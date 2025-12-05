@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/my-shops/[slug]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -41,6 +50,26 @@ export default function EditShopPage() {
     });
   }, [slug, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {any} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {any} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
@@ -52,7 +81,9 @@ export default function EditShopPage() {
       toast.success("Shop updated successfully!");
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerShopEdit.handleSubmit",
+        /** Metadata */
         metadata: { slug },
       });
       toast.error(error.message || "Failed to update shop. Please try again.");
@@ -60,6 +91,22 @@ export default function EditShopPage() {
       setIsSubmitting(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDelete = async () => {
     try {
@@ -71,7 +118,9 @@ export default function EditShopPage() {
       router.push("/seller/my-shops");
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerShopEdit.handleDelete",
+        /** Metadata */
         metadata: { slug },
       });
       toast.error(error.message || "Failed to delete shop. Please try again.");

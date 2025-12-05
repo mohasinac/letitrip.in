@@ -1,15 +1,41 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/Toast
+ * @description This file contains the Toast component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect } from "react";
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from "lucide-react";
 
+/**
+ * ToastType type
+ * 
+ * @typedef {Object} ToastType
+ * @description Type definition for ToastType
+ */
 export type ToastType = "success" | "error" | "info" | "warning";
 
+/**
+ * ToastProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ToastProps
+ */
 interface ToastProps {
+  /** Message */
   message: string;
+  /** Type */
   type?: ToastType;
+  /** Duration */
   duration?: number;
+  /** On Close */
   onClose: () => void;
+  /** Show */
   show: boolean;
 }
 
@@ -32,18 +58,26 @@ export default function Toast({
   if (!show) return null;
 
   const icons = {
+    /** Success */
     success: <CheckCircle className="w-5 h-5" />,
+    /** Error */
     error: <XCircle className="w-5 h-5" />,
+    /** Info */
     info: <Info className="w-5 h-5" />,
+    /** Warning */
     warning: <AlertTriangle className="w-5 h-5" />,
   };
 
   const colors = {
+    /** Success */
     success:
       "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800",
+    /** Error */
     error:
       "bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800",
+    /** Info */
     info: "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+    /** Warning */
     warning:
       "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
   };

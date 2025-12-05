@@ -1,5 +1,36 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/email/templates/welcome.template
+ * @description This file contains functionality related to welcome.template
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Welcome Email Template
+ */
+
+/**
+ * Retrieves welcome email template
+ *
+ * @param {string} name - The name
+ *
+ * @returns {string} The welcomeemailtemplate result
+ *
+ * @example
+ * getWelcomeEmailTemplate("example");
+ */
+
+/**
+ * Retrieves welcome email template
+ *
+ * @param {string} name - The name
+ *
+ * @returns {string} The welcomeemailtemplate result
+ *
+ * @example
+ * getWelcomeEmailTemplate("example");
  */
 
 export function getWelcomeEmailTemplate(name: string): string {
@@ -36,11 +67,14 @@ export function getWelcomeEmailTemplate(name: string): string {
     <div style="text-align: center; margin: 30px 0;">
       <a href="https://Letitrip.in" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Start Exploring
       </a>
@@ -61,6 +95,31 @@ export function getWelcomeEmailTemplate(name: string): string {
 </html>
   `;
 }
+
+/**
+ * Retrieves welcome email text
+ */
+/**
+ * Retrieves welcome email text
+ *
+ * @param {string} name - The name
+ *
+ * @returns {string} The welcomeemailtext result
+ *
+ * @example
+ * getWelcomeEmailText("example");
+ */
+
+/**
+ * Retrieves welcome email text
+ *
+ * @param {string} name - The name
+ *
+ * @returns {string} The welcomeemailtext result
+ *
+ * @example
+ * getWelcomeEmailText("example");
+ */
 
 export function getWelcomeEmailText(name: string): string {
   return `Hi ${name},

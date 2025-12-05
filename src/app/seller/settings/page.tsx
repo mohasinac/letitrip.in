@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/settings/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/firebase-error-logger";
@@ -46,42 +55,92 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * SellerProfile interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SellerProfile
+ */
 interface SellerProfile {
+  /** Display Name */
   displayName: string;
+  /** Email */
   email: string;
+  /** Phone */
   phone: string;
+  /** Business Name */
   businessName: string;
+  /** Business Type */
   businessType: "individual" | "company" | "partnership";
+  /** Gst Number */
   gstNumber: string;
+  /** Pan Number */
   panNumber: string;
+  /** Address */
   address: {
+    /** Street */
     street: string;
+    /** City */
     city: string;
+    /** State */
     state: string;
+    /** Pincode */
     pincode: string;
   };
 }
 
+/**
+ * NotificationPreferences interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NotificationPreferences
+ */
 interface NotificationPreferences {
+  /** Email Notifications */
   emailNotifications: boolean;
+  /** Order Alerts */
   orderAlerts: boolean;
+  /** Review Alerts */
   reviewAlerts: boolean;
+  /** Payout Alerts */
   payoutAlerts: boolean;
+  /** Promotional Emails */
   promotionalEmails: boolean;
+  /** Low Stock Alerts */
   lowStockAlerts: boolean;
+  /** Daily Digest */
   dailyDigest: boolean;
 }
 
+/**
+ * PayoutSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PayoutSettings
+ */
 interface PayoutSettings {
+  /** Account Holder Name */
   accountHolderName: string;
+  /** Bank Name */
   bankName: string;
+  /** Account Number */
   accountNumber: string;
+  /** Ifsc Code */
   ifscCode: string;
+  /** Upi Id */
   upiId: string;
+  /** Preferred Method */
   preferredMethod: "bank" | "upi";
+  /** Min Payout Amount */
   minPayoutAmount: number;
 }
 
+/**
+ * TabId type
+ * 
+ * @typedef {Object} TabId
+ * @description Type definition for TabId
+ */
 type TabId = "profile" | "notifications" | "payout" | "business";
 
 export default function SellerSettingsPage() {
@@ -97,38 +156,64 @@ export default function SellerSettingsPage() {
 
   // Form states
   const [profile, setProfile] = useState<SellerProfile>({
+    /** Display Name */
     displayName: "",
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
+    /** Business Name */
     businessName: "",
+    /** Business Type */
     businessType: "individual",
+    /** Gst Number */
     gstNumber: "",
+    /** Pan Number */
     panNumber: "",
+    /** Address */
     address: {
+      /** Street */
       street: "",
+      /** City */
       city: "",
+      /** State */
       state: "",
+      /** Pincode */
       pincode: "",
     },
   });
 
   const [notifications, setNotifications] = useState<NotificationPreferences>({
+    /** Email Notifications */
     emailNotifications: true,
+    /** Order Alerts */
     orderAlerts: true,
+    /** Review Alerts */
     reviewAlerts: true,
+    /** Payout Alerts */
     payoutAlerts: true,
+    /** Promotional Emails */
     promotionalEmails: false,
+    /** Low Stock Alerts */
     lowStockAlerts: true,
+    /** Daily Digest */
     dailyDigest: true,
   });
 
   const [payout, setPayout] = useState<PayoutSettings>({
+    /** Account Holder Name */
     accountHolderName: "",
+    /** Bank Name */
     bankName: "",
+    /** Account Number */
     accountNumber: "",
+    /** Ifsc Code */
     ifscCode: "",
+    /** Upi Id */
     upiId: "",
+    /** Preferred Method */
     preferredMethod: "bank",
+    /** Min Payout Amount */
     minPayoutAmount: 500,
   });
 
@@ -142,8 +227,11 @@ export default function SellerSettingsPage() {
     await execute(async () => {
       // Load seller settings from API
       const response = await apiService.get<{
+        /** Profile */
         profile: SellerProfile;
+        /** Notifications */
         notifications: NotificationPreferences;
+        /** Payout */
         payout: PayoutSettings;
       }>("/api/seller/settings");
 
@@ -153,6 +241,22 @@ export default function SellerSettingsPage() {
     });
   }, [user, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -160,12 +264,15 @@ export default function SellerSettingsPage() {
       setSuccess(null);
 
       const data = {
+        /** Profile */
         profile:
           activeTab === "profile" || activeTab === "business"
             ? profile
             : undefined,
+        /** Notifications */
         notifications:
           activeTab === "notifications" ? notifications : undefined,
+        /** Payout */
         payout: activeTab === "payout" ? payout : undefined,
       };
 
@@ -175,6 +282,7 @@ export default function SellerSettingsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "SellerSettings.handleSaveSettings",
       });
       setSaveError(
@@ -341,6 +449,7 @@ export default function SellerSettingsPage() {
                 onChange={(e) =>
                   setProfile({
                     ...profile,
+                    /** Business Type */
                     businessType: e.target
                       .value as SellerProfile["businessType"],
                   })
@@ -360,6 +469,7 @@ export default function SellerSettingsPage() {
                   onChange={(e) =>
                     setProfile({
                       ...profile,
+                      /** Gst Number */
                       gstNumber: e.target.value.toUpperCase(),
                     })
                   }
@@ -378,6 +488,7 @@ export default function SellerSettingsPage() {
                 onChange={(e) =>
                   setProfile({
                     ...profile,
+                    /** Pan Number */
                     panNumber: e.target.value.toUpperCase(),
                   })
                 }
@@ -401,8 +512,10 @@ export default function SellerSettingsPage() {
                   onChange={(e) =>
                     setProfile({
                       ...profile,
+                      /** Address */
                       address: {
                         ...profile.address,
+                        /** Street */
                         street: e.target.value,
                       },
                     })
@@ -421,6 +534,7 @@ export default function SellerSettingsPage() {
                     onChange={(e) =>
                       setProfile({
                         ...profile,
+                        /** Address */
                         address: { ...profile.address, city: e.target.value },
                       })
                     }
@@ -434,8 +548,10 @@ export default function SellerSettingsPage() {
                     onChange={(e) =>
                       setProfile({
                         ...profile,
+                        /** Address */
                         address: {
                           ...profile.address,
+                          /** State */
                           state: e.target.value,
                         },
                       })
@@ -450,8 +566,10 @@ export default function SellerSettingsPage() {
                     onChange={(e) =>
                       setProfile({
                         ...profile,
+                        /** Address */
                         address: {
                           ...profile.address,
+                          /** Pincode */
                           pincode: e.target.value
                             .replace(/\D/g, "")
                             .slice(0, 6),
@@ -483,6 +601,7 @@ export default function SellerSettingsPage() {
                 onChange={(checked) =>
                   setNotifications({
                     ...notifications,
+                    /** Email Notifications */
                     emailNotifications: checked,
                   })
                 }
@@ -526,6 +645,7 @@ export default function SellerSettingsPage() {
                 onChange={(checked) =>
                   setNotifications({
                     ...notifications,
+                    /** Low Stock Alerts */
                     lowStockAlerts: checked,
                   })
                 }
@@ -549,6 +669,7 @@ export default function SellerSettingsPage() {
                 onChange={(checked) =>
                   setNotifications({
                     ...notifications,
+                    /** Promotional Emails */
                     promotionalEmails: checked,
                   })
                 }
@@ -616,6 +737,7 @@ export default function SellerSettingsPage() {
                   onChange={(e) =>
                     setPayout({
                       ...payout,
+                      /** Account Holder Name */
                       accountHolderName: e.target.value,
                     })
                   }
@@ -639,6 +761,7 @@ export default function SellerSettingsPage() {
                   onChange={(e) =>
                     setPayout({
                       ...payout,
+                      /** Account Number */
                       accountNumber: e.target.value.replace(/\D/g, ""),
                     })
                   }
@@ -653,6 +776,7 @@ export default function SellerSettingsPage() {
                   onChange={(e) =>
                     setPayout({
                       ...payout,
+                      /** Ifsc Code */
                       ifscCode: e.target.value.toUpperCase(),
                     })
                   }
@@ -682,6 +806,7 @@ export default function SellerSettingsPage() {
               onChange={(e) =>
                 setPayout({
                   ...payout,
+                  /** Min Payout Amount */
                   minPayoutAmount: Number(e.target.value),
                 })
               }
@@ -729,17 +854,38 @@ export default function SellerSettingsPage() {
 }
 
 // Notification toggle component
+/**
+ * Function: Notification Toggle
+ */
+/**
+ * Performs notification toggle operation
+ *
+ * @returns {any} The notificationtoggle result
+ */
+
+/**
+ * Performs notification toggle operation
+ *
+ * @returns {any} The notificationtoggle result
+ */
+
 function NotificationToggle({
+  /** Icon */
   icon: Icon,
   label,
   description,
   checked,
   onChange,
 }: {
+  /** Icon */
   icon: React.ElementType;
+  /** Label */
   label: string;
+  /** Description */
   description: string;
+  /** Checked */
   checked: boolean;
+  /** On Change */
   onChange: (checked: boolean) => void;
 }) {
   return (

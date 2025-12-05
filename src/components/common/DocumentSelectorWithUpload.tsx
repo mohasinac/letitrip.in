@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/DocumentSelectorWithUpload
+ * @description This file contains the DocumentSelectorWithUpload component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -27,16 +36,32 @@ import {
 } from "@/constants/validation-messages";
 
 // Document Interface
+/**
+ * Document interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Document
+ */
 export interface Document {
+  /** Id */
   id: string;
+  /** Type */
   type: "pan" | "aadhaar" | "gstin" | "driving_license" | "passport" | "other";
+  /** Document Number */
   documentNumber: string;
+  /** File Name */
   fileName: string;
+  /** File Url */
   fileUrl: string;
+  /** File Size */
   fileSize: number;
+  /** Uploaded At */
   uploadedAt: Date;
+  /** Verification Status */
   verificationStatus: "pending" | "verified" | "rejected";
+  /** Verified At */
   verifiedAt?: Date;
+  /** Rejection Reason */
   rejectionReason?: string;
 }
 
@@ -50,6 +75,7 @@ const DOCUMENT_TYPES = [
 ];
 
 const DocumentSchema = z.object({
+  /** Type */
   type: z.enum([
     "pan",
     "aadhaar",
@@ -58,15 +84,32 @@ const DocumentSchema = z.object({
     "passport",
     "other",
   ]),
+  /** Document Number */
   documentNumber: z.string().min(5, "Document number is required"),
+  /** File */
   file: z.any(),
 });
 
+/**
+ * DocumentFormData type
+ * 
+ * @typedef {Object} DocumentFormData
+ * @description Type definition for DocumentFormData
+ */
 type DocumentFormData = z.infer<typeof DocumentSchema>;
 
+/**
+ * DocumentSelectorWithUploadProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DocumentSelectorWithUploadProps
+ */
 export interface DocumentSelectorWithUploadProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (documentId: string, document: Document) => void;
+  /** Document Type */
   documentType?:
     | "pan"
     | "aadhaar"
@@ -75,11 +118,36 @@ export interface DocumentSelectorWithUploadProps {
     | "passport"
     | "other"
     | "all";
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Document Selector With Upload
+ */
+/**
+ * Performs document selector with upload operation
+ *
+ * @returns {any} The documentselectorwithupload result
+ *
+ * @example
+ * DocumentSelectorWithUpload();
+ */
+
+/**
+ * Performs document selector with upload operation
+ *
+ * @returns {any} The documentselectorwithupload result
+ *
+ * @example
+ * DocumentSelectorWithUpload();
+ */
 
 export function DocumentSelectorWithUpload({
   value,
@@ -91,14 +159,20 @@ export function DocumentSelectorWithUpload({
   className = "",
 }: DocumentSelectorWithUploadProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: documents,
+    /** Set Data */
     setData: setDocuments,
     execute,
   } = useLoadingState<Document[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "DocumentSelectorWithUpload.loadDocuments",
       });
       toast.error("Failed to load documents");
@@ -115,10 +189,14 @@ export function DocumentSelectorWithUpload({
     register,
     handleSubmit,
     watch,
+    /** Form State */
     formState: { errors },
   } = useForm<DocumentFormData>({
+    /** Resolver */
     resolver: zodResolver(DocumentSchema),
+    /** Default Values */
     defaultValues: {
+      /** Type */
       type: documentType === "all" ? "pan" : documentType,
     },
   });
@@ -127,16 +205,64 @@ export function DocumentSelectorWithUpload({
     loadDocuments();
   }, [documentType]);
 
+  /**
+   * Fetches documents from server
+   *
+   * @returns {Promise<any>} Promise resolving to documents result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches documents from server
+   *
+   * @returns {Promise<any>} Promise resolving to documents result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadDocuments = () =>
     execute(async () => {
       // TODO: Implement actual API
       return [];
     });
 
+  /**
+   * Handles document select event
+   *
+   * @param {Document} document - The document
+   *
+   * @returns {any} The handledocumentselect result
+   */
+
+  /**
+   * Handles document select event
+   *
+   * @param {Document} document - The document
+   *
+   * @returns {any} The handledocumentselect result
+   */
+
   const handleDocumentSelect = (document: Document) => {
     setSelectedId(document.id);
     onChange(document.id, document);
   };
+
+  /**
+   * Handles file change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlefilechange result
+   */
+
+  /**
+   * Handles file change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlefilechange result
+   */
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -163,6 +289,26 @@ export function DocumentSelectorWithUpload({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {DocumentFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {DocumentFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const onSubmit = async (data: DocumentFormData) => {
     if (!selectedFile) {
       toast.error("Please select a file to upload");
@@ -175,7 +321,9 @@ export function DocumentSelectorWithUpload({
 
       // Upload file to Firebase Storage
       const uploadResult = await mediaService.upload({
+        /** File */
         file: selectedFile,
+        /** Context */
         context: "product",
       });
 
@@ -183,13 +331,21 @@ export function DocumentSelectorWithUpload({
 
       // TODO: Implement actual API to save document metadata
       const newDocument: Document = {
+        /** Id */
         id: `doc_${Date.now()}`,
+        /** Type */
         type: data.type,
+        /** Document Number */
         documentNumber: data.documentNumber,
+        /** File Name */
         fileName: selectedFile.name,
+        /** File Url */
         fileUrl: uploadResult.url,
+        /** File Size */
         fileSize: selectedFile.size,
+        /** Uploaded At */
         uploadedAt: new Date(),
+        /** Verification Status */
         verificationStatus: "pending",
       };
 
@@ -201,6 +357,7 @@ export function DocumentSelectorWithUpload({
       toast.success("Document uploaded successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "DocumentSelectorWithUpload.uploadDocument",
       });
       toast.error("Failed to upload document");
@@ -209,6 +366,22 @@ export function DocumentSelectorWithUpload({
       setUploadProgress(0);
     }
   };
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {Document["verificationStatus"]} status - The status
+   *
+   * @returns {any} The verificationbadge result
+   */
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {Document["verificationStatus"]} status - The status
+   *
+   * @returns {any} The verificationbadge result
+   */
 
   const getVerificationBadge = (status: Document["verificationStatus"]) => {
     switch (status) {
@@ -226,6 +399,7 @@ export function DocumentSelectorWithUpload({
             Rejected
           </span>
         );
+      /** Default */
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
@@ -235,6 +409,22 @@ export function DocumentSelectorWithUpload({
         );
     }
   };
+
+  /**
+   * Formats file size
+   *
+   * @param {number} bytes - The bytes
+   *
+   * @returns {string} The formatfilesize result
+   */
+
+  /**
+   * Formats file size
+   *
+   * @param {number} bytes - The bytes
+   *
+   * @returns {string} The formatfilesize result
+   */
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
@@ -334,6 +524,7 @@ export function DocumentSelectorWithUpload({
                     {document.verificationStatus === "rejected" &&
                       document.rejectionReason && (
                         <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                          /** Reason */
                           Reason: {document.rejectionReason}
                         </p>
                       )}

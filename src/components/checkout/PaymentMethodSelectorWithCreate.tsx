@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/PaymentMethodSelectorWithCreate
+ * @description This file contains the PaymentMethodSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -17,50 +26,118 @@ import {
 } from "@/constants/validation-messages";
 
 // Payment Method Interface
+/**
+ * PaymentMethod interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaymentMethod
+ */
 export interface PaymentMethod {
+  /** Id */
   id: string;
+  /** Type */
   type: "card" | "upi" | "netbanking" | "wallet" | "cod";
+  /** Display Name */
   displayName: string;
+  /** Last4 */
   last4?: string;
+  /** Card Brand */
   cardBrand?: string;
+  /** Upi Id */
   upiId?: string;
+  /** Bank Name */
   bankName?: string;
+  /** Wallet Provider */
   walletProvider?: string;
+  /** Expiry Month */
   expiryMonth?: number;
+  /** Expiry Year */
   expiryYear?: number;
+  /** Is Default */
   isDefault: boolean;
+  /** Created At */
   createdAt: Date;
 }
 
 // Validation Schema
 const PaymentMethodSchema = z.object({
+  /** Type */
   type: z.enum(["card", "upi", "netbanking", "wallet", "cod"]),
   // Card fields
+  /** Card Number */
   cardNumber: z.string().optional(),
+  /** Card Holder Name */
   cardHolderName: z.string().optional(),
+  /** Expiry Month */
   expiryMonth: z.string().optional(),
+  /** Expiry Year */
   expiryYear: z.string().optional(),
+  /** Cvv */
   cvv: z.string().optional(),
   // UPI field
+  /** Upi Id */
   upiId: z.string().optional(),
   // Netbanking field
+  /** Bank Name */
   bankName: z.string().optional(),
   // Wallet field
+  /** Wallet Provider */
   walletProvider: z.string().optional(),
+  /** Is Default */
   isDefault: z.boolean(),
 });
 
+/**
+ * PaymentMethodFormData type
+ * 
+ * @typedef {Object} PaymentMethodFormData
+ * @description Type definition for PaymentMethodFormData
+ */
 type PaymentMethodFormData = z.infer<typeof PaymentMethodSchema>;
 
+/**
+ * PaymentMethodSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaymentMethodSelectorWithCreateProps
+ */
 export interface PaymentMethodSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (methodId: string, method: PaymentMethod) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Auto Select Default */
   autoSelectDefault?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Payment Method Selector With Create
+ */
+/**
+ * Performs payment method selector with create operation
+ *
+ * @returns {any} The paymentmethodselectorwithcreate result
+ *
+ * @example
+ * PaymentMethodSelectorWithCreate();
+ */
+
+/**
+ * Performs payment method selector with create operation
+ *
+ * @returns {any} The paymentmethodselectorwithcreate result
+ *
+ * @example
+ * PaymentMethodSelectorWithCreate();
+ */
 
 export function PaymentMethodSelectorWithCreate({
   value,
@@ -72,14 +149,20 @@ export function PaymentMethodSelectorWithCreate({
   className = "",
 }: PaymentMethodSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: methods,
+    /** Set Data */
     setData: setMethods,
     execute,
   } = useLoadingState<PaymentMethod[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "PaymentMethodSelectorWithCreate.loadPaymentMethods",
       });
       toast.error("Failed to load payment methods");
@@ -93,11 +176,16 @@ export function PaymentMethodSelectorWithCreate({
     register,
     handleSubmit,
     watch,
+    /** Form State */
     formState: { errors },
   } = useForm<PaymentMethodFormData>({
+    /** Resolver */
     resolver: zodResolver(PaymentMethodSchema),
+    /** Default Values */
     defaultValues: {
+      /** Type */
       type: "card",
+      /** Is Default */
       isDefault: false,
     },
   });
@@ -110,6 +198,22 @@ export function PaymentMethodSelectorWithCreate({
 
   useEffect(() => {
     if (autoSelectDefault && (methods || []).length > 0 && !selectedId) {
+      /**
+       * Performs default method operation
+       *
+       * @param {any} methods || []).find((m - The methods || []).find((m
+       *
+       * @returns {any} The defaultmethod result
+       */
+
+      /**
+       * Performs default method operation
+       *
+       * @param {any} methods || []).find((m - The methods || []).find((m
+       *
+       * @returns {any} The defaultmethod result
+       */
+
       const defaultMethod = (methods || []).find((m) => m.isDefault);
       if (defaultMethod) {
         setSelectedId(defaultMethod.id);
@@ -118,32 +222,90 @@ export function PaymentMethodSelectorWithCreate({
     }
   }, [methods, autoSelectDefault, selectedId, onChange]);
 
+  /**
+   * Fetches payment methods from server
+   *
+   * @returns {Promise<any>} Promise resolving to paymentmethods result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches payment methods from server
+   *
+   * @returns {Promise<any>} Promise resolving to paymentmethods result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadPaymentMethods = () =>
     execute(async () => {
       // TODO: Implement actual API
       return [];
     });
 
+  /**
+   * Handles method select event
+   *
+   * @param {PaymentMethod} method - The method
+   *
+   * @returns {any} The handlemethodselect result
+   */
+
+  /**
+   * Handles method select event
+   *
+   * @param {PaymentMethod} method - The method
+   *
+   * @returns {any} The handlemethodselect result
+   */
+
   const handleMethodSelect = (method: PaymentMethod) => {
     setSelectedId(method.id);
     onChange(method.id, method);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {PaymentMethodFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {PaymentMethodFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const onSubmit = async (data: PaymentMethodFormData) => {
     try {
       setSubmitting(true);
       // TODO: Implement actual API
       const newMethod: PaymentMethod = {
+        /** Id */
         id: `pm_${Date.now()}`,
+        /** Type */
         type: data.type,
+        /** Display Name */
         displayName:
           data.cardHolderName ||
           data.upiId ||
           data.bankName ||
           data.walletProvider ||
           "Cash on Delivery",
+        /** Last4 */
         last4: data.cardNumber?.slice(-4),
+        /** Is Default */
         isDefault: data.isDefault,
+        /** Created At */
         createdAt: new Date(),
       };
 
@@ -154,6 +316,7 @@ export function PaymentMethodSelectorWithCreate({
       toast.success("Payment method added successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "PaymentMethodSelectorWithCreate.addPaymentMethod",
       });
       toast.error("Failed to add payment method");
@@ -161,6 +324,22 @@ export function PaymentMethodSelectorWithCreate({
       setSubmitting(false);
     }
   };
+
+  /**
+   * Retrieves method icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The methodicon result
+   */
+
+  /**
+   * Retrieves method icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The methodicon result
+   */
 
   const getMethodIcon = (type: string) => {
     return <CreditCard className="w-5 h-5" />;

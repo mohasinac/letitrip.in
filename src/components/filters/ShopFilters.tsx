@@ -1,23 +1,79 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/ShopFilters
+ * @description This file contains the ShopFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * ShopFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopFilterValues
+ */
 export interface ShopFilterValues {
+  /** Verified */
   verified?: boolean;
+  /** Rating */
   rating?: number;
+  /** Featured */
   featured?: boolean;
+  /** Homepage */
   homepage?: boolean;
+  /** Banned */
   banned?: boolean;
 }
 
+/**
+ * ShopFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopFiltersProps
+ */
 interface ShopFiltersProps {
+  /** Filters */
   filters: ShopFilterValues;
+  /** On Change */
   onChange: (filters: ShopFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs shop filters operation
+ *
+ * @returns {any} The shopfilters result
+ *
+ * @example
+ * ShopFilters();
+ */
+
+/**
+ * S
+ * @constant
+ */
+/**
+ * Performs shop filters operation
+ *
+ * @returns {any} The shopfilters result
+ *
+ * @example
+ * ShopFilters();
+ */
+
+/**
+ * S
+ * @constant
+ */
 export const ShopFilters: React.FC<ShopFiltersProps> = ({
   filters,
   onChange,
@@ -27,7 +83,9 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof ShopFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: ShopFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });

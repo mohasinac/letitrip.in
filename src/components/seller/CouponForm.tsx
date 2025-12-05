@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/CouponForm
+ * @description This file contains the CouponForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import DateTimePicker from "@/components/common/DateTimePicker";
@@ -11,56 +20,91 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * CouponFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CouponFormProps
+ */
 interface CouponFormProps {
+  /** Mode */
   mode: "create" | "edit";
+  /** Initial Data */
   initialData?: Partial<CouponFE>;
+  /** Shop Id */
   shopId?: string;
+  /** On Submit */
   onSubmit: (data: CouponFormFE) => void;
+  /** Is Submitting */
   isSubmitting?: boolean;
 }
 
 const COUPON_TYPES: {
+  /** Value */
   value: CouponType;
+  /** Label */
   label: string;
+  /** Description */
   description: string;
 }[] = [
   {
+    /** Value */
     value: CouponType.PERCENTAGE,
+    /** Label */
     label: "Percentage",
+    /** Description */
     description: "e.g., 10% off",
   },
   {
+    /** Value */
     value: CouponType.FLAT,
+    /** Label */
     label: "Flat Amount",
+    /** Description */
     description: "e.g., ₹100 off",
   },
   { value: CouponType.BOGO, label: "BOGO", description: "Buy One Get One" },
   {
+    /** Value */
     value: CouponType.TIERED,
+    /** Label */
     label: "Tiered",
+    /** Description */
     description: "Spend more, save more",
   },
   {
+    /** Value */
     value: CouponType.FREE_SHIPPING,
+    /** Label */
     label: "Free Shipping",
+    /** Description */
     description: "No shipping charges",
   },
 ];
 
 const APPLICABILITY_OPTIONS = [
   {
+    /** Value */
     value: "all",
+    /** Label */
     label: "All Products",
+    /** Description */
     description: "Applies to entire shop",
   },
   {
+    /** Value */
     value: "category",
+    /** Label */
     label: "Specific Categories",
+    /** Description */
     description: "Choose categories",
   },
   {
+    /** Value */
     value: "product",
+    /** Label */
     label: "Specific Products",
+    /** Description */
     description: "Choose products",
   },
 ];
@@ -73,29 +117,51 @@ export default function CouponForm({
   isSubmitting = false,
 }: CouponFormProps) {
   const [formData, setFormData] = useState({
+    /** Code */
     code: initialData?.code || "",
+    /** Name */
     name: initialData?.name || "",
+    /** Description */
     description: initialData?.description || "",
+    /** Shop Id */
     shopId: initialData?.shopId || shopId || "",
+    /** Type */
     type: initialData?.type || CouponType.PERCENTAGE,
+    /** Discount Value */
     discountValue: initialData?.discountValue || 0,
+    /** Max Discount Amount */
     maxDiscountAmount: initialData?.maxDiscountAmount || 0,
+    /** Min Purchase Amount */
     minPurchaseAmount: initialData?.minPurchaseAmount || 0,
+    /** Min Quantity */
     minQuantity: initialData?.minQuantity || 1,
+    /** Applicability */
     applicability: initialData?.applicability || CouponApplicability.ALL,
+    /** Applicable Categories */
     applicableCategories: initialData?.applicableCategories || [],
+    /** Applicable Products */
     applicableProducts: initialData?.applicableProducts || [],
+    /** Usage Limit */
     usageLimit: initialData?.usageLimit || undefined,
+    /** Usage Limit Per User */
     usageLimitPerUser: initialData?.usageLimitPerUser || 1,
+    /** Start Date */
     startDate: initialData?.startDate || new Date(),
+    /** End Date */
     endDate:
       initialData?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+    /** First Order Only */
     firstOrderOnly: initialData?.firstOrderOnly || false,
+    /** New Users Only */
     newUsersOnly: initialData?.newUsersOnly || false,
+    /** Can Combine With Other Coupons */
     canCombineWithOtherCoupons:
       initialData?.canCombineWithOtherCoupons || false,
+    /** Auto Apply */
     autoApply: initialData?.autoApply || false,
+    /** Is Public */
     isPublic: initialData?.isPublic || true,
+    /** Featured */
     featured: initialData?.featured || false,
   });
 
@@ -103,6 +169,26 @@ export default function CouponForm({
   const [isValidatingCode, setIsValidatingCode] = useState(false);
 
   // Validate coupon code
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateCode = async (code: string) => {
     if (!code || code.length < 3) {
       setCodeError("");
@@ -126,7 +212,9 @@ export default function CouponForm({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CouponForm.validateCouponCode",
+        /** Metadata */
         metadata: { code, shopId: formData.shopId },
       });
     } finally {
@@ -144,6 +232,26 @@ export default function CouponForm({
 
     return () => clearTimeout(timer);
   }, [formData.code, formData.shopId]);
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,6 +273,22 @@ export default function CouponForm({
 
     onSubmit(formData);
   };
+
+  /**
+   * Handles code change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlecodechange result
+   */
+
+  /**
+   * Handles code change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlecodechange result
+   */
 
   const handleCodeChange = (value: string) => {
     // Auto-uppercase and remove invalid characters
@@ -284,6 +408,7 @@ export default function CouponForm({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Type */
                       type: e.target.value as CouponType,
                     })
                   }
@@ -320,6 +445,7 @@ export default function CouponForm({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Discount Value */
                     discountValue: parseFloat(e.target.value),
                   })
                 }
@@ -341,6 +467,7 @@ export default function CouponForm({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Max Discount Amount */
                       maxDiscountAmount: e.target.value
                         ? parseFloat(e.target.value)
                         : 0,
@@ -379,6 +506,7 @@ export default function CouponForm({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Min Purchase Amount */
                   minPurchaseAmount: parseFloat(e.target.value),
                 })
               }
@@ -397,6 +525,7 @@ export default function CouponForm({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Min Quantity */
                   minQuantity: parseInt(e.target.value),
                 })
               }
@@ -431,6 +560,7 @@ export default function CouponForm({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Applicability */
                       applicability: e.target.value as any,
                     })
                   }
@@ -505,6 +635,7 @@ export default function CouponForm({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Usage Limit */
                   usageLimit: e.target.value
                     ? parseInt(e.target.value)
                     : undefined,
@@ -532,6 +663,7 @@ export default function CouponForm({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Usage Limit Per User */
                   usageLimitPerUser: parseInt(e.target.value),
                 })
               }

@@ -1,13 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormFieldset
+ * @description This file contains the FormFieldset component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormFieldsetProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormFieldsetProps
+ */
 export interface FormFieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
+  /** Legend */
   legend?: string;
+  /** Description */
   description?: string;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Children */
   children: React.ReactNode;
 }
 
@@ -19,6 +39,32 @@ export interface FormFieldsetProps extends React.FieldsetHTMLAttributes<HTMLFiel
  * - Optional description
  * - Error display
  * - Dark mode support
+ */
+/**
+ * Performs form fieldset operation
+ *
+ * @returns {any} The formfieldset result
+ *
+ * @example
+ * FormFieldset();
+ */
+
+/**
+ * F
+ * @constant
+ */
+/**
+ * Performs form fieldset operation
+ *
+ * @returns {any} The formfieldset result
+ *
+ * @example
+ * FormFieldset();
+ */
+
+/**
+ * F
+ * @constant
  */
 export const FormFieldset: React.FC<FormFieldsetProps> = ({
   legend,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/contact/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormField } from "@/components/forms/FormField";
@@ -12,22 +21,49 @@ import { useState } from "react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
+    /** Name */
     name: "",
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
+    /** Subject */
     subject: "",
+    /** Message */
     message: "",
   });
   const [success, setSuccess] = useState(false);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "ContactPage.handleSubmit" });
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,16 +72,23 @@ export default function ContactPage() {
     await execute(async () => {
       await supportService.createTicket({
         ...formData,
+        /** Category */
         category: "general",
+        /** Priority */
         priority: "medium",
       } as any);
 
       setSuccess(true);
       setFormData({
+        /** Name */
         name: "",
+        /** Email */
         email: "",
+        /** Phone */
         phone: "",
+        /** Subject */
         subject: "",
+        /** Message */
         message: "",
       });
 
@@ -53,7 +96,26 @@ export default function ContactPage() {
     });
   };
 
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} /** E */
+    e - The /**  e */
+    e
+   *
+   * @returns {any} The handlechange result
+   */
+
   const handleChange = (
+    /** E */
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData({

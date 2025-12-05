@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/PendingUploadsWarning
+ * @description This file contains the PendingUploadsWarning component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PendingUploadsWarning Component
  *
  * Warning modal before navigation with pending uploads
@@ -12,6 +21,12 @@ import { useRouter, usePathname } from "next/navigation";
 import { AlertTriangle, Upload, X } from "lucide-react";
 import { useUploadContext } from "@/contexts/UploadContext";
 
+/**
+ * PendingUploadsWarningProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PendingUploadsWarningProps
+ */
 export interface PendingUploadsWarningProps {
   enabled?: boolean; // Enable/disable warning
 }
@@ -31,6 +46,22 @@ export default function PendingUploadsWarning({
   // Intercept browser back/forward/refresh
   useEffect(() => {
     if (!enabled) return;
+
+    /**
+     * Handles before unload event
+     *
+     * @param {BeforeUnloadEvent} e - The e
+     *
+     * @returns {any} The handlebeforeunload result
+     */
+
+    /**
+     * Handles before unload event
+     *
+     * @param {BeforeUnloadEvent} e - The e
+     *
+     * @returns {any} The handlebeforeunload result
+     */
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasPendingUploads) {
@@ -81,10 +112,34 @@ export default function PendingUploadsWarning({
     };
   }, [enabled, hasPendingUploads, pathname, router]);
 
+  /**
+   * Handles stay event
+   *
+   * @returns {any} The handlestay result
+   */
+
+  /**
+   * Handles stay event
+   *
+   * @returns {any} The handlestay result
+   */
+
   const handleStay = () => {
     setShowWarning(false);
     setPendingNavigation(null);
   };
+
+  /**
+   * Handles leave event
+   *
+   * @returns {any} The handleleave result
+   */
+
+  /**
+   * Handles leave event
+   *
+   * @returns {any} The handleleave result
+   */
 
   const handleLeave = () => {
     if (pendingNavigation) {

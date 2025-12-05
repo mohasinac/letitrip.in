@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/my-shops/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
@@ -41,43 +50,87 @@ export default function CreateShopWizardPage() {
 
   const [formData, setFormData] = useState({
     // Step 1: Basic Info
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Category */
     category: "",
+    /** Description */
     description: "",
 
     // Step 2: Branding
+    /** Logo Url */
     logoUrl: "",
+    /** Banner Url */
     bannerUrl: "",
+    /** Theme Color */
     themeColor: "#3B82F6",
+    /** Accent Color */
     accentColor: "#10B981",
 
     // Step 3: Contact & Legal
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
+    /** Location */
     location: "",
+    /** Address */
     address: "",
+    /** Business Registration */
     businessRegistration: "",
+    /** Tax Id */
     taxId: "",
 
     // Step 4: Policies
+    /** Shipping Policy */
     shippingPolicy: "",
+    /** Return Policy */
     returnPolicy: "7-days",
+    /** Terms And Conditions */
     termsAndConditions: "",
 
     // Step 5: Settings
+    /** Default Shipping Fee */
     defaultShippingFee: undefined as number | undefined,
+    /** Support Email */
     supportEmail: "",
+    /** Enable C O D */
     enableCOD: false,
+    /** Enable Returns */
     enableReturns: true,
+    /** Show Contact */
     showContact: true,
 
     // Step 6: Review & Publish
+    /** Is Active */
     isActive: false,
+    /** Accepts Orders */
     acceptsOrders: true,
   });
 
   // Validate slug format
+  /**
+   * Validates slug
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The validateslug result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates slug
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The validateslug result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateSlug = (slug: string) => {
     if (!slug || slug.length < 3) {
       setSlugError("");
@@ -93,9 +146,47 @@ export default function CreateShopWizardPage() {
     }
   };
 
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validateStep = (step: number): boolean => {
     switch (step) {
@@ -140,16 +231,60 @@ export default function CreateShopWizardPage() {
     return true;
   };
 
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
   const nextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
     }
   };
 
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const prevStep = () => {
     setError("");
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
@@ -159,21 +294,37 @@ export default function CreateShopWizardPage() {
       setError("");
 
       const shopData: any = {
+        /** Name */
         name: formData.name,
+        /** Slug */
         slug: formData.slug,
+        /** Description */
         description: formData.description,
+        /** Email */
         email: formData.email,
+        /** Phone */
         phone: formData.phone,
+        /** Location */
         location: formData.location,
+        /** Address */
         address: formData.address,
+        /** Logo Url */
         logoUrl: formData.logoUrl || undefined,
+        /** Banner Url */
         bannerUrl: formData.bannerUrl || undefined,
+        /** Theme Color */
         themeColor: formData.themeColor,
+        /** Business Registration */
         businessRegistration: formData.businessRegistration || undefined,
+        /** Tax Id */
         taxId: formData.taxId || undefined,
+        /** Shipping Policy */
         shippingPolicy: formData.shippingPolicy || undefined,
+        /** Return Policy */
         returnPolicy: formData.returnPolicy,
+        /** Terms And Conditions */
         termsAndConditions: formData.termsAndConditions || undefined,
+        /** Is Active */
         isActive: formData.isActive,
       };
 
@@ -181,7 +332,9 @@ export default function CreateShopWizardPage() {
       router.push(`/seller/my-shops?created=true`);
     } catch (err: any) {
       logError(err as Error, {
+        /** Component */
         component: "ShopCreate.handleSubmit",
+        /** Metadata */
         metadata: { shopData: formData },
       });
       setError(err.message || "Failed to create shop");

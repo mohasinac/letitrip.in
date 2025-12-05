@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/header/stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Header Stats API
  * Epic: E033 - Live Header Data
  *
@@ -10,12 +19,24 @@ import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * HeaderStatsResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeaderStatsResponse
+ */
 interface HeaderStatsResponse {
+  /** Cart Count */
   cartCount: number;
+  /** Notification Count */
   notificationCount: number;
+  /** Messages Count */
   messagesCount: number;
+  /** Favorites Count */
   favoritesCount: number;
+  /** Rip Limit Balance */
   ripLimitBalance: number | null;
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: boolean;
 }
 
@@ -23,6 +44,32 @@ interface HeaderStatsResponse {
  * GET /api/header/stats
  * Returns all header statistics in a single optimized call
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -30,13 +77,21 @@ export async function GET(request: NextRequest) {
     // For unauthenticated users, return defaults
     if (!auth.user) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: {
+          /** Cart Count */
           cartCount: 0,
+          /** Notification Count */
           notificationCount: 0,
+          /** Messages Count */
           messagesCount: 0,
+          /** Favorites Count */
           favoritesCount: 0,
+          /** Rip Limit Balance */
           ripLimitBalance: null,
+          /** Has Unpaid Auctions */
           hasUnpaidAuctions: false,
         } as HeaderStatsResponse,
       });
@@ -135,7 +190,9 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: response,
     });
   } catch (error) {

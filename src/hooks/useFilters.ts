@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useFilters
+ * @description This file contains functionality related to useFilters
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -10,8 +19,28 @@ import { logError } from "@/lib/firebase-error-logger";
  * @param options - Configuration options
  * @returns Filter state and handlers
  */
+/**
+ * Custom React hook for filters
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * useFilters();
+ */
+
+/**
+ * Custom React hook for filters
+ *
+ * @returns {any} The usefilters result
+ *
+ * @example
+ * useFilters();
+ */
+
 export function useFilters<T extends Record<string, any>>(
+  /** Initial Filters */
   initialFilters: T,
+  /** Options */
   options: {
     /** Persist filters to localStorage (optional) */
     persist?: boolean;
@@ -64,7 +93,9 @@ export function useFilters<T extends Record<string, any>>(
         }
       } catch (error: any) {
         logError(error as Error, {
+          /** Component */
           component: "useFilters.loadInitialFilters",
+          /** Metadata */
           metadata: { storageKey },
         });
       }
@@ -106,7 +137,9 @@ export function useFilters<T extends Record<string, any>>(
         localStorage.setItem(storageKey, JSON.stringify(filters));
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "useFilters.useEffect",
+          /** Metadata */
           metadata: { storageKey },
         });
       }

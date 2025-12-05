@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/products/[slug]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -24,8 +33,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
+/**
+ * ProductPageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductPageProps
+ */
 interface ProductPageProps {
+  /** Params */
   params: Promise<{
+    /** Slug */
     slug: string;
   }>;
 }
@@ -37,15 +54,21 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [shop, setShop] = useState<ShopFE | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: product,
+    /** Set Data */
     setData: setProduct,
     execute,
   } = useLoadingState<ProductFE>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "ProductDetail.loadProduct",
+        /** Metadata */
         metadata: { slug },
       });
     },
@@ -62,17 +85,39 @@ export default function ProductPage({ params }: ProductPageProps) {
   useEffect(() => {
     if (product && shop) {
       addToHistory({
+        /** Id */
         id: product.id,
+        /** Type */
         type: "product",
+        /** Title */
         title: product.name,
+        /** Slug */
         slug: product.slug,
+        /** Image */
         image: product.images?.[0] || "",
+        /** Price */
         price: product.price,
         shop_id: product.shopId,
         shop_name: shop.name || "",
       });
     }
   }, [product, shop, addToHistory]);
+
+  /**
+   * Fetches product from server
+   *
+   * @returns {Promise<any>} Promise resolving to product result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches product from server
+   *
+   * @returns {Promise<any>} Promise resolving to product result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadProduct = () =>
     execute(async () => {
@@ -85,7 +130,9 @@ export default function ProductPage({ params }: ProductPageProps) {
           setShop(shopData);
         } catch (error) {
           logError(error as Error, {
+            /** Component */
             component: "ProductDetail.loadShop",
+            /** Metadata */
             metadata: { shopId: data.shopId },
           });
           // Non-critical error, continue showing product
@@ -138,6 +185,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     ...product.images.map((url: string) => ({ url, type: "image" as const })),
     ...(product.videos || []).map((url: string) => ({
       url,
+      /** Type */
       type: "video" as const,
     })),
   ];
@@ -280,6 +328,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </h3>
                   <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
                     <li>
+                      /** Condition */
                       Condition:{" "}
                       <span className="capitalize">
                         {product.condition || "New"}
@@ -331,6 +380,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   {product.stockCount > 0 && (
                     <div>
                       <label className="text-sm font-medium text-gray-900 dark:text-white">
+                        /** Quantity */
                         Quantity:
                       </label>
                       <select
@@ -365,10 +415,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                             selectedQuantity,
                             undefined,
                             {
+                              /** Name */
                               name: product.name,
+                              /** Price */
                               price: product.price,
+                              /** Image */
                               image: product.images[0],
+                              /** Shop Id */
                               shopId: product.shopId,
+                              /** Shop Name */
                               shopName: shop?.name || product.shopId,
                             },
                           );
@@ -396,10 +451,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                             selectedQuantity,
                             undefined,
                             {
+                              /** Name */
                               name: product.name,
+                              /** Price */
                               price: product.price,
+                              /** Image */
                               image: product.images[0],
+                              /** Shop Id */
                               shopId: product.shopId,
+                              /** Shop Name */
                               shopName: shop?.name || product.shopId,
                             },
                           );

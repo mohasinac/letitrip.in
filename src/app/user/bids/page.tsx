@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/bids/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PageState } from "@/components/common/PageState";
@@ -12,38 +21,72 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect } from "react";
 
+/**
+ * Bid interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Bid
+ */
 interface Bid {
+  /** Id */
   id: string;
   auction_id: string;
   user_id: string;
+  /** Amount */
   amount: number;
   created_at: any;
   is_auto_bid?: boolean;
 }
 
+/**
+ * AuctionDetails interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionDetails
+ */
 interface AuctionDetails {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Images */
   images: string[];
+  /** Current Bid */
   currentBid: number;
+  /** Starting Bid */
   startingBid: number;
+  /** Bid Count */
   bidCount: number;
+  /** End Time */
   endTime: Date | string;
+  /** Status */
   status: string;
   highest_bidder_id?: string;
 }
 
+/**
+ * BidWithAuction interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BidWithAuction
+ */
 interface BidWithAuction extends Bid {
+  /** Auction */
   auction?: AuctionDetails;
+  /** Is Winning */
   isWinning?: boolean;
+  /** Is Outbid */
   isOutbid?: boolean;
 }
 
 export default function MyBidsPage() {
   const { user } = useAuth();
   const {
+    /** Data */
     data: bids,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
@@ -70,9 +113,11 @@ export default function MyBidsPage() {
     // Enhance with winning/outbid status
     const bidsWithStatus = latestBids.map((bid: any) => ({
       ...bid,
+      /** Is Winning */
       isWinning:
         bid.auction?.highest_bidder_id === user?.uid &&
         bid.auction?.status === "live",
+      /** Is Outbid */
       isOutbid:
         bid.auction?.highest_bidder_id !== user?.uid &&
         bid.auction?.status === "live",
@@ -264,7 +309,9 @@ export default function MyBidsPage() {
                           </div>
                           <div className="text-gray-900 dark:text-gray-200">
                             {formatDate(bid.created_at, {
+                              /** Format */
                               format: "short",
+                              /** Include Time */
                               includeTime: true,
                             })}
                           </div>

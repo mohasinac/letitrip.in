@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileAdminSidebar
+ * @description This file contains the MobileAdminSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -32,28 +41,48 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href?: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Badge */
   badge?: string;
+  /** Children */
   children?: NavItem[];
 }
 
 const navigation: NavItem[] = [
   {
+    /** Title */
     title: "Dashboard",
+    /** Href */
     href: "/admin/dashboard",
+    /** Icon */
     icon: LayoutDashboard,
   },
   {
+    /** Title */
     title: "Overview",
+    /** Href */
     href: "/admin",
+    /** Icon */
     icon: Home,
   },
   {
+    /** Title */
     title: "Content Management",
+    /** Icon */
     icon: LayoutIcon,
+    /** Children */
     children: [
       { title: "Homepage Settings", href: "/admin/homepage", icon: Home },
       { title: "Hero Slides", href: "/admin/hero-slides", icon: Image },
@@ -61,8 +90,11 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    /** Title */
     title: "Marketplace",
+    /** Icon */
     icon: Store,
+    /** Children */
     children: [
       { title: "All Shops", href: "/admin/shops", icon: Store },
       { title: "Products", href: "/admin/products", icon: Package },
@@ -71,16 +103,22 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    /** Title */
     title: "User Management",
+    /** Icon */
     icon: Users,
+    /** Children */
     children: [
       { title: "All Users", href: "/admin/users", icon: Users },
       { title: "Reviews", href: "/admin/reviews", icon: Star },
     ],
   },
   {
+    /** Title */
     title: "Transactions",
+    /** Icon */
     icon: CreditCard,
+    /** Children */
     children: [
       { title: "Orders", href: "/admin/orders", icon: ShoppingCart },
       { title: "Payments", href: "/admin/payments", icon: CreditCard },
@@ -90,38 +128,101 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    /** Title */
     title: "Support",
+    /** Icon */
     icon: LifeBuoy,
+    /** Children */
     children: [
       { title: "All Tickets", href: "/admin/support-tickets", icon: LifeBuoy },
     ],
   },
   {
+    /** Title */
     title: "Analytics",
+    /** Icon */
     icon: BarChart3,
+    /** Children */
     children: [
       { title: "Overview", href: "/admin/analytics", icon: TrendingUp },
       { title: "Sales", href: "/admin/analytics/sales", icon: DollarSign },
     ],
   },
   {
+    /** Title */
     title: "Blog",
+    /** Icon */
     icon: Newspaper,
+    /** Children */
     children: [{ title: "All Posts", href: "/admin/blog", icon: Newspaper }],
   },
   {
+    /** Title */
     title: "Settings",
+    /** Icon */
     icon: Settings,
+    /** Children */
     children: [
       { title: "General", href: "/admin/settings/general", icon: Settings },
     ],
   },
 ];
 
+/**
+ * MobileAdminSidebarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileAdminSidebarProps
+ */
 interface MobileAdminSidebarProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
 }
+
+/**
+ * Function: Mobile Admin Sidebar
+ */
+/**
+ * Performs mobile admin sidebar operation
+ *
+ * @param {MobileAdminSidebarProps} {
+  isOpen,
+  onClose,
+} - The {
+  is open,
+  on close,
+}
+ *
+ * @returns {any} The mobileadminsidebar result
+ *
+ * @example
+ * MobileAdminSidebar({
+  isOpen,
+  onClose,
+});
+ */
+
+/**
+ * Performs mobile admin sidebar operation
+ *
+ * @param {MobileAdminSidebarProps} {
+  isOpen,
+  onClose,
+} - The {
+  is open,
+  on close,
+}
+ *
+ * @returns {any} The mobileadminsidebar result
+ *
+ * @example
+ * MobileAdminSidebar({
+  isOpen,
+  onClose,
+});
+ */
 
 export function MobileAdminSidebar({
   isOpen,
@@ -158,6 +259,22 @@ export function MobileAdminSidebar({
     }
   }, [pathname]);
 
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
   const toggleItem = (title: string) => {
     setExpandedItems((prev) =>
       prev.includes(title)
@@ -165,6 +282,22 @@ export function MobileAdminSidebar({
         : [...prev, title],
     );
   };
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");

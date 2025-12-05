@@ -1,12 +1,65 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ShopCardSkeleton
+ * @description This file contains the ShopCardSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * ShopCardSkeletonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopCardSkeletonProps
+ */
 export interface ShopCardSkeletonProps {
+  /** Show Banner */
   showBanner?: boolean;
+  /** Compact */
   compact?: boolean;
 }
 
+/**
+ * Performs shop card skeleton operation
+ *
+ * @param {any} [{
+  showBanner] - The {
+  show banner
+ *
+ * @returns {any} The shopcardskeleton result
+ *
+ * @example
+ * ShopCardSkeleton({
+  showBanner);
+ */
+
+/**
+ * S
+ * @constant
+ */
+/**
+ * Performs shop card skeleton operation
+ *
+ * @param {any} [{
+  showBanner] - The {
+  show banner
+ *
+ * @returns {any} The shopcardskeleton result
+ *
+ * @example
+ * ShopCardSkeleton({
+  showBanner);
+ */
+
+/**
+ * S
+ * @constant
+ */
 export const ShopCardSkeleton: React.FC<ShopCardSkeletonProps> = ({
   showBanner = true,
   compact = false,

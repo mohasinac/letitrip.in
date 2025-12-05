@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/tickets/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -13,12 +22,16 @@ import { supportService } from "@/services/support.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 const statusColors = {
+  /** Open */
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
   "in-progress":
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+  /** Resolved */
   resolved:
     "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  /** Closed */
   closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+  /** Escalated */
   escalated: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 
@@ -26,13 +39,28 @@ const categoryLabels = {
   "order-issue": "Order Issue",
   "return-refund": "Return/Refund",
   "product-question": "Product Question",
+  /** Account */
   account: "Account",
+  /** Payment */
   payment: "Payment",
+  /** Other */
   other: "Other",
 };
 
 export default function AdminTicketDetailsPage() {
   const params = useParams();
+  /**
+   * Performs ticket id operation
+   *
+   * @returns {any} The ticketid result
+   */
+
+  /**
+   * Performs ticket id operation
+   *
+   * @returns {any} The ticketid result
+   */
+
   const ticketId = (params.id as string) || "";
   const { data: ticket, isLoading, error, execute } = useLoadingState<any>();
   const [replyMessage, setReplyMessage] = useState("");
@@ -50,6 +78,26 @@ export default function AdminTicketDetailsPage() {
     }
   }, [ticketId, fetchTicket]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,6 +109,7 @@ export default function AdminTicketDetailsPage() {
 
     try {
       await supportService.replyToTicket(ticketId, {
+        /** Message */
         message: replyMessage,
         isInternal,
       });
@@ -76,10 +125,31 @@ export default function AdminTicketDetailsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} newStatus - The new status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} newStatus - The new status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleStatusChange = async (newStatus: string) => {
     setIsUpdating(true);
     try {
       await supportService.updateTicket(ticketId, {
+        /** Status */
         status: newStatus as any,
       });
       await fetchTicket();
@@ -91,10 +161,31 @@ export default function AdminTicketDetailsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} newPriority - The new priority
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} newPriority - The new priority
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handlePriorityChange = async (newPriority: string) => {
     setIsUpdating(true);
     try {
       await supportService.updateTicket(ticketId, {
+        /** Priority */
         priority: newPriority as any,
       });
       await fetchTicket();
@@ -321,6 +412,7 @@ export default function AdminTicketDetailsPage() {
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">
+                    /** Created */
                     Created:
                   </span>
                   <span className="ml-2 text-gray-900 dark:text-white">
@@ -329,6 +421,7 @@ export default function AdminTicketDetailsPage() {
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">
+                    /** Updated */
                     Updated:
                   </span>
                   <span className="ml-2 text-gray-900 dark:text-white">
@@ -338,6 +431,7 @@ export default function AdminTicketDetailsPage() {
                 {ticket.resolvedAt && (
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">
+                      /** Resolved */
                       Resolved:
                     </span>
                     <span className="ml-2 text-gray-900 dark:text-white">

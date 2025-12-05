@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/homepage/BannerEditor
+ * @description This file contains the BannerEditor component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
@@ -5,19 +14,64 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 
+/**
+ * BannerSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BannerSettings
+ */
 interface BannerSettings {
+  /** Enabled */
   enabled: boolean;
+  /** Title */
   title: string;
+  /** Content */
   content: string;
+  /** Link */
   link?: string;
+  /** Background Color */
   backgroundColor?: string;
+  /** Text Color */
   textColor?: string;
 }
 
+/**
+ * BannerEditorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BannerEditorProps
+ */
 interface BannerEditorProps {
+  /** Settings */
   settings: BannerSettings;
+  /** On Change */
   onChange: (settings: BannerSettings) => void;
 }
+
+/**
+ * Function: Banner Editor
+ */
+/**
+ * Performs banner editor operation
+ *
+ * @param {BannerEditorProps} { settings, onChange } - The { settings, on change }
+ *
+ * @returns {any} The bannereditor result
+ *
+ * @example
+ * BannerEditor({ settings, onChange });
+ */
+
+/**
+ * Performs banner editor operation
+ *
+ * @param {BannerEditorProps} { settings, onChange } - The { settings, on change }
+ *
+ * @returns {any} The bannereditor result
+ *
+ * @example
+ * BannerEditor({ settings, onChange });
+ */
 
 export function BannerEditor({ settings, onChange }: BannerEditorProps) {
   return (
@@ -36,6 +90,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
           onToggle={() =>
             onChange({
               ...settings,
+              /** Enabled */
               enabled: !settings.enabled,
             })
           }
@@ -53,6 +108,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
               onChange={(value: string) =>
                 onChange({
                   ...settings,
+                  /** Content */
                   content: value,
                 })
               }
@@ -67,6 +123,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
             onChange={(e) =>
               onChange({
                 ...settings,
+                /** Link */
                 link: e.target.value,
               })
             }
@@ -83,6 +140,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
                   onChange={(e) =>
                     onChange({
                       ...settings,
+                      /** Background Color */
                       backgroundColor: e.target.value,
                     })
                   }
@@ -94,6 +152,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
                   onChange={(e) =>
                     onChange({
                       ...settings,
+                      /** Background Color */
                       backgroundColor: e.target.value,
                     })
                   }
@@ -112,6 +171,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
                   onChange={(e) =>
                     onChange({
                       ...settings,
+                      /** Text Color */
                       textColor: e.target.value,
                     })
                   }
@@ -123,6 +183,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
                   onChange={(e) =>
                     onChange({
                       ...settings,
+                      /** Text Color */
                       textColor: e.target.value,
                     })
                   }

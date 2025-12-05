@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopHeader
+ * @description This file contains the ShopHeader component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,9 +18,41 @@ import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";
 
+/**
+ * ShopHeaderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopHeaderProps
+ */
 interface ShopHeaderProps {
+  /** Shop */
   shop: ShopFE;
 }
+
+/**
+ * Function: Shop Header
+ */
+/**
+ * Performs shop header operation
+ *
+ * @param {ShopHeaderProps} { shop } - The { shop }
+ *
+ * @returns {any} The shopheader result
+ *
+ * @example
+ * ShopHeader({ shop });
+ */
+
+/**
+ * Performs shop header operation
+ *
+ * @param {ShopHeaderProps} { shop } - The { shop }
+ *
+ * @returns {any} The shopheader result
+ *
+ * @example
+ * ShopHeader({ shop });
+ */
 
 export function ShopHeader({ shop }: ShopHeaderProps) {
   const [isFollowing, setIsFollowing] = useState(false);
@@ -22,6 +63,22 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
   useEffect(() => {
     checkFollowStatus();
   }, [shop.slug]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const checkFollowStatus = async () => {
     try {
@@ -35,6 +92,22 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleFollow = async () => {
     setFollowLoading(true);
     try {
@@ -47,7 +120,9 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       }
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ShopHeader.handleFollowToggle",
+        /** Metadata */
         metadata: { shopSlug: shop.slug },
       });
       toast.error(error.message || "Please login to follow shops");
@@ -56,11 +131,29 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
+          /** Title */
           title: shop.name,
+          /** Url */
           url: globalThis.location?.href || "",
         });
       } catch (error) {

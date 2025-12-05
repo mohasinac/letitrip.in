@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/SearchBar
+ * @description This file contains the SearchBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -29,6 +38,22 @@ export default function SearchBar() {
 
   useEffect(() => {
     // Click outside to close
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         searchRef.current &&
@@ -64,6 +89,26 @@ export default function SearchBar() {
     };
   }, [query]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} searchQuery - The search query
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} searchQuery - The search query
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const performSearch = async (searchQuery: string) => {
     try {
       setLoading(true);
@@ -72,13 +117,31 @@ export default function SearchBar() {
       setShowResults(true);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SearchBar.performSearch",
+        /** Metadata */
         metadata: { searchQuery },
       });
     } finally {
       setLoading(false);
     }
   };
+
+  /**
+   * Saves recent search
+   *
+   * @param {string} searchQuery - The search query
+   *
+   * @returns {string} The saverecentsearch result
+   */
+
+  /**
+   * Saves recent search
+   *
+   * @param {string} searchQuery - The search query
+   *
+   * @returns {string} The saverecentsearch result
+   */
 
   const saveRecentSearch = (searchQuery: string) => {
     const updated = [
@@ -89,6 +152,22 @@ export default function SearchBar() {
     localStorage.setItem("recentSearches", JSON.stringify(updated));
   };
 
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
@@ -98,18 +177,51 @@ export default function SearchBar() {
     }
   };
 
+  /**
+   * Handles result click event
+   *
+   * @param {string} type - The type
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The handleresultclick result
+   */
+
+  /**
+   * Handles result click event
+   *
+   * @param {string} type - The type
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The handleresultclick result
+   */
+
   const handleResultClick = (type: string, slug: string) => {
     saveRecentSearch(query);
     setShowResults(false);
 
     const routes: Record<string, string> = {
+      /** Product */
       product: "/products",
+      /** Shop */
       shop: "/shops",
+      /** Category */
       category: "/categories",
     };
 
     router.push(`${routes[type]}/${slug}`);
   };
+
+  /**
+   * Performs clear recent searches operation
+   *
+   * @returns {any} The clearrecentsearches result
+   */
+
+  /**
+   * Performs clear recent searches operation
+   *
+   * @returns {any} The clearrecentsearches result
+   */
 
   const clearRecentSearches = () => {
     setRecentSearches([]);

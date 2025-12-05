@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/handler-factory
+ * @description This file contains functionality related to handler-factory
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * API Handler Factory
  * Reduces code duplication by providing common patterns for:
  * - Error handling with consistent responses
@@ -27,22 +36,53 @@ import {
 // Types
 // ============================================================
 
+/**
+ * HandlerContext interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HandlerContext
+ */
 export interface HandlerContext {
+  /** User */
   user: AuthUser | null;
+  /** Params */
   params: Record<string, string>;
+  /** Body */
   body?: any;
+  /** Search Params */
   searchParams: URLSearchParams;
 }
 
+/**
+ * AuthenticatedContext interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuthenticatedContext
+ */
 export interface AuthenticatedContext extends HandlerContext {
+  /** User */
   user: AuthUser;
 }
 
+/**
+ * RouteHandler type
+ * 
+ * @typedef {Object} RouteHandler
+ * @description Type definition for RouteHandler
+ */
 export type RouteHandler<T extends HandlerContext = HandlerContext> = (
+  /** Request */
   request: NextRequest,
+  /** Context */
   context: T,
 ) => Promise<NextResponse>;
 
+/**
+ * HandlerOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HandlerOptions
+ */
 export interface HandlerOptions {
   /** Require authentication */
   auth?: boolean;
@@ -62,7 +102,37 @@ export interface HandlerOptions {
  * Wrap a handler with consistent error handling
  * Catches all errors and returns appropriate JSON responses
  */
+/**
+ * Performs with error handler operation
+ *
+ * @param {RouteHandler<T>} handler - The handler
+ *
+ * @returns {Promise<any>} Promise resolving to witherrorhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withErrorHandler(handler);
+ */
+
+/**
+ * Performs with error handler operation
+ *
+ * @param {RouteHandler<T>} /** Handler */
+  handler - The /**  handler */
+  handler
+ *
+ * @returns {Promise<any>} Promise resolving to witherrorhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withErrorHandler(/** Handler */
+  handler);
+ */
+
 export function withErrorHandler<T extends HandlerContext>(
+  /** Handler */
   handler: RouteHandler<T>,
 ): RouteHandler<T> {
   return async (request: NextRequest, context: T): Promise<NextResponse> => {
@@ -82,15 +152,39 @@ export function withErrorHandler<T extends HandlerContext>(
 /**
  * Create a success response with consistent format
  */
+/**
+ * Performs success response operation
+ *
+ * @returns {string} The successresponse result
+ *
+ * @example
+ * successResponse();
+ */
+
+/**
+ * Performs success response operation
+ *
+ * @returns {any} The successresponse result
+ *
+ * @example
+ * successResponse();
+ */
+
 export function successResponse<T>(
+  /** Data */
   data: T,
+  /** Options */
   options?: {
+    /** Status */
     status?: number;
+    /** Message */
     message?: string;
+    /** Meta */
     meta?: Record<string, any>;
   },
 ): NextResponse {
   const response: any = {
+    /** Success */
     success: true,
     data,
   };
@@ -109,14 +203,41 @@ export function successResponse<T>(
 /**
  * Create an error response with consistent format
  */
+/**
+ * Performs error response operation
+ *
+ * @param {string} message - The message
+ * @param {number} [status] - The status
+ * @param {any} [details] - The details
+ *
+ * @returns {string} The errorresponse result
+ *
+ * @example
+ * errorResponse("example", 123, details);
+ */
+
+/**
+ * Performs error response operation
+ *
+ * @returns {string} The errorresponse result
+ *
+ * @example
+ * errorResponse();
+ */
+
 export function errorResponse(
+  /** Message */
   message: string,
+  /** Status */
   status: number = 400,
+  /** Details */
   details?: any,
 ): NextResponse {
   return NextResponse.json(
     {
+      /** Success */
       success: false,
+      /** Error */
       error: message,
       ...(details && { details }),
     },
@@ -127,20 +248,48 @@ export function errorResponse(
 /**
  * Create a paginated response
  */
+/**
+ * Performs paginated response operation
+ *
+ * @returns {number} The paginatedresponse result
+ *
+ * @example
+ * paginatedResponse();
+ */
+
+/**
+ * Performs paginated response operation
+ *
+ * @returns {any} The paginatedresponse result
+ *
+ * @example
+ * paginatedResponse();
+ */
+
 export function paginatedResponse<T>(
+  /** Data */
   data: T[],
+  /** Pagination */
   pagination: {
+    /** Total */
     total?: number;
+    /** Limit */
     limit: number;
+    /** Has Next Page */
     hasNextPage: boolean;
+    /** Next Cursor */
     nextCursor?: string | null;
+    /** Page */
     page?: number;
+    /** Total Pages */
     totalPages?: number;
   },
 ): NextResponse {
   return NextResponse.json({
+    /** Success */
     success: true,
     data,
+    /** Count */
     count: data.length,
     pagination,
   });
@@ -181,13 +330,35 @@ export function paginatedResponse<T>(
  *   { roles: ['admin'] }
  * );
  */
+/**
+ * Creates a new handler
+ *
+ * @returns {any} The handler result
+ *
+ * @example
+ * createHandler();
+ */
+
+/**
+ * Creates a new handler
+ *
+ * @returns {any} The handler result
+ *
+ * @example
+ * createHandler();
+ */
+
 export function createHandler<TAuth extends boolean = false>(
+  /** Handler */
   handler: RouteHandler<
     TAuth extends true ? AuthenticatedContext : HandlerContext
   >,
+  /** Options */
   options: HandlerOptions & { auth?: TAuth } = {},
 ): (
+  /** Request */
   request: NextRequest,
+  /** Context */
   context?: { params?: Promise<Record<string, string>> },
 ) => Promise<NextResponse> {
   const { auth = false, roles, parseBody = false, logging = false } = options;
@@ -207,6 +378,7 @@ export function createHandler<TAuth extends boolean = false>(
 
     // Initialize context
     const context: HandlerContext = {
+      /** User */
       user: null,
       params,
       searchParams,
@@ -245,6 +417,12 @@ export function createHandler<TAuth extends boolean = false>(
 // CRUD Handler Factory
 // ============================================================
 
+/**
+ * CrudHandlerConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CrudHandlerConfig
+ */
 export interface CrudHandlerConfig<T = any> {
   /** Collection reference or name */
   collection: () => FirebaseFirestore.CollectionReference;
@@ -275,6 +453,28 @@ export interface CrudHandlerConfig<T = any> {
  *   canModify: (user, data) => user.role === 'admin' || data.owner_id === user.uid,
  * });
  */
+/**
+ * Creates a new crud handlers
+ *
+ * @param {CrudHandlerConfig<T>} config - The config
+ *
+ * @returns {any} The crudhandlers result
+ *
+ * @example
+ * createCrudHandlers(config);
+ */
+
+/**
+ * Creates a new crud handlers
+ *
+ * @param {CrudHandlerConfig<T>} config - The config
+ *
+ * @returns {any} The crudhandlers result
+ *
+ * @example
+ * createCrudHandlers(config);
+ */
+
 export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
   const {
     collection,
@@ -343,7 +543,9 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
       const docRef = await collection().add(docData);
 
       return successResponse(transform(docRef.id, docData), {
+        /** Status */
         status: 201,
+        /** Message */
         message: `${resourceName} created successfully`,
       });
     },
@@ -408,6 +610,7 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
       const updatedDoc = await collection().doc(id).get();
 
       return successResponse(transform(updatedDoc.id, updatedDoc.data()), {
+        /** Message */
         message: `${resourceName} updated successfully`,
       });
     },
@@ -458,12 +661,39 @@ export function createCrudHandlers<T = any>(config: CrudHandlerConfig<T>) {
 /**
  * Extract pagination params from search params
  */
+/**
+ * Retrieves pagination params
+ *
+ * @param {URLSearchParams} searchParams - The search params
+ *
+ * @returns {any} The paginationparams result
+ *
+ * @example
+ * getPaginationParams(searchParams);
+ */
+
+/**
+ * Retrieves pagination params
+ *
+ * @param {URLSearchParams} searchParams - The search params
+ *
+ * @returns {any} The paginationparams result
+ *
+ * @example
+ * getPaginationParams(searchParams);
+ */
+
 export function getPaginationParams(searchParams: URLSearchParams) {
   return {
+    /** Limit */
     limit: Math.min(parseInt(searchParams.get("limit") || "20"), 100),
+    /** Start After */
     startAfter: searchParams.get("startAfter") || searchParams.get("cursor"),
+    /** Page */
     page: parseInt(searchParams.get("page") || "1"),
+    /** Sort By */
     sortBy: searchParams.get("sortBy") || "created_at",
+    /** Sort Order */
     sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
   };
 }
@@ -471,8 +701,31 @@ export function getPaginationParams(searchParams: URLSearchParams) {
 /**
  * Extract filter params from search params (excluding pagination params)
  */
+/**
+ * Retrieves filter params
+ *
+ * @param {URLSearchParams} searchParams - The search params
+ * @param {string[]} allowedFilters - The allowed filters
+ *
+ * @returns {string} The filterparams result
+ *
+ * @example
+ * getFilterParams(searchParams, allowedFilters);
+ */
+
+/**
+ * Retrieves filter params
+ *
+ * @returns {string} The filterparams result
+ *
+ * @example
+ * getFilterParams();
+ */
+
 export function getFilterParams(
+  /** Search Params */
   searchParams: URLSearchParams,
+  /** Allowed Filters */
   allowedFilters: string[],
 ): Record<string, string> {
   const filters: Record<string, string> = {};

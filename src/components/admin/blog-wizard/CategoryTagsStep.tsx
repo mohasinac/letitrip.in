@@ -1,11 +1,29 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/blog-wizard/CategoryTagsStep
+ * @description This file contains the CategoryTagsStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { useState } from "react";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { X } from "lucide-react";
 import type { BlogFormData, OnBlogChange } from "./types";
 
+/**
+ * CategoryTagsStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryTagsStepProps
+ */
 interface CategoryTagsStepProps {
+  /** Form Data */
   formData: BlogFormData;
+  /** On Change */
   onChange: OnBlogChange;
+  /** Error */
   error?: string;
 }
 
@@ -20,6 +38,55 @@ const CATEGORIES = [
   "Reviews",
 ];
 
+/**
+ * Function: Category Tags Step
+ */
+/**
+ * Performs category tags step operation
+ *
+ * @param {CategoryTagsStepProps} {
+  formData,
+  onChange,
+  error,
+} - The {
+  form data,
+  on change,
+  error,
+}
+ *
+ * @returns {any} The categorytagsstep result
+ *
+ * @example
+ * CategoryTagsStep({
+  formData,
+  onChange,
+  error,
+});
+ */
+
+/**
+ * Performs category tags step operation
+ *
+ * @param {CategoryTagsStepProps} {
+  formData,
+  onChange,
+  error,
+} - The {
+  form data,
+  on change,
+  error,
+}
+ *
+ * @returns {any} The categorytagsstep result
+ *
+ * @example
+ * CategoryTagsStep({
+  formData,
+  onChange,
+  error,
+});
+ */
+
 export function CategoryTagsStep({
   formData,
   onChange,
@@ -28,17 +95,64 @@ export function CategoryTagsStep({
   const [tagInput, setTagInput] = useState("");
   const [customCategory, setCustomCategory] = useState("");
 
+  /**
+   * Handles category change event
+   *
+   * @param {React.ChangeEvent<HTMLSelectElement>} e - The e
+   *
+   * @returns {any} The handlecategorychange result
+   */
+
+  /**
+   * Handles category change event
+   *
+   * @param {React.ChangeEvent<HTMLSelectElement>} e - The e
+   *
+   * @returns {any} The handlecategorychange result
+   */
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange("category", e.target.value);
     setCustomCategory("");
   };
 
+  /**
+   * Handles custom category change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlecustomcategorychange result
+   */
+
+  /**
+   * Handles custom category change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} /** E */
+    e - The /**  e */
+    e
+   *
+   * @returns {any} The handlecustomcategorychange result
+   */
+
   const handleCustomCategoryChange = (
+    /** E */
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setCustomCategory(e.target.value);
     onChange("category", e.target.value);
   };
+
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
+
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
@@ -46,6 +160,22 @@ export function CategoryTagsStep({
       setTagInput("");
     }
   };
+
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
+
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
 
   const handleRemoveTag = (tag: string) => {
     onChange(

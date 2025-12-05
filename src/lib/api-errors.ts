@@ -1,10 +1,21 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/api-errors
+ * @description This file contains functionality related to api-errors
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * API Error Classes
  * Standardized error responses for API routes
  */
 
 export class ApiError extends Error {
+  /** Status Code */
   statusCode: number;
+  /** Is Operational */
   isOperational: boolean;
 
   constructor(message: string, statusCode: number, isOperational = true) {
@@ -47,6 +58,7 @@ export class NotFoundError extends ApiError {
  * 400 Bad Request - Validation error
  */
 export class ValidationError extends ApiError {
+  /** Errors */
   errors?: Record<string, string>;
 
   constructor(message = "Validation failed", errors?: Record<string, string>) {
@@ -85,10 +97,38 @@ export class InternalServerError extends ApiError {
 /**
  * Helper to convert error to JSON response
  */
+/**
+ * Performs error to json operation
+ *
+ * @param {Error | ApiError} error - Error object
+ *
+ * @returns {any} The errortojson result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * errorToJson(error);
+ */
+
+/**
+ * Performs error to json operation
+ *
+ * @param {Error | ApiError} error - Error object
+ *
+ * @returns {any} The errortojson result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * errorToJson(error);
+ */
+
 export function errorToJson(error: Error | ApiError) {
   if (error instanceof ApiError) {
     const response: any = {
+      /** Error */
       error: error.message,
+      /** Status Code */
       statusCode: error.statusCode,
     };
 
@@ -101,7 +141,9 @@ export function errorToJson(error: Error | ApiError) {
 
   // Generic error
   return {
+    /** Error */
     error: error.message || "An unexpected error occurred",
+    /** Status Code */
     statusCode: 500,
   };
 }
@@ -109,6 +151,32 @@ export function errorToJson(error: Error | ApiError) {
 /**
  * Helper to check if error is operational (expected) vs programming error
  */
+/**
+ * Checks if operational error
+ *
+ * @param {Error} error - Error object
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isOperationalError(error);
+ */
+
+/**
+ * Checks if operational error
+ *
+ * @param {Error} error - Error object
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isOperationalError(error);
+ */
+
 export function isOperationalError(error: Error): boolean {
   if (error instanceof ApiError) {
     return error.isOperational;

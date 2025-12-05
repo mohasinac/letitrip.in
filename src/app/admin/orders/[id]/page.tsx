@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/orders/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -21,14 +30,30 @@ import { toast } from "sonner";
 export default function OrderDetailPage() {
   const router = useRouter();
   const params = useParams();
+  /**
+   * Performs order id operation
+   *
+   * @returns {any} The orderid result
+   */
+
+  /**
+   * Performs order id operation
+   *
+   * @returns {any} The orderid result
+   */
+
   const orderId = (params.id as string) || "";
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: order,
+    /** Set Data */
     setData: setOrder,
     execute,
   } = useLoadingState<OrderFE>({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "OrderDetailPage.loadOrder", orderId });
       router.push(notFound.order(orderId, error));
@@ -55,10 +80,42 @@ export default function OrderDetailPage() {
     loadOrder();
   }, [orderId]);
 
+  /**
+   * Fetches order from server
+   *
+   * @returns {Promise<any>} Promise resolving to order result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches order from server
+   *
+   * @returns {Promise<any>} Promise resolving to order result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadOrder = () =>
     execute(async () => {
       return await ordersService.getById(orderId);
     });
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleStatusUpdate = async () => {
     if (!order) return;
@@ -80,6 +137,22 @@ export default function OrderDetailPage() {
       setSaving(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCreateShipment = async () => {
     if (!order) return;
@@ -109,6 +182,22 @@ export default function OrderDetailPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCancelOrder = async () => {
     if (!order) return;
 
@@ -130,6 +219,22 @@ export default function OrderDetailPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDownloadInvoice = async () => {
     if (!order) return;
 
@@ -148,6 +253,22 @@ export default function OrderDetailPage() {
     }
   };
 
+  /**
+   * Retrieves status color
+   *
+   * @param {OrderStatus} status - The status
+   *
+   * @returns {any} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {OrderStatus} status - The status
+   *
+   * @returns {any} The statuscolor result
+   */
+
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case "pending":
@@ -164,10 +285,27 @@ export default function OrderDetailPage() {
         return "bg-red-100 text-red-800";
       case "refunded":
         return "bg-orange-100 text-orange-800";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  /**
+   * Retrieves payment status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The paymentstatuscolor result
+   */
+
+  /**
+   * Retrieves payment status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The paymentstatuscolor result
+   */
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
@@ -179,14 +317,33 @@ export default function OrderDetailPage() {
         return "bg-red-100 text-red-800";
       case "refunded":
         return "bg-orange-100 text-orange-800";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
     }).format(amount);
   };
@@ -386,11 +543,13 @@ export default function OrderDetailPage() {
                     </Link>
                     {item.variant && (
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        /** Variant */
                         Variant: {item.variant}
                       </p>
                     )}
                     {item.sku && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        /** S K U */
                         SKU: {item.sku}
                       </p>
                     )}
@@ -406,6 +565,7 @@ export default function OrderDetailPage() {
                       {formatCurrency(item.price)}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
+                      /** Qty */
                       Qty: {item.quantity}
                     </p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">

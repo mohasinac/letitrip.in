@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/categories/[slug]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -27,9 +36,35 @@ import { Filter, Grid as GridIcon, List, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use, useEffect, useState } from "react";
 
+/**
+ * PageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PageProps
+ */
 interface PageProps {
+  /** Params */
   params: Promise<{ slug: string }>;
 }
+
+/**
+ * Function: Category Detail Content
+ */
+/**
+ * Performs category detail content operation
+ *
+ * @param {PageProps} { params } - The { params }
+ *
+ * @returns {any} The categorydetailcontent result
+ */
+
+/**
+ * Performs category detail content operation
+ *
+ * @param {PageProps} { params } - The { params }
+ *
+ * @returns {any} The categorydetailcontent result
+ */
 
 function CategoryDetailContent({ params }: PageProps) {
   const { slug } = use(params);
@@ -45,6 +80,18 @@ function CategoryDetailContent({ params }: PageProps) {
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "20");
   const sortField = searchParams.get("sortField") || "createdAt";
+  /**
+   * Sorts direction
+   *
+   * @returns {any} The sortdirection result
+   */
+
+  /**
+   * Sorts direction
+   *
+   * @returns {any} The sortdirection result
+   */
+
   const sortDirection = (searchParams.get("sortDirection") || "desc") as
     | "asc"
     | "desc";
@@ -55,10 +102,13 @@ function CategoryDetailContent({ params }: PageProps) {
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Execute */
     execute: executeCategoryLoad,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "CategoryDetail.loadCategory", slug });
       router.push(notFound.category(slug, error));
@@ -66,6 +116,7 @@ function CategoryDetailContent({ params }: PageProps) {
   });
   const { isLoading: productsLoading, execute: executeProductsLoad } =
     useLoadingState({
+      /** On Load Error */
       onLoadError: (error) => {
         logError(error, { component: "CategoryDetail.loadProducts", slug });
       },
@@ -84,6 +135,22 @@ function CategoryDetailContent({ params }: PageProps) {
     }
   }, [category, sortField, sortDirection, filters, page, pageSize]);
 
+  /**
+   * Fetches category from server
+   *
+   * @returns {Promise<any>} Promise resolving to category result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches category from server
+   *
+   * @returns {Promise<any>} Promise resolving to category result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategory = () =>
     executeCategoryLoad(async () => {
       // Load category details
@@ -98,20 +165,41 @@ function CategoryDetailContent({ params }: PageProps) {
 
       // Load subcategories
       const subcatsResponse = await categoriesService.list({
+        /** Parent Id */
         parentId: categoryData.id,
+        /** Is Active */
         isActive: true,
       });
       setSubcategories(subcatsResponse.data);
     });
+
+  /**
+   * Fetches products from server
+   *
+   * @returns {Promise<any>} Promise resolving to products result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches products from server
+   *
+   * @returns {Promise<any>} Promise resolving to products result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadProducts = () => {
     if (!category) return;
 
     executeProductsLoad(async () => {
       const response = await productsService.list({
+        /** Category Id */
         categoryId: category.id,
         ...filters,
+        /** Sort By */
         sortBy: sortField as any,
+        /** Limit */
         limit: pageSize,
         page,
       });
@@ -120,13 +208,36 @@ function CategoryDetailContent({ params }: PageProps) {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAddToCart = async (
+    /** Product Id */
     productId: string,
+    /** Product Details */
     productDetails?: {
+      /** Name */
       name: string;
+      /** Price */
       price: number;
+      /** Image */
       image: string;
+      /** Shop Id */
       shopId: string;
+      /** Shop Name */
       shopName: string;
     }
   ) => {
@@ -137,10 +248,15 @@ function CategoryDetailContent({ params }: PageProps) {
           throw new Error("Product not found");
         }
         productDetails = {
+          /** Name */
           name: product.name,
+          /** Price */
           price: product.price,
+          /** Image */
           image: product.images?.[0] || "",
+          /** Shop Id */
           shopId: product.shopId,
+          /** Shop Name */
           shopName: product.shopId,
         };
       }
@@ -195,8 +311,11 @@ function CategoryDetailContent({ params }: PageProps) {
           parentCategory={
             breadcrumb.length > 0
               ? {
+                  /** Id */
                   id: breadcrumb[breadcrumb.length - 1].id,
+                  /** Name */
                   name: breadcrumb[breadcrumb.length - 1].name,
+                  /** Slug */
                   slug: breadcrumb[breadcrumb.length - 1].slug,
                 }
               : null

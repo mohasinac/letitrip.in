@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/support/ticket/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 // Constants for all hardcoded strings
@@ -45,13 +54,37 @@ import { logError } from "@/lib/firebase-error-logger";
 export default function SupportTicketPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
+    /** Subject */
     subject: "",
+    /** Category */
     category: "other",
+    /** Priority */
     priority: "medium",
+    /** Description */
     description: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +109,9 @@ export default function SupportTicketPage() {
       router.push("/user/tickets");
     } catch (err: any) {
       logError(err, {
+        /** Component */
         component: "SupportTicketPage.handleSubmit",
+        /** Metadata */
         metadata: { formData },
       });
       setError(err.message || "Failed to create support ticket");

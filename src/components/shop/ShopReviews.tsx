@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopReviews
+ * @description This file contains the ShopReviews component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -13,34 +22,79 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { logError } from "@/lib/error-logger";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
+/**
+ * ShopReview interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopReview
+ */
 export interface ShopReview {
+  /** Id */
   id: string;
+  /** Author Name */
   authorName: string;
+  /** Author Avatar */
   authorAvatar?: string;
+  /** Rating */
   rating: number;
+  /** Comment */
   comment: string;
+  /** Created At */
   createdAt: string;
+  /** Helpful Count */
   helpfulCount: number;
+  /** Is Helpful */
   isHelpful?: boolean;
 }
 
+/**
+ * ShopReviewsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopReviewsProps
+ */
 export interface ShopReviewsProps {
+  /** Shop */
   shop: ShopFE;
+  /** Reviews */
   reviews?: ShopReview[];
+  /** Loading */
   loading?: boolean;
+  /** On Submit Review */
   onSubmitReview?: (review: {
+    /** Rating */
     rating: number;
+    /** Comment */
     comment: string;
   }) => Promise<void>;
+  /** On Mark Helpful */
   onMarkHelpful?: (reviewId: string) => Promise<void>;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Rating Stars
+ */
+/**
+ * Performs rating stars operation
+ *
+ * @returns {number} The ratingstars result
+ */
+
+/**
+ * Performs rating stars operation
+ *
+ * @returns {any} The ratingstars result
+ */
 
 function RatingStars({
   rating,
   onSelect,
 }: {
+  /** Rating */
   rating: number;
+  /** On Select */
   onSelect?: (rating: number) => void;
 }) {
   return (
@@ -64,11 +118,28 @@ function RatingStars({
   );
 }
 
+/**
+ * Function: Review Card
+ */
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ */
+
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ */
+
 function ReviewCard({
   review,
   onMarkHelpful,
 }: {
+  /** Review */
   review: ShopReview;
+  /** On Mark Helpful */
   onMarkHelpful?: (id: string) => void;
 }) {
   return (
@@ -98,8 +169,11 @@ function ReviewCard({
               </h4>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {new Date(review.createdAt).toLocaleDateString("en-US", {
+                  /** Year */
                   year: "numeric",
+                  /** Month */
                   month: "long",
+                  /** Day */
                   day: "numeric",
                 })}
               </p>
@@ -156,6 +230,24 @@ function ReviewCard({
  * />
  * ```
  */
+/**
+ * Performs shop reviews operation
+ *
+ * @returns {any} The shopreviews result
+ *
+ * @example
+ * ShopReviews();
+ */
+
+/**
+ * Performs shop reviews operation
+ *
+ * @returns {any} The shopreviews result
+ *
+ * @example
+ * ShopReviews();
+ */
+
 export function ShopReviews({
   shop,
   reviews = [],
@@ -174,7 +266,9 @@ export function ShopReviews({
   // Calculate rating breakdown
   const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
+    /** Count */
     count: reviews.filter((r) => r.rating === rating).length,
+    /** Percentage */
     percentage: reviews.length
       ? (reviews.filter((r) => r.rating === rating).length / reviews.length) *
         100
@@ -194,6 +288,26 @@ export function ShopReviews({
       }
     });
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!onSubmitReview || newRating === 0 || !newComment.trim()) return;
@@ -206,7 +320,9 @@ export function ShopReviews({
       setShowForm(false);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ShopReviews.handleSubmit",
+        /** Metadata */
         metadata: { shopId: shop.id },
       });
       toast.error("Failed to submit review");

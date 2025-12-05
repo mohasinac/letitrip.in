@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/FeaturedShopsSection
+ * @description This file contains the FeaturedShopsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,11 +22,51 @@ import { analyticsService } from "@/services/analytics.service";
 import type { ShopWithItems } from "@/services/homepage.service";
 import { ExternalLink, Package } from "lucide-react";
 
+/**
+ * FeaturedShopsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedShopsSectionProps
+ */
 interface FeaturedShopsSectionProps {
+  /** Shop Limit */
   shopLimit?: number;
+  /** Items Per Shop */
   itemsPerShop?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Featured Shops Section
+ */
+/**
+ * Performs featured shops section operation
+ *
+ * @param {FeaturedShopsSectionProps} [{
+  shopLimit] - The {
+  shop limit
+ *
+ * @returns {any} The featuredshopssection result
+ *
+ * @example
+ * FeaturedShopsSection({
+  shopLimit);
+ */
+
+/**
+ * Performs featured shops section operation
+ *
+ * @param {FeaturedShopsSectionProps} [{
+  shopLimit] - The {
+  shop limit
+ *
+ * @returns {any} The featuredshopssection result
+ *
+ * @example
+ * FeaturedShopsSection({
+  shopLimit);
+ */
 
 export function FeaturedShopsSection({
   shopLimit = 4,
@@ -31,6 +80,22 @@ export function FeaturedShopsSection({
     loadShops();
   }, [shopLimit, itemsPerShop]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadShops = async () => {
     try {
       setLoading(true);
@@ -42,6 +107,7 @@ export function FeaturedShopsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_featured_shops_viewed", {
+          /** Count */
           count: data.length,
         });
       }
@@ -179,22 +245,34 @@ export function FeaturedShopsSection({
                       <AuctionCard
                         key={item.id}
                         auction={{
+                          /** Id */
                           id: item.id,
+                          /** Name */
                           name: item.name,
+                          /** Slug */
                           slug: item.slug,
+                          /** Images */
                           images: item.images,
+                          /** Current Bid */
                           currentBid: item.currentBid,
+                          /** Starting Bid */
                           startingBid: item.startingBid,
+                          /** Bid Count */
                           bidCount: item.bidCount,
+                          /** End Time */
                           endTime: item.endTime,
+                          /** Status */
                           status:
                             item.status === "upcoming"
                               ? "pending"
                               : item.status === "live"
                                 ? "active"
                                 : item.status,
+                          /** Shop */
                           shop: {
+                            /** Id */
                             id: item.shopId,
+                            /** Name */
                             name: item.shopName,
                           },
                         }}

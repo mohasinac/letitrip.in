@@ -1,8 +1,19 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/fees/structure/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { IndianRupee, ShoppingBag, Store, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Fee Structure | Let It Rip",
+  /** Description */
   description:
     "Complete breakdown of fees for buyers and sellers on Let It Rip platform",
 };
@@ -216,15 +227,34 @@ export default function FeeStructurePage() {
   );
 }
 
+/**
+ * Function: Fee Row
+ */
+/**
+ * Performs fee row operation
+ *
+ * @returns {any} The feerow result
+ */
+
+/**
+ * Performs fee row operation
+ *
+ * @returns {any} The feerow result
+ */
+
 function FeeRow({
   title,
   description,
   fee,
   details,
 }: {
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Fee */
   fee: string;
+  /** Details */
   details: string;
 }) {
   return (

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cart/CartSummary
+ * @description This file contains the CartSummary component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Price } from "@/components/common/values/Price";
@@ -7,19 +16,57 @@ import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+/**
+ * CartSummaryProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CartSummaryProps
+ */
 interface CartSummaryProps {
+  /** Subtotal */
   subtotal: number;
+  /** Shipping */
   shipping: number;
+  /** Tax */
   tax: number;
+  /** Discount */
   discount: number;
+  /** Total */
   total: number;
+  /** Item Count */
   itemCount: number;
+  /** Coupon Code */
   couponCode?: string;
+  /** On Apply Coupon */
   onApplyCoupon?: (code: string) => Promise<void>;
+  /** On Remove Coupon */
   onRemoveCoupon?: () => Promise<void>;
+  /** On Checkout */
   onCheckout?: () => void;
+  /** Loading */
   loading?: boolean;
 }
+
+/**
+ * Function: Cart Summary
+ */
+/**
+ * Performs cart summary operation
+ *
+ * @returns {any} The cartsummary result
+ *
+ * @example
+ * CartSummary();
+ */
+
+/**
+ * Performs cart summary operation
+ *
+ * @returns {any} The cartsummary result
+ *
+ * @example
+ * CartSummary();
+ */
 
 export function CartSummary({
   subtotal,
@@ -39,6 +86,22 @@ export function CartSummary({
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [couponError, setCouponError] = useState("");
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleApplyCoupon = async () => {
     if (!couponInput.trim() || !onApplyCoupon) return;
 
@@ -54,6 +117,22 @@ export function CartSummary({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRemoveCoupon = async () => {
     if (!onRemoveCoupon) return;
 
@@ -62,10 +141,23 @@ export function CartSummary({
       setCouponError("");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CartSummary.handleRemoveCoupon",
       });
     }
   };
+
+  /**
+   * Handles checkout event
+   *
+   * @returns {any} The handlecheckout result
+   */
+
+  /**
+   * Handles checkout event
+   *
+   * @returns {any} The handlecheckout result
+   */
 
   const handleCheckout = () => {
     if (onCheckout) {
@@ -101,6 +193,7 @@ export function CartSummary({
             <div
               className="bg-blue-600 h-2 rounded-full transition-all"
               style={{
+                /** Width */
                 width: `${Math.min(
                   (subtotal / freeShippingThreshold) * 100,
                   100,

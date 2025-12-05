@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useLoadingState
+ * @description This file contains functionality related to useLoadingState
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useLoadingState Hook
  * Consolidates common loading/error state patterns across components
  *
@@ -7,6 +16,12 @@
 
 import { useCallback, useRef, useState } from "react";
 
+/**
+ * LoadingState interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadingState
+ */
 export interface LoadingState<T = any, E = Error> {
   /** Whether data is currently loading */
   isLoading: boolean;
@@ -20,6 +35,12 @@ export interface LoadingState<T = any, E = Error> {
   isRefreshing: boolean;
 }
 
+/**
+ * UseLoadingStateOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseLoadingStateOptions
+ */
 export interface UseLoadingStateOptions<T> {
   /** Initial data value */
   initialData?: T | null;
@@ -33,10 +54,18 @@ export interface UseLoadingStateOptions<T> {
   errorAutoResetMs?: number;
 }
 
+/**
+ * UseLoadingStateReturn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseLoadingStateReturn
+ */
 export interface UseLoadingStateReturn<T> extends LoadingState<T> {
   /** Execute an async operation with loading state management */
   execute: <R = T>(
+    /** Async Fn */
     asyncFn: () => Promise<R>,
+    /** Options */
     options?: { setData?: boolean; isRefresh?: boolean },
   ) => Promise<R | null>;
   /** Set data manually */
@@ -88,7 +117,33 @@ export interface UseLoadingStateReturn<T> extends LoadingState<T> {
  * }
  * ```
  */
+/**
+ * Custom React hook for loading state
+ *
+ * @param {UseLoadingStateOptions<T>} [options] - Configuration options
+ *
+ * @returns {any} The useloadingstate result
+ *
+ * @example
+ * useLoadingState(options);
+ */
+
+/**
+ * Custom React hook for loading state
+ *
+ * @param {UseLoadingStateOptions<T>} [/** Options */
+  options] - The /**  options */
+  options
+ *
+ * @returns {any} The useloadingstate result
+ *
+ * @example
+ * useLoadingState(/** Options */
+  options);
+ */
+
 export function useLoadingState<T = any>(
+  /** Options */
   options: UseLoadingStateOptions<T> = {},
 ): UseLoadingStateReturn<T> {
   const {
@@ -100,10 +155,15 @@ export function useLoadingState<T = any>(
   } = options;
 
   const [state, setState] = useState<LoadingState<T>>({
+    /** Is Loading */
     isLoading: false,
+    /** Error */
     error: null,
+    /** Data */
     data: initialData,
+    /** Is Initialized */
     isInitialized: false,
+    /** Is Refreshing */
     isRefreshing: false,
   });
 
@@ -144,10 +204,15 @@ export function useLoadingState<T = any>(
   const reset = useCallback(() => {
     clearErrorTimeout();
     setState({
+      /** Is Loading */
       isLoading: false,
+      /** Error */
       error: null,
+      /** Data */
       data: initialData,
+      /** Is Initialized */
       isInitialized: false,
+      /** Is Refreshing */
       isRefreshing: false,
     });
     lastOperationRef.current = null;
@@ -155,7 +220,9 @@ export function useLoadingState<T = any>(
 
   const execute = useCallback(
     async <R = T>(
+      /** Async Fn */
       asyncFn: () => Promise<R>,
+      /** Execute Options */
       executeOptions: { setData?: boolean; isRefresh?: boolean } = {},
     ): Promise<R | null> => {
       const { setData: shouldSetData = true, isRefresh = false } =
@@ -169,8 +236,11 @@ export function useLoadingState<T = any>(
 
       setState((prev) => ({
         ...prev,
+        /** Is Loading */
         isLoading: true,
+        /** Error */
         error: null,
+        /** Is Refreshing */
         isRefreshing: isRefresh && prev.isInitialized,
       }));
 
@@ -179,8 +249,11 @@ export function useLoadingState<T = any>(
 
         setState((prev) => ({
           ...prev,
+          /** Is Loading */
           isLoading: false,
+          /** Is Initialized */
           isInitialized: true,
+          /** Is Refreshing */
           isRefreshing: false,
           ...(shouldSetData && { data: result as T }),
         }));
@@ -195,9 +268,12 @@ export function useLoadingState<T = any>(
 
         setState((prev) => ({
           ...prev,
+          /** Is Loading */
           isLoading: false,
           error,
+          /** Is Initialized */
           isInitialized: true,
+          /** Is Refreshing */
           isRefreshing: false,
         }));
 
@@ -263,6 +339,24 @@ export function useLoadingState<T = any>(
  * );
  * ```
  */
+/**
+ * Custom React hook for multi loading state
+ *
+ * @returns {any} The usemultiloadingstate result
+ *
+ * @example
+ * useMultiLoadingState();
+ */
+
+/**
+ * Custom React hook for multi loading state
+ *
+ * @returns {any} The usemultiloadingstate result
+ *
+ * @example
+ * useMultiLoadingState();
+ */
+
 export function useMultiLoadingState<
   T extends Record<string, () => Promise<any>>,
 >(loaders: T) {

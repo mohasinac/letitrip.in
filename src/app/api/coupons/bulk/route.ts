@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/coupons/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -5,9 +14,31 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ValidationError } from "@/lib/api-errors";
 
 // Build update object for each action
+/**
+ * Function: Build Coupon Update
+ */
+/**
+ * Performs build coupon update operation
+ *
+ * @param {string} action - The action
+ * @param {string} now - The now
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {string} The buildcouponupdate result
+ */
+
+/**
+ * Performs build coupon update operation
+ *
+ * @returns {string} The buildcouponupdate result
+ */
+
 function buildCouponUpdate(
+  /** Action */
   action: string,
+  /** Now */
   now: string,
+  /** Data */
   data?: any,
 ): Record<string, any> | null {
   switch (action) {
@@ -23,6 +54,7 @@ function buildCouponUpdate(
       delete updates.code;
       delete updates.created_at;
       return updates;
+    /** Default */
     default:
       return null;
   }
@@ -40,6 +72,32 @@ function buildCouponUpdate(
  * - delete: Delete coupons
  * - update: Update coupon fields
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
@@ -49,7 +107,9 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Only sellers and admins can perform bulk operations",
         },
         { status: 403 },
@@ -80,8 +140,11 @@ export async function POST(request: NextRequest) {
 
         if (!couponDoc.exists) {
           results.push({
+            /** Id */
             id: couponId,
+            /** Success */
             success: false,
+            /** Error */
             error: "Coupon not found",
           });
           continue;
@@ -94,8 +157,11 @@ export async function POST(request: NextRequest) {
           const ownsShop = await userOwnsShop(couponData.shop_id, user.uid);
           if (!ownsShop) {
             results.push({
+              /** Id */
               id: couponId,
+              /** Success */
               success: false,
+              /** Error */
               error: "Not authorized to edit this coupon",
             });
             continue;
@@ -113,8 +179,11 @@ export async function POST(request: NextRequest) {
         const updates = buildCouponUpdate(action, now, data);
         if (!updates) {
           results.push({
+            /** Id */
             id: couponId,
+            /** Success */
             success: false,
+            /** Error */
             error:
               action === "update"
                 ? "Update data is required"
@@ -127,8 +196,11 @@ export async function POST(request: NextRequest) {
         results.push({ id: couponId, success: true });
       } catch (err: any) {
         results.push({
+          /** Id */
           id: couponId,
+          /** Success */
           success: false,
+          /** Error */
           error: err.message || "Failed to process coupon",
         });
       }
@@ -138,11 +210,16 @@ export async function POST(request: NextRequest) {
     const failureCount = results.filter((r) => !r.success).length;
 
     return NextResponse.json({
+      /** Success */
       success: true,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: couponIds.length,
+        /** Succeeded */
         succeeded: successCount,
+        /** Failed */
         failed: failureCount,
       },
     });

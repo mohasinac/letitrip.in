@@ -1,8 +1,40 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/me/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { COLLECTIONS } from "@/constants/database";
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "../../lib/firebase/config";
 import { getSessionToken, verifySession } from "../../lib/session";
+
+/**
+ * Function: Me Handler
+ */
+/**
+ * Performs me handler operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to mehandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs me handler operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to mehandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function meHandler(req: NextRequest) {
   try {
@@ -40,18 +72,30 @@ async function meHandler(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** User */
         user: {
+          /** Uid */
           uid: userData?.uid,
+          /** Email */
           email: userData?.email,
+          /** Name */
           name: userData?.name,
+          /** Role */
           role: userData?.role,
+          /** Is Email Verified */
           isEmailVerified: userData?.isEmailVerified,
+          /** Profile */
           profile: userData?.profile,
+          /** Created At */
           createdAt: userData?.createdAt,
+          /** Last Login */
           lastLogin: userData?.lastLogin,
         },
+        /** Session */
         session: {
+          /** Session Id */
           sessionId: session.sessionId,
+          /** Expires At */
           expiresAt: session.exp
             ? new Date(session.exp * 1000).toISOString()
             : null,
@@ -64,7 +108,9 @@ async function meHandler(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Error */
         error: "Failed to get user data",
+        /** Message */
         message:
           process.env.NODE_ENV === "production"
             ? "An unexpected error occurred"
@@ -74,6 +120,35 @@ async function meHandler(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
 
 export async function GET(req: NextRequest) {
   // Rate limiting

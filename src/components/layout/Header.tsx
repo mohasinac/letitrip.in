@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/Header
+ * @description This file contains the Header component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef } from "react";
@@ -13,9 +22,33 @@ export default function Header() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const searchBarRef = useRef<SearchBarRef>(null);
 
+  /**
+   * Performs toggle mobile sidebar operation
+   *
+   * @returns {any} The togglemobilesidebar result
+   */
+
+  /**
+   * Performs toggle mobile sidebar operation
+   *
+   * @returns {any} The togglemobilesidebar result
+   */
+
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
+
+  /**
+   * Handles search click event
+   *
+   * @returns {any} The handlesearchclick result
+   */
+
+  /**
+   * Handles search click event
+   *
+   * @returns {any} The handlesearchclick result
+   */
 
   const handleSearchClick = () => {
     setIsSearchVisible(true);
@@ -23,6 +56,18 @@ export default function Header() {
       searchBarRef.current?.focusSearch();
     }, 100);
   };
+
+  /**
+   * Handles close search event
+   *
+   * @returns {any} The handleclosesearch result
+   */
+
+  /**
+   * Handles close search event
+   *
+   * @returns {any} The handleclosesearch result
+   */
 
   const handleCloseSearch = () => {
     setIsSearchVisible(false);

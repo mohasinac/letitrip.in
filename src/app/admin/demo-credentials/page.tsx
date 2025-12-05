@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo-credentials/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -18,6 +27,24 @@ export default function DemoCredentialsPage() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPasswords, setShowPasswords] = useState(false);
 
+  /**
+   * Performs copy to clipboard operation
+   *
+   * @param {string} text - The text
+   * @param {string} field - The field
+   *
+   * @returns {string} The copytoclipboard result
+   */
+
+  /**
+   * Performs copy to clipboard operation
+   *
+   * @param {string} text - The text
+   * @param {string} field - The field
+   *
+   * @returns {string} The copytoclipboard result
+   */
+
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
@@ -28,68 +55,104 @@ export default function DemoCredentialsPage() {
 
   const adminAccounts = [
     {
+      /** Name */
       name: "Platform Admin",
+      /** Email */
       email: "admin@letitrip.in",
+      /** Password */
       password: "Admin@123",
+      /** Role */
       role: "Super Admin",
     },
     {
+      /** Name */
       name: "DEMO_Admin User",
+      /** Email */
       email: "demo.admin@letitrip.in",
+      /** Password */
       password: defaultPassword,
+      /** Role */
       role: "Admin",
     },
   ];
 
   const moderatorAccounts = [
     {
+      /** Name */
       name: "DEMO_Moderator 1",
+      /** Email */
       email: "demo.mod1@letitrip.in",
+      /** Role */
       role: "Moderator",
     },
     {
+      /** Name */
       name: "DEMO_Moderator 2",
+      /** Email */
       email: "demo.mod2@letitrip.in",
+      /** Role */
       role: "Moderator",
     },
   ];
 
   const supportAccounts = [
     {
+      /** Name */
       name: "DEMO_Support Agent 1",
+      /** Email */
       email: "demo.support1@letitrip.in",
+      /** Role */
       role: "Support",
     },
     {
+      /** Name */
       name: "DEMO_Support Agent 2",
+      /** Email */
       email: "demo.support2@letitrip.in",
+      /** Role */
       role: "Support",
     },
   ];
 
   const sellerAccounts = [
     {
+      /** Name */
       name: "DEMO_Alex Chen",
+      /** Email */
       email: "alex.chen@demo.letitrip.in",
+      /** Shop */
       shop: "DEMO_CollectorsHub - TCG & Collectibles",
+      /** Role */
       role: "Seller 1",
     },
     {
+      /** Name */
       name: "DEMO_Raj Patel",
+      /** Email */
       email: "raj.patel@demo.letitrip.in",
+      /** Shop */
       shop: "DEMO_Anime Legends - Figure Paradise",
+      /** Role */
       role: "Seller 2",
     },
     {
+      /** Name */
       name: "DEMO_Storm Blader",
+      /** Email */
       email: "storm.blader@demo.letitrip.in",
+      /** Shop */
       shop: "DEMO_Beyblade Arena Mumbai",
+      /** Role */
       role: "Seller 3",
     },
     {
+      /** Name */
       name: "DEMO_Galaxy Master",
+      /** Email */
       email: "galaxy.master@demo.letitrip.in",
+      /** Shop */
       shop: "DEMO_Metal Fight Stadium Delhi",
+      /** Role */
       role: "Seller 4",
     },
   ];
@@ -101,6 +164,22 @@ export default function DemoCredentialsPage() {
     { name: "DEMO_Kenji Tanaka", email: "kenji.tanaka@demo.letitrip.in" },
     { name: "DEMO_Sarah Johnson", email: "sarah.j@demo.letitrip.in" },
   ];
+
+  /**
+   * Performs copy button operation
+   *
+   * @param {{ text} { text, field } - The { text, field }
+   *
+   * @returns {string} The copybutton result
+   */
+
+  /**
+   * Performs copy button operation
+   *
+   * @param {{ text} { text, field } - The { text, field }
+   *
+   * @returns {string} The copybutton result
+   */
 
   const CopyButton = ({ text, field }: { text: string; field: string }) => (
     <button

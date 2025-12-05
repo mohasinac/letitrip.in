@@ -1,6 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/analytics/[sessionId]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
 
 export async function GET(
   _request: Request,
@@ -17,6 +57,7 @@ export async function GET(
       .get();
 
     const orders = ordersSnap.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -50,6 +91,7 @@ export async function GET(
       .get();
 
     const auctions = auctionsSnap.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -71,6 +113,7 @@ export async function GET(
       .get();
 
     const buyers = usersSnap.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -83,9 +126,13 @@ export async function GET(
       );
 
       return {
+        /** Buyer Id */
         buyerId: buyer.id,
+        /** Buyer Name */
         buyerName: buyer.name,
+        /** Total Orders */
         totalOrders: buyerOrders.length,
+        /** Total Spent */
         totalSpent: buyerSpent,
       };
     });
@@ -108,27 +155,43 @@ export async function GET(
       }));
 
     return NextResponse.json({
+      /** Orders */
       orders: {
+        /** Total */
         total: totalOrders,
+        /** Total Revenue */
         totalRevenue: Math.round(totalRevenue),
+        /** Average Order Value */
         averageOrderValue: Math.round(averageOrderValue),
+        /** By Status */
         byStatus: orderStatusBreakdown,
+        /** By Payment Method */
         byPaymentMethod: paymentMethodBreakdown,
       },
+      /** Auctions */
       auctions: {
+        /** Total */
         total: totalAuctions,
+        /** Active */
         active: activeAuctions,
+        /** Total Bids */
         totalBids: totalBidsAcrossAuctions,
+        /** Average Bids Per Auction */
         averageBidsPerAuction:
           totalAuctions > 0
             ? Math.round(totalBidsAcrossAuctions / totalAuctions)
             : 0,
       },
+      /** Buyers */
       buyers: {
+        /** Total */
         total: buyers.length,
+        /** Activity */
         activity: buyerActivity,
       },
+      /** Products */
       products: {
+        /** Top Selling */
         topSelling: topProducts,
       },
     });

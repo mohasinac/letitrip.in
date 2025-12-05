@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/CategorySelector
+ * @description This file contains the CategorySelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
@@ -9,28 +18,50 @@ import React, { useCallback, useMemo, useState } from "react";
  * Supports multi-level categories with search and breadcrumb navigation
  */
 
+/**
+ * Category interface
+ * @interface Category
+ */
 export interface Category {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
   parent_id: string | null;
   parentIds?: string[]; // Multi-parent support
   childrenIds?: string[]; // Multi-children support
+  /** Level */
   level: number;
   has_children: boolean;
   is_active: boolean;
   product_count?: number;
 }
 
+/**
+ * CategorySelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategorySelectorProps
+ */
 interface CategorySelectorProps {
+  /** Categories */
   categories: Category[];
+  /** Value */
   value: string | null;
+  /** On Change */
   onChange: (categoryId: string | null, category: Category | null) => void;
+  /** Placeholder */
   placeholder?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
+  /** Show Product Count */
   showProductCount?: boolean;
   allowParentSelection?: boolean; // For admin - can select parent categories
+  /** Class Name */
   className?: string;
 }
 
@@ -203,7 +234,9 @@ export default function CategorySelector({
               ${!category.is_active ? "opacity-50" : ""}
             `}
               style={{
+                /** Padding Left */
                 paddingLeft: `${16 + level * 20}px`,
+                /** Padding Right */
                 paddingRight: "16px",
               }}
             >

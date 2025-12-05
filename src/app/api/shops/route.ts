@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { UserRole } from "@/app/api/lib/firebase/queries";
 import { shopsSieveConfig } from "@/app/api/lib/sieve/config";
@@ -18,15 +27,25 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for shops
 const shopsConfig = {
   ...shopsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Owner Id */
     ownerId: "owner_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Product Count */
     productCount: "product_count",
+    /** Review Count */
     reviewCount: "review_count",
+    /** Is Verified */
     isVerified: "is_verified",
+    /** Is Banned */
     isBanned: "is_banned",
+    /** Featured */
     featured: "is_featured",
+    /** Show On Homepage */
     showOnHomepage: "show_on_homepage",
   } as Record<string, string>,
 };
@@ -34,19 +53,46 @@ const shopsConfig = {
 /**
  * Transform shop document to API response format
  */
+/**
+ * Transforms shop
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformshop result
+ */
+
+/**
+ * Transforms shop
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformshop result
+ */
+
 function transformShop(id: string, data: any) {
   return {
     id,
     ...data,
     // Add camelCase aliases
+    /** Owner Id */
     ownerId: data.owner_id,
+    /** Is Verified */
     isVerified: data.is_verified,
+    /** Featured */
     featured: data.is_featured,
+    /** Is Banned */
     isBanned: data.is_banned,
+    /** Show On Homepage */
     showOnHomepage: data.show_on_homepage,
+    /** Total Products */
     totalProducts: data.total_products || data.product_count || 0,
+    /** Review Count */
     reviewCount: data.review_count || 0,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -61,6 +107,32 @@ function transformShop(id: string, data: any) {
  * - Seller: Own shops
  * - Admin: All shops
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   return withCache(
     request,
@@ -71,6 +143,7 @@ export async function GET(request: NextRequest) {
 
         // Parse Sieve query
         const {
+          /** Query */
           query: sieveQuery,
           errors,
           warnings,
@@ -79,8 +152,11 @@ export async function GET(request: NextRequest) {
         if (errors.length > 0) {
           return NextResponse.json(
             {
+              /** Success */
               success: false,
+              /** Error */
               error: "Invalid query parameters",
+              /** Details */
               details: errors,
             },
             { status: 400 }
@@ -154,6 +230,26 @@ export async function GET(request: NextRequest) {
         const totalCount = countSnapshot.data().count;
 
         // Apply pagination
+        /**
+         * Performs offset operation
+         *
+         * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+        if (offset > 0
+         *
+         * @returns {any} The offset result
+         */
+
+        /**
+         * Performs offset operation
+         *
+         * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+        if (offset > 0
+         *
+         * @returns {any} The offset result
+         */
+
         const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
         if (offset > 0) {
           const skipSnapshot = await query.limit(offset).get();
@@ -188,15 +284,22 @@ export async function GET(request: NextRequest) {
         const pagination = createPaginationMeta(totalCount, sieveQuery);
 
         return NextResponse.json({
+          /** Success */
           success: true,
+          /** Data */
           data: shops,
           shops, // Backward compatibility
+          /** Count */
           count: shops.length,
           canCreateMore,
           pagination,
+          /** Meta */
           meta: {
+            /** Applied Filters */
             appliedFilters: sieveQuery.filters,
+            /** Applied Sorts */
             appliedSorts: sieveQuery.sorts,
+            /** Warnings */
             warnings: warnings.length > 0 ? warnings : undefined,
           },
         });
@@ -206,8 +309,11 @@ export async function GET(request: NextRequest) {
         const errorMessage = error?.message || "Failed to fetch shops";
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: errorMessage,
+            /** Details */
             details:
               process.env.NODE_ENV === "development" ? error?.stack : undefined,
           },
@@ -220,6 +326,35 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/shops - Create shop
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const authResult = await requireAuth(request);
@@ -231,7 +366,9 @@ export async function POST(request: NextRequest) {
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Only sellers and admins can create shops",
         },
         { status: 403 }
@@ -253,7 +390,9 @@ export async function POST(request: NextRequest) {
       if (userShopsSnapshot.size >= 1) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "You can only create 1 shop. Please contact admin for more.",
           },
           { status: 403 }
@@ -295,7 +434,9 @@ export async function POST(request: NextRequest) {
     if (Object.keys(errors).length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Validation failed",
           errors,
         },
@@ -314,7 +455,9 @@ export async function POST(request: NextRequest) {
     if (!existingShopSnapshot.empty) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Shop slug already exists. Please choose a different slug.",
         },
         { status: 400 }
@@ -324,15 +467,23 @@ export async function POST(request: NextRequest) {
     // Create shop object
     const shopData = {
       owner_id: userId,
+      /** Name */
       name: data.name,
+      /** Slug */
       slug: data.slug,
+      /** Description */
       description: data.description,
+      /** Location */
       location: data.location || null,
+      /** Phone */
       phone: data.phone || null,
+      /** Email */
       email: data.email || null,
+      /** Website */
       website: data.website || null,
       logo: null, // Will be uploaded in edit page
       banner: null, // Will be uploaded in edit page
+      /** Rating */
       rating: 0,
       review_count: 0,
       product_count: 0,
@@ -354,15 +505,19 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json({
+      /** Success */
       success: true,
       shop,
+      /** Message */
       message: "Shop created successfully. You can now upload logo and banner.",
     });
   } catch (error) {
     logError(error as Error, { component: "API.shops.POST" });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Failed to create shop",
       },
       { status: 500 }

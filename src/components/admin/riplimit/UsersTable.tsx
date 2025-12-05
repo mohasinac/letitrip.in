@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/riplimit/UsersTable
+ * @description This file contains the UsersTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Button } from "@/components/ui/Button";
@@ -6,43 +15,114 @@ import { Edit, Eye, Loader2, Search, Users } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
+/**
+ * RipLimitUser interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitUser
+ */
 interface RipLimitUser {
+  /** User Id */
   userId: string;
+  /** Available Balance */
   availableBalance: number;
+  /** Blocked Balance */
   blockedBalance: number;
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: boolean;
+  /** Is Blocked */
   isBlocked: boolean;
+  /** Unpaid Auction Ids */
   unpaidAuctionIds: string[];
+  /** Created At */
   createdAt: { _seconds: number };
+  /** Updated At */
   updatedAt: { _seconds: number };
+  /** User */
   user: {
+    /** Email */
     email: string;
+    /** Display Name */
     displayName?: string;
+    /** Photo U R L */
     photoURL?: string;
   } | null;
 }
 
+/**
+ * Pagination interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Pagination
+ */
 interface Pagination {
+  /** Page */
   page: number;
+  /** Page Size */
   pageSize: number;
+  /** Total Count */
   totalCount: number;
+  /** Total Pages */
   totalPages: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Has Previous Page */
   hasPreviousPage: boolean;
 }
 
+/**
+ * UserFilter type
+ * 
+ * @typedef {Object} UserFilter
+ * @description Type definition for UserFilter
+ */
 type UserFilter = "all" | "unpaid" | "blocked";
 
+/**
+ * UsersTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UsersTableProps
+ */
 interface UsersTableProps {
+  /** Users */
   users: RipLimitUser[];
+  /** Loading */
   loading: boolean;
+  /** Pagination */
   pagination: Pagination | null;
+  /** User Filter */
   userFilter: UserFilter;
+  /** On Filter Change */
   onFilterChange: (filter: UserFilter) => void;
+  /** On Page Change */
   onPageChange: (page: number) => void;
+  /** On View User */
   onViewUser: (userId: string) => void;
+  /** On Adjust Balance */
   onAdjustBalance: (user: RipLimitUser) => void;
 }
+
+/**
+ * Function: Users Table
+ */
+/**
+ * Performs users table operation
+ *
+ * @returns {any} The userstable result
+ *
+ * @example
+ * UsersTable();
+ */
+
+/**
+ * Performs users table operation
+ *
+ * @returns {any} The userstable result
+ *
+ * @example
+ * UsersTable();
+ */
 
 export function UsersTable({
   users,
@@ -55,6 +135,22 @@ export function UsersTable({
   onAdjustBalance,
 }: UsersTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
+
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatrl result
+   */
+
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatrl result
+   */
 
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
 

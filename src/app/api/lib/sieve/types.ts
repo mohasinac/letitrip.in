@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/app/api/lib/sieve/types
+ * @description This file contains TypeScript type definitions for types
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Sieve Pagination & Filtering Types
  * Epic: E026 - Sieve-style Pagination
  *
@@ -50,10 +59,15 @@ export type SortDirection = "asc" | "desc";
  * Parsed filter condition
  */
 export interface FilterCondition {
+  /** Field */
   field: string;
+  /** Operator */
   operator: FilterOperator;
+  /** Value */
   value: FilterValue;
+  /** Is Negated */
   isNegated?: boolean;
+  /** Is Case Insensitive */
   isCaseInsensitive?: boolean;
 }
 
@@ -61,7 +75,9 @@ export interface FilterCondition {
  * Parsed sort field
  */
 export interface SortField {
+  /** Field */
   field: string;
+  /** Direction */
   direction: SortDirection;
 }
 
@@ -69,9 +85,13 @@ export interface SortField {
  * Complete parsed sieve query
  */
 export interface SieveQuery {
+  /** Page */
   page: number;
+  /** Page Size */
   pageSize: number;
+  /** Sorts */
   sorts: SortField[];
+  /** Filters */
   filters: FilterCondition[];
 }
 
@@ -117,11 +137,17 @@ export interface SieveConfig {
  * Sieve pagination metadata
  */
 export interface SievePaginationMeta {
+  /** Page */
   page: number;
+  /** Page Size */
   pageSize: number;
+  /** Total Count */
   totalCount: number;
+  /** Total Pages */
   totalPages: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Has Previous Page */
   hasPreviousPage: boolean;
 }
 
@@ -129,8 +155,11 @@ export interface SievePaginationMeta {
  * Applied query metadata (for debugging/transparency)
  */
 export interface SieveAppliedMeta {
+  /** Applied Filters */
   appliedFilters: FilterCondition[];
+  /** Applied Sorts */
   appliedSorts: SortField[];
+  /** Warnings */
   warnings?: string[];
 }
 
@@ -138,9 +167,13 @@ export interface SieveAppliedMeta {
  * Sieve paginated response
  */
 export interface SievePaginatedResponse<T> {
+  /** Success */
   success: boolean;
+  /** Data */
   data: T[];
+  /** Pagination */
   pagination: SievePaginationMeta;
+  /** Meta */
   meta?: SieveAppliedMeta;
 }
 
@@ -150,12 +183,15 @@ export interface SievePaginatedResponse<T> {
  * Sieve parsing error
  */
 export interface SieveError {
+  /** Type */
   type:
     | "invalid_filter"
     | "invalid_sort"
     | "invalid_pagination"
     | "unknown_field";
+  /** Field */
   field?: string;
+  /** Message */
   message: string;
 }
 
@@ -163,8 +199,11 @@ export interface SieveError {
  * Sieve parse result (may contain errors)
  */
 export interface SieveParseResult {
+  /** Query */
   query: SieveQuery;
+  /** Errors */
   errors: SieveError[];
+  /** Warnings */
   warnings: string[];
 }
 
@@ -189,8 +228,11 @@ export type FirestoreOperator =
  * Firestore filter that can be applied directly
  */
 export interface FirestoreFilter {
+  /** Field */
   field: string;
+  /** Operator */
   operator: FirestoreOperator;
+  /** Value */
   value: FilterValue;
 }
 
@@ -199,7 +241,9 @@ export interface FirestoreFilter {
  * (Firestore doesn't support these natively)
  */
 export interface ClientSideFilter {
+  /** Condition */
   condition: FilterCondition;
+  /** Reason */
   reason: string;
 }
 

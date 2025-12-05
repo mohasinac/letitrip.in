@@ -1,26 +1,80 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileSwipeActions
+ * @description This file contains the MobileSwipeActions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef, ReactNode, useCallback } from "react";
 import { Trash2, Edit, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * SwipeAction interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SwipeAction
+ */
 interface SwipeAction {
+  /** Id */
   id: string;
+  /** Icon */
   icon: ReactNode;
+  /** Label */
   label: string;
+  /** Color */
   color: string;
+  /** Bg Color */
   bgColor: string;
+  /** On Click */
   onClick: () => void;
 }
 
+/**
+ * MobileSwipeActionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileSwipeActionsProps
+ */
 interface MobileSwipeActionsProps {
+  /** Children */
   children: ReactNode;
+  /** Left Actions */
   leftActions?: SwipeAction[];
+  /** Right Actions */
   rightActions?: SwipeAction[];
+  /** Threshold */
   threshold?: number;
+  /** Class Name */
   className?: string;
+  /** On Swipe Complete */
   onSwipeComplete?: (direction: "left" | "right") => void;
 }
+
+/**
+ * Function: Mobile Swipe Actions
+ */
+/**
+ * Performs mobile swipe actions operation
+ *
+ * @returns {any} The mobileswipeactions result
+ *
+ * @example
+ * MobileSwipeActions();
+ */
+
+/**
+ * Performs mobile swipe actions operation
+ *
+ * @returns {any} The mobileswipeactions result
+ *
+ * @example
+ * MobileSwipeActions();
+ */
 
 export function MobileSwipeActions({
   children,
@@ -121,11 +175,39 @@ export function MobileSwipeActions({
     onSwipeComplete,
   ]);
 
+  /**
+   * Handles action click event
+   *
+   * @param {SwipeAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
+
+  /**
+   * Handles action click event
+   *
+   * @param {SwipeAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
+
   const handleActionClick = (action: SwipeAction) => {
     action.onClick();
     setTranslateX(0);
     setIsOpen(null);
   };
+
+  /**
+   * Performs close operation
+   *
+   * @returns {any} The close result
+   */
+
+  /**
+   * Performs close operation
+   *
+   * @returns {any} The close result
+   */
 
   const close = () => {
     setTranslateX(0);
@@ -183,7 +265,9 @@ export function MobileSwipeActions({
         ref={containerRef}
         className="relative bg-white z-10"
         style={{
+          /** Transform */
           transform: `translateX(${translateX}px)`,
+          /** Transition */
           transition: isDragging.current ? "none" : "transform 0.2s ease-out",
         }}
         onTouchStart={handleTouchStart}
@@ -201,29 +285,110 @@ export function MobileSwipeActions({
 }
 
 // Pre-built action helpers
+/**
+ * Creates a new delete action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The deleteaction result
+ *
+ * @example
+ * createDeleteAction(onClick);
+ */
+
+/**
+ * Creates a new delete action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The deleteaction result
+ *
+ * @example
+ * createDeleteAction(onClick);
+ */
+
 export const createDeleteAction = (onClick: () => void): SwipeAction => ({
+  /** Id */
   id: "delete",
+  /** Icon */
   icon: <Trash2 className="w-5 h-5" />,
+  /** Label */
   label: "Delete",
+  /** Color */
   color: "text-white",
+  /** Bg Color */
   bgColor: "bg-red-500",
   onClick,
 });
 
+/**
+ * Creates a new edit action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The editaction result
+ *
+ * @example
+ * createEditAction(onClick);
+ */
+
+/**
+ * Creates a new edit action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The editaction result
+ *
+ * @example
+ * createEditAction(onClick);
+ */
+
 export const createEditAction = (onClick: () => void): SwipeAction => ({
+  /** Id */
   id: "edit",
+  /** Icon */
   icon: <Edit className="w-5 h-5" />,
+  /** Label */
   label: "Edit",
+  /** Color */
   color: "text-white",
+  /** Bg Color */
   bgColor: "bg-blue-500",
   onClick,
 });
 
+/**
+ * Creates a new more action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The moreaction result
+ *
+ * @example
+ * createMoreAction(onClick);
+ */
+
+/**
+ * Creates a new more action
+ *
+ * @param {(} onClick - The on click
+ *
+ * @returns {any} The moreaction result
+ *
+ * @example
+ * createMoreAction(onClick);
+ */
+
 export const createMoreAction = (onClick: () => void): SwipeAction => ({
+  /** Id */
   id: "more",
+  /** Icon */
   icon: <MoreHorizontal className="w-5 h-5" />,
+  /** Label */
   label: "More",
+  /** Color */
   color: "text-white",
+  /** Bg Color */
   bgColor: "bg-gray-500",
   onClick,
 });

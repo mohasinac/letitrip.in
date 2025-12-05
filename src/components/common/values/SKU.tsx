@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/SKU
+ * @description This file contains the SKU component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * SKU (Stock Keeping Unit) Display Component
  *
  * Displays product SKU with copy functionality.
@@ -16,12 +25,43 @@ import { cn } from "@/lib/utils";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * SKUProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SKUProps
+ */
 interface SKUProps {
+  /** Value */
   value: string;
+  /** Label */
   label?: boolean;
+  /** Copyable */
   copyable?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: S K U
+ */
+/**
+ * Performs s k u operation
+ *
+ * @returns {any} The sku result
+ *
+ * @example
+ * SKU();
+ */
+
+/**
+ * Performs s k u operation
+ *
+ * @returns {any} The sku result
+ *
+ * @example
+ * SKU();
+ */
 
 export function SKU({
   value,
@@ -31,6 +71,22 @@ export function SKU({
 }: SKUProps) {
   const [copied, setCopied] = useState(false);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(value);
@@ -38,7 +94,9 @@ export function SKU({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "SKU.handleCopy",
+        /** Metadata */
         metadata: { sku: value },
       });
     }

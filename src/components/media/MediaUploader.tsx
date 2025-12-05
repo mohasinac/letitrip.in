@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/MediaUploader
+ * @description This file contains the MediaUploader component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useRef, useState } from "react";
@@ -9,19 +18,38 @@ import CameraCapture from "./CameraCapture";
 import VideoRecorder from "./VideoRecorder";
 import MediaEditorModal from "./MediaEditorModal";
 
+/**
+ * MediaUploaderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaUploaderProps
+ */
 interface MediaUploaderProps {
+  /** Accept */
   accept?: "image" | "video" | "all";
+  /** Max Files */
   maxFiles?: number;
+  /** Resource Type */
   resourceType?: "product" | "shop" | "category" | "user" | "auction";
+  /** Multiple */
   multiple?: boolean;
+  /** On Files Added */
   onFilesAdded?: (files: MediaFile[]) => void;
+  /** On File Removed */
   onFileRemoved?: (id: string) => void;
+  /** On File Edited */
   onFileEdited?: (editedFile: MediaFile) => void;
+  /** Files */
   files?: MediaFile[];
+  /** Class Name */
   className?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Enable Camera */
   enableCamera?: boolean;
+  /** Enable Video Recording */
   enableVideoRecording?: boolean;
+  /** Enable Editing */
   enableEditing?: boolean;
 }
 
@@ -48,12 +76,35 @@ export default function MediaUploader({
   const [editingMedia, setEditingMedia] = useState<MediaFile | null>(null);
 
   const acceptedTypes = {
+    /** Image */
     image: "image/*",
+    /** Video */
     video: "video/*",
+    /** All */
     all: "image/*,video/*",
   };
 
   const canAddMore = files.length < maxFiles;
+
+  /**
+   * Performs async operation
+   *
+   * @param {FileList} fileList - The file list
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {FileList} fileList - The file list
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleFiles = async (fileList: FileList) => {
     const newErrors: string[] = [];
@@ -98,6 +149,7 @@ export default function MediaUploader({
           case "auction":
             sizeLimitKey = "PRODUCT_IMAGE"; // Reuse product image limits
             break;
+          /** Default */
           default:
             sizeLimitKey = "PRODUCT_IMAGE";
         }
@@ -120,17 +172,27 @@ export default function MediaUploader({
 
       // Create MediaFile object
       const mediaFile: MediaFile = {
+        /** Id */
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
+        /** Type */
         type: mediaType,
+        /** Source */
         source: "file",
         preview,
+        /** Upload Status */
         uploadStatus: "pending",
+        /** Upload Progress */
         uploadProgress: 0,
+        /** Metadata */
         metadata: {
+          /** Slug */
           slug: "",
+          /** Description */
           description: "",
+          /** Size */
           size: file.size,
+          /** Mime Type */
           mimeType: file.type,
         },
       };
@@ -145,6 +207,22 @@ export default function MediaUploader({
     }
   };
 
+  /**
+   * Handles drag event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledrag result
+   */
+
+  /**
+   * Handles drag event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledrag result
+   */
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -154,6 +232,22 @@ export default function MediaUploader({
       setDragActive(false);
     }
   };
+
+  /**
+   * Handles drop event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledrop result
+   */
+
+  /**
+   * Handles drop event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledrop result
+   */
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -167,17 +261,61 @@ export default function MediaUploader({
     }
   };
 
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       handleFiles(e.target.files);
     }
   };
 
+  /**
+   * Handles click event
+   *
+   * @returns {any} The handleclick result
+   */
+
+  /**
+   * Handles click event
+   *
+   * @returns {any} The handleclick result
+   */
+
   const handleClick = () => {
     if (!disabled && canAddMore) {
       fileInputRef.current?.click();
     }
   };
+
+  /**
+   * Handles camera capture event
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {any} The handlecameracapture result
+   */
+
+  /**
+   * Handles camera capture event
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {any} The handlecameracapture result
+   */
 
   const handleCameraCapture = (mediaFile: MediaFile) => {
     if (onFilesAdded) {
@@ -186,6 +324,22 @@ export default function MediaUploader({
     setShowCamera(false);
   };
 
+  /**
+   * Handles video recorded event
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {any} The handlevideorecorded result
+   */
+
+  /**
+   * Handles video recorded event
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {any} The handlevideorecorded result
+   */
+
   const handleVideoRecorded = (mediaFile: MediaFile) => {
     if (onFilesAdded) {
       onFilesAdded([mediaFile]);
@@ -193,9 +347,41 @@ export default function MediaUploader({
     setShowVideoRecorder(false);
   };
 
+  /**
+   * Handles edit media event
+   *
+   * @param {MediaFile} media - The media
+   *
+   * @returns {any} The handleeditmedia result
+   */
+
+  /**
+   * Handles edit media event
+   *
+   * @param {MediaFile} media - The media
+   *
+   * @returns {any} The handleeditmedia result
+   */
+
   const handleEditMedia = (media: MediaFile) => {
     setEditingMedia(media);
   };
+
+  /**
+   * Handles save edit event
+   *
+   * @param {MediaFile} editedMedia - The edited media
+   *
+   * @returns {any} The handlesaveedit result
+   */
+
+  /**
+   * Handles save edit event
+   *
+   * @param {MediaFile} editedMedia - The edited media
+   *
+   * @returns {any} The handlesaveedit result
+   */
 
   const handleSaveEdit = (editedMedia: MediaFile) => {
     if (onFileEdited) {
@@ -203,6 +389,18 @@ export default function MediaUploader({
     }
     setEditingMedia(null);
   };
+
+  /**
+   * Handles cancel edit event
+   *
+   * @returns {any} The handlecanceledit result
+   */
+
+  /**
+   * Handles cancel edit event
+   *
+   * @returns {any} The handlecanceledit result
+   */
 
   const handleCancelEdit = () => {
     setEditingMedia(null);

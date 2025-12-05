@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/emails/OrderConfirmation
+ * @description This file contains the OrderConfirmation component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Order Confirmation Email Template
  *
  * @status IMPLEMENTED
@@ -7,26 +16,73 @@
 
 import * as React from "react";
 
+/**
+ * OrderConfirmationEmailProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderConfirmationEmailProps
+ */
 export interface OrderConfirmationEmailProps {
+  /** Customer Name */
   customerName: string;
+  /** Order Id */
   orderId: string;
+  /** Order Date */
   orderDate: string;
+  /** Order Total */
   orderTotal: number;
+  /** Order Items */
   orderItems: Array<{
+    /** Name */
     name: string;
+    /** Quantity */
     quantity: number;
+    /** Price */
     price: number;
+    /** Image */
     image?: string;
   }>;
+  /** Shipping Address */
   shippingAddress: {
+    /** Street */
     street: string;
+    /** City */
     city: string;
+    /** State */
     state: string;
+    /** Pincode */
     pincode: string;
   };
+  /** Tracking Url */
   trackingUrl?: string;
 }
 
+/**
+ * Performs order confirmation email operation
+ *
+ * @returns {any} The orderconfirmationemail result
+ *
+ * @example
+ * OrderConfirmationEmail();
+ */
+
+/**
+ * O
+ * @constant
+ */
+/**
+ * Performs order confirmation email operation
+ *
+ * @returns {any} The orderconfirmationemail result
+ *
+ * @example
+ * OrderConfirmationEmail();
+ */
+
+/**
+ * O
+ * @constant
+ */
 export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
   customerName,
   orderId,
@@ -45,35 +101,51 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
       </head>
       <body
         style={{
+          /** Font Family */
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          /** Background Color */
           backgroundColor: "#f3f4f6",
+          /** Margin */
           margin: 0,
+          /** Padding */
           padding: 0,
         }}
       >
         <div
           style={{
+            /** Max Width */
             maxWidth: "600px",
+            /** Margin */
             margin: "0 auto",
+            /** Padding */
             padding: "20px",
           }}
         >
           {/* Header */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Border Radius */
               borderRadius: "8px 8px 0 0",
+              /** Padding */
               padding: "24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Bottom */
               borderBottom: "4px solid #3b82f6",
             }}
           >
             <h1
               style={{
+                /** Font Size */
                 fontSize: "24px",
+                /** Font Weight */
                 fontWeight: "bold",
+                /** Color */
                 color: "#1f2937",
+                /** Margin */
                 margin: 0,
               }}
             >
@@ -84,17 +156,24 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
           {/* Main Content */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Padding */
               padding: "32px 24px",
             }}
           >
             {/* Greeting */}
             <h2
               style={{
+                /** Font Size */
                 fontSize: "20px",
+                /** Font Weight */
                 fontWeight: "bold",
+                /** Color */
                 color: "#1f2937",
+                /** Margin Top */
                 marginTop: 0,
+                /** Margin Bottom */
                 marginBottom: "16px",
               }}
             >
@@ -103,9 +182,13 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
 
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.5",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
@@ -117,18 +200,27 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             {/* Order Details */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f9fafb",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "16px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <h3
                 style={{
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#1f2937",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "12px",
                 }}
               >
@@ -140,8 +232,11 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                 </span>
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "14px",
+                    /** Font Weight */
                     fontWeight: "600",
+                    /** Color */
                     color: "#1f2937",
                   }}
                 >
@@ -162,10 +257,15 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             <div style={{ marginBottom: "24px" }}>
               <h3
                 style={{
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#1f2937",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "16px",
                 }}
               >
@@ -175,9 +275,13 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                 <div
                   key={index}
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "center",
+                    /** Padding */
                     padding: "12px 0",
+                    /** Border Bottom */
                     borderBottom:
                       index < orderItems.length - 1
                         ? "1px solid #e5e7eb"
@@ -189,10 +293,15 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                       src={item.image}
                       alt={item.name}
                       style={{
+                        /** Width */
                         width: "60px",
+                        /** Height */
                         height: "60px",
+                        /** Object Fit */
                         objectFit: "cover",
+                        /** Border Radius */
                         borderRadius: "4px",
+                        /** Margin Right */
                         marginRight: "12px",
                       }}
                     />
@@ -200,9 +309,13 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                   <div style={{ flex: 1 }}>
                     <div
                       style={{
+                        /** Font Size */
                         fontSize: "14px",
+                        /** Font Weight */
                         fontWeight: "600",
+                        /** Color */
                         color: "#1f2937",
+                        /** Margin Bottom */
                         marginBottom: "4px",
                       }}
                     >
@@ -210,17 +323,23 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                     </div>
                     <div
                       style={{
+                        /** Font Size */
                         fontSize: "12px",
+                        /** Color */
                         color: "#6b7280",
                       }}
                     >
+                      /** Quantity */
                       Quantity: {item.quantity}
                     </div>
                   </div>
                   <div
                     style={{
+                      /** Font Size */
                       fontSize: "14px",
+                      /** Font Weight */
                       fontWeight: "600",
+                      /** Color */
                       color: "#1f2937",
                     }}
                   >
@@ -233,23 +352,33 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             {/* Total */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f9fafb",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "16px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <div
                 style={{
+                  /** Display */
                   display: "flex",
+                  /** Justify Content */
                   justifyContent: "space-between",
+                  /** Align Items */
                   alignItems: "center",
                 }}
               >
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "16px",
+                    /** Font Weight */
                     fontWeight: "600",
+                    /** Color */
                     color: "#1f2937",
                   }}
                 >
@@ -257,8 +386,11 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                 </span>
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "18px",
+                    /** Font Weight */
                     fontWeight: "bold",
+                    /** Color */
                     color: "#3b82f6",
                   }}
                 >
@@ -270,18 +402,27 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             {/* Shipping Address */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f9fafb",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "16px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <h3
                 style={{
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#1f2937",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "12px",
                 }}
               >
@@ -289,8 +430,11 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
               </h3>
               <div
                 style={{
+                  /** Font Size */
                   fontSize: "14px",
+                  /** Color */
                   color: "#1f2937",
+                  /** Line Height */
                   lineHeight: "1.6",
                 }}
               >
@@ -309,13 +453,21 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
                 <a
                   href={trackingUrl}
                   style={{
+                    /** Display */
                     display: "inline-block",
+                    /** Background Color */
                     backgroundColor: "#3b82f6",
+                    /** Color */
                     color: "#ffffff",
+                    /** Font Size */
                     fontSize: "14px",
+                    /** Font Weight */
                     fontWeight: "600",
+                    /** Padding */
                     padding: "12px 24px",
+                    /** Border Radius */
                     borderRadius: "6px",
+                    /** Text Decoration */
                     textDecoration: "none",
                   }}
                 >
@@ -327,9 +479,13 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             {/* Help Text */}
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.5",
+                /** Text Align */
                 textAlign: "center",
               }}
             >
@@ -346,18 +502,27 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
           {/* Footer */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#f9fafb",
+              /** Border Radius */
               borderRadius: "0 0 8px 8px",
+              /** Padding */
               padding: "24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Top */
               borderTop: "1px solid #e5e7eb",
             }}
           >
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#6b7280",
+                /** Margin */
                 margin: 0,
+                /** Margin Bottom */
                 marginBottom: "8px",
               }}
             >
@@ -365,8 +530,11 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             </p>
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#9ca3af",
+                /** Margin */
                 margin: 0,
               }}
             >

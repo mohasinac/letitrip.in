@@ -1,33 +1,68 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/fees/payment/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { CreditCard, Smartphone, Building2, Wallet } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Payment Methods | Let It Rip",
+  /** Description */
   description: "Supported payment methods on Let It Rip platform",
 };
 
+/**
+ * Performs payment methods page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = PaymentMethodsPage();
+ */
 export default function PaymentMethodsPage() {
   const paymentMethods = [
     {
+      /** Icon */
       icon: <CreditCard className="w-8 h-8" />,
+      /** Title */
       title: "Credit & Debit Cards",
+      /** Description */
       description: "We accept all major credit and debit cards",
+      /** Supported */
       supported: ["Visa", "Mastercard", "American Express", "RuPay", "Maestro"],
+      /** Processing Time */
       processingTime: "Instant",
+      /** Fees */
       fees: "No additional fees",
     },
     {
+      /** Icon */
       icon: <Smartphone className="w-8 h-8" />,
+      /** Title */
       title: "UPI & Digital Wallets",
+      /** Description */
       description: "Pay using UPI or popular digital wallets",
+      /** Supported */
       supported: ["Google Pay", "PhonePe", "Paytm", "Amazon Pay", "UPI"],
+      /** Processing Time */
       processingTime: "Instant",
+      /** Fees */
       fees: "No additional fees",
     },
     {
+      /** Icon */
       icon: <Building2 className="w-8 h-8" />,
+      /** Title */
       title: "Net Banking",
+      /** Description */
       description: "Direct payment from your bank account",
+      /** Supported */
       supported: [
         "All major Indian banks",
         "HDFC",
@@ -36,18 +71,26 @@ export default function PaymentMethodsPage() {
         "Axis",
         "Others",
       ],
+      /** Processing Time */
       processingTime: "Instant",
+      /** Fees */
       fees: "No additional fees",
     },
     {
+      /** Icon */
       icon: <Wallet className="w-8 h-8" />,
+      /** Title */
       title: "Cash on Delivery",
+      /** Description */
       description: "Pay when you receive your order (select items only)",
+      /** Supported */
       supported: [
         "Available for orders under ₹50,000",
         "ID verification required",
       ],
+      /** Processing Time */
       processingTime: "At delivery",
+      /** Fees */
       fees: "₹50 COD handling fee",
     },
   ];

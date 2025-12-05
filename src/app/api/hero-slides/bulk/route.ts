@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/hero-slides/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
@@ -8,6 +17,32 @@ import { ValidationError, errorToJson, ApiError } from "@/lib/api-errors";
  * POST /api/hero-slides/bulk
  * Admin only: Bulk operations on hero slides
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     // Require admin role
@@ -86,6 +121,7 @@ export async function POST(req: NextRequest) {
         }
         break;
 
+      /** Default */
       default:
         throw new ValidationError(`Unknown action: ${action}`);
     }
@@ -94,13 +130,16 @@ export async function POST(req: NextRequest) {
     await batch.commit();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: `Successfully ${action}d ${ids.length} hero slide(s)`,
     });
   } catch (error) {
     console.error("Error in bulk operation:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }

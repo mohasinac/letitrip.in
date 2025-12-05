@@ -1,13 +1,53 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/AdminPageHeader
+ * @description This file contains the AdminPageHeader component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 
+/**
+ * AdminPageHeaderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AdminPageHeaderProps
+ */
 interface AdminPageHeaderProps {
+  /** Title */
   title: string;
+  /** Description */
   description?: string;
+  /** Actions */
   actions?: ReactNode;
+  /** Breadcrumbs */
   breadcrumbs?: { label: string; href?: string }[];
 }
+
+/**
+ * Function: Admin Page Header
+ */
+/**
+ * Performs admin page header operation
+ *
+ * @returns {any} The adminpageheader result
+ *
+ * @example
+ * AdminPageHeader();
+ */
+
+/**
+ * Performs admin page header operation
+ *
+ * @returns {any} The adminpageheader result
+ *
+ * @example
+ * AdminPageHeader();
+ */
 
 export function AdminPageHeader({
   title,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/users/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -10,18 +19,34 @@ import { usersService } from "@/services/users.service";
 import { UserRole } from "@/types/shared/common.types";
 import { CheckCircle, Mail, Phone, Shield } from "lucide-react";
 
+/**
+ * User interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for User
+ */
 interface User {
+  /** Id */
   id: string;
+  /** Email */
   email: string;
+  /** Name */
   name?: string;
+  /** Role */
   role: UserRole;
+  /** Avatar */
   avatar?: string;
+  /** Phone */
   phone?: string;
+  /** Email Verified */
   emailVerified: boolean;
+  /** Phone Verified */
   phoneVerified: boolean;
   is_banned?: boolean;
   ban_reason?: string;
+  /** Created At */
   createdAt: string;
+  /** Updated At */
   updatedAt: string;
 }
 
@@ -29,8 +54,11 @@ export default function AdminUsersPage() {
   // Define columns for the resource page
   const columns = [
     {
+      /** Key */
       key: "user",
+      /** Label */
       label: "User",
+      /** Render */
       render: (user: User) => (
         <div className="flex items-center gap-3">
           {user.avatar ? (
@@ -61,8 +89,11 @@ export default function AdminUsersPage() {
       ),
     },
     {
+      /** Key */
       key: "role",
+      /** Label */
       label: "Role",
+      /** Render */
       render: (user: User) => (
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-gray-400" />
@@ -73,8 +104,11 @@ export default function AdminUsersPage() {
       ),
     },
     {
+      /** Key */
       key: "verification",
+      /** Label */
       label: "Verification",
+      /** Render */
       render: (user: User) => (
         <div className="space-y-1">
           <div className="flex items-center gap-1 text-sm">
@@ -103,8 +137,11 @@ export default function AdminUsersPage() {
       ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (user: User) =>
         user.is_banned ? (
           <StatusBadge status="banned" />
@@ -113,8 +150,11 @@ export default function AdminUsersPage() {
         ),
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Joined",
+      /** Render */
       render: (user: User) => (
         <DateDisplay date={new Date(user.createdAt)} format="short" />
       ),
@@ -124,9 +164,13 @@ export default function AdminUsersPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "role",
+      /** Label */
       label: "Role",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Roles" },
         { value: "user", label: "User" },
@@ -135,9 +179,13 @@ export default function AdminUsersPage() {
       ],
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "active", label: "Active" },
@@ -147,13 +195,37 @@ export default function AdminUsersPage() {
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Start After */
       startAfter: options.cursor,
+      /** Limit */
       limit: 20,
     };
 
@@ -169,42 +241,97 @@ export default function AdminUsersPage() {
 
     const response = await usersService.list(apiFilters);
     return {
+      /** Items */
       items: (response.data || []).map((user) => ({
         ...user,
+        /** Created At */
         createdAt:
           user.createdAt instanceof Date
             ? user.createdAt.toISOString()
             : user.createdAt,
+        /** Updated At */
         updatedAt:
           user.updatedAt instanceof Date
             ? user.updatedAt.toISOString()
             : user.updatedAt,
       })) as User[],
+      /** Next Cursor */
       nextCursor:
         "nextCursor" in response.pagination
           ? (response.pagination as any).nextCursor
           : null,
+      /** Has Next Page */
       hasNextPage: response.pagination.hasNextPage || false,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<User>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<User>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<User>) => {
     // Convert to UserProfileFormFE format
     const formData = {
+      /** Display Name */
       displayName: data.name || "",
+      /** First Name */
       firstName: data.name?.split(" ")[0] || "",
+      /** Last Name */
       lastName: data.name?.split(" ").slice(1).join(" ") || "",
+      /** Phone Number */
       phoneNumber: data.phone || "",
+      /** Email */
       email: data.email || "",
+      /** Role */
       role: data.role || "user",
+      /** Email Verified */
       emailVerified: data.emailVerified ?? false,
+      /** Phone Verified */
       phoneVerified: data.phoneVerified ?? false,
     };
     await usersService.update(id, formData as any);
   };
 
   // Handle delete - Users cannot be deleted, use ban instead
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await usersService.ban(id, true, "Account deleted by admin");
   };

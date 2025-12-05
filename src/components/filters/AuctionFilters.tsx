@@ -1,26 +1,85 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/AuctionFilters
+ * @description This file contains the AuctionFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * AuctionFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionFilterValues
+ */
 export interface AuctionFilterValues {
+  /** Status */
   status?: string[];
+  /** Time Left */
   timeLeft?: string;
+  /** Bid Min */
   bidMin?: number;
+  /** Bid Max */
   bidMax?: number;
+  /** Featured */
   featured?: boolean;
+  /** Ending Soon */
   endingSoon?: boolean;
+  /** Sort By */
   sortBy?: "endTime" | "currentBid" | "bidCount" | "createdAt";
+  /** Sort Order */
   sortOrder?: "asc" | "desc";
 }
 
+/**
+ * AuctionFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionFiltersProps
+ */
 interface AuctionFiltersProps {
+  /** Filters */
   filters: AuctionFilterValues;
+  /** On Change */
   onChange: (filters: AuctionFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs auction filters operation
+ *
+ * @returns {any} The auctionfilters result
+ *
+ * @example
+ * AuctionFilters();
+ */
+
+/**
+ * A
+ * @constant
+ */
+/**
+ * Performs auction filters operation
+ *
+ * @returns {any} The auctionfilters result
+ *
+ * @example
+ * AuctionFilters();
+ */
+
+/**
+ * A
+ * @constant
+ */
 export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
   filters,
   onChange,
@@ -30,11 +89,29 @@ export const AuctionFilters: React.FC<AuctionFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof AuctionFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: AuctionFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
 
   const toggleArrayFilter = (value: string) => {
     const current = filters.status || [];

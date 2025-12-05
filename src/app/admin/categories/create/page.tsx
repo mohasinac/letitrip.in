@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/categories/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import BasicInfoStep from "@/components/admin/category-wizard/BasicInfoStep";
@@ -24,17 +33,25 @@ import { useEffect, useState } from "react";
 
 const STEPS = [
   {
+    /** Id */
     id: 1,
+    /** Name */
     name: "Basic Info",
+    /** Icon */
     icon: FolderTree,
+    /** Description */
     description: "Name, parent & description",
   },
   { id: 2, name: "Media", icon: ImageIcon, description: "Image & icon" },
   { id: 3, name: "SEO", icon: Search, description: "Meta tags & slug" },
   {
+    /** Id */
     id: 4,
+    /** Name */
     name: "Display Settings",
+    /** Icon */
     icon: Settings,
+    /** Description */
     description: "Visibility & order",
   },
 ];
@@ -50,20 +67,47 @@ export default function CreateCategoryWizardPage() {
   const [categories, setCategories] = useState<CategoryFE[]>([]);
 
   const [formData, setFormData] = useState({
+    /** Name */
     name: "",
+    /** Parent Category */
     parentCategory: "",
+    /** Description */
     description: "",
+    /** Image Url */
     imageUrl: "",
+    /** Icon */
     icon: "📁",
+    /** Slug */
     slug: "",
+    /** Meta Title */
     metaTitle: "",
+    /** Meta Description */
     metaDescription: "",
+    /** Display Order */
     displayOrder: "0",
+    /** Featured */
     featured: false,
+    /** Is Active */
     isActive: true,
   });
 
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadCategories = async () => {
       try {
         const response = await categoriesService.list({});
@@ -75,9 +119,47 @@ export default function CreateCategoryWizardPage() {
     loadCategories();
   }, []);
 
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
   const handleChange = (field: string, value: unknown) => {
     setFormData((prev: typeof formData) => ({ ...prev, [field]: value }));
   };
+
+  /**
+   * Validates slug
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The validateslug result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates slug
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The validateslug result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validateSlug = (slug: string) => {
     if (!slug || slug.length < 2) {
@@ -92,6 +174,26 @@ export default function CreateCategoryWizardPage() {
       setSlugError("");
     }
   };
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validateStep = (step: number): boolean => {
     switch (step) {
@@ -124,16 +226,60 @@ export default function CreateCategoryWizardPage() {
     return true;
   };
 
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
   const nextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
     }
   };
 
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const prevStep = () => {
     setError("");
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
@@ -143,11 +289,16 @@ export default function CreateCategoryWizardPage() {
       setError("");
 
       const categoryData: any = {
+        /** Name */
         name: formData.name,
+        /** Slug */
         slug: formData.slug,
+        /** Description */
         description: formData.description || undefined,
         parent_id: formData.parentCategory || null,
+        /** Image */
         image: formData.imageUrl || undefined,
+        /** Icon */
         icon: formData.icon,
         sort_order: parseInt(formData.displayOrder) || 0,
         is_featured: formData.featured,

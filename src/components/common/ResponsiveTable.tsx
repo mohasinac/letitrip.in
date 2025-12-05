@@ -1,9 +1,26 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ResponsiveTable
+ * @description This file contains the ResponsiveTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 
+/**
+ * ResponsiveTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResponsiveTableProps
+ */
 interface ResponsiveTableProps {
+  /** Children */
   children: ReactNode;
+  /** Sticky First Column */
   stickyFirstColumn?: boolean;
 }
 
@@ -11,6 +28,40 @@ interface ResponsiveTableProps {
  * Responsive table wrapper with horizontal scroll on mobile
  * and optional sticky first column
  */
+/**
+ * Performs responsive table operation
+ *
+ * @param {ResponsiveTableProps} [{
+  children,
+  stickyFirstColumn] - The {
+  children,
+  sticky first column
+ *
+ * @returns {any} The responsivetable result
+ *
+ * @example
+ * ResponsiveTable({
+  children,
+  stickyFirstColumn);
+ */
+
+/**
+ * Performs responsive table operation
+ *
+ * @param {ResponsiveTableProps} [{
+  children,
+  stickyFirstColumn] - The {
+  children,
+  sticky first column
+ *
+ * @returns {any} The responsivetable result
+ *
+ * @example
+ * ResponsiveTable({
+  children,
+  stickyFirstColumn);
+ */
+
 export function ResponsiveTable({
   children,
   stickyFirstColumn = true,
@@ -29,7 +80,9 @@ export function ResponsiveTable({
       <style jsx global>{`
         .sticky-first-col table thead tr th:first-child,
         .sticky-first-col table tbody tr td:first-child {
+          /** Position */
           position: sticky;
+          /** Left */
           left: 0;
           z-index: 10;
           background-color: white;
@@ -60,12 +113,19 @@ export function ResponsiveTable({
         /* Add shadow to sticky column for depth */
         .sticky-first-col table thead tr th:first-child::after,
         .sticky-first-col table tbody tr td:first-child::after {
+          /** Content */
           content: "";
+          /** Position */
           position: absolute;
+          /** Top */
           top: 0;
+          /** Right */
           right: 0;
+          /** Bottom */
           bottom: 0;
+          /** Width */
           width: 1px;
+          /** Background */
           background: rgba(0, 0, 0, 0.1);
         }
 
@@ -80,6 +140,7 @@ export function ResponsiveTable({
           input[type="checkbox"] {
             min-width: 44px;
             min-height: 44px;
+            /** Cursor */
             cursor: pointer;
           }
         }

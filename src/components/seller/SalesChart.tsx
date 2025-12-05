@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/SalesChart
+ * @description This file contains the SalesChart component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -11,23 +20,73 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 
+/**
+ * SalesData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SalesData
+ */
 interface SalesData {
+  /** Date */
   date: string;
+  /** Revenue */
   revenue: number;
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Data */
   data: SalesData[];
 }
 
 export default function SalesChart({ data }: Props) {
+  /**
+   * Formats currency
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(value);
   };
+
+  /**
+   * Formats date
+   *
+   * @param {string} dateString - The date string
+   *
+   * @returns {string} The formatdate result
+   */
+
+  /**
+   * Formats date
+   *
+   * @param {string} dateString - The date string
+   *
+   * @returns {string} The formatdate result
+   */
 
   const formatDate = (dateString: string) => {
     try {
@@ -57,9 +116,13 @@ export default function SalesChart({ data }: Props) {
               formatter={(value: number) => formatCurrency(value)}
               labelFormatter={formatDate}
               contentStyle={{
+                /** Background Color */
                 backgroundColor: "#1f2937",
+                /** Border */
                 border: "1px solid #374151",
+                /** Border Radius */
                 borderRadius: "6px",
+                /** Color */
                 color: "#f9fafb",
               }}
             />

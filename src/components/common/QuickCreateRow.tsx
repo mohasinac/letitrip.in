@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/QuickCreateRow
+ * @description This file contains the QuickCreateRow component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import InlineCategorySelectorWithCreate from "@/components/seller/InlineCategorySelectorWithCreate";
@@ -6,6 +15,27 @@ import { InlineField, QuickCreateRowProps } from "@/types/inline-edit";
 import { Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { InlineImageUpload } from "./InlineImageUpload";
+
+/**
+ * Function: Quick Create Row
+ */
+/**
+ * Performs quick create row operation
+ *
+ * @returns {any} The quickcreaterow result
+ *
+ * @example
+ * QuickCreateRow();
+ */
+
+/**
+ * Performs quick create row operation
+ *
+ * @returns {any} The quickcreaterow result
+ *
+ * @example
+ * QuickCreateRow();
+ */
 
 export function QuickCreateRow({
   fields,
@@ -18,6 +48,24 @@ export function QuickCreateRow({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isExpanded, setIsExpanded] = useState(false);
+
+  /**
+   * Handles change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
 
   const handleChange = (key: string, value: any) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -32,6 +80,22 @@ export function QuickCreateRow({
       });
     }
   };
+
+  /**
+   * Validates field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {string} The validatefield result
+   */
+
+  /**
+   * Validates field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {string} The validatefield result
+   */
 
   const validateField = (field: InlineField): string | null => {
     const value = values[field.key];
@@ -62,6 +126,22 @@ export function QuickCreateRow({
     return null;
   };
 
+  /**
+   * Validates all
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates all
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateAll = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -75,6 +155,22 @@ export function QuickCreateRow({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSave = async () => {
     if (!validateAll()) {
@@ -91,11 +187,29 @@ export function QuickCreateRow({
       setIsExpanded(false);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "QuickCreateRow.handleCreate",
+        /** Metadata */
         metadata: { values },
       });
     }
   };
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancel = () => {
     setValues(defaultValues);
@@ -103,6 +217,22 @@ export function QuickCreateRow({
     setTouched({});
     setIsExpanded(false);
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -113,6 +243,26 @@ export function QuickCreateRow({
       handleCancel();
     }
   };
+
+  /**
+   * Renders field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {any} The renderfield result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Renders field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {any} The renderfield result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const renderField = (field: InlineField) => {
     const value = values[field.key];
@@ -296,6 +446,7 @@ export function QuickCreateRow({
           </div>
         );
 
+      /** Default */
       default:
         return null;
     }

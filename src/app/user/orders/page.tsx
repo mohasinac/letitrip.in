@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/orders/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { EmptyState } from "@/components/common/EmptyState";
@@ -35,17 +44,24 @@ export default function OrdersPage() {
 
   // Filter state with URL sync
   const {
+    /** Applied Filters */
     appliedFilters: filters,
     updateFilters,
     applyFilters,
   } = useFilters<{
+    /** Status */
     status?: string;
+    /** Sort By */
     sortBy: string;
+    /** Sort Order */
     sortOrder: "asc" | "desc";
   }>(
     {
+      /** Status */
       status: searchParams.get("status") || undefined,
+      /** Sort By */
       sortBy: searchParams.get("sortBy") || "created_at",
+      /** Sort Order */
       sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
     },
     { syncWithUrl: true },
@@ -56,7 +72,9 @@ export default function OrdersPage() {
       const startAfter = cursors[currentPage - 1];
       const response = await ordersService.list({
         ...filters,
+        /** Start After */
         startAfter: startAfter || undefined,
+        /** Limit */
         limit: 20,
       } as any);
 
@@ -97,12 +115,36 @@ export default function OrdersPage() {
     router.push(`/user/orders?${params.toString()}`, { scroll: false });
   }, [filters, router]);
 
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
 
   const handleNextPage = () => {
     if (hasNextPage) {
@@ -113,9 +155,13 @@ export default function OrdersPage() {
 
   const columns = [
     {
+      /** Key */
       key: "orderId",
+      /** Header */
       header: "Order ID",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (order: any) => (
         <button
           onClick={() => router.push(`/user/orders/${order.id}`)}
@@ -126,37 +172,70 @@ export default function OrdersPage() {
       ),
     },
     {
+      /** Key */
       key: "createdAt",
+      /** Header */
       header: "Date",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (order: any) => (
         <DateDisplay date={order.createdAt} format="short" />
       ),
     },
     {
+      /** Key */
       key: "shopName",
+      /** Header */
       header: "Shop",
+      /** Render */
       render: (order: any) => order.shopName || "N/A",
     },
     {
+      /** Key */
       key: "total",
+      /** Header */
       header: "Total",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (order: any) => <Price amount={order.total} />,
     },
     {
+      /** Key */
       key: "status",
+      /** Header */
       header: "Status",
+      /** Render */
       render: (order: any) => <StatusBadge status={order.status} />,
     },
     {
+      /** Key */
       key: "paymentStatus",
+      /** Header */
       header: "Payment",
+      /** Render */
       render: (order: any) => <StatusBadge status={order.paymentStatus} />,
     },
   ];
 
   // Mobile card renderer for orders
+  /**
+   * Renders mobile order card
+   *
+   * @param {OrderCardFE} order - The order
+   *
+   * @returns {any} The rendermobileordercard result
+   */
+
+  /**
+   * Renders mobile order card
+   *
+   * @param {OrderCardFE} order - The order
+   *
+   * @returns {any} The rendermobileordercard result
+   */
+
   const renderMobileOrderCard = (order: OrderCardFE) => (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-start justify-between mb-2">
@@ -187,6 +266,22 @@ export default function OrdersPage() {
   );
 
   // Handle pull-to-refresh
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRefresh = async () => {
     await loadOrders();
   };
@@ -229,7 +324,9 @@ export default function OrdersPage() {
                 title="No orders found"
                 description="You haven't placed any orders yet"
                 action={{
+                  /** Label */
                   label: "Start Shopping",
+                  /** On Click */
                   onClick: () => router.push("/"),
                 }}
               />

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/SellerProducts
+ * @description This file contains the SellerProducts component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,12 +18,43 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * SellerProductsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SellerProductsProps
+ */
 interface SellerProductsProps {
+  /** Product Id */
   productId: string;
+  /** Category Id */
   categoryId: string;
+  /** Shop Id */
   shopId: string;
+  /** Shop Name */
   shopName?: string;
 }
+
+/**
+ * Function: Seller Products
+ */
+/**
+ * Performs seller products operation
+ *
+ * @returns {any} The sellerproducts result
+ *
+ * @example
+ * SellerProducts();
+ */
+
+/**
+ * Performs seller products operation
+ *
+ * @returns {any} The sellerproducts result
+ *
+ * @example
+ * SellerProducts();
+ */
 
 export function SellerProducts({
   productId,
@@ -31,17 +71,55 @@ export function SellerProducts({
     loadSellerProducts();
   }, [productId, shopId, categoryId]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSellerProducts = async () => {
     try {
       setLoading(true);
       // Fetch seller's other products from same category or parent categories
       const response = await productsService.list({
         shopId,
+        /** Status */
         status: "active" as any,
+        /** Limit */
         limit: 30,
       });
 
       // Filter out current product and prioritize same category
+      /**
+       * Filters filtered
+       *
+       * @param {ProductCardFE} response.data || []).filter(
+        (p - The response.data || []).filter(
+        (p
+       *
+       * @returns {any} The filtered result
+       */
+
+      /**
+       * Filters filtered
+       *
+       * @param {ProductCardFE} response.data || []).filter(
+        (p - The response.data || []).filter(
+        (p
+       *
+       * @returns {any} The filtered result
+       */
+
       const filtered = (response.data || []).filter(
         (p: ProductCardFE) => p.id !== productId,
       );
@@ -58,7 +136,9 @@ export function SellerProducts({
       setProducts(sorted.slice(0, 16)); // Max 16 products
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerProducts.loadProducts",
+        /** Metadata */
         metadata: { sellerId: shopId },
       });
       toast.error("Failed to load seller products");
@@ -66,6 +146,22 @@ export function SellerProducts({
       setLoading(false);
     }
   };
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
 
   const handleScroll = (direction: "left" | "right") => {
     const container = document.getElementById("seller-products-scroll");
@@ -78,10 +174,24 @@ export function SellerProducts({
         : container.scrollLeft + scrollAmount;
 
     container.scrollTo({
+      /** Left */
       left: newPosition,
+      /** Behavior */
       behavior: "smooth",
     });
   };
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
 
   const updateScrollButtons = () => {
     const container = document.getElementById("seller-products-scroll");
@@ -213,6 +323,7 @@ export function SellerProducts({
 
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
+          /** Display */
           display: none;
         }
       `}</style>

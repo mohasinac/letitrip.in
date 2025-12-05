@@ -1,23 +1,70 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/FormModal
+ * @description This file contains the FormModal component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode, useEffect, useRef } from "react";
 
+/**
+ * FormModalProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormModalProps
+ */
 export interface FormModalProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Title */
   title: string;
+  /** Children */
   children: ReactNode;
+  /** Size */
   size?: "sm" | "md" | "lg" | "xl" | "full";
+  /** Show Close Button */
   showCloseButton?: boolean;
 }
 
 const sizeClasses = {
+  /** Sm */
   sm: "max-w-md",
+  /** Md */
   md: "max-w-lg",
+  /** Lg */
   lg: "max-w-2xl",
+  /** Xl */
   xl: "max-w-4xl",
+  /** Full */
   full: "max-w-7xl",
 };
+
+/**
+ * Function: Form Modal
+ */
+/**
+ * Performs form modal operation
+ *
+ * @returns {any} The formmodal result
+ *
+ * @example
+ * FormModal();
+ */
+
+/**
+ * Performs form modal operation
+ *
+ * @returns {any} The formmodal result
+ *
+ * @example
+ * FormModal();
+ */
 
 export function FormModal({
   isOpen,
@@ -30,6 +77,22 @@ export function FormModal({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();

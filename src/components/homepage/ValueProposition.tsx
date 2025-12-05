@@ -1,3 +1,30 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/ValueProposition
+ * @description This file contains the ValueProposition component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
+ * Performs value proposition operation
+ *
+ * @returns {any} The valueproposition result
+ *
+ * @example
+ * ValueProposition();
+ */
+
+/**
+ * Performs value proposition operation
+ *
+ * @returns {any} The valueproposition result
+ *
+ * @example
+ * ValueProposition();
+ */
+
 export function ValueProposition() {
   return (
     <section
@@ -86,11 +113,39 @@ export function ValueProposition() {
   );
 }
 
+/**
+ * ValuePropItemProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ValuePropItemProps
+ */
 interface ValuePropItemProps {
+  /** Icon */
   icon: React.ReactNode;
+  /** Text */
   text: string;
+  /** Color Class */
   colorClass: string;
 }
+
+/**
+ * Function: Value Prop Item
+ */
+/**
+ * Performs value prop item operation
+ *
+ * @param {ValuePropItemProps} { icon, text, colorClass } - The { icon, text, color class }
+ *
+ * @returns {any} The valuepropitem result
+ */
+
+/**
+ * Performs value prop item operation
+ *
+ * @param {ValuePropItemProps} { icon, text, colorClass } - The { icon, text, color class }
+ *
+ * @returns {any} The valuepropitem result
+ */
 
 function ValuePropItem({ icon, text, colorClass }: ValuePropItemProps) {
   return (

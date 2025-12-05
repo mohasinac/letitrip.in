@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/AuthGuard
+ * @description This file contains the AuthGuard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,10 +14,20 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { unauthorized, forbidden } from "@/lib/error-redirects";
 
+/**
+ * AuthGuardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuthGuardProps
+ */
 interface AuthGuardProps {
+  /** Children */
   children: React.ReactNode;
+  /** Require Auth */
   requireAuth?: boolean;
+  /** Redirect To */
   redirectTo?: string;
+  /** Allowed Roles */
   allowedRoles?: string[];
 }
 

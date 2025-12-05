@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/orders/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ordersSieveConfig } from "@/app/api/lib/sieve/config";
@@ -13,12 +22,19 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for orders
 const ordersConfig = {
   ...ordersSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** User Id */
     userId: "user_id",
+    /** Shop Id */
     shopId: "shop_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Payment Status */
     paymentStatus: "payment_status",
+    /** Total */
     total: "total_amount",
   } as Record<string, string>,
 };
@@ -26,15 +42,39 @@ const ordersConfig = {
 /**
  * Transform order document to API response format
  */
+/**
+ * Transforms order
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformorder result
+ */
+
+/**
+ * Transforms order
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformorder result
+ */
+
 function transformOrder(id: string, data: any) {
   return {
     id,
     ...data,
+    /** User Id */
     userId: data.user_id,
+    /** Shop Id */
     shopId: data.shop_id,
+    /** Payment Status */
     paymentStatus: data.payment_status,
+    /** Total Amount */
     totalAmount: data.total_amount,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -49,6 +89,32 @@ function transformOrder(id: string, data: any) {
  * - Seller: Orders for their shop(s)
  * - Admin: All orders
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -57,6 +123,7 @@ export async function GET(request: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -65,8 +132,11 @@ export async function GET(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -87,12 +157,19 @@ export async function GET(request: NextRequest) {
     } else if (role === "seller") {
       if (!shopId) {
         return NextResponse.json({
+          /** Success */
           success: true,
+          /** Data */
           data: [],
+          /** Pagination */
           pagination: {
+            /** Page */
             page: 1,
+            /** Page Size */
             pageSize: sieveQuery.pageSize,
+            /** Total */
             total: 0,
+            /** Total Pages */
             totalPages: 0,
           },
         });
@@ -109,12 +186,19 @@ export async function GET(request: NextRequest) {
       query = query.where("user_id", "==", user!.uid);
     } else {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: [],
+        /** Pagination */
         pagination: {
+          /** Page */
           page: 1,
+          /** Page Size */
           pageSize: sieveQuery.pageSize,
+          /** Total */
           total: 0,
+          /** Total Pages */
           totalPages: 0,
         },
       });
@@ -155,6 +239,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -173,12 +277,17 @@ export async function GET(request: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -195,6 +304,32 @@ export async function GET(request: NextRequest) {
  * POST /api/orders
  * Create order (authenticated users only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
@@ -212,7 +347,9 @@ export async function POST(request: NextRequest) {
       user_id: user.uid,
       shop_id,
       items,
+      /** Amount */
       amount: Number(amount),
+      /** Status */
       status: "pending",
       created_at: now,
       updated_at: now,

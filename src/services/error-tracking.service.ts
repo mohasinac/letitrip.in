@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/error-tracking.service
+ * @description This file contains service functions for error-tracking operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Error Tracking Service
  *
  * Provides centralized error tracking, monitoring, and reporting capabilities.
@@ -22,52 +31,114 @@ import {
 // Types
 // ============================================================================
 
+/**
+ * ErrorStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorStats
+ */
 export interface ErrorStats {
+  /** Total Errors */
   totalErrors: number;
+  /** Errors By Severity */
   errorsBySeverity: Record<ErrorSeverity, number>;
+  /** Errors By Component */
   errorsByComponent: Record<string, number>;
   errorRate: number; // errors per minute
+  /** Affected Users */
   affectedUsers: Set<string>;
+  /** Top Errors */
   topErrors: ErrorSummary[];
+  /** Time Range */
   timeRange: {
+    /** Start */
     start: Date;
+    /** End */
     end: Date;
   };
 }
 
+/**
+ * ErrorSummary interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorSummary
+ */
 export interface ErrorSummary {
+  /** Message */
   message: string;
+  /** Count */
   count: number;
+  /** Last Occurrence */
   lastOccurrence: Date;
+  /** First Occurrence */
   firstOccurrence: Date;
+  /** Severity */
   severity: ErrorSeverity;
+  /** Affected Components */
   affectedComponents: string[];
+  /** Affected Users */
   affectedUsers: string[];
+  /** Stack Trace */
   stackTrace?: string;
 }
 
+/**
+ * ErrorTrend interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorTrend
+ */
 export interface ErrorTrend {
+  /** Timestamp */
   timestamp: Date;
+  /** Count */
   count: number;
+  /** Severity */
   severity: ErrorSeverity;
 }
 
+/**
+ * ErrorFilter interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorFilter
+ */
 export interface ErrorFilter {
+  /** Severity */
   severity?: ErrorSeverity[];
+  /** Component */
   component?: string[];
+  /** User Id */
   userId?: string;
+  /** Start Date */
   startDate?: Date;
+  /** End Date */
   endDate?: Date;
+  /** Limit */
   limit?: number;
 }
 
+/**
+ * ErrorAlert interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorAlert
+ */
 export interface ErrorAlert {
+  /** Id */
   id: string;
+  /** Type */
   type: "rate" | "severity" | "user-impact";
+  /** Threshold */
   threshold: number;
+  /** Current Value */
   currentValue: number;
+  /** Message */
   message: string;
+  /** Timestamp */
   timestamp: Date;
+  /** Metadata */
   metadata?: Record<string, any>;
 }
 
@@ -75,6 +146,12 @@ export interface ErrorAlert {
 // Error Tracking Service
 // ============================================================================
 
+/**
+ * ErrorTrackingService class
+ * 
+ * @class
+ * @description Description of ErrorTrackingService class functionality
+ */
 class ErrorTrackingService {
   private errorMap: Map<string, ErrorSummary> = new Map();
   private errorTrends: ErrorTrend[] = [];
@@ -114,23 +191,34 @@ class ErrorTrackingService {
       }
     } else {
       this.errorMap.set(errorKey, {
+        /** Message */
         message: error.message,
+        /** Count */
         count: 1,
+        /** Last Occurrence */
         lastOccurrence: now,
+        /** First Occurrence */
         firstOccurrence: now,
+        /** Severity */
         severity: error.severity,
+        /** Affected Components */
         affectedComponents: error.context.component
           ? [error.context.component]
           : [],
+        /** Affected Users */
         affectedUsers: error.context.userId ? [error.context.userId] : [],
+        /** Stack Trace */
         stackTrace: error.stack,
       });
     }
 
     // Add to trends
     this.errorTrends.push({
+      /** Timestamp */
       timestamp: now,
+      /** Count */
       count: 1,
+      /** Severity */
       severity: error.severity,
     });
 
@@ -182,6 +270,28 @@ class ErrorTrackingService {
     });
 
     // Calculate error rate (errors per minute)
+    /**
+     * Performs time range minutes operation
+     *
+     * @param {any} [end.getTime() - start.getTime()) / 60000;
+    const errorRate] - The end.get time() - start.get time()) / 60000;
+    const error rate
+     * @param {any} t - The t
+     *
+     * @returns {any} The timerangeminutes result
+     */
+
+    /**
+     * Performs time range minutes operation
+     *
+     * @param {any} [end.getTime() - start.getTime()) / 60000;
+    const errorRate] - The end.get time() - start.get time()) / 60000;
+    const error rate
+     * @param {any} t - The t
+     *
+     * @returns {any} The timerangeminutes result
+     */
+
     const timeRangeMinutes = (end.getTime() - start.getTime()) / 60000;
     const errorRate =
       relevantTrends.reduce((sum, t) => sum + t.count, 0) / timeRangeMinutes;
@@ -193,12 +303,14 @@ class ErrorTrackingService {
       .slice(0, 10);
 
     return {
+      /** Total Errors */
       totalErrors: relevantTrends.reduce((sum, t) => sum + t.count, 0),
       errorsBySeverity,
       errorsByComponent,
       errorRate,
       affectedUsers,
       topErrors,
+      /** Time Range */
       timeRange: { start, end },
     };
   }
@@ -247,12 +359,16 @@ class ErrorTrackingService {
    * Get error trends over time
    */
   getTrends(
+    /** Interval */
     interval: "minute" | "hour" | "day" = "hour",
     limit = 24,
   ): ErrorTrend[] {
     const intervalMsMap = {
+      /** Minute */
       minute: 60000,
+      /** Hour */
       hour: 3600000,
+      /** Day */
       day: 86400000,
     };
     const intervalMs = intervalMsMap[interval];
@@ -267,8 +383,11 @@ class ErrorTrackingService {
         existing.count += trend.count;
       } else {
         buckets.set(bucketKey, {
+          /** Timestamp */
           timestamp: new Date(bucketKey),
+          /** Count */
           count: trend.count,
+          /** Severity */
           severity: trend.severity,
         });
       }
@@ -329,14 +448,21 @@ class ErrorTrackingService {
     // JSON format
     return JSON.stringify(
       {
+        /** Export Date */
         exportDate: new Date().toISOString(),
+        /** Total Errors */
         totalErrors: errors.reduce((sum, e) => sum + e.count, 0),
+        /** Unique Errors */
         uniqueErrors: errors.length,
+        /** Errors */
         errors: errors.map((e) => ({
           ...e,
+          /** First Occurrence */
           firstOccurrence: e.firstOccurrence.toISOString(),
+          /** Last Occurrence */
           lastOccurrence: e.lastOccurrence.toISOString(),
         })),
+        /** Stats */
         stats: this.getStats(),
       },
       null,
@@ -376,11 +502,17 @@ class ErrorTrackingService {
     const errorCount = recentErrors.reduce((sum, t) => sum + t.count, 0);
     if (errorCount > this.ERROR_RATE_THRESHOLD) {
       this.addAlert({
+        /** Id */
         id: `rate-${Date.now()}`,
+        /** Type */
         type: "rate",
+        /** Threshold */
         threshold: this.ERROR_RATE_THRESHOLD,
+        /** Current Value */
         currentValue: errorCount,
+        /** Message */
         message: `High error rate detected: ${errorCount} errors in the last minute`,
+        /** Timestamp */
         timestamp: now,
       });
     }
@@ -391,11 +523,17 @@ class ErrorTrackingService {
     );
     if (criticalErrors.length >= this.CRITICAL_ERROR_THRESHOLD) {
       this.addAlert({
+        /** Id */
         id: `critical-${Date.now()}`,
+        /** Type */
         type: "severity",
+        /** Threshold */
         threshold: this.CRITICAL_ERROR_THRESHOLD,
+        /** Current Value */
         currentValue: criticalErrors.length,
+        /** Message */
         message: `Critical error detected: ${criticalErrors.length} critical errors in the last minute`,
+        /** Timestamp */
         timestamp: now,
       });
     }
@@ -410,12 +548,19 @@ class ErrorTrackingService {
 
     if (affectedUsers.size >= this.USER_IMPACT_THRESHOLD) {
       this.addAlert({
+        /** Id */
         id: `users-${Date.now()}`,
+        /** Type */
         type: "user-impact",
+        /** Threshold */
         threshold: this.USER_IMPACT_THRESHOLD,
+        /** Current Value */
         currentValue: affectedUsers.size,
+        /** Message */
         message: `Multiple users affected: ${affectedUsers.size} unique users experiencing errors`,
+        /** Timestamp */
         timestamp: now,
+        /** Metadata */
         metadata: { userCount: affectedUsers.size },
       });
     }
@@ -461,6 +606,28 @@ export const errorTrackingService = new ErrorTrackingService();
  * Initialize error tracking integration
  * Call this once at app startup
  */
+/**
+ * Performs initialize error tracking operation
+ *
+ * @returns {void} No return value
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * initializeErrorTracking();
+ */
+
+/**
+ * Performs initialize error tracking operation
+ *
+ * @returns {void} No return value
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * initializeErrorTracking();
+ */
+
 export function initializeErrorTracking(): void {
   // Hook into ErrorLogger to automatically track errors
   const originalLog = ErrorLogger.log.bind(ErrorLogger);
@@ -471,10 +638,15 @@ export function initializeErrorTracking(): void {
 
     // Track in error tracking service
     const loggedError = {
+      /** Message */
       message: typeof error === "string" ? error : error.message,
+      /** Severity */
       severity: severity || ErrorSeverity.MEDIUM,
+      /** Context */
       context: context || {},
+      /** Timestamp */
       timestamp: new Date(),
+      /** Stack */
       stack: typeof error === "string" ? undefined : error.stack,
     };
 
@@ -498,6 +670,32 @@ export function initializeErrorTracking(): void {
 /**
  * Get a human-readable error summary
  */
+/**
+ * Retrieves error summary text
+ *
+ * @param {ErrorStats} stats - The stats
+ *
+ * @returns {string} The errorsummarytext result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getErrorSummaryText(stats);
+ */
+
+/**
+ * Retrieves error summary text
+ *
+ * @param {ErrorStats} stats - The stats
+ *
+ * @returns {string} The errorsummarytext result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getErrorSummaryText(stats);
+ */
+
 export function getErrorSummaryText(stats: ErrorStats): string {
   const lines = [
     `Error Summary (${stats.timeRange.start.toLocaleString()} - ${stats.timeRange.end.toLocaleString()})`,
@@ -526,6 +724,28 @@ export function getErrorSummaryText(stats: ErrorStats): string {
 /**
  * Check if error tracking is healthy
  */
+/**
+ * Checks if error tracking healthy
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isErrorTrackingHealthy();
+ */
+
+/**
+ * Checks if error tracking healthy
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isErrorTrackingHealthy();
+ */
+
 export function isErrorTrackingHealthy(): boolean {
   const stats = errorTrackingService.getStats();
   const alerts = errorTrackingService.getAlerts();

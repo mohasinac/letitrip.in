@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/SellerSidebar
+ * @description This file contains the SellerSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -20,101 +29,196 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Badge */
   badge?: string;
+  /** Children */
   children?: NavItem[];
 }
 
 const navigation: NavItem[] = [
   {
+    /** Title */
     title: "Dashboard",
+    /** Href */
     href: "/seller",
+    /** Icon */
     icon: LayoutDashboard,
   },
   {
+    /** Title */
     title: "My Shops",
+    /** Href */
     href: "/seller/my-shops",
+    /** Icon */
     icon: Store,
   },
   {
+    /** Title */
     title: "Products",
+    /** Href */
     href: "/seller/products",
+    /** Icon */
     icon: Package,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Products",
+        /** Href */
         href: "/seller/products",
+        /** Icon */
         icon: Package,
       },
       {
+        /** Title */
         title: "Add Product",
+        /** Href */
         href: "/seller/products/add",
+        /** Icon */
         icon: Package,
       },
     ],
   },
   {
+    /** Title */
     title: "Auctions",
+    /** Href */
     href: "/seller/auctions",
+    /** Icon */
     icon: Gavel,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Auctions",
+        /** Href */
         href: "/seller/auctions",
+        /** Icon */
         icon: Gavel,
       },
       {
+        /** Title */
         title: "Create Auction",
+        /** Href */
         href: "/seller/auctions/create",
+        /** Icon */
         icon: Gavel,
       },
     ],
   },
   {
+    /** Title */
     title: "Orders",
+    /** Href */
     href: "/seller/orders",
+    /** Icon */
     icon: ShoppingCart,
   },
   {
+    /** Title */
     title: "Returns & Refunds",
+    /** Href */
     href: "/seller/returns",
+    /** Icon */
     icon: RotateCcw,
   },
   {
+    /** Title */
     title: "Revenue",
+    /** Href */
     href: "/seller/revenue",
+    /** Icon */
     icon: DollarSign,
   },
   {
+    /** Title */
     title: "Analytics",
+    /** Href */
     href: "/seller/analytics",
+    /** Icon */
     icon: BarChart3,
   },
   {
+    /** Title */
     title: "Reviews",
+    /** Href */
     href: "/seller/reviews",
+    /** Icon */
     icon: Star,
   },
   {
+    /** Title */
     title: "Support Tickets",
+    /** Href */
     href: "/seller/support-tickets",
+    /** Icon */
     icon: Ticket,
   },
   {
+    /** Title */
     title: "Coupons",
+    /** Href */
     href: "/seller/coupons",
+    /** Icon */
     icon: Ticket,
   },
 ];
+
+/**
+ * Function: Seller Sidebar
+ */
+/**
+ * Performs seller sidebar operation
+ *
+ * @returns {any} The sellersidebar result
+ *
+ * @example
+ * SellerSidebar();
+ */
+
+/**
+ * Performs seller sidebar operation
+ *
+ * @returns {any} The sellersidebar result
+ *
+ * @example
+ * SellerSidebar();
+ */
 
 export function SellerSidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
 
   const toggleItem = (title: string) => {
     setExpandedItems((prev) =>
@@ -123,6 +227,22 @@ export function SellerSidebar() {
         : [...prev, title],
     );
   };
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
@@ -154,6 +274,7 @@ export function SellerSidebar() {
         if (parentMatches || matchingChildren.length > 0) {
           return {
             ...item,
+            /** Children */
             children:
               matchingChildren.length > 0 ? matchingChildren : item.children,
           };
@@ -175,6 +296,22 @@ export function SellerSidebar() {
   }, [searchQuery, filterNavigation]);
 
   // Highlight matching text
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
   const highlightText = (text: string) => {
     if (!searchQuery.trim()) return text;
 

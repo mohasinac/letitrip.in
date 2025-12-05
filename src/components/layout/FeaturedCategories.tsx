@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedCategories
+ * @description This file contains the FeaturedCategories component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -21,14 +30,22 @@ import {
 } from "lucide-react";
 
 const iconMap: Record<string, any> = {
+  /** Layers */
   layers: Layers,
+  /** Heart */
   heart: Heart,
+  /** Gem */
   gem: Gem,
+  /** Mountain */
   mountain: Mountain,
+  /** Headphones */
   headphones: Headphones,
   "gamepad-2": Gamepad2,
+  /** Shirt */
   shirt: Shirt,
+  /** Music */
   music: Music,
+  /** Package */
   package: Package,
   "shopping-bag": ShoppingBag,
 };
@@ -41,6 +58,22 @@ export default function FeaturedCategories() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const fetchCategories = async () => {
       try {
         const response = await categoriesService.getFeatured();
@@ -50,6 +83,7 @@ export default function FeaturedCategories() {
         setCategories(data.slice(0, 9));
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "FeaturedCategories.fetchCategories",
         });
       } finally {
@@ -62,6 +96,22 @@ export default function FeaturedCategories() {
 
   // Show first 9 categories by default
   const visibleCategories = categories;
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {

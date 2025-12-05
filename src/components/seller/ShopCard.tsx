@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ShopCard
+ * @description This file contains the ShopCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -15,21 +24,41 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * ShopCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopCardProps
+ */
 interface ShopCardProps {
+  /** Shop */
   shop: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Description */
     description?: string;
+    /** Logo */
     logo: string | null;
+    /** Is Verified */
     isVerified: boolean;
+    /** Featured */
     featured: boolean;
+    /** Is Banned */
     isBanned: boolean;
+    /** Product Count */
     productCount?: number;
+    /** Rating */
     rating?: number;
+    /** Review Count */
     reviewCount?: number;
   };
+  /** Show Actions */
   showActions?: boolean;
+  /** Variant */
   variant?: "default" | "compact";
 }
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/EmailVerificationModal
+ * @description This file contains the EmailVerificationModal component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -6,11 +15,22 @@ import { otpService } from "@/services/otp.service";
 import { useEffect, useState } from "react";
 import { OTPInput } from "./OTPInput";
 
+/**
+ * EmailVerificationModalProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailVerificationModalProps
+ */
 interface EmailVerificationModalProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** User Id */
   userId: string;
+  /** Email */
   email: string;
+  /** On Verified */
   onVerified: () => void;
 }
 
@@ -25,6 +45,24 @@ interface EmailVerificationModalProps {
  * - Dark mode support
  * - Mobile responsive
  */
+/**
+ * Performs email verification modal operation
+ *
+ * @returns {any} The emailverificationmodal result
+ *
+ * @example
+ * EmailVerificationModal();
+ */
+
+/**
+ * Performs email verification modal operation
+ *
+ * @returns {any} The emailverificationmodal result
+ *
+ * @example
+ * EmailVerificationModal();
+ */
+
 export function EmailVerificationModal({
   isOpen,
   onClose,
@@ -41,9 +79,12 @@ export function EmailVerificationModal({
   const [resendCountdown, setResendCountdown] = useState(0);
 
   const { isLoading: sending, execute: executeSend } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "EmailVerificationModal.sendOTP",
+        /** Metadata */
         metadata: { userId, email },
       });
       setError("Failed to send OTP. Please try again.");
@@ -51,9 +92,12 @@ export function EmailVerificationModal({
   });
 
   const { isLoading: verifying, execute: executeVerify } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "EmailVerificationModal.verifyOTP",
+        /** Metadata */
         metadata: { userId, email },
       });
       setError("Verification failed. Please try again.");
@@ -97,6 +141,22 @@ export function EmailVerificationModal({
     return () => clearInterval(timer);
   }, [expiresAt]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const sendOTP = async () => {
     setError("");
     setSuccess("");
@@ -105,7 +165,9 @@ export function EmailVerificationModal({
     await executeSend(async () => {
       const result = await otpService.sendOTP({
         userId,
+        /** Type */
         type: "email",
+        /** Destination */
         destination: email,
       });
 
@@ -116,6 +178,22 @@ export function EmailVerificationModal({
       setSuccess("OTP sent to your email!");
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const verifyOTP = async () => {
     if (otp.length !== 6) {
@@ -129,7 +207,9 @@ export function EmailVerificationModal({
     await executeVerify(async () => {
       const result = await otpService.verifyOTP({
         userId,
+        /** Type */
         type: "email",
+        /** Destination */
         destination: email,
         otp,
       });
@@ -146,6 +226,22 @@ export function EmailVerificationModal({
       }
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleResend = async () => {
     if (!canResend) return;
@@ -258,6 +354,7 @@ export function EmailVerificationModal({
           onClick={verifyOTP}
           disabled={verifying || otp.length !== 6}
           className="w-full px-4 py-3 text-white bg-primary-600 rounded-lg hover:bg-primary-700 
+            /** Disabled */
             disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed
             transition-colors duration-200"
         >
@@ -268,6 +365,7 @@ export function EmailVerificationModal({
         <button
           onClick={onClose}
           className="w-full mt-3 px-4 py-2 text-gray-700 dark:text-gray-300 
+            /** Hover */
             hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
         >
           Cancel

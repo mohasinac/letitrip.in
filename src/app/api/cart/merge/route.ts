@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/cart/merge/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
@@ -6,6 +15,32 @@ import { getCurrentUser } from "../../lib/session";
  * POST /api/cart/merge
  * Merge guest cart items into user cart after login
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -23,15 +58,24 @@ export async function POST(request: NextRequest) {
     if (!Array.isArray(guestCartItems) || guestCartItems.length === 0) {
       // No items to merge, return empty cart
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: {
+          /** Items */
           items: [],
+          /** Item Count */
           itemCount: 0,
+          /** Subtotal */
           subtotal: 0,
+          /** Discount */
           discount: 0,
+          /** Tax */
           tax: 0,
+          /** Total */
           total: 0,
         },
+        /** Message */
         message: "No items to merge",
       });
     }
@@ -80,6 +124,7 @@ export async function POST(request: NextRequest) {
           );
 
           await existingDoc.ref.update({
+            /** Quantity */
             quantity: newQuantity,
             updated_at: now,
           });
@@ -88,7 +133,9 @@ export async function POST(request: NextRequest) {
           await Collections.cart().add({
             user_id: user.id,
             product_id: productId,
+            /** Quantity */
             quantity: Math.min(quantity, product.stock_count),
+            /** Variant */
             variant: variantId || null,
             added_at: now,
             updated_at: now,
@@ -126,19 +173,33 @@ export async function POST(request: NextRequest) {
         const shop = shopDoc.data();
 
         return {
+          /** Id */
           id: doc.id,
+          /** User Id */
           userId: data.user_id,
+          /** Product Id */
           productId: data.product_id,
+          /** Product Name */
           productName: product.name,
+          /** Product Slug */
           productSlug: product.slug,
+          /** Product Image */
           productImage: product.images?.[0] || "",
+          /** Price */
           price: product.price,
+          /** Quantity */
           quantity: data.quantity,
+          /** Max Quantity */
           maxQuantity: product.stock_count || 0,
+          /** Variant Id */
           variantId: data.variant,
+          /** Shop Id */
           shopId: product.shop_id,
+          /** Shop Name */
           shopName: shop?.name || "Unknown",
+          /** Is Available */
           isAvailable: product.is_active && product.stock_count > 0,
+          /** Added At */
           addedAt: data.added_at,
         };
       }),
@@ -157,9 +218,13 @@ export async function POST(request: NextRequest) {
     const total = subtotal + shipping + tax - discount;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Items */
         items: validItems,
+        /** Item Count */
         itemCount: validItems.reduce(
           (sum: number, item: any) => sum + item.quantity,
           0,
@@ -169,6 +234,7 @@ export async function POST(request: NextRequest) {
         tax,
         total,
       },
+      /** Message */
       message: `Merged ${mergedCount} item(s)${
         skippedCount > 0 ? `, skipped ${skippedCount}` : ""
       }`,

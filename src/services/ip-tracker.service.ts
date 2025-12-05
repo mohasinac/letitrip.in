@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/ip-tracker.service
+ * @description This file contains service functions for ip-tracker operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * IP Tracker Service
  *
  * Tracks user activities and IP addresses for security and analytics.
@@ -22,14 +31,31 @@ import { logError } from "@/lib/firebase-error-logger";
 
 const { USER_ACTIVITIES } = COLLECTIONS;
 
+/**
+ * ActivityData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActivityData
+ */
 export interface ActivityData {
+  /** User Id */
   userId?: string;
+  /** Ip Address */
   ipAddress: string;
+  /** User Agent */
   userAgent?: string;
+  /** Action */
   action: ActivityAction;
+  /** Metadata */
   metadata?: Record<string, any>;
 }
 
+/**
+ * ActivityAction type
+ * 
+ * @typedef {Object} ActivityAction
+ * @description Type definition for ActivityAction
+ */
 export type ActivityAction =
   | "login"
   | "logout"
@@ -45,12 +71,27 @@ export type ActivityAction =
   | "product_created"
   | "auction_created";
 
+/**
+ * RateLimitResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RateLimitResult
+ */
 export interface RateLimitResult {
+  /** Allowed */
   allowed: boolean;
+  /** Remaining Attempts */
   remainingAttempts: number;
+  /** Reset At */
   resetAt: Date;
 }
 
+/**
+ * IPTrackerService class
+ * 
+ * @class
+ * @description Description of IPTrackerService class functionality
+ */
 class IPTrackerService {
   /**
    * Log user activity with IP address
@@ -61,21 +102,33 @@ class IPTrackerService {
       const timestamp = new Date();
 
       await activityRef.set({
+        /** Id */
         id: activityRef.id,
+        /** User Id */
         userId: data.userId || null,
+        /** Ip Address */
         ipAddress: data.ipAddress,
+        /** User Agent */
         userAgent: data.userAgent || null,
+        /** Action */
         action: data.action,
+        /** Metadata */
         metadata: data.metadata || {},
         timestamp,
+        /** Created At */
         createdAt: timestamp,
       });
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.logActivity",
+        /** Action */
         action: "log_activity",
+        /** Metadata */
         metadata: {
+          /** User Id */
           userId: data.userId,
+          /** Action */
           action: data.action,
         },
       });
@@ -87,9 +140,13 @@ class IPTrackerService {
    * Check rate limit for specific action by IP
    */
   async checkRateLimit(
+    /** Ip Address */
     ipAddress: string,
+    /** Action */
     action: ActivityAction,
+    /** Max Attempts */
     maxAttempts: number = 5,
+    /** Window Minutes */
     windowMinutes: number = 15,
   ): Promise<RateLimitResult> {
     try {
@@ -114,8 +171,11 @@ class IPTrackerService {
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.checkRateLimit",
+        /** Action */
         action: "check_rate_limit",
+        /** Metadata */
         metadata: {
           ipAddress,
           action,
@@ -123,8 +183,11 @@ class IPTrackerService {
       });
       // On error, allow the action
       return {
+        /** Allowed */
         allowed: true,
+        /** Remaining Attempts */
         remainingAttempts: maxAttempts,
+        /** Reset At */
         resetAt: new Date(Date.now() + windowMinutes * 60 * 1000),
       };
     }
@@ -134,7 +197,9 @@ class IPTrackerService {
    * Get recent activities for an IP address
    */
   async getActivitiesByIP(
+    /** Ip Address */
     ipAddress: string,
+    /** Limit */
     limit: number = 50,
   ): Promise<any[]> {
     try {
@@ -148,8 +213,11 @@ class IPTrackerService {
       return snapshot.docs.map((doc: any) => doc.data());
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.getActivitiesByIP",
+        /** Action */
         action: "get_activities_by_ip",
+        /** Metadata */
         metadata: { ipAddress },
       });
       return [];
@@ -160,7 +228,9 @@ class IPTrackerService {
    * Get recent activities for a user
    */
   async getActivitiesByUser(
+    /** User Id */
     userId: string,
+    /** Limit */
     limit: number = 50,
   ): Promise<any[]> {
     try {
@@ -174,8 +244,11 @@ class IPTrackerService {
       return snapshot.docs.map((doc: any) => doc.data());
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.getActivitiesByUser",
+        /** Action */
         action: "get_activities_by_user",
+        /** Metadata */
         metadata: { userId },
       });
       return [];
@@ -202,8 +275,11 @@ class IPTrackerService {
       return Array.from(userIds);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.getUsersFromIP",
+        /** Action */
         action: "get_users_from_ip",
+        /** Metadata */
         metadata: { ipAddress },
       });
       return [];
@@ -214,7 +290,9 @@ class IPTrackerService {
    * Get suspicious activity indicators for an IP
    */
   async getSuspiciousActivityScore(ipAddress: string): Promise<{
+    /** Score */
     score: number;
+    /** Reasons */
     reasons: string[];
   }> {
     try {
@@ -278,8 +356,11 @@ class IPTrackerService {
       return { score, reasons };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "IPTrackerService.getSuspiciousActivityScore",
+        /** Action */
         action: "get_suspicious_activity_score",
+        /** Metadata */
         metadata: { ipAddress },
       });
       return { score: 0, reasons: [] };

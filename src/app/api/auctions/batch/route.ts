@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/batch/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
@@ -6,6 +15,32 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * Fetch multiple auctions by IDs
  * Used by homepage featured sections to display admin-curated auctions
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -64,23 +99,36 @@ export async function POST(request: NextRequest) {
       .map((id) => auctions.find((a) => a.id === id || a.slug === id))
       .filter(Boolean)
       .map((a: any) => ({
+        /** Id */
         id: a.id,
         ...a,
         // Add camelCase aliases
+        /** Shop Id */
         shopId: a.shop_id,
+        /** Category Id */
         categoryId: a.category_id,
+        /** Current Bid */
         currentBid: a.current_bid,
+        /** Starting Bid */
         startingBid: a.starting_bid,
+        /** Bid Count */
         bidCount: a.bid_count,
+        /** Start Time */
         startTime: a.start_time,
+        /** End Time */
         endTime: a.end_time,
+        /** Featured */
         featured: a.is_featured,
+        /** Created At */
         createdAt: a.created_at,
+        /** Updated At */
         updatedAt: a.updated_at,
       }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: orderedAuctions,
     });
   } catch (error) {

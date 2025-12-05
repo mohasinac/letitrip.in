@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/contexts/ComparisonContext
+ * @description This file contains the ComparisonContext component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, {
@@ -14,6 +23,12 @@ import {
 } from "@/services/comparison.service";
 import { COMPARISON_CONFIG } from "@/constants/comparison";
 
+/**
+ * ComparisonContextType interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ComparisonContextType
+ */
 interface ComparisonContextType {
   /** Products in comparison */
   products: ComparisonProduct[];
@@ -41,9 +56,41 @@ const ComparisonContext = createContext<ComparisonContextType | undefined>(
   undefined,
 );
 
+/**
+ * ComparisonProviderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ComparisonProviderProps
+ */
 interface ComparisonProviderProps {
+  /** Children */
   children: React.ReactNode;
 }
+
+/**
+ * Function: Comparison Provider
+ */
+/**
+ * Performs comparison provider operation
+ *
+ * @param {ComparisonProviderProps} { children } - The { children }
+ *
+ * @returns {any} The comparisonprovider result
+ *
+ * @example
+ * ComparisonProvider({ children });
+ */
+
+/**
+ * Performs comparison provider operation
+ *
+ * @param {ComparisonProviderProps} { children } - The { children }
+ *
+ * @returns {any} The comparisonprovider result
+ *
+ * @example
+ * ComparisonProvider({ children });
+ */
 
 export function ComparisonProvider({ children }: ComparisonProviderProps) {
   const [products, setProducts] = useState<ComparisonProduct[]>([]);
@@ -55,6 +102,22 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
 
   // Listen for storage changes (for cross-tab sync)
   useEffect(() => {
+    /**
+     * Handles storage change event
+     *
+     * @param {StorageEvent} e - The e
+     *
+     * @returns {any} The handlestoragechange result
+     */
+
+    /**
+     * Handles storage change event
+     *
+     * @param {StorageEvent} e - The e
+     *
+     * @returns {any} The handlestoragechange result
+     */
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === COMPARISON_CONFIG.STORAGE_KEY) {
         setProducts(comparisonService.getComparisonProducts());
@@ -107,6 +170,7 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
       canAddMore,
       canCompare,
       count,
+      /** Max Products */
       maxProducts: COMPARISON_CONFIG.MAX_PRODUCTS,
     }),
     [
@@ -132,6 +196,28 @@ export function ComparisonProvider({ children }: ComparisonProviderProps) {
 /**
  * Hook to access comparison context
  */
+/**
+ * Custom React hook for comparison
+ *
+ * @returns {any} The usecomparison result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useComparison();
+ */
+
+/**
+ * Custom React hook for comparison
+ *
+ * @returns {any} The usecomparison result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useComparison();
+ */
+
 export function useComparison(): ComparisonContextType {
   const context = useContext(ComparisonContext);
   if (context === undefined) {

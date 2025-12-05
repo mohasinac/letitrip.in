@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/reviews/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -22,6 +31,35 @@ const REVIEW_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
 ];
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -125,17 +163,26 @@ export async function POST(request: NextRequest) {
           user_name: `${DEMO_PREFIX}${reviewer.name}`,
           user_avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop`,
           rating,
+          /** Title */
           title: REVIEW_TITLES[r % REVIEW_TITLES.length],
+          /** Comment */
           comment: REVIEW_COMMENTS[r % REVIEW_COMMENTS.length],
+          /** Pros */
           pros: ["Great quality", "Fast shipping", "Authentic product"].slice(
             0,
             1 + Math.floor(Math.random() * 2),
           ),
+          /** Cons */
           cons: rating < 4 ? ["Packaging could be better"] : [],
+          /** Images */
           images: reviewImages,
+          /** Video */
           video: reviewVideo,
+          /** Status */
           status: "published",
+          /** Is Approved */
           isApproved: true,
+          /** Verified Purchase */
           verifiedPurchase: Math.random() > 0.2,
           is_verified: Math.random() > 0.2,
           is_featured: Math.random() > 0.9,
@@ -144,6 +191,7 @@ export async function POST(request: NextRequest) {
           seller_response:
             Math.random() > 0.7
               ? {
+                  /** Message */
                   message:
                     "Thank you for your review! We appreciate your feedback.",
                   responded_at: timestamp,
@@ -166,9 +214,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "reviews",
+      /** Data */
       data: {
+        /** Count */
         count: totalReviews,
       },
     });

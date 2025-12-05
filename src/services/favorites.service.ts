@@ -1,19 +1,47 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/favorites.service
+ * @description This file contains service functions for favorites operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { logServiceError } from "@/lib/error-logger";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { apiService } from "./api.service";
 
+/**
+ * FavoriteItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FavoriteItem
+ */
 interface FavoriteItem {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
+  /** Product Id */
   productId: string;
+  /** Product */
   product: ProductCardFE;
+  /** Added At */
   addedAt: Date;
 }
 
+/**
+ * FavoritesService class
+ * 
+ * @class
+ * @description Description of FavoritesService class functionality
+ */
 class FavoritesService {
   // Get user favorites by type
   async listByType(type: "product" | "shop" | "category" | "auction"): Promise<{
+    /** Success */
     success: boolean;
+    /** Data */
     data: FavoriteItem[];
   }> {
     try {
@@ -38,7 +66,9 @@ class FavoritesService {
 
   // Remove favorite by type and ID
   async removeByType(
+    /** Type */
     type: "product" | "shop" | "category" | "auction",
+    /** Item Id */
     itemId: string
   ): Promise<{ success: boolean }> {
     try {
@@ -66,6 +96,7 @@ class FavoritesService {
 
   // Check if product is favorited
   async isFavorited(
+    /** Product Id */
     productId: string
   ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
     return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
@@ -144,6 +175,7 @@ class FavoritesService {
       const result = await apiService.post<{ synced: number }>(
         "/favorites/sync",
         {
+          /** Product Ids */
           productIds: guestFavorites,
         }
       );

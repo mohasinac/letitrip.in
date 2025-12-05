@@ -1,16 +1,37 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/guide/prohibited/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { AlertTriangle, ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Prohibited Items | Let It Rip",
+  /** Description */
   description:
     "List of items that cannot be listed or sold on Let It Rip platform",
 };
 
+/**
+ * Performs prohibited items page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ProhibitedItemsPage();
+ */
 export default function ProhibitedItemsPage() {
   const prohibitedCategories = [
     {
+      /** Category */
       category: "Illegal & Restricted Items",
+      /** Items */
       items: [
         "Weapons, firearms, and ammunition",
         "Explosives and fireworks",
@@ -21,7 +42,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Adult Content",
+      /** Items */
       items: [
         "Adult videos, magazines, and materials",
         "Escort services",
@@ -30,7 +53,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Counterfeit & Replicas",
+      /** Items */
       items: [
         "Counterfeit designer goods",
         "Fake branded products",
@@ -40,7 +65,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Regulated Items",
+      /** Items */
       items: [
         "Prescription medications",
         "Medical devices without approval",
@@ -51,7 +78,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Hazardous Materials",
+      /** Items */
       items: [
         "Toxic or hazardous chemicals",
         "Flammable liquids and gases",
@@ -61,7 +90,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Services & Virtual Items",
+      /** Items */
       items: [
         "Event tickets (resale above face value)",
         "Lottery tickets and gambling items",
@@ -71,7 +102,9 @@ export default function ProhibitedItemsPage() {
       ],
     },
     {
+      /** Category */
       category: "Offensive Items",
+      /** Items */
       items: [
         "Hate speech materials",
         "Items promoting violence",

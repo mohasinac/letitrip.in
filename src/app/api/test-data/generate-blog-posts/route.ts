@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/generate-blog-posts/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,6 +14,35 @@ import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,7 +93,9 @@ export async function POST(req: NextRequest) {
       // Generate rich content with multiple sections
       const sections = faker.helpers.multiple(
         () => ({
+          /** Heading */
           heading: faker.lorem.sentence({ min: 2, max: 5 }).replace(/\.$/, ""),
+          /** Content */
           content: faker.lorem.paragraphs(2, "\n\n"),
         }),
         { count: { min: 3, max: 5 } }
@@ -109,25 +149,42 @@ ${faker.lorem.paragraph()}
           : "archived";
 
       const blogPostData = {
+        /** Id */
         id: `${PREFIX}blog_post_${timestamp}_${i + 1}`,
+        /** Title */
         title: title,
+        /** Slug */
         slug: slug,
+        /** Excerpt */
         excerpt: faker.lorem.paragraph(),
+        /** Content */
         content: content,
         featuredImage: `https://source.unsplash.com/800x450/?${category.toLowerCase()},blog&sig=${timestamp}${i}`,
+        /** Author */
         author: {
+          /** Id */
           id: `${PREFIX}admin_001`,
+          /** Name */
           name: faker.person.fullName(),
+          /** Avatar */
           avatar: faker.image.avatar(),
         },
+        /** Category */
         category: category,
+        /** Tags */
         tags: tags,
+        /** Status */
         status: status,
         featured: Math.random() < 0.3, // 30% featured (consolidated from featured + showOnHomepage)
+        /** Published At */
         publishedAt: status === "published" ? publishedAt.toISOString() : null,
+        /** Created At */
         createdAt: publishedAt.toISOString(),
+        /** Updated At */
         updatedAt: new Date().toISOString(),
+        /** Views */
         views: faker.number.int({ min: 0, max: 5000 }),
+        /** Likes */
         likes: faker.number.int({ min: 0, max: 500 }),
       };
 
@@ -136,24 +193,36 @@ ${faker.lorem.paragraph()}
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Count */
       count: blogPosts.length,
+      /** Posts */
       posts: blogPosts.map((post) => ({
+        /** Id */
         id: post.id,
+        /** Title */
         title: post.title,
+        /** Slug */
         slug: post.slug,
+        /** Category */
         category: post.category,
+        /** Status */
         status: post.status,
+        /** Featured */
         featured: post.featured,
       })),
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.testData.generateBlogPosts",
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to generate blog posts",
       },
       { status: 500 }

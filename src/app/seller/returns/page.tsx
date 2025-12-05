@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/returns/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -21,9 +30,18 @@ import { AlertTriangle, CheckCircle, Eye, Filter, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * ReturnsData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReturnsData
+ */
 interface ReturnsData {
+  /** Returns */
   returns: ReturnCardFE[];
+  /** Total Pages */
   totalPages: number;
+  /** Total Returns */
   totalReturns: number;
 }
 
@@ -31,15 +49,33 @@ export default function SellerReturnsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const { data, isLoading, execute } = useLoadingState<ReturnsData>({
+    /** Initial Data */
     initialData: { returns: [], totalPages: 1, totalReturns: 0 },
   });
 
   // Filter state with URL sync
   const {
+    /** Applied Filters */
     appliedFilters: filterValues,
     updateFilters,
     applyFilters,
   } = useFilters<Partial<ReturnFiltersFE>>({}, { syncWithUrl: true });
+
+  /**
+   * Sets filter values
+   *
+   * @param {Partial<ReturnFiltersFE>} filters - The filters
+   *
+   * @returns {any} The setfiltervalues result
+   */
+
+  /**
+   * Sets filter values
+   *
+   * @param {Partial<ReturnFiltersFE>} filters - The filters
+   *
+   * @returns {any} The setfiltervalues result
+   */
 
   const setFilterValues = (filters: Partial<ReturnFiltersFE>) => {
     updateFilters(filters);
@@ -59,12 +95,17 @@ export default function SellerReturnsPage() {
     try {
       const response = await returnsService.list({
         ...filterValues,
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: 20,
       });
       return {
+        /** Returns */
         returns: response.data || [],
+        /** Total Pages */
         totalPages: Math.ceil((response.count || 0) / 20),
+        /** Total Returns */
         totalReturns: response.count || 0,
       };
     } catch (error) {
@@ -76,6 +117,26 @@ export default function SellerReturnsPage() {
   useEffect(() => {
     execute(loadReturns);
   }, [execute, loadReturns]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleApprove = async (id: string) => {
     try {
@@ -89,11 +150,35 @@ export default function SellerReturnsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {string} [notes] - The notes
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {string} [notes] - The notes
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleReject = async (id: string, notes?: string) => {
     try {
       setProcessingId(id);
       await returnsService.approve(id, {
+        /** Approved */
         approved: false,
+        /** Notes */
         notes: notes || "Return request rejected by seller",
       });
       await execute(loadReturns);
@@ -103,6 +188,22 @@ export default function SellerReturnsPage() {
       setProcessingId(null);
     }
   };
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -118,18 +219,38 @@ export default function SellerReturnsPage() {
         return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
       case "escalated":
         return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300";
+      /** Default */
       default:
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
     }
   };
 
+  /**
+   * Retrieves reason label
+   *
+   * @param {string} reason - The reason
+   *
+   * @returns {string} The reasonlabel result
+   */
+
+  /**
+   * Retrieves reason label
+   *
+   * @param {string} reason - The reason
+   *
+   * @returns {string} The reasonlabel result
+   */
+
   const getReasonLabel = (reason: string) => {
     const labels: Record<string, string> = {
+      /** Defective */
       defective: "Defective/Damaged",
       "wrong-item": "Wrong Item",
       "not-as-described": "Not as Described",
+      /** Damaged */
       damaged: "Damaged",
       "changed-mind": "Changed Mind",
+      /** Other */
       other: "Other",
     };
     return labels[reason] || reason;
@@ -248,6 +369,7 @@ export default function SellerReturnsPage() {
                                   }
                                   className="text-sm text-indigo-600 hover:text-indigo-900 font-mono"
                                 >
+                                  /** Order */
                                   Order: {returnItem.orderId.substring(0, 8)}
                                 </button>
                               </div>
@@ -266,6 +388,7 @@ export default function SellerReturnsPage() {
                                   <AlertTriangle className="w-4 h-4 text-orange-500" />
                                 )}
                                 <span className="text-gray-500 dark:text-gray-400">
+                                  /** Reason */
                                   Reason:
                                 </span>
                                 <span className="text-gray-900 dark:text-white">
@@ -274,6 +397,7 @@ export default function SellerReturnsPage() {
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400">
+                                  /** Amount */
                                   Amount:
                                 </span>
                                 <span className="font-semibold text-gray-900 dark:text-white">
@@ -286,6 +410,7 @@ export default function SellerReturnsPage() {
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400">
+                                  /** Date */
                                   Date:
                                 </span>
                                 <DateDisplay

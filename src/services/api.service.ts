@@ -1,28 +1,66 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/api.service
+ * @description This file contains service functions for api operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { DEFAULT_CACHE_CONFIG } from "@/config/cache.config";
 import { trackAPIError, trackCacheHit, trackSlowAPI } from "@/lib/analytics";
 import { logError } from "@/lib/firebase-error-logger";
 
 // Cache entry type
+/**
+ * CacheEntry interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CacheEntry
+ */
 interface CacheEntry<T> {
+  /** Data */
   data: T;
+  /** Timestamp */
   timestamp: number;
+  /** Expires At */
   expiresAt: number;
 }
 
 // Cache configuration per endpoint
+/**
+ * CacheConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CacheConfig
+ */
 interface CacheConfig {
   ttl: number; // Time to live in milliseconds
   staleWhileRevalidate?: number; // Additional time to serve stale content
 }
 
 // Retry configuration
+/**
+ * RetryConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RetryConfig
+ */
 interface RetryConfig {
+  /** Max Retries */
   maxRetries: number;
   retryDelay: number; // milliseconds
+  /** Retryable Statuses */
   retryableStatuses: number[];
 }
 
 // API Service - Base HTTP client with request deduplication and stale-while-revalidate caching
+/**
+ * ApiService class
+ * 
+ * @class
+ * @description Description of ApiService class functionality
+ */
 class ApiService {
   private baseUrl: string;
   private pendingRequests: Map<string, Promise<any>>;
@@ -44,8 +82,10 @@ class ApiService {
 
     // Default retry configuration
     this.retryConfig = {
+      /** Max Retries */
       maxRetries: 3,
       retryDelay: 1000, // Start with 1 second
+      /** Retryable Statuses */
       retryableStatuses: [408, 429, 500, 502, 503, 504],
     };
 
@@ -61,7 +101,9 @@ class ApiService {
     // Load default cache configurations
     for (const [pattern, config] of Object.entries(DEFAULT_CACHE_CONFIG)) {
       this.cacheConfig.set(pattern, {
+        /** Ttl */
         ttl: config.ttl,
+        /** Stale While Revalidate */
         staleWhileRevalidate: config.staleWhileRevalidate,
       });
     }
@@ -95,7 +137,9 @@ class ApiService {
    * Check if cached data is stale but can be served while revalidating
    */
   private isStaleButUsable(
+    /** Entry */
     entry: CacheEntry<any>,
+    /** Config */
     config: CacheConfig,
   ): boolean {
     const staleUntil = entry.expiresAt + (config.staleWhileRevalidate || 0);
@@ -106,10 +150,14 @@ class ApiService {
    * Get data from cache
    */
   private getCachedData<T>(
+    /** Cache Key */
     cacheKey: string,
+    /** Config */
     config: CacheConfig | null,
   ): {
+    /** Data */
     data: T | null;
+    /** Status */
     status: "fresh" | "stale" | "miss";
   } {
     if (!config) {
@@ -141,7 +189,9 @@ class ApiService {
     const now = Date.now();
     this.cache.set(cacheKey, {
       data,
+      /** Timestamp */
       timestamp: now,
+      /** Expires At */
       expiresAt: now + config.ttl,
     });
   }
@@ -220,7 +270,9 @@ class ApiService {
    * If yes, return the existing promise to avoid duplicate requests
    */
   private async deduplicateRequest<T>(
+    /** Cache Key */
     cacheKey: string,
+    /** Request Fn */
     requestFn: () => Promise<T>,
   ): Promise<T> {
     // Check if there's already a pending request
@@ -252,8 +304,11 @@ class ApiService {
   }
 
   private async request<T>(
+    /** Endpoint */
     endpoint: string,
+    /** Options */
     options: RequestInit = {},
+    /** Attempt */
     attempt: number = 1,
   ): Promise<T> {
     // Handle server-side requests (when baseUrl is relative)
@@ -276,10 +331,12 @@ class ApiService {
 
     const config: RequestInit = {
       ...options,
+      /** Headers */
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      /** Signal */
       signal: controller.signal,
     };
 
@@ -411,10 +468,15 @@ class ApiService {
    * Get cache statistics for monitoring
    */
   getCacheStats(): {
+    /** Hits */
     hits: Record<string, number>;
+    /** Misses */
     misses: Record<string, number>;
+    /** Hit Rate */
     hitRate: number;
+    /** Cache Size */
     cacheSize: number;
+    /** Oldest Entry */
     oldestEntry: number | null;
   } {
     const hits = Object.fromEntries(this.cacheHits);
@@ -443,7 +505,9 @@ class ApiService {
       hits,
       misses,
       hitRate,
+      /** Cache Size */
       cacheSize: this.cache.size,
+      /** Oldest Entry */
       oldestEntry: oldestTimestamp,
     };
   }
@@ -479,6 +543,7 @@ class ApiService {
       this.deduplicateRequest(cacheKey, () =>
         this.request<T>(endpoint, {
           ...options,
+          /** Method */
           method: "GET",
         }),
       )
@@ -490,7 +555,9 @@ class ApiService {
         })
         .catch((error) => {
           logError(error as Error, {
+            /** Component */
             component: "ApiService.getCached",
+            /** Metadata */
             metadata: { endpoint },
           });
         });
@@ -508,6 +575,7 @@ class ApiService {
     const data = await this.deduplicateRequest(cacheKey, () =>
       this.request<T>(endpoint, {
         ...options,
+        /** Method */
         method: "GET",
       }),
     );
@@ -521,8 +589,11 @@ class ApiService {
   }
 
   async post<T>(
+    /** Endpoint */
     endpoint: string,
+    /** Data */
     data?: any,
+    /** Options */
     options?: RequestInit,
   ): Promise<T> {
     // For POST requests, include body in cache key for idempotent operations
@@ -536,6 +607,7 @@ class ApiService {
     return this.deduplicateRequest(cacheKey, () =>
       this.request<T>(endpoint, {
         ...options,
+        /** Method */
         method: "POST",
         body,
       }),
@@ -543,37 +615,52 @@ class ApiService {
   }
 
   async put<T>(
+    /** Endpoint */
     endpoint: string,
+    /** Data */
     data?: any,
+    /** Options */
     options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
+      /** Method */
       method: "PUT",
+      /** Body */
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async patch<T>(
+    /** Endpoint */
     endpoint: string,
+    /** Data */
     data?: any,
+    /** Options */
     options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
+      /** Method */
       method: "PATCH",
+      /** Body */
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T>(
+    /** Endpoint */
     endpoint: string,
+    /** Data */
     data?: any,
+    /** Options */
     options?: RequestInit,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
+      /** Method */
       method: "DELETE",
+      /** Body */
       body: data ? JSON.stringify(data) : undefined,
     });
   }

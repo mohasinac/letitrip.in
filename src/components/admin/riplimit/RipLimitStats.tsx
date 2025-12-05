@@ -1,30 +1,136 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/riplimit/RipLimitStats
+ * @description This file contains the RipLimitStats component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Quantity } from "@/components/common/values/Quantity";
 import { Card } from "@/components/ui/Card";
 import { AlertTriangle, DollarSign, Users, Wallet } from "lucide-react";
 
+/**
+ * RipLimitStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitStats
+ */
 interface RipLimitStats {
+  /** Total Circulation */
   totalCirculation: number;
+  /** Total Available */
   totalAvailable: number;
+  /** Total Blocked */
   totalBlocked: number;
+  /** Total Revenue */
   totalRevenue: number;
+  /** Total Refunded */
   totalRefunded: number;
+  /** Net Revenue */
   netRevenue: number;
+  /** User Count */
   userCount: number;
+  /** Unpaid User Count */
   unpaidUserCount: number;
 }
 
+/**
+ * RipLimitStatsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitStatsProps
+ */
 interface RipLimitStatsProps {
+  /** Stats */
   stats: RipLimitStats | null;
+  /** Loading */
   loading: boolean;
 }
+
+/**
+ * Function: Rip Limit Stats Cards
+ */
+/**
+ * Performs rip limit stats cards operation
+ *
+ * @param {Readonly<RipLimitStatsProps>} {
+  stats,
+  loading,
+} - The {
+  stats,
+  loading,
+}
+ *
+ * @returns {number} The riplimitstatscards result
+ *
+ * @example
+ * RipLimitStatsCards({
+  stats,
+  loading,
+});
+ */
+
+/**
+ * Performs rip limit stats cards operation
+ *
+ * @param {Readonly<RipLimitStatsProps>} {
+  stats,
+  loading,
+} - The {
+  stats,
+  loading,
+}
+ *
+ * @returns {any} The riplimitstatscards result
+ *
+ * @example
+ * RipLimitStatsCards({
+  stats,
+  loading,
+});
+ */
 
 export function RipLimitStatsCards({
   stats,
   loading,
 }: Readonly<RipLimitStatsProps>) {
+  /**
+   * Formats i n r
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatinr result
+   */
+
+  /**
+   * Formats i n r
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatinr result
+   */
+
   const formatINR = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatrl result
+   */
+
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatrl result
+   */
+
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
 
   return (

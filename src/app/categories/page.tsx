@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/categories/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { EmptyState } from "@/components/common/EmptyState";
@@ -23,6 +32,21 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
+/**
+ * Function: Categories Content
+ */
+/**
+ * Performs categories content operation
+ *
+ * @returns {any} The categoriescontent result
+ */
+
+/**
+ * Performs categories content operation
+ *
+ * @returns {any} The categoriescontent result
+ */
+
 function CategoriesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,12 +54,17 @@ function CategoriesContent() {
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: categories,
+    /** Set Data */
     setData: setCategories,
     execute,
   } = useLoadingState<CategoryFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "CategoriesPage.loadCategories" });
     },
@@ -83,6 +112,22 @@ function CategoriesContent() {
     loadCategories();
   }, [currentPage, sortBy, sortOrder]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadFilterOptions = async () => {
     try {
       const categoriesData = await categoriesService.list({ limit: 100 });
@@ -92,16 +137,20 @@ function CategoriesContent() {
         if (section.title === "Category Level") {
           return {
             ...section,
+            /** Fields */
             fields: section.fields.map((field) => {
               if (field.key === "parent_id") {
                 return {
                   ...field,
+                  /** Options */
                   options: [
                     { label: "Root Categories", value: "null" },
                     ...(categoriesData?.data || [])
                       .filter((cat) => !cat.isLeaf)
                       .map((cat) => ({
+                        /** Label */
                         label: cat.name,
+                        /** Value */
                         value: cat.id,
                       })),
                   ],
@@ -117,20 +166,42 @@ function CategoriesContent() {
       setFilterOptions(updatedFilters);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CategoriesPage.loadFilterOptions",
       });
     }
   };
 
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategories = () =>
     execute(async () => {
       const response = await categoriesService.list({
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: 50,
         sortBy,
         sortOrder,
+        /** Featured */
         featured: filterValues.is_featured || undefined,
+        /** Show On Homepage */
         showOnHomepage: filterValues.is_homepage || undefined,
+        /** Parent Id */
         parentId: filterValues.parent_id || undefined,
       });
 
@@ -165,12 +236,36 @@ function CategoriesContent() {
     router.push("/categories", { scroll: false });
   }, [router]);
 
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
 
   const handleNextPage = () => {
     if (hasNextPage) {
@@ -215,10 +310,12 @@ function CategoriesContent() {
                 : "Categories will appear here once they are added."
             }
             action={{
+              /** Label */
               label:
                 Object.keys(filterValues).length > 0
                   ? "Clear Filters"
                   : "Go to Home",
+              /** On Click */
               onClick:
                 Object.keys(filterValues).length > 0
                   ? handleResetFilters

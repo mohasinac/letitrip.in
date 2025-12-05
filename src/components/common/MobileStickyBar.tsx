@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/MobileStickyBar
+ * @description This file contains the MobileStickyBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Mobile sticky bar component for product/auction pages
  */
 
@@ -9,18 +18,36 @@ import { useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
 import { Price } from "@/components/common/values/Price";
 
+/**
+ * MobileStickyBarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileStickyBarProps
+ */
 interface MobileStickyBarProps {
+  /** Type */
   type?: "product" | "auction";
+  /** Price */
   price?: number;
+  /** Original Price */
   originalPrice?: number;
+  /** Current Bid */
   currentBid?: number;
+  /** On Add To Cart */
   onAddToCart?: () => void;
+  /** On Buy Now */
   onBuyNow?: () => void;
+  /** On Place Bid */
   onPlaceBid?: () => void;
+  /** On Add To Wishlist */
   onAddToWishlist?: () => void;
+  /** In Stock */
   inStock?: boolean;
+  /** Is Active */
   isActive?: boolean;
+  /** Disabled */
   disabled?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -42,6 +69,22 @@ export default function MobileStickyBar({
   const [isAdding, setIsAdding] = useState(false);
 
   if (!isMobile) return null;
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleAddToCart = async () => {
     if (!onAddToCart || disabled) return;

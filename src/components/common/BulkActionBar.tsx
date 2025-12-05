@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/BulkActionBar
+ * @description This file contains the BulkActionBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -6,6 +15,27 @@ import { toast } from "sonner";
 import { logError } from "@/lib/error-logger";
 import { BulkActionBarProps, BulkAction } from "@/types/inline-edit";
 import { ConfirmDialog } from "./ConfirmDialog";
+
+/**
+ * Function: Bulk Action Bar
+ */
+/**
+ * Performs bulk action bar operation
+ *
+ * @returns {any} The bulkactionbar result
+ *
+ * @example
+ * BulkActionBar();
+ */
+
+/**
+ * Performs bulk action bar operation
+ *
+ * @returns {any} The bulkactionbar result
+ *
+ * @example
+ * BulkActionBar();
+ */
 
 export function BulkActionBar({
   selectedCount,
@@ -24,6 +54,22 @@ export function BulkActionBar({
     return null;
   }
 
+  /**
+   * Handles action click event
+   *
+   * @param {BulkAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
+
+  /**
+   * Handles action click event
+   *
+   * @param {BulkAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
+
   const handleActionClick = (action: BulkAction) => {
     if (action.confirm) {
       setConfirmAction(action);
@@ -31,6 +77,28 @@ export function BulkActionBar({
       executeAction(action);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {BulkAction} action - The action
+   * @param {any} [input] - The input
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {BulkAction} action - The action
+   * @param {any} [input] - The input
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const executeAction = async (action: BulkAction, input?: any) => {
     try {
@@ -40,7 +108,9 @@ export function BulkActionBar({
       setInputValue(null);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "BulkActionBar.handleExecuteAction",
+        /** Metadata */
         metadata: { actionId: action.id },
       });
       toast.error(`Failed to execute action`);
@@ -48,6 +118,22 @@ export function BulkActionBar({
       setActionLoading(false);
     }
   };
+
+  /**
+   * Retrieves variant classes
+   *
+   * @param {BulkAction["variant"]} variant - The variant
+   *
+   * @returns {any} The variantclasses result
+   */
+
+  /**
+   * Retrieves variant classes
+   *
+   * @param {BulkAction["variant"]} variant - The variant
+   *
+   * @returns {any} The variantclasses result
+   */
 
   const getVariantClasses = (variant: BulkAction["variant"]) => {
     switch (variant) {
@@ -57,6 +143,7 @@ export function BulkActionBar({
         return "bg-yellow-600 hover:bg-yellow-700 text-white";
       case "success":
         return "bg-green-600 hover:bg-green-700 text-white";
+      /** Default */
       default:
         return "bg-blue-600 hover:bg-blue-700 text-white";
     }

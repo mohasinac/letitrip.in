@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ProductReviews
+ * @description This file contains the ProductReviews component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,10 +16,61 @@ import { reviewsService } from "@/services/reviews.service";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
 
+/**
+ * ProductReviewsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductReviewsProps
+ */
 interface ProductReviewsProps {
+  /** Product Id */
   productId: string;
+  /** Product Slug */
   productSlug: string;
 }
+
+/**
+ * Function: Product Reviews
+ */
+/**
+ * Performs product reviews operation
+ *
+ * @param {ProductReviewsProps} {
+  productId,
+  productSlug,
+} - The {
+  product id,
+  product slug,
+}
+ *
+ * @returns {any} The productreviews result
+ *
+ * @example
+ * ProductReviews({
+  productId,
+  productSlug,
+});
+ */
+
+/**
+ * Performs product reviews operation
+ *
+ * @param {ProductReviewsProps} {
+  productId,
+  productSlug,
+} - The {
+  product id,
+  product slug,
+}
+ *
+ * @returns {any} The productreviews result
+ *
+ * @example
+ * ProductReviews({
+  productId,
+  productSlug,
+});
+ */
 
 export function ProductReviews({
   productId,
@@ -23,13 +83,31 @@ export function ProductReviews({
     loadReviews();
   }, [productSlug]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadReviews = async () => {
     try {
       setLoading(true);
       await reviewsService.list({ productId });
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductReviews.loadReviews",
+        /** Metadata */
         metadata: { productId },
       });
     } finally {

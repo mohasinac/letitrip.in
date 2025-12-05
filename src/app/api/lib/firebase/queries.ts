@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/firebase/queries
+ * @description This file contains functionality related to queries
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Common Firestore Query Builders
  * Provides role-based filtering and common query patterns
  * Location: /src/app/api/lib/firebase/queries.ts
@@ -25,21 +34,58 @@ export enum UserRole {
  * Filter options for queries
  */
 export interface QueryFilter {
+  /** Field */
   field: string;
+  /** Operator */
   operator: WhereFilterOp;
+  /** Value */
   value: any;
 }
 
+/**
+ * QueryOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for QueryOptions
+ */
 export interface QueryOptions {
+  /** Filters */
   filters?: QueryFilter[];
+  /** Order By */
   orderBy?: { field: string; direction?: OrderByDirection };
+  /** Limit */
   limit?: number;
+  /** Start After */
   startAfter?: any;
 }
 
 /**
  * Apply filters to a query
  */
+/**
+ * Performs apply filters operation
+ *
+ * @param {Query} query - The query
+ * @param {QueryFilter[]} filters - The filters
+ *
+ * @returns {any} The applyfilters result
+ *
+ * @example
+ * applyFilters(query, filters);
+ */
+
+/**
+ * Performs apply filters operation
+ *
+ * @param {Query} query - The query
+ * @param {QueryFilter[]} filters - The filters
+ *
+ * @returns {any} The applyfilters result
+ *
+ * @example
+ * applyFilters(query, filters);
+ */
+
 export function applyFilters(query: Query, filters: QueryFilter[]): Query {
   let filteredQuery = query;
 
@@ -58,9 +104,34 @@ export function applyFilters(query: Query, filters: QueryFilter[]): Query {
  * Apply pagination to a query
  * @deprecated Use the pagination utilities from @/app/api/lib/utils/pagination instead
  */
+/**
+ * Performs apply pagination operation
+ *
+ * @param {Query} query - The query
+ * @param {number} [limit] - The limit
+ * @param {any} [startAfter] - The start after
+ *
+ * @returns {number} The applypagination result
+ *
+ * @example
+ * applyPagination(query, 123, startAfter);
+ */
+
+/**
+ * Performs apply pagination operation
+ *
+ * @returns {number} The applypagination result
+ *
+ * @example
+ * applyPagination();
+ */
+
 export function applyPagination(
+  /** Query */
   query: Query,
+  /** Limit */
   limit?: number,
+  /** Start After */
   startAfter?: any,
 ): Query {
   let paginatedQuery = query;
@@ -79,8 +150,31 @@ export function applyPagination(
 /**
  * Apply ordering to a query
  */
+/**
+ * Performs apply ordering operation
+ *
+ * @param {Query} query - The query
+ * @param {{ field} [orderBy] - The order by
+ *
+ * @returns {string} The applyordering result
+ *
+ * @example
+ * applyOrdering(query, {});
+ */
+
+/**
+ * Performs apply ordering operation
+ *
+ * @returns {string} The applyordering result
+ *
+ * @example
+ * applyOrdering();
+ */
+
 export function applyOrdering(
+  /** Query */
   query: Query,
+  /** Order By */
   orderBy?: { field: string; direction?: OrderByDirection },
 ): Query {
   if (orderBy) {
@@ -92,6 +186,30 @@ export function applyOrdering(
 /**
  * Build a complete query with filters, ordering, and pagination
  */
+/**
+ * Performs build query operation
+ *
+ * @param {Query} baseQuery - The base query
+ * @param {QueryOptions} options - Configuration options
+ *
+ * @returns {any} The buildquery result
+ *
+ * @example
+ * buildQuery(baseQuery, options);
+ */
+
+/**
+ * Performs build query operation
+ *
+ * @param {Query} baseQuery - The base query
+ * @param {QueryOptions} options - Configuration options
+ *
+ * @returns {any} The buildquery result
+ *
+ * @example
+ * buildQuery(baseQuery, options);
+ */
+
 export function buildQuery(baseQuery: Query, options: QueryOptions): Query {
   let query = baseQuery;
 
@@ -116,6 +234,30 @@ export function buildQuery(baseQuery: Query, options: QueryOptions): Query {
 /**
  * Role-based query builders for shops
  */
+/**
+ * Retrieves shops query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [userId] - user identifier
+ *
+ * @returns {string} The shopsquery result
+ *
+ * @example
+ * getShopsQuery(userRole, "example");
+ */
+
+/**
+ * Retrieves shops query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [userId] - user identifier
+ *
+ * @returns {string} The shopsquery result
+ *
+ * @example
+ * getShopsQuery(userRole, "example");
+ */
+
 export function getShopsQuery(userRole: UserRole, userId?: string) {
   const shopsRef = Collections.shops();
 
@@ -131,6 +273,7 @@ export function getShopsQuery(userRole: UserRole, userId?: string) {
       return shopsRef.where("owner_id", "==", userId);
 
     case UserRole.USER:
+    /** Default */
     default:
       // Guest/User sees only verified shops
       // We'll filter out banned shops in the API route to avoid composite index
@@ -141,6 +284,30 @@ export function getShopsQuery(userRole: UserRole, userId?: string) {
 /**
  * Role-based query builders for products
  */
+/**
+ * Retrieves products query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The productsquery result
+ *
+ * @example
+ * getProductsQuery(userRole, "example");
+ */
+
+/**
+ * Retrieves products query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The productsquery result
+ *
+ * @example
+ * getProductsQuery(userRole, "example");
+ */
+
 export function getProductsQuery(userRole: UserRole, shopId?: string) {
   const productsRef = Collections.products();
 
@@ -157,6 +324,7 @@ export function getProductsQuery(userRole: UserRole, shopId?: string) {
       return productsRef.where("shop_id", "==", shopId);
 
     case UserRole.USER:
+    /** Default */
     default:
       // Guest/User sees only published products
       return productsRef.where("status", "==", "published");
@@ -166,9 +334,34 @@ export function getProductsQuery(userRole: UserRole, shopId?: string) {
 /**
  * Role-based query builders for orders
  */
+/**
+ * Retrieves orders query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [userId] - user identifier
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The ordersquery result
+ *
+ * @example
+ * getOrdersQuery(userRole, "example", "example");
+ */
+
+/**
+ * Retrieves orders query
+ *
+ * @returns {string} The ordersquery result
+ *
+ * @example
+ * getOrdersQuery();
+ */
+
 export function getOrdersQuery(
+  /** User Role */
   userRole: UserRole,
+  /** User Id */
   userId?: string,
+  /** Shop Id */
   shopId?: string,
 ) {
   const ordersRef = Collections.orders();
@@ -185,6 +378,7 @@ export function getOrdersQuery(
       return ordersRef;
 
     case UserRole.USER:
+    /** Default */
     default:
       // User sees only their own orders
       if (!userId) {
@@ -197,6 +391,30 @@ export function getOrdersQuery(
 /**
  * Role-based query builders for auctions
  */
+/**
+ * Retrieves auctions query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The auctionsquery result
+ *
+ * @example
+ * getAuctionsQuery(userRole, "example");
+ */
+
+/**
+ * Retrieves auctions query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The auctionsquery result
+ *
+ * @example
+ * getAuctionsQuery(userRole, "example");
+ */
+
 export function getAuctionsQuery(userRole: UserRole, shopId?: string) {
   const auctionsRef = Collections.auctions();
 
@@ -213,6 +431,7 @@ export function getAuctionsQuery(userRole: UserRole, shopId?: string) {
       return auctionsRef.where("shop_id", "==", shopId);
 
     case UserRole.USER:
+    /** Default */
     default:
       // Guest/User sees only active public auctions
       return auctionsRef.where("status", "==", "active");
@@ -222,9 +441,34 @@ export function getAuctionsQuery(userRole: UserRole, shopId?: string) {
 /**
  * Role-based query builders for returns
  */
+/**
+ * Retrieves returns query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [userId] - user identifier
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The returnsquery result
+ *
+ * @example
+ * getReturnsQuery(userRole, "example", "example");
+ */
+
+/**
+ * Retrieves returns query
+ *
+ * @returns {string} The returnsquery result
+ *
+ * @example
+ * getReturnsQuery();
+ */
+
 export function getReturnsQuery(
+  /** User Role */
   userRole: UserRole,
+  /** User Id */
   userId?: string,
+  /** Shop Id */
   shopId?: string,
 ) {
   const returnsRef = Collections.returns();
@@ -242,6 +486,7 @@ export function getReturnsQuery(
       return returnsRef.where("shop_id", "==", shopId);
 
     case UserRole.USER:
+    /** Default */
     default:
       // User sees only their own returns
       if (!userId) {
@@ -254,9 +499,34 @@ export function getReturnsQuery(
 /**
  * Role-based query builders for support tickets
  */
+/**
+ * Retrieves support tickets query
+ *
+ * @param {UserRole} userRole - The user role
+ * @param {string} [userId] - user identifier
+ * @param {string} [shopId] - shop identifier
+ *
+ * @returns {string} The supportticketsquery result
+ *
+ * @example
+ * getSupportTicketsQuery(userRole, "example", "example");
+ */
+
+/**
+ * Retrieves support tickets query
+ *
+ * @returns {string} The supportticketsquery result
+ *
+ * @example
+ * getSupportTicketsQuery();
+ */
+
 export function getSupportTicketsQuery(
+  /** User Role */
   userRole: UserRole,
+  /** User Id */
   userId?: string,
+  /** Shop Id */
   shopId?: string,
 ) {
   const ticketsRef = Collections.supportTickets();
@@ -274,6 +544,7 @@ export function getSupportTicketsQuery(
       return ticketsRef.where("shop_id", "==", shopId);
 
     case UserRole.USER:
+    /** Default */
     default:
       // User sees only their own tickets
       if (!userId) {
@@ -286,10 +557,36 @@ export function getSupportTicketsQuery(
 /**
  * Helper to check if user owns a resource
  */
+/**
+ * Custom React hook for user owns resource
+ *
+ * @returns {Promise<any>} Promise resolving to userownsresource result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * userOwnsResource();
+ */
+
+/**
+ * Custom React hook for user owns resource
+ *
+ * @returns {Promise<any>} Promise resolving to userownsresource result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * userOwnsResource();
+ */
+
 export async function userOwnsResource(
+  /** Collection Name */
   collectionName: string,
+  /** Resource Id */
   resourceId: string,
+  /** User Id */
   userId: string,
+  /** Owner Field */
   ownerField: string = "owner_id",
 ): Promise<boolean> {
   try {
@@ -310,8 +607,35 @@ export async function userOwnsResource(
 /**
  * Helper to check if user owns a shop
  */
+/**
+ * Custom React hook for user owns shop
+ *
+ * @param {string} shopId - shop identifier
+ * @param {string} userId - user identifier
+ *
+ * @returns {Promise<any>} Promise resolving to userownsshop result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * userOwnsShop("example", "example");
+ */
+
+/**
+ * Custom React hook for user owns shop
+ *
+ * @returns {Promise<any>} Promise resolving to userownsshop result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * userOwnsShop();
+ */
+
 export async function userOwnsShop(
+  /** Shop Id */
   shopId: string,
+  /** User Id */
   userId: string,
 ): Promise<boolean> {
   return userOwnsResource(COLLECTIONS.SHOPS, shopId, userId, "owner_id");

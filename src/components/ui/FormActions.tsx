@@ -1,23 +1,76 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/FormActions
+ * @description This file contains the FormActions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Button, ButtonProps } from "./Button";
 
+/**
+ * FormActionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormActionsProps
+ */
 export interface FormActionsProps {
+  /** On Cancel */
   onCancel?: () => void;
+  /** On Submit */
   onSubmit?: (() => void) | ((e: React.FormEvent) => void);
+  /** Submit Label */
   submitLabel?: string;
+  /** Cancel Label */
   cancelLabel?: string;
+  /** Is Submitting */
   isSubmitting?: boolean;
+  /** Submit Disabled */
   submitDisabled?: boolean;
+  /** Cancel Disabled */
   cancelDisabled?: boolean;
+  /** Show Cancel */
   showCancel?: boolean;
+  /** Submit Variant */
   submitVariant?: ButtonProps["variant"];
+  /** Class Name */
   className?: string;
+  /** Position */
   position?: "left" | "right" | "space-between";
+  /** Additional Actions */
   additionalActions?: React.ReactNode;
 }
 
+/**
+ * Performs form actions operation
+ *
+ * @returns {any} The formactions result
+ *
+ * @example
+ * FormActions();
+ */
+
+/**
+ * F
+ * @constant
+ */
+/**
+ * Performs form actions operation
+ *
+ * @returns {any} The formactions result
+ *
+ * @example
+ * FormActions();
+ */
+
+/**
+ * F
+ * @constant
+ */
 export const FormActions: React.FC<FormActionsProps> = ({
   onCancel,
   onSubmit,
@@ -33,7 +86,9 @@ export const FormActions: React.FC<FormActionsProps> = ({
   additionalActions,
 }) => {
   const positionClasses = {
+    /** Left */
     left: "justify-start",
+    /** Right */
     right: "justify-end",
     "space-between": "justify-between",
   };

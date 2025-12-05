@@ -1,56 +1,139 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/BaseCard
+ * @description This file contains the BaseCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 
+/**
+ * Badge interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Badge
+ */
 export interface Badge {
+  /** Text */
   text: string;
+  /** Color */
   color: "yellow" | "red" | "blue" | "green" | "gray" | "purple" | "orange";
 }
 
+/**
+ * ActionButton interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActionButton
+ */
 export interface ActionButton {
+  /** Icon */
   icon: React.ReactNode;
+  /** On Click */
   onClick: (e: React.MouseEvent) => void;
+  /** Label */
   label: string;
+  /** Active */
   active?: boolean;
+  /** Active Color */
   activeColor?: string;
 }
 
+/**
+ * BaseCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BaseCardProps
+ */
 export interface BaseCardProps {
+  /** Href */
   href: string;
+  /** Image */
   image?: string;
+  /** Image Alt */
   imageAlt: string;
+  /** Image Fallback */
   imageFallback?: React.ReactNode;
+  /** Badges */
   badges?: Badge[];
+  /** Action Buttons */
   actionButtons?: ActionButton[];
+  /** Children */
   children: React.ReactNode;
+  /** Class Name */
   className?: string;
+  /** Image Class Name */
   imageClassName?: string;
+  /** Image Overlay */
   imageOverlay?: React.ReactNode;
+  /** Priority */
   priority?: boolean;
+  /** Aspect Ratio */
   aspectRatio?: "square" | "video" | "wide";
+  /** On Click */
   onClick?: () => void;
 }
 
 const badgeColors = {
+  /** Yellow */
   yellow: "bg-yellow-500 text-white",
+  /** Red */
   red: "bg-red-500 text-white",
+  /** Blue */
   blue: "bg-blue-500 text-white",
+  /** Green */
   green: "bg-green-500 text-white",
+  /** Gray */
   gray: "bg-gray-500 text-white",
+  /** Purple */
   purple: "bg-purple-500 text-white",
+  /** Orange */
   orange: "bg-orange-500 text-white",
 };
 
 const aspectRatioClasses = {
+  /** Square */
   square: "aspect-square",
+  /** Video */
   video: "aspect-video",
+  /** Wide */
   wide: "aspect-[21/9]",
 };
 
 /**
  * BaseCard - Reusable card component for Products, Auctions, Shops, etc.
+ */
+/**
+ * Performs base card operation
+ *
+ * @returns {any} The basecard result
+ *
+ * @example
+ * BaseCard();
+ */
+
+/**
+ * B
+ * @constant
+ */
+/**
+ * Performs base card operation
+ *
+ * @returns {any} The basecard result
+ *
+ * @example
+ * BaseCard();
+ */
+
+/**
+ * B
+ * @constant
  */
 export const BaseCard: React.FC<BaseCardProps> = ({
   href,
@@ -67,6 +150,22 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   aspectRatio = "square",
   onClick,
 }) => {
+  /**
+   * Handles click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleclick result
+   */
+
+  /**
+   * Handles click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleclick result
+   */
+
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
       e.preventDefault();
@@ -80,6 +179,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       onClick={handleClick}
       className={`
         group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden
+        /** Hover */
         hover:shadow-lg hover:border-blue-500 transition-all duration-200
         ${className}
       `}

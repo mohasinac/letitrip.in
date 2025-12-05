@@ -1,15 +1,56 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/InlineFormModal
+ * @description This file contains the InlineFormModal component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { X } from "lucide-react";
 import { ReactNode } from "react";
 
+/**
+ * InlineFormModalProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InlineFormModalProps
+ */
 interface InlineFormModalProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Title */
   title: string;
+  /** Children */
   children: ReactNode;
+  /** Size */
   size?: "sm" | "md" | "lg" | "xl";
 }
+
+/**
+ * Function: Inline Form Modal
+ */
+/**
+ * Performs inline form modal operation
+ *
+ * @returns {any} The inlineformmodal result
+ *
+ * @example
+ * InlineFormModal();
+ */
+
+/**
+ * Performs inline form modal operation
+ *
+ * @returns {any} The inlineformmodal result
+ *
+ * @example
+ * InlineFormModal();
+ */
 
 export function InlineFormModal({
   isOpen,
@@ -21,9 +62,13 @@ export function InlineFormModal({
   if (!isOpen) return null;
 
   const sizeClasses = {
+    /** Sm */
     sm: "max-w-md",
+    /** Md */
     md: "max-w-2xl",
+    /** Lg */
     lg: "max-w-4xl",
+    /** Xl */
     xl: "max-w-6xl",
   };
 

@@ -1,22 +1,70 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopStats
+ * @description This file contains the ShopStats component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Package, Users, TrendingUp, Star } from "lucide-react";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
+/**
+ * ShopStatsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopStatsProps
+ */
 export interface ShopStatsProps {
+  /** Shop */
   shop: ShopFE;
+  /** Class Name */
   className?: string;
 }
 
+/**
+ * StatCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatCardProps
+ */
 interface StatCardProps {
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Label */
   label: string;
+  /** Value */
   value: number | string;
+  /** Trend */
   trend?: {
+    /** Value */
     value: number;
+    /** Is Positive */
     isPositive: boolean;
   };
 }
+
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @param {Icon, label, value, trend }} { icon - The { icon
+ *
+ * @returns {any} The statcard result
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @param {Icon, label, value, trend }} { icon - The { icon
+ *
+ * @returns {any} The statcard result
+ */
 
 function StatCard({ icon: Icon, label, value, trend }: StatCardProps) {
   return (
@@ -65,26 +113,60 @@ function StatCard({ icon: Icon, label, value, trend }: StatCardProps) {
  * <ShopStats shop={shop} />
  * ```
  */
+/**
+ * Performs shop stats operation
+ *
+ * @param {ShopStatsProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shopstats result
+ *
+ * @example
+ * ShopStats({ shop, className);
+ */
+
+/**
+ * Performs shop stats operation
+ *
+ * @param {ShopStatsProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shopstats result
+ *
+ * @example
+ * ShopStats({ shop, className);
+ */
+
 export function ShopStats({ shop, className = "" }: ShopStatsProps) {
   const stats: StatCardProps[] = [
     {
+      /** Icon */
       icon: Package,
+      /** Label */
       label: "Products",
+      /** Value */
       value: shop.productCount || 0,
     },
     {
+      /** Icon */
       icon: Users,
+      /** Label */
       label: "Followers",
+      /** Value */
       value: shop.follower_count || 0,
     },
     {
+      /** Icon */
       icon: TrendingUp,
+      /** Label */
       label: "Total Sales",
+      /** Value */
       value: shop.totalOrders || 0,
     },
     {
+      /** Icon */
       icon: Star,
+      /** Label */
       label: "Average Rating",
+      /** Value */
       value: shop.rating ? shop.rating.toFixed(1) : "0.0",
     },
   ];

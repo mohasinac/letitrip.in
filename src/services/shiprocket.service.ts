@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/shiprocket.service
+ * @description This file contains service functions for shiprocket operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Shiprocket Service
  *
  * @status IMPLEMENTED
@@ -30,43 +39,104 @@ import { apiService } from "@/services/api.service";
 // TYPES
 // ============================================================================
 
+/**
+ * ShiprocketAuthResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShiprocketAuthResponse
+ */
 interface ShiprocketAuthResponse {
+  /** Token */
   token: string;
+  /** Expires At */
   expiresAt: Date;
 }
 
+/**
+ * CreateOrderResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CreateOrderResponse
+ */
 interface CreateOrderResponse {
+  /** Order Id */
   orderId: string;
+  /** Shipment Id */
   shipmentId: string;
+  /** Status */
   status: string;
+  /** Awb Assign Status */
   awbAssignStatus: string;
+  /** Awb Code */
   awbCode?: string;
 }
 
+/**
+ * GenerateAWBResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GenerateAWBResponse
+ */
 interface GenerateAWBResponse {
+  /** Awb Code */
   awbCode: string;
+  /** Courier Name */
   courierName: string;
+  /** Courier Company Id */
   courierCompanyId: number;
 }
 
+/**
+ * SchedulePickupResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SchedulePickupResponse
+ */
 interface SchedulePickupResponse {
+  /** Pickup Id */
   pickupId: string;
+  /** Pickup Scheduled Date */
   pickupScheduledDate: string;
+  /** Status */
   status: string;
 }
 
+/**
+ * CancelOrderResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CancelOrderResponse
+ */
 interface CancelOrderResponse {
+  /** Order Id */
   orderId: string;
+  /** Status */
   status: string;
+  /** Message */
   message: string;
 }
 
+/**
+ * ManifestResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ManifestResponse
+ */
 interface ManifestResponse {
+  /** Manifest Url */
   manifestUrl: string;
+  /** Manifest Id */
   manifestId: string;
 }
 
+/**
+ * PrintLabelResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PrintLabelResponse
+ */
 interface PrintLabelResponse {
+  /** Label Url */
   labelUrl: string;
 }
 
@@ -74,6 +144,12 @@ interface PrintLabelResponse {
 // SHIPROCKET SERVICE CLASS
 // ============================================================================
 
+/**
+ * ShiprocketService class
+ * 
+ * @class
+ * @description Description of ShiprocketService class functionality
+ */
 class ShiprocketService {
   /**
    * Calculate shipping rates
@@ -87,6 +163,7 @@ class ShiprocketService {
       return response || [];
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.calculateRates",
         params,
       });
@@ -98,6 +175,7 @@ class ShiprocketService {
    * Get recommended courier for shipment
    */
   async getRecommendedCourier(
+    /** Params */
     params: RateCalculationParams
   ): Promise<CourierRate | null> {
     try {
@@ -105,6 +183,7 @@ class ShiprocketService {
       return rates.find((rate) => rate.recommended) || rates[0] || null;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.getRecommendedCourier",
         params,
       });
@@ -129,7 +208,9 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.createOrder",
+        /** Order Id */
         orderId: params.orderId,
       });
       throw error;
@@ -140,7 +221,9 @@ class ShiprocketService {
    * Generate AWB (Air Waybill) for shipment
    */
   async generateAWB(
+    /** Shipment Id */
     shipmentId: string,
+    /** Courier Id */
     courierId?: CourierPartnerId
   ): Promise<GenerateAWBResponse> {
     try {
@@ -159,6 +242,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.generateAWB",
         shipmentId,
         courierId,
@@ -171,7 +255,9 @@ class ShiprocketService {
    * Schedule pickup for shipment
    */
   async schedulePickup(
+    /** Shipment Ids */
     shipmentIds: string[],
+    /** Pickup Date */
     pickupDate?: Date
   ): Promise<SchedulePickupResponse> {
     try {
@@ -179,6 +265,7 @@ class ShiprocketService {
         "/shipping/shiprocket/schedule-pickup",
         {
           shipmentIds,
+          /** Pickup Date */
           pickupDate: pickupDate?.toISOString(),
         }
       );
@@ -190,6 +277,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.schedulePickup",
         shipmentIds,
         pickupDate,
@@ -209,6 +297,7 @@ class ShiprocketService {
       return response || null;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.trackShipment",
         awbCode,
       });
@@ -227,6 +316,7 @@ class ShiprocketService {
       return response || [];
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.trackByOrderId",
         orderId,
       });
@@ -251,6 +341,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.cancelOrder",
         orderId,
       });
@@ -275,6 +366,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.generateLabel",
         shipmentIds,
       });
@@ -299,6 +391,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.generateManifest",
         shipmentIds,
       });
@@ -317,6 +410,7 @@ class ShiprocketService {
       return response || [];
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.getPickupLocations",
       });
       return [];
@@ -327,6 +421,7 @@ class ShiprocketService {
    * Create pickup location
    */
   async createPickupLocation(
+    /** Location */
     location: Omit<PickupLocation, "id">
   ): Promise<PickupLocation> {
     try {
@@ -342,6 +437,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.createPickupLocation",
         location,
       });
@@ -353,7 +449,9 @@ class ShiprocketService {
    * Update pickup location
    */
   async updatePickupLocation(
+    /** Location Id */
     locationId: string,
+    /** Updates */
     updates: Partial<PickupLocation>
   ): Promise<PickupLocation> {
     try {
@@ -369,6 +467,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.updatePickupLocation",
         locationId,
         updates,
@@ -388,6 +487,7 @@ class ShiprocketService {
       return true;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.deletePickupLocation",
         locationId,
       });
@@ -406,6 +506,7 @@ class ShiprocketService {
       return response || null;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.getShipmentByOrderId",
         orderId,
       });
@@ -417,15 +518,24 @@ class ShiprocketService {
    * Get all shipments
    */
   async getAllShipments(filters?: {
+    /** Status */
     status?: string;
+    /** Start Date */
     startDate?: Date;
+    /** End Date */
     endDate?: Date;
+    /** Page */
     page?: number;
+    /** Limit */
     limit?: number;
   }): Promise<{
+    /** Shipments */
     shipments: ShippingLabel[];
+    /** Total */
     total: number;
+    /** Page */
     page: number;
+    /** Total Pages */
     totalPages: number;
   }> {
     try {
@@ -446,29 +556,42 @@ class ShiprocketService {
       }
 
       const response = await apiService.get<{
+        /** Shipments */
         shipments: ShippingLabel[];
+        /** Total */
         total: number;
+        /** Page */
         page: number;
+        /** Total Pages */
         totalPages: number;
       }>(`/shipping/shiprocket/shipments?${queryParams.toString()}`);
 
       return (
         response || {
+          /** Shipments */
           shipments: [],
+          /** Total */
           total: 0,
+          /** Page */
           page: 1,
+          /** Total Pages */
           totalPages: 0,
         }
       );
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.getAllShipments",
         filters,
       });
       return {
+        /** Shipments */
         shipments: [],
+        /** Total */
         total: 0,
+        /** Page */
         page: 1,
+        /** Total Pages */
         totalPages: 0,
       };
     }
@@ -478,7 +601,9 @@ class ShiprocketService {
    * Request return pickup (RTO)
    */
   async requestReturn(
+    /** Order Id */
     orderId: string,
+    /** Reason */
     reason: string
   ): Promise<SchedulePickupResponse> {
     try {
@@ -497,6 +622,7 @@ class ShiprocketService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.requestReturn",
         orderId,
         reason,
@@ -509,37 +635,54 @@ class ShiprocketService {
    * Check serviceability for pincode
    */
   async checkServiceability(params: {
+    /** Pickup Pincode */
     pickupPincode: string;
+    /** Delivery Pincode */
     deliveryPincode: string;
+    /** Weight */
     weight: number;
+    /** Cod Amount */
     codAmount?: number;
   }): Promise<{
+    /** Is Serviceable */
     isServiceable: boolean;
+    /** Available Couriers */
     availableCouriers: string[];
+    /** Estimated Delivery Days */
     estimatedDeliveryDays: number;
   }> {
     try {
       const response = await apiService.post<{
+        /** Is Serviceable */
         isServiceable: boolean;
+        /** Available Couriers */
         availableCouriers: string[];
+        /** Estimated Delivery Days */
         estimatedDeliveryDays: number;
       }>("/shipping/shiprocket/check-serviceability", params);
 
       return (
         response || {
+          /** Is Serviceable */
           isServiceable: false,
+          /** Available Couriers */
           availableCouriers: [],
+          /** Estimated Delivery Days */
           estimatedDeliveryDays: 0,
         }
       );
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.checkServiceability",
         params,
       });
       return {
+        /** Is Serviceable */
         isServiceable: false,
+        /** Available Couriers */
         availableCouriers: [],
+        /** Estimated Delivery Days */
         estimatedDeliveryDays: 0,
       };
     }
@@ -549,19 +692,26 @@ class ShiprocketService {
    * Get NDR (Non-Delivery Report) details
    */
   async getNDRDetails(awbCode: string): Promise<{
+    /** Ndr Status */
     ndrStatus: string;
+    /** Ndr Reason */
     ndrReason: string;
+    /** Action Taken */
     actionTaken?: string;
   } | null> {
     try {
       const response = await apiService.get<{
+        /** Ndr Status */
         ndrStatus: string;
+        /** Ndr Reason */
         ndrReason: string;
+        /** Action Taken */
         actionTaken?: string;
       }>(`/shipping/shiprocket/ndr/${awbCode}`);
       return response || null;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.getNDRDetails",
         awbCode,
       });
@@ -573,11 +723,17 @@ class ShiprocketService {
    * Take action on NDR
    */
   async actionNDR(
+    /** Awb Code */
     awbCode: string,
+    /** Action */
     action: "reattempt" | "rto" | "reroute",
+    /** Params */
     params?: {
+      /** New Address */
       newAddress?: string;
+      /** New Phone */
       newPhone?: string;
+      /** Reattempt Date */
       reattemptDate?: Date;
     }
   ): Promise<boolean> {
@@ -589,6 +745,7 @@ class ShiprocketService {
       return true;
     } catch (error) {
       logError(error as Error, {
+        /** Service */
         service: "ShiprocketService.actionNDR",
         awbCode,
         action,

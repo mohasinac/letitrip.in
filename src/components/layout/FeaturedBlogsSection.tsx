@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedBlogsSection
+ * @description This file contains the FeaturedBlogsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
@@ -15,6 +24,22 @@ export default function FeaturedBlogsSection() {
     fetchFeaturedBlogs();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const fetchFeaturedBlogs = async () => {
     try {
       setLoading(true);
@@ -22,6 +47,7 @@ export default function FeaturedBlogsSection() {
       setBlogs(blogsList.slice(0, 10));
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedBlogsSection.fetchFeaturedBlogs",
       });
       setBlogs([]);

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useUrlPagination
+ * @description This file contains functionality related to useUrlPagination
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useUrlPagination Hook
  *
  * Manages pagination state synchronized with URL parameters.
@@ -26,6 +35,12 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
+/**
+ * UseUrlPaginationOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseUrlPaginationOptions
+ */
 export interface UseUrlPaginationOptions {
   /** Initial page number (default: 1) */
   initialPage?: number;
@@ -41,6 +56,12 @@ export interface UseUrlPaginationOptions {
   debounceMs?: number;
 }
 
+/**
+ * UseUrlPaginationReturn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseUrlPaginationReturn
+ */
 export interface UseUrlPaginationReturn {
   /** Current page number (1-based) */
   page: number;
@@ -69,6 +90,27 @@ export interface UseUrlPaginationReturn {
   /** Reset pagination to initial state */
   reset: () => void;
 }
+
+/**
+ * Function: Use Url Pagination
+ */
+/**
+ * Custom React hook for url pagination
+ *
+ * @returns {any} The useurlpagination result
+ *
+ * @example
+ * useUrlPagination();
+ */
+
+/**
+ * Custom React hook for url pagination
+ *
+ * @returns {any} The useurlpagination result
+ *
+ * @example
+ * useUrlPagination();
+ */
 
 export function useUrlPagination({
   initialPage = 1,

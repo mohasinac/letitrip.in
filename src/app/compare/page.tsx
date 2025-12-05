@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/compare/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -34,8 +43,25 @@ export default function ComparePage() {
     );
   }
 
+  /**
+   * Retrieves value
+   *
+   * @param {ComparisonProduct} product - The product
+   * @param {string} key - The key
+   *
+   * @returns {string} The value result
+   */
+
+  /**
+   * Retrieves value
+   *
+   * @returns {string} The value result
+   */
+
   const getValue = (
+    /** Product */
     product: ComparisonProduct,
+    /** Key */
     key: string
   ): string | number | boolean | null => {
     const value = product[key as keyof ComparisonProduct];
@@ -43,8 +69,25 @@ export default function ComparePage() {
     return value as string | number | boolean;
   };
 
+  /**
+   * Renders value
+   *
+   * @param {string | number | boolean | null} value - The value
+   * @param {string} type - The type
+   *
+   * @returns {string} The rendervalue result
+   */
+
+  /**
+   * Renders value
+   *
+   * @returns {string} The rendervalue result
+   */
+
   const renderValue = (
+    /** Value */
     value: string | number | boolean | null,
+    /** Type */
     type: string
   ) => {
     if (value === null || value === undefined) {
@@ -77,12 +120,31 @@ export default function ComparePage() {
             {String(value)}
           </span>
         );
+      /** Default */
       default:
         return <span>{String(value)}</span>;
     }
   };
 
   // Find best values for highlighting
+  /**
+   * Retrieves best value
+   *
+   * @param {string} key - The key
+   * @param {string} type - The type
+   *
+   * @returns {string} The bestvalue result
+   */
+
+  /**
+   * Retrieves best value
+   *
+   * @param {string} key - The key
+   * @param {string} type - The type
+   *
+   * @returns {string} The bestvalue result
+   */
+
   const getBestValue = (key: string, type: string): string | number | null => {
     const values = products
       .map((p) => getValue(p, key))

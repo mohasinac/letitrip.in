@@ -1,14 +1,34 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/shipping-policy/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import Link from "next/link";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Shipping Policy - Let It Rip",
+  /** Description */
   description:
     "Understand our domestic India shipping for imported products. Delivery times, shipping costs, and tracking information for in-stock and pre-order items.",
+  /** Robots */
   robots: "index, follow",
 };
 
+/**
+ * Performs shipping policy page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ShippingPolicyPage();
+ */
 export default function ShippingPolicyPage() {
   return (
     <LegalPageLayout
@@ -92,6 +112,7 @@ export default function ShippingPolicyPage() {
       </ul>
       <p>
         <em>
+          /** Note */
           Note: Times are estimates and may vary due to location, holidays,
           weather, or carrier delays. Pre-order timelines depend on
           international supplier availability.
@@ -185,6 +206,7 @@ export default function ShippingPolicyPage() {
       </ul>
       <p>
         <em>
+          /** Note */
           Note: Some sellers may offer free shipping on select products. Check
           product page for seller-specific shipping offers.
         </em>

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/reviews/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import {
   getUserFromRequest,
@@ -15,7 +24,42 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 // GET /api/reviews/[id] - Get review details
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Req */
+  req, {});
+ */
+
 export async function GET(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -52,15 +96,20 @@ export async function GET(
     // Admin can see all reviews
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Review */
       review: {
+        /** Id */
         id: doc.id,
         ...review,
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.id.GET",
+      /** Metadata */
       metadata: { reviewId: id },
     });
     return NextResponse.json(
@@ -71,7 +120,42 @@ export async function GET(
 }
 
 // PATCH /api/reviews/[id] - Update review
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Req */
+  req, {});
+ */
+
 export async function PATCH(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -134,16 +218,22 @@ export async function PATCH(
     const updatedDoc = await db.collection(COLLECTIONS.REVIEWS).doc(id).get();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Review */
       review: {
+        /** Id */
         id: updatedDoc.id,
         ...updatedDoc.data(),
       },
+      /** Message */
       message: "Review updated successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.id.PATCH",
+      /** Metadata */
       metadata: { reviewId: id },
     });
     return NextResponse.json(
@@ -154,7 +244,42 @@ export async function PATCH(
 }
 
 // DELETE /api/reviews/[id] - Delete review
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Req */
+  req, {});
+ */
+
 export async function DELETE(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -191,12 +316,16 @@ export async function DELETE(
     await db.collection(COLLECTIONS.REVIEWS).doc(id).delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Review deleted successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.id.DELETE",
+      /** Metadata */
       metadata: { reviewId: id },
     });
     return NextResponse.json(

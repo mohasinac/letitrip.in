@@ -1,16 +1,88 @@
 /**
+ * @fileoverview React Component
+ * @module src/templates/email/WelcomeEmail
+ * @description This file contains the WelcomeEmail component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Welcome Email Template
  * Task 1.5.2 - Email Templates
  */
 
 import React from "react";
 
+/**
+ * WelcomeEmailProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WelcomeEmailProps
+ */
 export interface WelcomeEmailProps {
+  /** User Name */
   userName: string;
+  /** User Email */
   userEmail: string;
+  /** Verification Url */
   verificationUrl?: string;
 }
 
+/**
+ * Performs welcome email operation
+ *
+ * @param {any} {
+  userName,
+  userEmail,
+  verificationUrl,
+} - The {
+  user name,
+  user email,
+  verification url,
+}
+ *
+ * @returns {any} The welcomeemail result
+ *
+ * @example
+ * WelcomeEmail({
+  userName,
+  userEmail,
+  verificationUrl,
+});
+ */
+
+/**
+ * W
+ * @constant
+ */
+/**
+ * Performs welcome email operation
+ *
+ * @param {any} {
+  userName,
+  userEmail,
+  verificationUrl,
+} - The {
+  user name,
+  user email,
+  verification url,
+}
+ *
+ * @returns {any} The welcomeemail result
+ *
+ * @example
+ * WelcomeEmail({
+  userName,
+  userEmail,
+  verificationUrl,
+});
+ */
+
+/**
+ * W
+ * @constant
+ */
 export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
   userName,
   userEmail,
@@ -110,106 +182,188 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
 };
 
 const styles = {
+  /** Body */
   body: {
+    /** Margin */
     margin: 0,
+    /** Padding */
     padding: 0,
+    /** Font Family */
     fontFamily: "Arial, sans-serif",
+    /** Background Color */
     backgroundColor: "#f5f5f5",
   },
+  /** Container */
   container: {
+    /** Max Width */
     maxWidth: "600px",
+    /** Margin */
     margin: "0 auto",
+    /** Background Color */
     backgroundColor: "#ffffff",
   },
+  /** Header */
   header: {
+    /** Background Color */
     backgroundColor: "#10b981",
+    /** Color */
     color: "#ffffff",
+    /** Padding */
     padding: "30px 20px",
+    /** Text Align */
     textAlign: "center" as const,
   },
+  /** Logo */
   logo: {
+    /** Margin */
     margin: 0,
+    /** Font Size */
     fontSize: "28px",
   },
+  /** Content */
   content: {
+    /** Padding */
     padding: "40px 20px",
   },
+  /** Title */
   title: {
+    /** Margin */
     margin: "0 0 20px 0",
+    /** Font Size */
     fontSize: "24px",
+    /** Color */
     color: "#1f2937",
   },
+  /** Text */
   text: {
+    /** Margin */
     margin: "15px 0",
+    /** Font Size */
     fontSize: "14px",
+    /** Color */
     color: "#6b7280",
+    /** Line Height */
     lineHeight: "1.6",
   },
+  /** Button Container */
   buttonContainer: {
+    /** Text Align */
     textAlign: "center" as const,
+    /** Margin */
     margin: "30px 0",
   },
+  /** Button */
   button: {
+    /** Display */
     display: "inline-block",
+    /** Background Color */
     backgroundColor: "#10b981",
+    /** Color */
     color: "#ffffff",
+    /** Padding */
     padding: "12px 30px",
+    /** Border Radius */
     borderRadius: "6px",
+    /** Text Decoration */
     textDecoration: "none",
+    /** Font Size */
     fontSize: "16px",
+    /** Font Weight */
     fontWeight: "600" as const,
   },
+  /** Features Section */
   featuresSection: {
+    /** Margin */
     margin: "30px 0",
   },
+  /** Features Title */
   featuresTitle: {
+    /** Margin */
     margin: "0 0 20px 0",
+    /** Font Size */
     fontSize: "18px",
+    /** Color */
     color: "#1f2937",
   },
+  /** Feature */
   feature: {
+    /** Display */
     display: "flex",
+    /** Padding */
     padding: "15px 0",
+    /** Border Bottom */
     borderBottom: "1px solid #e5e7eb",
   },
+  /** Feature Icon */
   featureIcon: {
+    /** Font Size */
     fontSize: "32px",
+    /** Margin Right */
     marginRight: "15px",
   },
+  /** Feature Name */
   featureName: {
+    /** Margin */
     margin: "0 0 5px 0",
+    /** Font Size */
     fontSize: "16px",
+    /** Color */
     color: "#1f2937",
   },
+  /** Feature Desc */
   featureDesc: {
+    /** Margin */
     margin: 0,
+    /** Font Size */
     fontSize: "14px",
+    /** Color */
     color: "#6b7280",
   },
+  /** Info Box */
   infoBox: {
+    /** Background Color */
     backgroundColor: "#f9fafb",
+    /** Padding */
     padding: "15px",
+    /** Border Radius */
     borderRadius: "6px",
+    /** Margin */
     margin: "20px 0",
   },
+  /** Info Text */
   infoText: {
+    /** Margin */
     margin: "5px 0",
+    /** Font Size */
     fontSize: "14px",
+    /** Color */
     color: "#1f2937",
   },
+  /** Footer */
   footer: {
+    /** Padding */
     padding: "20px",
+    /** Text Align */
     textAlign: "center" as const,
+    /** Background Color */
     backgroundColor: "#f9fafb",
+    /** Border Top */
     borderTop: "1px solid #e5e7eb",
   },
+  /** Footer Text */
   footerText: {
+    /** Margin */
     margin: "10px 0",
+    /** Font Size */
     fontSize: "12px",
+    /** Color */
     color: "#9ca3af",
   },
+  /** Link */
   link: {
+    /** Color */
     color: "#10b981",
+    /** Text Decoration */
     textDecoration: "none",
   },
 };

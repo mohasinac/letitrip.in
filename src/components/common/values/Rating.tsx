@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Rating
+ * @description This file contains the Rating component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Rating Display Component
  *
  * Displays star ratings with optional review count.
@@ -16,21 +25,58 @@ import { Star } from "lucide-react";
 import { formatCompactNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
+/**
+ * RatingProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RatingProps
+ */
 interface RatingProps {
+  /** Value */
   value: number;
+  /** Max Value */
   maxValue?: number;
+  /** Review Count */
   reviewCount?: number;
+  /** Show Number */
   showNumber?: boolean;
+  /** Size */
   size?: "xs" | "sm" | "md" | "lg";
+  /** Class Name */
   className?: string;
 }
 
 const sizeClasses = {
+  /** Xs */
   xs: { star: 12, text: "text-xs" },
+  /** Sm */
   sm: { star: 14, text: "text-sm" },
+  /** Md */
   md: { star: 16, text: "text-base" },
+  /** Lg */
   lg: { star: 20, text: "text-lg" },
 };
+
+/**
+ * Function: Rating
+ */
+/**
+ * Performs rating operation
+ *
+ * @returns {any} The rating result
+ *
+ * @example
+ * Rating();
+ */
+
+/**
+ * Performs rating operation
+ *
+ * @returns {any} The rating result
+ *
+ * @example
+ * Rating();
+ */
 
 export function Rating({
   value,

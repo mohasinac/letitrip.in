@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/tickets/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
@@ -6,9 +15,31 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Build update object for each action (excluding delete which needs special handling)
+/**
+ * Function: Build Ticket Update
+ */
+/**
+ * Performs build ticket update operation
+ *
+ * @param {string} action - The action
+ * @param {Date} now - The now
+ * @param {any} [updates] - The updates
+ *
+ * @returns {string} The buildticketupdate result
+ */
+
+/**
+ * Performs build ticket update operation
+ *
+ * @returns {string} The buildticketupdate result
+ */
+
 function buildTicketUpdate(
+  /** Action */
   action: string,
+  /** Now */
   now: Date,
+  /** Updates */
   updates?: any,
 ): Record<string, any> | null {
   switch (action) {
@@ -18,8 +49,11 @@ function buildTicketUpdate(
     case "assign":
       if (!updates?.assignedTo) return null;
       return {
+        /** Assigned To */
         assignedTo: updates.assignedTo,
+        /** Status */
         status: "in-progress",
+        /** Updated At */
         updatedAt: now,
       };
     case "resolve":
@@ -28,6 +62,7 @@ function buildTicketUpdate(
       return { status: "closed", resolvedAt: now, updatedAt: now };
     case "escalate":
       return { status: "escalated", priority: "urgent", updatedAt: now };
+    /** Default */
     default:
       return null;
   }
@@ -38,6 +73,32 @@ function buildTicketUpdate(
  * Bulk operations on tickets (admin only)
  * Actions: delete, update, assign, resolve, close, escalate
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let data: any;
   try {
@@ -52,12 +113,14 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!action) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: "Action is required",
       });
     }
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       throw new ValidationError("Validation failed", {
+        /** Ids */
         ids: "At least one ticket ID is required",
       });
     }
@@ -72,6 +135,7 @@ export async function POST(request: NextRequest) {
     ];
     if (!validActions.includes(action)) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: `Invalid action. Must be one of: ${validActions.join(", ")}`,
       });
     }
@@ -81,7 +145,9 @@ export async function POST(request: NextRequest) {
     const now = new Date();
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -134,8 +200,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: results,
+      /** Message */
       message: `Bulk ${action} completed. Success: ${results.success.length}, Failed: ${results.failed.length}`,
     });
   } catch (error: any) {
@@ -146,7 +215,9 @@ export async function POST(request: NextRequest) {
       );
     }
     logError(error as Error, {
+      /** Component */
       component: "API.tickets.bulk",
+      /** Metadata */
       metadata: { action: data?.action, idsCount: data?.ids?.length },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });

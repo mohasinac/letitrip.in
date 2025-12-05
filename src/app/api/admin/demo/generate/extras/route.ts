@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/extras/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -66,6 +75,35 @@ const TICKET_VIDEOS = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
 ];
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -75,82 +113,136 @@ export async function POST(request: NextRequest) {
     const timestamp = new Date();
 
     const counts = {
+      /** Hero Slides */
       heroSlides: 0,
+      /** Featured Sections */
       featuredSections: 0,
+      /** Featured Shops */
       featuredShops: 0,
+      /** Featured Categories */
       featuredCategories: 0,
+      /** Carts */
       carts: 0,
+      /** Favorites */
       favorites: 0,
+      /** Notifications */
       notifications: 0,
+      /** Tickets */
       tickets: 0,
+      /** Returns */
       returns: 0,
+      /** Conversations */
       conversations: 0,
+      /** Messages */
       messages: 0,
+      /** Coupons */
       coupons: 0,
+      /** Settings */
       settings: 0,
+      /** Feature Flags */
       featureFlags: 0,
     };
 
     // Hero Slides (10) with Beyblade-themed content
     const heroSlideData = [
       {
+        /** Title */
         title: "Beyblade X Launch Sale",
+        /** Subtitle */
         subtitle: "Up to 50% off on the latest X series",
+        /** Cta */
         cta: "Shop Now",
+        /** Cta Link */
         ctaLink: "/categories/beyblade-x",
       },
       {
+        /** Title */
         title: "Rare Vintage Collection",
+        /** Subtitle */
         subtitle: "Original series Beyblades in stock",
+        /** Cta */
         cta: "Explore",
+        /** Cta Link */
         ctaLink: "/categories/vintage-beyblades",
       },
       {
+        /** Title */
         title: "Tournament Ready Gear",
+        /** Subtitle */
         subtitle: "Pro launchers and stadiums",
+        /** Cta */
         cta: "Shop Gear",
+        /** Cta Link */
         ctaLink: "/categories/launchers-gear",
       },
       {
+        /** Title */
         title: "Metal Fight Masters",
+        /** Subtitle */
         subtitle: "Galaxy Pegasus & L-Drago available",
+        /** Cta */
         cta: "View Collection",
+        /** Cta Link */
         ctaLink: "/categories/metal-fight",
       },
       {
+        /** Title */
         title: "Gold Edition Release",
+        /** Subtitle */
         subtitle: "Limited gold plated Beyblades",
+        /** Cta */
         cta: "Grab Now",
+        /** Cta Link */
         ctaLink: "/categories/gold-series",
       },
       {
+        /** Title */
         title: "Flash Sale - 24 Hours",
+        /** Subtitle */
         subtitle: "Attack types at lowest prices",
+        /** Cta */
         cta: "Shop Sale",
+        /** Cta Link */
         ctaLink: "/categories/attack-types",
       },
       {
+        /** Title */
         title: "Collector's Paradise",
+        /** Subtitle */
         subtitle: "Sealed boxes and rare finds",
+        /** Cta */
         cta: "Browse",
+        /** Cta Link */
         ctaLink: "/categories/collector-items",
       },
       {
+        /** Title */
         title: "Free Shipping Week",
+        /** Subtitle */
         subtitle: "On orders above ₹2000",
+        /** Cta */
         cta: "Shop Now",
+        /** Cta Link */
         ctaLink: "/products",
       },
       {
+        /** Title */
         title: "Live Auctions",
+        /** Subtitle */
         subtitle: "Bid on rare collectible Beyblades",
+        /** Cta */
         cta: "Join Auction",
+        /** Cta Link */
         ctaLink: "/auctions",
       },
       {
+        /** Title */
         title: "Blader Membership",
+        /** Subtitle */
         subtitle: "Exclusive deals for members",
+        /** Cta */
         cta: "Join Now",
+        /** Cta Link */
         ctaLink: "/membership",
       },
     ];
@@ -161,8 +253,11 @@ export async function POST(request: NextRequest) {
         .collection(COLLECTIONS.HERO_SLIDES)
         .doc()
         .set({
+          /** Title */
           title: `${DEMO_PREFIX}${heroSlideData[i].title}`,
+          /** Subtitle */
           subtitle: heroSlideData[i].subtitle,
+          /** Description */
           description: `Experience the best ${heroSlideData[i].title.toLowerCase()} at Letitrip`,
           image_url: HERO_IMAGES[i % HERO_IMAGES.length],
           mobile_image_url: HERO_MOBILE_IMAGES[i % HERO_MOBILE_IMAGES.length],
@@ -179,15 +274,21 @@ export async function POST(request: NextRequest) {
             "#e94560",
           ][i % 5],
           text_color: "#ffffff",
+          /** Overlay */
           overlay: true,
           overlay_opacity: 0.4,
+          /** Position */
           position: i + 1,
           is_active: i < 8,
           start_date: timestamp,
           end_date: new Date(timestamp.getTime() + 30 * 24 * 60 * 60 * 1000),
+          /** Analytics */
           analytics: {
+            /** Views */
             views: Math.floor(Math.random() * 10000) + 1000,
+            /** Clicks */
             clicks: Math.floor(Math.random() * 500) + 50,
+            /** Ctr */
             ctr: (Math.random() * 5 + 1).toFixed(2),
           },
           created_at: timestamp,
@@ -199,51 +300,83 @@ export async function POST(request: NextRequest) {
     // Featured Sections for homepage - Beyblade focused
     const sectionTypes = [
       {
+        /** Type */
         type: "featured_products",
+        /** Title */
         title: "Featured Beyblades",
+        /** Subtitle */
         subtitle: "Hand-picked for bladers",
+        /** Display Count */
         displayCount: 8,
       },
       {
+        /** Type */
         type: "new_arrivals",
+        /** Title */
         title: "New Arrivals",
+        /** Subtitle */
         subtitle: "Just landed",
+        /** Display Count */
         displayCount: 12,
       },
       {
+        /** Type */
         type: "best_sellers",
+        /** Title */
         title: "Top Sellers",
+        /** Subtitle */
         subtitle: "Fan favorites this week",
+        /** Display Count */
         displayCount: 8,
       },
       {
+        /** Type */
         type: "on_sale",
+        /** Title */
         title: "Hot Deals",
+        /** Subtitle */
         subtitle: "Limited time offers",
+        /** Display Count */
         displayCount: 10,
       },
       {
+        /** Type */
         type: "featured_auctions",
+        /** Title */
         title: "Live Auctions",
+        /** Subtitle */
         subtitle: "Bid on rare Beyblades",
+        /** Display Count */
         displayCount: 6,
       },
       {
+        /** Type */
         type: "featured_shops",
+        /** Title */
         title: "Top Sellers",
+        /** Subtitle */
         subtitle: "Verified Beyblade shops",
+        /** Display Count */
         displayCount: 6,
       },
       {
+        /** Type */
         type: "featured_categories",
+        /** Title */
         title: "Shop by Type",
+        /** Subtitle */
         subtitle: "Attack, Defense, Stamina",
+        /** Display Count */
         displayCount: 8,
       },
       {
+        /** Type */
         type: "vintage_collection",
+        /** Title */
         title: "Vintage & Rare",
+        /** Subtitle */
         subtitle: "Classic Beyblades",
+        /** Display Count */
         displayCount: 8,
       },
     ];
@@ -253,8 +386,11 @@ export async function POST(request: NextRequest) {
         .collection(COLLECTIONS.FEATURED_SECTIONS)
         .doc()
         .set({
+          /** Type */
           type: sectionTypes[i].type,
+          /** Title */
           title: `${DEMO_PREFIX}${sectionTypes[i].title}`,
+          /** Subtitle */
           subtitle: sectionTypes[i].subtitle,
           background_image:
             i % 2 === 0 ? HERO_IMAGES[i % HERO_IMAGES.length] : null,
@@ -262,6 +398,7 @@ export async function POST(request: NextRequest) {
           sort_order: i + 1,
           is_active: true,
           display_count: sectionTypes[i].displayCount,
+          /** Layout */
           layout: ["grid", "carousel", "list"][i % 3],
           show_view_all: true,
           view_all_link: `/products?section=${sectionTypes[i].type}`,
@@ -280,6 +417,7 @@ export async function POST(request: NextRequest) {
           .collection(COLLECTIONS.SHOPS)
           .doc(shops[i].id)
           .update({
+            /** Featured */
             featured: true,
             featured_order: i + 1,
             featured_badge: [
@@ -300,38 +438,63 @@ export async function POST(request: NextRequest) {
     // Coupons with Beyblade themed codes
     const couponData = [
       {
+        /** Code */
         code: "LETITBEY10",
+        /** Discount */
         discount: 10,
+        /** Type */
         type: "percentage",
+        /** Min Order */
         minOrder: 500,
+        /** Max Discount */
         maxDiscount: 200,
       },
       {
+        /** Code */
         code: "BURST100",
+        /** Discount */
         discount: 100,
+        /** Type */
         type: "fixed",
+        /** Min Order */
         minOrder: 1000,
+        /** Max Discount */
         maxDiscount: 100,
       },
       {
+        /** Code */
         code: "FIRSTSPIN20",
+        /** Discount */
         discount: 20,
+        /** Type */
         type: "percentage",
+        /** Min Order */
         minOrder: 800,
+        /** Max Discount */
         maxDiscount: 500,
       },
       {
+        /** Code */
         code: "FREESHIP",
+        /** Discount */
         discount: 0,
+        /** Type */
         type: "free_shipping",
+        /** Min Order */
         minOrder: 1500,
+        /** Max Discount */
         maxDiscount: 100,
       },
       {
+        /** Code */
         code: "GOLDRUSH30",
+        /** Discount */
         discount: 30,
+        /** Type */
         type: "percentage",
+        /** Min Order */
         minOrder: 2000,
+        /** Max Discount */
         maxDiscount: 1000,
       },
     ];
@@ -341,7 +504,9 @@ export async function POST(request: NextRequest) {
         .collection(COLLECTIONS.COUPONS)
         .doc()
         .set({
+          /** Code */
           code: `${DEMO_PREFIX}${coupon.code}`,
+          /** Description */
           description: `Get ${coupon.type === "percentage" ? coupon.discount + "%" : "₹" + coupon.discount} off`,
           discount_type: coupon.type,
           discount_value: coupon.discount,
@@ -372,8 +537,11 @@ export async function POST(request: NextRequest) {
           const price = 500 + Math.random() * 5000;
           cartItems.push({
             product_id: products[(buyers.indexOf(buyer) + i) % products.length],
+            /** Quantity */
             quantity: 1 + Math.floor(Math.random() * 2),
+            /** Price */
             price: Math.round(price),
+            /** Image */
             image: PRODUCT_IMAGES[i % PRODUCT_IMAGES.length],
           });
           subtotal += price;
@@ -384,8 +552,10 @@ export async function POST(request: NextRequest) {
           .doc()
           .set({
             user_id: buyer.id,
+            /** Items */
             items: cartItems,
             item_count: cartItems.length,
+            /** Subtotal */
             subtotal: Math.round(subtotal),
             updated_at: timestamp,
             created_at: timestamp,
@@ -429,23 +599,35 @@ export async function POST(request: NextRequest) {
     if (users) {
       const notificationTypes = [
         {
+          /** Type */
           type: "order_shipped",
+          /** Title */
           title: "Your order is on the way!",
+          /** Icon */
           icon: "truck",
         },
         {
+          /** Type */
           type: "price_drop",
+          /** Title */
           title: "Price dropped on your wishlist item!",
+          /** Icon */
           icon: "tag",
         },
         {
+          /** Type */
           type: "auction_ending",
+          /** Title */
           title: "Auction ending soon!",
+          /** Icon */
           icon: "clock",
         },
         {
+          /** Type */
           type: "new_message",
+          /** Title */
           title: "You have a new message",
+          /** Icon */
           icon: "message",
         },
         { type: "review_reminder", title: "Share your feedback", icon: "star" },
@@ -459,14 +641,23 @@ export async function POST(request: NextRequest) {
           .collection(COLLECTIONS.NOTIFICATIONS)
           .doc()
           .set({
+            /** User Id */
             userId: user.id,
+            /** Type */
             type: notif.type,
+            /** Title */
             title: notif.title,
+            /** Message */
             message: `Hey ${user.name}, ${notif.title.toLowerCase()}`,
+            /** Icon */
             icon: notif.icon,
+            /** Image */
             image: PRODUCT_IMAGES[users.indexOf(user) % PRODUCT_IMAGES.length],
+            /** Action Url */
             actionUrl: "/orders",
+            /** Is Read */
             isRead: Math.random() > 0.6,
+            /** Created At */
             createdAt: timestamp,
           });
         counts.notifications++;
@@ -477,43 +668,67 @@ export async function POST(request: NextRequest) {
     if (buyers) {
       const ticketCategories = [
         {
+          /** Category */
           category: "order_issue",
+          /** Subject */
           subject: "Beyblade order not received",
+          /** Priority */
           priority: "high",
         },
         {
+          /** Category */
           category: "payment",
+          /** Subject */
           subject: "Payment failed for launcher purchase",
+          /** Priority */
           priority: "high",
         },
         {
+          /** Category */
           category: "shipping",
+          /** Subject */
           subject: "Wrong tracking for stadium order",
+          /** Priority */
           priority: "medium",
         },
         {
+          /** Category */
           category: "product_inquiry",
+          /** Subject */
           subject: "Is this Beyblade authentic Takara Tomy?",
+          /** Priority */
           priority: "low",
         },
         {
+          /** Category */
           category: "return_request",
+          /** Subject */
           subject: "Want to return damaged Beyblade",
+          /** Priority */
           priority: "medium",
         },
         {
+          /** Category */
           category: "refund",
+          /** Subject */
           subject: "Refund not processed for cancelled order",
+          /** Priority */
           priority: "high",
         },
         {
+          /** Category */
           category: "account",
+          /** Subject */
           subject: "Cannot login to my blader account",
+          /** Priority */
           priority: "medium",
         },
         {
+          /** Category */
           category: "technical",
+          /** Subject */
           subject: "Product images not loading",
+          /** Priority */
           priority: "low",
         },
       ];
@@ -527,14 +742,23 @@ export async function POST(request: NextRequest) {
           .collection(COLLECTIONS.SUPPORT_TICKETS)
           .doc()
           .set({
+            /** Ticket Number */
             ticketNumber: `${DEMO_PREFIX}TKT-${String(t + 1).padStart(5, "0")}`,
+            /** User Id */
             userId: buyers[t % buyers.length].id,
+            /** User Name */
             userName: buyers[t % buyers.length].name,
+            /** User Email */
             userEmail: `${buyers[t % buyers.length].name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
+            /** Category */
             category: ticketData.category,
+            /** Subject */
             subject: ticketData.subject,
+            /** Description */
             description: `I need help with: ${ticketData.subject}. Please assist me as soon as possible.`,
+            /** Priority */
             priority: ticketData.priority,
+            /** Status */
             status: [
               "open",
               "in_progress",
@@ -542,33 +766,46 @@ export async function POST(request: NextRequest) {
               "resolved",
               "closed",
             ][t % 5],
+            /** Attachments */
             attachments: hasAttachment
               ? [
                   {
+                    /** Type */
                     type: "image",
+                    /** Url */
                     url: TICKET_ATTACHMENTS[t % TICKET_ATTACHMENTS.length],
+                    /** Name */
                     name: "screenshot.jpg",
                   },
                 ]
               : [],
+            /** Videos */
             videos: hasVideo
               ? [
                   {
+                    /** Url */
                     url: TICKET_VIDEOS[t % TICKET_VIDEOS.length],
+                    /** Name */
                     name: "screen_recording.mp4",
                   },
                 ]
               : [],
+            /** Assigned To */
             assignedTo: t % 3 === 0 ? "support_agent_1" : null,
+            /** Tags */
             tags: [ticketData.category, ticketData.priority],
+            /** Response Time */
             responseTime:
               t % 2 === 0 ? Math.floor(Math.random() * 24) + 1 : null, // hours
+            /** Satisfaction */
             satisfaction:
               t % 5 === 4 ? Math.floor(Math.random() * 2) + 4 : null, // 4-5 stars
+            /** Created At */
             createdAt: new Date(
               timestamp.getTime() -
                 Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
             ),
+            /** Updated At */
             updatedAt: timestamp,
           });
         counts.tickets++;
@@ -601,9 +838,13 @@ export async function POST(request: NextRequest) {
             user_name: buyer.name,
             shop_id: shop.id,
             product_id: products[r % products.length],
+            /** Reason */
             reason: returnReasons[r % returnReasons.length],
+            /** Description */
             description: `${returnReasons[r % returnReasons.length]}. Please process my return request.`,
+            /** Status */
             status: ["pending", "approved", "rejected", "completed"][r % 4],
+            /** Media */
             media: hasImages
               ? [
                   RETURN_IMAGES[r % RETURN_IMAGES.length],
@@ -640,13 +881,21 @@ export async function POST(request: NextRequest) {
           .collection(COLLECTIONS.CONVERSATIONS)
           .doc(conversationId)
           .set({
+            /** Participants */
             participants: [buyer.id, shop.ownerId],
+            /** Participant Names */
             participantNames: [buyer.name, shop.name],
+            /** Type */
             type: "buyer_seller",
+            /** Shop Id */
             shopId: shop.id,
+            /** Last Message */
             lastMessage: "Thanks for your query!",
+            /** Last Message At */
             lastMessageAt: timestamp,
+            /** Unread Count */
             unreadCount: { [buyer.id]: 0, [shop.ownerId]: 1 },
+            /** Created At */
             createdAt: timestamp,
           });
         counts.conversations++;
@@ -655,12 +904,16 @@ export async function POST(request: NextRequest) {
         const messages = [
           { sender: buyer.id, text: "Hi, is this item available?" },
           {
+            /** Sender */
             sender: shop.ownerId,
+            /** Text */
             text: "Yes, it's available! Would you like to purchase?",
           },
           { sender: buyer.id, text: "What's the best price you can offer?" },
           {
+            /** Sender */
             sender: shop.ownerId,
+            /** Text */
             text: "I can offer 10% discount on this item.",
           },
           { sender: buyer.id, text: "Great, I'll place the order now!" },
@@ -673,10 +926,15 @@ export async function POST(request: NextRequest) {
             .doc()
             .set({
               conversationId,
+              /** Sender Id */
               senderId: messages[m].sender,
+              /** Text */
               text: messages[m].text,
+              /** Type */
               type: "text",
+              /** Is Read */
               isRead: m < messages.length - 1,
+              /** Created At */
               createdAt: new Date(
                 timestamp.getTime() - (messages.length - m) * 60 * 1000,
               ),
@@ -698,8 +956,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "extras",
+      /** Data */
       data: counts,
     });
   } catch (error: unknown) {

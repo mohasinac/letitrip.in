@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/coupons/[code]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
@@ -12,7 +21,39 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
  * - Public: Active coupons only
  * - Owner/Admin: All statuses
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ code: string }> },
 ) {
@@ -55,7 +96,39 @@ export async function GET(
  * PATCH /api/coupons/[code]
  * Update coupon (owner/admin only)
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ code: string }> },
 ) {
@@ -100,7 +173,9 @@ export async function PATCH(
     await Collections.coupons().doc(coupon.id).update(update);
     const updated = await Collections.coupons().doc(coupon.id).get();
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
@@ -116,7 +191,39 @@ export async function PATCH(
  * DELETE /api/coupons/[code]
  * Delete coupon (owner/admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ code: string }> },
 ) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/favorites/list/[type]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
@@ -5,7 +14,42 @@ import { getCurrentUser } from "@/app/api/lib/session";
 const VALID_TYPES = ["product", "shop", "category", "auction"];
 
 // GET /api/favorites/list/[type] - Get user's favorites by type
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ type: string }> },
 ) {
@@ -45,6 +89,7 @@ export async function GET(
     const resultDocs = hasNextPage ? docs.slice(0, limit) : docs;
 
     const favorites = resultDocs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -54,9 +99,13 @@ export async function GET(
       string,
       () => FirebaseFirestore.CollectionReference
     > = {
+      /** Product */
       product: Collections.products,
+      /** Shop */
       shop: Collections.shops,
+      /** Category */
       category: Collections.categories,
+      /** Auction */
       auction: Collections.auctions,
     };
 
@@ -71,6 +120,7 @@ export async function GET(
 
         if (itemDoc.exists) {
           items.push({
+            /** Id */
             id: itemDoc.id,
             ...itemDoc.data(),
             favorited_at: (fav as any).created_at,
@@ -85,8 +135,11 @@ export async function GET(
         : null;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: items,
+      /** Pagination */
       pagination: {
         limit,
         hasNextPage,

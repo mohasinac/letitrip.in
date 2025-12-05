@@ -1,57 +1,103 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ResourceListWrapper
+ * @description This file contains the ResourceListWrapper component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 import { Grid, List, Download, Filter } from "lucide-react";
 
+/**
+ * StatsCard interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatsCard
+ */
 interface StatsCard {
+  /** Label */
   label: string;
+  /** Value */
   value: string | number;
+  /** Icon */
   icon?: ReactNode;
+  /** Color */
   color?: string;
 }
 
+/**
+ * ResourceListWrapperProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceListWrapperProps
+ */
 interface ResourceListWrapperProps {
   // Context
+  /** Context */
   context: "admin" | "seller" | "public";
 
   // Header
+  /** Title */
   title: string;
+  /** Description */
   description?: string;
+  /** Create Button */
   createButton?: ReactNode;
 
   // Stats Cards (optional)
+  /** Stats */
   stats?: StatsCard[];
 
   // Filter Sidebar (optional - pass your own component)
+  /** Filter Sidebar */
   filterSidebar?: ReactNode;
+  /** Show Filter Sidebar */
   showFilterSidebar?: boolean;
 
   // Search
+  /** Search Placeholder */
   searchPlaceholder?: string;
+  /** Search Value */
   searchValue?: string;
+  /** On Search Change */
   onSearchChange?: (value: string) => void;
 
   // View Toggle (optional)
+  /** View Mode */
   viewMode?: "grid" | "table";
+  /** On View Mode Change */
   onViewModeChange?: (mode: "grid" | "table") => void;
+  /** Show View Toggle */
   showViewToggle?: boolean;
 
   // Bulk Actions Bar (pass your own component if needed)
+  /** Bulk Actions Bar */
   bulkActionsBar?: ReactNode;
 
   // Export (admin/seller only)
+  /** On Export */
   onExport?: () => void;
+  /** Show Export */
   showExport?: boolean;
 
   // Content
+  /** Children */
   children: ReactNode;
 
   // Pagination
+  /** Pagination */
   pagination?: ReactNode;
 
   // Mobile Filter (pass your own component)
+  /** Mobile Filter Sidebar */
   mobileFilterSidebar?: ReactNode;
+  /** Mobile Filter Open */
   mobileFilterOpen?: boolean;
+  /** On Mobile Filter Toggle */
   onMobileFilterToggle?: () => void;
 }
 

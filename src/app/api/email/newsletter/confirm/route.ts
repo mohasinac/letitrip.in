@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/email/newsletter/confirm/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Newsletter Confirm API Route
  *
  * Confirm newsletter subscription
@@ -12,6 +21,35 @@ import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET - Confirm newsletter subscription
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -49,7 +87,9 @@ export async function GET(req: NextRequest) {
 
     // Confirm subscription
     await subscriptionDoc.ref.update({
+      /** Confirmed */
       confirmed: true,
+      /** Confirmed At */
       confirmedAt: admin.firestore.FieldValue.serverTimestamp(),
       confirmationToken: admin.firestore.FieldValue.delete(), // Remove token after confirmation
     });
@@ -69,20 +109,30 @@ export async function GET(req: NextRequest) {
 
     // Log confirmation event
     await db.collection("emailEvents").add({
+      /** Type */
       type: "newsletter_confirm",
+      /** Email */
       email: subscription.email,
+      /** Timestamp */
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     // Send welcome email
     await db.collection("emailQueue").add({
+      /** To */
       to: subscription.email,
+      /** Template */
       template: "newsletter_welcome",
+      /** Data */
       data: {
+        /** Recipient Name */
         recipientName: subscription.name,
+        /** Recipient Email */
         recipientEmail: subscription.email,
       },
+      /** Status */
       status: "pending",
+      /** Created At */
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -92,6 +142,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "NewsletterConfirmAPI.GET",
     });
     return NextResponse.json(

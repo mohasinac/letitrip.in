@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -35,10 +44,12 @@ import type {
 
 export default function AdminDemoPage() {
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "AdminDemoPage.fetchExistingData" });
       setSummary(getEmptySummary());
@@ -53,7 +64,9 @@ export default function AdminDemoPage() {
   const [summary, setSummary] = useState<ExtendedSummary | null>(null);
   const [credentials, setCredentials] = useState<CredentialsData | null>(null);
   const [deletionResult, setDeletionResult] = useState<{
+    /** Total */
     total: number;
+    /** Breakdown */
     breakdown: DeletionBreakdown[];
   } | null>(null);
 
@@ -126,7 +139,9 @@ export default function AdminDemoPage() {
 
   const runStep = useCallback(
     async (
+      /** Step */
       step: DemoStep,
+      /** State */
       state: GenerationState
     ): Promise<{ success: boolean; state: GenerationState }> => {
       setCurrentStep(step);
@@ -141,7 +156,9 @@ export default function AdminDemoPage() {
             if (result.success && result.data) {
               state.categoryMap = result.data.categoryMap;
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -155,7 +172,9 @@ export default function AdminDemoPage() {
               state.users = [...result.data.sellers, ...result.data.buyers];
               state.credentials = result.data.credentials;
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -168,7 +187,9 @@ export default function AdminDemoPage() {
             if (result.success && result.data) {
               state.shops = result.data.shops;
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -186,7 +207,9 @@ export default function AdminDemoPage() {
               state.products = result.data.products;
               state.productsByShop = result.data.productsByShop;
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -203,7 +226,9 @@ export default function AdminDemoPage() {
             if (result.success && result.data) {
               state.auctions = result.data.auctions;
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -219,7 +244,9 @@ export default function AdminDemoPage() {
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -235,7 +262,9 @@ export default function AdminDemoPage() {
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count,
               });
             }
@@ -252,7 +281,9 @@ export default function AdminDemoPage() {
             );
             if (result.success && result.data) {
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count:
                   result.data.orders +
                   result.data.payments +
@@ -263,9 +294,13 @@ export default function AdminDemoPage() {
 
           case "extras":
             result = await demoDataService.generateExtras({
+              /** Shops */
               shops: state.shops,
+              /** Buyers */
               buyers: state.buyers,
+              /** Users */
               users: state.users,
+              /** Products */
               products: state.products,
               scale,
             });
@@ -275,7 +310,9 @@ export default function AdminDemoPage() {
                 0
               );
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: totalExtras,
               });
             }
@@ -285,12 +322,15 @@ export default function AdminDemoPage() {
             result = await demoDataService.generateSettings(scale);
             if (result.success && result.data) {
               updateStepStatus(step, {
+                /** Status */
                 status: "completed",
+                /** Count */
                 count: result.data.count || 1,
               });
             }
             break;
 
+          /** Default */
           default:
             throw new Error(`Unknown step: ${step}`);
         }
@@ -309,6 +349,22 @@ export default function AdminDemoPage() {
     },
     [scale, updateStepStatus]
   );
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleGenerateAll = async () => {
     try {
@@ -374,6 +430,26 @@ export default function AdminDemoPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {DemoStep} step - The step
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {DemoStep} step - The step
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleGenerateSingleStep = async (step: DemoStep) => {
     try {
       setGenerating(true);
@@ -421,13 +497,17 @@ export default function AdminDemoPage() {
         const result = await demoDataService.cleanupStep(step);
         if (result.success && result.data) {
           updateCleanupStepStatus(step, {
+            /** Status */
             status: "completed",
+            /** Count */
             count: result.data.count,
           });
           return { success: true, count: result.data.count };
         } else {
           updateCleanupStepStatus(step, {
+            /** Status */
             status: "error",
+            /** Error */
             error: result.error || "Unknown error",
           });
           return { success: false, count: 0 };
@@ -441,6 +521,22 @@ export default function AdminDemoPage() {
     },
     [updateCleanupStepStatus]
   );
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleStepByStepCleanup = async () => {
     if (
@@ -504,6 +600,26 @@ export default function AdminDemoPage() {
     setCleanupPaused(false);
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {DemoStep} step - The step
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {DemoStep} step - The step
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCleanupSingleStep = async (step: DemoStep) => {
     try {
       setCleaning(true);
@@ -529,6 +645,18 @@ export default function AdminDemoPage() {
     }
   };
 
+  /**
+   * Handles pause toggle event
+   *
+   * @returns {any} The handlepausetoggle result
+   */
+
+  /**
+   * Handles pause toggle event
+   *
+   * @returns {any} The handlepausetoggle result
+   */
+
   const handlePauseToggle = () => {
     if (generating) {
       const newPaused = !paused;
@@ -542,6 +670,18 @@ export default function AdminDemoPage() {
       toast.info(newPaused ? "Cleanup paused" : "Cleanup resuming...");
     }
   };
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
 
   const handleCancel = () => {
     setCancelled(true);
@@ -650,7 +790,9 @@ export default function AdminDemoPage() {
             <div className="space-y-3">
               {GENERATION_STEPS.map(
                 (
+                  /** Step Config */
                   stepConfig: (typeof GENERATION_STEPS)[number],
+                  /** Index */
                   index: number
                 ) => (
                   <DemoStepCard

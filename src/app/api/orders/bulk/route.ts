@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/orders/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -9,41 +18,81 @@ const STATUS_REQUIREMENTS: Record<
   string,
   { required: string[]; message: string }
 > = {
+  /** Confirm */
   confirm: {
+    /** Required */
     required: ["pending"],
+    /** Message */
     message: "Only pending orders can be confirmed",
   },
+  /** Process */
   process: {
+    /** Required */
     required: ["confirmed"],
+    /** Message */
     message: "Only confirmed orders can be processed",
   },
+  /** Ship */
   ship: {
+    /** Required */
     required: ["processing"],
+    /** Message */
     message: "Only processing orders can be shipped",
   },
+  /** Deliver */
   deliver: {
+    /** Required */
     required: ["shipped"],
+    /** Message */
     message: "Only shipped orders can be marked as delivered",
   },
+  /** Cancel */
   cancel: {
+    /** Required */
     required: ["pending", "confirmed", "processing"],
+    /** Message */
     message: "Can only cancel pending/confirmed/processing orders",
   },
+  /** Refund */
   refund: {
+    /** Required */
     required: ["delivered", "cancelled"],
+    /** Message */
     message: "Can only refund delivered or cancelled orders",
   },
+  /** Delete */
   delete: {
+    /** Required */
     required: ["cancelled", "failed", "refunded"],
+    /** Message */
     message: "Can only delete cancelled, failed, or refunded orders",
   },
 };
 
 // Build update object for each action
+/**
+ * Function: Build Action Update
+ */
+/**
+ * Performs build action update operation
+ *
+ * @returns {string} The buildactionupdate result
+ */
+
+/**
+ * Performs build action update operation
+ *
+ * @returns {string} The buildactionupdate result
+ */
+
 function buildActionUpdate(
+  /** Action */
   action: string,
+  /** Now */
   now: string,
+  /** Order Data */
   orderData: any,
+  /** Data */
   data?: any,
 ): Record<string, any> | null {
   switch (action) {
@@ -53,6 +102,7 @@ function buildActionUpdate(
       return { status: "processing", processing_at: now, updated_at: now };
     case "ship":
       return {
+        /** Status */
         status: "shipped",
         shipped_at: now,
         tracking_number: data?.trackingNumber || "",
@@ -62,6 +112,7 @@ function buildActionUpdate(
       return { status: "delivered", delivered_at: now, updated_at: now };
     case "cancel":
       return {
+        /** Status */
         status: "cancelled",
         cancelled_at: now,
         cancellation_reason: data?.reason || "Cancelled by seller/admin",
@@ -69,6 +120,7 @@ function buildActionUpdate(
       };
     case "refund":
       return {
+        /** Status */
         status: "refunded",
         refunded_at: now,
         refund_amount: data?.refundAmount || orderData.amount,
@@ -82,6 +134,7 @@ function buildActionUpdate(
       delete updates.user_id;
       delete updates.created_at;
       return updates;
+    /** Default */
     default:
       return null;
   }
@@ -103,6 +156,32 @@ function buildActionUpdate(
  * - delete: Delete cancelled/failed orders
  * - update: Update order fields
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
@@ -112,7 +191,9 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Only sellers and admins can perform bulk operations",
         },
         { status: 403 },
@@ -152,8 +233,11 @@ export async function POST(request: NextRequest) {
 
         if (!orderDoc.exists) {
           results.push({
+            /** Id */
             id: orderId,
+            /** Success */
             success: false,
+            /** Error */
             error: "Order not found",
           });
           continue;
@@ -166,8 +250,11 @@ export async function POST(request: NextRequest) {
           const ownsShop = await userOwnsShop(orderData.shop_id, user.uid);
           if (!ownsShop) {
             results.push({
+              /** Id */
               id: orderId,
+              /** Success */
               success: false,
+              /** Error */
               error: "Not authorized to edit this order",
             });
             continue;
@@ -178,8 +265,11 @@ export async function POST(request: NextRequest) {
         const requirement = STATUS_REQUIREMENTS[action];
         if (requirement && !requirement.required.includes(orderData.status)) {
           results.push({
+            /** Id */
             id: orderId,
+            /** Success */
             success: false,
+            /** Error */
             error: requirement.message,
           });
           continue;
@@ -196,8 +286,11 @@ export async function POST(request: NextRequest) {
         const updates = buildActionUpdate(action, now, orderData, data);
         if (!updates) {
           results.push({
+            /** Id */
             id: orderId,
+            /** Success */
             success: false,
+            /** Error */
             error:
               action === "update"
                 ? "Update data is required"
@@ -210,8 +303,11 @@ export async function POST(request: NextRequest) {
         results.push({ id: orderId, success: true });
       } catch (err: any) {
         results.push({
+          /** Id */
           id: orderId,
+          /** Success */
           success: false,
+          /** Error */
           error: err.message || "Failed to process order",
         });
       }
@@ -221,11 +317,16 @@ export async function POST(request: NextRequest) {
     const failureCount = results.filter((r) => !r.success).length;
 
     return NextResponse.json({
+      /** Success */
       success: true,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: orderIds.length,
+        /** Succeeded */
         succeeded: successCount,
+        /** Failed */
         failed: failureCount,
       },
     });

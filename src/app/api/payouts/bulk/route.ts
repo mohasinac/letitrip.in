@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payouts/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
@@ -8,32 +17,69 @@ const STATUS_REQUIREMENTS: Record<
   string,
   { required?: string[]; excluded?: string[]; message: string }
 > = {
+  /** Approve */
   approve: {
+    /** Required */
     required: ["pending"],
+    /** Message */
     message: "Only pending payouts can be approved",
   },
+  /** Process */
   process: {
+    /** Required */
     required: ["pending", "approved"],
+    /** Message */
     message: "Only pending or approved payouts can be processed",
   },
+  /** Complete */
   complete: {
+    /** Required */
     required: ["processing"],
+    /** Message */
     message: "Only processing payouts can be completed",
   },
+  /** Reject */
   reject: {
+    /** Required */
     required: ["pending"],
+    /** Message */
     message: "Only pending payouts can be rejected",
   },
+  /** Delete */
   delete: {
+    /** Excluded */
     excluded: ["completed", "processing"],
+    /** Message */
     message: "Cannot delete completed or processing payouts",
   },
 };
 
 // Build update object for each action
+/**
+ * Function: Build Payout Update
+ */
+/**
+ * Performs build payout update operation
+ *
+ * @param {string} action - The action
+ * @param {string} userId - user identifier
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {string} The buildpayoutupdate result
+ */
+
+/**
+ * Performs build payout update operation
+ *
+ * @returns {string} The buildpayoutupdate result
+ */
+
 function buildPayoutUpdate(
+  /** Action */
   action: string,
+  /** User Id */
   userId: string,
+  /** Data */
   data?: any,
 ): Record<string, any> | null {
   const now = new Date();
@@ -42,6 +88,7 @@ function buildPayoutUpdate(
       return { status: "approved", approved_at: now, updated_at: now };
     case "process":
       return {
+        /** Status */
         status: "processing",
         processing_at: now,
         processed_by: userId,
@@ -51,6 +98,7 @@ function buildPayoutUpdate(
       return { status: "completed", completed_at: now, updated_at: now };
     case "reject":
       return {
+        /** Status */
         status: "rejected",
         rejected_at: now,
         failure_reason: data?.reason || "Rejected by admin",
@@ -64,6 +112,7 @@ function buildPayoutUpdate(
         updates.transaction_id = data.transaction_id;
       if ("notes" in data) updates.notes = data.notes;
       return updates;
+    /** Default */
     default:
       return null;
   }
@@ -75,6 +124,32 @@ function buildPayoutUpdate(
  * Admin only
  *
  * Actions: approve, process, complete, reject, delete, update
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
  */
 
 export async function POST(request: NextRequest) {
@@ -94,7 +169,9 @@ export async function POST(request: NextRequest) {
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid request. Provide action and ids array.",
         },
         { status: 400 },
@@ -102,7 +179,9 @@ export async function POST(request: NextRequest) {
     }
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -149,6 +228,7 @@ export async function POST(request: NextRequest) {
         if (!updates) {
           results.failed.push({
             id,
+            /** Error */
             error:
               action === "update"
                 ? "No update data provided"
@@ -165,23 +245,32 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       action,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: ids.length,
+        /** Succeeded */
         succeeded: results.success.length,
+        /** Failed */
         failed: results.failed.length,
       },
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.payouts.bulk.POST",
+      /** Metadata */
       metadata: { operation, idsCount: idsLength },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Bulk operation failed",
       },
       { status: 500 },

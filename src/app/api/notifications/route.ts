@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/notifications/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Notifications API
  * Epic: E016 - Notifications System
  *
@@ -15,9 +24,18 @@ import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { COLLECTIONS } from "@/constants/database";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * NotificationBE interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NotificationBE
+ */
 export interface NotificationBE {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
+  /** Type */
   type:
     | "order"
     | "auction"
@@ -27,21 +45,32 @@ export interface NotificationBE {
     | "payment"
     | "shipping"
     | "review";
+  /** Title */
   title: string;
+  /** Message */
   message: string;
+  /** Read */
   read: boolean;
+  /** Link */
   link?: string;
+  /** Metadata */
   metadata?: Record<string, unknown>;
+  /** Created At */
   createdAt: string;
+  /** Read At */
   readAt?: string;
 }
 
 // Extended Sieve config with field mappings for notifications
 const notificationsConfig = {
   ...notificationsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** User Id */
     userId: "userId",
+    /** Created At */
     createdAt: "createdAt",
+    /** Read At */
     readAt: "readAt",
   } as Record<string, string>,
 };
@@ -49,17 +78,44 @@ const notificationsConfig = {
 /**
  * Transform notification document to API response format
  */
+/**
+ * Transforms notification
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformnotification result
+ */
+
+/**
+ * Transforms notification
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformnotification result
+ */
+
 function transformNotification(id: string, data: any): NotificationBE {
   return {
     id,
+    /** User Id */
     userId: data.userId,
+    /** Type */
     type: data.type,
+    /** Title */
     title: data.title,
+    /** Message */
     message: data.message,
+    /** Read */
     read: data.read,
+    /** Link */
     link: data.link,
+    /** Metadata */
     metadata: data.metadata,
+    /** Created At */
     createdAt: data.createdAt,
+    /** Read At */
     readAt: data.readAt,
   };
 }
@@ -69,6 +125,32 @@ function transformNotification(id: string, data: any): NotificationBE {
  * List notifications for the authenticated user with Sieve pagination
  * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=read==false
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -84,6 +166,7 @@ export async function GET(request: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -92,8 +175,11 @@ export async function GET(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -142,6 +228,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -162,14 +268,20 @@ export async function GET(request: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         notifications,
         pagination,
       },
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -186,6 +298,32 @@ export async function GET(request: NextRequest) {
  * POST /api/notifications
  * Create a new notification (admin only or internal use)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -204,7 +342,9 @@ export async function POST(request: NextRequest) {
     if (!userId || !type || !title || !message) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Missing required fields: userId, type, title, message",
         },
         { status: 400 }
@@ -219,9 +359,11 @@ export async function POST(request: NextRequest) {
       type,
       title,
       message,
+      /** Read */
       read: false,
       link,
       metadata,
+      /** Created At */
       createdAt: now,
     };
 
@@ -230,8 +372,11 @@ export async function POST(request: NextRequest) {
       .add(notification);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: docRef.id,
         ...notification,
       },
@@ -249,6 +394,32 @@ export async function POST(request: NextRequest) {
  * PATCH /api/notifications
  * Mark notifications as read
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request);
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request);
+ */
+
 export async function PATCH(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -282,7 +453,9 @@ export async function PATCH(request: NextRequest) {
       await batch.commit();
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: { marked: unreadSnapshot.size },
       });
     }
@@ -307,7 +480,9 @@ export async function PATCH(request: NextRequest) {
     await batch.commit();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { marked: notificationIds.length },
     });
   } catch (error) {
@@ -323,6 +498,32 @@ export async function PATCH(request: NextRequest) {
  * DELETE /api/notifications
  * Delete notifications
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
 export async function DELETE(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -355,7 +556,9 @@ export async function DELETE(request: NextRequest) {
       await batch.commit();
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: { deleted: allSnapshot.size },
       });
     }
@@ -374,7 +577,9 @@ export async function DELETE(request: NextRequest) {
       await batch.commit();
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: { deleted: readSnapshot.size },
       });
     }
@@ -407,7 +612,9 @@ export async function DELETE(request: NextRequest) {
     await docRef.delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { deleted: 1 },
     });
   } catch (error) {

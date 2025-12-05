@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/contexts/ThemeContext
+ * @description This file contains the ThemeContext component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, {
@@ -10,8 +19,20 @@ import React, {
 } from "react";
 
 // Theme types - Only light and dark (no system)
+/**
+ * Theme type
+ * 
+ * @typedef {Object} Theme
+ * @description Type definition for Theme
+ */
 export type Theme = "light" | "dark";
 
+/**
+ * ThemeContextType interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ThemeContextType
+ */
 interface ThemeContextType {
   /** Current theme setting (light or dark) */
   theme: Theme;
@@ -30,6 +51,18 @@ const THEME_STORAGE_KEY = "jfv-theme";
 /**
  * Get the stored theme from localStorage
  */
+/**
+ * Retrieves stored theme
+ *
+ * @returns {any} The storedtheme result
+ */
+
+/**
+ * Retrieves stored theme
+ *
+ * @returns {any} The storedtheme result
+ */
+
 function getStoredTheme(): Theme | null {
   if (typeof window === "undefined") return null;
   try {
@@ -46,6 +79,22 @@ function getStoredTheme(): Theme | null {
 /**
  * Store theme in localStorage
  */
+/**
+ * Performs store theme operation
+ *
+ * @param {Theme} theme - The theme
+ *
+ * @returns {void} No return value
+ */
+
+/**
+ * Performs store theme operation
+ *
+ * @param {Theme} theme - The theme
+ *
+ * @returns {void} No return value
+ */
+
 function storeTheme(theme: Theme): void {
   if (typeof window === "undefined") return;
   try {
@@ -58,6 +107,22 @@ function storeTheme(theme: Theme): void {
 /**
  * Apply theme to document
  */
+/**
+ * Performs apply theme operation
+ *
+ * @param {Theme} theme - The theme
+ *
+ * @returns {void} No return value
+ */
+
+/**
+ * Performs apply theme operation
+ *
+ * @param {Theme} theme - The theme
+ *
+ * @returns {void} No return value
+ */
+
 function applyTheme(theme: Theme): void {
   if (typeof document === "undefined") return;
 
@@ -82,13 +147,57 @@ function applyTheme(theme: Theme): void {
   }
 }
 
+/**
+ * ThemeProviderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ThemeProviderProps
+ */
 interface ThemeProviderProps {
+  /** Children */
   children: React.ReactNode;
   /** Default theme if none stored - defaults to dark */
   defaultTheme?: Theme;
   /** Enable localStorage persistence */
   enableStorage?: boolean;
 }
+
+/**
+ * Function: Theme Provider
+ */
+/**
+ * Performs theme provider operation
+ *
+ * @param {ThemeProviderProps} [{
+  children,
+  defaultTheme] - The {
+  children,
+  default theme
+ *
+ * @returns {any} The themeprovider result
+ *
+ * @example
+ * ThemeProvider({
+  children,
+  defaultTheme);
+ */
+
+/**
+ * Performs theme provider operation
+ *
+ * @param {ThemeProviderProps} [{
+  children,
+  defaultTheme] - The {
+  children,
+  default theme
+ *
+ * @returns {any} The themeprovider result
+ *
+ * @example
+ * ThemeProvider({
+  children,
+  defaultTheme);
+ */
 
 export function ThemeProvider({
   children,
@@ -148,6 +257,28 @@ export function ThemeProvider({
 /**
  * Hook to access theme context
  */
+/**
+ * Custom React hook for theme
+ *
+ * @returns {any} The usetheme result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useTheme();
+ */
+
+/**
+ * Custom React hook for theme
+ *
+ * @returns {any} The usetheme result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useTheme();
+ */
+
 export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext);
   if (context === undefined) {
@@ -159,6 +290,32 @@ export function useTheme(): ThemeContextType {
 /**
  * Script to prevent flash of wrong theme
  * Add this to <head> before any content
+ */
+/**
+ * Performs theme script operation
+ *
+ * @returns {any} The themescript result
+ *
+ * @example
+ * ThemeScript();
+ */
+
+/**
+ * T
+ * @constant
+ */
+/**
+ * Performs theme script operation
+ *
+ * @returns {any} The themescript result
+ *
+ * @example
+ * ThemeScript();
+ */
+
+/**
+ * T
+ * @constant
  */
 export const ThemeScript = () => {
   const script = `

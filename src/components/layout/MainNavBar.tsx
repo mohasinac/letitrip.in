@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/MainNavBar
+ * @description This file contains the MainNavBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ThemeToggle } from "@/components/common/ThemeToggle";
@@ -33,12 +42,15 @@ export default function MainNavBar({
   onMobileMenuToggle,
   onSearchClick,
 }: {
+  /** On Mobile Menu Toggle */
   onMobileMenuToggle: () => void;
+  /** On Search Click */
   onSearchClick: () => void;
 }) {
   const { user, isAuthenticated, isAdmin, isAdminOrSeller } = useAuth();
   const { cart } = useCart();
   const {
+    /** Cart Count */
     cartCount: apiCartCount,
     notificationCount,
     messagesCount,
@@ -56,6 +68,22 @@ export default function MainNavBar({
   const cartCount = cart?.itemCount ?? apiCartCount;
 
   useEffect(() => {
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     function handleClickOutside(event: MouseEvent) {
       if (
         userMenuRef.current &&
@@ -82,6 +110,18 @@ export default function MainNavBar({
   }, []);
 
   // Get user initials or first letter of name
+  /**
+   * Retrieves user initials
+   *
+   * @returns {any} The userinitials result
+   */
+
+  /**
+   * Retrieves user initials
+   *
+   * @returns {any} The userinitials result
+   */
+
   const getUserInitials = () => {
     if (!user) return "U";
 
@@ -97,11 +137,35 @@ export default function MainNavBar({
   };
 
   // Get profile picture URL
+  /**
+   * Retrieves profile picture
+   *
+   * @returns {any} The profilepicture result
+   */
+
+  /**
+   * Retrieves profile picture
+   *
+   * @returns {any} The profilepicture result
+   */
+
   const getProfilePicture = () => {
     return user?.photoURL || null;
   };
 
   // Get display name
+  /**
+   * Retrieves display name
+   *
+   * @returns {any} The displayname result
+   */
+
+  /**
+   * Retrieves display name
+   *
+   * @returns {any} The displayname result
+   */
+
   const getDisplayName = () => {
     if (!user) return "Guest";
     return (
@@ -413,6 +477,7 @@ export default function MainNavBar({
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600 dark:text-gray-400">
+                        /** Subtotal */
                         Subtotal:
                       </span>
                       <span className="font-bold text-lg">

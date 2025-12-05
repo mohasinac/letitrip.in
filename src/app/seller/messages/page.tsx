@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/app/seller/messages/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Seller Messages Page
  *
  * @status IMPLEMENTED
@@ -58,8 +67,11 @@ export default function SellerMessagesPage() {
         messagesService.setCurrentUserId(user.uid);
 
         const result = await messagesService.getConversations({
+          /** Page */
           page: pageNum,
+          /** Page Size */
           pageSize: 20,
+          /** Status */
           status: "all",
         });
 
@@ -87,9 +99,33 @@ export default function SellerMessagesPage() {
     loadConversations(1);
   }, [loadConversations]);
 
+  /**
+   * Handles refresh event
+   *
+   * @returns {any} The handlerefresh result
+   */
+
+  /**
+   * Handles refresh event
+   *
+   * @returns {any} The handlerefresh result
+   */
+
   const handleRefresh = () => {
     loadConversations(1, true);
   };
+
+  /**
+   * Handles load more event
+   *
+   * @returns {any} The handleloadmore result
+   */
+
+  /**
+   * Handles load more event
+   *
+   * @returns {any} The handleloadmore result
+   */
 
   const handleLoadMore = () => {
     if (hasMore && !isLoading) {
@@ -108,12 +144,29 @@ export default function SellerMessagesPage() {
     );
   });
 
+  /**
+   * Retrieves conversation icon
+   *
+   * @param {ConversationFE} conv - The conv
+   *
+   * @returns {any} The conversationicon result
+   */
+
+  /**
+   * Retrieves conversation icon
+   *
+   * @param {ConversationFE} conv - The conv
+   *
+   * @returns {any} The conversationicon result
+   */
+
   const getConversationIcon = (conv: ConversationFE) => {
     switch (conv.type) {
       case "order":
         return <Package className="w-5 h-5 text-blue-500" />;
       case "buyer_seller":
         return <Store className="w-5 h-5 text-green-500" />;
+      /** Default */
       default:
         return <MessageSquare className="w-5 h-5 text-gray-500" />;
     }
@@ -287,6 +340,7 @@ export default function SellerMessagesPage() {
                           ? formatDistanceToNow(
                               new Date(conv.lastMessage.sentAt),
                               {
+                                /** Add Suffix */
                                 addSuffix: true,
                               },
                             )

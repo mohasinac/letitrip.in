@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/FeaturedCategoriesSection
+ * @description This file contains the FeaturedCategoriesSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,11 +21,51 @@ import { analyticsService } from "@/services/analytics.service";
 import type { CategoryWithItems } from "@/services/homepage.service";
 import { ExternalLink } from "lucide-react";
 
+/**
+ * FeaturedCategoriesSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedCategoriesSectionProps
+ */
 interface FeaturedCategoriesSectionProps {
+  /** Category Limit */
   categoryLimit?: number;
+  /** Items Per Category */
   itemsPerCategory?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Featured Categories Section
+ */
+/**
+ * Performs featured categories section operation
+ *
+ * @param {FeaturedCategoriesSectionProps} [{
+  categoryLimit] - The {
+  category limit
+ *
+ * @returns {any} The featuredcategoriessection result
+ *
+ * @example
+ * FeaturedCategoriesSection({
+  categoryLimit);
+ */
+
+/**
+ * Performs featured categories section operation
+ *
+ * @param {FeaturedCategoriesSectionProps} [{
+  categoryLimit] - The {
+  category limit
+ *
+ * @returns {any} The featuredcategoriessection result
+ *
+ * @example
+ * FeaturedCategoriesSection({
+  categoryLimit);
+ */
 
 export function FeaturedCategoriesSection({
   categoryLimit = 6,
@@ -30,6 +79,22 @@ export function FeaturedCategoriesSection({
     loadCategories();
   }, [categoryLimit, itemsPerCategory]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategories = async () => {
     try {
       setLoading(true);
@@ -41,11 +106,13 @@ export function FeaturedCategoriesSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_featured_categories_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedCategoriesSection.loadCategories",
       });
     } finally {
@@ -170,22 +237,34 @@ export function FeaturedCategoriesSection({
                       <AuctionCard
                         key={item.id}
                         auction={{
+                          /** Id */
                           id: item.id,
+                          /** Name */
                           name: item.name,
+                          /** Slug */
                           slug: item.slug,
+                          /** Images */
                           images: item.images,
+                          /** Current Bid */
                           currentBid: item.currentBid,
+                          /** Starting Bid */
                           startingBid: item.startingBid,
+                          /** Bid Count */
                           bidCount: item.bidCount,
+                          /** End Time */
                           endTime: item.endTime,
+                          /** Status */
                           status:
                             item.status === "upcoming"
                               ? "pending"
                               : item.status === "live"
                                 ? "active"
                                 : item.status,
+                          /** Shop */
                           shop: {
+                            /** Id */
                             id: item.shopId,
+                            /** Name */
                             name: item.shopName,
                           },
                         }}

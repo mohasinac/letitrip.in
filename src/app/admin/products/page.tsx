@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/products/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -15,8 +24,11 @@ export default function AdminProductsPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "product",
+      /** Label */
       label: "Product",
+      /** Render */
       render: (product: ProductCardFE) => (
         <div className="flex items-center gap-3">
           {product.images && product.images[0] ? (
@@ -44,13 +56,19 @@ export default function AdminProductsPage() {
       ),
     },
     {
+      /** Key */
       key: "price",
+      /** Label */
       label: "Price",
+      /** Render */
       render: (product: ProductCardFE) => <Price amount={product.price} />,
     },
     {
+      /** Key */
       key: "stock",
+      /** Label */
       label: "Stock",
+      /** Render */
       render: (product: ProductCardFE) => (
         <div className="text-sm">
           <div className="text-gray-900 dark:text-white">
@@ -67,8 +85,11 @@ export default function AdminProductsPage() {
       ),
     },
     {
+      /** Key */
       key: "seller",
+      /** Label */
       label: "Shop",
+      /** Render */
       render: (product: ProductCardFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {product.shop?.name || "No shop"}
@@ -76,15 +97,21 @@ export default function AdminProductsPage() {
       ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (product: ProductCardFE) => (
         <StatusBadge status={product.status || "pending"} />
       ),
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (product: ProductCardFE) => (
         <DateDisplay date={new Date()} format="medium" />
       ),
@@ -94,9 +121,13 @@ export default function AdminProductsPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "active", label: "Active" },
@@ -106,9 +137,13 @@ export default function AdminProductsPage() {
       ],
     },
     {
+      /** Key */
       key: "inStock",
+      /** Label */
       label: "Stock",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All" },
         { value: "true", label: "In Stock" },
@@ -116,25 +151,55 @@ export default function AdminProductsPage() {
       ],
     },
     {
+      /** Key */
       key: "minPrice",
+      /** Label */
       label: "Min Price",
+      /** Type */
       type: "text" as const,
     },
     {
+      /** Key */
       key: "maxPrice",
+      /** Label */
       label: "Max Price",
+      /** Type */
       type: "text" as const,
     },
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -159,18 +224,63 @@ export default function AdminProductsPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as ProductCardFE[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<ProductCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<ProductCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<ProductCardFE>) => {
     await productsService.update(id, data as any);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await productsService.delete(id);
   };

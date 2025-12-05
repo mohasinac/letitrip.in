@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/tickets/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -11,29 +20,47 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 
 const statusColors = {
+  /** Open */
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
   "in-progress":
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+  /** Resolved */
   resolved:
     "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  /** Closed */
   closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+  /** Escalated */
   escalated: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 
+/**
+ * Performs admin tickets page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = AdminTicketsPage();
+ */
 export default function AdminTicketsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const {
+    /** Data */
     data: ticketsData,
     isLoading,
     execute,
   } = useLoadingState<{
+    /** Data */
     data: any[];
+    /** Stats */
     stats: any;
   }>();
   const [filter, setFilter] = useState({
+    /** Status */
     status: "",
+    /** Category */
     category: "",
+    /** Priority */
     priority: "",
   });
 
@@ -43,8 +70,11 @@ export default function AdminTicketsPage() {
   const fetchTickets = useCallback(async () => {
     await execute(() =>
       supportService.listTickets({
+        /** Status */
         status: filter.status as any,
+        /** Category */
         category: filter.category as any,
+        /** Priority */
         priority: filter.priority as any,
       }),
     );
@@ -186,6 +216,7 @@ export default function AdminTicketsPage() {
                     <div className="flex flex-wrap gap-3 text-sm mb-3">
                       <div className="flex items-center gap-1">
                         <span className="text-gray-500 dark:text-gray-400">
+                          /** Priority */
                           Priority:
                         </span>
                         <span
@@ -204,6 +235,7 @@ export default function AdminTicketsPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-gray-500 dark:text-gray-400">
+                          /** Created */
                           Created:
                         </span>
                         <DateDisplay

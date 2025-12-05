@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/razorpay/verify/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Razorpay Payment Verification API Route
  * POST /api/payments/razorpay/verify
  *
@@ -12,11 +21,49 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * VerifyPaymentRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VerifyPaymentRequest
+ */
 interface VerifyPaymentRequest {
+  /** Order Id */
   orderId: string;
+  /** Payment Id */
   paymentId: string;
+  /** Signature */
   signature: string;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,7 +140,9 @@ export async function POST(request: NextRequest) {
         .collection(COLLECTIONS.PAYMENT_TRANSACTIONS)
         .doc(orderId)
         .update({
+          /** Status */
           status: "verification_failed",
+          /** Verification Attempts */
           verificationAttempts:
             (
               await db
@@ -101,13 +150,17 @@ export async function POST(request: NextRequest) {
                 .doc(orderId)
                 .get()
             ).data()?.verificationAttempts || 0 + 1,
+          /** Last Verification Attempt */
           lastVerificationAttempt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
         });
 
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Payment signature verification failed",
         },
         { status: 400 }
@@ -141,8 +194,11 @@ export async function POST(request: NextRequest) {
     await db.collection(COLLECTIONS.PAYMENT_TRANSACTIONS).doc(orderId).update({
       paymentId,
       signature,
+      /** Status */
       status: "verified",
+      /** Verified At */
       verifiedAt: new Date(),
+      /** Updated At */
       updatedAt: new Date(),
     });
 
@@ -155,10 +211,14 @@ export async function POST(request: NextRequest) {
 
       if (orderDoc.exists) {
         await orderRef.update({
+          /** Payment Status */
           paymentStatus: "paid",
           paymentId,
+          /** Payment Gateway */
           paymentGateway: "razorpay",
+          /** Paid At */
           paidAt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
         });
       }
@@ -167,25 +227,34 @@ export async function POST(request: NextRequest) {
     // Return success response
     return NextResponse.json(
       {
+        /** Success */
         success: true,
         orderId,
         paymentId,
+        /** Amount */
         amount: transactionData?.amount || 0,
+        /** Currency */
         currency: transactionData?.currency || "INR",
+        /** Status */
         status: "verified",
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "RazorpayVerifyAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Payment verification failed",
     });
 
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to verify payment",
       },
       { status: 500 }

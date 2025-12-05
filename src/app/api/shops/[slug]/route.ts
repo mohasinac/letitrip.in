@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/[slug]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
   getUserFromRequest,
@@ -25,7 +34,42 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 // GET /api/shops/[slug] - Retrieve shop by slug with role-based access control
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -33,6 +77,18 @@ export async function GET(
     const { slug } = await params;
 
     const user = await getUserFromRequest(request);
+    /**
+     * Performs role operation
+     *
+     * @returns {any} The role result
+     */
+
+    /**
+     * Performs role operation
+     *
+     * @returns {any} The role result
+     */
+
     const role = (user?.role || "guest") as
       | "guest"
       | "user"
@@ -68,17 +124,27 @@ export async function GET(
     }
 
     const shop: any = {
+      /** Id */
       id: docId,
       ...data,
       // Add camelCase aliases
+      /** Owner Id */
       ownerId: data.owner_id,
+      /** Is Verified */
       isVerified: data.is_verified,
+      /** Featured */
       featured: data.is_featured,
+      /** Is Banned */
       isBanned: data.is_banned,
+      /** Show On Homepage */
       showOnHomepage: data.show_on_homepage,
+      /** Total Products */
       totalProducts: data.total_products || data.product_count || 0,
+      /** Review Count */
       reviewCount: data.review_count || 0,
+      /** Created At */
       createdAt: data.created_at,
+      /** Updated At */
       updatedAt: data.updated_at,
     };
 
@@ -105,12 +171,15 @@ export async function GET(
     // Admin: Can access all shops (no additional check)
 
     return NextResponse.json({
+      /** Success */
       success: true,
       shop,
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.detail.GET",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
@@ -121,7 +190,42 @@ export async function GET(
 }
 
 // PATCH /api/shops/[slug] - Update shop by slug (internal ID resolved first)
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -217,13 +321,18 @@ export async function PATCH(
 
     const updated = await Collections.shops().doc(docId).get();
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Shop */
       shop: { id: updated.id, ...updated.data() },
+      /** Message */
       message: "Shop updated successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.detail.PATCH",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
@@ -234,7 +343,42 @@ export async function PATCH(
 }
 
 // DELETE /api/shops/[slug] - Delete shop by slug (resolve internal ID)
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -291,13 +435,27 @@ export async function DELETE(
     if (!productsSnapshot.empty) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error:
             "Cannot delete shop with active products. Deactivate or remove products first.",
         },
         { status: 400 },
       );
     }
+
+    /**
+     * Performs orders snapshot operation
+     *
+     * @returns {any} The orderssnapshot result
+     */
+
+    /**
+     * Performs orders snapshot operation
+     *
+     * @returns {any} The orderssnapshot result
+     */
 
     const ordersSnapshot = (await Collections.orders()
       .where("shop_id", "==", docId)
@@ -318,12 +476,16 @@ export async function DELETE(
     await Collections.shops().doc(docId).delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Shop deleted successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.detail.DELETE",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(

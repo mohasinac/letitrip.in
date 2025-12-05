@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/types/shared/common.types
+ * @description This file contains TypeScript type definitions for common
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * SHARED TYPES - Common Enums and Base Types
  * Used by both Frontend and Backend
  */
@@ -22,8 +31,11 @@ export type ISOTimestamp = string;
  * Base entity with common fields
  */
 export interface BaseEntity {
+  /** Id */
   id: string;
+  /** Created At */
   createdAt: FirebaseTimestamp;
+  /** Updated At */
   updatedAt: FirebaseTimestamp;
 }
 
@@ -31,8 +43,11 @@ export interface BaseEntity {
  * Category reference for products
  */
 export interface CategoryReference {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
 }
 
@@ -40,8 +55,11 @@ export interface CategoryReference {
  * Shop reference for products
  */
 export interface ShopReference {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
 }
 
@@ -49,7 +67,9 @@ export interface ShopReference {
  * Validation error structure
  */
 export interface ValidationError {
+  /** Field */
   field: string;
+  /** Message */
   message: string;
 }
 
@@ -304,9 +324,13 @@ export enum ReturnReason {
  * Cursor-based pagination metadata (from API)
  */
 export interface CursorPaginationMeta {
+  /** Limit */
   limit: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Next Cursor */
   nextCursor: string | null;
+  /** Count */
   count: number;
 }
 
@@ -314,11 +338,17 @@ export interface CursorPaginationMeta {
  * Offset-based pagination metadata (from API)
  */
 export interface OffsetPaginationMeta {
+  /** Page */
   page: number;
+  /** Limit */
   limit: number;
+  /** Total */
   total?: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Has Prev Page */
   hasPrevPage: boolean;
+  /** Total Pages */
   totalPages?: number;
 }
 
@@ -326,9 +356,13 @@ export interface OffsetPaginationMeta {
  * Paginated Response (Backend) - API response with cursor-based pagination
  */
 export interface PaginatedResponseBE<T> {
+  /** Success */
   success: boolean;
+  /** Data */
   data: T[];
+  /** Count */
   count: number;
+  /** Pagination */
   pagination: CursorPaginationMeta | OffsetPaginationMeta;
 }
 
@@ -336,8 +370,11 @@ export interface PaginatedResponseBE<T> {
  * Paginated Response (Frontend) - Simplified for UI consumption
  */
 export interface PaginatedResponseFE<T> {
+  /** Data */
   data: T[];
+  /** Count */
   count: number;
+  /** Pagination */
   pagination: CursorPaginationMeta | OffsetPaginationMeta;
 }
 
@@ -347,9 +384,13 @@ export interface PaginatedResponseFE<T> {
  * Result of a bulk action operation on a single item
  */
 export interface BulkActionResult {
+  /** Id */
   id: string;
+  /** Success */
   success: boolean;
+  /** Error */
   error?: string;
+  /** Data */
   data?: any;
 }
 
@@ -357,11 +398,17 @@ export interface BulkActionResult {
  * Response from bulk action API
  */
 export interface BulkActionResponse {
+  /** Success */
   success: boolean;
+  /** Results */
   results: BulkActionResult[];
+  /** Summary */
   summary?: {
+    /** Total */
     total: number;
+    /** Successful */
     successful: number;
+    /** Failed */
     failed: number;
   };
 }
@@ -370,7 +417,10 @@ export interface BulkActionResponse {
  * Bulk action request
  */
 export interface BulkActionRequest {
+  /** Action */
   action: string;
+  /** Ids */
   ids: string[];
+  /** Data */
   data?: any;
 }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/support-tickets/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -29,24 +38,56 @@ export default function SellerSupportTicketsPage() {
   );
 }
 
+/**
+ * TicketsData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TicketsData
+ */
 interface TicketsData {
+  /** Tickets */
   tickets: SupportTicketFE[];
+  /** Total Tickets */
   totalTickets: number;
+  /** Stats */
   stats: {
+    /** Total */
     total: number;
+    /** Open */
     open: number;
+    /** In Progress */
     inProgress: number;
+    /** Resolved */
     resolved: number;
   };
 }
+
+/**
+ * Function: Seller Support Tickets Content
+ */
+/**
+ * Performs seller support tickets content operation
+ *
+ * @returns {any} The sellersupportticketscontent result
+ */
+
+/**
+ * Performs seller support tickets content operation
+ *
+ * @returns {any} The sellersupportticketscontent result
+ */
 
 function SellerSupportTicketsContent() {
   const isMobile = useIsMobile();
   const [showFilters, setShowFilters] = useState(!isMobile);
   const { data, isLoading, execute } = useLoadingState<TicketsData>({
+    /** Initial Data */
     initialData: {
+      /** Tickets */
       tickets: [],
+      /** Total Tickets */
       totalTickets: 0,
+      /** Stats */
       stats: { total: 0, open: 0, inProgress: 0, resolved: 0 },
     },
   });
@@ -57,9 +98,13 @@ function SellerSupportTicketsContent() {
   const tickets = data?.tickets || [];
   const totalTickets = data?.totalTickets || 0;
   const stats = data?.stats || {
+    /** Total */
     total: 0,
+    /** Open */
     open: 0,
+    /** In Progress */
     inProgress: 0,
+    /** Resolved */
     resolved: 0,
   };
 
@@ -68,8 +113,11 @@ function SellerSupportTicketsContent() {
       const [ticketsRes, totalRes, openRes, inProgressRes, resolvedRes] =
         await Promise.all([
           supportService.getMyTickets({
+            /** Search */
             search: searchQuery || undefined,
+            /** Page */
             page: currentPage,
+            /** Limit */
             limit: 20,
             ...filterValues,
           }),
@@ -80,20 +128,30 @@ function SellerSupportTicketsContent() {
         ]);
 
       return {
+        /** Tickets */
         tickets: ticketsRes.data || [],
+        /** Total Tickets */
         totalTickets: ticketsRes.count || 0,
+        /** Stats */
         stats: {
+          /** Total */
           total: totalRes.count || 0,
+          /** Open */
           open: openRes.count || 0,
+          /** In Progress */
           inProgress: inProgressRes.count || 0,
+          /** Resolved */
           resolved: resolvedRes.count || 0,
         },
       };
     } catch (error) {
       logError(error as Error, { component: "SellerSupportTickets.loadData" });
       return {
+        /** Tickets */
         tickets: [],
+        /** Total Tickets */
         totalTickets: 0,
+        /** Stats */
         stats: { total: 0, open: 0, inProgress: 0, resolved: 0 },
       };
     }
@@ -102,6 +160,22 @@ function SellerSupportTicketsContent() {
   useEffect(() => {
     execute(loadData);
   }, [execute, loadData]);
+
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
+
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -113,10 +187,27 @@ function SellerSupportTicketsContent() {
         return "text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/30";
       case "low":
         return "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30";
+      /** Default */
       default:
         return "text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-700";
     }
   };
+
+  /**
+   * Retrieves category icon
+   *
+   * @param {string} category - The category
+   *
+   * @returns {string} The categoryicon result
+   */
+
+  /**
+   * Retrieves category icon
+   *
+   * @param {string} category - The category
+   *
+   * @returns {string} The categoryicon result
+   */
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -134,10 +225,27 @@ function SellerSupportTicketsContent() {
         return "🔧";
       case "account":
         return "👤";
+      /** Default */
       default:
         return "❓";
     }
   };
+
+  /**
+   * Formats time ago
+   *
+   * @param {Date | string} date - The date
+   *
+   * @returns {any} The formattimeago result
+   */
+
+  /**
+   * Formats time ago
+   *
+   * @param {Date | string} date - The date
+   *
+   * @returns {any} The formattimeago result
+   */
 
   const formatTimeAgo = (date: Date | string) => {
     const now = new Date();

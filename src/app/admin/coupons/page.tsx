@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/coupons/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -8,14 +17,23 @@ import { Ticket, Percent } from "lucide-react";
 import { getCouponBulkActions } from "@/constants/bulk-actions";
 import { COUPON_FIELDS, toInlineFields } from "@/constants/form-fields";
 import type { CouponFE } from "@/types/frontend/coupon.types";
+/**
+ * Coupon type
+ * 
+ * @typedef {Object} Coupon
+ * @description Type definition for Coupon
+ */
 type Coupon = CouponFE;
 
 export default function AdminCouponsPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "coupon",
+      /** Label */
       label: "Coupon",
+      /** Render */
       render: (coupon: Coupon) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
@@ -33,8 +51,11 @@ export default function AdminCouponsPage() {
       ),
     },
     {
+      /** Key */
       key: "discount",
+      /** Label */
       label: "Discount",
+      /** Render */
       render: (coupon: Coupon) => (
         <div className="flex items-center gap-1 text-gray-900 dark:text-white">
           {coupon.type === "percentage" ? (
@@ -49,8 +70,11 @@ export default function AdminCouponsPage() {
       ),
     },
     {
+      /** Key */
       key: "usage",
+      /** Label */
       label: "Usage",
+      /** Render */
       render: (coupon: Coupon) => (
         <div className="text-sm">
           <div className="text-gray-900 dark:text-white">
@@ -64,17 +88,22 @@ export default function AdminCouponsPage() {
       ),
     },
     {
+      /** Key */
       key: "validity",
+      /** Label */
       label: "Validity",
+      /** Render */
       render: (coupon: Coupon) => (
         <div className="text-sm">
           {coupon.startDate && (
             <div className="text-gray-600 dark:text-gray-400">
+              /** From */
               From: <DateDisplay date={coupon.startDate} format="short" />
             </div>
           )}
           {coupon.endDate && (
             <div className="text-gray-600 dark:text-gray-400">
+              /** Until */
               Until: <DateDisplay date={coupon.endDate} format="short" />
             </div>
           )}
@@ -82,8 +111,11 @@ export default function AdminCouponsPage() {
       ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (coupon: Coupon) => {
         const now = new Date();
         const isExpired = coupon.endDate && new Date(coupon.endDate) < now;
@@ -106,8 +138,11 @@ export default function AdminCouponsPage() {
       },
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (coupon: Coupon) => (
         <DateDisplay date={coupon.createdAt} format="medium" />
       ),
@@ -117,9 +152,13 @@ export default function AdminCouponsPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "isActive",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "true", label: "Active" },
@@ -127,9 +166,13 @@ export default function AdminCouponsPage() {
       ],
     },
     {
+      /** Key */
       key: "discountType",
+      /** Label */
       label: "Type",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Types" },
         { value: "percentage", label: "Percentage" },
@@ -139,13 +182,37 @@ export default function AdminCouponsPage() {
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -167,18 +234,63 @@ export default function AdminCouponsPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as Coupon[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<Coupon>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<Coupon>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<Coupon>) => {
     await couponsService.update(id, data);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await couponsService.delete(id);
   };

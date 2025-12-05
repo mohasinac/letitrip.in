@@ -1,3 +1,12 @@
+/**
+ * @fileoverview JavaScript Module
+ * @module jest.config
+ * @description This file contains functionality related to jest.config
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({

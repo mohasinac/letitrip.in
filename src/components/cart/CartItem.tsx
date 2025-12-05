@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cart/CartItem
+ * @description This file contains the CartItem component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -13,15 +22,48 @@ import {
 import { Price } from "@/components/common/values/Price";
 import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
+/**
+ * CartItemProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CartItemProps
+ */
 interface CartItemProps {
+  /** Item */
   item: CartItemType & {
+    /** Original Price */
     originalPrice?: number;
+    /** Stock Count */
     stockCount?: number;
   };
+  /** On Update Quantity */
   onUpdateQuantity: (itemId: string, quantity: number) => Promise<void>;
+  /** On Remove */
   onRemove: (itemId: string) => Promise<void>;
+  /** Disabled */
   disabled?: boolean;
 }
+
+/**
+ * Function: Cart Item
+ */
+/**
+ * Performs cart item operation
+ *
+ * @returns {any} The cartitem result
+ *
+ * @example
+ * CartItem();
+ */
+
+/**
+ * Performs cart item operation
+ *
+ * @returns {any} The cartitem result
+ *
+ * @example
+ * CartItem();
+ */
 
 export function CartItem({
   item,
@@ -32,6 +74,26 @@ export function CartItem({
   const [quantity, setQuantity] = useState(item.quantity);
   const [updating, setUpdating] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  /**
+   * Performs async operation
+   *
+   * @param {number} newQuantity - The new quantity
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {number} newQuantity - The new quantity
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1 || newQuantity > 99 || disabled) return;
@@ -48,6 +110,22 @@ export function CartItem({
       setUpdating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleRemove = async () => {
     try {
@@ -68,6 +146,18 @@ export function CartItem({
 
   // Swipe-to-delete action for mobile
   const deleteAction = createDeleteAction(() => setShowDeleteDialog(true));
+
+  /**
+   * Performs cart item content operation
+   *
+   * @returns {any} The cartitemcontent result
+   */
+
+  /**
+   * Performs cart item content operation
+   *
+   * @returns {any} The cartitemcontent result
+   */
 
   const cartItemContent = (
     <div className="flex gap-4 py-4 border-b border-gray-200 bg-white">
@@ -111,6 +201,7 @@ export function CartItem({
 
             {item.variantId && (
               <div className="mt-1 text-xs text-gray-600">
+                /** Variant */
                 Variant: {item.variantId}
               </div>
             )}

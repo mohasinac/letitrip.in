@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/orders/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -22,8 +31,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * OrderPageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderPageProps
+ */
 interface OrderPageProps {
+  /** Params */
   params: Promise<{
+    /** Id */
     id: string;
   }>;
 }
@@ -61,18 +78,52 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     }
   }, [user, orderId, loadOrder]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDownloadInvoice = async () => {
     if (!orderId) return;
     try {
       await ordersService.downloadInvoice(orderId);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OrderDetailPage.downloadInvoice",
+        /** Metadata */
         metadata: { orderId },
       });
       toast.error("Failed to download invoice");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancelOrder = async () => {
     if (!orderId) return;
@@ -84,7 +135,9 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
       toast.success("Order cancelled successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "UserOrderDetail.handleCancelOrder",
+        /** Metadata */
         metadata: { orderId },
       });
       toast.error("Failed to cancel order");
@@ -209,6 +262,7 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                     {item.productName}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
+                    /** Qty */
                     Qty: {item.quantity}
                   </p>
                 </div>
@@ -217,6 +271,7 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                     <Price amount={item.price} />
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
+                    /** Total */
                     Total: <Price amount={item.price * item.quantity} />
                   </p>
                 </div>
@@ -315,6 +370,25 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
     </div>
   );
 }
+
+/**
+ * Function: Order Timeline
+ */
+/**
+ * Performs order timeline operation
+ *
+ * @param {{ status} { status } - The { status }
+ *
+ * @returns {string} The ordertimeline result
+ */
+
+/**
+ * Performs order timeline operation
+ *
+ * @param {{ status} { status } - The { status }
+ *
+ * @returns {string} The ordertimeline result
+ */
 
 function OrderTimeline({ status }: { status: string }) {
   const steps = [

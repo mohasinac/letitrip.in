@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/email/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -18,48 +27,88 @@ import { logError } from "@/lib/firebase-error-logger";
 import { Check, Mail, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * EmailSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailSettings
+ */
 interface EmailSettings {
+  /** Default Provider */
   defaultProvider: "resend" | "sendgrid";
   // Resend Settings
+  /** Resend Enabled */
   resendEnabled: boolean;
+  /** Resend Api Key */
   resendApiKey: string;
+  /** Resend From Email */
   resendFromEmail: string;
+  /** Resend From Name */
   resendFromName: string;
   // SendGrid Settings
+  /** Sendgrid Enabled */
   sendgridEnabled: boolean;
+  /** Sendgrid Api Key */
   sendgridApiKey: string;
+  /** Sendgrid From Email */
   sendgridFromEmail: string;
+  /** Sendgrid From Name */
   sendgridFromName: string;
   // General Settings
+  /** Fallback Enabled */
   fallbackEnabled: boolean;
+  /** Retry Attempts */
   retryAttempts: number;
+  /** Retry Delay */
   retryDelay: number;
   // Category Settings
+  /** Categories */
   categories: {
+    /** T R A N S A C T I O N A L */
     TRANSACTIONAL: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** M A R K E T I N G */
     MARKETING: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** N O T I F I C A T I O N S */
     NOTIFICATIONS: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** A C C O U N T */
     ACCOUNT: { enabled: boolean; provider?: "resend" | "sendgrid" };
   };
 }
 
 const defaultSettings: EmailSettings = {
+  /** Default Provider */
   defaultProvider: "resend",
+  /** Resend Enabled */
   resendEnabled: false,
+  /** Resend Api Key */
   resendApiKey: "",
+  /** Resend From Email */
   resendFromEmail: "",
+  /** Resend From Name */
   resendFromName: "JustForView.in",
+  /** Sendgrid Enabled */
   sendgridEnabled: false,
+  /** Sendgrid Api Key */
   sendgridApiKey: "",
+  /** Sendgrid From Email */
   sendgridFromEmail: "",
+  /** Sendgrid From Name */
   sendgridFromName: "JustForView.in",
+  /** Fallback Enabled */
   fallbackEnabled: true,
+  /** Retry Attempts */
   retryAttempts: 3,
+  /** Retry Delay */
   retryDelay: 5000,
+  /** Categories */
   categories: {
+    /** T R A N S A C T I O N A L */
     TRANSACTIONAL: { enabled: true, provider: "resend" },
+    /** M A R K E T I N G */
     MARKETING: { enabled: true, provider: "resend" },
+    /** N O T I F I C A T I O N S */
     NOTIFICATIONS: { enabled: true, provider: "resend" },
+    /** A C C O U N T */
     ACCOUNT: { enabled: true, provider: "resend" },
   },
 };
@@ -74,6 +123,22 @@ export default function EmailSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     try {
       setLoading(true);
@@ -83,6 +148,7 @@ export default function EmailSettingsPage() {
       setSettings(data || defaultSettings);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "EmailSettingsPage.loadSettings",
       });
       toast.error("Failed to load email settings");
@@ -91,13 +157,32 @@ export default function EmailSettingsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     try {
       setSaving(true);
 
       const response = await fetch("/api/admin/settings/email", {
+        /** Method */
         method: "PUT",
+        /** Headers */
         headers: { "Content-Type": "application/json" },
+        /** Body */
         body: JSON.stringify(settings),
       });
 
@@ -106,6 +191,7 @@ export default function EmailSettingsPage() {
       toast.success("Email settings saved successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "EmailSettingsPage.handleSave",
       });
       toast.error("Failed to save email settings");
@@ -114,13 +200,36 @@ export default function EmailSettingsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {"resend" | "sendgrid"} provider - The provider
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {"resend" | "sendgrid"} provider - The provider
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleTestConnection = async (provider: "resend" | "sendgrid") => {
     try {
       setTesting(provider);
 
       const response = await fetch("/api/admin/settings/email/test", {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: { "Content-Type": "application/json" },
+        /** Body */
         body: JSON.stringify({ provider }),
       });
 
@@ -141,6 +250,7 @@ export default function EmailSettingsPage() {
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "EmailSettingsPage.handleTestConnection",
         provider,
       });
@@ -189,6 +299,7 @@ export default function EmailSettingsPage() {
                 onChange={(e) =>
                   setSettings({
                     ...settings,
+                    /** Default Provider */
                     defaultProvider: e.target.value as "resend" | "sendgrid",
                   })
                 }
@@ -209,6 +320,7 @@ export default function EmailSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Retry Attempts */
                       retryAttempts: parseInt(e.target.value),
                     })
                   }
@@ -225,6 +337,7 @@ export default function EmailSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Retry Delay */
                       retryDelay: parseInt(e.target.value),
                     })
                   }
@@ -239,6 +352,7 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Fallback Enabled */
                         fallbackEnabled: e.target.checked,
                       })
                     }
@@ -270,6 +384,7 @@ export default function EmailSettingsPage() {
                 onChange={(e) =>
                   setSettings({
                     ...settings,
+                    /** Resend Enabled */
                     resendEnabled: e.target.checked,
                   })
                 }
@@ -291,6 +406,7 @@ export default function EmailSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Resend Api Key */
                       resendApiKey: e.target.value,
                     })
                   }
@@ -306,6 +422,7 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Resend From Email */
                         resendFromEmail: e.target.value,
                       })
                     }
@@ -320,6 +437,7 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Resend From Name */
                         resendFromName: e.target.value,
                       })
                     }
@@ -366,6 +484,7 @@ export default function EmailSettingsPage() {
                 onChange={(e) =>
                   setSettings({
                     ...settings,
+                    /** Sendgrid Enabled */
                     sendgridEnabled: e.target.checked,
                   })
                 }
@@ -387,6 +506,7 @@ export default function EmailSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Sendgrid Api Key */
                       sendgridApiKey: e.target.value,
                     })
                   }
@@ -402,6 +522,7 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Sendgrid From Email */
                         sendgridFromEmail: e.target.value,
                       })
                     }
@@ -416,6 +537,7 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Sendgrid From Name */
                         sendgridFromName: e.target.value,
                       })
                     }
@@ -469,10 +591,12 @@ export default function EmailSettingsPage() {
                       onChange={(e) =>
                         setSettings({
                           ...settings,
+                          /** Categories */
                           categories: {
                             ...settings.categories,
                             [category]: {
                               ...config,
+                              /** Enabled */
                               enabled: e.target.checked,
                             },
                           },
@@ -504,10 +628,12 @@ export default function EmailSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Categories */
                         categories: {
                           ...settings.categories,
                           [category]: {
                             ...config,
+                            /** Provider */
                             provider: e.target.value as "resend" | "sendgrid",
                           },
                         },

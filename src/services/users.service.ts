@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/users.service
+ * @description This file contains service functions for users operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { USER_ROUTES } from "@/constants/api-routes";
 import { UserBE, UserFiltersBE } from "@/types/backend/user.types";
@@ -19,9 +28,16 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
+/**
+ * UsersService class
+ * 
+ * @class
+ * @description Description of UsersService class functionality
+ */
 class UsersService {
   // List users (admin only)
   async list(
+    /** Filters */
     filters?: Partial<UserFiltersBE>,
   ): Promise<PaginatedResponseFE<UserFE>> {
     const params = new URLSearchParams();
@@ -43,8 +59,11 @@ class UsersService {
       await apiService.get<PaginatedResponseBE<UserBE>>(endpoint);
 
     return {
+      /** Data */
       data: toFEUsers(response.data),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -59,6 +78,7 @@ class UsersService {
   async update(id: string, formData: UserProfileFormFE): Promise<UserFE> {
     const request = toBEUpdateUserRequest(formData);
     const response: any = await apiService.patch(USER_ROUTES.BY_ID(id), {
+      /** Updates */
       updates: request,
     });
     return toFEUser(response.data);
@@ -66,8 +86,11 @@ class UsersService {
 
   // Ban user (admin only)
   async ban(
+    /** Id */
     id: string,
+    /** Is Banned */
     isBanned: boolean,
+    /** Ban Reason */
     banReason?: string,
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
@@ -102,10 +125,13 @@ class UsersService {
 
   // Change password
   async changePassword(
+    /** Form Data */
     formData: ChangePasswordFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(USER_ROUTES.CHANGE_PASSWORD, {
+      /** Current Password */
       currentPassword: formData.currentPassword,
+      /** New Password */
       newPassword: formData.newPassword,
     });
   }
@@ -117,9 +143,11 @@ class UsersService {
 
   // Verify email with OTP
   async verifyEmail(
+    /** Form Data */
     formData: OTPVerificationFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-email/confirm", {
+      /** Otp */
       otp: formData.otp,
     });
   }
@@ -131,9 +159,11 @@ class UsersService {
 
   // Verify mobile with OTP
   async verifyMobile(
+    /** Form Data */
     formData: OTPVerificationFormFE,
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
+      /** Otp */
       otp: formData.otp,
     });
   }
@@ -144,7 +174,9 @@ class UsersService {
     formData.append("file", file);
 
     const response = await fetch(`/api${USER_ROUTES.AVATAR}`, {
+      /** Method */
       method: "POST",
+      /** Body */
       body: formData,
     });
 
@@ -170,15 +202,23 @@ class UsersService {
 
   // Get user statistics (admin only)
   async getStats(): Promise<{
+    /** Total Users */
     totalUsers: number;
+    /** Active Users */
     activeUsers: number;
+    /** New Users This Month */
     newUsersThisMonth: number;
+    /** Users By Role */
     usersByRole: Record<string, number>;
   }> {
     return apiService.get<{
+      /** Total Users */
       totalUsers: number;
+      /** Active Users */
       activeUsers: number;
+      /** New Users This Month */
       newUsersThisMonth: number;
+      /** Users By Role */
       usersByRole: Record<string, number>;
     }>(USER_ROUTES.STATS);
   }

@@ -1,19 +1,47 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ErrorBoundary
+ * @description This file contains the ErrorBoundary component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { logComponentError } from "@/lib/error-logger";
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Children */
   children: ReactNode;
+  /** Fallback */
   fallback?: ReactNode;
+  /** On Reset */
   onReset?: () => void;
+  /** Reset Keys */
   resetKeys?: Array<string | number>;
 }
 
+/**
+ * State interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for State
+ */
 interface State {
+  /** Has Error */
   hasError: boolean;
+  /** Error */
   error: Error | null;
+  /** Error Info */
   errorInfo: ErrorInfo | null;
 }
 
@@ -48,16 +76,21 @@ export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      /** Has Error */
       hasError: false,
+      /** Error */
       error: null,
+      /** Error Info */
       errorInfo: null,
     };
   }
 
   static getDerivedStateFromError(error: Error): State {
     return {
+      /** Has Error */
       hasError: true,
       error,
+      /** Error Info */
       errorInfo: null,
     };
   }
@@ -95,8 +128,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private reset = () => {
     this.setState({
+      /** Has Error */
       hasError: false,
+      /** Error */
       error: null,
+      /** Error Info */
       errorInfo: null,
     });
 
@@ -198,10 +234,57 @@ export class ErrorBoundary extends Component<Props, State> {
 /**
  * Hook-based error boundary wrapper for functional components
  */
+/**
+ * Performs with error boundary operation
+ *
+ * @param {React.ComponentType<P>} Component - The  component
+ * @param {Omit<Props, "children">} [errorBoundaryProps] - The error boundary props
+ *
+ * @returns {any} The witherrorboundary result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withErrorBoundary(Component, errorBoundaryProps);
+ */
+
+/**
+ * Performs with error boundary operation
+ *
+ * @returns {any} The witherrorboundary result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withErrorBoundary();
+ */
+
 export function withErrorBoundary<P extends object>(
+  /** Component */
   Component: React.ComponentType<P>,
+  /** Error Boundary Props */
   errorBoundaryProps?: Omit<Props, "children">,
 ) {
+  /**
+   * Performs wrapped component operation
+   *
+   * @param {P} props - The props
+   *
+   * @returns {any} The wrappedcomponent result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs wrapped component operation
+   *
+   * @param {P} props - The props
+   *
+   * @returns {any} The wrappedcomponent result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const WrappedComponent = (props: P) => (
     <ErrorBoundary {...errorBoundaryProps}>
       <Component {...props} />

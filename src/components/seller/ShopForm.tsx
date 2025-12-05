@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ShopForm
+ * @description This file contains the ShopForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,10 +22,20 @@ import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 
+/**
+ * ShopFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopFormProps
+ */
 interface ShopFormProps {
+  /** Shop */
   shop?: ShopFE;
+  /** On Submit */
   onSubmit: (data: any) => Promise<void>;
+  /** Is Submitting */
   isSubmitting?: boolean;
+  /** Mode */
   mode: "create" | "edit";
 }
 
@@ -46,6 +65,22 @@ export default function ShopForm({
     }
   }, [name, slug, mode]);
 
+  /**
+   * Validates validate
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates validate
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = "Shop name is required";
@@ -71,15 +106,41 @@ export default function ShopForm({
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     const data: any = {
+      /** Name */
       name: name.trim(),
+      /** Slug */
       slug: slug.trim(),
+      /** Description */
       description: description.trim(),
+      /** Address */
       address: location.trim() || undefined,
+      /** Phone */
       phone: phone.trim() || undefined,
+      /** Email */
       email: email.trim() || undefined,
     };
     await onSubmit(data);

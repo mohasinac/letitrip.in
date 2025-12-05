@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/shipping/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -38,14 +47,22 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const DEFAULT_SETTINGS: ShippingSettings = {
+  /** Free Shipping Threshold */
   freeShippingThreshold: 999,
+  /** Default Shipping Charge */
   defaultShippingCharge: 49,
+  /** Express Shipping Charge */
   expressShippingCharge: 99,
+  /** Express Shipping Enabled */
   expressShippingEnabled: true,
+  /** Estimated Delivery Days */
   estimatedDeliveryDays: {
+    /** Standard */
     standard: { min: 5, max: 7 },
+    /** Express */
     express: { min: 2, max: 3 },
   },
+  /** Restricted Pincodes */
   restrictedPincodes: [],
 };
 
@@ -56,15 +73,21 @@ export default function AdminShippingSettingsPage() {
   const [newPincode, setNewPincode] = useState("");
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: settings,
+    /** Set Data */
     setData: setSettings,
     execute,
   } = useLoadingState<ShippingSettings>({
+    /** Initial Data */
     initialData: DEFAULT_SETTINGS,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AdminShippingSettings.loadSettings",
       });
     },
@@ -74,12 +97,48 @@ export default function AdminShippingSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     await execute(async () => {
       const data = await settingsService.getShipping();
       return { ...DEFAULT_SETTINGS, ...data };
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +161,18 @@ export default function AdminShippingSettingsPage() {
     }
   };
 
+  /**
+   * Performs add restricted pincode operation
+   *
+   * @returns {any} The addrestrictedpincode result
+   */
+
+  /**
+   * Performs add restricted pincode operation
+   *
+   * @returns {any} The addrestrictedpincode result
+   */
+
   const addRestrictedPincode = () => {
     const pincode = newPincode.trim();
     if (
@@ -112,26 +183,63 @@ export default function AdminShippingSettingsPage() {
     ) {
       setSettings({
         ...settings,
+        /** Restricted Pincodes */
         restrictedPincodes: [...settings.restrictedPincodes, pincode],
       });
       setNewPincode("");
     }
   };
 
+  /**
+   * Deletes restricted pincode
+   *
+   * @param {string} pincode - The pincode
+   *
+   * @returns {string} The removerestrictedpincode result
+   */
+
+  /**
+   * Deletes restricted pincode
+   *
+   * @param {string} pincode - The pincode
+   *
+   * @returns {string} The removerestrictedpincode result
+   */
+
   const removeRestrictedPincode = (pincode: string) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Restricted Pincodes */
       restrictedPincodes: settings.restrictedPincodes.filter(
         (p) => p !== pincode
       ),
     });
   };
 
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(amount);
   };
@@ -230,6 +338,7 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Free Shipping Threshold */
                         freeShippingThreshold: parseInt(e.target.value) || 0,
                       });
                     }
@@ -265,6 +374,7 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Default Shipping Charge */
                         defaultShippingCharge: parseInt(e.target.value) || 0,
                       });
                     }
@@ -291,6 +401,7 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Express Shipping Charge */
                         expressShippingCharge: parseInt(e.target.value) || 0,
                       });
                     }
@@ -318,6 +429,7 @@ export default function AdminShippingSettingsPage() {
                   if (settings) {
                     setSettings({
                       ...settings,
+                      /** Express Shipping Enabled */
                       expressShippingEnabled: !settings.expressShippingEnabled,
                     });
                   }
@@ -365,10 +477,13 @@ export default function AdminShippingSettingsPage() {
                     ) {
                       setSettings({
                         ...settings,
+                        /** Estimated Delivery Days */
                         estimatedDeliveryDays: {
                           ...settings.estimatedDeliveryDays,
+                          /** Standard */
                           standard: {
                             ...settings.estimatedDeliveryDays.standard,
+                            /** Min */
                             min: parseInt(e.target.value) || 1,
                           },
                         },
@@ -386,10 +501,13 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Estimated Delivery Days */
                         estimatedDeliveryDays: {
                           ...settings.estimatedDeliveryDays,
+                          /** Standard */
                           standard: {
                             ...settings.estimatedDeliveryDays.standard,
+                            /** Max */
                             max: parseInt(e.target.value) || 7,
                           },
                         },
@@ -419,10 +537,13 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Estimated Delivery Days */
                         estimatedDeliveryDays: {
                           ...settings.estimatedDeliveryDays,
+                          /** Express */
                           express: {
                             ...settings.estimatedDeliveryDays.express,
+                            /** Min */
                             min: parseInt(e.target.value) || 1,
                           },
                         },
@@ -441,10 +562,13 @@ export default function AdminShippingSettingsPage() {
                     if (settings) {
                       setSettings({
                         ...settings,
+                        /** Estimated Delivery Days */
                         estimatedDeliveryDays: {
                           ...settings.estimatedDeliveryDays,
+                          /** Express */
                           express: {
                             ...settings.estimatedDeliveryDays.express,
+                            /** Max */
                             max: parseInt(e.target.value) || 3,
                           },
                         },

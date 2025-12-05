@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedReviewsSection
+ * @description This file contains the FeaturedReviewsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,6 +24,22 @@ export default function FeaturedReviewsSection() {
     fetchFeaturedReviews();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const fetchFeaturedReviews = async () => {
     try {
       setLoading(true);
@@ -22,6 +47,7 @@ export default function FeaturedReviewsSection() {
       setReviews(reviewsList.slice(0, 10));
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedReviewsSection.fetchFeaturedReviews",
       });
       setReviews([]);

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/TruncatedText
+ * @description This file contains the TruncatedText component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Truncated Text Component
  *
  * Displays text with truncation and optional "Show more" functionality.
@@ -13,15 +22,49 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * TruncatedTextProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TruncatedTextProps
+ */
 interface TruncatedTextProps {
+  /** Text */
   text: string;
+  /** Max Length */
   maxLength?: number;
+  /** Lines */
   lines?: number;
+  /** Show More Label */
   showMoreLabel?: string;
+  /** Show Less Label */
   showLessLabel?: string;
+  /** Class Name */
   className?: string;
+  /** Expandable */
   expandable?: boolean;
 }
+
+/**
+ * Function: Truncated Text
+ */
+/**
+ * Performs truncated text operation
+ *
+ * @returns {any} The truncatedtext result
+ *
+ * @example
+ * TruncatedText();
+ */
+
+/**
+ * Performs truncated text operation
+ *
+ * @returns {any} The truncatedtext result
+ *
+ * @example
+ * TruncatedText();
+ */
 
 export function TruncatedText({
   text,

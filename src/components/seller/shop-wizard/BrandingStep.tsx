@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/BrandingStep
+ * @description This file contains the BrandingStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -6,9 +15,18 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { ShopFormData, OnShopChange } from "./types";
 
+/**
+ * BrandingStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BrandingStepProps
+ */
 interface BrandingStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnShopChange;
+  /** Errors */
   errors: Record<string, string>;
 }
 

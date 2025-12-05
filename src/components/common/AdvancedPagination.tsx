@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/AdvancedPagination
+ * @description This file contains the AdvancedPagination component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -7,17 +16,34 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+/**
+ * AdvancedPaginationProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AdvancedPaginationProps
+ */
 export interface AdvancedPaginationProps {
+  /** Current Page */
   currentPage: number;
+  /** Total Pages */
   totalPages: number;
+  /** Page Size */
   pageSize: number;
+  /** Total Items */
   totalItems: number;
+  /** On Page Change */
   onPageChange: (page: number) => void;
+  /** On Page Size Change */
   onPageSizeChange?: (size: number) => void;
+  /** Page Size Options */
   pageSizeOptions?: number[];
+  /** Show Page Size Selector */
   showPageSizeSelector?: boolean;
+  /** Show Page Input */
   showPageInput?: boolean;
+  /** Show First Last */
   showFirstLast?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -48,6 +74,24 @@ export interface AdvancedPaginationProps {
  * />
  * ```
  */
+/**
+ * Performs advanced pagination operation
+ *
+ * @returns {any} The advancedpagination result
+ *
+ * @example
+ * AdvancedPagination();
+ */
+
+/**
+ * Performs advanced pagination operation
+ *
+ * @returns {any} The advancedpagination result
+ *
+ * @example
+ * AdvancedPagination();
+ */
+
 export function AdvancedPagination({
   currentPage,
   totalPages,
@@ -61,8 +105,45 @@ export function AdvancedPagination({
   showFirstLast = true,
   className = "",
 }: AdvancedPaginationProps) {
+  /**
+   * Performs start item operation
+   *
+   * @param {any} [currentPage - 1) * pageSize + 1;
+  const endItem] - The current page - 1) * page size + 1;
+  const end item
+   * @param {React.FormEvent<HTMLFormElement>} [totalItems);
+
+  const handlePageInput] - The total items);
+
+  const handle page input
+   *
+   * @returns {any} The startitem result
+   */
+
+  /**
+   * Performs start item operation
+   *
+   * @returns {any} The startitem result
+   */
+
   const startItem = (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
+
+  /**
+   * Handles page input event
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e - The e
+   *
+   * @returns {any} The handlepageinput result
+   */
+
+  /**
+   * Handles page input event
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e - The e
+   *
+   * @returns {any} The handlepageinput result
+   */
 
   const handlePageInput = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,6 +153,18 @@ export function AdvancedPagination({
       onPageChange(pageNum);
     }
   };
+
+  /**
+   * Renders page numbers
+   *
+   * @returns {any} The renderpagenumbers result
+   */
+
+  /**
+   * Renders page numbers
+   *
+   * @returns {any} The renderpagenumbers result
+   */
 
   const renderPageNumbers = () => {
     const pages: (number | string)[] = [];

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/messages/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Messages API
  * Epic: E023 - Messaging System
  *
@@ -15,6 +24,22 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 /**
  * Helper function to convert role to sender/recipient type
  */
+/**
+ * Retrieves user type
+ *
+ * @param {string | null} role - The role
+ *
+ * @returns {string} The usertype result
+ */
+
+/**
+ * Retrieves user type
+ *
+ * @param {string | null} role - The role
+ *
+ * @returns {string} The usertype result
+ */
+
 function getUserType(role: string | null): "admin" | "seller" | "user" {
   if (role === "admin") return "admin";
   if (role === "seller") return "seller";
@@ -25,6 +50,32 @@ function getUserType(role: string | null): "admin" | "seller" | "user" {
  * GET /api/messages
  * List conversations for the authenticated user
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -63,18 +114,43 @@ export async function GET(request: NextRequest) {
     const total = countSnapshot.data().count || 0;
 
     // Get paginated conversations
+    /**
+     * Performs offset operation
+     *
+     * @param {any} [page - 1) * pageSize;
+    const snapshot] - The page - 1) * page size;
+    const snapshot
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} [page - 1) * pageSize;
+    const snapshot] - The page - 1) * page size;
+    const snapshot
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (page - 1) * pageSize;
     const snapshot = await query.offset(offset).limit(pageSize).get();
 
     const conversations = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
+        /** Id */
         id: doc.id,
         ...data,
+        /** Created At */
         createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        /** Updated At */
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+        /** Last Message */
         lastMessage: {
           ...data.lastMessage,
+          /** Sent At */
           sentAt:
             data.lastMessage?.sentAt?.toDate?.()?.toISOString() ||
             data.lastMessage?.sentAt,
@@ -83,15 +159,21 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         conversations,
+        /** Pagination */
         pagination: {
           page,
           pageSize,
           total,
+          /** Total Pages */
           totalPages: Math.ceil(total / pageSize),
+          /** Has Next */
           hasNext: offset + conversations.length < total,
+          /** Has Prev */
           hasPrev: page > 1,
         },
       },
@@ -109,6 +191,32 @@ export async function GET(request: NextRequest) {
  * POST /api/messages
  * Create new conversation or send message to existing conversation
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
@@ -154,7 +262,9 @@ export async function POST(request: NextRequest) {
       if (!conversationData?.participantIds?.includes(userId)) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "Not authorized to access this conversation",
           },
           { status: 403 },
@@ -163,6 +273,22 @@ export async function POST(request: NextRequest) {
 
       // Create message
       const messageRef = db.collection(COLLECTIONS.MESSAGES).doc();
+      /**
+       * Retrieves sender type
+       *
+       * @param {string | null} role - The role
+       *
+       * @returns {string} The sendertype result
+       */
+
+      /**
+       * Retrieves sender type
+       *
+       * @param {string | null} role - The role
+       *
+       * @returns {string} The sendertype result
+       */
+
       const getSenderType = (role: string | null) => {
         if (role === "admin") return "admin";
         if (role === "seller") return "seller";
@@ -170,13 +296,21 @@ export async function POST(request: NextRequest) {
       };
       const messageData = {
         conversationId,
+        /** Sender Id */
         senderId: userId,
+        /** Sender Name */
         senderName: userName,
+        /** Sender Type */
         senderType: getSenderType(auth.role),
+        /** Content */
         content: message.trim(),
+        /** Attachments */
         attachments: [],
+        /** Read By */
         readBy: { [userId]: now },
+        /** Is Deleted */
         isDeleted: false,
+        /** Created At */
         createdAt: now,
       };
 
@@ -189,30 +323,47 @@ export async function POST(request: NextRequest) {
       const currentUnreadCount = conversationData.unreadCount || {};
 
       await conversationRef.update({
+        /** Last Message */
         lastMessage: {
+          /** Content */
           content: message.trim(),
+          /** Sender Id */
           senderId: userId,
+          /** Sent At */
           sentAt: now,
         },
+        /** Unread Count */
         unreadCount: {
           ...currentUnreadCount,
           [otherParticipantId]:
             (currentUnreadCount[otherParticipantId] || 0) + 1,
         },
+        /** Updated At */
         updatedAt: now,
+        /** Status */
         status: "active",
       });
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: {
+          /** Message Id */
           messageId: messageRef.id,
+          /** Conversation Id */
           conversationId: conversationId,
+          /** Sender Id */
           senderId: messageData.senderId,
+          /** Sender Name */
           senderName: messageData.senderName,
+          /** Sender Type */
           senderType: messageData.senderType,
+          /** Content */
           content: messageData.content,
+          /** Attachments */
           attachments: messageData.attachments,
+          /** Created At */
           createdAt: now.toDate().toISOString(),
         },
       });
@@ -222,7 +373,9 @@ export async function POST(request: NextRequest) {
     if (!recipientId) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Recipient ID is required for new conversations",
         },
         { status: 400 },
@@ -264,14 +417,23 @@ export async function POST(request: NextRequest) {
       // Add message to existing conversation
       const messageRef = db.collection(COLLECTIONS.MESSAGES).doc();
       const messageData = {
+        /** Conversation Id */
         conversationId: existingConversation.id,
+        /** Sender Id */
         senderId: userId,
+        /** Sender Name */
         senderName: userName,
+        /** Sender Type */
         senderType: getUserType(auth.role),
+        /** Content */
         content: message.trim(),
+        /** Attachments */
         attachments: [],
+        /** Read By */
         readBy: { [userId]: now },
+        /** Is Deleted */
         isDeleted: false,
+        /** Created At */
         createdAt: now,
       };
 
@@ -280,24 +442,36 @@ export async function POST(request: NextRequest) {
       // Update conversation
       const currentUnreadCount = existingConversation.data().unreadCount || {};
       await existingConversation.ref.update({
+        /** Last Message */
         lastMessage: {
+          /** Content */
           content: message.trim(),
+          /** Sender Id */
           senderId: userId,
+          /** Sent At */
           sentAt: now,
         },
+        /** Unread Count */
         unreadCount: {
           ...currentUnreadCount,
           [recipientId]: (currentUnreadCount[recipientId] || 0) + 1,
         },
+        /** Updated At */
         updatedAt: now,
+        /** Status */
         status: "active",
       });
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: {
+          /** Message Id */
           messageId: messageRef.id,
+          /** Conversation Id */
           conversationId: existingConversation.id,
+          /** Is New Conversation */
           isNewConversation: false,
         },
       });
@@ -306,33 +480,54 @@ export async function POST(request: NextRequest) {
     // Create new conversation
     const conversationRef = db.collection(COLLECTIONS.CONVERSATIONS).doc();
     const conversationData = {
+      /** Type */
       type: type || "buyer_seller",
+      /** Participants */
       participants: {
+        /** Sender */
         sender: {
+          /** Id */
           id: userId,
+          /** Name */
           name: userName,
+          /** Type */
           type: getUserType(auth.role),
         },
+        /** Recipient */
         recipient: {
+          /** Id */
           id: recipientId,
+          /** Name */
           name: recipientName,
+          /** Type */
           type: recipientType,
         },
       },
+      /** Participant Ids */
       participantIds: [userId, recipientId],
+      /** Subject */
       subject: subject || null,
+      /** Context */
       context: context || null,
+      /** Last Message */
       lastMessage: {
+        /** Content */
         content: message.trim(),
+        /** Sender Id */
         senderId: userId,
+        /** Sent At */
         sentAt: now,
       },
+      /** Unread Count */
       unreadCount: {
         [userId]: 0,
         [recipientId]: 1,
       },
+      /** Status */
       status: "active",
+      /** Created At */
       createdAt: now,
+      /** Updated At */
       updatedAt: now,
     };
 
@@ -341,24 +536,38 @@ export async function POST(request: NextRequest) {
     // Create first message
     const messageRef = db.collection(COLLECTIONS.MESSAGES).doc();
     const messageData = {
+      /** Conversation Id */
       conversationId: conversationRef.id,
+      /** Sender Id */
       senderId: userId,
+      /** Sender Name */
       senderName: userName,
+      /** Sender Type */
       senderType: getUserType(auth.role),
+      /** Content */
       content: message.trim(),
+      /** Attachments */
       attachments: [],
+      /** Read By */
       readBy: { [userId]: now },
+      /** Is Deleted */
       isDeleted: false,
+      /** Created At */
       createdAt: now,
     };
 
     await messageRef.set(messageData);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Conversation Id */
         conversationId: conversationRef.id,
+        /** Message Id */
         messageId: messageRef.id,
+        /** Is New Conversation */
         isNewConversation: true,
       },
     });

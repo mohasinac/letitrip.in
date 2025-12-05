@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/[slug]/hierarchy/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
@@ -5,6 +14,34 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * GET /api/categories/[slug]/hierarchy
  * Get full category hierarchy path (breadcrumb)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -64,14 +101,18 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: hierarchy,
     });
   } catch (error: any) {
     console.error("Category hierarchy error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to fetch category hierarchy",
       },
       { status: 500 },

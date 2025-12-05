@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ReviewList
+ * @description This file contains the ReviewList component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,21 +17,41 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { reviewsService } from "@/services/reviews.service";
 import { EmptyState } from "@/components/common/EmptyState";
 
+/**
+ * Review interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Review
+ */
 interface Review {
+  /** Id */
   id: string;
   user_id: string;
+  /** Rating */
   rating: number;
+  /** Title */
   title: string;
+  /** Comment */
   comment: string;
+  /** Images */
   images: string[];
   verified_purchase: boolean;
   helpful_count: number;
   created_at: string;
 }
 
+/**
+ * ReviewStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewStats
+ */
 interface ReviewStats {
+  /** Total Reviews */
   totalReviews: number;
+  /** Average Rating */
   averageRating: number;
+  /** Rating Distribution */
   ratingDistribution: {
     5: number;
     4: number;
@@ -32,7 +61,14 @@ interface ReviewStats {
   };
 }
 
+/**
+ * ReviewListProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewListProps
+ */
 interface ReviewListProps {
+  /** Product Id */
   productId: string;
 }
 
@@ -49,19 +85,39 @@ export default function ReviewList({ productId }: ReviewListProps) {
     loadReviews();
   }, [productId, sortBy, filterRating]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadReviews = async () => {
     setLoading(true);
     try {
       const response = await reviewsService.list({
         productId,
+        /** Rating */
         rating: filterRating || undefined,
+        /** Sort By */
         sortBy:
           sortBy === "helpful"
             ? "helpfulCount"
             : sortBy === "rating"
               ? "rating"
               : "createdAt",
+        /** Sort Order */
         sortOrder: "desc",
+        /** Limit */
         limit: 20,
       });
 
@@ -71,8 +127,11 @@ export default function ReviewList({ productId }: ReviewListProps) {
       if (productId) {
         const statsData = await reviewsService.getSummary({ productId });
         setStats({
+          /** Total Reviews */
           totalReviews: statsData.totalReviews,
+          /** Average Rating */
           averageRating: statsData.averageRating,
+          /** Rating Distribution */
           ratingDistribution: statsData.ratingDistribution.reduce(
             (acc: any, item: any) => {
               acc[item.rating] = item.count;
@@ -84,7 +143,9 @@ export default function ReviewList({ productId }: ReviewListProps) {
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ReviewList.loadReviews",
+        /** Metadata */
         metadata: { productId },
       });
       setReviews([]);
@@ -93,6 +154,26 @@ export default function ReviewList({ productId }: ReviewListProps) {
       setLoading(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} reviewId - review identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} reviewId - review identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleMarkHelpful = async (reviewId: string) => {
     try {
@@ -106,11 +187,29 @@ export default function ReviewList({ productId }: ReviewListProps) {
       );
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ReviewList.handleMarkHelpful",
+        /** Metadata */
         metadata: { reviewId },
       });
     }
   };
+
+  /**
+   * Renders stars
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The renderstars result
+   */
+
+  /**
+   * Renders stars
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The renderstars result
+   */
 
   const renderStars = (rating: number) => {
     return (
@@ -128,6 +227,18 @@ export default function ReviewList({ productId }: ReviewListProps) {
       </div>
     );
   };
+
+  /**
+   * Renders rating distribution
+   *
+   * @returns {any} The renderratingdistribution result
+   */
+
+  /**
+   * Renders rating distribution
+   *
+   * @returns {any} The renderratingdistribution result
+   */
 
   const renderRatingDistribution = () => {
     if (!stats) return null;

@@ -1,9 +1,53 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/[id]/feature/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../../lib/session";
 
 // PATCH /api/auctions/[id]/feature - admin only
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -24,7 +68,9 @@ export async function PATCH(
     await Collections.auctions().doc(id).update(update);
     const updated = await Collections.auctions().doc(id).get();
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {

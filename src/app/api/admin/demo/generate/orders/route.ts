@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/orders/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -44,6 +53,35 @@ const STREETS = [
   "Brigade Road",
   "Linking Road",
 ];
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -97,8 +135,11 @@ export async function POST(request: NextRequest) {
         for (let item = 0; item < numItems; item++) {
           const price = 500 + Math.random() * 10000;
           items.push({
+            /** Product Id */
             productId: shopProducts[(o + item) % shopProducts.length],
+            /** Quantity */
             quantity: 1,
+            /** Price */
             price: Math.round(price),
           });
           subtotal += price;
@@ -124,52 +165,87 @@ export async function POST(request: NextRequest) {
           ];
 
         await orderRef.set({
+          /** Order Number */
           orderNumber: `${DEMO_PREFIX}ORD-${String(orderCount + 1).padStart(6, "0")}`,
+          /** Buyer Id */
           buyerId: buyer.id,
+          /** Buyer Name */
           buyerName: `${DEMO_PREFIX}${buyer.name}`,
+          /** Buyer Email */
           buyerEmail: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
+          /** Buyer Phone */
           buyerPhone: `+91-${9000000000 + orderCount}`,
+          /** Shop Id */
           shopId: shop.id,
+          /** Seller Id */
           sellerId: shop.ownerId,
           items,
+          /** Subtotal */
           subtotal: Math.round(subtotal),
           shippingFee,
+          /** Tax */
           tax: Math.round(subtotal * 0.18),
+          /** Discount */
           discount: Math.random() > 0.7 ? Math.round(subtotal * 0.1) : 0,
+          /** Total */
           total: Math.round(total),
           status,
+          /** Payment Method */
           paymentMethod: paymentMethodData.method,
+          /** Payment Status */
           paymentStatus:
             paymentMethodData.method === "cod" ? "pending" : "completed",
+          /** Shipping Address */
           shippingAddress: {
+            /** Name */
             name: buyer.name,
+            /** Phone */
             phone: `+91-${9000000000 + orderCount}`,
+            /** Street */
             street: `${100 + orderCount} ${STREETS[orderCount % STREETS.length]}`,
+            /** City */
             city: city.city,
+            /** State */
             state: city.state,
+            /** Pincode */
             pincode: city.pincode,
+            /** Country */
             country: "India",
+            /** Landmark */
             landmark: "Near Main Market",
           },
+          /** Billing Address */
           billingAddress: {
+            /** Name */
             name: buyer.name,
+            /** Phone */
             phone: `+91-${9000000000 + orderCount}`,
+            /** Street */
             street: `${100 + orderCount} ${STREETS[orderCount % STREETS.length]}`,
+            /** City */
             city: city.city,
+            /** State */
             state: city.state,
+            /** Pincode */
             pincode: city.pincode,
+            /** Country */
             country: "India",
           },
+          /** Notes */
           notes:
             Math.random() > 0.7
               ? "Please handle with care - fragile items"
               : "",
+          /** Gift Wrap */
           giftWrap: Math.random() > 0.8,
+          /** Estimated Delivery */
           estimatedDelivery: new Date(
             timestamp.getTime() +
               (3 + Math.floor(Math.random() * 5)) * 24 * 60 * 60 * 1000,
           ),
+          /** Created At */
           createdAt: timestamp,
+          /** Updated At */
           updatedAt: timestamp,
         });
 
@@ -182,24 +258,34 @@ export async function POST(request: NextRequest) {
             .collection(COLLECTIONS.PAYMENTS)
             .doc()
             .set({
+              /** Order Id */
               orderId: orderRef.id,
+              /** Transaction Id */
               transactionId: `${DEMO_PREFIX}pay_${nanoid(14)}`,
               razorpay_order_id: razorpayOrderId,
               razorpay_payment_id: razorpayPaymentId,
               razorpay_signature: `sig_${nanoid(32)}`,
               amount: Math.round(total * 100), // in paise
+              /** Currency */
               currency: "INR",
               ...paymentMethodData,
+              /** Status */
               status: "captured",
               fee: Math.round(total * 0.02 * 100), // 2% fee in paise
               tax: Math.round(total * 0.02 * 0.18 * 100), // GST on fee
+              /** Email */
               email: `${buyer.name.toLowerCase().replace(/\s/g, ".")}@demo.letitrip.in`,
+              /** Contact */
               contact: `+91-${9000000000 + orderCount}`,
+              /** Notes */
               notes: { order_id: orderRef.id, shop_id: shop.id },
+              /** Receipt */
               receipt: `${DEMO_PREFIX}RCPT-${String(paymentCount + 1).padStart(6, "0")}`,
               invoice_id: `${DEMO_PREFIX}INV-${String(paymentCount + 1).padStart(6, "0")}`,
+              /** International */
               international: false,
               captured_at: timestamp,
+              /** Created At */
               createdAt: timestamp,
             });
           paymentCount++;
@@ -212,22 +298,31 @@ export async function POST(request: NextRequest) {
 
           const trackingEvents = [
             {
+              /** Status */
               status: "pickup_scheduled",
+              /** Location */
               location: city.city,
+              /** Timestamp */
               timestamp: new Date(
                 timestamp.getTime() - 4 * 24 * 60 * 60 * 1000,
               ),
             },
             {
+              /** Status */
               status: "picked_up",
+              /** Location */
               location: city.city,
+              /** Timestamp */
               timestamp: new Date(
                 timestamp.getTime() - 3 * 24 * 60 * 60 * 1000,
               ),
             },
             {
+              /** Status */
               status: "in_transit",
+              /** Location */
               location: "Sorting Hub",
+              /** Timestamp */
               timestamp: new Date(
                 timestamp.getTime() - 2 * 24 * 60 * 60 * 1000,
               ),
@@ -236,8 +331,11 @@ export async function POST(request: NextRequest) {
 
           if (status === "out_for_delivery" || status === "delivered") {
             trackingEvents.push({
+              /** Status */
               status: "out_for_delivery",
+              /** Location */
               location: city.city,
+              /** Timestamp */
               timestamp: new Date(
                 timestamp.getTime() - 1 * 24 * 60 * 60 * 1000,
               ),
@@ -245,7 +343,9 @@ export async function POST(request: NextRequest) {
           }
           if (status === "delivered") {
             trackingEvents.push({
+              /** Status */
               status: "delivered",
+              /** Location */
               location: city.city,
               timestamp,
             });
@@ -255,14 +355,17 @@ export async function POST(request: NextRequest) {
             .collection(COLLECTIONS.SHIPMENTS)
             .doc()
             .set({
+              /** Order Id */
               orderId: orderRef.id,
               shiprocket_order_id: shiprocketOrderId,
               shiprocket_shipment_id: `SHP${200000 + shipmentCount}`,
               awb_code: awbCode,
+              /** Tracking Number */
               trackingNumber: `${DEMO_PREFIX}${awbCode}`,
               courier_name: courier.name,
               courier_code: courier.code,
               courier_company_id: Math.floor(Math.random() * 50) + 1,
+              /** Status */
               status:
                 status === "delivered"
                   ? "delivered"
@@ -280,13 +383,16 @@ export async function POST(request: NextRequest) {
                 status === "delivered"
                   ? `https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=300&fit=crop`
                   : null,
+              /** Weight */
               weight: 0.5 + Math.random() * 2,
+              /** Dimensions */
               dimensions: { length: 20, width: 15, height: 10 },
               tracking_url: `https://shiprocket.co/tracking/${awbCode}`,
               tracking_events: trackingEvents,
               label_url: `https://demo.shiprocket.in/labels/${shiprocketOrderId}.pdf`,
               manifest_url: `https://demo.shiprocket.in/manifests/${shiprocketOrderId}.pdf`,
               invoice_url: `https://demo.shiprocket.in/invoices/${shiprocketOrderId}.pdf`,
+              /** Created At */
               createdAt: timestamp,
             });
           shipmentCount++;
@@ -297,11 +403,17 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "orders",
+      /** Data */
       data: {
+        /** Orders */
         orders: orderCount,
+        /** Payments */
         payments: paymentCount,
+        /** Shipments */
         shipments: shipmentCount,
       },
     });

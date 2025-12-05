@@ -1,15 +1,37 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/events/EventCountdown
+ * @description This file contains the EventCountdown component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Calendar, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * EventCountdownProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EventCountdownProps
+ */
 export interface EventCountdownProps {
+  /** Target Date */
   targetDate: string;
+  /** Label */
   label?: string;
+  /** Show Days */
   showDays?: boolean;
+  /** Show Hours */
   showHours?: boolean;
+  /** Show Minutes */
   showMinutes?: boolean;
+  /** Show Seconds */
   showSeconds?: boolean;
+  /** On Complete */
   onComplete?: () => void;
 }
 
@@ -33,6 +55,24 @@ export interface EventCountdownProps {
  * />
  * ```
  */
+/**
+ * Performs event countdown operation
+ *
+ * @returns {any} The eventcountdown result
+ *
+ * @example
+ * EventCountdown();
+ */
+
+/**
+ * Performs event countdown operation
+ *
+ * @returns {any} The eventcountdown result
+ *
+ * @example
+ * EventCountdown();
+ */
+
 export function EventCountdown({
   targetDate,
   label = "Time remaining",
@@ -43,20 +83,42 @@ export function EventCountdown({
   onComplete,
 }: EventCountdownProps) {
   const [timeRemaining, setTimeRemaining] = useState<{
+    /** Days */
     days: number;
+    /** Hours */
     hours: number;
+    /** Minutes */
     minutes: number;
+    /** Seconds */
     seconds: number;
+    /** Is Complete */
     isComplete: boolean;
   }>({
+    /** Days */
     days: 0,
+    /** Hours */
     hours: 0,
+    /** Minutes */
     minutes: 0,
+    /** Seconds */
     seconds: 0,
+    /** Is Complete */
     isComplete: false,
   });
 
   useEffect(() => {
+    /**
+     * Calculates time
+     *
+     * @returns {any} The calculatetime result
+     */
+
+    /**
+     * Calculates time
+     *
+     * @returns {any} The calculatetime result
+     */
+
     const calculateTime = () => {
       const now = new Date().getTime();
       const target = new Date(targetDate).getTime();
@@ -64,10 +126,15 @@ export function EventCountdown({
 
       if (difference <= 0) {
         setTimeRemaining({
+          /** Days */
           days: 0,
+          /** Hours */
           hours: 0,
+          /** Minutes */
           minutes: 0,
+          /** Seconds */
           seconds: 0,
+          /** Is Complete */
           isComplete: true,
         });
         if (onComplete && !timeRemaining.isComplete) {
@@ -88,6 +155,7 @@ export function EventCountdown({
         hours,
         minutes,
         seconds,
+        /** Is Complete */
         isComplete: false,
       });
     };

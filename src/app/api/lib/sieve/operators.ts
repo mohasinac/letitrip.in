@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/sieve/operators
+ * @description This file contains functionality related to operators
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Sieve Filter Operators
  * Epic: E026 - Sieve-style Pagination
  *
@@ -12,8 +21,31 @@ import { FilterCondition, FilterOperator, FilterValue } from "./types";
 /**
  * Evaluate a filter condition against a value
  */
+/**
+ * Performs evaluate filter operation
+ *
+ * @param {FilterCondition} condition - The condition
+ * @param {unknown} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * evaluateFilter(condition, value);
+ */
+
+/**
+ * Performs evaluate filter operation
+ *
+ * @returns {any} The evaluatefilter result
+ *
+ * @example
+ * evaluateFilter();
+ */
+
 export function evaluateFilter(
+  /** Condition */
   condition: FilterCondition,
+  /** Value */
   value: unknown,
 ): boolean {
   const { operator } = condition;
@@ -53,6 +85,7 @@ export function evaluateFilter(
       return isNull(value);
     case "!=null":
       return !isNull(value);
+    /** Default */
     default:
       return false;
   }
@@ -61,8 +94,31 @@ export function evaluateFilter(
 /**
  * Evaluate multiple filters with AND logic
  */
+/**
+ * Performs evaluate filters operation
+ *
+ * @param {FilterCondition[]} filters - The filters
+ * @param {Record<string, unknown>} record - The record
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * evaluateFilters(filters, record);
+ */
+
+/**
+ * Performs evaluate filters operation
+ *
+ * @returns {any} The evaluatefilters result
+ *
+ * @example
+ * evaluateFilters();
+ */
+
 export function evaluateFilters(
+  /** Filters */
   filters: FilterCondition[],
+  /** Record */
   record: Record<string, unknown>,
 ): boolean {
   return filters.every((filter) => {
@@ -76,9 +132,28 @@ export function evaluateFilters(
 /**
  * Equality comparison
  */
+/**
+ * Performs equals operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ * @param {boolean} caseInsensitive - Whether case insensitive
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs equals operation
+ *
+ * @returns {any} The equals result
+ */
+
 function equals(
+  /** Value */
   value: unknown,
+  /** Filter Value */
   filterValue: FilterValue,
+  /** Case Insensitive */
   caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) {
@@ -107,6 +182,24 @@ function equals(
 /**
  * Greater than comparison
  */
+/**
+ * Performs greater than operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs greater than operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function greaterThan(value: unknown, filterValue: FilterValue): boolean {
   if (value === null || value === undefined) return false;
   if (filterValue === null) return false;
@@ -132,6 +225,24 @@ function greaterThan(value: unknown, filterValue: FilterValue): boolean {
 /**
  * Greater than or equal comparison
  */
+/**
+ * Performs greater than or equal operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs greater than or equal operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function greaterThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
   return equals(value, filterValue, false) || greaterThan(value, filterValue);
 }
@@ -139,6 +250,24 @@ function greaterThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
 /**
  * Less than comparison
  */
+/**
+ * Performs less than operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs less than operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function lessThan(value: unknown, filterValue: FilterValue): boolean {
   if (value === null || value === undefined) return false;
   if (filterValue === null) return false;
@@ -164,6 +293,24 @@ function lessThan(value: unknown, filterValue: FilterValue): boolean {
 /**
  * Less than or equal comparison
  */
+/**
+ * Performs less than or equal operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs less than or equal operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function lessThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
   return equals(value, filterValue, false) || lessThan(value, filterValue);
 }
@@ -173,9 +320,28 @@ function lessThanOrEqual(value: unknown, filterValue: FilterValue): boolean {
 /**
  * Contains (substring) comparison
  */
+/**
+ * Performs contains operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ * @param {boolean} caseInsensitive - Whether case insensitive
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs contains operation
+ *
+ * @returns {any} The contains result
+ */
+
 function contains(
+  /** Value */
   value: unknown,
+  /** Filter Value */
   filterValue: FilterValue,
+  /** Case Insensitive */
   caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
@@ -193,9 +359,28 @@ function contains(
 /**
  * Starts with comparison
  */
+/**
+ * Performs starts with operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ * @param {boolean} caseInsensitive - Whether case insensitive
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs starts with operation
+ *
+ * @returns {any} The startswith result
+ */
+
 function startsWith(
+  /** Value */
   value: unknown,
+  /** Filter Value */
   filterValue: FilterValue,
+  /** Case Insensitive */
   caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
@@ -213,9 +398,28 @@ function startsWith(
 /**
  * Ends with comparison
  */
+/**
+ * Performs ends with operation
+ *
+ * @param {unknown} value - The value
+ * @param {FilterValue} filterValue - The filter value
+ * @param {boolean} caseInsensitive - Whether case insensitive
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs ends with operation
+ *
+ * @returns {any} The endswith result
+ */
+
 function endsWith(
+  /** Value */
   value: unknown,
+  /** Filter Value */
   filterValue: FilterValue,
+  /** Case Insensitive */
   caseInsensitive: boolean,
 ): boolean {
   if (value === null || value === undefined) return false;
@@ -235,6 +439,22 @@ function endsWith(
 /**
  * Check if value is null or undefined
  */
+/**
+ * Checks if null
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Checks if null
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function isNull(value: unknown): boolean {
   return value === null || value === undefined;
 }
@@ -245,8 +465,31 @@ function isNull(value: unknown): boolean {
  * Get nested value from object using dot notation
  * Example: getNestedValue({ a: { b: 1 } }, "a.b") => 1
  */
+/**
+ * Retrieves nested value
+ *
+ * @param {Record<string, unknown>} obj - The obj
+ * @param {string} path - The path
+ *
+ * @returns {string} The nestedvalue result
+ *
+ * @example
+ * getNestedValue(obj, "example");
+ */
+
+/**
+ * Retrieves nested value
+ *
+ * @returns {string} The nestedvalue result
+ *
+ * @example
+ * getNestedValue();
+ */
+
 export function getNestedValue(
+  /** Obj */
   obj: Record<string, unknown>,
+  /** Path */
   path: string,
 ): unknown {
   const parts = path.split(".");
@@ -268,6 +511,22 @@ export function getNestedValue(
 /**
  * Check if value is a date-like object
  */
+/**
+ * Checks if date value
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Checks if date value
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function isDateValue(value: unknown): boolean {
   if (value instanceof Date) return true;
   if (typeof value === "object" && value !== null) {
@@ -282,6 +541,22 @@ function isDateValue(value: unknown): boolean {
 /**
  * Convert value to Date
  */
+/**
+ * Performs to date operation
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {any} The todate result
+ */
+
+/**
+ * Performs to date operation
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {any} The todate result
+ */
+
 function toDate(value: unknown): Date {
   if (value instanceof Date) return value;
   if (typeof value === "string") return new Date(value);
@@ -302,6 +577,22 @@ function toDate(value: unknown): Date {
 /**
  * Convert value to number
  */
+/**
+ * Performs to number operation
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {number} The tonumber result
+ */
+
+/**
+ * Performs to number operation
+ *
+ * @param {unknown} value - The value
+ *
+ * @returns {number} The tonumber result
+ */
+
 function toNumber(value: unknown): number {
   if (typeof value === "number") return value;
   if (typeof value === "string") return parseFloat(value);
@@ -313,6 +604,28 @@ function toNumber(value: unknown): number {
 /**
  * Get description for an operator
  */
+/**
+ * Retrieves operator description
+ *
+ * @param {FilterOperator} operator - The operator
+ *
+ * @returns {string} The operatordescription result
+ *
+ * @example
+ * getOperatorDescription(operator);
+ */
+
+/**
+ * Retrieves operator description
+ *
+ * @param {FilterOperator} operator - The operator
+ *
+ * @returns {string} The operatordescription result
+ *
+ * @example
+ * getOperatorDescription(operator);
+ */
+
 export function getOperatorDescription(operator: FilterOperator): string {
   const descriptions: Record<FilterOperator, string> = {
     "==": "equals",
@@ -339,6 +652,28 @@ export function getOperatorDescription(operator: FilterOperator): string {
 /**
  * Check if operator is supported by Firestore
  */
+/**
+ * Checks if firestore supported
+ *
+ * @param {FilterOperator} operator - The operator
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isFirestoreSupported(operator);
+ */
+
+/**
+ * Checks if firestore supported
+ *
+ * @param {FilterOperator} operator - The operator
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isFirestoreSupported(operator);
+ */
+
 export function isFirestoreSupported(operator: FilterOperator): boolean {
   const supported: FilterOperator[] = ["==", "!=", ">", ">=", "<", "<="];
   return supported.includes(operator);
@@ -347,7 +682,33 @@ export function isFirestoreSupported(operator: FilterOperator): boolean {
 /**
  * Get all available operators for a field type
  */
+/**
+ * Retrieves operators for type
+ *
+ * @param {"string" | "number" | "boolean" | "date"} type - The type
+ *
+ * @returns {any} The operatorsfortype result
+ *
+ * @example
+ * getOperatorsForType(type);
+ */
+
+/**
+ * Retrieves operators for type
+ *
+ * @param {"string" | "number" | "boolean" | "date"} /** Type */
+  type - The /**  type */
+  type
+ *
+ * @returns {any} The operatorsfortype result
+ *
+ * @example
+ * getOperatorsForType(/** Type */
+  type);
+ */
+
 export function getOperatorsForType(
+  /** Type */
   type: "string" | "number" | "boolean" | "date",
 ): FilterOperator[] {
   switch (type) {
@@ -373,6 +734,7 @@ export function getOperatorsForType(
       return ["==", "!=", "==null", "!=null"];
     case "date":
       return ["==", "!=", ">", ">=", "<", "<=", "==null", "!=null"];
+    /** Default */
     default:
       return ["==", "!="];
   }

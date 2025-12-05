@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/cleanup-all/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -15,10 +24,43 @@ import { COLLECTIONS } from "@/constants/database";
 
 const PREFIXES = ["DEMO_", "test_"];
 
+/**
+ * DeletionResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DeletionResult
+ */
 interface DeletionResult {
+  /** Collection */
   collection: string;
+  /** Count */
   count: number;
 }
+
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE();
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE();
+ */
 
 export async function DELETE() {
   try {
@@ -103,93 +145,149 @@ export async function DELETE() {
 
       // Shipments - related to demo orders
       {
+        /** Name */
         name: "shipments",
+        /** Related Field */
         relatedField: "orderId",
+        /** Related Ids */
         relatedIds: demoOrderIds,
+        /** Strategy */
         strategy: "related",
       },
 
       // Related collections (delete by referenced ID)
       {
+        /** Name */
         name: "bids",
+        /** Related Field */
         relatedField: "auctionId",
+        /** Related Ids */
         relatedIds: demoAuctionIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "reviews",
+        /** Related Field */
         relatedField: "product_id",
+        /** Related Ids */
         relatedIds: demoProductIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "order_items",
+        /** Related Field */
         relatedField: "orderId",
+        /** Related Ids */
         relatedIds: demoOrderIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "favorites",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "carts",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "cart_items",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       { name: "messages", strategy: "deep_scan" },
       {
+        /** Name */
         name: "notifications",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "addresses",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "returns",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
 
       // Support tickets - use correct collection name and strategy
       {
+        /** Name */
         name: "support_tickets",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "tickets",
+        /** Related Field */
         relatedField: "userId",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       }, // legacy name
 
       {
+        /** Name */
         name: "payouts",
+        /** Related Field */
         relatedField: "shopId",
+        /** Related Ids */
         relatedIds: demoShopIds,
+        /** Strategy */
         strategy: "related",
       },
       {
+        /** Name */
         name: "media",
+        /** Related Field */
         relatedField: "uploadedBy",
+        /** Related Ids */
         relatedIds: demoUserIds,
+        /** Strategy */
         strategy: "related",
       },
 
@@ -259,7 +357,9 @@ export async function DELETE() {
             await batch.commit();
           }
           deletionResults.push({
+            /** Collection */
             collection: collection.name,
+            /** Count */
             count: demoDocRefs.length,
           });
         }
@@ -273,10 +373,15 @@ export async function DELETE() {
     const totalDeleted = deletionResults.reduce((sum, r) => sum + r.count, 0);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Deleted */
       deleted: totalDeleted,
+      /** Prefixes */
       prefixes: PREFIXES,
+      /** Breakdown */
       breakdown: deletionResults,
+      /** Message */
       message: `All demo/test data cleaned up successfully (${totalDeleted} documents deleted)`,
     });
   } catch (error: unknown) {
@@ -284,7 +389,9 @@ export async function DELETE() {
     console.error("Cleanup all error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: message,
       },
       { status: 500 },
@@ -295,6 +402,24 @@ export async function DELETE() {
 /**
  * Recursively check if any string value in an object starts with demo prefixes
  */
+/**
+ * Performs check for demo data operation
+ *
+ * @param {any} data - Data object containing information
+ * @param {string[]} prefixes - The prefixes
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs check for demo data operation
+ *
+ * @param {any} data - Data object containing information
+ * @param {string[]} prefixes - The prefixes
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function checkForDemoData(data: any, prefixes: string[]): boolean {
   if (typeof data === "string") {
     return prefixes.some((prefix) => data.startsWith(prefix));

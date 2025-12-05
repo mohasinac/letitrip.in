@@ -1,8 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/tree/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { withCache } from "@/app/api/middleware/cache";
 
 // GET /api/categories/tree - Full category tree (public)
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   return withCache(
     request,
@@ -12,21 +50,35 @@ export async function GET(request: NextRequest) {
         const nodes = snapshot.docs.map((d) => {
           const catData: any = d.data();
           return {
+            /** Id */
             id: d.id,
             ...catData,
             // Add camelCase aliases
+            /** Parent Id */
             parentId: catData.parent_id,
+            /** Featured */
             featured: catData.is_featured,
+            /** Show On Homepage */
             showOnHomepage: catData.show_on_homepage,
+            /** Is Active */
             isActive: catData.is_active,
+            /** Product Count */
             productCount: catData.product_count || 0,
+            /** Child Count */
             childCount: catData.child_count || 0,
+            /** Has Children */
             hasChildren: catData.has_children || false,
+            /** Sort Order */
             sortOrder: catData.sort_order || 0,
+            /** Meta Title */
             metaTitle: catData.meta_title,
+            /** Meta Description */
             metaDescription: catData.meta_description,
+            /** Commission Rate */
             commissionRate: catData.commission_rate || 0,
+            /** Created At */
             createdAt: catData.created_at,
+            /** Updated At */
             updatedAt: catData.updated_at,
           };
         });

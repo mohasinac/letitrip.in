@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/MobileFilterDrawer
+ * @description This file contains the MobileFilterDrawer component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Mobile filter drawer component
  */
 
@@ -8,13 +17,26 @@ import { X, SlidersHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
 
+/**
+ * MobileFilterDrawerProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileFilterDrawerProps
+ */
 interface MobileFilterDrawerProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Apply */
   onApply?: () => void;
+  /** On Reset */
   onReset?: () => void;
+  /** Children */
   children: React.ReactNode;
+  /** Title */
   title?: string;
+  /** Class Name */
   className?: string;
 }
 
@@ -45,10 +67,34 @@ export default function MobileFilterDrawer({
 
   if (!isMobile) return null;
 
+  /**
+   * Handles close event
+   *
+   * @returns {any} The handleclose result
+   */
+
+  /**
+   * Handles close event
+   *
+   * @returns {any} The handleclose result
+   */
+
   const handleClose = () => {
     setIsAnimating(false);
     setTimeout(onClose, 300);
   };
+
+  /**
+   * Handles apply event
+   *
+   * @returns {any} The handleapply result
+   */
+
+  /**
+   * Handles apply event
+   *
+   * @returns {any} The handleapply result
+   */
 
   const handleApply = () => {
     if (onApply) onApply();

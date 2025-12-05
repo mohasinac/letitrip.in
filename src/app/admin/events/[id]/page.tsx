@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/events/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormField } from "@/components/forms/FormField";
@@ -19,25 +28,41 @@ export default function AdminEventDetailPage() {
   const isNew = eventId === "create";
 
   const [formData, setFormData] = useState({
+    /** Title */
     title: "",
+    /** Description */
     description: "",
+    /** Type */
     type: "workshop",
+    /** Status */
     status: "draft",
+    /** Start Date */
     startDate: "",
+    /** End Date */
     endDate: "",
+    /** Location */
     location: "",
+    /** Is Online */
     isOnline: false,
+    /** Max Participants */
     maxParticipants: "",
+    /** Registration Deadline */
     registrationDeadline: "",
+    /** Is Poll Event */
     isPollEvent: false,
+    /** Allow Multiple Votes */
     allowMultipleVotes: false,
+    /** Image Url */
     imageUrl: "",
   });
 
   const { isLoading: loading, execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "AdminEventDetail",
+        /** Action */
         action: isNew ? "create" : "update",
       });
       toast.error(`Failed to ${isNew ? "create" : "update"} event`);
@@ -53,29 +78,78 @@ export default function AdminEventDetailPage() {
     }
   }, [eventId]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadEvent = async () => {
     await execute(async () => {
       const data = await eventsService.getByIdAdmin(eventId);
       if (data.success && data.event) {
         const event = data.event;
         setFormData({
+          /** Title */
           title: event.title || "",
+          /** Description */
           description: event.description || "",
+          /** Type */
           type: event.type || "workshop",
+          /** Status */
           status: event.status || "draft",
+          /** Start Date */
           startDate: event.startDate || "",
+          /** End Date */
           endDate: event.endDate || "",
+          /** Location */
           location: event.location || "",
+          /** Is Online */
           isOnline: event.isOnline || false,
+          /** Max Participants */
           maxParticipants: event.maxParticipants?.toString() || "",
+          /** Registration Deadline */
           registrationDeadline: event.registrationDeadline || "",
+          /** Is Poll Event */
           isPollEvent: event.isPollEvent || false,
+          /** Allow Multiple Votes */
           allowMultipleVotes: event.allowMultipleVotes || false,
+          /** Image Url */
           imageUrl: event.imageUrl || "",
         });
       }
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,8 +158,11 @@ export default function AdminEventDetailPage() {
     await execute(async () => {
       const payload = {
         ...formData,
+        /** Type */
         type: formData.type as Event["type"],
+        /** Status */
         status: formData.status as Event["status"],
+        /** Max Participants */
         maxParticipants: formData.maxParticipants
           ? parseInt(formData.maxParticipants)
           : undefined,
@@ -103,6 +180,22 @@ export default function AdminEventDetailPage() {
 
     setSubmitting(false);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this event?")) return;
@@ -215,6 +308,7 @@ export default function AdminEventDetailPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Start Date */
                     startDate: e.target.value
                       ? new Date(e.target.value).toISOString()
                       : "",
@@ -230,6 +324,7 @@ export default function AdminEventDetailPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** End Date */
                     endDate: e.target.value
                       ? new Date(e.target.value).toISOString()
                       : "",
@@ -272,6 +367,7 @@ export default function AdminEventDetailPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Registration Deadline */
                     registrationDeadline: e.target.value
                       ? new Date(e.target.value).toISOString()
                       : "",
@@ -329,6 +425,7 @@ export default function AdminEventDetailPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Allow Multiple Votes */
                       allowMultipleVotes: e.target.checked,
                     })
                   }

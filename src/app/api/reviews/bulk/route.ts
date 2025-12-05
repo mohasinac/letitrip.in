@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/reviews/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS } from "@/constants/database";
@@ -5,8 +14,28 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Build update object for each action
+/**
+ * Function: Build Review Update
+ */
+/**
+ * Performs build review update operation
+ *
+ * @param {string} action - The action
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {string} The buildreviewupdate result
+ */
+
+/**
+ * Performs build review update operation
+ *
+ * @returns {string} The buildreviewupdate result
+ */
+
 function buildReviewUpdate(
+  /** Action */
   action: string,
+  /** Data */
   data?: any,
 ): Record<string, any> | null {
   const now = new Date().toISOString();
@@ -25,6 +54,7 @@ function buildReviewUpdate(
       if ("status" in data) updates.status = data.status;
       if ("is_flagged" in data) updates.is_flagged = data.is_flagged;
       return updates;
+    /** Default */
     default:
       return null;
   }
@@ -36,6 +66,32 @@ function buildReviewUpdate(
  * Admin only
  *
  * Actions: approve, reject, flag, unflag, delete, update
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
  */
 
 export async function POST(request: NextRequest) {
@@ -54,7 +110,9 @@ export async function POST(request: NextRequest) {
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid request. Provide action and ids array.",
         },
         { status: 400 },
@@ -63,7 +121,9 @@ export async function POST(request: NextRequest) {
 
     const db = getFirestoreAdmin();
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -89,6 +149,7 @@ export async function POST(request: NextRequest) {
         if (!updates) {
           results.failed.push({
             id,
+            /** Error */
             error:
               action === "update"
                 ? "No update data provided"
@@ -105,23 +166,32 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       action,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: ids.length,
+        /** Succeeded */
         succeeded: results.success.length,
+        /** Failed */
         failed: results.failed.length,
       },
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.bulk.POST",
+      /** Metadata */
       metadata: { action, idsCount: ids.length },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Bulk operation failed",
       },
       { status: 500 },

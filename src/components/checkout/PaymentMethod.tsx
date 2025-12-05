@@ -1,11 +1,53 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/PaymentMethod
+ * @description This file contains the PaymentMethod component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { CreditCard, Wallet, Banknote } from "lucide-react";
 
+/**
+ * PaymentMethodProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaymentMethodProps
+ */
 interface PaymentMethodProps {
+  /** Selected */
   selected: "razorpay" | "cod";
+  /** On Select */
   onSelect: (method: "razorpay" | "cod") => void;
 }
+
+/**
+ * Function: Payment Method
+ */
+/**
+ * Performs payment method operation
+ *
+ * @param {PaymentMethodProps} { selected, onSelect } - The { selected, on select }
+ *
+ * @returns {any} The paymentmethod result
+ *
+ * @example
+ * PaymentMethod({ selected, onSelect });
+ */
+
+/**
+ * Performs payment method operation
+ *
+ * @param {PaymentMethodProps} { selected, onSelect } - The { selected, on select }
+ *
+ * @returns {any} The paymentmethod result
+ *
+ * @example
+ * PaymentMethod({ selected, onSelect });
+ */
 
 export function PaymentMethod({ selected, onSelect }: PaymentMethodProps) {
   return (

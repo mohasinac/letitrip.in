@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/InlineImageUpload
+ * @description This file contains the InlineImageUpload component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -7,12 +16,34 @@ import { InlineImageUploadProps } from "@/types/inline-edit";
 import { Image as ImageIcon, Loader2, Upload, X } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * Function: Inline Image Upload
+ */
+/**
+ * Performs inline image upload operation
+ *
+ * @returns {any} The inlineimageupload result
+ *
+ * @example
+ * InlineImageUpload();
+ */
+
+/**
+ * Performs inline image upload operation
+ *
+ * @returns {any} The inlineimageupload result
+ *
+ * @example
+ * InlineImageUpload();
+ */
+
 export function InlineImageUpload({
   value,
   onChange,
   onRemove,
   accept = "image/*",
   size = 64,
+  /** Loading */
   loading: externalLoading,
   disabled,
   context = "product",
@@ -29,6 +60,26 @@ export function InlineImageUpload({
   const [error, setError] = useState<string | null>(null);
 
   const isLoading = uploading || externalLoading;
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,12 +103,15 @@ export function InlineImageUpload({
 
       const response = await mediaService.upload({
         file,
+        /** Context */
         context: validContext,
       });
       onChange(response.url);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "InlineImageUpload.handleUpload",
+        /** Metadata */
         metadata: { context: validContext },
       });
       setError("Failed to upload image");
@@ -65,6 +119,18 @@ export function InlineImageUpload({
       setUploading(false);
     }
   };
+
+  /**
+   * Handles remove event
+   *
+   * @returns {any} The handleremove result
+   */
+
+  /**
+   * Handles remove event
+   *
+   * @returns {any} The handleremove result
+   */
 
   const handleRemove = () => {
     if (onRemove) {

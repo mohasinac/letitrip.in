@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/ContactLegalStep
+ * @description This file contains the ContactLegalStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormField } from "@/components/forms/FormField";
@@ -5,9 +14,18 @@ import { FormInput } from "@/components/forms/FormInput";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import type { ShopFormData, OnShopChange } from "./types";
 
+/**
+ * ContactLegalStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContactLegalStepProps
+ */
 interface ContactLegalStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnShopChange;
+  /** Errors */
   errors: Record<string, string>;
 }
 

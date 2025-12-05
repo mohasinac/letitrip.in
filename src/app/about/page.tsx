@@ -1,10 +1,22 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/about/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { generateMetadata as genMeta } from "@/lib/seo/metadata";
 import { generateLocalBusinessSchema, generateJSONLD } from "@/lib/seo/schema";
 
 export const metadata = genMeta({
+  /** Title */
   title: "About Us - Authentic Collectibles Seller",
+  /** Description */
   description:
     "Let It Rip is India's trusted seller of authentic imported collectibles - Beyblades, Pokemon TCG, Yu-Gi-Oh, Transformers, Hot Wheels & more. We handle all customs, you pay ₹0 import duties!",
+  /** Keywords */
   keywords: [
     "about Let It Rip",
     "authentic collectibles India",
@@ -12,9 +24,18 @@ export const metadata = genMeta({
     "Pokemon TCG seller",
     "import collectibles India",
   ],
+  /** Path */
   path: "/about",
 });
 
+/**
+ * Performs about page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = AboutPage();
+ */
 export default function AboutPage() {
   const localBusinessSchema = generateLocalBusinessSchema();
 
@@ -76,43 +97,67 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
+                  /** Icon */
                   icon: "🎯",
+                  /** Name */
                   name: "Beyblades",
+                  /** Desc */
                   desc: "Authentic Takara Tomy - Burst, X, Metal Fusion, stadiums & launchers",
                 },
                 {
+                  /** Icon */
                   icon: "🎴",
+                  /** Name */
                   name: "Pokemon TCG",
+                  /** Desc */
                   desc: "Official booster packs, elite trainer boxes, singles & collections",
                 },
                 {
+                  /** Icon */
                   icon: "🃏",
+                  /** Name */
                   name: "Yu-Gi-Oh! TCG",
+                  /** Desc */
                   desc: "Konami originals - booster packs, structure decks, tins & rare cards",
                 },
                 {
+                  /** Icon */
                   icon: "🤖",
+                  /** Name */
                   name: "Transformers",
+                  /** Desc */
                   desc: "Hasbro & Takara Tomy - Studio Series, Generations, Masterpiece",
                 },
                 {
+                  /** Icon */
                   icon: "🏎️",
+                  /** Name */
                   name: "Hot Wheels",
+                  /** Desc */
                   desc: "Die-cast cars, premium editions, Car Culture, track sets",
                 },
                 {
+                  /** Icon */
                   icon: "⭐",
+                  /** Name */
                   name: "Stickers",
+                  /** Desc */
                   desc: "Collectible stickers - anime, gaming, holographic, vinyl designs",
                 },
                 {
+                  /** Icon */
                   icon: "🎨",
+                  /** Name */
                   name: "Crafts",
+                  /** Desc */
                   desc: "Japanese washi tape, origami, art supplies & DIY materials",
                 },
                 {
+                  /** Icon */
                   icon: "🎁",
+                  /** Name */
                   name: "Collectibles",
+                  /** Desc */
                   desc: "Figurines, model kits, plushies, keychains & limited editions",
                 },
               ].map((category) => (
@@ -142,33 +187,51 @@ export default function AboutPage() {
             <div className="space-y-4">
               {[
                 {
+                  /** Title */
                   title: "100% Authentic Products",
+                  /** Desc */
                   desc: "We import directly from authorized distributors in Japan, USA, UK, China & Hong Kong. Every product is genuine - we guarantee it!",
+                  /** Icon */
                   icon: "✅",
                 },
                 {
+                  /** Title */
                   title: "Zero Customs Charges for You",
+                  /** Desc */
                   desc: "We handle ALL import customs and duties. The price you see is the price you pay - no surprise charges at delivery!",
+                  /** Icon */
                   icon: "💰",
                 },
                 {
+                  /** Title */
                   title: "Fast India Delivery",
+                  /** Desc */
                   desc: "In-stock items (most Beyblades, Pokemon packs, Hot Wheels) ship in 3-7 days. Pre-orders take 15-25 days from order to doorstep.",
+                  /** Icon */
                   icon: "🚀",
                 },
                 {
+                  /** Title */
                   title: "COD Available",
+                  /** Desc */
                   desc: "Cash on Delivery available for in-stock items. Pay only when you receive your authentic collectibles!",
+                  /** Icon */
                   icon: "💵",
                 },
                 {
+                  /** Title */
                   title: "Collector-Friendly",
+                  /** Desc */
                   desc: "We're collectors ourselves! We understand the importance of packaging, authenticity certificates, and product condition.",
+                  /** Icon */
                   icon: "🎯",
                 },
                 {
+                  /** Title */
                   title: "Easy Returns",
+                  /** Desc */
                   desc: "Returns to our India warehouse (₹100-300) vs ₹2,000-5,000 to ship back to Japan/USA. Much more affordable!",
+                  /** Icon */
                   icon: "🔄",
                 },
               ].map((feature) => (

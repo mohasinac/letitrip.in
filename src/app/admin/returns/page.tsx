@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/returns/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -26,8 +35,11 @@ export default function AdminReturnsPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const {
+    /** Data */
     data: returns,
+    /** Is Loading */
     isLoading: loading,
+    /** Execute */
     execute: loadReturns,
   } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -38,7 +50,9 @@ export default function AdminReturnsPage() {
   const fetchReturns = useCallback(async () => {
     const response = await returnsService.list({
       ...filterValues,
+      /** Page */
       page: currentPage,
+      /** Limit */
       limit: 20,
     } as any);
     setTotalPages(Math.ceil((response.count || 0) / 20));
@@ -49,6 +63,26 @@ export default function AdminReturnsPage() {
   useEffect(() => {
     loadReturns(fetchReturns);
   }, [fetchReturns, loadReturns]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleApprove = async (id: string) => {
     if (!confirm("Approve this return request?")) return;
@@ -61,6 +95,26 @@ export default function AdminReturnsPage() {
       toast.error(error.message || "Failed to approve return");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleReject = async (id: string) => {
     const reason = prompt("Reason for rejection:");
@@ -189,6 +243,7 @@ export default function AdminReturnsPage() {
                         {/* Reason */}
                         <div className="text-sm">
                           <span className="text-gray-500 dark:text-gray-400">
+                            /** Reason */
                             Reason:
                           </span>{" "}
                           <span className="text-gray-900 dark:text-white">

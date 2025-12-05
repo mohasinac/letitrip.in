@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/payment-gateways/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -39,10 +48,20 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // TODO: Replace with actual settings service when API routes are implemented
+/**
+ * GatewaySettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GatewaySettings
+ */
 interface GatewaySettings {
+  /** Id */
   id: string;
+  /** Enabled */
   enabled: boolean;
+  /** Mode */
   mode: PaymentMode;
+  /** Config */
   config: Record<string, string>;
 }
 
@@ -61,12 +80,15 @@ export default function PaymentGatewaysSettingsPage() {
   >({});
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "PaymentGatewaysSettings.loadSettings",
       });
     },
@@ -75,6 +97,22 @@ export default function PaymentGatewaysSettingsPage() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadSettings = async () => {
     await execute(async () => {
@@ -85,9 +123,13 @@ export default function PaymentGatewaysSettingsPage() {
       const settings: Record<string, GatewaySettings> = {};
       PAYMENT_GATEWAYS.forEach((gateway) => {
         settings[gateway.id] = {
+          /** Id */
           id: gateway.id,
+          /** Enabled */
           enabled: gateway.enabled,
+          /** Mode */
           mode: "test",
+          /** Config */
           config: {},
         };
       });
@@ -96,15 +138,50 @@ export default function PaymentGatewaysSettingsPage() {
     });
   };
 
+  /**
+   * Handles toggle gateway event
+   *
+   * @param {string} gatewayId - gateway identifier
+   *
+   * @returns {string} The handletogglegateway result
+   */
+
+  /**
+   * Handles toggle gateway event
+   *
+   * @param {string} gatewayId - gateway identifier
+   *
+   * @returns {string} The handletogglegateway result
+   */
+
   const handleToggleGateway = (gatewayId: string) => {
     setGatewaySettings((prev) => ({
       ...prev,
       [gatewayId]: {
         ...prev[gatewayId],
+        /** Enabled */
         enabled: !prev[gatewayId].enabled,
       },
     }));
   };
+
+  /**
+   * Handles mode change event
+   *
+   * @param {string} gatewayId - gateway identifier
+   * @param {PaymentMode} mode - The mode
+   *
+   * @returns {string} The handlemodechange result
+   */
+
+  /**
+   * Handles mode change event
+   *
+   * @param {string} gatewayId - gateway identifier
+   * @param {PaymentMode} mode - The mode
+   *
+   * @returns {string} The handlemodechange result
+   */
 
   const handleModeChange = (gatewayId: string, mode: PaymentMode) => {
     setGatewaySettings((prev) => ({
@@ -116,10 +193,46 @@ export default function PaymentGatewaysSettingsPage() {
     }));
   };
 
+  /**
+   * Handles configure gateway event
+   *
+   * @param {PaymentGatewayConfig} gateway - The gateway
+   *
+   * @returns {any} The handleconfiguregateway result
+   */
+
+  /**
+   * Handles configure gateway event
+   *
+   * @param {PaymentGatewayConfig} gateway - The gateway
+   *
+   * @returns {any} The handleconfiguregateway result
+   */
+
   const handleConfigureGateway = (gateway: PaymentGatewayConfig) => {
     setSelectedGateway(gateway);
     setShowConfigModal(true);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} gatewayId - gateway identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} gatewayId - gateway identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleTestConnection = async (gatewayId: string) => {
     setTestingGateway(gatewayId);
@@ -129,6 +242,7 @@ export default function PaymentGatewaysSettingsPage() {
       alert(`${gatewayId} connection test successful!`);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "PaymentGatewaysSettings.testConnection",
         gatewayId,
       });
@@ -137,6 +251,22 @@ export default function PaymentGatewaysSettingsPage() {
       setTestingGateway(null);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSaveSettings = async () => {
     try {
@@ -151,6 +281,7 @@ export default function PaymentGatewaysSettingsPage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "PaymentGatewaysSettings.saveSettings",
       });
       setFormError(
@@ -502,19 +633,54 @@ export default function PaymentGatewaysSettingsPage() {
 }
 
 // Gateway Configuration Modal Component
+/**
+ * Function: Gateway Config Modal
+ */
+/**
+ * Performs gateway config modal operation
+ *
+ * @returns {any} The gatewayconfigmodal result
+ */
+
+/**
+ * Performs gateway config modal operation
+ *
+ * @returns {any} The gatewayconfigmodal result
+ */
+
 function GatewayConfigModal({
   gateway,
   mode,
   onClose,
   onSave,
 }: {
+  /** Gateway */
   gateway: PaymentGatewayConfig;
+  /** Mode */
   mode: PaymentMode;
+  /** On Close */
   onClose: () => void;
+  /** On Save */
   onSave: (config: Record<string, string>) => void;
 }) {
   const [config, setConfig] = useState<Record<string, string>>({});
   const fields = gateway.config[mode];
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

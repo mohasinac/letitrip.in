@@ -1,8 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/cart/coupon/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
 
 // POST /api/cart/coupon - Apply coupon to cart
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -111,10 +149,15 @@ export async function POST(request: NextRequest) {
         const product = productDoc.data();
 
         return {
+          /** Id */
           id: doc.id,
+          /** Product Id */
           productId: data.product_id,
+          /** Category Id */
           categoryId: product?.category_id || "",
+          /** Quantity */
           quantity: data.quantity,
+          /** Price */
           price: product?.price || 0,
         };
       }),
@@ -129,7 +172,9 @@ export async function POST(request: NextRequest) {
     if (items.length === 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error:
             "Cart must have items to apply coupon (minimum requirement not met)",
         },
@@ -141,7 +186,9 @@ export async function POST(request: NextRequest) {
     if (minOrderValue && subtotal < minOrderValue) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: `Minimum purchase amount is ₹${minOrderValue}`,
         },
         { status: 400 },
@@ -177,6 +224,7 @@ export async function POST(request: NextRequest) {
         discount = 0;
         break;
 
+      /** Default */
       default:
         discount = 0;
     }
@@ -184,13 +232,29 @@ export async function POST(request: NextRequest) {
     // Calculate final totals
     const shipping =
       coupon.type === "free-shipping" ? 0 : subtotal > 5000 ? 0 : 100;
+    /**
+     * Performs tax operation
+     *
+     * @returns {any} The tax result
+     */
+
+    /**
+     * Performs tax operation
+     *
+     * @returns {any} The tax result
+     */
+
     const tax = (subtotal - discount) * 0.18;
     const total = subtotal + shipping + tax - discount;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Coupon Code */
         couponCode: code.toUpperCase(),
+        /** Coupon Id */
         couponId: couponDoc.id,
         discount,
         subtotal,
@@ -198,6 +262,7 @@ export async function POST(request: NextRequest) {
         tax,
         total,
       },
+      /** Message */
       message: "Coupon applied successfully",
     });
   } catch (error) {
@@ -210,6 +275,35 @@ export async function POST(request: NextRequest) {
 }
 
 // DELETE /api/cart/coupon - Remove coupon from cart
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -235,7 +329,9 @@ export async function DELETE(request: NextRequest) {
         const product = productDoc.data();
 
         return {
+          /** Price */
           price: product?.price || 0,
+          /** Quantity */
           quantity: data.quantity,
         };
       }),
@@ -250,14 +346,18 @@ export async function DELETE(request: NextRequest) {
     const total = subtotal + shipping + tax;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         subtotal,
         shipping,
         tax,
+        /** Discount */
         discount: 0,
         total,
       },
+      /** Message */
       message: "Coupon removed",
     });
   } catch (error) {

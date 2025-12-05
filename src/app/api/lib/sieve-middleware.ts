@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/sieve-middleware
+ * @description This file contains functionality related to sieve-middleware
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Sieve Middleware
  *
  * Provides reusable middleware for standardized Sieve pagination across API routes.
@@ -37,6 +46,12 @@ import type {
 import { parseSieveQuery } from "./sieve/parser";
 import { executeSieveQuery } from "./sieve/firestore";
 
+/**
+ * SieveMiddlewareOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SieveMiddlewareOptions
+ */
 export interface SieveMiddlewareOptions<T = unknown> {
   /**
    * Collection name in Firestore
@@ -59,8 +74,11 @@ export interface SieveMiddlewareOptions<T = unknown> {
    * If provided, overrides the default query execution
    */
   handler?: (
+    /** Request */
     request: NextRequest,
+    /** Sieve Query */
     sieveQuery: SieveQuery,
+    /** Config */
     config: SieveConfig,
   ) => Promise<SievePaginatedResponse<any>>;
 
@@ -69,7 +87,9 @@ export interface SieveMiddlewareOptions<T = unknown> {
    * Useful for adding dynamic filters based on request context
    */
   beforeQuery?: (
+    /** Request */
     request: NextRequest,
+    /** Sieve Query */
     sieveQuery: SieveQuery,
   ) => Promise<SieveQuery> | SieveQuery;
 
@@ -77,7 +97,9 @@ export interface SieveMiddlewareOptions<T = unknown> {
    * Callback to modify the response before sending
    */
   afterQuery?: (
+    /** Result */
     result: SievePaginatedResponse<any>,
+    /** Request */
     request: NextRequest,
   ) => Promise<SievePaginatedResponse<any>> | SievePaginatedResponse<any>;
 
@@ -95,8 +117,33 @@ export interface SieveMiddlewareOptions<T = unknown> {
 /**
  * Creates a Sieve-enabled GET handler for API routes
  */
+/**
+ * Performs with sieve operation
+ *
+ * @param {SieveConfig} config - The config
+ * @param {SieveMiddlewareOptions<T>} options - Configuration options
+ *
+ * @returns {Promise<any>} Promise resolving to withsieve result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withSieve(config, options);
+ */
+
+/**
+ * Performs with sieve operation
+ *
+ * @returns {any} The withsieve result
+ *
+ * @example
+ * withSieve();
+ */
+
 export function withSieve<T = unknown>(
+  /** Config */
   config: SieveConfig,
+  /** Options */
   options: SieveMiddlewareOptions<T>,
 ) {
   return async function handler(request: NextRequest): Promise<NextResponse> {
@@ -137,6 +184,7 @@ export function withSieve<T = unknown>(
       if (options.transform && result.data) {
         result = {
           ...result,
+          /** Data */
           data: result.data.map(options.transform),
         };
       }
@@ -154,7 +202,9 @@ export function withSieve<T = unknown>(
 
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: message,
         },
         { status: 500 },
@@ -171,8 +221,11 @@ export const sieveFilters = {
    * Filter for published/active items
    */
   published: (): FilterCondition => ({
+    /** Field */
     field: "status",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: "published",
   }),
 
@@ -180,8 +233,11 @@ export const sieveFilters = {
    * Filter for active items
    */
   active: (): FilterCondition => ({
+    /** Field */
     field: "status",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: "active",
   }),
 
@@ -189,8 +245,11 @@ export const sieveFilters = {
    * Filter for live auctions
    */
   liveAuction: (): FilterCondition => ({
+    /** Field */
     field: "status",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: "live",
   }),
 
@@ -198,8 +257,11 @@ export const sieveFilters = {
    * Filter for verified shops
    */
   verifiedShop: (): FilterCondition => ({
+    /** Field */
     field: "verified",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: true,
   }),
 
@@ -207,8 +269,11 @@ export const sieveFilters = {
    * Filter by shop ID
    */
   byShop: (shopId: string): FilterCondition => ({
+    /** Field */
     field: "shopId",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: shopId,
   }),
 
@@ -216,8 +281,11 @@ export const sieveFilters = {
    * Filter by user ID
    */
   byUser: (userId: string): FilterCondition => ({
+    /** Field */
     field: "userId",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: userId,
   }),
 
@@ -225,8 +293,11 @@ export const sieveFilters = {
    * Filter by category ID
    */
   byCategory: (categoryId: string): FilterCondition => ({
+    /** Field */
     field: "categoryId",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: categoryId,
   }),
 
@@ -234,8 +305,11 @@ export const sieveFilters = {
    * Filter for non-deleted items (soft delete)
    */
   notDeleted: (): FilterCondition => ({
+    /** Field */
     field: "deletedAt",
+    /** Operator */
     operator: "==null",
+    /** Value */
     value: null,
   }),
 
@@ -243,8 +317,11 @@ export const sieveFilters = {
    * Filter for items in stock
    */
   inStock: (): FilterCondition => ({
+    /** Field */
     field: "stock",
+    /** Operator */
     operator: ">",
+    /** Value */
     value: 0,
   }),
 
@@ -252,8 +329,11 @@ export const sieveFilters = {
    * Filter for featured items
    */
   featured: (): FilterCondition => ({
+    /** Field */
     field: "featured",
+    /** Operator */
     operator: "==",
+    /** Value */
     value: true,
   }),
 };
@@ -261,9 +341,34 @@ export const sieveFilters = {
 /**
  * Creates a protected Sieve handler with authentication
  */
+/**
+ * Performs with protected sieve operation
+ *
+ * @param {SieveConfig} config - The config
+ * @param {SieveMiddlewareOptions<T> & {
+    getAuthFilter} options - Configuration options
+ *
+ * @returns {string} The withprotectedsieve result
+ *
+ * @example
+ * withProtectedSieve(config, {});
+ */
+
+/**
+ * Performs with protected sieve operation
+ *
+ * @returns {any} The withprotectedsieve result
+ *
+ * @example
+ * withProtectedSieve();
+ */
+
 export function withProtectedSieve<T = unknown>(
+  /** Config */
   config: SieveConfig,
+  /** Options */
   options: SieveMiddlewareOptions<T> & {
+    /** Get Auth Filter */
     getAuthFilter: (userId: string) => FilterCondition | FilterCondition[];
   },
 ) {
@@ -278,7 +383,9 @@ export function withProtectedSieve<T = unknown>(
       // For now, return unauthorized if no implementation
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Protected Sieve not fully implemented",
         },
         { status: 501 },
@@ -290,7 +397,9 @@ export function withProtectedSieve<T = unknown>(
       );
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Internal server error",
         },
         { status: 500 },

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/types/backend/coupon.types
+ * @description This file contains TypeScript type definitions for coupon
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Backend Coupon Types
  *
  * Coupon types as received from the API (Firestore documents)
@@ -16,7 +25,9 @@ import type {
  * Tiered Discount Configuration
  */
 export interface TieredDiscountBE {
+  /** Min Amount */
   minAmount: number;
+  /** Discount Percentage */
   discountPercentage: number;
 }
 
@@ -24,9 +35,13 @@ export interface TieredDiscountBE {
  * BOGO (Buy One Get One) Configuration
  */
 export interface BogoConfigBE {
+  /** Buy Quantity */
   buyQuantity: number;
+  /** Get Quantity */
   getQuantity: number;
+  /** Discount Percentage */
   discountPercentage: number;
+  /** Applicable Products */
   applicableProducts?: string[];
 }
 
@@ -34,56 +49,87 @@ export interface BogoConfigBE {
  * Backend Coupon Document (from Firestore)
  */
 export interface CouponBE {
+  /** Id */
   id: string;
+  /** Shop Id */
   shopId: string;
 
   // Basic info
+  /** Code */
   code: string;
+  /** Name */
   name: string;
+  /** Description */
   description?: string;
 
   // Type & value
+  /** Type */
   type: CouponType;
+  /** Discount Value */
   discountValue?: number;
+  /** Max Discount Amount */
   maxDiscountAmount?: number;
 
   // Configurations
+  /** Tiers */
   tiers?: TieredDiscountBE[];
+  /** Bogo Config */
   bogoConfig?: BogoConfigBE;
 
   // Requirements
+  /** Min Purchase Amount */
   minPurchaseAmount: number;
+  /** Min Quantity */
   minQuantity: number;
 
   // Applicability
+  /** Applicability */
   applicability: CouponApplicability;
+  /** Applicable Categories */
   applicableCategories?: string[];
+  /** Applicable Products */
   applicableProducts?: string[];
+  /** Excluded Categories */
   excludedCategories?: string[];
+  /** Excluded Products */
   excludedProducts?: string[];
 
   // Usage
+  /** Usage Limit */
   usageLimit?: number;
+  /** Usage Limit Per User */
   usageLimitPerUser: number;
+  /** Usage Count */
   usageCount: number;
 
   // Validity
+  /** Start Date */
   startDate: Timestamp;
+  /** End Date */
   endDate: Timestamp;
+  /** Status */
   status: CouponStatus;
 
   // Restrictions
+  /** First Order Only */
   firstOrderOnly: boolean;
+  /** New Users Only */
   newUsersOnly: boolean;
+  /** Can Combine With Other Coupons */
   canCombineWithOtherCoupons: boolean;
 
   // Display
+  /** Auto Apply */
   autoApply: boolean;
+  /** Is Public */
   isPublic: boolean;
+  /** Featured */
   featured: boolean;
 
   // Audit
+  /** Created At */
   createdAt: Timestamp;
+  /** Updated At */
   updatedAt: Timestamp;
 }
 
@@ -91,11 +137,17 @@ export interface CouponBE {
  * Filters for querying coupons from backend
  */
 export interface CouponFiltersBE {
+  /** Shop Id */
   shopId?: string;
+  /** Type */
   type?: CouponType;
+  /** Status */
   status?: CouponStatus;
+  /** Search */
   search?: string;
+  /** Page */
   page?: number;
+  /** Limit */
   limit?: number;
 }
 
@@ -103,31 +155,55 @@ export interface CouponFiltersBE {
  * Create Coupon Request (to backend)
  */
 export interface CreateCouponRequestBE {
+  /** Shop Id */
   shopId: string;
+  /** Code */
   code: string;
+  /** Name */
   name: string;
+  /** Description */
   description?: string;
+  /** Type */
   type: CouponType;
+  /** Discount Value */
   discountValue?: number;
+  /** Max Discount Amount */
   maxDiscountAmount?: number;
+  /** Tiers */
   tiers?: TieredDiscountBE[];
+  /** Bogo Config */
   bogoConfig?: BogoConfigBE;
+  /** Min Purchase Amount */
   minPurchaseAmount: number;
+  /** Min Quantity */
   minQuantity: number;
+  /** Applicability */
   applicability: CouponApplicability;
+  /** Applicable Categories */
   applicableCategories?: string[];
+  /** Applicable Products */
   applicableProducts?: string[];
+  /** Excluded Categories */
   excludedCategories?: string[];
+  /** Excluded Products */
   excludedProducts?: string[];
+  /** Usage Limit */
   usageLimit?: number;
+  /** Usage Limit Per User */
   usageLimitPerUser: number;
   startDate: string; // ISO date string
   endDate: string; // ISO date string
+  /** First Order Only */
   firstOrderOnly: boolean;
+  /** New Users Only */
   newUsersOnly: boolean;
+  /** Can Combine With Other Coupons */
   canCombineWithOtherCoupons: boolean;
+  /** Auto Apply */
   autoApply: boolean;
+  /** Is Public */
   isPublic: boolean;
+  /** Featured */
   featured: boolean;
 }
 
@@ -135,5 +211,6 @@ export interface CreateCouponRequestBE {
  * Update Coupon Request (to backend)
  */
 export interface UpdateCouponRequestBE extends Partial<CreateCouponRequestBE> {
+  /** Status */
   status?: CouponStatus;
 }

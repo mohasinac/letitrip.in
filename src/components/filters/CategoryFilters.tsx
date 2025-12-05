@@ -1,22 +1,77 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/CategoryFilters
+ * @description This file contains the CategoryFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * CategoryFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryFilterValues
+ */
 export interface CategoryFilterValues {
+  /** Featured */
   featured?: boolean;
+  /** Homepage */
   homepage?: boolean;
+  /** Parent Id */
   parentId?: string;
+  /** Is Leaf */
   isLeaf?: boolean;
 }
 
+/**
+ * CategoryFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryFiltersProps
+ */
 interface CategoryFiltersProps {
+  /** Filters */
   filters: CategoryFilterValues;
+  /** On Change */
   onChange: (filters: CategoryFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs category filters operation
+ *
+ * @returns {any} The categoryfilters result
+ *
+ * @example
+ * CategoryFilters();
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs category filters operation
+ *
+ * @returns {any} The categoryfilters result
+ *
+ * @example
+ * CategoryFilters();
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   filters,
   onChange,
@@ -26,7 +81,9 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof CategoryFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: CategoryFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });

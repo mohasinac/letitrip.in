@@ -1,16 +1,63 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/Card
+ * @description This file contains the Card component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * CardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CardProps
+ */
 export interface CardProps {
+  /** Children */
   children: React.ReactNode;
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Header Action */
   headerAction?: React.ReactNode;
+  /** Class Name */
   className?: string;
+  /** No Padding */
   noPadding?: boolean;
 }
 
+/**
+ * Performs card operation
+ *
+ * @returns {any} The card result
+ *
+ * @example
+ * Card();
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs card operation
+ *
+ * @returns {any} The card result
+ *
+ * @example
+ * Card();
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const Card: React.FC<CardProps> = ({
   children,
   title,
@@ -47,13 +94,49 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
+/**
+ * CardSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CardSectionProps
+ */
 export interface CardSectionProps {
+  /** Children */
   children: React.ReactNode;
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Class Name */
   className?: string;
 }
 
+/**
+ * Performs card section operation
+ *
+ * @returns {any} The cardsection result
+ *
+ * @example
+ * CardSection();
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs card section operation
+ *
+ * @returns {any} The cardsection result
+ *
+ * @example
+ * CardSection();
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const CardSection: React.FC<CardSectionProps> = ({
   children,
   title,

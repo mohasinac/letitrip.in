@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/ShippingMethodSelector
+ * @description This file contains the ShippingMethodSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -15,28 +24,78 @@ import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Shipping Method Interface
+/**
+ * ShippingMethod interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShippingMethod
+ */
 export interface ShippingMethod {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Carrier */
   carrier: string;
+  /** Description */
   description: string;
+  /** Cost */
   cost: number;
+  /** Estimated Days */
   estimatedDays: number;
+  /** Features */
   features: string[];
+  /** Cutoff Time */
   cutoffTime?: string;
+  /** Available */
   available: boolean;
 }
 
+/**
+ * ShippingMethodSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShippingMethodSelectorProps
+ */
 export interface ShippingMethodSelectorProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (methodId: string, method: ShippingMethod) => void;
+  /** Cart Total */
   cartTotal: number;
+  /** Delivery Pincode */
   deliveryPincode: string;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Shipping Method Selector
+ */
+/**
+ * Performs shipping method selector operation
+ *
+ * @returns {any} The shippingmethodselector result
+ *
+ * @example
+ * ShippingMethodSelector();
+ */
+
+/**
+ * Performs shipping method selector operation
+ *
+ * @returns {any} The shippingmethodselector result
+ *
+ * @example
+ * ShippingMethodSelector();
+ */
 
 export function ShippingMethodSelector({
   value,
@@ -49,14 +108,20 @@ export function ShippingMethodSelector({
   className = "",
 }: ShippingMethodSelectorProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: methods,
+    /** Set Data */
     setData: setMethods,
     execute,
   } = useLoadingState<ShippingMethod[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "ShippingMethodSelector.loadShippingMethods",
       });
       toast.error("Failed to load shipping methods");
@@ -67,6 +132,22 @@ export function ShippingMethodSelector({
   useEffect(() => {
     loadShippingMethods();
   }, [deliveryPincode, cartTotal]);
+
+  /**
+   * Fetches shipping methods from server
+   *
+   * @returns {Promise<any>} Promise resolving to shippingmethods result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches shipping methods from server
+   *
+   * @returns {Promise<any>} Promise resolving to shippingmethods result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadShippingMethods = () =>
     execute(async () => {
@@ -79,57 +160,90 @@ export function ShippingMethodSelector({
       // Mock data for now
       const mockMethods: ShippingMethod[] = [
         {
+          /** Id */
           id: "standard",
+          /** Name */
           name: "Standard Delivery",
+          /** Carrier */
           carrier: "India Post",
+          /** Description */
           description: "Regular shipping via postal service",
+          /** Cost */
           cost: cartTotal >= 500 ? 0 : 40,
+          /** Estimated Days */
           estimatedDays: 7,
+          /** Features */
           features: ["Tracking available", "Signature on delivery"],
+          /** Available */
           available: true,
         },
         {
+          /** Id */
           id: "express",
+          /** Name */
           name: "Express Delivery",
+          /** Carrier */
           carrier: "Blue Dart",
+          /** Description */
           description: "Fast delivery within 2-3 days",
+          /** Cost */
           cost: 120,
+          /** Estimated Days */
           estimatedDays: 3,
+          /** Features */
           features: [
             "Real-time tracking",
             "Signature on delivery",
             "Insurance included",
           ],
+          /** Cutoff Time */
           cutoffTime: "3:00 PM",
+          /** Available */
           available: true,
         },
         {
+          /** Id */
           id: "same-day",
+          /** Name */
           name: "Same Day Delivery",
+          /** Carrier */
           carrier: "Dunzo",
+          /** Description */
           description: "Get it today if ordered before cutoff",
+          /** Cost */
           cost: 200,
+          /** Estimated Days */
           estimatedDays: 0,
+          /** Features */
           features: [
             "Live tracking",
             "Contactless delivery",
             "Photo proof of delivery",
           ],
+          /** Cutoff Time */
           cutoffTime: "12:00 PM",
           available: deliveryPincode.startsWith("560"), // Only in Bangalore
         },
         {
+          /** Id */
           id: "pickup",
+          /** Name */
           name: "Store Pickup",
+          /** Carrier */
           carrier: "Self",
+          /** Description */
           description: "Pick up from our store location",
+          /** Cost */
           cost: 0,
+          /** Estimated Days */
           estimatedDays: 1,
+          /** Features */
           features: [
             "Free",
             "Flexible pickup hours",
             "ID verification required",
           ],
+          /** Available */
           available: true,
         },
       ];
@@ -149,6 +263,22 @@ export function ShippingMethodSelector({
       }
     });
 
+  /**
+   * Handles method select event
+   *
+   * @param {ShippingMethod} method - The method
+   *
+   * @returns {any} The handlemethodselect result
+   */
+
+  /**
+   * Handles method select event
+   *
+   * @param {ShippingMethod} method - The method
+   *
+   * @returns {any} The handlemethodselect result
+   */
+
   const handleMethodSelect = (method: ShippingMethod) => {
     if (!method.available) {
       toast.error("This shipping method is not available for your location");
@@ -158,6 +288,22 @@ export function ShippingMethodSelector({
     setSelectedId(method.id);
     onChange(method.id, method);
   };
+
+  /**
+   * Retrieves delivery date range
+   *
+   * @param {number} days - The days
+   *
+   * @returns {string} The deliverydaterange result
+   */
+
+  /**
+   * Retrieves delivery date range
+   *
+   * @param {number} days - The days
+   *
+   * @returns {string} The deliverydaterange result
+   */
 
   const getDeliveryDateRange = (days: number): string => {
     if (days === 0) return "Today";
@@ -169,7 +315,9 @@ export function ShippingMethodSelector({
     endDate.setDate(endDate.getDate() + 2);
 
     const options: Intl.DateTimeFormatOptions = {
+      /** Month */
       month: "short",
+      /** Day */
       day: "numeric",
     };
     return `${startDate.toLocaleDateString(
@@ -177,6 +325,22 @@ export function ShippingMethodSelector({
       options,
     )} - ${endDate.toLocaleDateString("en-IN", options)}`;
   };
+
+  /**
+   * Retrieves cutoff warning
+   *
+   * @param {string} [cutoffTime] - The cutoff time
+   *
+   * @returns {string} The cutoffwarning result
+   */
+
+  /**
+   * Retrieves cutoff warning
+   *
+   * @param {string} [cutoffTime] - The cutoff time
+   *
+   * @returns {string} The cutoffwarning result
+   */
 
   const getCutoffWarning = (cutoffTime?: string): string | null => {
     if (!cutoffTime) return null;

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/category-hierarchy
+ * @description This file contains functionality related to category-hierarchy
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * CATEGORY HIERARCHY UTILITIES
  * Helper functions for managing category trees, product counts, and cycle prevention
  */
@@ -11,7 +20,36 @@ import { logError } from "@/lib/firebase-error-logger";
  * Get all descendant category IDs (children, grandchildren, etc.)
  * Used for finding all products under a category
  */
+/**
+ * Retrieves all descendant ids
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to alldescendantids result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAllDescendantIds("example");
+ */
+
+/**
+ * Retrieves all descendant ids
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to alldescendantids result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAllDescendantIds("example");
+ */
+
 export async function getAllDescendantIds(
+  /** Category Id */
   categoryId: string,
 ): Promise<string[]> {
   const db = getFirestoreAdmin();
@@ -47,6 +85,32 @@ export async function getAllDescendantIds(
  * Get all ancestor category IDs (parents, grandparents, etc.)
  * Used for updating product counts up the tree
  */
+/**
+ * Retrieves all ancestor ids
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to allancestorids result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAllAncestorIds("example");
+ */
+
+/**
+ * Retrieves all ancestor ids
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to allancestorids result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAllAncestorIds("example");
+ */
+
 export async function getAllAncestorIds(categoryId: string): Promise<string[]> {
   const db = getFirestoreAdmin();
   const ancestors: string[] = [];
@@ -91,8 +155,35 @@ export async function getAllAncestorIds(categoryId: string): Promise<string[]> {
  * Check if adding a parent would create a cycle
  * Returns true if it would create a cycle
  */
+/**
+ * Performs would create cycle operation
+ *
+ * @param {string} categoryId - category identifier
+ * @param {string} newParentId - newParent identifier
+ *
+ * @returns {Promise<any>} Promise resolving to wouldcreatecycle result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * wouldCreateCycle("example", "example");
+ */
+
+/**
+ * Performs would create cycle operation
+ *
+ * @returns {Promise<any>} Promise resolving to wouldcreatecycle result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * wouldCreateCycle();
+ */
+
 export async function wouldCreateCycle(
+  /** Category Id */
   categoryId: string,
+  /** New Parent Id */
   newParentId: string,
 ): Promise<boolean> {
   // Can't be your own parent
@@ -107,7 +198,36 @@ export async function wouldCreateCycle(
  * Count products directly in a leaf category (no descendants)
  * For leaf nodes only - counts unique products
  */
+/**
+ * Performs count leaf category products operation
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countleafcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countLeafCategoryProducts("example");
+ */
+
+/**
+ * Performs count leaf category products operation
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countleafcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countLeafCategoryProducts("example");
+ */
+
 export async function countLeafCategoryProducts(
+  /** Category Id */
   categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
@@ -131,7 +251,36 @@ export async function countLeafCategoryProducts(
  * Count products for parent category by summing children counts
  * For non-leaf nodes - sums all direct children counts
  */
+/**
+ * Performs count parent category products operation
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countparentcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countParentCategoryProducts("example");
+ */
+
+/**
+ * Performs count parent category products operation
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countparentcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countParentCategoryProducts("example");
+ */
+
 export async function countParentCategoryProducts(
+  /** Category Id */
   categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
@@ -162,7 +311,36 @@ export async function countParentCategoryProducts(
  * - Leaf nodes: count actual products
  * - Parent nodes: sum children counts
  */
+/**
+ * Performs count category products operation
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countCategoryProducts("example");
+ */
+
+/**
+ * Performs count category products operation
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to countcategoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * countCategoryProducts("example");
+ */
+
 export async function countCategoryProducts(
+  /** Category Id */
   categoryId: string,
 ): Promise<number> {
   const isLeaf = await isCategoryLeaf(categoryId);
@@ -180,7 +358,36 @@ export async function countCategoryProducts(
  * Update product count for a category and all its ancestors
  * Updates bottom-up: leaf first, then parents
  */
+/**
+ * Updates existing category product counts
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to updatecategoryproductcounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * updateCategoryProductCounts("example");
+ */
+
+/**
+ * Updates existing category product counts
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to updatecategoryproductcounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * updateCategoryProductCounts("example");
+ */
+
 export async function updateCategoryProductCounts(
+  /** Category Id */
   categoryId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
@@ -249,7 +456,36 @@ export async function updateCategoryProductCounts(
 /**
  * Get all category IDs for product queries (category + all descendants)
  */
+/**
+ * Retrieves category ids for query
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to categoryidsforquery result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getCategoryIdsForQuery("example");
+ */
+
+/**
+ * Retrieves category ids for query
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to categoryidsforquery result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getCategoryIdsForQuery("example");
+ */
+
 export async function getCategoryIdsForQuery(
+  /** Category Id */
   categoryId: string,
 ): Promise<string[]> {
   const descendants = await getAllDescendantIds(categoryId);
@@ -259,11 +495,40 @@ export async function getCategoryIdsForQuery(
 /**
  * Validate parent assignments before saving
  */
+/**
+ * Validates parent assignments
+ *
+ * @param {string} categoryId - category identifier
+ * @param {string[]} parentIds - The parent ids
+ *
+ * @returns {Promise<any>} Promise resolving to validateparentassignments result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateParentAssignments("example", parentIds);
+ */
+
+/**
+ * Validates parent assignments
+ *
+ * @returns {Promise<any>} Promise resolving to validateparentassignments result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateParentAssignments();
+ */
+
 export async function validateParentAssignments(
+  /** Category Id */
   categoryId: string,
+  /** Parent Ids */
   parentIds: string[],
 ): Promise<{
+  /** Valid */
   valid: boolean;
+  /** Errors */
   errors: string[];
 }> {
   const errors: string[] = [];
@@ -293,6 +558,7 @@ export async function validateParentAssignments(
   }
 
   return {
+    /** Valid */
     valid: errors.length === 0,
     errors,
   };
@@ -301,7 +567,36 @@ export async function validateParentAssignments(
 /**
  * Calculate category level based on deepest path from root
  */
+/**
+ * Calculates category level
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to calculatecategorylevel result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * calculateCategoryLevel("example");
+ */
+
+/**
+ * Calculates category level
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to calculatecategorylevel result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * calculateCategoryLevel("example");
+ */
+
 export async function calculateCategoryLevel(
+  /** Category Id */
   categoryId: string,
 ): Promise<number> {
   const db = getFirestoreAdmin();
@@ -332,6 +627,32 @@ export async function calculateCategoryLevel(
 /**
  * Check if category is a leaf (has no children)
  */
+/**
+ * Checks if category leaf
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to iscategoryleaf result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isCategoryLeaf("example");
+ */
+
+/**
+ * Checks if category leaf
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to iscategoryleaf result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * isCategoryLeaf("example");
+ */
+
 export async function isCategoryLeaf(categoryId: string): Promise<boolean> {
   const db = getFirestoreAdmin();
   const childrenSnapshot = await db
@@ -347,11 +668,38 @@ export async function isCategoryLeaf(categoryId: string): Promise<boolean> {
  * Get all products in category and descendants
  * Returns product IDs
  */
+/**
+ * Retrieves category products
+ *
+ * @returns {Promise<any>} Promise resolving to categoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getCategoryProducts();
+ */
+
+/**
+ * Retrieves category products
+ *
+ * @returns {Promise<any>} Promise resolving to categoryproducts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getCategoryProducts();
+ */
+
 export async function getCategoryProducts(
+  /** Category Id */
   categoryId: string,
+  /** Options */
   options?: {
+    /** Limit */
     limit?: number;
+    /** Offset */
     offset?: number;
+    /** Status */
     status?: string;
   },
 ): Promise<string[]> {
@@ -391,7 +739,36 @@ export async function getCategoryProducts(
 /**
  * Update auction counts for a category and all its ancestors
  */
+/**
+ * Updates existing category auction counts
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to updatecategoryauctioncounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * updateCategoryAuctionCounts("example");
+ */
+
+/**
+ * Updates existing category auction counts
+ *
+ * @param {string} /** Category Id */
+  categoryId - /** Category Id */
+  category identifier
+ *
+ * @returns {Promise<any>} Promise resolving to updatecategoryauctioncounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * updateCategoryAuctionCounts("example");
+ */
+
 export async function updateCategoryAuctionCounts(
+  /** Category Id */
   categoryId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
@@ -443,9 +820,34 @@ export async function updateCategoryAuctionCounts(
 /**
  * Rebuild all category product counts (useful for maintenance)
  */
+/**
+ * Performs rebuild all category counts operation
+ *
+ * @returns {Promise<any>} Promise resolving to rebuildallcategorycounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * rebuildAllCategoryCounts();
+ */
+
+/**
+ * Performs rebuild all category counts operation
+ *
+ * @returns {Promise<any>} Promise resolving to rebuildallcategorycounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * rebuildAllCategoryCounts();
+ */
+
 export async function rebuildAllCategoryCounts(): Promise<{
+  /** Updated */
   updated: number;
+  /** Errors */
   errors: string[];
+  /** Details */
   details?: any;
 }> {
   const db = getFirestoreAdmin();
@@ -454,7 +856,9 @@ export async function rebuildAllCategoryCounts(): Promise<{
   let updated = 0;
   const errors: string[] = [];
   const details: any = {
+    /** Total Categories */
     totalCategories: categoriesSnapshot.size,
+    /** Category Counts */
     categoryCounts: {},
   };
 
@@ -512,12 +916,17 @@ export async function rebuildAllCategoryCounts(): Promise<{
       });
 
       details.categoryCounts[categoryId] = {
+        /** Name */
         name: categoryData.name,
+        /** Product Count */
         productCount: count,
         inStockCount,
         outOfStockCount,
+        /** Live Auction Count */
         liveAuctionCount: liveAuctionsSnapshot.size,
+        /** Ended Auction Count */
         endedAuctionCount: endedAuctionsSnapshot.size,
+        /** Is Leaf */
         isLeaf: await isCategoryLeaf(categoryId),
       };
 
@@ -527,7 +936,9 @@ export async function rebuildAllCategoryCounts(): Promise<{
       updated++;
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "rebuildCategoryCounts",
+        /** Metadata */
         metadata: { categoryId: doc.id },
       });
       errors.push(`Failed to update ${doc.id}: ${error.message}`);

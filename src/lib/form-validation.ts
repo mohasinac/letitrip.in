@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/form-validation
+ * @description This file contains functionality related to form-validation
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Form Validation Utilities
  *
  * This module provides validation functions that work with the centralized
@@ -13,19 +22,59 @@ import {
   VALIDATION_MESSAGES,
 } from "@/constants/validation-messages";
 
+/**
+ * ValidationError interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ValidationError
+ */
 export interface ValidationError {
+  /** Field */
   field: string;
+  /** Message */
   message: string;
 }
 
+/**
+ * ValidationResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ValidationResult
+ */
 export interface ValidationResult {
+  /** Is Valid */
   isValid: boolean;
+  /** Errors */
   errors: Record<string, string>;
 }
 
 /**
  * Validate a single field value against its field configuration
  */
+/**
+ * Validates field
+ *
+ * @param {any} value - The value
+ * @param {FormField} field - The field
+ *
+ * @returns {string} The validatefield result
+ *
+ * @example
+ * validateField(value, field);
+ */
+
+/**
+ * Validates field
+ *
+ * @param {any} value - The value
+ * @param {FormField} field - The field
+ *
+ * @returns {string} The validatefield result
+ *
+ * @example
+ * validateField(value, field);
+ */
+
 export function validateField(value: any, field: FormField): string | null {
   // Required validation
   if (
@@ -112,9 +161,28 @@ export function validateField(value: any, field: FormField): string | null {
 /**
  * Validate using a FieldValidator
  */
+/**
+ * Validates with validator
+ *
+ * @param {any} value - The value
+ * @param {FieldValidator} validator - The validator
+ * @param {string} fieldLabel - The field label
+ *
+ * @returns {string} The validatewithvalidator result
+ */
+
+/**
+ * Validates with validator
+ *
+ * @returns {any} The validatewithvalidator result
+ */
+
 function validateWithValidator(
+  /** Value */
   value: any,
+  /** Validator */
   validator: FieldValidator,
+  /** Field Label */
   fieldLabel: string,
 ): string | null {
   switch (validator.type) {
@@ -206,8 +274,31 @@ function validateWithValidator(
 /**
  * Validate an entire form (all fields)
  */
+/**
+ * Validates form
+ *
+ * @param {Record<string, any>} values - The values
+ * @param {FormField[]} fields - The fields
+ *
+ * @returns {any} The validateform result
+ *
+ * @example
+ * validateForm(values, fields);
+ */
+
+/**
+ * Validates form
+ *
+ * @returns {any} The validateform result
+ *
+ * @example
+ * validateForm();
+ */
+
 export function validateForm(
+  /** Values */
   values: Record<string, any>,
+  /** Fields */
   fields: FormField[],
 ): ValidationResult {
   const errors: Record<string, string> = {};
@@ -221,6 +312,7 @@ export function validateForm(
   }
 
   return {
+    /** Is Valid */
     isValid: Object.keys(errors).length === 0,
     errors,
   };
@@ -229,9 +321,34 @@ export function validateForm(
 /**
  * Validate only specific fields
  */
+/**
+ * Validates fields
+ *
+ * @param {Record<string, any>} values - The values
+ * @param {FormField[]} fields - The fields
+ * @param {string[]} fieldKeys - The field keys
+ *
+ * @returns {string} The validatefields result
+ *
+ * @example
+ * validateFields(values, fields, fieldKeys);
+ */
+
+/**
+ * Validates fields
+ *
+ * @returns {any} The validatefields result
+ *
+ * @example
+ * validateFields();
+ */
+
 export function validateFields(
+  /** Values */
   values: Record<string, any>,
+  /** Fields */
   fields: FormField[],
+  /** Field Keys */
   fieldKeys: string[],
 ): ValidationResult {
   const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
@@ -241,6 +358,32 @@ export function validateFields(
 /**
  * Get first error message from validation result
  */
+/**
+ * Retrieves first error
+ *
+ * @param {Record<string, string>} errors - The errors
+ *
+ * @returns {string} The firsterror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getFirstError(errors);
+ */
+
+/**
+ * Retrieves first error
+ *
+ * @param {Record<string, string>} errors - The errors
+ *
+ * @returns {string} The firsterror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getFirstError(errors);
+ */
+
 export function getFirstError(errors: Record<string, string>): string | null {
   const firstKey = Object.keys(errors)[0];
   return firstKey ? errors[firstKey] : null;
@@ -249,7 +392,37 @@ export function getFirstError(errors: Record<string, string>): string | null {
 /**
  * Format validation errors for display
  */
+/**
+ * Formats errors
+ *
+ * @param {Record<string, string>} errors - The errors
+ *
+ * @returns {any} The formaterrors result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * formatErrors(errors);
+ */
+
+/**
+ * Formats errors
+ *
+ * @param {Record<string, string>} /** Errors */
+  errors - The /**  errors */
+  errors
+ *
+ * @returns {any} The formaterrors result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * formatErrors(/** Errors */
+  errors);
+ */
+
 export function formatErrors(
+  /** Errors */
   errors: Record<string, string>,
 ): ValidationError[] {
   return Object.entries(errors).map(([field, message]) => ({
@@ -261,6 +434,28 @@ export function formatErrors(
 /**
  * Check if value is empty
  */
+/**
+ * Checks if empty
+ *
+ * @param {any} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isEmpty(value);
+ */
+
+/**
+ * Checks if empty
+ *
+ * @param {any} value - The value
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isEmpty(value);
+ */
+
 export function isEmpty(value: any): boolean {
   return value === undefined || value === null || value === "";
 }
@@ -268,6 +463,28 @@ export function isEmpty(value: any): boolean {
 /**
  * Sanitize user input (basic XSS prevention)
  */
+/**
+ * Performs sanitize input operation
+ *
+ * @param {string} value - The value
+ *
+ * @returns {string} The sanitizeinput result
+ *
+ * @example
+ * sanitizeInput("example");
+ */
+
+/**
+ * Performs sanitize input operation
+ *
+ * @param {string} value - The value
+ *
+ * @returns {string} The sanitizeinput result
+ *
+ * @example
+ * sanitizeInput("example");
+ */
+
 export function sanitizeInput(value: string): string {
   return value
     .replace(/</g, "&lt;")
@@ -280,8 +497,31 @@ export function sanitizeInput(value: string): string {
 /**
  * Validate and sanitize user input
  */
+/**
+ * Validates and sanitize
+ *
+ * @param {string} value - The value
+ * @param {FormField} field - The field
+ *
+ * @returns {string} The validateandsanitize result
+ *
+ * @example
+ * validateAndSanitize("example", field);
+ */
+
+/**
+ * Validates and sanitize
+ *
+ * @returns {string} The validateandsanitize result
+ *
+ * @example
+ * validateAndSanitize();
+ */
+
 export function validateAndSanitize(
+  /** Value */
   value: string,
+  /** Field */
   field: FormField,
 ): { value: string; error: string | null } {
   const error = validateField(value, field);

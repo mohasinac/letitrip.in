@@ -1,8 +1,38 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileOfflineIndicator
+ * @description This file contains the MobileOfflineIndicator component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+/**
+ * Function: Mobile Offline Indicator
+ */
+/**
+ * Performs mobile offline indicator operation
+ *
+ * @returns {any} The mobileofflineindicator result
+ *
+ * @example
+ * MobileOfflineIndicator();
+ */
+
+/**
+ * Performs mobile offline indicator operation
+ *
+ * @returns {any} The mobileofflineindicator result
+ *
+ * @example
+ * MobileOfflineIndicator();
+ */
 
 export function MobileOfflineIndicator() {
   const [isOffline, setIsOffline] = useState(false);
@@ -12,12 +42,36 @@ export function MobileOfflineIndicator() {
     // Check initial state
     setIsOffline(!navigator.onLine);
 
+    /**
+     * Handles online event
+     *
+     * @returns {any} The handleonline result
+     */
+
+    /**
+     * Handles online event
+     *
+     * @returns {any} The handleonline result
+     */
+
     const handleOnline = () => {
       setIsOffline(false);
       // Show "Back online" briefly
       setShowIndicator(true);
       setTimeout(() => setShowIndicator(false), 2000);
     };
+
+    /**
+     * Handles offline event
+     *
+     * @returns {any} The handleoffline result
+     */
+
+    /**
+     * Handles offline event
+     *
+     * @returns {any} The handleoffline result
+     */
 
     const handleOffline = () => {
       setIsOffline(true);

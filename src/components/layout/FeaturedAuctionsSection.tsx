@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedAuctionsSection
+ * @description This file contains the FeaturedAuctionsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,17 +18,37 @@ import { apiService } from "@/services/api.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 
+/**
+ * FeaturedItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedItem
+ */
 interface FeaturedItem {
+  /** Id */
   id: string;
+  /** Type */
   type: string;
+  /** Item Id */
   itemId: string;
+  /** Name */
   name: string;
+  /** Image */
   image?: string;
+  /** Position */
   position: number;
+  /** Active */
   active: boolean;
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Max Auctions */
   maxAuctions?: number;
 }
 
@@ -30,6 +59,22 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
   useEffect(() => {
     fetchFeaturedAuctions();
   }, [maxAuctions]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchFeaturedAuctions = async () => {
     try {
@@ -65,8 +110,11 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
 
       // Fallback: Query auctions with featured=true flag
       const response = await auctionsService.list({
+        /** Featured */
         featured: true,
+        /** Status */
         status: AuctionStatus.ACTIVE,
+        /** Limit */
         limit: maxAuctions,
       } as any);
 
@@ -77,6 +125,7 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
       setAuctions(auctionsList);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedAuctionsSection.fetchFeaturedAuctions",
       });
       setAuctions([]);
@@ -121,25 +170,38 @@ export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
             key={auction.id}
             auction={
               {
+                /** Id */
                 id: auction.id,
+                /** Name */
                 name: auction.productName || auction.name || "",
+                /** Slug */
                 slug: auction.productSlug || auction.slug || "",
+                /** Images */
                 images:
                   auction.images ||
                   (auction.productImage ? [auction.productImage] : []),
+                /** Current Bid */
                 currentBid:
                   auction.currentPrice ||
                   auction.currentBid ||
                   auction.startingBid ||
                   0,
+                /** Starting Bid */
                 startingBid: auction.startingBid || 0,
+                /** Bid Count */
                 bidCount: auction.totalBids || auction.bidCount || 0,
+                /** End Time */
                 endTime: auction.endTime,
+                /** Featured */
                 featured: auction.featured,
+                /** Status */
                 status: auction.status || "active",
+                /** Shop */
                 shop: auction.shopId
                   ? {
+                      /** Id */
                       id: auction.shopId,
+                      /** Name */
                       name: (auction as any).shopName || "Shop",
                     }
                   : undefined,

@@ -1,6 +1,44 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/homepage/reviews/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,16 +61,27 @@ export async function GET(request: NextRequest) {
     const reviews = reviewsSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
+        /** Id */
         id: doc.id,
+        /** Product Id */
         productId: data.product_id,
+        /** User Id */
         userId: data.user_id,
+        /** User Name */
         userName: data.user_name,
+        /** User Avatar */
         userAvatar: data.user_avatar,
+        /** Rating */
         rating: data.rating,
+        /** Title */
         title: data.title,
+        /** Comment */
         comment: data.comment,
+        /** Images */
         images: data.images || [],
+        /** Verified Purchase */
         verifiedPurchase: data.verifiedPurchase || data.is_verified || false,
+        /** Created At */
         createdAt: data.created_at,
       };
     });

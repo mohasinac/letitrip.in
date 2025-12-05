@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/analytics/users/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -40,9 +49,32 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // User segment chart
+/**
+ * Function: User Segment Chart
+ */
+/**
+ * Performs user segment chart operation
+ *
+ * @param {{
+  data} {
+  data,
+} - The {
+  data,
+}
+ *
+ * @returns {string} The usersegmentchart result
+ */
+
+/**
+ * Performs user segment chart operation
+ *
+ * @returns {string} The usersegmentchart result
+ */
+
 function UserSegmentChart({
   data,
 }: {
+  /** Data */
   data: { label: string; value: number; color: string }[];
 }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
@@ -60,6 +92,18 @@ function UserSegmentChart({
               const startAngle = data
                 .slice(0, index)
                 .reduce((sum, s) => sum + (s.value / total) * 360, 0);
+              /**
+               * Performs angle operation
+               *
+               * @returns {any} The angle result
+               */
+
+              /**
+               * Performs angle operation
+               *
+               * @returns {any} The angle result
+               */
+
               const angle = (segment.value / total) * 360;
               const x1 =
                 50 + 40 * Math.cos((startAngle - 90) * (Math.PI / 180));
@@ -130,11 +174,28 @@ function UserSegmentChart({
 }
 
 // Top customers table
+/**
+ * Function: Top Customers Table
+ */
+/**
+ * Performs top customers table operation
+ *
+ * @returns {any} The topcustomerstable result
+ */
+
+/**
+ * Performs top customers table operation
+ *
+ * @returns {any} The topcustomerstable result
+ */
+
 function TopCustomersTable({
   customers,
   loading,
 }: {
+  /** Customers */
   customers: CustomerAnalyticsFE[];
+  /** Loading */
   loading: boolean;
 }) {
   if (loading) {
@@ -236,18 +297,52 @@ function TopCustomersTable({
 }
 
 // Activity timeline
+/**
+ * Function: Activity Timeline
+ */
+/**
+ * Performs activity timeline operation
+ *
+ * @returns {any} The activitytimeline result
+ */
+
+/**
+ * Performs activity timeline operation
+ *
+ * @returns {any} The activitytimeline result
+ */
+
 function ActivityTimeline() {
   const activities = [
     { type: "signup", text: "5 new users signed up", time: "2 minutes ago" },
     { type: "order", text: "User placed first order", time: "15 minutes ago" },
     { type: "seller", text: "New seller registered", time: "1 hour ago" },
     {
+      /** Type */
       type: "verification",
+      /** Text */
       text: "3 users verified email",
+      /** Time */
       time: "2 hours ago",
     },
     { type: "order", text: "VIP customer placed order", time: "3 hours ago" },
   ];
+
+  /**
+   * Retrieves icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The icon result
+   */
+
+  /**
+   * Retrieves icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The icon result
+   */
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -259,6 +354,7 @@ function ActivityTimeline() {
         return <Store className="w-4 h-4 text-purple-500" />;
       case "verification":
         return <Shield className="w-4 h-4 text-orange-500" />;
+      /** Default */
       default:
         return <Activity className="w-4 h-4 text-gray-500" />;
     }
@@ -294,12 +390,15 @@ function ActivityTimeline() {
 export default function AdminUsersAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "AdminUsersAnalyticsPage.loadData",
         period,
       });
@@ -309,13 +408,21 @@ export default function AdminUsersAnalyticsPage() {
 
   // Mock stats for now - these would come from an API
   const [stats] = useState({
+    /** Total Users */
     totalUsers: 12450,
+    /** New Users */
     newUsers: 342,
+    /** Active Users */
     activeUsers: 4523,
+    /** Churn Rate */
     churnRate: 2.3,
+    /** User Growth */
     userGrowth: 15.2,
+    /** New Users Growth */
     newUsersGrowth: 8.5,
+    /** Active Users Growth */
     activeUsersGrowth: 12.1,
+    /** Churn Rate Change */
     churnRateChange: -0.5,
   });
 
@@ -329,6 +436,7 @@ export default function AdminUsersAnalyticsPage() {
   const loadData = useCallback(() => {
     execute(async () => {
       const customerData = await analyticsService.getCustomerAnalytics({
+        /** Period */
         period: period as "day" | "week" | "month" | "year",
       });
       setCustomers(customerData);

@@ -1,12 +1,30 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/category-wizard/DisplayStep
+ * @description This file contains the DisplayStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { CategoryFormData, OnChange } from "./types";
 
+/**
+ * DisplayStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DisplayStepProps
+ */
 interface DisplayStepProps {
+  /** Form Data */
   formData: CategoryFormData;
+  /** Categories */
   categories: CategoryFE[];
+  /** On Change */
   onChange: OnChange;
 }
 

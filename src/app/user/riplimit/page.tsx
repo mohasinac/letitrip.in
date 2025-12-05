@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/riplimit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useFilters } from "@/hooks/useFilters";
@@ -47,6 +56,12 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * TransactionFilter type
+ * 
+ * @typedef {Object} TransactionFilter
+ * @description Type definition for TransactionFilter
+ */
 type TransactionFilter =
   | "ALL"
   | "PURCHASE"
@@ -61,23 +76,34 @@ export default function UserRipLimitPage() {
   // State
   const [transactionsTotal, setTransactionsTotal] = useState(0);
   const {
+    /** Is Loading */
     isLoading: loadingBalance,
+    /** Data */
     data: balance,
+    /** Set Data */
     setData: setBalance,
+    /** Execute */
     execute: executeBalance,
   } = useLoadingState<RipLimitBalanceFE>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "UserRipLimitPage.loadBalance" });
       toast.error("Failed to load balance");
     },
   });
   const {
+    /** Is Loading */
     isLoading: loadingTransactions,
+    /** Data */
     data: transactions,
+    /** Set Data */
     setData: setTransactions,
+    /** Execute */
     execute: executeTransactions,
   } = useLoadingState<RipLimitTransactionFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "UserRipLimitPage.loadTransactions" });
       toast.error("Failed to load transactions");
@@ -86,15 +112,33 @@ export default function UserRipLimitPage() {
 
   // Filter state with URL sync
   const {
+    /** Filters */
     filters: { type: transactionFilter = "ALL" },
     updateFilters,
     applyFilters,
   } = useFilters<{ type: TransactionFilter }>(
     { type: "ALL" },
     {
+      /** Sync With Url */
       syncWithUrl: true,
     }
   );
+
+  /**
+   * Sets transaction filter
+   *
+   * @param {TransactionFilter} type - The type
+   *
+   * @returns {any} The settransactionfilter result
+   */
+
+  /**
+   * Sets transaction filter
+   *
+   * @param {TransactionFilter} type - The type
+   *
+   * @returns {any} The settransactionfilter result
+   */
 
   const setTransactionFilter = (type: TransactionFilter) => {
     updateFilters({ type });
@@ -132,7 +176,9 @@ export default function UserRipLimitPage() {
       const filterType =
         transactionFilter === "ALL" ? undefined : transactionFilter;
       const data = await ripLimitService.getTransactions({
+        /** Type */
         type: filterType,
+        /** Limit */
         limit: 20,
       });
       setTransactions(data.transactions);
@@ -157,6 +203,22 @@ export default function UserRipLimitPage() {
   }, [transactionFilter, user, loadTransactions]);
 
   // Handle purchase initiation
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handlePurchase = async () => {
     if (purchaseAmount < 100) {
       setError("Minimum purchase amount is ₹100");
@@ -173,12 +235,17 @@ export default function UserRipLimitPage() {
 
       // Initialize Razorpay
       const options = {
+        /** Key */
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: purchaseData.amount * 100, // Razorpay expects paise
+        /** Currency */
         currency: purchaseData.currency,
+        /** Name */
         name: "Letitrip",
+        /** Description */
         description: `Purchase ${purchaseData.ripLimitAmount} RipLimit`,
         order_id: purchaseData.razorpayOrderId,
+        /** Handler */
         handler: async function (response: {
           razorpay_order_id: string;
           razorpay_payment_id: string;
@@ -202,11 +269,16 @@ export default function UserRipLimitPage() {
             setError("Payment verification failed. Please contact support.");
           }
         },
+        /** Prefill */
         prefill: {
+          /** Email */
           email: user?.email || "",
+          /** Contact */
           contact: "",
         },
+        /** Theme */
         theme: {
+          /** Color */
           color: "#3B82F6",
         },
       };
@@ -222,6 +294,22 @@ export default function UserRipLimitPage() {
   };
 
   // Handle refund request
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRefund = async () => {
     if (!balance || refundAmount <= 0) {
       setError("Please enter a valid refund amount");
@@ -261,6 +349,24 @@ export default function UserRipLimitPage() {
   };
 
   // Get transaction icon
+  /**
+   * Retrieves transaction icon
+   *
+   * @param {string} type - The type
+   * @param {boolean} isCredit - Whether is credit
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Retrieves transaction icon
+   *
+   * @param {string} type - The type
+   * @param {boolean} isCredit - Whether is credit
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
   const getTransactionIcon = (type: string, isCredit: boolean) => {
     if (type === "BID_BLOCK")
       return <Gavel className="w-4 h-4 text-orange-500" />;
@@ -575,6 +681,7 @@ export default function UserRipLimitPage() {
                       {tx.formattedAmount}
                     </p>
                     <p className="text-xs text-gray-400 dark:text-gray-500">
+                      /** Balance */
                       Balance: {tx.formattedBalanceAfter}
                     </p>
                   </div>
@@ -594,11 +701,14 @@ export default function UserRipLimitPage() {
                   // Load more transactions
                   ripLimitService
                     .getTransactions({
+                      /** Type */
                       type:
                         transactionFilter === "ALL"
                           ? undefined
                           : transactionFilter,
+                      /** Limit */
                       limit: 20,
+                      /** Offset */
                       offset: transactions.length,
                     })
                     .then((data) => {

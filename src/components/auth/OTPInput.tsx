@@ -1,11 +1,32 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/OTPInput
+ * @description This file contains the OTPInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { ChangeEvent, ClipboardEvent, KeyboardEvent, useRef } from "react";
 
+/**
+ * OTPInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OTPInputProps
+ */
 interface OTPInputProps {
+  /** Length */
   length?: number;
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (value: string) => void;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: boolean;
+  /** Auto Focus */
   autoFocus?: boolean;
 }
 
@@ -22,6 +43,24 @@ interface OTPInputProps {
  * - Error state styling
  * - Dark mode support
  */
+/**
+ * Performs o t p input operation
+ *
+ * @returns {any} The otpinput result
+ *
+ * @example
+ * OTPInput();
+ */
+
+/**
+ * Performs o t p input operation
+ *
+ * @returns {any} The otpinput result
+ *
+ * @example
+ * OTPInput();
+ */
+
 export function OTPInput({
   length = 6,
   value,
@@ -34,6 +73,24 @@ export function OTPInput({
 
   // Ensure value is padded to length
   const paddedValue = value.padEnd(length, " ");
+
+  /**
+   * Handles change event
+   *
+   * @param {number} index - The index
+   * @param {string} digit - The digit
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {number} index - The index
+   * @param {string} digit - The digit
+   *
+   * @returns {string} The handlechange result
+   */
 
   const handleChange = (index: number, digit: string) => {
     // Only allow digits
@@ -52,6 +109,24 @@ export function OTPInput({
       inputRefs.current[index + 1]?.focus();
     }
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {number} index - The index
+   * @param {KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {number} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {number} index - The index
+   * @param {KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {number} The handlekeydown result
+   */
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     // Backspace: clear current and move to previous
@@ -78,6 +153,22 @@ export function OTPInput({
     }
   };
 
+  /**
+   * Handles paste event
+   *
+   * @param {ClipboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlepaste result
+   */
+
+  /**
+   * Handles paste event
+   *
+   * @param {ClipboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlepaste result
+   */
+
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text/plain");
@@ -94,8 +185,25 @@ export function OTPInput({
     }
   };
 
+  /**
+   * Handles input change event
+   *
+   * @param {number} index - The index
+   * @param {ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {number} The handleinputchange result
+   */
+
+  /**
+   * Handles input change event
+   *
+   * @returns {number} The handleinputchange result
+   */
+
   const handleInputChange = (
+    /** Index */
     index: number,
+    /** E */
     e: ChangeEvent<HTMLInputElement>,
   ) => {
     const digit = e.target.value.slice(-1); // Get only the last character
@@ -123,6 +231,7 @@ export function OTPInput({
             w-12 h-14 text-center text-2xl font-semibold
             border-2 rounded-lg
             transition-all duration-200
+            /** Focus */
             focus:outline-none focus:ring-2
             ${
               error
@@ -134,6 +243,7 @@ export function OTPInput({
                 ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
                 : "bg-white dark:bg-gray-900"
             }
+            /** Hover */
             hover:border-gray-400 dark:hover:border-gray-500
           `}
           aria-label={`Digit ${index + 1} of ${length}`}

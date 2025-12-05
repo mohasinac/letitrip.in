@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileSellerSidebar
+ * @description This file contains the MobileSellerSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -21,79 +30,173 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Badge */
   badge?: string;
+  /** Children */
   children?: NavItem[];
 }
 
 const navigation: NavItem[] = [
   {
+    /** Title */
     title: "Dashboard",
+    /** Href */
     href: "/seller",
+    /** Icon */
     icon: LayoutDashboard,
   },
   {
+    /** Title */
     title: "My Shops",
+    /** Href */
     href: "/seller/my-shops",
+    /** Icon */
     icon: Store,
   },
   {
+    /** Title */
     title: "Products",
+    /** Href */
     href: "/seller/products",
+    /** Icon */
     icon: Package,
+    /** Children */
     children: [
       { title: "All Products", href: "/seller/products", icon: Package },
       { title: "Add Product", href: "/seller/products/add", icon: Plus },
     ],
   },
   {
+    /** Title */
     title: "Auctions",
+    /** Href */
     href: "/seller/auctions",
+    /** Icon */
     icon: Gavel,
+    /** Children */
     children: [
       { title: "All Auctions", href: "/seller/auctions", icon: Gavel },
       { title: "Create Auction", href: "/seller/auctions/create", icon: Plus },
     ],
   },
   {
+    /** Title */
     title: "Orders",
+    /** Href */
     href: "/seller/orders",
+    /** Icon */
     icon: ShoppingCart,
   },
   {
+    /** Title */
     title: "Returns & Refunds",
+    /** Href */
     href: "/seller/returns",
+    /** Icon */
     icon: RotateCcw,
   },
   {
+    /** Title */
     title: "Revenue",
+    /** Href */
     href: "/seller/revenue",
+    /** Icon */
     icon: DollarSign,
   },
   {
+    /** Title */
     title: "Analytics",
+    /** Href */
     href: "/seller/analytics",
+    /** Icon */
     icon: BarChart3,
   },
   {
+    /** Title */
     title: "Reviews",
+    /** Href */
     href: "/seller/reviews",
+    /** Icon */
     icon: Star,
   },
   {
+    /** Title */
     title: "Coupons",
+    /** Href */
     href: "/seller/coupons",
+    /** Icon */
     icon: Ticket,
   },
 ];
 
+/**
+ * MobileSellerSidebarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileSellerSidebarProps
+ */
 interface MobileSellerSidebarProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
 }
+
+/**
+ * Function: Mobile Seller Sidebar
+ */
+/**
+ * Performs mobile seller sidebar operation
+ *
+ * @param {MobileSellerSidebarProps} {
+  isOpen,
+  onClose,
+} - The {
+  is open,
+  on close,
+}
+ *
+ * @returns {any} The mobilesellersidebar result
+ *
+ * @example
+ * MobileSellerSidebar({
+  isOpen,
+  onClose,
+});
+ */
+
+/**
+ * Performs mobile seller sidebar operation
+ *
+ * @param {MobileSellerSidebarProps} {
+  isOpen,
+  onClose,
+} - The {
+  is open,
+  on close,
+}
+ *
+ * @returns {any} The mobilesellersidebar result
+ *
+ * @example
+ * MobileSellerSidebar({
+  isOpen,
+  onClose,
+});
+ */
 
 export function MobileSellerSidebar({
   isOpen,
@@ -130,6 +233,22 @@ export function MobileSellerSidebar({
     }
   }, [pathname]);
 
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
   const toggleItem = (title: string) => {
     setExpandedItems((prev) =>
       prev.includes(title)
@@ -137,6 +256,22 @@ export function MobileSellerSidebar({
         : [...prev, title],
     );
   };
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");

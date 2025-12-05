@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/sieve/firestore
+ * @description This file contains functionality related to firestore
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Sieve Firestore Adapter
  * Epic: E026 - Sieve-style Pagination
  *
@@ -31,8 +40,31 @@ import {
 /**
  * Adapt a SieveQuery to Firestore query constraints
  */
+/**
+ * Performs adapt to firestore operation
+ *
+ * @param {SieveQuery} sieveQuery - The sieve query
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {any} The adapttofirestore result
+ *
+ * @example
+ * adaptToFirestore(sieveQuery, config);
+ */
+
+/**
+ * Performs adapt to firestore operation
+ *
+ * @returns {any} The adapttofirestore result
+ *
+ * @example
+ * adaptToFirestore();
+ */
+
 export function adaptToFirestore(
+  /** Sieve Query */
   sieveQuery: SieveQuery,
+  /** Config */
   config?: SieveConfig,
 ): FirestoreAdapterResult {
   const firestoreFilters: FirestoreFilter[] = [];
@@ -47,26 +79,44 @@ export function adaptToFirestore(
       const field = config?.fieldMappings?.[filter.field] || filter.field;
       firestoreFilters.push({
         field,
+        /** Operator */
         operator: firestoreOp,
+        /** Value */
         value: filter.value,
       });
     } else {
       // Must be evaluated client-side
       clientSideFilters.push({
+        /** Condition */
         condition: filter,
+        /** Reason */
         reason: `Operator '${filter.operator}' is not supported by Firestore`,
       });
     }
   }
 
   // Calculate offset for pagination
+  /**
+   * Performs offset operation
+   *
+   * @returns {any} The offset result
+   */
+
+  /**
+   * Performs offset operation
+   *
+   * @returns {any} The offset result
+   */
+
   const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
 
   return {
     firestoreFilters,
     clientSideFilters,
+    /** Sorts */
     sorts: sieveQuery.sorts,
     offset,
+    /** Limit */
     limit: sieveQuery.pageSize,
   };
 }
@@ -74,6 +124,22 @@ export function adaptToFirestore(
 /**
  * Map sieve operator to Firestore operator
  */
+/**
+ * Maps operator to firestore
+ *
+ * @param {string} operator - The operator
+ *
+ * @returns {string} The mapoperatortofirestore result
+ */
+
+/**
+ * Maps operator to firestore
+ *
+ * @param {string} operator - The operator
+ *
+ * @returns {string} The mapoperatortofirestore result
+ */
+
 function mapOperatorToFirestore(operator: string): FirestoreOperator | null {
   const mapping: Record<string, FirestoreOperator> = {
     "==": "==",
@@ -91,9 +157,38 @@ function mapOperatorToFirestore(operator: string): FirestoreOperator | null {
 /**
  * Execute a sieve query against a Firestore collection
  */
+/**
+ * Performs execute sieve query operation
+ *
+ * @param {string} collectionName - Name of collection
+ * @param {SieveQuery} sieveQuery - The sieve query
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {Promise<any>} Promise resolving to executesievequery result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * executeSieveQuery("example", sieveQuery, config);
+ */
+
+/**
+ * Performs execute sieve query operation
+ *
+ * @returns {Promise<any>} Promise resolving to executesievequery result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * executeSieveQuery();
+ */
+
 export async function executeSieveQuery<T extends DocumentData>(
+  /** Collection Name */
   collectionName: string,
+  /** Sieve Query */
   sieveQuery: SieveQuery,
+  /** Config */
   config?: SieveConfig,
 ): Promise<SievePaginatedResponse<T>> {
   const db = getFirestoreAdmin();
@@ -129,6 +224,7 @@ export async function executeSieveQuery<T extends DocumentData>(
     // Type assertion needed: Firestore DocumentData to generic T
     // Caller is responsible for ensuring T matches the collection schema
     let allData = allDocs.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     })) as unknown as T[];
@@ -171,6 +267,7 @@ export async function executeSieveQuery<T extends DocumentData>(
     // Type assertion needed: Firestore DocumentData to generic T
     // Caller is responsible for ensuring T matches the collection schema
     data = snapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     })) as unknown as T[];
@@ -179,21 +276,30 @@ export async function executeSieveQuery<T extends DocumentData>(
   // Build pagination meta
   const totalPages = Math.ceil(totalCount / sieveQuery.pageSize);
   const pagination: SievePaginationMeta = {
+    /** Page */
     page: sieveQuery.page,
+    /** Page Size */
     pageSize: sieveQuery.pageSize,
     totalCount,
     totalPages,
+    /** Has Next Page */
     hasNextPage: sieveQuery.page < totalPages,
+    /** Has Previous Page */
     hasPreviousPage: sieveQuery.page > 1,
   };
 
   return {
+    /** Success */
     success: true,
     data,
     pagination,
+    /** Meta */
     meta: {
+      /** Applied Filters */
       appliedFilters: sieveQuery.filters,
+      /** Applied Sorts */
       appliedSorts: sieveQuery.sorts,
+      /** Warnings */
       warnings:
         adapted.clientSideFilters.length > 0
           ? [
@@ -210,9 +316,34 @@ export async function executeSieveQuery<T extends DocumentData>(
  * Apply sieve query to an existing Firestore query
  * Useful when you have pre-built queries with complex conditions
  */
+/**
+ * Performs apply sieve to query operation
+ *
+ * @param {Query} baseQuery - The base query
+ * @param {SieveQuery} sieveQuery - The sieve query
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {any} The applysievetoquery result
+ *
+ * @example
+ * applySieveToQuery(baseQuery, sieveQuery, config);
+ */
+
+/**
+ * Performs apply sieve to query operation
+ *
+ * @returns {any} The applysievetoquery result
+ *
+ * @example
+ * applySieveToQuery();
+ */
+
 export function applySieveToQuery(
+  /** Base Query */
   baseQuery: Query,
+  /** Sieve Query */
   sieveQuery: SieveQuery,
+  /** Config */
   config?: SieveConfig,
 ): Query {
   const adapted = adaptToFirestore(sieveQuery, config);
@@ -237,9 +368,34 @@ export function applySieveToQuery(
 /**
  * Post-process query results with client-side filters and pagination
  */
+/**
+ * Performs post process results operation
+ *
+ * @param {T[]} results - The results
+ * @param {SieveQuery} sieveQuery - The sieve query
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {number} The postprocessresults result
+ *
+ * @example
+ * postProcessResults(results, sieveQuery, config);
+ */
+
+/**
+ * Performs post process results operation
+ *
+ * @returns {any} The postprocessresults result
+ *
+ * @example
+ * postProcessResults();
+ */
+
 export function postProcessResults<T extends Record<string, unknown>>(
+  /** Results */
   results: T[],
+  /** Sieve Query */
   sieveQuery: SieveQuery,
+  /** Config */
   config?: SieveConfig,
 ): { data: T[]; totalCount: number } {
   const adapted = adaptToFirestore(sieveQuery, config);
@@ -270,6 +426,28 @@ export function postProcessResults<T extends Record<string, unknown>>(
 /**
  * Get collection reference
  */
+/**
+ * Retrieves collection ref
+ *
+ * @param {string} collectionName - Name of collection
+ *
+ * @returns {string} The collectionref result
+ *
+ * @example
+ * getCollectionRef("example");
+ */
+
+/**
+ * Retrieves collection ref
+ *
+ * @param {string} collectionName - Name of collection
+ *
+ * @returns {string} The collectionref result
+ *
+ * @example
+ * getCollectionRef("example");
+ */
+
 export function getCollectionRef(collectionName: string): CollectionReference {
   const db = getFirestoreAdmin();
   return db.collection(collectionName);
@@ -278,16 +456,43 @@ export function getCollectionRef(collectionName: string): CollectionReference {
 /**
  * Create empty pagination response
  */
+/**
+ * Creates a new empty response
+ *
+ * @returns {any} The emptyresponse result
+ *
+ * @example
+ * createEmptyResponse();
+ */
+
+/**
+ * Creates a new empty response
+ *
+ * @returns {any} The emptyresponse result
+ *
+ * @example
+ * createEmptyResponse();
+ */
+
 export function createEmptyResponse<T>(): SievePaginatedResponse<T> {
   return {
+    /** Success */
     success: true,
+    /** Data */
     data: [],
+    /** Pagination */
     pagination: {
+      /** Page */
       page: 1,
+      /** Page Size */
       pageSize: 20,
+      /** Total Count */
       totalCount: 0,
+      /** Total Pages */
       totalPages: 0,
+      /** Has Next Page */
       hasNextPage: false,
+      /** Has Previous Page */
       hasPreviousPage: false,
     },
   };
@@ -296,17 +501,44 @@ export function createEmptyResponse<T>(): SievePaginatedResponse<T> {
 /**
  * Create pagination meta from count and query
  */
+/**
+ * Creates a new pagination meta
+ *
+ * @param {number} totalCount - Number of total
+ * @param {SieveQuery} sieveQuery - The sieve query
+ *
+ * @returns {number} The paginationmeta result
+ *
+ * @example
+ * createPaginationMeta(123, sieveQuery);
+ */
+
+/**
+ * Creates a new pagination meta
+ *
+ * @returns {number} The paginationmeta result
+ *
+ * @example
+ * createPaginationMeta();
+ */
+
 export function createPaginationMeta(
+  /** Total Count */
   totalCount: number,
+  /** Sieve Query */
   sieveQuery: SieveQuery,
 ): SievePaginationMeta {
   const totalPages = Math.ceil(totalCount / sieveQuery.pageSize);
   return {
+    /** Page */
     page: sieveQuery.page,
+    /** Page Size */
     pageSize: sieveQuery.pageSize,
     totalCount,
     totalPages,
+    /** Has Next Page */
     hasNextPage: sieveQuery.page < totalPages,
+    /** Has Previous Page */
     hasPreviousPage: sieveQuery.page > 1,
   };
 }

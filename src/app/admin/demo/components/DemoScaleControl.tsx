@@ -1,10 +1,77 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoScaleControl
+ * @description This file contains the DemoScaleControl component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
+/**
+ * DemoScaleControlProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoScaleControlProps
+ */
 interface DemoScaleControlProps {
+  /** Scale */
   scale: number;
+  /** On Scale Change */
   onScaleChange: (scale: number) => void;
+  /** Disabled */
   disabled: boolean;
 }
+
+/**
+ * Function: Demo Scale Control
+ */
+/**
+ * Performs demo scale control operation
+ *
+ * @param {DemoScaleControlProps} {
+  scale,
+  onScaleChange,
+  disabled,
+} - The {
+  scale,
+  on scale change,
+  disabled,
+}
+ *
+ * @returns {any} The demoscalecontrol result
+ *
+ * @example
+ * DemoScaleControl({
+  scale,
+  onScaleChange,
+  disabled,
+});
+ */
+
+/**
+ * Performs demo scale control operation
+ *
+ * @param {DemoScaleControlProps} {
+  scale,
+  onScaleChange,
+  disabled,
+} - The {
+  scale,
+  on scale change,
+  disabled,
+}
+ *
+ * @returns {any} The demoscalecontrol result
+ *
+ * @example
+ * DemoScaleControl({
+  scale,
+  onScaleChange,
+  disabled,
+});
+ */
 
 export function DemoScaleControl({
   scale,

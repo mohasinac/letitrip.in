@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/location/pincode
+ * @description This file contains functionality related to pincode
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Location API Library - Pincode and Geocoding Utilities
  */
 
@@ -14,7 +23,36 @@ const INDIA_POST_API = "https://api.postalpincode.in/pincode";
 /**
  * Fetches pincode data from India Post API
  */
+/**
+ * Fetches pincode data from server
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {Promise<any>} Promise resolving to pincodedata result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * fetchPincodeData("example");
+ */
+
+/**
+ * Fetches pincode data from server
+ *
+ * @param {string} /** Pincode */
+  pincode - The /**  pincode */
+  pincode
+ *
+ * @returns {Promise<any>} Promise resolving to pincodedata result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * fetchPincodeData("example");
+ */
+
 export async function fetchPincodeData(
+  /** Pincode */
   pincode: string
 ): Promise<PincodeLookupResult> {
   // Validate pincode format
@@ -22,19 +60,28 @@ export async function fetchPincodeData(
   if (cleaned.length !== 6 || !/^[1-9]/.test(cleaned)) {
     return {
       pincode,
+      /** Areas */
       areas: [],
+      /** City */
       city: "",
+      /** District */
       district: "",
+      /** State */
       state: "",
+      /** Country */
       country: "India",
+      /** Is Valid */
       isValid: false,
+      /** Has Multiple Areas */
       hasMultipleAreas: false,
     };
   }
 
   try {
     const response = await fetch(`${INDIA_POST_API}/${cleaned}`, {
+      /** Headers */
       headers: {
+        /** Accept */
         Accept: "application/json",
       },
       next: { revalidate: 86400 }, // Cache for 24 hours
@@ -43,6 +90,18 @@ export async function fetchPincodeData(
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    /**
+     * Performs data operation
+     *
+     * @returns {any} The data result
+     */
+
+    /**
+     * Performs data operation
+     *
+     * @returns {any} The data result
+     */
 
     const data = (await response.json()) as IndiaPostPincodeResponse[];
 
@@ -55,13 +114,21 @@ export async function fetchPincodeData(
       result.PostOffice.length === 0
     ) {
       return {
+        /** Pincode */
         pincode: cleaned,
+        /** Areas */
         areas: [],
+        /** City */
         city: "",
+        /** District */
         district: "",
+        /** State */
         state: "",
+        /** Country */
         country: "India",
+        /** Is Valid */
         isValid: false,
+        /** Has Multiple Areas */
         hasMultipleAreas: false,
       };
     }
@@ -73,13 +140,20 @@ export async function fetchPincodeData(
     const firstPO = result.PostOffice[0];
 
     return {
+      /** Pincode */
       pincode: cleaned,
       areas,
+      /** City */
       city: firstPO.Division || firstPO.District,
+      /** District */
       district: firstPO.District,
+      /** State */
       state: firstPO.State,
+      /** Country */
       country: "India",
+      /** Is Valid */
       isValid: true,
+      /** Has Multiple Areas */
       hasMultipleAreas: areas.length > 1,
     };
   } catch (error) {
@@ -91,7 +165,33 @@ export async function fetchPincodeData(
 /**
  * Transforms India Post response to internal format
  */
+/**
+ * Transforms pincode response
+ *
+ * @param {IndiaPostPincodeResponse[]} response - The response
+ *
+ * @returns {any} The transformpincoderesponse result
+ *
+ * @example
+ * transformPincodeResponse(response);
+ */
+
+/**
+ * Transforms pincode response
+ *
+ * @param {IndiaPostPincodeResponse[]} /** Response */
+  response - The /**  response */
+  response
+ *
+ * @returns {any} The transformpincoderesponse result
+ *
+ * @example
+ * transformPincodeResponse(/** Response */
+  response);
+ */
+
 export function transformPincodeResponse(
+  /** Response */
   response: IndiaPostPincodeResponse[]
 ): PincodeData | null {
   const result = response[0];
@@ -104,15 +204,24 @@ export function transformPincodeResponse(
   const firstPO = postOffices[0];
 
   return {
+    /** Pincode */
     pincode: firstPO.Pincode,
+    /** Areas */
     areas: postOffices.map((po) => ({
+      /** Name */
       name: po.Name,
+      /** Branch Type */
       branchType: po.BranchType,
+      /** Delivery Status */
       deliveryStatus: po.DeliveryStatus === "Delivery",
     })),
+    /** City */
     city: firstPO.Division || firstPO.District,
+    /** District */
     district: firstPO.District,
+    /** State */
     state: firstPO.State,
+    /** Country */
     country: "India",
   };
 }
@@ -120,6 +229,28 @@ export function transformPincodeResponse(
 /**
  * Validates pincode format
  */
+/**
+ * Validates pincode
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePincode("example");
+ */
+
+/**
+ * Validates pincode
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePincode("example");
+ */
+
 export function validatePincode(pincode: string): boolean {
   const cleaned = pincode.replace(/\D/g, "");
   return cleaned.length === 6 && /^[1-9]/.test(cleaned);

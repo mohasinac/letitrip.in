@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/returns/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -51,7 +60,9 @@ export default function UserReturnsPage() {
   const loadReturns = useCallback(async () => {
     await execute(async () => {
       const filters: Record<string, unknown> = {
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: 10,
       };
 
@@ -71,57 +82,118 @@ export default function UserReturnsPage() {
     }
   }, [user, loadReturns]);
 
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  /**
+   * Retrieves status config
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusconfig result
+   */
+
+  /**
+   * Retrieves status config
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusconfig result
+   */
 
   const getStatusConfig = (status: string) => {
     const configs: Record<
       string,
       { icon: React.ReactNode; color: string; label: string }
     > = {
+      /** Pending */
       pending: {
+        /** Icon */
         icon: <Clock className="w-4 h-4" />,
+        /** Color */
         color:
           "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+        /** Label */
         label: "Pending Review",
       },
+      /** Approved */
       approved: {
+        /** Icon */
         icon: <CheckCircle className="w-4 h-4" />,
+        /** Color */
         color:
           "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        /** Label */
         label: "Approved",
       },
+      /** Rejected */
       rejected: {
+        /** Icon */
         icon: <XCircle className="w-4 h-4" />,
+        /** Color */
         color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+        /** Label */
         label: "Rejected",
       },
       "item-received": {
+        /** Icon */
         icon: <Package className="w-4 h-4" />,
+        /** Color */
         color:
           "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+        /** Label */
         label: "Item Received",
       },
       "refund-processed": {
+        /** Icon */
         icon: <RefreshCw className="w-4 h-4" />,
+        /** Color */
         color:
           "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+        /** Label */
         label: "Refund Processed",
       },
+      /** Completed */
       completed: {
+        /** Icon */
         icon: <CheckCircle className="w-4 h-4" />,
+        /** Color */
         color: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+        /** Label */
         label: "Completed",
       },
+      /** Escalated */
       escalated: {
+        /** Icon */
         icon: <AlertTriangle className="w-4 h-4" />,
+        /** Color */
         color:
           "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+        /** Label */
         label: "Escalated",
       },
     };
@@ -129,13 +201,32 @@ export default function UserReturnsPage() {
     return configs[status] || configs.pending;
   };
 
+  /**
+   * Retrieves reason label
+   *
+   * @param {string} reason - The reason
+   *
+   * @returns {string} The reasonlabel result
+   */
+
+  /**
+   * Retrieves reason label
+   *
+   * @param {string} reason - The reason
+   *
+   * @returns {string} The reasonlabel result
+   */
+
   const getReasonLabel = (reason: string) => {
     const labels: Record<string, string> = {
+      /** Defective */
       defective: "Defective/Damaged",
       "wrong-item": "Wrong Item",
       "not-as-described": "Not as Described",
+      /** Damaged */
       damaged: "Damaged in Transit",
       "changed-mind": "Changed Mind",
+      /** Other */
       other: "Other Reason",
     };
     return labels[reason] || reason;
@@ -275,6 +366,7 @@ export default function UserReturnsPage() {
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {returnItem.createdAt &&
                       formatDistanceToNow(new Date(returnItem.createdAt), {
+                        /** Add Suffix */
                         addSuffix: true,
                       })}
                   </span>
@@ -298,6 +390,7 @@ export default function UserReturnsPage() {
                       </p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
+                          /** Reason */
                           Reason:{" "}
                           <span className="font-medium">
                             {returnItem.reasonText ||
@@ -306,6 +399,7 @@ export default function UserReturnsPage() {
                         </span>
                         {returnItem.refundAmount && (
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            /** Refund */
                             Refund: {formatCurrency(returnItem.refundAmount)}
                           </span>
                         )}

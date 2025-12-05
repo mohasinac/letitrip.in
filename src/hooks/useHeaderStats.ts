@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useHeaderStats
+ * @description This file contains functionality related to useHeaderStats
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useHeaderStats Hook
  * Epic: E033 - Live Header Data
  *
@@ -10,25 +19,68 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
 
+/**
+ * HeaderStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeaderStats
+ */
 interface HeaderStats {
+  /** Cart Count */
   cartCount: number;
+  /** Notification Count */
   notificationCount: number;
+  /** Messages Count */
   messagesCount: number;
+  /** Favorites Count */
   favoritesCount: number;
+  /** Rip Limit Balance */
   ripLimitBalance: number | null;
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: boolean;
 }
 
 const defaultStats: HeaderStats = {
+  /** Cart Count */
   cartCount: 0,
+  /** Notification Count */
   notificationCount: 0,
+  /** Messages Count */
   messagesCount: 0,
+  /** Favorites Count */
   favoritesCount: 0,
+  /** Rip Limit Balance */
   ripLimitBalance: null,
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: false,
 };
 
 const POLL_INTERVAL = 30000; // 30 seconds
+
+/**
+ * Function: Use Header Stats
+ */
+/**
+ * Custom React hook for header stats
+ *
+ * @returns {any} The useheaderstats result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useHeaderStats();
+ */
+
+/**
+ * Custom React hook for header stats
+ *
+ * @returns {any} The useheaderstats result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useHeaderStats();
+ */
 
 export function useHeaderStats() {
   const { isAuthenticated } = useAuth();
@@ -57,7 +109,9 @@ export function useHeaderStats() {
         setError(null);
 
         const response = await apiService.get<{
+          /** Success */
           success: boolean;
+          /** Data */
           data: HeaderStats;
         }>("/header/stats");
 
@@ -98,6 +152,18 @@ export function useHeaderStats() {
 
   // Refresh on focus
   useEffect(() => {
+    /**
+     * Handles focus event
+     *
+     * @returns {any} The handlefocus result
+     */
+
+    /**
+     * Handles focus event
+     *
+     * @returns {any} The handlefocus result
+     */
+
     const handleFocus = () => {
       if (isAuthenticated) {
         fetchStats();
@@ -116,6 +182,7 @@ export function useHeaderStats() {
   const decrementNotifications = useCallback((count = 1) => {
     setStats((current) => ({
       ...current,
+      /** Notification Count */
       notificationCount: Math.max(0, current.notificationCount - count),
     }));
   }, []);
@@ -123,20 +190,28 @@ export function useHeaderStats() {
   const decrementMessages = useCallback((count = 1) => {
     setStats((current) => ({
       ...current,
+      /** Messages Count */
       messagesCount: Math.max(0, current.messagesCount - count),
     }));
   }, []);
 
   return {
     // Stats values
+    /** Cart Count */
     cartCount: stats.cartCount,
+    /** Notification Count */
     notificationCount: stats.notificationCount,
+    /** Messages Count */
     messagesCount: stats.messagesCount,
+    /** Favorites Count */
     favoritesCount: stats.favoritesCount,
+    /** Rip Limit Balance */
     ripLimitBalance: stats.ripLimitBalance,
+    /** Has Unpaid Auctions */
     hasUnpaidAuctions: stats.hasUnpaidAuctions,
 
     // Total badge count for notification bell
+    /** Total Notifications */
     totalNotifications: stats.notificationCount + stats.messagesCount,
 
     // Loading and error states
@@ -144,6 +219,7 @@ export function useHeaderStats() {
     error,
 
     // Refresh function to manually refetch stats
+    /** Refresh */
     refresh: () => fetchStats(true),
 
     // Optimistic update functions

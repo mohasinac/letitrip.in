@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/CameraCapture
+ * @description This file contains the CameraCapture component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
@@ -6,15 +15,25 @@ import { logError } from "@/lib/error-logger";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { MediaFile } from "@/types/media";
 
+/**
+ * CameraCaptureProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CameraCaptureProps
+ */
 interface CameraCaptureProps {
+  /** On Capture */
   onCapture: (mediaFile: MediaFile) => void;
+  /** On Close */
   onClose: () => void;
+  /** Facing Mode */
   facingMode?: "user" | "environment";
 }
 
 export default function CameraCapture({
   onCapture,
   onClose,
+  /** Facing Mode */
   facingMode: initialFacingMode = "environment",
 }: CameraCaptureProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,17 +55,37 @@ export default function CameraCapture({
     };
   }, [facingMode]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const startCamera = async () => {
     try {
       setError(null);
       setIsReady(false);
 
       const stream = await navigator.mediaDevices.getUserMedia({
+        /** Video */
         video: {
           facingMode,
+          /** Width */
           width: { ideal: 1920 },
+          /** Height */
           height: { ideal: 1080 },
         },
+        /** Audio */
         audio: false,
       });
 
@@ -61,6 +100,18 @@ export default function CameraCapture({
     }
   };
 
+  /**
+   * Performs stop camera operation
+   *
+   * @returns {any} The stopcamera result
+   */
+
+  /**
+   * Performs stop camera operation
+   *
+   * @returns {any} The stopcamera result
+   */
+
   const stopCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -68,9 +119,33 @@ export default function CameraCapture({
     }
   };
 
+  /**
+   * Performs toggle camera operation
+   *
+   * @returns {any} The togglecamera result
+   */
+
+  /**
+   * Performs toggle camera operation
+   *
+   * @returns {any} The togglecamera result
+   */
+
   const toggleCamera = () => {
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
   };
+
+  /**
+   * Performs capture photo operation
+   *
+   * @returns {any} The capturephoto result
+   */
+
+  /**
+   * Performs capture photo operation
+   *
+   * @returns {any} The capturephoto result
+   */
 
   const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -90,9 +165,39 @@ export default function CameraCapture({
     setCapturedImage(imageDataUrl);
   };
 
+  /**
+   * Performs retake photo operation
+   *
+   * @returns {Promise<any>} Promise resolving to retakephoto result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs retake photo operation
+   *
+   * @returns {any} The retakephoto result
+   */
+
   const retakePhoto = () => {
     setCapturedImage(null);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const confirmPhoto = async () => {
     if (!capturedImage) return;
@@ -103,21 +208,33 @@ export default function CameraCapture({
 
     // Create File from Blob
     const file = new File([blob], `camera-${Date.now()}.jpg`, {
+      /** Type */
       type: "image/jpeg",
     });
 
     const mediaFile: MediaFile = {
+      /** Id */
       id: `camera-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       file,
+      /** Type */
       type: "image",
+      /** Source */
       source: "camera",
+      /** Preview */
       preview: capturedImage,
+      /** Upload Status */
       uploadStatus: "pending",
+      /** Upload Progress */
       uploadProgress: 0,
+      /** Metadata */
       metadata: {
+        /** Slug */
         slug: "",
+        /** Description */
         description: "",
+        /** Size */
         size: file.size,
+        /** Mime Type */
         mimeType: "image/jpeg",
       },
     };

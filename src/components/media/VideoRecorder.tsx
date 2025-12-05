@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/VideoRecorder
+ * @description This file contains the VideoRecorder component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/error-logger";
@@ -6,9 +15,18 @@ import { MediaFile } from "@/types/media";
 import { Camera, Monitor, Pause, Play, Square, Video, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * VideoRecorderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VideoRecorderProps
+ */
 interface VideoRecorderProps {
+  /** On Recorded */
   onRecorded: (mediaFile: MediaFile) => void;
+  /** On Close */
   onClose: () => void;
+  /** Source */
   source?: "camera" | "screen";
   maxDuration?: number; // in seconds
 }
@@ -16,6 +34,7 @@ interface VideoRecorderProps {
 export default function VideoRecorder({
   onRecorded,
   onClose,
+  /** Source */
   source: initialSource = "camera",
   maxDuration = 300, // 5 minutes default
 }: VideoRecorderProps) {
@@ -41,6 +60,22 @@ export default function VideoRecorder({
     };
   }, [source]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const startPreview = async () => {
     try {
       setError(null);
@@ -50,15 +85,21 @@ export default function VideoRecorder({
 
       if (source === "camera") {
         stream = await navigator.mediaDevices.getUserMedia({
+          /** Video */
           video: {
+            /** Width */
             width: { ideal: 1920 },
+            /** Height */
             height: { ideal: 1080 },
           },
+          /** Audio */
           audio: true,
         });
       } else {
         stream = await navigator.mediaDevices.getDisplayMedia({
+          /** Video */
           video: true,
+          /** Audio */
           audio: true,
         });
       }
@@ -70,12 +111,26 @@ export default function VideoRecorder({
       }
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "VideoRecorder.startRecording",
+        /** Metadata */
         metadata: { source },
       });
       setError(`Unable to access ${source}. Please check permissions.`);
     }
   };
+
+  /**
+   * Performs cleanup operation
+   *
+   * @returns {any} The cleanup result
+   */
+
+  /**
+   * Performs cleanup operation
+   *
+   * @returns {any} The cleanup result
+   */
 
   const cleanup = () => {
     if (timerIntervalRef.current) {
@@ -92,12 +147,25 @@ export default function VideoRecorder({
     }
   };
 
+  /**
+   * Performs start recording operation
+   *
+   * @returns {any} The startrecording result
+   */
+
+  /**
+   * Performs start recording operation
+   *
+   * @returns {any} The startrecording result
+   */
+
   const startRecording = () => {
     if (!streamRef.current) return;
 
     chunksRef.current = [];
 
     const mediaRecorder = new MediaRecorder(streamRef.current, {
+      /** Mime Type */
       mimeType: "video/webm;codecs=vp9",
     });
 
@@ -120,6 +188,18 @@ export default function VideoRecorder({
     startTimer();
   };
 
+  /**
+   * Performs stop recording operation
+   *
+   * @returns {any} The stoprecording result
+   */
+
+  /**
+   * Performs stop recording operation
+   *
+   * @returns {any} The stoprecording result
+   */
+
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
@@ -127,6 +207,18 @@ export default function VideoRecorder({
       setIsPaused(false);
     }
   };
+
+  /**
+   * Performs pause recording operation
+   *
+   * @returns {any} The pauserecording result
+   */
+
+  /**
+   * Performs pause recording operation
+   *
+   * @returns {any} The pauserecording result
+   */
 
   const pauseRecording = () => {
     if (mediaRecorderRef.current && isRecording && !isPaused) {
@@ -136,6 +228,18 @@ export default function VideoRecorder({
     }
   };
 
+  /**
+   * Performs resume recording operation
+   *
+   * @returns {any} The resumerecording result
+   */
+
+  /**
+   * Performs resume recording operation
+   *
+   * @returns {any} The resumerecording result
+   */
+
   const resumeRecording = () => {
     if (mediaRecorderRef.current && isRecording && isPaused) {
       mediaRecorderRef.current.resume();
@@ -143,6 +247,18 @@ export default function VideoRecorder({
       resumeTimer();
     }
   };
+
+  /**
+   * Performs start timer operation
+   *
+   * @returns {any} The starttimer result
+   */
+
+  /**
+   * Performs start timer operation
+   *
+   * @returns {any} The starttimer result
+   */
 
   const startTimer = () => {
     timerIntervalRef.current = setInterval(() => {
@@ -156,6 +272,18 @@ export default function VideoRecorder({
     }, 1000);
   };
 
+  /**
+   * Performs pause timer operation
+   *
+   * @returns {any} The pausetimer result
+   */
+
+  /**
+   * Performs pause timer operation
+   *
+   * @returns {any} The pausetimer result
+   */
+
   const pauseTimer = () => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
@@ -163,9 +291,33 @@ export default function VideoRecorder({
     }
   };
 
+  /**
+   * Performs resume timer operation
+   *
+   * @returns {any} The resumetimer result
+   */
+
+  /**
+   * Performs resume timer operation
+   *
+   * @returns {any} The resumetimer result
+   */
+
   const resumeTimer = () => {
     startTimer();
   };
+
+  /**
+   * Performs stop timer operation
+   *
+   * @returns {any} The stoptimer result
+   */
+
+  /**
+   * Performs stop timer operation
+   *
+   * @returns {any} The stoptimer result
+   */
 
   const stopTimer = () => {
     if (timerIntervalRef.current) {
@@ -174,6 +326,18 @@ export default function VideoRecorder({
     }
   };
 
+  /**
+   * Performs toggle source operation
+   *
+   * @returns {any} The togglesource result
+   */
+
+  /**
+   * Performs toggle source operation
+   *
+   * @returns {any} The togglesource result
+   */
+
   const toggleSource = () => {
     setSource((prev) => (prev === "camera" ? "screen" : "camera"));
     setDuration(0);
@@ -181,11 +345,39 @@ export default function VideoRecorder({
     setIsPaused(false);
   };
 
+  /**
+   * Performs retake operation
+   *
+   * @returns {any} The retake result
+   */
+
+  /**
+   * Performs retake operation
+   *
+   * @returns {any} The retake result
+   */
+
   const retake = () => {
     setRecordedVideo(null);
     setDuration(0);
     startPreview();
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const confirmVideo = async () => {
     if (!recordedVideo) return;
@@ -194,21 +386,32 @@ export default function VideoRecorder({
     const blob = await response.blob();
 
     const file = new File([blob], `video-${Date.now()}.webm`, {
+      /** Type */
       type: "video/webm",
     });
 
     const mediaFile: MediaFile = {
+      /** Id */
       id: `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       file,
+      /** Type */
       type: "video",
       source,
+      /** Preview */
       preview: recordedVideo,
+      /** Upload Status */
       uploadStatus: "pending",
+      /** Upload Progress */
       uploadProgress: 0,
+      /** Metadata */
       metadata: {
+        /** Slug */
         slug: "",
+        /** Description */
         description: "",
+        /** Size */
         size: file.size,
+        /** Mime Type */
         mimeType: "video/webm",
         duration,
       },

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/address.service
+ * @description This file contains service functions for address operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { logError } from "@/lib/firebase-error-logger";
 import { AddressBE } from "@/types/backend/address.types";
 import { AddressFE, AddressFormFE } from "@/types/frontend/address.types";
@@ -12,26 +21,55 @@ import { apiService } from "./api.service";
 // TYPES FOR ADDRESS LOOKUP
 // ============================================================================
 
+/**
+ * PincodeDetails interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PincodeDetails
+ */
 export interface PincodeDetails {
+  /** Pincode */
   pincode: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** State Code */
   stateCode: string;
+  /** District */
   district: string;
+  /** Country */
   country: string;
+  /** Country Code */
   countryCode: string;
 }
 
+/**
+ * PostalCodeDetails interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PostalCodeDetails
+ */
 export interface PostalCodeDetails {
+  /** Postal Code */
   postalCode: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** State Code */
   stateCode?: string;
+  /** Country */
   country: string;
+  /** Country Code */
   countryCode: string;
+  /** Places */
   places?: Array<{
+    /** Name */
     name: string;
+    /** Latitude */
     latitude: string;
+    /** Longitude */
     longitude: string;
   }>;
 }
@@ -40,6 +78,12 @@ export interface PostalCodeDetails {
 // ADDRESS SERVICE
 // ============================================================================
 
+/**
+ * AddressService class
+ * 
+ * @class
+ * @description Description of AddressService class functionality
+ */
 class AddressService {
   async getAll(): Promise<AddressFE[]> {
     const response = await apiService.get<{ addresses: AddressBE[] }>(
@@ -63,7 +107,9 @@ class AddressService {
   }
 
   async update(
+    /** Id */
     id: string,
+    /** Form Data */
     formData: Partial<AddressFormFE>
   ): Promise<AddressFE> {
     const addressBE = await apiService.patch<AddressBE>(
@@ -81,6 +127,7 @@ class AddressService {
     const addressBE = await apiService.patch<AddressBE>(
       `/user/addresses/${id}`,
       {
+        /** Is Default */
         isDefault: true,
       }
     );
@@ -103,6 +150,7 @@ class AddressService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressService.lookupPincode",
         pincode,
       });
@@ -115,7 +163,9 @@ class AddressService {
    * Uses Zippopotam API
    */
   async lookupPostalCode(
+    /** Country Code */
     countryCode: string,
+    /** Postal Code */
     postalCode: string
   ): Promise<PostalCodeDetails | null> {
     try {
@@ -125,6 +175,7 @@ class AddressService {
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressService.lookupPostalCode",
         countryCode,
         postalCode,
@@ -138,28 +189,39 @@ class AddressService {
    * For India: Uses state + city combination
    */
   async autocompleteCities(params: {
+    /** Query */
     query: string;
+    /** State */
     state?: string;
+    /** Country */
     country: string;
+    /** Limit */
     limit?: number;
   }): Promise<
     Array<{
+      /** City */
       city: string;
+      /** State */
       state: string;
+      /** State Code */
       stateCode?: string;
     }>
   > {
     try {
       const response = await apiService.post<
         Array<{
+          /** City */
           city: string;
+          /** State */
           state: string;
+          /** State Code */
           stateCode?: string;
         }>
       >("/address/autocomplete/cities", params);
       return response;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressService.autocompleteCities",
         params,
       });
@@ -172,7 +234,9 @@ class AddressService {
    * Checks if all required fields are present
    */
   validateAddress(address: Partial<AddressFormFE>): {
+    /** Is Valid */
     isValid: boolean;
+    /** Errors */
     errors: string[];
   } {
     const errors: string[] = [];
@@ -198,6 +262,7 @@ class AddressService {
     }
 
     return {
+      /** Is Valid */
       isValid: errors.length === 0,
       errors,
     };

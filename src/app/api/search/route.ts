@@ -1,9 +1,39 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/search/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Utility: safely get number from query
+/**
+ * Function: To Number
+ */
+/**
+ * Performs to number operation
+ *
+ * @param {string | null} value - The value
+ * @param {number} fallback - The fallback
+ *
+ * @returns {string} The tonumber result
+ */
+
+/**
+ * Performs to number operation
+ *
+ * @param {string | null} value - The value
+ * @param {number} fallback - The fallback
+ *
+ * @returns {string} The tonumber result
+ */
+
 function toNumber(value: string | null, fallback: number): number {
   if (!value) return fallback;
   const n = Number(value);
@@ -11,7 +41,33 @@ function toNumber(value: string | null, fallback: number): number {
 }
 
 // Resolve category slug to ID
+/**
+ * Function: Resolve Category Slug
+ */
+/**
+ * Performs resolve category slug operation
+ *
+ * @param {string | null} [categorySlug] - The category slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolvecategoryslug result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs resolve category slug operation
+ *
+ * @param {string | null} [/** Category Slug */
+  categorySlug] - The /**  category  slug */
+  category slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolvecategoryslug result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function resolveCategorySlug(
+  /** Category Slug */
   categorySlug?: string | null,
 ): Promise<string | null> {
   if (!categorySlug) return null;
@@ -22,6 +78,35 @@ async function resolveCategorySlug(
   if (snap.empty) return null;
   return snap.docs[0].id;
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
 
 export async function GET(req: NextRequest) {
   // Rate limiting
@@ -39,7 +124,31 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
+    /**
+     * Performs type operation
+     *
+     * @returns {any} The type result
+     */
+
+    /**
+     * Performs type operation
+     *
+     * @returns {any} The type result
+     */
+
     const type = (searchParams.get("type") || "products").toLowerCase(); // products | auctions
+    /**
+     * Performs q operation
+     *
+     * @returns {any} The q result
+     */
+
+    /**
+     * Performs q operation
+     *
+     * @returns {any} The q result
+     */
+
     const q = (searchParams.get("q") || "").trim().toLowerCase();
     const page = Math.max(1, toNumber(searchParams.get("page"), 1));
     const limit = Math.min(
@@ -53,6 +162,18 @@ export async function GET(req: NextRequest) {
     const maxPrice = searchParams.get("max_price");
     const inStock =
       (searchParams.get("in_stock") || "").toLowerCase() === "true";
+    /**
+     * Sorts sort
+     *
+     * @returns {any} The sort result
+     */
+
+    /**
+     * Sorts sort
+     *
+     * @returns {any} The sort result
+     */
+
     const sort = (
       searchParams.get("sort") ||
       (type === "auctions" ? "endingSoon" : "latest")
@@ -130,6 +251,7 @@ export async function GET(req: NextRequest) {
 
     const snap = await query.get();
     let items = snap.docs.map((d: any) => ({
+      /** Id */
       id: d.id,
       ...(d.data() as any),
     }));
@@ -138,6 +260,22 @@ export async function GET(req: NextRequest) {
 
     // Compute basic relevance if requested
     if (needsRelevance && qWords.length) {
+      /**
+       * Performs primitives operation
+       *
+       * @param {any} val - The val
+       *
+       * @returns {string} The primitives result
+       */
+
+      /**
+       * Performs primitives operation
+       *
+       * @param {any} val - The val
+       *
+       * @returns {string} The primitives result
+       */
+
       const primitives = (val: any): string =>
         (typeof val === "string"
           ? val
@@ -147,6 +285,22 @@ export async function GET(req: NextRequest) {
         )
           .toString()
           .toLowerCase();
+
+      /**
+       * Performs score for operation
+       *
+       * @param {any} item - The item
+       *
+       * @returns {number} The scorefor result
+       */
+
+      /**
+       * Performs score for operation
+       *
+       * @param {any} item - The item
+       *
+       * @returns {number} The scorefor result
+       */
 
       const scoreFor = (item: any): number => {
         const name = primitives(item.name || item.title || "");
@@ -209,13 +363,28 @@ export async function GET(req: NextRequest) {
     }
 
     const total = items.length;
+    /**
+     * Performs start operation
+     *
+     * @returns {any} The start result
+     */
+
+    /**
+     * Performs start operation
+     *
+     * @returns {any} The start result
+     */
+
     const start = (page - 1) * limit;
     const paged = items.slice(start, start + limit);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       type,
+      /** Data */
       data: paged,
+      /** Pagination */
       pagination: { page, limit, total, hasMore: start + limit < total },
     });
   } catch (error) {
@@ -226,6 +395,25 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Function: It Date
+ */
+/**
+ * Performs it date operation
+ *
+ * @param {any} v - The v
+ *
+ * @returns {number} The itdate result
+ */
+
+/**
+ * Performs it date operation
+ *
+ * @param {any} v - The v
+ *
+ * @returns {number} The itdate result
+ */
 
 function itDate(v: any): number | null {
   if (!v) return null;

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/paypal/order/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PayPal Order Creation API Route
  * POST /api/payments/paypal/order
  *
@@ -12,24 +21,77 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * CreatePayPalOrderRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CreatePayPalOrderRequest
+ */
 interface CreatePayPalOrderRequest {
+  /** Amount */
   amount: number;
+  /** Currency */
   currency: string;
+  /** Order Id */
   orderId?: string;
+  /** Return Url */
   returnUrl: string;
+  /** Cancel Url */
   cancelUrl: string;
+  /** Description */
   description?: string;
 }
 
+/**
+ * PayPalOrderResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PayPalOrderResponse
+ */
 interface PayPalOrderResponse {
+  /** Id */
   id: string;
+  /** Status */
   status: string;
+  /** Links */
   links: Array<{
+    /** Href */
     href: string;
+    /** Rel */
     rel: string;
+    /** Method */
     method: string;
   }>;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -111,13 +173,17 @@ export async function POST(request: NextRequest) {
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
+      /** Method */
       method: "POST",
+      /** Headers */
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        /** Authorization */
         Authorization: `Basic ${Buffer.from(
           `${clientId}:${clientSecret}`
         ).toString("base64")}`,
       },
+      /** Body */
       body: "grant_type=client_credentials",
     });
 
@@ -130,13 +196,17 @@ export async function POST(request: NextRequest) {
 
     // Create PayPal order
     const orderRequest = {
+      /** Intent */
       intent: "CAPTURE",
       purchase_units: [
         {
+          /** Amount */
           amount: {
             currency_code: currency.toUpperCase(),
+            /** Value */
             value: amount.toFixed(2),
           },
+          /** Description */
           description: description || `Order for ${authResult.user.email}`,
           custom_id: orderId || undefined,
         },
@@ -150,11 +220,15 @@ export async function POST(request: NextRequest) {
     };
 
     const orderResponse = await fetch(`${baseUrl}/v2/checkout/orders`, {
+      /** Method */
       method: "POST",
+      /** Headers */
       headers: {
         "Content-Type": "application/json",
+        /** Authorization */
         Authorization: `Bearer ${accessToken}`,
       },
+      /** Body */
       body: JSON.stringify(orderRequest),
     });
 
@@ -175,40 +249,57 @@ export async function POST(request: NextRequest) {
       .collection(COLLECTIONS.PAYMENT_TRANSACTIONS)
       .doc(paypalOrder.id)
       .set({
+        /** Gateway */
         gateway: "paypal",
+        /** Gateway Order Id */
         gatewayOrderId: paypalOrder.id,
+        /** User Id */
         userId: authResult.user.uid,
+        /** Order Id */
         orderId: orderId || null,
+        /** Amount */
         amount: amount,
+        /** Currency */
         currency: currency.toUpperCase(),
+        /** Status */
         status: "created",
         approvalUrl,
         returnUrl,
         cancelUrl,
+        /** Created At */
         createdAt: new Date(),
+        /** Updated At */
         updatedAt: new Date(),
       });
 
     // Return formatted response
     return NextResponse.json(
       {
+        /** Id */
         id: paypalOrder.id,
+        /** Status */
         status: paypalOrder.status,
         approvalUrl,
+        /** Amount */
         amount: amount,
+        /** Currency */
         currency: currency.toUpperCase(),
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "PayPalOrderAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Order creation failed",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to create PayPal order",
       },
       { status: 500 }

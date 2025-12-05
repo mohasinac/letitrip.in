@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/Accessibility
+ * @description This file contains the Accessibility component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Accessibility components for better ARIA support
  */
 
@@ -7,9 +16,33 @@
 /**
  * Skip to content link component
  */
+/**
+ * Performs skip to content operation
+ *
+ * @param {{
+  contentId?} [{
+  contentId] - {
+  content identifier
+ *
+ * @returns {string} The skiptocontent result
+ *
+ * @example
+ * SkipToContent({});
+ */
+
+/**
+ * Performs skip to content operation
+ *
+ * @returns {string} The skiptocontent result
+ *
+ * @example
+ * SkipToContent();
+ */
+
 export function SkipToContent({
   contentId = "main-content",
 }: {
+  /** Content Id */
   contentId?: string;
 }) {
   return (
@@ -25,13 +58,34 @@ export function SkipToContent({
 /**
  * ARIA live region for dynamic content
  */
+/**
+ * Performs live region operation
+ *
+ * @returns {any} The liveregion result
+ *
+ * @example
+ * LiveRegion();
+ */
+
+/**
+ * Performs live region operation
+ *
+ * @returns {any} The liveregion result
+ *
+ * @example
+ * LiveRegion();
+ */
+
 export function LiveRegion({
   message,
   priority = "polite",
   atomic = true,
 }: {
+  /** Message */
   message: string;
+  /** Priority */
   priority?: "polite" | "assertive";
+  /** Atomic */
   atomic?: boolean;
 }) {
   return (
@@ -49,6 +103,28 @@ export function LiveRegion({
 /**
  * Screen reader announcer component
  */
+/**
+ * Performs announcer operation
+ *
+ * @param {{ message} { message } - The { message }
+ *
+ * @returns {string} The announcer result
+ *
+ * @example
+ * Announcer({});
+ */
+
+/**
+ * Performs announcer operation
+ *
+ * @param {{ message} { message } - The { message }
+ *
+ * @returns {string} The announcer result
+ *
+ * @example
+ * Announcer({});
+ */
+
 export function Announcer({ message }: { message: string }) {
   return (
     <div

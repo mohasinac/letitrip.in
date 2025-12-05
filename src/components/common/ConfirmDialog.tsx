@@ -1,21 +1,66 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ConfirmDialog
+ * @description This file contains the ConfirmDialog component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { logError } from "@/lib/error-logger";
 
+/**
+ * ConfirmDialogProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ConfirmDialogProps
+ */
 export interface ConfirmDialogProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Confirm */
   onConfirm: () => void | Promise<void>;
+  /** Title */
   title: string;
+  /** Description */
   description?: string;
   children?: React.ReactNode; // Support custom content
+  /** Confirm Label */
   confirmLabel?: string;
+  /** Cancel Label */
   cancelLabel?: string;
+  /** Variant */
   variant?: "danger" | "warning" | "info";
+  /** Is Loading */
   isLoading?: boolean;
 }
+
+/**
+ * Function: Confirm Dialog
+ */
+/**
+ * Performs confirm dialog operation
+ *
+ * @returns {any} The confirmdialog result
+ *
+ * @example
+ * ConfirmDialog();
+ */
+
+/**
+ * Performs confirm dialog operation
+ *
+ * @returns {any} The confirmdialog result
+ *
+ * @example
+ * ConfirmDialog();
+ */
 
 export function ConfirmDialog({
   isOpen,
@@ -33,6 +78,22 @@ export function ConfirmDialog({
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !isProcessing) {
         onClose();
@@ -50,6 +111,22 @@ export function ConfirmDialog({
     };
   }, [isOpen, isProcessing, onClose]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleConfirm = async () => {
     setIsProcessing(true);
     try {
@@ -66,16 +143,25 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   const variantStyles = {
+    /** Danger */
     danger: {
+      /** Button */
       button: "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+      /** Icon */
       icon: "⚠️",
     },
+    /** Warning */
     warning: {
+      /** Button */
       button: "bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500",
+      /** Icon */
       icon: "⚡",
     },
+    /** Info */
     info: {
+      /** Button */
       button: "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500",
+      /** Icon */
       icon: "ℹ️",
     },
   };

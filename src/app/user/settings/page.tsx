@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/settings/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { SettingsSection } from "@/components/common/SettingsSection";
@@ -21,18 +30,23 @@ export default function SettingsPage() {
   const [avatarFiles, setAvatarFiles] = useState<MediaFile[]>([]);
   const [success, setSuccess] = useState(false);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "SettingsPage.updateProfile" });
     },
   });
 
   const [formData, setFormData] = useState({
+    /** Name */
     name: "",
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
   });
 
@@ -44,13 +58,28 @@ export default function SettingsPage() {
 
     // Load user data
     setFormData({
+      /** Name */
       name: user.fullName || "",
+      /** Email */
       email: user.email || "",
+      /** Phone */
       phone: user.phoneNumber || "",
     });
   }, [user]);
 
   // Get user initials
+  /**
+   * Retrieves user initials
+   *
+   * @returns {string} The userinitials result
+   */
+
+  /**
+   * Retrieves user initials
+   *
+   * @returns {string} The userinitials result
+   */
+
   const getUserInitials = () => {
     if (!user) return "U";
     const name = user.displayName || user.fullName || user.email;
@@ -62,11 +91,32 @@ export default function SettingsPage() {
     return name[0].toUpperCase();
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAvatarUpload = async (files: MediaFile[]) => {
     setAvatarFiles(files);
     if (files.length > 0 && files[0].preview) {
       await execute(async () => {
         await authService.updateProfile({
+          /** Photo U R L */
           photoURL: files[0].preview,
         });
         setSuccess(true);
@@ -80,14 +130,37 @@ export default function SettingsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess(false);
 
     await execute(async () => {
       await authService.updateProfile({
+        /** Full Name */
         fullName: formData.name,
+        /** Email */
         email: formData.email,
+        /** Phone Number */
         phoneNumber: formData.phone,
       });
 
@@ -139,6 +212,7 @@ export default function SettingsPage() {
 
           <div className="text-center sm:text-left">
             <p className="text-xs text-gray-500 dark:text-gray-500">
+              /** Recommended */
               Recommended: Square image, at least 200x200 pixels
             </p>
           </div>

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ShopCard
+ * @description This file contains the ShopCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -17,39 +26,103 @@ import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { formatCompactNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
+/**
+ * ShopCardVariant type
+ * 
+ * @typedef {Object} ShopCardVariant
+ * @description Type definition for ShopCardVariant
+ */
 export type ShopCardVariant = "public" | "admin" | "seller" | "compact";
 
+/**
+ * ShopCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopCardProps
+ */
 export interface ShopCardProps {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Logo */
   logo?: string;
+  /** Banner */
   banner?: string;
+  /** Description */
   description?: string;
+  /** Rating */
   rating?: number;
+  /** Review Count */
   reviewCount?: number;
+  /** Product Count */
   productCount: number;
+  /** Live Product Count */
   liveProductCount?: number;
+  /** Auction Count */
   auctionCount?: number;
+  /** Live Auction Count */
   liveAuctionCount?: number;
+  /** Location */
   location?: string;
+  /** Is Verified */
   isVerified?: boolean;
+  /** Featured */
   featured?: boolean;
+  /** Status */
   status?: "active" | "pending" | "suspended" | "moderation";
+  /** Categories */
   categories?: string[];
+  /** On Follow */
   onFollow?: (id: string) => void;
+  /** Is Following */
   isFollowing?: boolean;
+  /** Show Banner */
   showBanner?: boolean;
+  /** Variant */
   variant?: ShopCardVariant;
   // Legacy - will map to variant="compact"
+  /** Compact */
   compact?: boolean;
   // Admin/Seller specific props
+  /** On Edit */
   onEdit?: (slug: string) => void;
+  /** On Delete */
   onDelete?: (id: string) => void;
+  /** Is Selected */
   isSelected?: boolean;
+  /** On Select */
   onSelect?: (id: string, selected: boolean) => void;
 }
 
+/**
+ * Performs shop card operation
+ *
+ * @returns {any} The shopcard result
+ *
+ * @example
+ * ShopCard();
+ */
+
+/**
+ * S
+ * @constant
+ */
+/**
+ * Performs shop card operation
+ *
+ * @returns {any} The shopcard result
+ *
+ * @example
+ * ShopCard();
+ */
+
+/**
+ * S
+ * @constant
+ */
 export const ShopCard: React.FC<ShopCardProps> = ({
   id,
   name,
@@ -84,6 +157,22 @@ export const ShopCard: React.FC<ShopCardProps> = ({
   const isAdmin = resolvedVariant === "admin";
   const isSeller = resolvedVariant === "seller";
 
+  /**
+   * Handles follow event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlefollow result
+   */
+
+  /**
+   * Handles follow event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlefollow result
+   */
+
   const handleFollow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -92,17 +181,65 @@ export const ShopCard: React.FC<ShopCardProps> = ({
     }
   };
 
+  /**
+   * Handles select click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselectclick result
+   */
+
+  /**
+   * Handles select click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselectclick result
+   */
+
   const handleSelectClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onSelect?.(id, !isSelected);
   };
 
+  /**
+   * Handles edit click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleeditclick result
+   */
+
+  /**
+   * Handles edit click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleeditclick result
+   */
+
   const handleEditClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onEdit?.(slug);
   };
+
+  /**
+   * Handles delete click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledeleteclick result
+   */
+
+  /**
+   * Handles delete click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledeleteclick result
+   */
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();

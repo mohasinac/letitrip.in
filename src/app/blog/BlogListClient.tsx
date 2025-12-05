@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/blog/BlogListClient
+ * @description This file contains the BlogListClient component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
@@ -19,16 +28,23 @@ export default function BlogListClient() {
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: blogs,
+    /** Set Data */
     setData: setBlogs,
     execute,
   } = useLoadingState<BlogPost[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "BlogListClient.fetchBlogs",
+        /** Metadata */
         metadata: { filters },
       });
     },
@@ -39,12 +55,19 @@ export default function BlogListClient() {
     searchParams.get("search") || ""
   );
   const [filters, setFilters] = useState<BlogFilters>({
+    /** Status */
     status: "published",
+    /** Limit */
     limit: 12,
+    /** Sort By */
     sortBy: (searchParams.get("sortBy") as any) || "publishedAt",
+    /** Sort Order */
     sortOrder: (searchParams.get("sortOrder") as any) || "desc",
+    /** Category */
     category: searchParams.get("category") || undefined,
+    /** Featured */
     featured: searchParams.get("featured") === "true" || undefined,
+    /** Search */
     search: searchParams.get("search") || undefined,
   });
 
@@ -64,12 +87,30 @@ export default function BlogListClient() {
     router.push(`/blog?${params.toString()}`, { scroll: false });
   }, [filters, router]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const fetchBlogs = async () => {
     await execute(async () => {
       const startAfter = cursors[currentPage - 1];
       const response = await blogService.list({
         ...filters,
+        /** Start After */
         startAfter: startAfter || undefined,
+        /** Search */
         search: filters.search || undefined,
       });
 
@@ -96,32 +137,95 @@ export default function BlogListClient() {
     });
   };
 
+  /**
+   * Handles search event
+   *
+   * @param {string} [searchValue] - The search value
+   *
+   * @returns {string} The handlesearch result
+   */
+
+  /**
+   * Handles search event
+   *
+   * @param {string} [searchValue] - The search value
+   *
+   * @returns {string} The handlesearch result
+   */
+
   const handleSearch = (searchValue?: string) => {
     setFilters((prev) => ({
       ...prev,
+      /** Search */
       search: searchValue || searchQuery,
     }));
     setCurrentPage(1);
     setCursors([null]);
   };
 
+  /**
+   * Handles category filter event
+   *
+   * @param {string} category - The category
+   *
+   * @returns {string} The handlecategoryfilter result
+   */
+
+  /**
+   * Handles category filter event
+   *
+   * @param {string} category - The category
+   *
+   * @returns {string} The handlecategoryfilter result
+   */
+
   const handleCategoryFilter = (category: string) => {
     setFilters((prev) => ({
       ...prev,
+      /** Category */
       category: prev.category === category ? undefined : category,
     }));
     setCurrentPage(1);
     setCursors([null]);
   };
 
+  /**
+   * Handles sort change event
+   *
+   * @param {string} sortBy - The sort by
+   *
+   * @returns {string} The handlesortchange result
+   */
+
+  /**
+   * Handles sort change event
+   *
+   * @param {string} sortBy - The sort by
+   *
+   * @returns {string} The handlesortchange result
+   */
+
   const handleSortChange = (sortBy: string) => {
     setFilters((prev) => ({
       ...prev,
+      /** Sort By */
       sortBy: sortBy as any,
     }));
     setCurrentPage(1);
     setCursors([null]);
   };
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -129,6 +233,18 @@ export default function BlogListClient() {
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
 
   const handleNextPage = () => {
     if (hasNextPage) {
@@ -304,10 +420,15 @@ export default function BlogListClient() {
             <button
               onClick={() =>
                 setFilters({
+                  /** Status */
                   status: "published",
+                  /** Page */
                   page: 1,
+                  /** Limit */
                   limit: 12,
+                  /** Sort By */
                   sortBy: "publishedAt",
+                  /** Sort Order */
                   sortOrder: "desc",
                 })
               }

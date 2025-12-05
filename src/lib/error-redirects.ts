@@ -1,8 +1,21 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/error-redirects
+ * @description This file contains functionality related to error-redirects
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Error Redirect Utilities
  * Helper functions to generate meaningful error page URLs with context
  */
 
+/**
+ * Error Reason type definition
+ * @typedef {ErrorReason}
+ */
 export type ErrorReason =
   // 404 Not Found
   | "product-not-found"
@@ -21,18 +34,56 @@ export type ErrorReason =
   | "account-suspended"
   | "email-not-verified";
 
+/**
+ * ErrorRedirectParams interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorRedirectParams
+ */
 interface ErrorRedirectParams {
+  /** Reason */
   reason?: ErrorReason;
+  /** Resource */
   resource?: string;
+  /** Required Role */
   requiredRole?: string;
+  /** Current Role */
   currentRole?: string;
+  /** Details */
   details?: string;
+  /** Error */
   error?: Error | unknown;
 }
 
 /**
  * Generate a 404 Not Found URL with context
  */
+/**
+ * Performs not found url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The notfoundurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * notFoundUrl(params);
+ */
+
+/**
+ * Performs not found url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The notfoundurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * notFoundUrl(params);
+ */
+
 export function notFoundUrl(params: ErrorRedirectParams): string {
   const searchParams = new URLSearchParams();
 
@@ -66,6 +117,32 @@ export function notFoundUrl(params: ErrorRedirectParams): string {
 /**
  * Generate a 401 Unauthorized URL with context
  */
+/**
+ * Performs unauthorized url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The unauthorizedurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * unauthorizedUrl(params);
+ */
+
+/**
+ * Performs unauthorized url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The unauthorizedurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * unauthorizedUrl(params);
+ */
+
 export function unauthorizedUrl(params: ErrorRedirectParams): string {
   const searchParams = new URLSearchParams();
 
@@ -95,6 +172,32 @@ export function unauthorizedUrl(params: ErrorRedirectParams): string {
 /**
  * Generate a 403 Forbidden URL with context
  */
+/**
+ * Performs forbidden url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The forbiddenurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * forbiddenUrl(params);
+ */
+
+/**
+ * Performs forbidden url operation
+ *
+ * @param {ErrorRedirectParams} params - The params
+ *
+ * @returns {string} The forbiddenurl result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * forbiddenUrl(params);
+ */
+
 export function forbiddenUrl(params: ErrorRedirectParams): string {
   const searchParams = new URLSearchParams();
 
@@ -128,33 +231,48 @@ export function forbiddenUrl(params: ErrorRedirectParams): string {
  * Quick helper for common 404 scenarios
  */
 export const notFound = {
+  /** Product */
   product: (slug: string, error?: Error) =>
     notFoundUrl({
+      /** Reason */
       reason: "product-not-found",
+      /** Resource */
       resource: slug,
       error,
     }),
+  /** Shop */
   shop: (slug: string, error?: Error) =>
     notFoundUrl({
+      /** Reason */
       reason: "shop-not-found",
+      /** Resource */
       resource: slug,
       error,
     }),
+  /** Auction */
   auction: (slug: string, error?: Error) =>
     notFoundUrl({
+      /** Reason */
       reason: "auction-not-found",
+      /** Resource */
       resource: slug,
       error,
     }),
+  /** Category */
   category: (slug: string, error?: Error) =>
     notFoundUrl({
+      /** Reason */
       reason: "category-not-found",
+      /** Resource */
       resource: slug,
       error,
     }),
+  /** Order */
   order: (orderId: string, error?: Error) =>
     notFoundUrl({
+      /** Reason */
       reason: "order-not-found",
+      /** Resource */
       resource: orderId,
       error,
     }),
@@ -164,18 +282,24 @@ export const notFound = {
  * Quick helper for common 401 scenarios
  */
 export const unauthorized = {
+  /** Not Logged In */
   notLoggedIn: (resource?: string) =>
     unauthorizedUrl({
+      /** Reason */
       reason: "not-logged-in",
       resource,
     }),
+  /** Session Expired */
   sessionExpired: (resource?: string) =>
     unauthorizedUrl({
+      /** Reason */
       reason: "session-expired",
       resource,
     }),
+  /** Invalid Token */
   invalidToken: (resource?: string, error?: Error) =>
     unauthorizedUrl({
+      /** Reason */
       reason: "invalid-token",
       resource,
       error,
@@ -186,26 +310,34 @@ export const unauthorized = {
  * Quick helper for common 403 scenarios
  */
 export const forbidden = {
+  /** Wrong Role */
   wrongRole: (requiredRole: string, currentRole?: string, resource?: string) =>
     forbiddenUrl({
+      /** Reason */
       reason: "wrong-role",
       requiredRole,
       currentRole,
       resource,
     }),
+  /** Insufficient Permissions */
   insufficientPermissions: (requiredRole?: string, resource?: string) =>
     forbiddenUrl({
+      /** Reason */
       reason: "insufficient-permissions",
       requiredRole,
       resource,
     }),
+  /** Account Suspended */
   accountSuspended: (details?: string) =>
     forbiddenUrl({
+      /** Reason */
       reason: "account-suspended",
       details,
     }),
+  /** Email Not Verified */
   emailNotVerified: (resource?: string) =>
     forbiddenUrl({
+      /** Reason */
       reason: "email-not-verified",
       resource,
     }),

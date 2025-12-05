@@ -1,19 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/layout
+ * @description This file contains the layout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { SellerSidebar } from "@/components/seller/SellerSidebar";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { SellerLayoutClient } from "./SellerLayoutClient";
 
 export const metadata: Metadata = {
+  /** Title */
   title: {
+    /** Template */
     template: "%s | Seller Dashboard - Letitrip",
+    /** Default */
     default: "Seller Dashboard - Letitrip",
   },
+  /** Description */
   description: "Manage your shop, products, orders, and more on Letitrip",
 };
 
 export default function SellerLayout({
   children,
 }: {
+  /** Children */
   children: React.ReactNode;
 }) {
   return (

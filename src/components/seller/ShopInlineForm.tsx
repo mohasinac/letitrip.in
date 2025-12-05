@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ShopInlineForm
+ * @description This file contains the ShopInlineForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -10,11 +19,69 @@ import { FormTextarea } from "@/components/forms/FormTextarea";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
+/**
+ * ShopInlineFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopInlineFormProps
+ */
 interface ShopInlineFormProps {
+  /** Shop */
   shop?: ShopFE;
+  /** On Success */
   onSuccess: () => void;
+  /** On Cancel */
   onCancel: () => void;
 }
+
+/**
+ * Function: Shop Inline Form
+ */
+/**
+ * Performs shop inline form operation
+ *
+ * @param {ShopInlineFormProps} {
+  shop,
+  onSuccess,
+  onCancel,
+} - The {
+  shop,
+  on success,
+  on cancel,
+}
+ *
+ * @returns {any} The shopinlineform result
+ *
+ * @example
+ * ShopInlineForm({
+  shop,
+  onSuccess,
+  onCancel,
+});
+ */
+
+/**
+ * Performs shop inline form operation
+ *
+ * @param {ShopInlineFormProps} {
+  shop,
+  onSuccess,
+  onCancel,
+} - The {
+  shop,
+  on success,
+  on cancel,
+}
+ *
+ * @returns {any} The shopinlineform result
+ *
+ * @example
+ * ShopInlineForm({
+  shop,
+  onSuccess,
+  onCancel,
+});
+ */
 
 export function ShopInlineForm({
   shop,
@@ -23,12 +90,37 @@ export function ShopInlineForm({
 }: ShopInlineFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    /** Name */
     name: shop?.name || "",
+    /** Slug */
     slug: shop?.slug || "",
+    /** Description */
     description: shop?.description || "",
+    /** Email */
     email: shop?.email || "",
+    /** Phone */
     phone: shop?.phone || "",
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +144,9 @@ export function ShopInlineForm({
       onSuccess();
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ShopInlineForm.handleSubmit",
+        /** Metadata */
         metadata: { shopSlug: formData.slug },
       });
       toast.error("Failed to save shop");

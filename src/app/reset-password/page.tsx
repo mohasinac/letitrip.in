@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/reset-password/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormLabel } from "@/components/forms/FormLabel";
@@ -17,6 +26,21 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useState } from "react";
 
+/**
+ * Function: Reset Password Form
+ */
+/**
+ * Performs reset password form operation
+ *
+ * @returns {any} The resetpasswordform result
+ */
+
+/**
+ * Performs reset password form operation
+ *
+ * @returns {any} The resetpasswordform result
+ */
+
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -30,6 +54,7 @@ function ResetPasswordForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { isLoading, error, execute } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "ResetPasswordForm.handleSubmit" });
     },
@@ -50,6 +75,26 @@ function ResetPasswordForm() {
     }
     return null;
   }, []);
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +117,7 @@ function ResetPasswordForm() {
       await apiService.put("/auth/reset-password", {
         email,
         token,
+        /** New Password */
         newPassword: password,
       });
       setIsSuccess(true);

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/razorpay/order/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Razorpay Order Creation API Route
  * POST /api/payments/razorpay/order
  *
@@ -12,27 +21,81 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * CreateOrderRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CreateOrderRequest
+ */
 interface CreateOrderRequest {
+  /** Amount */
   amount: number;
+  /** Currency */
   currency: string;
+  /** Order Id */
   orderId?: string;
+  /** Notes */
   notes?: Record<string, string>;
+  /** Receipt */
   receipt?: string;
 }
 
+/**
+ * RazorpayOrderResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RazorpayOrderResponse
+ */
 interface RazorpayOrderResponse {
+  /** Id */
   id: string;
+  /** Entity */
   entity: string;
+  /** Amount */
   amount: number;
   amount_paid: number;
   amount_due: number;
+  /** Currency */
   currency: string;
+  /** Receipt */
   receipt: string;
+  /** Status */
   status: string;
+  /** Attempts */
   attempts: number;
+  /** Notes */
   notes: Record<string, string>;
   created_at: number;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,6 +156,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Import Razorpay SDK dynamically
+    /**
+     * Performs razorpay operation
+     *
+     * @returns {any} The razorpay result
+     */
+
+    /**
+     * Performs razorpay operation
+     *
+     * @returns {any} The razorpay result
+     */
+
     const Razorpay = (await import("razorpay" as any)) as any;
     const razorpay = new Razorpay.default({
       key_id: keyId,
@@ -102,10 +177,15 @@ export async function POST(request: NextRequest) {
     // Create order options
     const orderOptions = {
       amount: Math.round(amount * 100), // Convert to paise
+      /** Currency */
       currency: currency.toUpperCase(),
+      /** Receipt */
       receipt: receipt || `receipt_${Date.now()}`,
+      /** Notes */
       notes: {
+        /** User Id */
         userId: authResult.user.uid,
+        /** User Email */
         userEmail: authResult.user.email,
         ...(orderId && { orderId }),
         ...notes,
@@ -122,41 +202,63 @@ export async function POST(request: NextRequest) {
       .collection(COLLECTIONS.PAYMENT_TRANSACTIONS)
       .doc(razorpayOrder.id)
       .set({
+        /** Gateway */
         gateway: "razorpay",
+        /** Gateway Order Id */
         gatewayOrderId: razorpayOrder.id,
+        /** User Id */
         userId: authResult.user.uid,
+        /** Order Id */
         orderId: orderId || null,
+        /** Amount */
         amount: amount,
+        /** Currency */
         currency: currency.toUpperCase(),
+        /** Status */
         status: "created",
+        /** Receipt */
         receipt: razorpayOrder.receipt,
+        /** Notes */
         notes: orderOptions.notes,
+        /** Created At */
         createdAt: new Date(razorpayOrder.created_at * 1000),
+        /** Updated At */
         updatedAt: new Date(),
       });
 
     // Return formatted response
     return NextResponse.json(
       {
+        /** Id */
         id: razorpayOrder.id,
+        /** Amount */
         amount: amount,
+        /** Currency */
         currency: currency.toUpperCase(),
+        /** Receipt */
         receipt: razorpayOrder.receipt,
+        /** Status */
         status: razorpayOrder.status,
+        /** Created At */
         createdAt: new Date(razorpayOrder.created_at * 1000).toISOString(),
+        /** Notes */
         notes: orderOptions.notes,
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "RazorpayOrderAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Order creation failed",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to create Razorpay order",
       },
       { status: 500 }

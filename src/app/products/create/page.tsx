@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/products/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
@@ -15,21 +24,42 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * Function: Create Product Content
+ */
+/**
+ * Performs create product content operation
+ *
+ * @returns {any} The createproductcontent result
+ */
+
+/**
+ * Performs create product content operation
+ *
+ * @returns {any} The createproductcontent result
+ */
+
 function CreateProductContent() {
   const router = useRouter();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: shops,
+    /** Set Data */
     setData: setShops,
     execute,
   } = useLoadingState<ShopCardFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "ProductCreate.loadShops",
       });
     },
@@ -37,6 +67,22 @@ function CreateProductContent() {
 
   // Load user's shops
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadShops = async () => {
       if (!user) return;
 
@@ -51,6 +97,26 @@ function CreateProductContent() {
     loadShops();
   }, [user, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {ProductFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {ProductFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user) {
       return;
@@ -63,7 +129,9 @@ function CreateProductContent() {
       router.push(`/products/${product.slug}`);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ProductCreate.handleSubmit",
+        /** Metadata */
         metadata: { productData: formData },
       });
     } finally {

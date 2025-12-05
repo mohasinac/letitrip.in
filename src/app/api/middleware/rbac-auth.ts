@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/middleware/rbac-auth
+ * @description This file contains functionality related to rbac-auth
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Enhanced Authentication & Authorization Middleware
  * Role-based access control for unified API routes
  *
@@ -19,7 +28,37 @@ import { COLLECTIONS } from "@/constants/database";
 /**
  * Extract user from request token (using existing session or Firebase token)
  */
+/**
+ * Retrieves user from request
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to userfromrequest result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getUserFromRequest(request);
+ */
+
+/**
+ * Retrieves user from request
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to userfromrequest result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getUserFromRequest(/** Request */
+  request);
+ */
+
 export async function getUserFromRequest(
+  /** Request */
   request: NextRequest,
 ): Promise<AuthUser | null> {
   try {
@@ -41,9 +80,13 @@ export async function getUserFromRequest(
           if (userDoc.exists) {
             const userData = userDoc.data();
             return {
+              /** Uid */
               uid: decodedToken.uid,
+              /** Email */
               email: decodedToken.email || userData?.email || "",
+              /** Role */
               role: (userData?.role as UserRole) || "user",
+              /** Shop Id */
               shopId: userData?.shopId,
             };
           }
@@ -61,8 +104,11 @@ export async function getUserFromRequest(
       const session = await verifySession(sessionToken);
       if (session) {
         return {
+          /** Uid */
           uid: session.userId,
+          /** Email */
           email: session.email || "",
+          /** Role */
           role: session.role as UserRole,
           shopId: (session as any).shopId, // shopId may not be in session type yet
         };
@@ -79,7 +125,37 @@ export async function getUserFromRequest(
 /**
  * Require authentication - user must be logged in
  */
+/**
+ * Performs require auth operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to requireauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAuth(request);
+ */
+
+/**
+ * Performs require auth operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to requireauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAuth(/** Request */
+  request);
+ */
+
 export async function requireAuth(
+  /** Request */
   request: NextRequest,
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
@@ -88,6 +164,7 @@ export async function requireAuth(
 
   if (!user) {
     return {
+      /** Error */
       error: NextResponse.json(
         errorToJson(new UnauthorizedError("Authentication required")),
         { status: 401 },
@@ -101,8 +178,35 @@ export async function requireAuth(
 /**
  * Require specific role(s)
  */
+/**
+ * Performs require role operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {UserRole[]} roles - The roles
+ *
+ * @returns {Promise<any>} Promise resolving to requirerole result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireRole(request, roles);
+ */
+
+/**
+ * Performs require role operation
+ *
+ * @returns {Promise<any>} Promise resolving to requirerole result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireRole();
+ */
+
 export async function requireRole(
+  /** Request */
   request: NextRequest,
+  /** Roles */
   roles: UserRole[],
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
@@ -117,6 +221,7 @@ export async function requireRole(
 
   if (!hasAnyRole(user, roles)) {
     return {
+      /** Error */
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
@@ -136,7 +241,37 @@ export async function requireRole(
 /**
  * Require admin role
  */
+/**
+ * Performs require admin operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to requireadmin result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAdmin(request);
+ */
+
+/**
+ * Performs require admin operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to requireadmin result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAdmin(/** Request */
+  request);
+ */
+
 export async function requireAdmin(
+  /** Request */
   request: NextRequest,
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
@@ -147,7 +282,37 @@ export async function requireAdmin(
 /**
  * Require seller role (or admin)
  */
+/**
+ * Performs require seller operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to requireseller result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireSeller(request);
+ */
+
+/**
+ * Performs require seller operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to requireseller result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireSeller(/** Request */
+  request);
+ */
+
 export async function requireSeller(
+  /** Request */
   request: NextRequest,
 ): Promise<
   { user: AuthUser; error?: never } | { user?: never; error: NextResponse }
@@ -158,8 +323,36 @@ export async function requireSeller(
 /**
  * Require ownership of resource
  */
+/**
+ * Performs require ownership operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {string} resourceOwnerId - resourceOwner identifier
+ * @param {boolean} [allowAdmin] - Whether allow admin
+ *
+ * @returns {Promise<any>} Promise resolving to requireownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireOwnership(request, "example", true);
+ */
+
+/**
+ * Performs require ownership operation
+ *
+ * @returns {Promise<any>} Promise resolving to requireownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireOwnership();
+ */
+
 export async function requireOwnership(
+  /** Request */
   request: NextRequest,
+  /** Resource Owner Id */
   resourceOwnerId: string,
   allowAdmin = true,
 ): Promise<
@@ -181,6 +374,7 @@ export async function requireOwnership(
   // Check ownership
   if (user.uid !== resourceOwnerId) {
     return {
+      /** Error */
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
@@ -198,8 +392,36 @@ export async function requireOwnership(
 /**
  * Require shop ownership (for sellers)
  */
+/**
+ * Performs require shop ownership operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {string} resourceShopId - resourceShop identifier
+ * @param {boolean} [allowAdmin] - Whether allow admin
+ *
+ * @returns {Promise<any>} Promise resolving to requireshopownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireShopOwnership(request, "example", true);
+ */
+
+/**
+ * Performs require shop ownership operation
+ *
+ * @returns {Promise<any>} Promise resolving to requireshopownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireShopOwnership();
+ */
+
 export async function requireShopOwnership(
+  /** Request */
   request: NextRequest,
+  /** Resource Shop Id */
   resourceShopId: string,
   allowAdmin = true,
 ): Promise<
@@ -224,6 +446,7 @@ export async function requireShopOwnership(
   }
 
   return {
+    /** Error */
     error: NextResponse.json(
       errorToJson(
         new ForbiddenError(
@@ -238,7 +461,37 @@ export async function requireShopOwnership(
 /**
  * Optional authentication - get user if available
  */
+/**
+ * Performs optional auth operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to optionalauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * optionalAuth(request);
+ */
+
+/**
+ * Performs optional auth operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to optionalauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * optionalAuth(/** Request */
+  request);
+ */
+
 export async function optionalAuth(
+  /** Request */
   request: NextRequest,
 ): Promise<AuthUser | null> {
   return getUserFromRequest(request);
@@ -247,9 +500,38 @@ export async function optionalAuth(
 /**
  * Check if user has permission for specific action
  */
+/**
+ * Performs check permission operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {"read" | "write" | "delete"} action - The action
+ * @param {{ type} [resource] - The resource
+ *
+ * @returns {Promise<any>} Promise resolving to checkpermission result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * checkPermission(request, action, {});
+ */
+
+/**
+ * Performs check permission operation
+ *
+ * @returns {Promise<any>} Promise resolving to checkpermission result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * checkPermission();
+ */
+
 export async function checkPermission(
+  /** Request */
   request: NextRequest,
+  /** Action */
   action: "read" | "write" | "delete",
+  /** Resource */
   resource: { type: string; ownerId?: string; shopId?: string },
 ): Promise<{ allowed: boolean; user: AuthUser | null }> {
   const user = await getUserFromRequest(request);
@@ -304,7 +586,39 @@ export async function checkPermission(
 /**
  * Helper to wrap route handler with authentication
  */
+/**
+ * Performs with auth operation
+ *
+ * @param {(request} handler - The handler
+ * @param {AuthUser} user - The user
+ *
+ * @returns {Promise<any>} Promise resolving to withauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withAuth(handler, user);
+ */
+
+/**
+ * Performs with auth operation
+ *
+ * @param {(request} /** Handler */
+  handler - The /**  handler */
+  handler
+ * @param {AuthUser} user - The user
+ *
+ * @returns {Promise<any>} Promise resolving to withauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withAuth(/** Handler */
+  handler, user);
+ */
+
 export function withAuth(
+  /** Handler */
   handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {
@@ -321,8 +635,44 @@ export function withAuth(
 /**
  * Helper to wrap route handler with role requirement
  */
+/**
+ * Performs with role operation
+ *
+ * @param {UserRole[]} roles - The roles
+ * @param {(request} handler - The handler
+ * @param {AuthUser} user - The user
+ *
+ * @returns {Promise<any>} Promise resolving to withrole result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withRole(roles, handler, user);
+ */
+
+/**
+ * Performs with role operation
+ *
+ * @param {UserRole[]} /** Roles */
+  roles - The /**  roles */
+  roles
+ * @param {(request} /** Handler */
+  handler - The /**  handler */
+  handler
+ * @param {AuthUser} user - The user
+ *
+ * @returns {any} The withrole result
+ *
+ * @example
+ * withRole(/** Roles */
+  roles, /** Handler */
+  handler, user);
+ */
+
 export function withRole(
+  /** Roles */
   roles: UserRole[],
+  /** Handler */
   handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest) => {

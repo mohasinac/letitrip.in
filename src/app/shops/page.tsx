@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/shops/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
@@ -14,6 +23,26 @@ import { shopsService } from "@/services/shops.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
+/**
+ * Function: Shops Content
+ */
+/**
+ * Performs shops content operation
+ *
+ * @returns {void} Function return value
+ */
+/**
+ * Performs shops content operation
+ *
+ * @returns {any} The shopscontent result
+ */
+
+/**
+ * Performs shops content operation
+ *
+ * @returns {any} The shopscontent result
+ */
+
 function ShopsContent() {
   const router = useRouter();
   const isMobile = useIsMobile();
@@ -23,6 +52,7 @@ function ShopsContent() {
     filters,
     updateFilter,
     updateFilters,
+    /** Reset Filters */
     resetFilters: resetUrlFilters,
     sort,
     setSort,
@@ -31,15 +61,24 @@ function ShopsContent() {
     limit,
     setLimit,
   } = useUrlFilters({
+    /** Initial Filters */
     initialFilters: {
+      /** Category Id */
       categoryId: "",
+      /** Min Rating */
       minRating: "",
+      /** Is Verified */
       isVerified: "",
+      /** Featured */
       featured: "",
+      /** View */
       view: "grid",
     },
+    /** Initial Sort */
     initialSort: { field: "rating", order: "desc" },
+    /** Initial Page */
     initialPage: 1,
+    /** Initial Limit */
     initialLimit: 20,
   });
 
@@ -52,6 +91,34 @@ function ShopsContent() {
   const { isLoading, error, execute } = useLoadingState<void>();
 
   // Extract view from filters
+  /**
+   * Performs view operation
+   *
+   * @param {any} [filters.view as "grid" | "list") || "grid";
+
+  const loadShops] - The filters.view as "grid" | "list") || "grid";
+
+  const load shops
+   *
+   * @returns {Promise<any>} Promise resolving to view result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs view operation
+   *
+   * @param {any} [filters.view as "grid" | "list") || "grid";
+
+  const loadShops] - The filters.view as "grid" | "list") || "grid";
+
+  const load shops
+   *
+   * @returns {Promise<any>} Promise resolving to view result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const view = (filters.view as "grid" | "list") || "grid";
 
   const loadShops = useCallback(async () => {
@@ -60,9 +127,12 @@ function ShopsContent() {
 
       // Build filter params
       const apiFilters: any = {
+        /** Start After */
         startAfter: startAfter || undefined,
         limit,
+        /** Sort By */
         sortBy: sort?.field || "rating",
+        /** Sort Order */
         sortOrder: sort?.order || "desc",
       };
 
@@ -327,6 +397,14 @@ function ShopsContent() {
   );
 }
 
+/**
+ * Performs shops page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ShopsPage();
+ */
 export default function ShopsPage() {
   return (
     <Suspense

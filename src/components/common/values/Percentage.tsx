@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Percentage
+ * @description This file contains the Percentage component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Percentage Display Component
  *
  * Displays percentages with proper formatting and optional color coding.
@@ -16,15 +25,49 @@ import React from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * PercentageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PercentageProps
+ */
 interface PercentageProps {
+  /** Value */
   value: number;
+  /** Show Sign */
   showSign?: boolean;
+  /** Show Icon */
   showIcon?: boolean;
+  /** Type */
   type?: "neutral" | "discount" | "increase" | "decrease";
+  /** Suffix */
   suffix?: string;
+  /** Precision */
   precision?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Percentage
+ */
+/**
+ * Performs percentage operation
+ *
+ * @returns {any} The percentage result
+ *
+ * @example
+ * Percentage();
+ */
+
+/**
+ * Performs percentage operation
+ *
+ * @returns {any} The percentage result
+ *
+ * @example
+ * Percentage();
+ */
 
 export function Percentage({
   value,
@@ -45,9 +88,13 @@ export function Percentage({
       : Math.abs(value).toString();
 
   const colorClasses = {
+    /** Neutral */
     neutral: "text-gray-700 dark:text-gray-300",
+    /** Discount */
     discount: "text-green-600 dark:text-green-400",
+    /** Increase */
     increase: "text-red-600 dark:text-red-400",
+    /** Decrease */
     decrease: "text-green-600 dark:text-green-400",
   };
 

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin Settings Page
  *
  * @status IMPLEMENTED
@@ -17,7 +26,9 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Settings | Admin Dashboard",
+  /** Description */
   description: "Manage system configuration and settings",
 };
 
@@ -70,6 +81,21 @@ export default function AdminSettingsPage() {
   );
 }
 
+/**
+ * Function: Settings Card
+ */
+/**
+ * Performs settings card operation
+ *
+ * @returns {any} The settingscard result
+ */
+
+/**
+ * Performs settings card operation
+ *
+ * @returns {any} The settingscard result
+ */
+
 function SettingsCard({
   title,
   description,
@@ -77,10 +103,15 @@ function SettingsCard({
   status,
   icon,
 }: {
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Href */
   href: string;
+  /** Status */
   status: "pending" | "ready";
+  /** Icon */
   icon: string;
 }) {
   return (

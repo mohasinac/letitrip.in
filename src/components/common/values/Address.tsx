@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Address
+ * @description This file contains the Address component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Address Display Component
  *
  * Displays addresses in a consistent format.
@@ -16,21 +25,64 @@ import { MapPin } from "lucide-react";
 import { formatAddress } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
+/**
+ * AddressData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressData
+ */
 interface AddressData {
+  /** Line1 */
   line1: string;
+  /** Line2 */
   line2?: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** Pincode */
   pincode: string;
+  /** Country */
   country?: string;
 }
 
+/**
+ * AddressProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressProps
+ */
 interface AddressProps {
+  /** Address */
   address: AddressData;
+  /** Format */
   format?: "single-line" | "multi-line" | "compact";
+  /** Show Icon */
   showIcon?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Address
+ */
+/**
+ * Performs address operation
+ *
+ * @returns {any} The address result
+ *
+ * @example
+ * Address();
+ */
+
+/**
+ * Performs address operation
+ *
+ * @returns {any} The address result
+ *
+ * @example
+ * Address();
+ */
 
 export function Address({
   address,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/HeroCarousel
+ * @description This file contains the HeroCarousel component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -10,36 +19,60 @@ import { logError } from "@/lib/firebase-error-logger";
 // Default slides for demo - would come from API
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
+    /** Id */
     id: "1",
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1920&h=600&fit=crop",
+    /** Title */
     title: "India's #1 Collectibles Store",
+    /** Subtitle */
     subtitle: "Authentic Beyblades, Pokemon TCG, Yu-Gi-Oh & More",
+    /** Cta Text */
     ctaText: "Shop Now",
+    /** Cta Link */
     ctaLink: "/products",
+    /** Order */
     order: 1,
+    /** Enabled */
     enabled: true,
   },
   {
+    /** Id */
     id: "2",
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=1920&h=600&fit=crop",
+    /** Title */
     title: "Live Auctions Every Day",
+    /** Subtitle */
     subtitle: "Bid on Rare & Limited Edition Items",
+    /** Cta Text */
     ctaText: "View Auctions",
+    /** Cta Link */
     ctaLink: "/auctions",
+    /** Order */
     order: 2,
+    /** Enabled */
     enabled: true,
   },
   {
+    /** Id */
     id: "3",
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1606663889134-b1dedb5ed8b7?w=1920&h=600&fit=crop",
+    /** Title */
     title: "100% Authentic Products",
+    /** Subtitle */
     subtitle: "Zero Customs Charges • Fast India Delivery",
+    /** Cta Text */
     ctaText: "Learn More",
+    /** Cta Link */
     ctaLink: "/about",
+    /** Order */
     order: 3,
+    /** Enabled */
     enabled: true,
   },
 ];
@@ -54,6 +87,22 @@ export default function HeroCarousel() {
 
   // Fetch slides from API
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const fetchSlides = async () => {
       try {
         const slides = await homepageService.getHeroSlides();
@@ -62,6 +111,7 @@ export default function HeroCarousel() {
         }
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "HeroCarousel.fetchSlides",
         });
         // Keep default slides on error
@@ -97,6 +147,22 @@ export default function HeroCarousel() {
     );
     setTimeout(() => setIsTransitioning(false), 500);
   }, [enabledSlides.length, isTransitioning]);
+
+  /**
+   * Performs go to slide operation
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The gotoslide result
+   */
+
+  /**
+   * Performs go to slide operation
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The gotoslide result
+   */
 
   const goToSlide = (index: number) => {
     if (isTransitioning) return;
@@ -239,46 +305,58 @@ export default function HeroCarousel() {
       <style jsx global>{`
         @keyframes fade-in-up {
           from {
+            /** Opacity */
             opacity: 0;
+            /** Transform */
             transform: translateY(20px);
           }
           to {
+            /** Opacity */
             opacity: 1;
+            /** Transform */
             transform: translateY(0);
           }
         }
 
         .animate-fade-in-up {
+          /** Animation */
           animation: fade-in-up 0.6s ease-out forwards;
         }
 
         .animation-delay-200 {
           animation-delay: 0.2s;
+          /** Opacity */
           opacity: 0;
         }
 
         .animation-delay-400 {
           animation-delay: 0.4s;
+          /** Opacity */
           opacity: 0;
         }
 
         /* Hero Carousel Rich Text Styles */
         .prose-invert p {
+          /** Margin */
           margin: 0;
+          /** Display */
           display: inline;
         }
         .prose-invert strong {
           font-weight: 700;
+          /** Color */
           color: #fff;
         }
         .prose-invert em {
           font-style: italic;
         }
         .prose-invert a {
+          /** Color */
           color: #fbbf24;
           text-decoration: underline;
         }
         .prose-invert a:hover {
+          /** Color */
           color: #f59e0b;
         }
       `}</style>

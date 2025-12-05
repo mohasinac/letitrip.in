@@ -1,13 +1,32 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/ErrorState
+ * @description This file contains the ErrorState component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Error state component with retry functionality
  */
 
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
+/**
+ * ErrorStateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorStateProps
+ */
 interface ErrorStateProps {
+  /** Message */
   message?: string;
+  /** On Retry */
   onRetry?: () => void;
+  /** Type */
   type?: "error" | "not-found" | "network";
+  /** Class Name */
   className?: string;
 }
 
@@ -17,6 +36,18 @@ export default function ErrorState({
   type = "error",
   className = "",
 }: ErrorStateProps) {
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
   const getMessage = () => {
     if (message !== "Something went wrong") return message;
 
@@ -25,6 +56,7 @@ export default function ErrorState({
         return "The item you're looking for doesn't exist";
       case "network":
         return "Network error. Please check your connection";
+      /** Default */
       default:
         return "Something went wrong. Please try again";
     }

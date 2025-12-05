@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/messages/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -34,8 +43,11 @@ import { toast } from "sonner";
 
 // Participant type icons
 const participantIcons: Record<ParticipantType, React.ReactNode> = {
+  /** User */
   user: <User className="h-4 w-4" />,
+  /** Seller */
   seller: <Store className="h-4 w-4" />,
+  /** Admin */
   admin: <Shield className="h-4 w-4" />,
 };
 
@@ -43,19 +55,39 @@ const participantIcons: Record<ParticipantType, React.ReactNode> = {
 const typeColors: Record<ConversationType, string> = {
   buyer_seller:
     "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  /** Order */
   order:
     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  /** Support */
   support:
     "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
 };
+
+/**
+ * Function: Conversation Item
+ */
+/**
+ * Performs conversation item operation
+ *
+ * @returns {any} The conversationitem result
+ */
+
+/**
+ * Performs conversation item operation
+ *
+ * @returns {any} The conversationitem result
+ */
 
 function ConversationItem({
   conversation,
   isSelected,
   onClick,
 }: {
+  /** Conversation */
   conversation: ConversationFE;
+  /** Is Selected */
   isSelected: boolean;
+  /** On Click */
   onClick: () => void;
 }) {
   return (
@@ -127,6 +159,25 @@ function ConversationItem({
   );
 }
 
+/**
+ * Function: Message Bubble
+ */
+/**
+ * Performs message bubble operation
+ *
+ * @param {{ message} { message } - The { message }
+ *
+ * @returns {any} The messagebubble result
+ */
+
+/**
+ * Performs message bubble operation
+ *
+ * @param {{ message} { message } - The { message }
+ *
+ * @returns {any} The messagebubble result
+ */
+
 function MessageBubble({ message }: { message: MessageFE }) {
   return (
     <div
@@ -159,6 +210,21 @@ function MessageBubble({ message }: { message: MessageFE }) {
   );
 }
 
+/**
+ * Function: Messages Content
+ */
+/**
+ * Performs messages content operation
+ *
+ * @returns {any} The messagescontent result
+ */
+
+/**
+ * Performs messages content operation
+ *
+ * @returns {any} The messagescontent result
+ */
+
 function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -188,6 +254,7 @@ function MessagesContent() {
   const loadConversations = useCallback(async () => {
     await execute(async () => {
       const response = await messagesService.getConversations({
+        /** Status */
         status: showArchived ? "archived" : "active",
       });
       setConversations(response.conversations);
@@ -231,31 +298,63 @@ function MessagesContent() {
   }, [searchParams, selectedConversation, loadMessages]);
 
   // Send message
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
     try {
       setSendingMessage(true);
       await messagesService.sendMessage(selectedConversation.id, {
+        /** Content */
         content: newMessage.trim(),
       });
 
       // Add optimistic message
       const optimisticMessage: MessageFE = {
+        /** Id */
         id: `temp-${Date.now()}`,
+        /** Conversation Id */
         conversationId: selectedConversation.id,
+        /** Sender Id */
         senderId: user?.uid || "",
+        /** Sender Name */
         senderName: user?.displayName || "You",
+        /** Sender Type */
         senderType: "user",
+        /** Content */
         content: newMessage.trim(),
+        /** Attachments */
         attachments: [],
+        /** Is Read */
         isRead: true,
+        /** Is From Me */
         isFromMe: true,
+        /** Is Deleted */
         isDeleted: false,
+        /** Created At */
         createdAt: new Date(),
+        /** Time Ago */
         timeAgo: "just now",
+        /** Formatted Time */
         formattedTime: new Date().toLocaleTimeString([], {
+          /** Hour */
           hour: "numeric",
+          /** Minute */
           minute: "2-digit",
         }),
       };
@@ -269,12 +368,18 @@ function MessagesContent() {
           c.id === selectedConversation.id
             ? {
                 ...c,
+                /** Last Message */
                 lastMessage: {
+                  /** Content */
                   content: newMessage.trim(),
+                  /** Sender Id */
                   senderId: user?.uid || "",
+                  /** Sent At */
                   sentAt: new Date(),
+                  /** Is From Me */
                   isFromMe: true,
                 },
+                /** Time Ago */
                 timeAgo: "just now",
               }
             : c,
@@ -289,6 +394,22 @@ function MessagesContent() {
   };
 
   // Handle conversation selection
+  /**
+   * Handles select conversation event
+   *
+   * @param {ConversationFE} conversation - The conversation
+   *
+   * @returns {any} The handleselectconversation result
+   */
+
+  /**
+   * Handles select conversation event
+   *
+   * @param {ConversationFE} conversation - The conversation
+   *
+   * @returns {any} The handleselectconversation result
+   */
+
   const handleSelectConversation = (conversation: ConversationFE) => {
     setSelectedConversation(conversation);
     loadMessages(conversation.id);
@@ -296,6 +417,22 @@ function MessagesContent() {
   };
 
   // Handle archive
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleArchive = async () => {
     if (!selectedConversation) return;
 
@@ -308,7 +445,9 @@ function MessagesContent() {
       setMessages([]);
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "MessagesPage.handleArchive",
+        /** Metadata */
         metadata: { conversationId: selectedConversation?.id },
       });
       toast.error("Failed to archive conversation");

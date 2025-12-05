@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/AddressSelector
+ * @description This file contains the AddressSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/error-logger";
@@ -8,11 +17,69 @@ import { useEffect, useState } from "react";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 import { SmartAddressForm } from "../common/SmartAddressForm";
 
+/**
+ * AddressSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressSelectorProps
+ */
 interface AddressSelectorProps {
+  /** Selected Id */
   selectedId: string | null;
+  /** On Select */
   onSelect: (id: string) => void;
+  /** Type */
   type: "shipping" | "billing";
 }
+
+/**
+ * Function: Address Selector
+ */
+/**
+ * Performs address selector operation
+ *
+ * @param {AddressSelectorProps} {
+  selectedId,
+  onSelect,
+  type,
+} - The {
+  selected id,
+  on select,
+  type,
+}
+ *
+ * @returns {any} The addressselector result
+ *
+ * @example
+ * AddressSelector({
+  selectedId,
+  onSelect,
+  type,
+});
+ */
+
+/**
+ * Performs address selector operation
+ *
+ * @param {AddressSelectorProps} {
+  selectedId,
+  onSelect,
+  type,
+} - The {
+  selected id,
+  on select,
+  type,
+}
+ *
+ * @returns {any} The addressselector result
+ *
+ * @example
+ * AddressSelector({
+  selectedId,
+  onSelect,
+  type,
+});
+ */
 
 export function AddressSelector({
   selectedId,
@@ -28,6 +95,22 @@ export function AddressSelector({
   useEffect(() => {
     loadAddresses();
   }, []);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadAddresses = async () => {
     try {
@@ -47,6 +130,22 @@ export function AddressSelector({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     if (!deleteId) return;
 
@@ -58,13 +157,27 @@ export function AddressSelector({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressSelector.handleDelete",
+        /** Metadata */
         metadata: { addressId: deleteId },
       });
     } finally {
       setDeleteId(null);
     }
   };
+
+  /**
+   * Handles form close event
+   *
+   * @returns {any} The handleformclose result
+   */
+
+  /**
+   * Handles form close event
+   *
+   * @returns {any} The handleformclose result
+   */
 
   const handleFormClose = () => {
     setShowForm(false);

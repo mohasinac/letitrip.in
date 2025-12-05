@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedCategoriesSection
+ * @description This file contains the FeaturedCategoriesSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,23 +20,52 @@ import { apiService } from "@/services/api.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * FeaturedItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedItem
+ */
 interface FeaturedItem {
+  /** Id */
   id: string;
+  /** Type */
   type: string;
+  /** Item Id */
   itemId: string;
+  /** Name */
   name: string;
+  /** Image */
   image?: string;
+  /** Position */
   position: number;
+  /** Active */
   active: boolean;
 }
 
+/**
+ * CategoryWithProducts interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryWithProducts
+ */
 interface CategoryWithProducts {
+  /** Category */
   category: CategoryFE;
+  /** Products */
   products: ProductCardFE[];
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Max Categories */
   maxCategories?: number;
+  /** Products Per Category */
   productsPerCategory?: number;
 }
 
@@ -43,6 +81,22 @@ export default function FeaturedCategoriesSection({
   useEffect(() => {
     fetchFeaturedCategories();
   }, [maxCategories, productsPerCategory]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchFeaturedCategories = async () => {
     try {
@@ -84,20 +138,26 @@ export default function FeaturedCategoriesSection({
         topCategories.map(async (category: CategoryFE) => {
           try {
             const productsData = await productsService.list({
+              /** Category Id */
               categoryId: category.id,
+              /** Limit */
               limit: productsPerCategory,
             } as any);
             return {
               category,
+              /** Products */
               products: productsData.data,
             };
           } catch (error) {
             logError(error as Error, {
+              /** Component */
               component: "FeaturedCategoriesSection.fetchFeaturedCategories",
+              /** Metadata */
               metadata: { categoryId: category.id },
             });
             return {
               category,
+              /** Products */
               products: [],
             };
           }
@@ -111,6 +171,7 @@ export default function FeaturedCategoriesSection({
       );
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedCategoriesSection.fetchFeaturedCategories",
       });
       setCategoriesWithProducts([]);

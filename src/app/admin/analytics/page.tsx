@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/analytics/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PeriodSelector } from "@/components/common/PeriodSelector";
@@ -30,6 +39,25 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // Simple bar chart for sales
+/**
+ * Function: Sales Chart
+ */
+/**
+ * Performs sales chart operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The saleschart result
+ */
+
+/**
+ * Performs sales chart operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The saleschart result
+ */
+
 function SalesChart({ data }: { data: SalesDataPointFE[] }) {
   if (data.length === 0) {
     return (
@@ -66,6 +94,25 @@ function SalesChart({ data }: { data: SalesDataPointFE[] }) {
 }
 
 // Top products table
+/**
+ * Function: Top Products Table
+ */
+/**
+ * Performs top products table operation
+ *
+ * @param {{ products} { products } - The { products }
+ *
+ * @returns {any} The topproductstable result
+ */
+
+/**
+ * Performs top products table operation
+ *
+ * @param {{ products} { products } - The { products }
+ *
+ * @returns {any} The topproductstable result
+ */
+
 function TopProductsTable({ products }: { products: TopProductFE[] }) {
   if (products.length === 0) {
     return (
@@ -130,12 +177,15 @@ function TopProductsTable({ products }: { products: TopProductFE[] }) {
 export default function AdminAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "AdminAnalyticsPage.fetchAnalytics",
         period,
       });

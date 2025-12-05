@@ -1,17 +1,70 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/CategoryCardSkeleton
+ * @description This file contains the CategoryCardSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * CategoryCardSkeletonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryCardSkeletonProps
+ */
 export interface CategoryCardSkeletonProps {
+  /** Variant */
   variant?: "default" | "compact" | "large";
 }
 
+/**
+ * Performs category card skeleton operation
+ *
+ * @param {string} [{
+  variant] - The {
+  variant
+ *
+ * @returns {any} The categorycardskeleton result
+ *
+ * @example
+ * CategoryCardSkeleton("example");
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs category card skeleton operation
+ *
+ * @param {string} [{
+  variant] - The {
+  variant
+ *
+ * @returns {any} The categorycardskeleton result
+ *
+ * @example
+ * CategoryCardSkeleton("example");
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const CategoryCardSkeleton: React.FC<CategoryCardSkeletonProps> = ({
   variant = "default",
 }) => {
   const sizeClasses = {
+    /** Compact */
     compact: "aspect-square",
+    /** Default */
     default: "aspect-[4/3]",
+    /** Large */
     large: "aspect-[16/9]",
   };
 

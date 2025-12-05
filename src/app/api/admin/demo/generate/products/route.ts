@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/products/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -286,6 +295,7 @@ const BEYBLADE_PRODUCTS: Record<string, string[]> = {
     "Rise Tip",
     "Orbit Tip",
   ],
+  /** Blades */
   Blades: [
     "Dran Blade",
     "Shark Blade",
@@ -296,6 +306,7 @@ const BEYBLADE_PRODUCTS: Record<string, string[]> = {
     "Cobalt Blade",
     "Leon Blade",
   ],
+  /** Ratchets */
   Ratchets: [
     "3-60 Ratchet",
     "4-60 Ratchet",
@@ -306,6 +317,7 @@ const BEYBLADE_PRODUCTS: Record<string, string[]> = {
     "4-80 Ratchet",
     "2-60 Ratchet",
   ],
+  /** Bits */
   Bits: [
     "Flat Bit",
     "Needle Bit",
@@ -409,6 +421,35 @@ const BEYBLADE_PRODUCTS: Record<string, string[]> = {
     "Replacement Launchers",
   ],
 };
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -525,29 +566,40 @@ export async function POST(request: NextRequest) {
       }
 
       await productRef.set({
+        /** Name */
         name: `${DEMO_PREFIX}${productName}`,
+        /** Slug */
         slug: `${DEMO_PREFIX.toLowerCase().replace(/_/g, "-")}${productName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${productIndex + 1}`,
+        /** Sku */
         sku: `${DEMO_PREFIX}BEY-${String(productIndex + 1).padStart(5, "0")}`,
+        /** Description */
         description: `Premium ${productName} - authentic Beyblade from the ${categoryName} collection. Perfect for collectors and competitive bladers alike.`,
+        /** Price */
         price: Math.round(basePrice),
         compare_at_price: Math.round(basePrice * 1.25),
+        /** Cost */
         cost: Math.round(basePrice * 0.55),
         stock_count: stockCount,
         category_id: categoryId,
         shop_id: currentShop.id,
         seller_id: currentShop.ownerId,
+        /** Status */
         status: "published",
         is_active: true,
         is_featured: i % 10 < 3,
         is_deleted: false,
+        /** Brand */
         brand: ["Takara Tomy", "Hasbro", "Young Toys", "SonokongⅡ"][i % 4],
         condition,
+        /** Images */
         images: productImages,
+        /** Videos */
         videos: productVideos,
         view_count: Math.floor(Math.random() * 1000) + 100,
         sales_count: Math.floor(Math.random() * 100),
         review_count: 0,
         average_rating: 0,
+        /** Tags */
         tags: [
           "beyblade",
           categoryName.toLowerCase().replace(/\s+/g, "-"),
@@ -584,10 +636,15 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "products",
+      /** Data */
       data: {
+        /** Count */
         count: createdProducts.length,
+        /** Products */
         products: createdProducts,
         productsByShop,
         categoryStats,

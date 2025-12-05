@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/CouponInlineForm
+ * @description This file contains the CouponInlineForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -10,12 +19,43 @@ import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 
+/**
+ * CouponInlineFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CouponInlineFormProps
+ */
 interface CouponInlineFormProps {
+  /** Coupon */
   coupon?: CouponFE;
+  /** Shop Id */
   shopId?: string;
+  /** On Success */
   onSuccess: () => void;
+  /** On Cancel */
   onCancel: () => void;
 }
+
+/**
+ * Function: Coupon Inline Form
+ */
+/**
+ * Performs coupon inline form operation
+ *
+ * @returns {any} The couponinlineform result
+ *
+ * @example
+ * CouponInlineForm();
+ */
+
+/**
+ * Performs coupon inline form operation
+ *
+ * @returns {any} The couponinlineform result
+ *
+ * @example
+ * CouponInlineForm();
+ */
 
 export function CouponInlineForm({
   coupon,
@@ -26,19 +66,47 @@ export function CouponInlineForm({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
+    /** Code */
     code: coupon?.code || "",
+    /** Name */
     name: coupon?.name || "",
+    /** Type */
     type: coupon?.type || "percentage",
+    /** Discount Value */
     discountValue: coupon?.discountValue || 0,
+    /** Min Purchase Amount */
     minPurchaseAmount: coupon?.minPurchaseAmount || 0,
+    /** Usage Limit Per User */
     usageLimitPerUser: coupon?.usageLimitPerUser || 1,
+    /** Start Date */
     startDate: coupon?.startDate
       ? toDateInputValue(coupon.startDate)
       : getTodayDateInputValue(),
+    /** End Date */
     endDate: coupon?.endDate
       ? toDateInputValue(coupon.endDate)
       : toDateInputValue(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
   });
+
+  /**
+   * Performs clear error operation
+   *
+   * @param {string} field - The field
+   *
+   * @returns {string} The clearerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs clear error operation
+   *
+   * @param {string} field - The field
+   *
+   * @returns {string} The clearerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const clearError = (field: string) => {
     if (errors[field]) {
@@ -49,6 +117,26 @@ export function CouponInlineForm({
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +172,9 @@ export function CouponInlineForm({
         // Update existing coupon
         await couponsService.update(coupon.code, {
           ...formData,
+          /** Start Date */
           startDate: new Date(formData.startDate),
+          /** End Date */
           endDate: new Date(formData.endDate),
         } as any);
       } else {
@@ -92,15 +182,25 @@ export function CouponInlineForm({
         await couponsService.create({
           ...formData,
           shopId,
+          /** Start Date */
           startDate: new Date(formData.startDate),
+          /** End Date */
           endDate: new Date(formData.endDate),
+          /** Applicability */
           applicability: "all",
+          /** Min Quantity */
           minQuantity: 1,
+          /** First Order Only */
           firstOrderOnly: false,
+          /** New Users Only */
           newUsersOnly: false,
+          /** Can Combine With Other Coupons */
           canCombineWithOtherCoupons: true,
+          /** Auto Apply */
           autoApply: false,
+          /** Is Public */
           isPublic: true,
+          /** Featured */
           featured: false,
         } as any);
       }
@@ -108,7 +208,9 @@ export function CouponInlineForm({
       onSuccess();
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CouponInlineForm.handleSubmit",
+        /** Metadata */
         metadata: { couponCode: formData.code },
       });
       setErrors({ form: error.message || "Failed to save coupon" });
@@ -190,6 +292,7 @@ export function CouponInlineForm({
             onChange={(e) => {
               setFormData({
                 ...formData,
+                /** Discount Value */
                 discountValue: parseFloat(e.target.value),
               });
               clearError("discountValue");

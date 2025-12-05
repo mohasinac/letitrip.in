@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/SmartLink
+ * @description This file contains the SmartLink component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { forwardRef, useMemo } from "react";
@@ -7,6 +16,22 @@ import { getLinkType, resolveUrl, isDownloadableLink } from "@/lib/link-utils";
 /**
  * External link icon (opens in new tab indicator)
  */
+/**
+ * Performs external icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The externalicon result
+ */
+
+/**
+ * Performs external icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The externalicon result
+ */
+
 const ExternalIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -31,6 +56,22 @@ const ExternalIcon = ({ className }: { className?: string }) => (
 /**
  * Download icon
  */
+/**
+ * Performs download icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The downloadicon result
+ */
+
+/**
+ * Performs download icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The downloadicon result
+ */
+
 const DownloadIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -44,6 +85,12 @@ const DownloadIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * SmartLinkProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SmartLinkProps
+ */
 export interface SmartLinkProps extends Omit<
   React.AnchorHTMLAttributes<HTMLAnchorElement>,
   "href"
@@ -149,9 +196,13 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
       // Empty or disabled - render as span
       if (!href || disabled) {
         return {
+          /** Type */
           type: "disabled" as const,
+          /** Is Internal */
           isInternal: false,
+          /** Open In New Tab */
           openInNewTab: false,
+          /** Resolved Href */
           resolvedHref: href || "#",
         };
       }
@@ -177,9 +228,12 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
       const isDownloadable = isDownload || isDownloadableLink(href);
 
       return {
+        /** Type */
         type: linkType,
+        /** Is Internal */
         isInternal: isInternalResult,
         openInNewTab,
+        /** Resolved Href */
         resolvedHref: resolveUrl(href),
         isDownloadable,
       };
@@ -234,6 +288,22 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
     }, [ariaLabel, linkInfo.isInternal, linkInfo.isDownloadable]);
 
     // Handle click
+    /**
+     * Handles click event
+     *
+     * @param {React.MouseEvent<HTMLAnchorElement>} e - The e
+     *
+     * @returns {any} The handleclick result
+     */
+
+    /**
+     * Handles click event
+     *
+     * @param {React.MouseEvent<HTMLAnchorElement>} e - The e
+     *
+     * @returns {any} The handleclick result
+     */
+
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (disabled) {
         e.preventDefault();
@@ -258,6 +328,18 @@ export const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(
     }
 
     // Build the content with optional icons
+    /**
+     * Performs content operation
+     *
+     * @returns {any} The content result
+     */
+
+    /**
+     * Performs content operation
+     *
+     * @returns {any} The content result
+     */
+
     const content = (
       <>
         {children}

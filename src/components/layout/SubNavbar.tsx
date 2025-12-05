@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/SubNavbar
+ * @description This file contains the SubNavbar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -29,6 +38,22 @@ const NAV_ITEMS = [
  */
 export default function SubNavbar() {
   const pathname = usePathname();
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     if (href === "/") {

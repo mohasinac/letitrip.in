@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/ShopOrderSummary
+ * @description This file contains the ShopOrderSummary component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -5,25 +14,67 @@ import { Tag, X, Loader2, Store } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Price } from "@/components/common/values/Price";
 
+/**
+ * ShopOrderSummaryProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopOrderSummaryProps
+ */
 interface ShopOrderSummaryProps {
+  /** Shop Id */
   shopId: string;
+  /** Shop Name */
   shopName: string;
+  /** Items */
   items: Array<{
+    /** Id */
     id: string;
+    /** Product Id */
     productId: string;
+    /** Product Name */
     productName: string;
+    /** Product Image */
     productImage: string | null;
+    /** Price */
     price: number;
+    /** Quantity */
     quantity: number;
+    /** Variant */
     variant?: string;
   }>;
+  /** On Apply Coupon */
   onApplyCoupon?: (shopId: string, code: string) => Promise<void>;
+  /** On Remove Coupon */
   onRemoveCoupon?: (shopId: string) => Promise<void>;
+  /** Applied Coupon */
   appliedCoupon?: {
+    /** Code */
     code: string;
+    /** Discount Amount */
     discountAmount: number;
   } | null;
 }
+
+/**
+ * Function: Shop Order Summary
+ */
+/**
+ * Performs shop order summary operation
+ *
+ * @returns {any} The shopordersummary result
+ *
+ * @example
+ * ShopOrderSummary();
+ */
+
+/**
+ * Performs shop order summary operation
+ *
+ * @returns {any} The shopordersummary result
+ *
+ * @example
+ * ShopOrderSummary();
+ */
 
 export function ShopOrderSummary({
   shopId,
@@ -46,6 +97,22 @@ export function ShopOrderSummary({
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + shipping + tax - discount;
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim() || !onApplyCoupon) return;
 
@@ -60,6 +127,22 @@ export function ShopOrderSummary({
       setCouponLoading(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleRemoveCoupon = async () => {
     if (!onRemoveCoupon) return;
@@ -107,6 +190,7 @@ export function ShopOrderSummary({
                 </p>
               )}
               <p className="text-sm text-gray-600 dark:text-gray-400">
+                /** Qty */
                 Qty: {item.quantity}
               </p>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">

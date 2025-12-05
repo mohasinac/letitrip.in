@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/UnifiedFilterSidebar.example
+ * @description This file contains the UnifiedFilterSidebar.example component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * UnifiedFilterSidebar with useUrlFilters Integration Example
  *
  * This example shows how to integrate UnifiedFilterSidebar with the useUrlFilters hook
@@ -9,17 +18,53 @@ import { UnifiedFilterSidebar } from "@/components/common/UnifiedFilterSidebar";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { useState } from "react";
 
+/**
+ * Function: Filtered List Page Example
+ */
+/**
+ * Performs filtered list page example operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = FilteredListPageExample();
+ */
+/**
+ * Performs filtered list page example operation
+ *
+ * @returns {any} The filteredlistpageexample result
+ *
+ * @example
+ * FilteredListPageExample();
+ */
+
+/**
+ * Performs filtered list page example operation
+ *
+ * @returns {any} The filteredlistpageexample result
+ *
+ * @example
+ * FilteredListPageExample();
+ */
+
 export function FilteredListPageExample() {
   // Initialize useUrlFilters hook with initial values
   const { filters, updateFilter, resetFilters, activeFilterCount } =
     useUrlFilters({
+      /** Initial Filters */
       initialFilters: {
+        /** Category */
         category: "",
+        /** Status */
         status: "",
+        /** Price Range */
         priceRange: [] as string[],
+        /** Tags */
         tags: [] as string[],
       },
+      /** Initial Page */
       initialPage: 1,
+      /** Initial Limit */
       initialLimit: 20,
     });
 
@@ -29,13 +74,20 @@ export function FilteredListPageExample() {
   // Define filter sections configuration
   const filterSections = [
     {
+      /** Title */
       title: "Category",
+      /** Collapsible */
       collapsible: false,
+      /** Fields */
       fields: [
         {
+          /** Key */
           key: "category",
+          /** Label */
           label: "Category",
+          /** Type */
           type: "select" as const,
+          /** Options */
           options: [
             { value: "electronics", label: "Electronics", count: 120 },
             { value: "clothing", label: "Clothing", count: 85 },
@@ -45,13 +97,20 @@ export function FilteredListPageExample() {
       ],
     },
     {
+      /** Title */
       title: "Status",
+      /** Collapsible */
       collapsible: true,
+      /** Fields */
       fields: [
         {
+          /** Key */
           key: "status",
+          /** Label */
           label: "Status",
+          /** Type */
           type: "checkbox" as const,
+          /** Options */
           options: [
             { value: "active", label: "Active", count: 150 },
             { value: "sold", label: "Sold", count: 45 },
@@ -61,15 +120,24 @@ export function FilteredListPageExample() {
       ],
     },
     {
+      /** Title */
       title: "Price Range",
+      /** Collapsible */
       collapsible: true,
+      /** Fields */
       fields: [
         {
+          /** Key */
           key: "priceRange",
+          /** Label */
           label: "Price Range",
+          /** Type */
           type: "range" as const,
+          /** Min */
           min: 0,
+          /** Max */
           max: 10000,
+          /** Step */
           step: 100,
         },
       ],
@@ -118,10 +186,39 @@ export function FilteredListPageExample() {
  * Method 2: With Pending Changes (Optional)
  * Use local state for pending changes, apply to URL only when button clicked
  */
+/**
+ * Performs filtered list with pending changes example operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = FilteredListWithPendingChangesExample();
+ */
+/**
+ * Performs filtered list with pending changes example operation
+ *
+ * @returns {any} The filteredlistwithpendingchangesexample result
+ *
+ * @example
+ * FilteredListWithPendingChangesExample();
+ */
+
+/**
+ * Performs filtered list with pending changes example operation
+ *
+ * @returns {any} The filteredlistwithpendingchangesexample result
+ *
+ * @example
+ * FilteredListWithPendingChangesExample();
+ */
+
 export function FilteredListWithPendingChangesExample() {
   const { filters, updateFilter, resetFilters, updateFilters } = useUrlFilters({
+    /** Initial Filters */
     initialFilters: {
+      /** Category */
       category: "",
+      /** Status */
       status: "",
     },
   });
@@ -169,8 +266,35 @@ export function FilteredListWithPendingChangesExample() {
 /**
  * Method 3: Mobile Responsive with Filter Toggle
  */
+/**
+ * Performs mobile responsive filter example operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = MobileResponsiveFilterExample();
+ */
+/**
+ * Performs mobile responsive filter example operation
+ *
+ * @returns {any} The mobileresponsivefilterexample result
+ *
+ * @example
+ * MobileResponsiveFilterExample();
+ */
+
+/**
+ * Performs mobile responsive filter example operation
+ *
+ * @returns {any} The mobileresponsivefilterexample result
+ *
+ * @example
+ * MobileResponsiveFilterExample();
+ */
+
 export function MobileResponsiveFilterExample() {
   const { filters, updateFilter, resetFilters } = useUrlFilters({
+    /** Initial Filters */
     initialFilters: { category: "", status: "" },
   });
 

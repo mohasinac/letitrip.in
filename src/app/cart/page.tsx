@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/cart/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,6 +39,22 @@ export default function CartPage() {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleClearCart = async () => {
     try {
       await clearCart();
@@ -38,6 +63,18 @@ export default function CartPage() {
       toast.error("Failed to clear cart. Please try again.");
     }
   };
+
+  /**
+   * Handles checkout event
+   *
+   * @returns {any} The handlecheckout result
+   */
+
+  /**
+   * Handles checkout event
+   *
+   * @returns {any} The handlecheckout result
+   */
 
   const handleCheckout = () => {
     if (!user) {
@@ -48,6 +85,26 @@ export default function CartPage() {
 
     router.push("/checkout");
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleApplyCoupon = async (code: string) => {
     try {
@@ -99,7 +156,9 @@ export default function CartPage() {
             title="Your cart is empty"
             description="Start adding products to your cart to see them here."
             action={{
+              /** Label */
               label: "Start Shopping",
+              /** On Click */
               onClick: () => router.push("/products"),
             }}
           />

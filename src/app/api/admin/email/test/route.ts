@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/email/test/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Test Email Endpoint
  * POST /api/admin/email/test
  *
@@ -7,6 +16,35 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { emailService } from "@/app/api/lib/email/email.service";
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +69,9 @@ export async function POST(request: NextRequest) {
     // Send test email
     const result = await emailService.send({
       to,
+      /** Subject */
       subject: "Test Email from Letitrip - Resend Integration",
+      /** Html */
       html: `
 <!DOCTYPE html>
 <html>
@@ -83,13 +123,16 @@ export async function POST(request: NextRequest) {
 </body>
 </html>
       `,
+      /** Text */
       text: `Test Email - Resend Integration\n\nCongratulations! Your Resend email integration is working correctly.\n\nSent at: ${new Date().toLocaleString()}\nStatus: Delivered\n\nThis test email confirms that your application can successfully send emails through Resend.`,
     });
 
     if (!result.success) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: result.error || "Failed to send email",
         },
         { status: 500 },
@@ -97,15 +140,20 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Test email sent successfully",
+      /** Message Id */
       messageId: result.messageId,
     });
   } catch (error: any) {
     console.error("Test email error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to send test email",
       },
       { status: 500 },

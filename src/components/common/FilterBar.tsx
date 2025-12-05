@@ -1,31 +1,95 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/FilterBar
+ * @description This file contains the FilterBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 
+/**
+ * FilterOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterOption
+ */
 export interface FilterOption {
+  /** Label */
   label: string;
+  /** Value */
   value: string | number;
+  /** Count */
   count?: number;
 }
 
+/**
+ * QuickFilter interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for QuickFilter
+ */
 export interface QuickFilter {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Type */
   type: "select" | "checkbox" | "radio";
+  /** Options */
   options: FilterOption[];
+  /** Default Value */
   defaultValue?: string | number | boolean;
 }
 
+/**
+ * FilterBarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterBarProps
+ */
 export interface FilterBarProps {
+  /** Filters */
   filters: QuickFilter[];
+  /** Values */
   values: Record<string, any>;
+  /** On Change */
   onChange: (key: string, value: any) => void;
+  /** On Reset */
   onReset?: () => void;
+  /** Show Advanced */
   showAdvanced?: boolean;
+  /** On Toggle Advanced */
   onToggleAdvanced?: () => void;
+  /** Class Name */
   className?: string;
+  /** Result Count */
   resultCount?: number;
 }
+
+/**
+ * Function: Filter Bar
+ */
+/**
+ * Performs filter bar operation
+ *
+ * @returns {any} The filterbar result
+ *
+ * @example
+ * FilterBar();
+ */
+
+/**
+ * Performs filter bar operation
+ *
+ * @returns {any} The filterbar result
+ *
+ * @example
+ * FilterBar();
+ */
 
 export function FilterBar({
   filters,
@@ -37,9 +101,28 @@ export function FilterBar({
   className = "",
   resultCount,
 }: FilterBarProps) {
+  /**
+   * Handles checkbox change event
+   *
+   * @param {string} key - The key
+   * @param {string | number} optionValue - The option value
+   * @param {boolean} checked - Whether checked
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Handles checkbox change event
+   *
+   * @returns {string} The handlecheckboxchange result
+   */
+
   const handleCheckboxChange = (
+    /** Key */
     key: string,
+    /** Option Value */
     optionValue: string | number,
+    /** Checked */
     checked: boolean,
   ) => {
     const currentValues = values[key] || [];
@@ -191,6 +274,7 @@ export function FilterBar({
         {hasActiveFilters && (
           <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-500 dark:text-gray-400">
+              /** Active */
               Active:
             </span>
             {Object.entries(values).map(([key, value]) => {
@@ -202,6 +286,22 @@ export function FilterBar({
               ) {
                 return null;
               }
+
+              /**
+               * Retrieves label
+               *
+               * @param {any} val - The val
+               *
+               * @returns {any} The label result
+               */
+
+              /**
+               * Retrieves label
+               *
+               * @param {any} val - The val
+               *
+               * @returns {any} The label result
+               */
 
               const getLabel = (val: any) => {
                 const option = filter.options.find((o) => o.value === val);

@@ -1,15 +1,35 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/static-assets-client.service
+ * @description This file contains service functions for static-assets-client operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  *export interface StaticAsset {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Type */
   type: 'payment-logo' | 'icon' | 'image' | 'video' | 'document';
+  /** Url */
   url: string;
+  /** Storage Path */
   storagePath: string;
+  /** Category */
   category?: string | null;
+  /** Uploaded By */
   uploadedBy: string;
+  /** Uploaded At */
   uploadedAt: string;
+  /** Size */
   size: number;
+  /** Content Type */
   contentType: string;
+  /** Metadata */
   metadata?: Record<string, any>;
 }s Service (Client-side)
  * All operations go through API routes (following architecture pattern)
@@ -18,26 +38,58 @@
 import { apiService } from "./api.service";
 import { logServiceError } from "@/lib/error-logger";
 
+/**
+ * StaticAsset interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StaticAsset
+ */
 export interface StaticAsset {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Type */
   type: "payment-logo" | "icon" | "image" | "video" | "document";
+  /** Url */
   url: string;
+  /** Storage Path */
   storagePath: string;
+  /** Category */
   category?: string;
+  /** Uploaded By */
   uploadedBy: string;
+  /** Uploaded At */
   uploadedAt: string;
+  /** Size */
   size: number;
+  /** Content Type */
   contentType: string;
+  /** Metadata */
   metadata?: Record<string, any>;
 }
 
+/**
+ * AssetUploadResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AssetUploadResult
+ */
 export interface AssetUploadResult {
+  /** Asset */
   asset: StaticAsset;
+  /** Success */
   success: boolean;
+  /** Error */
   error?: string;
 }
 
+/**
+ * StaticAssetsService class
+ * 
+ * @class
+ * @description Description of StaticAssetsService class functionality
+ */
 class StaticAssetsService {
   private readonly BASE_PATH = "/admin/static-assets";
 
@@ -45,7 +97,9 @@ class StaticAssetsService {
    * Get all static assets with optional filters
    */
   async getAssets(filters?: {
+    /** Type */
     type?: StaticAsset["type"];
+    /** Category */
     category?: string;
   }): Promise<StaticAsset[]> {
     const params = new URLSearchParams();
@@ -89,14 +143,21 @@ class StaticAssetsService {
    * Request upload URL (server generates signed URL)
    */
   async requestUploadUrl(data: {
+    /** File Name */
     fileName: string;
+    /** Content Type */
     contentType: string;
+    /** Type */
     type: StaticAsset["type"];
+    /** Category */
     category?: string;
   }): Promise<{ uploadUrl: string; assetId: string; storagePath: string }> {
     return apiService.post<{
+      /** Upload Url */
       uploadUrl: string;
+      /** Asset Id */
       assetId: string;
+      /** Storage Path */
       storagePath: string;
     }>(`${this.BASE_PATH}/upload-url`, data);
   }
@@ -105,14 +166,19 @@ class StaticAssetsService {
    * Upload file (2-step process: get URL, then upload)
    */
   async uploadAsset(
+    /** File */
     file: File,
+    /** Type */
     type: StaticAsset["type"],
+    /** Category */
     category?: string,
   ): Promise<AssetUploadResult> {
     try {
       // Step 1: Request upload URL from server
       const { uploadUrl, assetId, storagePath } = await this.requestUploadUrl({
+        /** File Name */
         fileName: file.name,
+        /** Content Type */
         contentType: file.type,
         type,
         category,
@@ -120,8 +186,11 @@ class StaticAssetsService {
 
       // Step 2: Upload directly to Firebase Storage
       const uploadResponse = await fetch(uploadUrl, {
+        /** Method */
         method: "PUT",
+        /** Body */
         body: file,
+        /** Headers */
         headers: {
           "Content-Type": file.type,
         },
@@ -136,23 +205,30 @@ class StaticAssetsService {
         `${this.BASE_PATH}/confirm-upload`,
         {
           assetId,
+          /** Name */
           name: file.name,
           type,
           storagePath,
           category,
+          /** Size */
           size: file.size,
+          /** Content Type */
           contentType: file.type,
         },
       );
 
       return {
         asset,
+        /** Success */
         success: true,
       };
     } catch (error: any) {
       return {
+        /** Asset */
         asset: {} as StaticAsset,
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Upload failed",
       };
     }
@@ -162,7 +238,9 @@ class StaticAssetsService {
    * Update asset metadata
    */
   async updateAsset(
+    /** Id */
     id: string,
+    /** Updates */
     updates: Partial<StaticAsset>,
   ): Promise<StaticAsset> {
     const response = await apiService.patch<{ asset: StaticAsset }>(

@@ -1,33 +1,89 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/BaseTable
+ * @description This file contains the BaseTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * BaseTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BaseTableProps
+ */
 export interface BaseTableProps<T> {
+  /** Data */
   data: T[];
+  /** Columns */
   columns: TableColumn<T>[];
+  /** Key Extractor */
   keyExtractor: (row: T, index: number) => string | number;
+  /** Is Loading */
   isLoading?: boolean;
+  /** Empty Message */
   emptyMessage?: string;
+  /** On Row Click */
   onRowClick?: (row: T) => void;
+  /** Row Class Name */
   rowClassName?: (row: T) => string;
+  /** Sticky Header */
   stickyHeader?: boolean;
+  /** Sticky First Column */
   stickyFirstColumn?: boolean;
+  /** Compact */
   compact?: boolean;
 }
 
+/**
+ * TableColumn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TableColumn
+ */
 export interface TableColumn<T> {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Width */
   width?: string;
+  /** Align */
   align?: "left" | "center" | "right";
+  /** Sortable */
   sortable?: boolean;
+  /** Render */
   render?: (value: any, row: T, index: number) => React.ReactNode;
+  /** Header Render */
   headerRender?: () => React.ReactNode;
 }
 
 /**
  * BaseTable - Reusable table component with common patterns
  */
+/**
+ * Performs base table operation
+ *
+ * @returns {any} The basetable result
+ *
+ * @example
+ * BaseTable();
+ */
+
+/**
+ * Performs base table operation
+ *
+ * @returns {any} The basetable result
+ *
+ * @example
+ * BaseTable();
+ */
+
 export function BaseTable<T>({
   data,
   columns,
@@ -84,8 +140,11 @@ export function BaseTable<T>({
   }
 
   const alignmentClasses = {
+    /** Left */
     left: "text-left",
+    /** Center */
     center: "text-center",
+    /** Right */
     right: "text-right",
   };
 
@@ -137,6 +196,18 @@ export function BaseTable<T>({
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((column, colIndex) => {
+                /**
+                 * Performs value operation
+                 *
+                 * @returns {any} The value result
+                 */
+
+                /**
+                 * Performs value operation
+                 *
+                 * @returns {any} The value result
+                 */
+
                 const value = (row as any)[column.key];
                 return (
                   <td

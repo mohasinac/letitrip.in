@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/viewing-history.service
+ * @description This file contains service functions for viewing-history operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Viewing History Service
  * Client-side localStorage service for managing recently viewed products
  */
@@ -8,6 +17,12 @@ import {
   type ViewingHistoryItem,
 } from "@/constants/navigation";
 
+/**
+ * ViewingHistoryService class
+ * 
+ * @class
+ * @description Description of ViewingHistoryService class functionality
+ */
 class ViewingHistoryService {
   private getStorageKey(): string {
     return VIEWING_HISTORY_CONFIG.STORAGE_KEY;

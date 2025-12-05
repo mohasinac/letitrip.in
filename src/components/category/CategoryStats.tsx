@@ -1,26 +1,78 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/CategoryStats
+ * @description This file contains the CategoryStats component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Package, Store, Star, Tag } from "lucide-react";
 import { Price } from "@/components/common/values/Price";
 
+/**
+ * CategoryStatsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryStatsProps
+ */
 export interface CategoryStatsProps {
+  /** Product Count */
   productCount: number;
+  /** Seller Count */
   sellerCount: number;
+  /** Price Range */
   priceRange: {
+    /** Min */
     min: number;
+    /** Max */
     max: number;
   };
+  /** Average Rating */
   averageRating?: number;
+  /** Popular Brands */
   popularBrands?: string[];
+  /** Class Name */
   className?: string;
 }
 
+/**
+ * StatCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatCardProps
+ */
 interface StatCardProps {
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Label */
   label: string;
+  /** Value */
   value: string | number | React.ReactNode;
+  /** Subtitle */
   subtitle?: string;
 }
+
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @param {Icon, label, value, subtitle }} { icon - The { icon
+ *
+ * @returns {any} The statcard result
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @param {Icon, label, value, subtitle }} { icon - The { icon
+ *
+ * @returns {any} The statcard result
+ */
 
 function StatCard({ icon: Icon, label, value, subtitle }: StatCardProps) {
   return (
@@ -68,6 +120,24 @@ function StatCard({ icon: Icon, label, value, subtitle }: StatCardProps) {
  * />
  * ```
  */
+/**
+ * Performs category stats operation
+ *
+ * @returns {any} The categorystats result
+ *
+ * @example
+ * CategoryStats();
+ */
+
+/**
+ * Performs category stats operation
+ *
+ * @returns {any} The categorystats result
+ *
+ * @example
+ * CategoryStats();
+ */
+
 export function CategoryStats({
   productCount,
   sellerCount,

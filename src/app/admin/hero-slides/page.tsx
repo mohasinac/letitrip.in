@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/hero-slides/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { EmptyState } from "@/components/common/EmptyState";
@@ -35,13 +44,18 @@ import { toast } from "sonner";
 export default function HeroSlidesPage() {
   const router = useRouter();
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: slides,
+    /** Set Data */
     setData: setSlides,
     execute,
   } = useLoadingState<HeroSlide[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "HeroSlidesPage.loadSlides" });
       toast.error("Failed to load hero slides");
@@ -64,10 +78,46 @@ export default function HeroSlidesPage() {
     loadSlides();
   }, []);
 
+  /**
+   * Fetches slides from server
+   *
+   * @returns {Promise<any>} Promise resolving to slides result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches slides from server
+   *
+   * @returns {Promise<any>} Promise resolving to slides result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSlides = () =>
     execute(async () => {
       return await heroSlidesService.getHeroSlides();
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleBulkAction = async (actionId: string) => {
     setActionLoading(true);
@@ -89,15 +139,71 @@ export default function HeroSlidesPage() {
     }
   };
 
+  /**
+   * Handles drag start event
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {string} slideId - slide identifier
+   *
+   * @returns {string} The handledragstart result
+   */
+
+  /**
+   * Handles drag start event
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {string} slideId - slide identifier
+   *
+   * @returns {string} The handledragstart result
+   */
+
   const handleDragStart = (e: React.DragEvent, slideId: string) => {
     setDraggedSlide(slideId);
     e.dataTransfer.effectAllowed = "move";
   };
 
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledragover result
+   */
+
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledragover result
+   */
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {string} targetSlideId - targetSlide identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {string} targetSlideId - targetSlide identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDrop = async (e: React.DragEvent, targetSlideId: string) => {
     e.preventDefault();
@@ -116,6 +222,7 @@ export default function HeroSlidesPage() {
     // Update order
     const reorderedSlides = newSlides.map((slide, index) => ({
       ...slide,
+      /** Order */
       order: index + 1,
     }));
 
@@ -126,7 +233,9 @@ export default function HeroSlidesPage() {
     try {
       await heroSlidesService.reorderSlides(
         reorderedSlides.map((s) => ({
+          /** Id */
           id: s.id,
+          /** Order */
           order: s.order,
         }))
       );
@@ -216,7 +325,9 @@ export default function HeroSlidesPage() {
           title="No hero slides"
           description="Create your first hero slide to display on the homepage"
           action={{
+            /** Label */
             label: "Add Slide",
+            /** On Click */
             onClick: () => router.push("/admin/hero-slides/create"),
           }}
         />
@@ -313,7 +424,9 @@ export default function HeroSlidesPage() {
                     loading={actionLoading}
                     resourceName="slide"
                     defaultValues={{
+                      /** Is Active */
                       isActive: true,
+                      /** Cta Text */
                       ctaText: "Shop Now",
                     }}
                   />

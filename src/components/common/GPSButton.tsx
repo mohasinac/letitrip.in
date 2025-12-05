@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/GPSButton
+ * @description This file contains the GPSButton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useCallback } from "react";
@@ -9,19 +18,65 @@ import type {
   ReverseGeocodeResult,
 } from "@/types/shared/location.types";
 
+/**
+ * GPSButtonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GPSButtonProps
+ */
 export interface GPSButtonProps {
+  /** On Location Detected */
   onLocationDetected?: (coords: GeoCoordinates) => void;
+  /** On Address Detected */
   onAddressDetected?: (address: ReverseGeocodeResult) => void;
+  /** On Error */
   onError?: (error: GeolocationError) => void;
+  /** Disabled */
   disabled?: boolean;
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "button" | "icon" | "text";
+  /** Size */
   size?: "sm" | "md" | "lg";
+  /** Show Status */
   showStatus?: boolean;
+  /** Reverse Geocode */
   reverseGeocode?: boolean;
 }
 
+/**
+ * Status type
+ * 
+ * @typedef {Object} Status
+ * @description Type definition for Status
+ */
 type Status = "idle" | "loading" | "success" | "error";
+
+/**
+ * Function: G P S Button
+ */
+/**
+ * Performs g p s button operation
+ *
+ * @returns {any} The gpsbutton result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GPSButton();
+ */
+
+/**
+ * Performs g p s button operation
+ *
+ * @returns {any} The gpsbutton result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GPSButton();
+ */
 
 export function GPSButton({
   onLocationDetected,
@@ -46,6 +101,22 @@ export function GPSButton({
     return result;
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleClick = async () => {
     if (disabled || status === "loading") return;
 
@@ -57,7 +128,9 @@ export function GPSButton({
       const perm = await checkPermission();
       if (perm === "denied") {
         const error: GeolocationError = {
+          /** Code */
           code: "PERMISSION_DENIED",
+          /** Message */
           message:
             "Location permission denied. Please enable in browser settings.",
         };
@@ -91,6 +164,18 @@ export function GPSButton({
     }
   };
 
+  /**
+   * Retrieves icon
+   *
+   * @returns {any} The icon result
+   */
+
+  /**
+   * Retrieves icon
+   *
+   * @returns {any} The icon result
+   */
+
   const getIcon = () => {
     switch (status) {
       case "loading":
@@ -99,26 +184,46 @@ export function GPSButton({
         return <CheckCircle className="text-green-500" />;
       case "error":
         return <XCircle className="text-red-500" />;
+      /** Default */
       default:
         return <MapPin />;
     }
   };
 
+  /**
+   * Retrieves size classes
+   *
+   * @returns {any} The sizeclasses result
+   */
+
+  /**
+   * Retrieves size classes
+   *
+   * @returns {any} The sizeclasses result
+   */
+
   const getSizeClasses = () => {
     switch (size) {
       case "sm":
         return {
+          /** Button */
           button: "px-2 py-1 text-sm",
+          /** Icon */
           icon: "w-4 h-4",
         };
       case "lg":
         return {
+          /** Button */
           button: "px-4 py-3 text-lg",
+          /** Icon */
           icon: "w-6 h-6",
         };
+      /** Default */
       default:
         return {
+          /** Button */
           button: "px-3 py-2 text-base",
+          /** Icon */
           icon: "w-5 h-5",
         };
     }
@@ -126,8 +231,21 @@ export function GPSButton({
 
   const sizeClasses = getSizeClasses();
 
+  /**
+   * Retrieves button content
+   *
+   * @returns {any} The buttoncontent result
+   */
+
+  /**
+   * Retrieves button content
+   *
+   * @returns {any} The buttoncontent result
+   */
+
   const getButtonContent = () => {
     const icon = React.cloneElement(getIcon(), {
+      /** Class Name */
       className: sizeClasses.icon,
     });
 
@@ -149,6 +267,7 @@ export function GPSButton({
             </span>
           </>
         );
+      /** Default */
       default:
         return (
           <>
@@ -161,12 +280,26 @@ export function GPSButton({
     }
   };
 
+  /**
+   * Retrieves button styles
+   *
+   * @returns {any} The buttonstyles result
+   */
+
+  /**
+   * Retrieves button styles
+   *
+   * @returns {any} The buttonstyles result
+   */
+
   const getButtonStyles = () => {
     const baseStyles = `
       inline-flex items-center justify-center
       rounded-lg font-medium
       transition-colors duration-200
+      /** Focus */
       focus:outline-none focus:ring-2 focus:ring-primary/50
+      /** Disabled */
       disabled:opacity-50 disabled:cursor-not-allowed
     `;
 
@@ -175,6 +308,7 @@ export function GPSButton({
         return `${baseStyles} bg-green-100 text-green-700 hover:bg-green-200`;
       case "error":
         return `${baseStyles} bg-red-100 text-red-700 hover:bg-red-200`;
+      /** Default */
       default:
         return `${baseStyles} bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300`;
     }

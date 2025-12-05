@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/google-forms.service
+ * @description This file contains service functions for google-forms operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Google Forms Integration Service
  *
  * Fetches Google Form responses and syncs event registrations
@@ -7,36 +16,79 @@
 
 import { logError } from "@/lib/firebase-error-logger";
 
+/**
+ * GoogleFormResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GoogleFormResponse
+ */
 interface GoogleFormResponse {
+  /** Response Id */
   responseId: string;
+  /** Create Time */
   createTime: string;
+  /** Last Submitted Time */
   lastSubmittedTime: string;
+  /** Respondent Email */
   respondentEmail?: string;
+  /** Answers */
   answers: Record<string, GoogleFormAnswer>;
 }
 
+/**
+ * GoogleFormAnswer interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GoogleFormAnswer
+ */
 interface GoogleFormAnswer {
+  /** Question Id */
   questionId: string;
+  /** Text Answers */
   textAnswers?: {
+    /** Answers */
     answers: Array<{ value: string }>;
   };
+  /** File Upload Answers */
   fileUploadAnswers?: {
+    /** Answers */
     answers: Array<{ fileId: string; fileName: string; mimeType: string }>;
   };
 }
 
+/**
+ * EventRegistration interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EventRegistration
+ */
 interface EventRegistration {
+  /** Event Id */
   eventId: string;
+  /** User Id */
   userId?: string;
+  /** Email */
   email: string;
+  /** Name */
   name: string;
+  /** Phone */
   phone?: string;
+  /** Additional Data */
   additionalData?: Record<string, any>;
+  /** Source */
   source: "google_forms";
+  /** Response Id */
   responseId: string;
+  /** Created At */
   createdAt: Date;
 }
 
+/**
+ * GoogleFormsService class
+ * 
+ * @class
+ * @description Description of GoogleFormsService class functionality
+ */
 class GoogleFormsService {
   private apiKey: string;
   private enabled: boolean;
@@ -65,7 +117,9 @@ class GoogleFormsService {
       const url = `https://forms.googleapis.com/v1/forms/${formId}/responses?key=${this.apiKey}`;
 
       const response = await fetch(url, {
+        /** Method */
         method: "GET",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
         },
@@ -82,6 +136,7 @@ class GoogleFormsService {
       return data.responses || [];
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "GoogleFormsService.fetchFormResponses",
         formId,
       });
@@ -93,11 +148,17 @@ class GoogleFormsService {
    * Parse form response into event registration data
    */
   parseEventRegistration(
+    /** Event Id */
     eventId: string,
+    /** Response */
     response: GoogleFormResponse,
+    /** Question Mapping */
     questionMapping: {
+      /** Name Question Id */
       nameQuestionId: string;
+      /** Email Question Id */
       emailQuestionId: string;
+      /** Phone Question Id */
       phoneQuestionId?: string;
     },
   ): EventRegistration {
@@ -133,8 +194,11 @@ class GoogleFormsService {
         } else if (answer.fileUploadAnswers) {
           additionalData[questionId] = answer.fileUploadAnswers.answers.map(
             (a) => ({
+              /** File Id */
               fileId: a.fileId,
+              /** File Name */
               fileName: a.fileName,
+              /** Mime Type */
               mimeType: a.mimeType,
             }),
           );
@@ -144,13 +208,20 @@ class GoogleFormsService {
 
     return {
       eventId,
+      /** Email */
       email: emailAnswer,
+      /** Name */
       name: nameAnswer,
+      /** Phone */
       phone: phoneAnswer,
+      /** Additional Data */
       additionalData:
         Object.keys(additionalData).length > 0 ? additionalData : undefined,
+      /** Source */
       source: "google_forms",
+      /** Response Id */
       responseId: response.responseId,
+      /** Created At */
       createdAt: new Date(response.lastSubmittedTime),
     };
   }
@@ -159,16 +230,25 @@ class GoogleFormsService {
    * Sync Google Form responses to event registrations
    */
   async syncEventRegistrations(
+    /** Event Id */
     eventId: string,
+    /** Form Id */
     formId: string,
+    /** Question Mapping */
     questionMapping: {
+      /** Name Question Id */
       nameQuestionId: string;
+      /** Email Question Id */
       emailQuestionId: string;
+      /** Phone Question Id */
       phoneQuestionId?: string;
     },
   ): Promise<{
+    /** Synced */
     synced: number;
+    /** Skipped */
     skipped: number;
+    /** Errors */
     errors: number;
   }> {
     const stats = { synced: 0, skipped: 0, errors: 0 };
@@ -201,7 +281,9 @@ class GoogleFormsService {
           stats.synced++;
         } catch (error) {
           logError(error as Error, {
+            /** Component */
             component: "GoogleFormsService.syncEventRegistrations",
+            /** Response Id */
             responseId: response.responseId,
           });
           stats.errors++;
@@ -211,6 +293,7 @@ class GoogleFormsService {
       return stats;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "GoogleFormsService.syncEventRegistrations",
         eventId,
         formId,
@@ -236,6 +319,7 @@ class GoogleFormsService {
       return new Set(data.registrations?.map((r: any) => r.responseId) || []);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "GoogleFormsService.getExistingResponseIds",
         eventId,
       });
@@ -247,15 +331,19 @@ class GoogleFormsService {
    * Save registration via API
    */
   private async saveRegistration(
+    /** Registration */
     registration: EventRegistration,
   ): Promise<void> {
     const response = await fetch(
       `/api/events/${registration.eventId}/register`,
       {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
         },
+        /** Body */
         body: JSON.stringify(registration),
       },
     );
@@ -270,12 +358,19 @@ class GoogleFormsService {
    * Get form metadata
    */
   async getFormMetadata(formId: string): Promise<{
+    /** Title */
     title: string;
+    /** Description */
     description: string;
+    /** Questions */
     questions: Array<{
+      /** Question Id */
       questionId: string;
+      /** Title */
       title: string;
+      /** Type */
       type: string;
+      /** Required */
       required: boolean;
     }>;
   }> {
@@ -287,7 +382,9 @@ class GoogleFormsService {
       const url = `https://forms.googleapis.com/v1/forms/${formId}?key=${this.apiKey}`;
 
       const response = await fetch(url, {
+        /** Method */
         method: "GET",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
         },
@@ -303,17 +400,25 @@ class GoogleFormsService {
       const data = await response.json();
 
       return {
+        /** Title */
         title: data.info?.title || "",
+        /** Description */
         description: data.info?.description || "",
+        /** Questions */
         questions: (data.items || []).map((item: any) => ({
+          /** Question Id */
           questionId: item.questionItem?.question?.questionId || "",
+          /** Title */
           title: item.title || "",
+          /** Type */
           type: Object.keys(item.questionItem?.question || {})[0] || "unknown",
+          /** Required */
           required: item.questionItem?.question?.required || false,
         })),
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "GoogleFormsService.getFormMetadata",
         formId,
       });

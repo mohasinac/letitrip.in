@@ -1,20 +1,65 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/dashboard/ActivityItem
+ * @description This file contains the ActivityItem component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { LucideIcon, Clock } from "lucide-react";
 
+/**
+ * ActivityItemProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActivityItemProps
+ */
 interface ActivityItemProps {
+  /** Id */
   id: string;
+  /** Type */
   type: string;
+  /** Message */
   message: string;
+  /** Time */
   time: string;
+  /** Status */
   status: "success" | "warning" | "info" | "error";
+  /** Icon */
   icon: LucideIcon;
+  /** Color */
   color: string;
+  /** On Action */
   onAction?: () => void;
 }
+
+/**
+ * Function: Activity Item
+ */
+/**
+ * Performs activity item operation
+ *
+ * @returns {any} The activityitem result
+ *
+ * @example
+ * ActivityItem();
+ */
+
+/**
+ * Performs activity item operation
+ *
+ * @returns {any} The activityitem result
+ *
+ * @example
+ * ActivityItem();
+ */
 
 export function ActivityItem({
   message,
   time,
   status,
+  /** Icon */
   icon: Icon,
   color,
   onAction,

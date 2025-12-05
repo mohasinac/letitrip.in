@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/auction-wizard/PickupStep
+ * @description This file contains the PickupStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormLabel } from "@/components/forms/FormLabel";
@@ -5,6 +14,31 @@ import { FormTextarea } from "@/components/forms/FormTextarea";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import type { StepProps } from "./types";
 import type { AddressFE } from "@/types/frontend/address.types";
+
+/**
+ * Function: Pickup Step
+ */
+/**
+ * Performs pickup step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The pickupstep result
+ *
+ * @example
+ * PickupStep({ formData, setFormData });
+ */
+
+/**
+ * Performs pickup step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The pickupstep result
+ *
+ * @example
+ * PickupStep({ formData, setFormData });
+ */
 
 export function PickupStep({ formData, setFormData }: StepProps) {
   return (

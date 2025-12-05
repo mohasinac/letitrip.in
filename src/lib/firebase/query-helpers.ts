@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/firebase/query-helpers
+ * @description This file contains functionality related to query-helpers
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Firebase Query Helpers
  *
  * Provides reusable pagination utilities for Firestore queries.
@@ -117,7 +126,33 @@ export interface QueryConfig {
  * });
  * ```
  */
+/**
+ * Performs build pagination constraints operation
+ *
+ * @param {PaginationConfig} config - The config
+ *
+ * @returns {any} The buildpaginationconstraints result
+ *
+ * @example
+ * buildPaginationConstraints(config);
+ */
+
+/**
+ * Performs build pagination constraints operation
+ *
+ * @param {PaginationConfig} /** Config */
+  config - The /**  config */
+  config
+ *
+ * @returns {any} The buildpaginationconstraints result
+ *
+ * @example
+ * buildPaginationConstraints(/** Config */
+  config);
+ */
+
 export function buildPaginationConstraints(
+  /** Config */
   config: PaginationConfig,
 ): QueryConstraint[] {
   const constraints: QueryConstraint[] = [];
@@ -158,7 +193,33 @@ export function buildPaginationConstraints(
  * ]);
  * ```
  */
+/**
+ * Performs build filter constraints operation
+ *
+ * @param {QueryFilter[]} filters - The filters
+ *
+ * @returns {any} The buildfilterconstraints result
+ *
+ * @example
+ * buildFilterConstraints(filters);
+ */
+
+/**
+ * Performs build filter constraints operation
+ *
+ * @param {QueryFilter[]} /** Filters */
+  filters - The /**  filters */
+  filters
+ *
+ * @returns {any} The buildfilterconstraints result
+ *
+ * @example
+ * buildFilterConstraints(/** Filters */
+  filters);
+ */
+
 export function buildFilterConstraints(
+  /** Filters */
   filters: QueryFilter[],
 ): QueryConstraint[] {
   return filters.map((filter) =>
@@ -180,6 +241,28 @@ export function buildFilterConstraints(
  * ]);
  * ```
  */
+/**
+ * Performs build sort constraints operation
+ *
+ * @param {QuerySort[]} sorts - The sorts
+ *
+ * @returns {any} The buildsortconstraints result
+ *
+ * @example
+ * buildSortConstraints(sorts);
+ */
+
+/**
+ * Performs build sort constraints operation
+ *
+ * @param {QuerySort[]} sorts - The sorts
+ *
+ * @returns {any} The buildsortconstraints result
+ *
+ * @example
+ * buildSortConstraints(sorts);
+ */
+
 export function buildSortConstraints(sorts: QuerySort[]): QueryConstraint[] {
   return sorts.map((sort) => orderBy(sort.field, sort.direction));
 }
@@ -199,6 +282,28 @@ export function buildSortConstraints(sorts: QuerySort[]): QueryConstraint[] {
  * });
  * ```
  */
+/**
+ * Performs build query constraints operation
+ *
+ * @param {QueryConfig} config - The config
+ *
+ * @returns {any} The buildqueryconstraints result
+ *
+ * @example
+ * buildQueryConstraints(config);
+ */
+
+/**
+ * Performs build query constraints operation
+ *
+ * @param {QueryConfig} config - The config
+ *
+ * @returns {any} The buildqueryconstraints result
+ *
+ * @example
+ * buildQueryConstraints(config);
+ */
+
 export function buildQueryConstraints(config: QueryConfig): QueryConstraint[] {
   const constraints: QueryConstraint[] = [];
 
@@ -241,9 +346,34 @@ export function buildQueryConstraints(config: QueryConfig): QueryConstraint[] {
  * );
  * ```
  */
+/**
+ * Performs process paginated results operation
+ *
+ * @param {QueryDocumentSnapshot<DocumentData>[]} docs - The docs
+ * @param {number} pageSize - The page size
+ * @param {boolean} [hasPrevCursor] - Whether has prev cursor
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * processPaginatedResults(docs, 123, true);
+ */
+
+/**
+ * Performs process paginated results operation
+ *
+ * @returns {number} The processpaginatedresults result
+ *
+ * @example
+ * processPaginatedResults();
+ */
+
 export function processPaginatedResults<T>(
+  /** Docs */
   docs: QueryDocumentSnapshot<DocumentData>[],
+  /** Page Size */
   pageSize: number,
+  /** Has Prev Cursor */
   hasPrevCursor: boolean = false,
 ): PaginatedResult<T> {
   const data = docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T);
@@ -282,9 +412,34 @@ export function processPaginatedResults<T>(
  * const config = firstPage(20, 'created_at', 'desc');
  * ```
  */
+/**
+ * Performs first page operation
+ *
+ * @param {number} [pageSize] - The page size
+ * @param {string} [sortField] - The sort field
+ * @param {OrderByDirection} [sortDirection] - The sort direction
+ *
+ * @returns {string} The firstpage result
+ *
+ * @example
+ * firstPage(123, "example", sortDirection);
+ */
+
+/**
+ * Performs first page operation
+ *
+ * @returns {string} The firstpage result
+ *
+ * @example
+ * firstPage();
+ */
+
 export function firstPage(
+  /** Page Size */
   pageSize: number = 20,
+  /** Sort Field */
   sortField?: string,
+  /** Sort Direction */
   sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
@@ -308,14 +463,37 @@ export function firstPage(
  * const config = nextPage(20, lastDoc, 'created_at', 'desc');
  * ```
  */
+/**
+ * Performs next page operation
+ *
+ * @returns {string} The nextpage result
+ *
+ * @example
+ * nextPage();
+ */
+
+/**
+ * Performs next page operation
+ *
+ * @returns {number} The nextpage result
+ *
+ * @example
+ * nextPage();
+ */
+
 export function nextPage(
+  /** Page Size */
   pageSize: number,
+  /** Cursor */
   cursor: QueryDocumentSnapshot<DocumentData>,
+  /** Sort Field */
   sortField?: string,
+  /** Sort Direction */
   sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
     pageSize,
+    /** After Cursor */
     afterCursor: cursor,
     sortField,
     sortDirection,
@@ -336,14 +514,37 @@ export function nextPage(
  * const config = prevPage(20, firstDoc, 'created_at', 'desc');
  * ```
  */
+/**
+ * Performs prev page operation
+ *
+ * @returns {string} The prevpage result
+ *
+ * @example
+ * prevPage();
+ */
+
+/**
+ * Performs prev page operation
+ *
+ * @returns {number} The prevpage result
+ *
+ * @example
+ * prevPage();
+ */
+
 export function prevPage(
+  /** Page Size */
   pageSize: number,
+  /** Cursor */
   cursor: QueryDocumentSnapshot<DocumentData>,
+  /** Sort Field */
   sortField?: string,
+  /** Sort Direction */
   sortDirection?: OrderByDirection,
 ): PaginationConfig {
   return {
     pageSize,
+    /** Before Cursor */
     beforeCursor: cursor,
     sortField,
     sortDirection,
@@ -360,6 +561,28 @@ export function prevPage(
  * @param status - Status value ('active', 'inactive', etc.)
  * @returns Query filter
  */
+/**
+ * Performs status filter operation
+ *
+ * @param {string} status - The status
+ *
+ * @returns {string} The statusfilter result
+ *
+ * @example
+ * statusFilter("example");
+ */
+
+/**
+ * Performs status filter operation
+ *
+ * @param {string} status - The status
+ *
+ * @returns {string} The statusfilter result
+ *
+ * @example
+ * statusFilter("example");
+ */
+
 export function statusFilter(status: string): QueryFilter {
   return { field: "status", operator: "==", value: status };
 }
@@ -370,6 +593,28 @@ export function statusFilter(status: string): QueryFilter {
  * @param userId - User ID
  * @returns Query filter
  */
+/**
+ * Custom React hook for user filter
+ *
+ * @param {string} userId - user identifier
+ *
+ * @returns {string} The userfilter result
+ *
+ * @example
+ * userFilter("example");
+ */
+
+/**
+ * Custom React hook for user filter
+ *
+ * @param {string} userId - user identifier
+ *
+ * @returns {string} The userfilter result
+ *
+ * @example
+ * userFilter("example");
+ */
+
 export function userFilter(userId: string): QueryFilter {
   return { field: "user_id", operator: "==", value: userId };
 }
@@ -380,6 +625,28 @@ export function userFilter(userId: string): QueryFilter {
  * @param shopId - Shop ID
  * @returns Query filter
  */
+/**
+ * Performs shop filter operation
+ *
+ * @param {string} shopId - shop identifier
+ *
+ * @returns {string} The shopfilter result
+ *
+ * @example
+ * shopFilter("example");
+ */
+
+/**
+ * Performs shop filter operation
+ *
+ * @param {string} shopId - shop identifier
+ *
+ * @returns {string} The shopfilter result
+ *
+ * @example
+ * shopFilter("example");
+ */
+
 export function shopFilter(shopId: string): QueryFilter {
   return { field: "shop_id", operator: "==", value: shopId };
 }
@@ -390,6 +657,28 @@ export function shopFilter(shopId: string): QueryFilter {
  * @param categoryId - Category ID
  * @returns Query filter
  */
+/**
+ * Performs category filter operation
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {string} The categoryfilter result
+ *
+ * @example
+ * categoryFilter("example");
+ */
+
+/**
+ * Performs category filter operation
+ *
+ * @param {string} categoryId - category identifier
+ *
+ * @returns {string} The categoryfilter result
+ *
+ * @example
+ * categoryFilter("example");
+ */
+
 export function categoryFilter(categoryId: string): QueryFilter {
   return { field: "category_id", operator: "==", value: categoryId };
 }
@@ -402,9 +691,34 @@ export function categoryFilter(categoryId: string): QueryFilter {
  * @param endDate - End date
  * @returns Array of query filters
  */
+/**
+ * Performs date range filter operation
+ *
+ * @param {string} field - The field
+ * @param {Date} startDate - The start date
+ * @param {Date} endDate - The end date
+ *
+ * @returns {string} The daterangefilter result
+ *
+ * @example
+ * dateRangeFilter("example", startDate, endDate);
+ */
+
+/**
+ * Performs date range filter operation
+ *
+ * @returns {string} The daterangefilter result
+ *
+ * @example
+ * dateRangeFilter();
+ */
+
 export function dateRangeFilter(
+  /** Field */
   field: string,
+  /** Start Date */
   startDate: Date,
+  /** End Date */
   endDate: Date,
 ): QueryFilter[] {
   return [
@@ -418,6 +732,24 @@ export function dateRangeFilter(
  *
  * @returns Query sort
  */
+/**
+ * Sorts by created desc
+ *
+ * @returns {any} The sortbycreateddesc result
+ *
+ * @example
+ * sortByCreatedDesc();
+ */
+
+/**
+ * Sorts by created desc
+ *
+ * @returns {any} The sortbycreateddesc result
+ *
+ * @example
+ * sortByCreatedDesc();
+ */
+
 export function sortByCreatedDesc(): QuerySort {
   return { field: "created_at", direction: "desc" };
 }
@@ -427,6 +759,24 @@ export function sortByCreatedDesc(): QuerySort {
  *
  * @returns Query sort
  */
+/**
+ * Sorts by created asc
+ *
+ * @returns {any} The sortbycreatedasc result
+ *
+ * @example
+ * sortByCreatedAsc();
+ */
+
+/**
+ * Sorts by created asc
+ *
+ * @returns {any} The sortbycreatedasc result
+ *
+ * @example
+ * sortByCreatedAsc();
+ */
+
 export function sortByCreatedAsc(): QuerySort {
   return { field: "created_at", direction: "asc" };
 }
@@ -436,6 +786,24 @@ export function sortByCreatedAsc(): QuerySort {
  *
  * @returns Query sort
  */
+/**
+ * Sorts by updated desc
+ *
+ * @returns {any} The sortbyupdateddesc result
+ *
+ * @example
+ * sortByUpdatedDesc();
+ */
+
+/**
+ * Sorts by updated desc
+ *
+ * @returns {any} The sortbyupdateddesc result
+ *
+ * @example
+ * sortByUpdatedDesc();
+ */
+
 export function sortByUpdatedDesc(): QuerySort {
   return { field: "updated_at", direction: "desc" };
 }
@@ -445,6 +813,24 @@ export function sortByUpdatedDesc(): QuerySort {
  *
  * @returns Query sort
  */
+/**
+ * Sorts by price asc
+ *
+ * @returns {any} The sortbypriceasc result
+ *
+ * @example
+ * sortByPriceAsc();
+ */
+
+/**
+ * Sorts by price asc
+ *
+ * @returns {any} The sortbypriceasc result
+ *
+ * @example
+ * sortByPriceAsc();
+ */
+
 export function sortByPriceAsc(): QuerySort {
   return { field: "price", direction: "asc" };
 }
@@ -454,6 +840,24 @@ export function sortByPriceAsc(): QuerySort {
  *
  * @returns Query sort
  */
+/**
+ * Sorts by price desc
+ *
+ * @returns {any} The sortbypricedesc result
+ *
+ * @example
+ * sortByPriceDesc();
+ */
+
+/**
+ * Sorts by price desc
+ *
+ * @returns {any} The sortbypricedesc result
+ *
+ * @example
+ * sortByPriceDesc();
+ */
+
 export function sortByPriceDesc(): QuerySort {
   return { field: "price", direction: "desc" };
 }
@@ -463,6 +867,24 @@ export function sortByPriceDesc(): QuerySort {
  *
  * @returns Query sort
  */
+/**
+ * Sorts by popularity
+ *
+ * @returns {any} The sortbypopularity result
+ *
+ * @example
+ * sortByPopularity();
+ */
+
+/**
+ * Sorts by popularity
+ *
+ * @returns {any} The sortbypopularity result
+ *
+ * @example
+ * sortByPopularity();
+ */
+
 export function sortByPopularity(): QuerySort {
   return { field: "view_count", direction: "desc" };
 }
@@ -477,18 +899,48 @@ export function sortByPopularity(): QuerySort {
  * @param cursor - Document snapshot
  * @returns Base64 encoded cursor string
  */
+/**
+ * Performs encode cursor operation
+ *
+ * @param {QueryDocumentSnapshot<DocumentData>} cursor - The cursor
+ *
+ * @returns {string} The encodecursor result
+ *
+ * @example
+ * encodeCursor(cursor);
+ */
+
+/**
+ * Performs encode cursor operation
+ *
+ * @param {QueryDocumentSnapshot<DocumentData>} /** Cursor */
+  cursor - The /**  cursor */
+  cursor
+ *
+ * @returns {string} The encodecursor result
+ *
+ * @example
+ * encodeCursor(/** Cursor */
+  cursor);
+ */
+
 export function encodeCursor(
+  /** Cursor */
   cursor: QueryDocumentSnapshot<DocumentData>,
 ): string {
   try {
     const cursorData = {
+      /** Id */
       id: cursor.id,
+      /** Path */
       path: cursor.ref.path,
     };
     return Buffer.from(JSON.stringify(cursorData)).toString("base64");
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "encodeCursor",
+      /** Metadata */
       metadata: { cursorId: cursor.id },
     });
     return "";
@@ -501,6 +953,28 @@ export function encodeCursor(
  * @param result - Paginated result
  * @returns True if there are more pages
  */
+/**
+ * Checks if more pages
+ *
+ * @param {PaginatedResult<T>} result - The result
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasMorePages(result);
+ */
+
+/**
+ * Checks if more pages
+ *
+ * @param {PaginatedResult<T>} result - The result
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasMorePages(result);
+ */
+
 export function hasMorePages<T>(result: PaginatedResult<T>): boolean {
   return result.hasNextPage;
 }
@@ -511,6 +985,28 @@ export function hasMorePages<T>(result: PaginatedResult<T>): boolean {
  * @param result - Paginated result
  * @returns Human-readable page info
  */
+/**
+ * Retrieves page info
+ *
+ * @param {PaginatedResult<T>} result - The result
+ *
+ * @returns {string} The pageinfo result
+ *
+ * @example
+ * getPageInfo(result);
+ */
+
+/**
+ * Retrieves page info
+ *
+ * @param {PaginatedResult<T>} result - The result
+ *
+ * @returns {string} The pageinfo result
+ *
+ * @example
+ * getPageInfo(result);
+ */
+
 export function getPageInfo<T>(result: PaginatedResult<T>): string {
   const itemCount = result.data.length;
   const more = result.hasNextPage ? " (more available)" : "";
@@ -524,6 +1020,30 @@ export function getPageInfo<T>(result: PaginatedResult<T>): string {
  * @param pageSize - Items per page
  * @returns Estimated number of pages
  */
+/**
+ * Performs estimate pages operation
+ *
+ * @param {number} totalCount - Number of total
+ * @param {number} pageSize - The page size
+ *
+ * @returns {number} The estimatepages result
+ *
+ * @example
+ * estimatePages(123, 123);
+ */
+
+/**
+ * Performs estimate pages operation
+ *
+ * @param {number} totalCount - Number of total
+ * @param {number} pageSize - The page size
+ *
+ * @returns {number} The estimatepages result
+ *
+ * @example
+ * estimatePages(123, 123);
+ */
+
 export function estimatePages(totalCount: number, pageSize: number): number {
   return Math.ceil(totalCount / pageSize);
 }

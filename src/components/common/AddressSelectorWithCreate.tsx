@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/AddressSelectorWithCreate
+ * @description This file contains the AddressSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -9,16 +18,51 @@ import type { AddressFE } from "@/types/frontend/address.types";
 import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
+/**
+ * AddressSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressSelectorWithCreateProps
+ */
 export interface AddressSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (addressId: string, address: AddressFE) => void;
+  /** Filter Type */
   filterType?: "home" | "work" | "other" | "all";
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Auto Select Default */
   autoSelectDefault?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Address Selector With Create
+ */
+/**
+ * Performs address selector with create operation
+ *
+ * @returns {any} The addressselectorwithcreate result
+ *
+ * @example
+ * AddressSelectorWithCreate();
+ */
+
+/**
+ * Performs address selector with create operation
+ *
+ * @returns {any} The addressselectorwithcreate result
+ *
+ * @example
+ * AddressSelectorWithCreate();
+ */
 
 export function AddressSelectorWithCreate({
   value,
@@ -31,15 +75,22 @@ export function AddressSelectorWithCreate({
   className = "",
 }: AddressSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: addresses,
+    /** Set Data */
     setData: setAddresses,
     execute,
   } = useLoadingState<AddressFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "AddressSelectorWithCreate",
+        /** Action */
         action: "loadAddresses",
       });
       toast.error("Failed to load addresses");
@@ -65,6 +116,22 @@ export function AddressSelectorWithCreate({
     }
   }, [addresses, autoSelectDefault, selectedId, onChange]);
 
+  /**
+   * Fetches addresses from server
+   *
+   * @returns {Promise<any>} Promise resolving to addresses result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches addresses from server
+   *
+   * @returns {Promise<any>} Promise resolving to addresses result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAddresses = () =>
     execute(async () => {
       const data = await addressService.getAll();
@@ -76,10 +143,42 @@ export function AddressSelectorWithCreate({
       return filtered;
     });
 
+  /**
+   * Handles address select event
+   *
+   * @param {AddressFE} address - The address
+   *
+   * @returns {any} The handleaddressselect result
+   */
+
+  /**
+   * Handles address select event
+   *
+   * @param {AddressFE} address - The address
+   *
+   * @returns {any} The handleaddressselect result
+   */
+
   const handleAddressSelect = (address: AddressFE) => {
     setSelectedId(address.id);
     onChange(address.id, address);
   };
+
+  /**
+   * Handles address created event
+   *
+   * @param {AddressFE} newAddress - The new address
+   *
+   * @returns {any} The handleaddresscreated result
+   */
+
+  /**
+   * Handles address created event
+   *
+   * @param {AddressFE} newAddress - The new address
+   *
+   * @returns {any} The handleaddresscreated result
+   */
 
   const handleAddressCreated = (newAddress: AddressFE) => {
     setAddresses([...(addresses || []), newAddress]);
@@ -89,12 +188,29 @@ export function AddressSelectorWithCreate({
     toast.success("Address added successfully");
   };
 
+  /**
+   * Retrieves address icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The addressicon result
+   */
+
+  /**
+   * Retrieves address icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The addressicon result
+   */
+
   const getAddressIcon = (type: string) => {
     switch (type) {
       case "home":
         return <Home className="w-4 h-4" />;
       case "work":
         return <Briefcase className="w-4 h-4" />;
+      /** Default */
       default:
         return <MapPin className="w-4 h-4" />;
     }

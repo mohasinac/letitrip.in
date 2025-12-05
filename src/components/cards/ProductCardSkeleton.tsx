@@ -1,12 +1,65 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ProductCardSkeleton
+ * @description This file contains the ProductCardSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * ProductCardSkeletonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductCardSkeletonProps
+ */
 export interface ProductCardSkeletonProps {
+  /** Compact */
   compact?: boolean;
+  /** Show Shop Name */
   showShopName?: boolean;
 }
 
+/**
+ * Performs product card skeleton operation
+ *
+ * @param {any} [{
+  compact] - The {
+  compact
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton({
+  compact);
+ */
+
+/**
+ * P
+ * @constant
+ */
+/**
+ * Performs product card skeleton operation
+ *
+ * @param {any} [{
+  compact] - The {
+  compact
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton({
+  compact);
+ */
+
+/**
+ * P
+ * @constant
+ */
 export const ProductCardSkeleton: React.FC<ProductCardSkeletonProps> = ({
   compact = false,
   showShopName = true,

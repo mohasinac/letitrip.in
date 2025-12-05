@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/blog/[slug]/BlogPostClient
+ * @description This file contains the BlogPostClient component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
@@ -22,7 +31,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * BlogPostClientProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogPostClientProps
+ */
 interface BlogPostClientProps {
+  /** Slug */
   slug: string;
 }
 
@@ -32,16 +48,23 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
   const [liked, setLiked] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: post,
+    /** Set Data */
     setData: setPost,
     execute,
   } = useLoadingState<BlogPost | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "BlogPostClient.fetchPost",
+        /** Metadata */
         metadata: { slug },
       });
     },
@@ -50,6 +73,22 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
   useEffect(() => {
     fetchPost();
   }, [slug]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchPost = async () => {
     await execute(async () => {
@@ -65,6 +104,22 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleLike = async () => {
     if (!post) return;
     try {
@@ -72,27 +127,51 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       setLiked(!liked);
       setPost({
         ...post,
+        /** Likes */
         likes: liked ? post.likes - 1 : post.likes + 1,
       });
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "BlogPostClient.handleLike",
+        /** Metadata */
         metadata: { postId: post.id },
       });
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
+          /** Title */
           title: post?.title,
+          /** Text */
           text: post?.excerpt,
+          /** Url */
           url: globalThis.location?.href || "",
         });
       } catch (err) {
         logError(err as Error, {
+          /** Component */
           component: "BlogPostClient.handleShare",
+          /** Metadata */
           metadata: { postId: post?.id },
         });
       }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/reviews.service
+ * @description This file contains service functions for reviews operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { REVIEW_ROUTES } from "@/constants/api-routes";
 import { ReviewBE } from "@/types/backend/review.types";
@@ -16,14 +25,29 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
+/**
+ * ModerateReviewData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ModerateReviewData
+ */
 interface ModerateReviewData {
+  /** Is Approved */
   isApproved: boolean;
+  /** Moderation Notes */
   moderationNotes?: string;
 }
 
+/**
+ * ReviewsService class
+ * 
+ * @class
+ * @description Description of ReviewsService class functionality
+ */
 class ReviewsService {
   // List reviews with cursor-based pagination
   async list(
+    /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ReviewFE>> {
     const params = new URLSearchParams();
@@ -43,8 +67,11 @@ class ReviewsService {
 
     const response: any = await apiService.get(endpoint);
     return {
+      /** Data */
       data: toFEReviews(response.data || response.reviews || []),
+      /** Count */
       count: response.count || 0,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -100,7 +127,9 @@ class ReviewsService {
     files.forEach((file) => formData.append("files", file));
 
     const response = await fetch(REVIEW_ROUTES.MEDIA, {
+      /** Method */
       method: "POST",
+      /** Body */
       body: formData,
     });
 
@@ -114,13 +143,20 @@ class ReviewsService {
 
   // Get review summary for a product/shop
   async getSummary(filters: {
+    /** Product Id */
     productId?: string;
+    /** Shop Id */
     shopId?: string;
+    /** Auction Id */
     auctionId?: string;
   }): Promise<{
+    /** Average Rating */
     averageRating: number;
+    /** Total Reviews */
     totalReviews: number;
+    /** Rating Distribution */
     ratingDistribution: { rating: number; count: number }[];
+    /** Verified Purchase Percentage */
     verifiedPurchasePercentage: number;
   }> {
     const params = new URLSearchParams();
@@ -141,7 +177,9 @@ class ReviewsService {
 
   // Check if user can review
   async canReview(
+    /** Product Id */
     productId?: string,
+    /** Auction Id */
     auctionId?: string,
   ): Promise<{ canReview: boolean; reason?: string }> {
     const params = new URLSearchParams();
@@ -172,15 +210,23 @@ class ReviewsService {
 
   // Bulk operations (admin only)
   private async bulkAction(
+    /** Action */
     action: string,
+    /** Ids */
     ids: string[],
+    /** Data */
     data?: Record<string, any>,
   ): Promise<{
+    /** Success */
     success: boolean;
+    /** Results */
     results: {
+      /** Success */
       success: string[];
+      /** Failed */
       failed: { id: string; error: string }[];
     };
+    /** Summary */
     summary: { total: number; succeeded: number; failed: number };
   }> {
     return apiService.post(REVIEW_ROUTES.BULK, { action, ids, data });

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/SearchInput
+ * @description This file contains the SearchInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * SearchInput Component
  *
  * A reusable search input with icon and clear button.
@@ -26,6 +35,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, X } from "lucide-react";
 
+/**
+ * SearchInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SearchInputProps
+ */
 interface SearchInputProps {
   /** Current search value */
   value: string;
@@ -48,25 +63,61 @@ interface SearchInputProps {
 }
 
 const sizeClasses = {
+  /** Sm */
   sm: {
+    /** Wrapper */
     wrapper: "h-8",
+    /** Input */
     input: "pl-8 pr-8 py-1 text-sm",
+    /** Icon */
     icon: "left-2 w-4 h-4",
+    /** Clear */
     clear: "right-2 w-4 h-4",
   },
+  /** Md */
   md: {
+    /** Wrapper */
     wrapper: "h-10",
+    /** Input */
     input: "pl-10 pr-10 py-2 text-sm",
+    /** Icon */
     icon: "left-3 w-5 h-5",
+    /** Clear */
     clear: "right-3 w-4 h-4",
   },
+  /** Lg */
   lg: {
+    /** Wrapper */
     wrapper: "h-12",
+    /** Input */
     input: "pl-12 pr-12 py-3 text-base",
+    /** Icon */
     icon: "left-4 w-5 h-5",
+    /** Clear */
     clear: "right-4 w-5 h-5",
   },
 };
+
+/**
+ * Function: Search Input
+ */
+/**
+ * Performs search input operation
+ *
+ * @returns {any} The searchinput result
+ *
+ * @example
+ * SearchInput();
+ */
+
+/**
+ * Performs search input operation
+ *
+ * @returns {any} The searchinput result
+ *
+ * @example
+ * SearchInput();
+ */
 
 export function SearchInput({
   value,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/GoogleSignInButton
+ * @description This file contains the GoogleSignInButton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,8 +19,11 @@ import { toast } from "sonner";
 
 // Initialize Firebase client for Google Auth popup
 const firebaseConfig = {
+  /** Api Key */
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  /** Auth Domain */
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  /** Project Id */
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
 };
 
@@ -20,16 +32,47 @@ const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 
+/**
+ * GoogleSignInButtonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GoogleSignInButtonProps
+ */
 interface GoogleSignInButtonProps {
+  /** On Success */
   onSuccess?: () => void;
+  /** On Error */
   onError?: (error: Error) => void;
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "full" | "icon";
+  /** Disabled */
   disabled?: boolean;
+  /** Redirect Path */
   redirectPath?: string;
 }
 
 // Inner component that uses useSearchParams
+/**
+ * Function: Google Sign In Button Inner
+ */
+/**
+ * Performs google sign in button inner operation
+ *
+ * @returns {any} The googlesigninbuttoninner result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs google sign in button inner operation
+ *
+ * @returns {any} The googlesigninbuttoninner result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 function GoogleSignInButtonInner({
   onSuccess,
   onError,
@@ -42,6 +85,22 @@ function GoogleSignInButtonInner({
   const searchParams = useSearchParams();
   const { loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleGoogleSignIn = async () => {
     if (loading || disabled) return;
@@ -61,8 +120,11 @@ function GoogleSignInButtonInner({
 
       // Send to our backend to create/update user and session
       const response = await loginWithGoogle(idToken, {
+        /** Display Name */
         displayName: user.displayName || undefined,
+        /** Email */
         email: user.email || undefined,
+        /** Photo U R L */
         photoURL: user.photoURL || undefined,
       });
 
@@ -86,7 +148,9 @@ function GoogleSignInButtonInner({
       }, 100);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "GoogleSignInButton.handleGoogleSignIn",
+        /** Metadata */
         metadata: { redirectPath },
       });
 
@@ -151,6 +215,29 @@ function GoogleSignInButtonInner({
 }
 
 // Fallback component for loading state
+/**
+ * Function: Google Sign In Button Fallback
+ */
+/**
+ * Performs google sign in button fallback operation
+ *
+ * @param {Pick<GoogleSignInButtonProps, "className" | "variant">} [{
+  className] - Name of {
+  class
+ *
+ * @returns {any} The googlesigninbuttonfallback result
+ */
+
+/**
+ * Performs google sign in button fallback operation
+ *
+ * @param {Pick<GoogleSignInButtonProps, "className" | "variant">} [{
+  className] - Name of {
+  class
+ *
+ * @returns {any} The googlesigninbuttonfallback result
+ */
+
 function GoogleSignInButtonFallback({
   className = "",
   variant = "full",
@@ -181,6 +268,31 @@ function GoogleSignInButtonFallback({
 }
 
 // Exported component wrapped in Suspense
+/**
+ * Function: Google Sign In Button
+ */
+/**
+ * Performs google sign in button operation
+ *
+ * @param {GoogleSignInButtonProps} props - The props
+ *
+ * @returns {any} The googlesigninbutton result
+ *
+ * @example
+ * GoogleSignInButton(props);
+ */
+
+/**
+ * Performs google sign in button operation
+ *
+ * @param {GoogleSignInButtonProps} props - The props
+ *
+ * @returns {any} The googlesigninbutton result
+ *
+ * @example
+ * GoogleSignInButton(props);
+ */
+
 export function GoogleSignInButton(props: GoogleSignInButtonProps) {
   return (
     <Suspense
@@ -197,6 +309,25 @@ export function GoogleSignInButton(props: GoogleSignInButtonProps) {
 }
 
 // Google "G" logo SVG
+/**
+ * Function: Google Icon
+ */
+/**
+ * Performs google icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The googleicon result
+ */
+
+/**
+ * Performs google icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The googleicon result
+ */
+
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24">

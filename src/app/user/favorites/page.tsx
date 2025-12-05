@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/favorites/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Price } from "@/components/common/values/Price";
@@ -10,14 +19,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * FavoriteType type
+ * 
+ * @typedef {Object} FavoriteType
+ * @description Type definition for FavoriteType
+ */
 type FavoriteType = "product" | "shop" | "category" | "auction";
 
+/**
+ * FavoriteItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FavoriteItem
+ */
 interface FavoriteItem {
+  /** Id */
   id: string;
+  /** Name */
   name?: string;
+  /** Title */
   title?: string;
+  /** Image */
   image?: string;
+  /** Images */
   images?: string[];
+  /** Price */
   price?: number;
   favorited_at: string;
 }
@@ -26,10 +53,13 @@ export default function FavoritesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FavoriteType>("product");
   const {
+    /** Data */
     data: items,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
+    /** Set Data */
     setData: setItems,
   } = useLoadingState<FavoriteItem[]>({ initialData: [] });
 
@@ -44,6 +74,26 @@ export default function FavoritesPage() {
     }
   }, [user, execute, fetchFavorites]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} itemId - item identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} itemId - item identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRemove = async (itemId: string) => {
     try {
       const result = await favoritesService.removeByType(activeTab, itemId);
@@ -52,7 +102,9 @@ export default function FavoritesPage() {
       }
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "UserFavorites.handleRemove",
+        /** Metadata */
         metadata: { itemType: activeTab, itemId },
       });
     }
@@ -68,6 +120,22 @@ export default function FavoritesPage() {
     { type: "auction" as FavoriteType, label: "Auctions", icon: Gavel },
   ];
 
+  /**
+   * Retrieves item link
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemlink result
+   */
+
+  /**
+   * Retrieves item link
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemlink result
+   */
+
   const getItemLink = (item: FavoriteItem) => {
     switch (activeTab) {
       case "product":
@@ -78,14 +146,47 @@ export default function FavoritesPage() {
         return `/categories/${item.id}`;
       case "auction":
         return `/auctions/${item.id}`;
+      /** Default */
       default:
         return "#";
     }
   };
 
+  /**
+   * Retrieves item image
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemimage result
+   */
+
+  /**
+   * Retrieves item image
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemimage result
+   */
+
   const getItemImage = (item: FavoriteItem) => {
     return item.image || item.images?.[0] || "/placeholder-image.png";
   };
+
+  /**
+   * Retrieves item name
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemname result
+   */
+
+  /**
+   * Retrieves item name
+   *
+   * @param {FavoriteItem} item - The item
+   *
+   * @returns {any} The itemname result
+   */
 
   const getItemName = (item: FavoriteItem) => {
     return item.name || item.title || "Untitled";

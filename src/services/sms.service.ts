@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/sms.service
+ * @description This file contains service functions for sms operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { logError } from "@/lib/firebase-error-logger";
 
 /**
@@ -10,20 +19,43 @@ import { logError } from "@/lib/firebase-error-logger";
  * - Template-based messaging
  */
 
+/**
+ * Send S M S Request interface
+ * @interface SendSMSRequest
+ */
 export interface SendSMSRequest {
   to: string; // Phone number with country code (e.g., +919876543210)
+  /** Message */
   message: string;
+  /** Template */
   template?: string;
+  /** Variables */
   variables?: Record<string, string>;
 }
 
+/**
+ * SMSTemplate interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SMSTemplate
+ */
 export interface SMSTemplate {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Content */
   content: string;
+  /** Variables */
   variables: string[];
 }
 
+/**
+ * SMSService class
+ * 
+ * @class
+ * @description Description of SMSService class functionality
+ */
 class SMSService {
   private readonly provider: "msg91" | "twilio" | "mock";
   private readonly authKey: string;
@@ -44,6 +76,7 @@ class SMSService {
         return "https://api.msg91.com/api/v5";
       case "twilio":
         return "https://api.twilio.com/2010-04-01";
+      /** Default */
       default:
         return "";
     }
@@ -55,15 +88,22 @@ class SMSService {
   private async sendViaMSG91(request: SendSMSRequest): Promise<void> {
     try {
       const response = await fetch(`${this.baseUrl}/flow/`, {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
+          /** Authkey */
           authkey: this.authKey,
         },
+        /** Body */
         body: JSON.stringify({
+          /** Sender */
           sender: this.senderId,
           short_url: "0",
+          /** Mobiles */
           mobiles: request.to,
+          /** Message */
           message: request.message,
           route: "4", // Transactional route
           country: "91", // India
@@ -83,7 +123,9 @@ class SMSService {
       console.log(`[SMS] Sent via MSG91 to ${request.to}`);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SMSService.sendViaMSG91",
+        /** Metadata */
         metadata: { to: request.to },
       });
       throw error;
@@ -108,14 +150,21 @@ class SMSService {
       const response = await fetch(
         `${this.baseUrl}/Accounts/${accountSid}/Messages.json`,
         {
+          /** Method */
           method: "POST",
+          /** Headers */
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
+            /** Authorization */
             Authorization: `Basic ${auth}`,
           },
+          /** Body */
           body: new URLSearchParams({
+            /** To */
             To: request.to,
+            /** From */
             From: fromNumber,
+            /** Body */
             Body: request.message,
           }),
         },
@@ -128,7 +177,9 @@ class SMSService {
       console.log(`[SMS] Sent via Twilio to ${request.to}`);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SMSService.sendViaTwilio",
+        /** Metadata */
         metadata: { to: request.to },
       });
       throw error;
@@ -147,6 +198,7 @@ class SMSService {
    * Send SMS with automatic provider selection
    */
   async send(
+    /** Request */
     request: SendSMSRequest,
   ): Promise<{ success: boolean; message: string }> {
     try {
@@ -165,22 +217,29 @@ class SMSService {
         case "twilio":
           await this.sendViaTwilio(request);
           break;
+        /** Default */
         default:
           await this.sendViaMock(request);
       }
 
       return {
+        /** Success */
         success: true,
+        /** Message */
         message: "SMS sent successfully",
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SMSService.send",
+        /** Metadata */
         metadata: request,
       });
 
       return {
+        /** Success */
         success: false,
+        /** Message */
         message: error instanceof Error ? error.message : "Failed to send SMS",
       };
     }
@@ -190,12 +249,15 @@ class SMSService {
    * Send OTP via SMS
    */
   async sendOTP(
+    /** Phone Number */
     phoneNumber: string,
+    /** Otp */
     otp: string,
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your JustForView verification code is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
 
     return await this.send({
+      /** To */
       to: phoneNumber,
       message,
     });
@@ -205,13 +267,17 @@ class SMSService {
    * Send order confirmation SMS
    */
   async sendOrderConfirmation(
+    /** Phone Number */
     phoneNumber: string,
+    /** Order Id */
     orderId: string,
+    /** Amount */
     amount: number,
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your order #${orderId} has been confirmed! Total: ₹${amount}. Track at justforview.in/orders/${orderId}`;
 
     return await this.send({
+      /** To */
       to: phoneNumber,
       message,
     });
@@ -221,14 +287,18 @@ class SMSService {
    * Send order shipped SMS
    */
   async sendOrderShipped(
+    /** Phone Number */
     phoneNumber: string,
+    /** Order Id */
     orderId: string,
+    /** Tracking Id */
     trackingId?: string,
   ): Promise<{ success: boolean; message: string }> {
     const trackingInfo = trackingId ? ` Tracking: ${trackingId}` : "";
     const message = `Your order #${orderId} has been shipped!${trackingInfo} Track at justforview.in/orders/${orderId}`;
 
     return await this.send({
+      /** To */
       to: phoneNumber,
       message,
     });
@@ -238,12 +308,15 @@ class SMSService {
    * Send order delivered SMS
    */
   async sendOrderDelivered(
+    /** Phone Number */
     phoneNumber: string,
+    /** Order Id */
     orderId: string,
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your order #${orderId} has been delivered! Thank you for shopping with JustForView.`;
 
     return await this.send({
+      /** To */
       to: phoneNumber,
       message,
     });
@@ -253,14 +326,18 @@ class SMSService {
    * Send promotional SMS (requires DND approval)
    */
   async sendPromotion(
+    /** Phone Number */
     phoneNumber: string,
+    /** Message */
     message: string,
   ): Promise<{ success: boolean; message: string }> {
     // Add unsubscribe option as per TRAI regulations
     const fullMessage = `${message}\n\nTo opt-out, reply STOP to ${this.senderId}`;
 
     return await this.send({
+      /** To */
       to: phoneNumber,
+      /** Message */
       message: fullMessage,
     });
   }

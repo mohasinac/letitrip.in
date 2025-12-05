@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/CategoryForm
+ * @description This file contains the CategoryForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import CategorySelector, {
@@ -21,13 +30,25 @@ import { MediaFile } from "@/types/media";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * CategoryFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryFormProps
+ */
 interface CategoryFormProps {
+  /** Initial Data */
   initialData?: {
+    /** Id */
     id?: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Description */
     description?: string;
     parent_id?: string | null;
+    /** Image */
     image?: string;
     is_featured?: boolean;
     show_on_homepage?: boolean;
@@ -36,6 +57,7 @@ interface CategoryFormProps {
     meta_title?: string;
     meta_description?: string;
   };
+  /** Mode */
   mode: "create" | "edit";
 }
 
@@ -45,10 +67,14 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
   const [formData, setFormData] = useState({
+    /** Name */
     name: initialData?.name || "",
+    /** Slug */
     slug: initialData?.slug || "",
+    /** Description */
     description: initialData?.description || "",
     parent_id: initialData?.parent_id || null,
+    /** Image */
     image: initialData?.image || "",
     is_featured: initialData?.is_featured || false,
     show_on_homepage: initialData?.show_on_homepage || false,
@@ -68,14 +94,19 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     isCleaning,
     hasUploadedMedia,
   } = useMediaUploadWithCleanup({
+    /** Enable Navigation Guard */
     enableNavigationGuard: true,
+    /** Navigation Guard Message */
     navigationGuardMessage: "You have uploaded an image. Leave and delete?",
+    /** On Upload Success */
     onUploadSuccess: (url) => {
       setFormData((prev) => ({ ...prev, image: url }));
     },
+    /** On Upload Error */
     onUploadError: (error) => {
       setErrors((prev) => ({ ...prev, image: `Upload failed: ${error}` }));
     },
+    /** On Cleanup Complete */
     onCleanupComplete: () => {
       setUploadedFiles([]);
     },
@@ -83,14 +114,34 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
 
   // Load categories for CategorySelector
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadCategories = async () => {
       try {
         const response = await categoriesService.list();
         const transformed = response.data.map((cat: any) => ({
+          /** Id */
           id: cat.id,
+          /** Name */
           name: cat.name,
+          /** Slug */
           slug: cat.slug,
           parent_id: cat.parent_id,
+          /** Level */
           level: 0,
           has_children: false,
           is_active: cat.is_active,
@@ -98,12 +149,29 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
         setCategories(transformed);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "CategoryForm.loadCategories",
         });
       }
     };
     loadCategories();
   }, []);
+
+  /**
+   * Validates validate
+   *
+   * @returns {any} The validate result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates validate
+   *
+   * @returns {any} The validate result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -118,6 +186,26 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,7 +234,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       router.refresh();
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CategoryForm.handleSubmit",
+        /** Metadata */
         metadata: { formData, isEdit: !!initialData },
       });
 
@@ -157,6 +247,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       }
 
       setErrors({
+        /** Submit */
         submit:
           error instanceof Error
             ? error.message
@@ -167,6 +258,26 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleImageUpload = async (files: MediaFile[]) => {
     if (files.length === 0) return;
 
@@ -176,11 +287,29 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       await uploadMedia(files[0].file, "category");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CategoryForm.handleImageUpload",
+        /** Metadata */
         metadata: { fileName: files[0].file.name },
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancel = async () => {
     if (hasUploadedMedia) {

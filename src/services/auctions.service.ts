@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/auctions.service
+ * @description This file contains service functions for auctions operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
@@ -29,6 +38,12 @@ import type {
 import { logServiceError } from "@/lib/error-logger";
 import { getUserFriendlyError } from "@/components/common/ErrorMessage";
 
+/**
+ * AuctionsService class
+ * 
+ * @class
+ * @description Description of AuctionsService class functionality
+ */
 class AuctionsService {
   /**
    * Handle service errors and convert to user-friendly messages
@@ -40,6 +55,7 @@ class AuctionsService {
 
   // List auctions (role-filtered) with cursor-based pagination
   async list(
+    /** Filters */
     filters?: Partial<AuctionFiltersBE>,
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
     try {
@@ -47,8 +63,11 @@ class AuctionsService {
       const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
       return {
+        /** Data */
         data: (response.data || []).map(toFEAuctionCard),
+        /** Count */
         count: response.count,
+        /** Pagination */
         pagination: response.pagination,
       };
     } catch (error) {
@@ -96,7 +115,9 @@ class AuctionsService {
 
   // Update auction (owner/admin)
   async update(
+    /** Id */
     id: string,
+    /** Form Data */
     formData: Partial<AuctionFormFE>,
   ): Promise<AuctionFE> {
     try {
@@ -121,7 +142,9 @@ class AuctionsService {
 
   // Validate slug availability
   async validateSlug(
+    /** Slug */
     slug: string,
+    /** Shop Id */
     shopId?: string,
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
@@ -135,9 +158,13 @@ class AuctionsService {
 
   // Get auction bids
   async getBids(
+    /** Id */
     id: string,
+    /** Limit */
     limit?: number,
+    /** Start After */
     startAfter?: string | null,
+    /** Sort Order */
     sortOrder: "asc" | "desc" = "desc",
   ): Promise<PaginatedResponseFE<BidFE>> {
     try {
@@ -155,8 +182,11 @@ class AuctionsService {
         await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
 
       return {
+        /** Data */
         data: response.data.map((bid) => toFEBid(bid)),
+        /** Count */
         count: response.count,
+        /** Pagination */
         pagination: response.pagination,
       };
     } catch (error) {
@@ -168,8 +198,11 @@ class AuctionsService {
   async placeBid(id: string, formData: PlaceBidFormFE): Promise<BidFE> {
     try {
       const bidBE = await apiService.post<BidBE>(`/auctions/${id}/bid`, {
+        /** Amount */
         amount: formData.amount,
+        /** Is Auto Bid */
         isAutoBid: formData.isAutoBid,
+        /** Max Auto Bid Amount */
         maxAutoBidAmount: formData.maxAutoBidAmount,
       });
       return toFEBid(bidBE);
@@ -180,14 +213,18 @@ class AuctionsService {
 
   // Set featured auction (admin only)
   async setFeatured(
+    /** Id */
     id: string,
+    /** Featured */
     featured: boolean,
+    /** Priority */
     priority?: number,
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       `/auctions/${id}/feature`,
       {
         featured,
+        /** Featured Priority */
         featuredPriority: priority,
       },
     );
@@ -209,7 +246,9 @@ class AuctionsService {
   // Get homepage auctions
   async getHomepage(): Promise<AuctionCardFE[]> {
     const response = await this.list({
+      /** Status */
       status: AUCTION_STATUS.ACTIVE as any,
+      /** Limit */
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     return response.data;
@@ -252,7 +291,9 @@ class AuctionsService {
   async getWatchlist(): Promise<AuctionFE[]> {
     try {
       const response = await apiService.get<{
+        /** Success */
         success: boolean;
+        /** Data */
         data: AuctionBE[];
       }>("/auctions/watchlist");
       const auctionsBE = response.data || [];
@@ -266,7 +307,9 @@ class AuctionsService {
   async getMyBids(): Promise<BidFE[]> {
     try {
       const response = await apiService.get<{
+        /** Success */
         success: boolean;
+        /** Data */
         data: BidBE[];
       }>("/auctions/my-bids");
       const bidsBE = response.data || [];
@@ -280,7 +323,9 @@ class AuctionsService {
   async getWonAuctions(): Promise<AuctionFE[]> {
     try {
       const response = await apiService.get<{
+        /** Success */
         success: boolean;
+        /** Data */
         data: AuctionBE[];
       }>("/auctions/won");
       const auctionsBE = response.data || [];
@@ -294,8 +339,11 @@ class AuctionsService {
    * Bulk actions - supports: start, end, cancel, feature, unfeature, delete, update
    */
   async bulkAction(
+    /** Action */
     action: string,
+    /** Auction Ids */
     auctionIds: string[],
+    /** Data */
     data?: any,
   ): Promise<BulkActionResponse> {
     try {
@@ -303,7 +351,9 @@ class AuctionsService {
         AUCTION_ROUTES.BULK,
         {
           action,
+          /** Ids */
           ids: auctionIds,
+          /** Updates */
           updates: data,
         },
       );
@@ -360,7 +410,9 @@ class AuctionsService {
    * Bulk update auctions
    */
   async bulkUpdate(
+    /** Auction Ids */
     auctionIds: string[],
+    /** Updates */
     updates: Partial<AuctionFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", auctionIds, updates);
@@ -368,16 +420,24 @@ class AuctionsService {
 
   // Quick create for inline editing (minimal fields)
   async quickCreate(data: {
+    /** Name */
     name: string;
+    /** Starting Bid */
     startingBid: number;
+    /** Start Time */
     startTime: Date | string;
+    /** End Time */
     endTime: Date | string;
+    /** Status */
     status?: string;
+    /** Images */
     images?: string[];
   }): Promise<AuctionFE> {
     const auctionBE = await apiService.post<AuctionBE>(AUCTION_ROUTES.LIST, {
       ...data,
+      /** Description */
       description: "",
+      /** Slug */
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
     });
     return toFEAuction(auctionBE);
@@ -385,7 +445,9 @@ class AuctionsService {
 
   // Quick update for inline editing
   async quickUpdate(
+    /** Id */
     id: string,
+    /** Data */
     data: Partial<AuctionFormFE>,
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(

@@ -1,7 +1,47 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/[id]/similar/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
 // GET /api/auctions/[id]/similar - similar by category, diverse shops
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> },

@@ -1,14 +1,57 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/ToggleSwitch
+ * @description This file contains the ToggleSwitch component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
+/**
+ * ToggleSwitchProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ToggleSwitchProps
+ */
 interface ToggleSwitchProps {
+  /** Enabled */
   enabled: boolean;
+  /** On Toggle */
   onToggle: () => void;
+  /** Disabled */
   disabled?: boolean;
+  /** Size */
   size?: "sm" | "md" | "lg";
+  /** Label */
   label?: string;
+  /** Description */
   description?: string;
+  /** Id */
   id?: string;
 }
+
+/**
+ * Function: Toggle Switch
+ */
+/**
+ * Performs toggle switch operation
+ *
+ * @returns {any} The toggleswitch result
+ *
+ * @example
+ * ToggleSwitch();
+ */
+
+/**
+ * Performs toggle switch operation
+ *
+ * @returns {any} The toggleswitch result
+ *
+ * @example
+ * ToggleSwitch();
+ */
 
 export function ToggleSwitch({
   enabled,
@@ -20,19 +63,31 @@ export function ToggleSwitch({
   id,
 }: ToggleSwitchProps) {
   const sizes = {
+    /** Sm */
     sm: {
+      /** Container */
       container: "h-5 w-9",
+      /** Circle */
       circle: "h-3 w-3",
+      /** Translate */
       translate: enabled ? "translate-x-5" : "translate-x-1",
     },
+    /** Md */
     md: {
+      /** Container */
       container: "h-6 w-11",
+      /** Circle */
       circle: "h-4 w-4",
+      /** Translate */
       translate: enabled ? "translate-x-6" : "translate-x-1",
     },
+    /** Lg */
     lg: {
+      /** Container */
       container: "h-7 w-14",
+      /** Circle */
       circle: "h-5 w-5",
+      /** Translate */
       translate: enabled ? "translate-x-8" : "translate-x-1",
     },
   };

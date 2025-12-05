@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/constants/limits
+ * @description This file contains functionality related to limits
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Numeric Limits and Configuration Constants
  * Centralized location for all limit-related values
  */
@@ -6,6 +15,10 @@
 // =============================================================================
 // PAGINATION LIMITS
 // =============================================================================
+/**
+ * Pagination
+ * @constant
+ */
 export const PAGINATION = {
   DEFAULT_PAGE_SIZE: 20,
   MAX_PAGE_SIZE: 100,
@@ -16,6 +29,10 @@ export const PAGINATION = {
 // =============================================================================
 // PRODUCT LIMITS
 // =============================================================================
+/**
+ * Product Limits
+ * @constant
+ */
 export const PRODUCT_LIMITS = {
   MAX_IMAGES: 10,
   MAX_VIDEOS: 3,
@@ -32,6 +49,10 @@ export const PRODUCT_LIMITS = {
 // =============================================================================
 // AUCTION LIMITS
 // =============================================================================
+/**
+ * Auction Limits
+ * @constant
+ */
 export const AUCTION_LIMITS = {
   MIN_STARTING_BID: 1,
   MAX_STARTING_BID: 100000000, // 10 crores
@@ -46,6 +67,10 @@ export const AUCTION_LIMITS = {
 // =============================================================================
 // UPLOAD LIMITS
 // =============================================================================
+/**
+ * Upload Limits
+ * @constant
+ */
 export const UPLOAD_LIMITS = {
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
   MAX_IMAGE_SIZE: 5 * 1024 * 1024, // 5MB
@@ -55,11 +80,15 @@ export const UPLOAD_LIMITS = {
   ALLOWED_VIDEO_TYPES: ["video/mp4", "video/webm"],
   ALLOWED_DOCUMENT_TYPES: ["application/pdf"],
   MAX_DIMENSIONS: {
+    /** Width */
     width: 4096,
+    /** Height */
     height: 4096,
   },
   THUMBNAIL_SIZE: {
+    /** Width */
     width: 300,
+    /** Height */
     height: 300,
   },
 } as const;
@@ -67,6 +96,10 @@ export const UPLOAD_LIMITS = {
 // =============================================================================
 // SHOP LIMITS
 // =============================================================================
+/**
+ * Shop Limits
+ * @constant
+ */
 export const SHOP_LIMITS = {
   MAX_PRODUCTS: 10000,
   MAX_ACTIVE_AUCTIONS: 5,
@@ -80,6 +113,10 @@ export const SHOP_LIMITS = {
 // =============================================================================
 // USER LIMITS
 // =============================================================================
+/**
+ * User Limits
+ * @constant
+ */
 export const USER_LIMITS = {
   MIN_USERNAME_LENGTH: 3,
   MAX_USERNAME_LENGTH: 30,
@@ -95,6 +132,10 @@ export const USER_LIMITS = {
 // =============================================================================
 // CATEGORY LIMITS
 // =============================================================================
+/**
+ * Category Limits
+ * @constant
+ */
 export const CATEGORY_LIMITS = {
   MAX_DEPTH: 5, // Max nesting levels
   MAX_CHILDREN: 50, // Max direct children per category
@@ -106,6 +147,10 @@ export const CATEGORY_LIMITS = {
 // =============================================================================
 // REVIEW/RATING LIMITS
 // =============================================================================
+/**
+ * Review Limits
+ * @constant
+ */
 export const REVIEW_LIMITS = {
   MIN_RATING: 1,
   MAX_RATING: 5,
@@ -117,6 +162,10 @@ export const REVIEW_LIMITS = {
 // =============================================================================
 // ORDER LIMITS
 // =============================================================================
+/**
+ * Order Limits
+ * @constant
+ */
 export const ORDER_LIMITS = {
   MIN_ORDER_VALUE: 1,
   MAX_ORDER_VALUE: 10000000, // 1 crore
@@ -129,6 +178,10 @@ export const ORDER_LIMITS = {
 // =============================================================================
 // RATE LIMITS
 // =============================================================================
+/**
+ * Rate Limits
+ * @constant
+ */
 export const RATE_LIMITS = {
   API_REQUESTS_PER_MINUTE: 60,
   API_REQUESTS_PER_HOUR: 1000,
@@ -141,6 +194,10 @@ export const RATE_LIMITS = {
 // =============================================================================
 // COUPON LIMITS
 // =============================================================================
+/**
+ * Coupon Limits
+ * @constant
+ */
 export const COUPON_LIMITS = {
   MIN_CODE_LENGTH: 4,
   MAX_CODE_LENGTH: 20,
@@ -152,6 +209,10 @@ export const COUPON_LIMITS = {
 // =============================================================================
 // SEARCH LIMITS
 // =============================================================================
+/**
+ * Search Limits
+ * @constant
+ */
 export const SEARCH_LIMITS = {
   MIN_QUERY_LENGTH: 2,
   MAX_QUERY_LENGTH: 200,
@@ -163,6 +224,10 @@ export const SEARCH_LIMITS = {
 // =============================================================================
 // VIEWING HISTORY LIMITS
 // =============================================================================
+/**
+ * History Limits
+ * @constant
+ */
 export const HISTORY_LIMITS = {
   MAX_RECENTLY_VIEWED: 50,
   MAX_COMPARISON_ITEMS: 4,
@@ -172,6 +237,10 @@ export const HISTORY_LIMITS = {
 // =============================================================================
 // BLOG LIMITS
 // =============================================================================
+/**
+ * Blog Limits
+ * @constant
+ */
 export const BLOG_LIMITS = {
   MIN_TITLE_LENGTH: 10,
   MAX_TITLE_LENGTH: 200,
@@ -184,6 +253,10 @@ export const BLOG_LIMITS = {
 // =============================================================================
 // SUPPORT TICKET LIMITS
 // =============================================================================
+/**
+ * Ticket Limits
+ * @constant
+ */
 export const TICKET_LIMITS = {
   MIN_SUBJECT_LENGTH: 10,
   MAX_SUBJECT_LENGTH: 200,

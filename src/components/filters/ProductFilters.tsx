@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/ProductFilters
+ * @description This file contains the ProductFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,26 +15,78 @@ import { logError } from "@/lib/error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 
+/**
+ * ProductFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductFilterValues
+ */
 export interface ProductFilterValues {
+  /** Price Min */
   priceMin?: number;
+  /** Price Max */
   priceMax?: number;
+  /** Categories */
   categories?: string[];
+  /** Stock */
   stock?: "in_stock" | "out_of_stock" | "low_stock";
+  /** Condition */
   condition?: ("new" | "like_new" | "good" | "fair")[];
+  /** Brands */
   brands?: string[];
+  /** Featured */
   featured?: boolean;
+  /** Returnable */
   returnable?: boolean;
+  /** Rating */
   rating?: number;
 }
 
+/**
+ * ProductFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductFiltersProps
+ */
 interface ProductFiltersProps {
+  /** Filters */
   filters: ProductFilterValues;
+  /** On Change */
   onChange: (filters: ProductFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
+  /** Available Brands */
   availableBrands?: string[];
 }
 
+/**
+ * Performs product filters operation
+ *
+ * @returns {any} The productfilters result
+ *
+ * @example
+ * ProductFilters();
+ */
+
+/**
+ * P
+ * @constant
+ */
+/**
+ * Performs product filters operation
+ *
+ * @returns {any} The productfilters result
+ *
+ * @example
+ * ProductFilters();
+ */
+
+/**
+ * P
+ * @constant
+ */
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
   filters,
   onChange,
@@ -46,6 +107,22 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     loadCategories();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategories = async () => {
     try {
       const response = await categoriesService.list({ isActive: true });
@@ -58,22 +135,62 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   };
 
   const updateFilter = <K extends keyof ProductFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: ProductFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
 
   const toggleArrayFilter = <K extends keyof ProductFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: string,
   ) => {
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
     const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
       ? current.filter((v) => v !== value)
       : [...current, value];
     onChange({ ...filters, [key]: updated.length > 0 ? updated : undefined });
   };
+
+  /**
+   * Performs toggle category expand operation
+   *
+   * @param {string} categoryId - category identifier
+   *
+   * @returns {string} The togglecategoryexpand result
+   */
+
+  /**
+   * Performs toggle category expand operation
+   *
+   * @param {string} categoryId - category identifier
+   *
+   * @returns {string} The togglecategoryexpand result
+   */
 
   const toggleCategoryExpand = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -95,6 +212,22 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     return cat.level === 0 || parentIds.length === 0;
   });
 
+  /**
+   * Retrieves child categories
+   *
+   * @param {string} parentId - parent identifier
+   *
+   * @returns {string} The childcategories result
+   */
+
+  /**
+   * Retrieves child categories
+   *
+   * @param {string} parentId - parent identifier
+   *
+   * @returns {string} The childcategories result
+   */
+
   const getChildCategories = (parentId: string) => {
     return filteredCategories.filter((cat) => {
       const parentIds = cat.parentIds || (cat.parentId ? [cat.parentId] : []);
@@ -102,9 +235,47 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     });
   };
 
+  /**
+   * Renders category tree
+   *
+   * @param {CategoryFE} category - The category
+   * @param {number} [depth] - The depth
+   *
+   * @returns {any} The rendercategorytree result
+   */
+
+  /**
+   * Renders category tree
+   *
+   * @param {CategoryFE} category - The category
+   * @param {number} [depth] - The depth
+   *
+   * @returns {any} The rendercategorytree result
+   */
+
   const renderCategoryTree = (category: CategoryFE, depth = 0) => {
     const hasChildren = category.parentIds && category.parentIds.length > 0;
     const isExpanded = expandedCategories.has(category.id);
+    /**
+     * Checks if selected
+     *
+     * @param {any} [filters.categories || []).includes(category.id);
+    const children] - The filters.categories || []).includes(category.id);
+    const children
+     *
+     * @returns {any} The isselected result
+     */
+
+    /**
+     * Checks if selected
+     *
+     * @param {any} [filters.categories || []).includes(category.id);
+    const children] - The filters.categories || []).includes(category.id);
+    const children
+     *
+     * @returns {any} The isselected result
+     */
+
     const isSelected = (filters.categories || []).includes(category.id);
     const children = hasChildren ? getChildCategories(category.id) : [];
 

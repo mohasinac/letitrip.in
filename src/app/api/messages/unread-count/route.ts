@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/messages/unread-count/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Messages Unread Count API
  * Epic: E033 - Live Header Data
  *
@@ -14,13 +23,41 @@ import { COLLECTIONS } from "@/constants/database";
  * GET /api/messages/unread-count
  * Returns the total unread message count across all conversations
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await getAuthFromRequest(request);
 
     if (!auth.user) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: { count: 0 },
       });
     }
@@ -43,7 +80,9 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { count: totalUnread },
     });
   } catch (error) {

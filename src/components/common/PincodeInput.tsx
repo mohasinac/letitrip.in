@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/PincodeInput
+ * @description This file contains the PincodeInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect, useCallback, forwardRef } from "react";
@@ -7,25 +16,62 @@ import type { PincodeLookupResult } from "@/types/shared/location.types";
 import { PINCODE_LENGTH } from "@/constants/location";
 import { FormLabel } from "@/components/forms/FormLabel";
 
+/**
+ * PincodeInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PincodeInputProps
+ */
 export interface PincodeInputProps {
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (value: string) => void;
+  /** On Lookup Complete */
   onLookupComplete?: (result: PincodeLookupResult) => void;
+  /** On Area Select */
   onAreaSelect?: (area: string) => void;
+  /** Disabled */
   disabled?: boolean;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Placeholder */
   placeholder?: string;
+  /** Class Name */
   className?: string;
+  /** Input Class Name */
   inputClassName?: string;
+  /** Auto Lookup */
   autoLookup?: boolean;
+  /** Show Area Selector */
   showAreaSelector?: boolean;
+  /** Id */
   id?: string;
+  /** Name */
   name?: string;
 }
 
+/**
+ * P
+ * @constant
+ */
 export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
+  /**
+   * Performs pincode input operation
+   *
+   * @returns {any} The pincodeinput result
+   */
+
+  /**
+   * Performs pincode input operation
+   *
+   * @returns {any} The pincodeinput result
+   */
+
   function PincodeInput(
     {
       value,
@@ -103,6 +149,22 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
       }
     }, [value, lookupResult]);
 
+    /**
+     * Handles change event
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlechange result
+     */
+
+    /**
+     * Handles change event
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlechange result
+     */
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value
         .replace(/\D/g, "")
@@ -110,10 +172,42 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
       onChange(newValue);
     };
 
+    /**
+     * Handles area select event
+     *
+     * @param {string} area - The area
+     *
+     * @returns {string} The handleareaselect result
+     */
+
+    /**
+     * Handles area select event
+     *
+     * @param {string} area - The area
+     *
+     * @returns {string} The handleareaselect result
+     */
+
     const handleAreaSelect = (area: string) => {
       setSelectedArea(area);
       onAreaSelect?.(area);
     };
+
+    /**
+     * Retrieves status icon
+     *
+     * @returns {any} The statusicon result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Retrieves status icon
+     *
+     * @returns {any} The statusicon result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
 
     const getStatusIcon = () => {
       if (loading) {
@@ -154,7 +248,9 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
             className={`
               w-full px-3 py-2 pr-10
               border rounded-lg
+              /** Focus */
               focus:outline-none focus:ring-2 focus:ring-primary/50
+              /** Disabled */
               disabled:bg-gray-100 disabled:cursor-not-allowed
               ${
                 error || lookupError
@@ -162,6 +258,7 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
                   : "border-gray-300 dark:border-gray-600"
               }
               ${lookupResult?.isValid ? "border-green-500" : ""}
+              /** Dark */
               dark:bg-gray-800 dark:text-white
               ${inputClassName}
             `}
@@ -212,7 +309,9 @@ export const PincodeInput = forwardRef<HTMLInputElement, PincodeInputProps>(
                 value={selectedArea}
                 onChange={(e) => handleAreaSelect(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
+                         /** Focus */
                          focus:outline-none focus:ring-2 focus:ring-primary/50
+                         /** Dark */
                          dark:bg-gray-800 dark:text-white"
               >
                 <option value="">Select an area...</option>

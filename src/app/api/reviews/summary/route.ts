@@ -1,9 +1,47 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/reviews/summary/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { withCache } from "@/app/api/middleware/cache";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/reviews/summary - Get review statistics for a product
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   let productId: string | null = null;
   return withCache(
@@ -59,14 +97,18 @@ export async function GET(request: NextRequest) {
         ];
 
         return NextResponse.json({
+          /** Success */
           success: true,
           totalReviews,
+          /** Average Rating */
           averageRating: parseFloat(averageRating.toFixed(2)),
           ratingDistribution,
         });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.reviews.summary.GET",
+          /** Metadata */
           metadata: { productId },
         });
         return NextResponse.json(
@@ -77,6 +119,7 @@ export async function GET(request: NextRequest) {
     },
     {
       ttl: 300, // 5 minutes
+      /** Key */
       key: `reviews:summary:${new URL(request.url).searchParams.get(
         "productId",
       )}`,

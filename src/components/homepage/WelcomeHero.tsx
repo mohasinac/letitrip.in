@@ -1,4 +1,42 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/WelcomeHero
+ * @description This file contains the WelcomeHero component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { COMPANY_NAME, COMPANY_ALT_TEXT } from "@/constants/navigation";
+
+/**
+ * Function: Welcome Hero
+ */
+/**
+ * Performs welcome hero operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = WelcomeHero();
+ */
+/**
+ * Performs welcome hero operation
+ *
+ * @returns {any} The welcomehero result
+ *
+ * @example
+ * WelcomeHero();
+ */
+
+/**
+ * Performs welcome hero operation
+ *
+ * @returns {any} The welcomehero result
+ *
+ * @example
+ * WelcomeHero();
+ */
 
 export function WelcomeHero() {
   return (

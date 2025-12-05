@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/analytics/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
@@ -13,25 +22,48 @@ import { analyticsService } from "@/services/analytics.service";
 import { toDateInputValue } from "@/lib/date-utils";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
+/**
+ * AnalyticsData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AnalyticsData
+ */
 interface AnalyticsData {
+  /** Revenue */
   revenue: { total: number; average: number; trend: number };
+  /** Orders */
   orders: {
+    /** Total */
     total: number;
+    /** Pending */
     pending: number;
+    /** Completed */
     completed: number;
+    /** Cancelled */
     cancelled: number;
   };
+  /** Products */
   products: { total: number; active: number; outOfStock: number };
+  /** Customers */
   customers: { total: number; new: number; returning: number };
+  /** Conversion Rate */
   conversionRate: number;
+  /** Average Order Value */
   averageOrderValue: number;
+  /** Sales Over Time */
   salesOverTime: Array<{ date: string; revenue: number }>;
+  /** Top Products */
   topProducts: Array<{
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Revenue */
     revenue: number;
+    /** Quantity */
     quantity: number;
   }>;
+  /** Revenue By Category */
   revenueByCategory: Array<{ category: string; revenue: number }>;
 }
 
@@ -49,7 +81,9 @@ export default function AnalyticsPage() {
   const [endDate, setEndDate] = useState<Date>(new Date());
 
   const {
+    /** Data */
     data: analytics,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
@@ -70,38 +104,63 @@ export default function AnalyticsPage() {
   // Fetch analytics data
   const fetchAnalytics = useCallback(async () => {
     const data = await analyticsService.getOverview({
+      /** Shop Id */
       shopId: selectedShopId || undefined,
+      /** Start Date */
       startDate: toDateInputValue(startDate),
+      /** End Date */
       endDate: toDateInputValue(endDate),
     });
 
     // Map analytics overview to detailed analytics format
     return {
+      /** Revenue */
       revenue: {
+        /** Total */
         total: data.totalRevenue || 0,
+        /** Average */
         average: data.averageOrderValue || 0,
+        /** Trend */
         trend: data.revenueGrowth || 0,
       },
+      /** Orders */
       orders: {
+        /** Total */
         total: data.totalOrders || 0,
+        /** Pending */
         pending: (data as any).pendingOrders || 0,
+        /** Completed */
         completed: (data as any).completedOrders || 0,
+        /** Cancelled */
         cancelled: (data as any).cancelledOrders || 0,
       },
+      /** Products */
       products: {
+        /** Total */
         total: data.totalProducts || 0,
+        /** Active */
         active: (data as any).activeProducts || 0,
+        /** Out Of Stock */
         outOfStock: (data as any).outOfStockProducts || 0,
       },
+      /** Customers */
       customers: {
+        /** Total */
         total: data.totalCustomers || 0,
+        /** New */
         new: (data as any).newCustomers || 0,
+        /** Returning */
         returning: (data as any).returningCustomers || 0,
       },
+      /** Conversion Rate */
       conversionRate: data.conversionRate || 0,
+      /** Average Order Value */
       averageOrderValue: data.averageOrderValue || 0,
+      /** Sales Over Time */
       salesOverTime: (data as any).salesOverTime || [],
+      /** Top Products */
       topProducts: (data as any).topProducts || [],
+      /** Revenue By Category */
       revenueByCategory: (data as any).revenueByCategory || [],
     };
   }, [selectedShopId, startDate, endDate]);
@@ -290,8 +349,11 @@ export default function AnalyticsPage() {
                     </span>
                     <span className="text-lg font-semibold text-gray-900 dark:text-white">
                       {new Intl.NumberFormat("en-IN", {
+                        /** Style */
                         style: "currency",
+                        /** Currency */
                         currency: "INR",
+                        /** Maximum Fraction Digits */
                         maximumFractionDigits: 0,
                       }).format(analytics.averageOrderValue)}
                     </span>

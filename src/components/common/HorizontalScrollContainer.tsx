@@ -1,22 +1,51 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/HorizontalScrollContainer
+ * @description This file contains the HorizontalScrollContainer component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * HorizontalScrollContainerProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HorizontalScrollContainerProps
+ */
 interface HorizontalScrollContainerProps {
+  /** Title */
   title?: string;
+  /** View All Link */
   viewAllLink?: string;
+  /** View All Text */
   viewAllText?: string;
+  /** Children */
   children: React.ReactNode;
+  /** Class Name */
   className?: string;
+  /** Item Width */
   itemWidth?: string;
+  /** Gap */
   gap?: string;
+  /** Show Arrows */
   showArrows?: boolean;
+  /** Heading Level */
   headingLevel?: "h2" | "h3" | "h4";
+  /** Arrow Style */
   arrowStyle?: "compact" | "full-height";
 }
 
+/**
+ * H
+ * @constant
+ */
 export const HorizontalScrollContainer: React.FC<
   HorizontalScrollContainerProps
 > = ({
@@ -39,6 +68,18 @@ export const HorizontalScrollContainer: React.FC<
   const [containerMaxWidth, setContainerMaxWidth] = useState<string>("100%");
 
   // Calculate how many items can fit in the container width
+  /**
+   * Calculates visible items
+   *
+   * @returns {any} The calculatevisibleitems result
+   */
+
+  /**
+   * Calculates visible items
+   *
+   * @returns {any} The calculatevisibleitems result
+   */
+
   const calculateVisibleItems = () => {
     if (containerRef.current) {
       const totalWidth = containerRef.current.clientWidth;
@@ -62,6 +103,18 @@ export const HorizontalScrollContainer: React.FC<
   };
 
   // Check scroll position and update arrow visibility
+  /**
+   * Performs check scroll operation
+   *
+   * @returns {any} The checkscroll result
+   */
+
+  /**
+   * Performs check scroll operation
+   *
+   * @returns {any} The checkscroll result
+   */
+
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -74,6 +127,18 @@ export const HorizontalScrollContainer: React.FC<
     calculateVisibleItems();
     checkScroll();
     const scrollElement = scrollRef.current;
+
+    /**
+     * Handles resize event
+     *
+     * @returns {any} The handleresize result
+     */
+
+    /**
+     * Handles resize event
+     *
+     * @returns {any} The handleresize result
+     */
 
     const handleResize = () => {
       calculateVisibleItems();
@@ -91,10 +156,38 @@ export const HorizontalScrollContainer: React.FC<
     }
   }, [children, itemWidth, gap, showArrows, arrowStyle]);
 
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const itemWidthNum = parseInt(itemWidth);
       const gapNum = parseInt(gap) * 16;
+      /**
+       * Performs scroll amount operation
+       *
+       * @returns {any} The scrollamount result
+       */
+
+      /**
+       * Performs scroll amount operation
+       *
+       * @returns {any} The scrollamount result
+       */
+
       const scrollAmount = (itemWidthNum + gapNum) * visibleItems;
       const newScrollLeft =
         scrollRef.current.scrollLeft +
@@ -112,6 +205,7 @@ export const HorizontalScrollContainer: React.FC<
             React.createElement(
               headingLevel,
               {
+                /** Class Name */
                 className:
                   headingLevel === "h2"
                     ? "text-2xl font-bold text-gray-900 dark:text-white"
@@ -162,9 +256,13 @@ export const HorizontalScrollContainer: React.FC<
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
           style={{
+            /** Gap */
             gap: gap,
+            /** Scrollbar Width */
             scrollbarWidth: "none",
+            /** Ms Overflow Style */
             msOverflowStyle: "none",
+            /** Max Width */
             maxWidth: containerMaxWidth,
           }}
         >

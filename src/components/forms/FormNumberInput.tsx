@@ -1,23 +1,51 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormNumberInput
+ * @description This file contains the FormNumberInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormNumberInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormNumberInputProps
+ */
 export interface FormNumberInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "size" | "type"
 > {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Prefix */
   prefix?: string;
+  /** Suffix */
   suffix?: string;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Compact */
   compact?: boolean;
+  /** Allow Decimals */
   allowDecimals?: boolean;
+  /** Decimal Places */
   decimalPlaces?: number;
 }
 
+/**
+ * F
+ * @constant
+ */
 export const FormNumberInput = forwardRef<
   HTMLInputElement,
   FormNumberInputProps
@@ -45,6 +73,22 @@ export const FormNumberInput = forwardRef<
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const computedStep =
       step ?? (allowDecimals ? Math.pow(10, -decimalPlaces) : 1);
+
+    /**
+     * Handles change event
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlechange result
+     */
+
+    /**
+     * Handles change event
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlechange result
+     */
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;

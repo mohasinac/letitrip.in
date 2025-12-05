@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Email
+ * @description This file contains the Email component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Email Display Component
  *
  * Displays email addresses with optional click-to-email and masking.
@@ -15,13 +24,45 @@ import React from "react";
 import { Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * EmailProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailProps
+ */
 interface EmailProps {
+  /** Value */
   value: string;
+  /** Clickable */
   clickable?: boolean;
+  /** Show Icon */
   showIcon?: boolean;
+  /** Masked */
   masked?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Email
+ */
+/**
+ * Performs email operation
+ *
+ * @returns {any} The email result
+ *
+ * @example
+ * Email();
+ */
+
+/**
+ * Performs email operation
+ *
+ * @returns {any} The email result
+ *
+ * @example
+ * Email();
+ */
 
 export function Email({
   value,
@@ -34,6 +75,18 @@ export function Email({
   const displayValue = masked
     ? value.replace(/^(.{1})(.*)(@.*)$/, "$1***$3")
     : value;
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
 
   const content = (
     <>

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/settings/email/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin Email Settings API Route
  *
  * Get/Update email service provider settings
@@ -12,28 +21,80 @@ import { logError } from "@/lib/firebase-error-logger";
 import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * EmailSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailSettings
+ */
 interface EmailSettings {
+  /** Default Provider */
   defaultProvider: "resend" | "sendgrid";
+  /** Resend Enabled */
   resendEnabled: boolean;
+  /** Resend Api Key */
   resendApiKey: string;
+  /** Resend From Email */
   resendFromEmail: string;
+  /** Resend From Name */
   resendFromName: string;
+  /** Sendgrid Enabled */
   sendgridEnabled: boolean;
+  /** Sendgrid Api Key */
   sendgridApiKey: string;
+  /** Sendgrid From Email */
   sendgridFromEmail: string;
+  /** Sendgrid From Name */
   sendgridFromName: string;
+  /** Fallback Enabled */
   fallbackEnabled: boolean;
+  /** Retry Attempts */
   retryAttempts: number;
+  /** Retry Delay */
   retryDelay: number;
+  /** Categories */
   categories: {
+    /** T R A N S A C T I O N A L */
     TRANSACTIONAL: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** M A R K E T I N G */
     MARKETING: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** N O T I F I C A T I O N S */
     NOTIFICATIONS: { enabled: boolean; provider?: "resend" | "sendgrid" };
+    /** A C C O U N T */
     ACCOUNT: { enabled: boolean; provider?: "resend" | "sendgrid" };
   };
 }
 
 // GET - Retrieve email settings
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -56,6 +117,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(settingsDoc.data());
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEmailSettingsAPI.GET",
     });
     return NextResponse.json(
@@ -66,6 +128,35 @@ export async function GET(req: NextRequest) {
 }
 
 // PUT - Update email settings
+/**
+ * Function: P U T
+ */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
 export async function PUT(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -117,13 +208,16 @@ export async function PUT(req: NextRequest) {
       .doc("email")
       .set({
         ...settings,
+        /** Updated At */
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        /** Updated By */
         updatedBy: authResult.user.uid,
       });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEmailSettingsAPI.PUT",
     });
     return NextResponse.json(

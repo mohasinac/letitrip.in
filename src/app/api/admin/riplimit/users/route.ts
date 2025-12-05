@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/riplimit/users/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin RipLimit Users API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -16,6 +25,32 @@ import { RipLimitAccountBE } from "@/types/backend/riplimit.types";
  * GET /api/admin/riplimit/users
  * Returns paginated list of users with RipLimit accounts (admin only)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     // Authenticate and check admin role
@@ -59,6 +94,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} query.page - 1) * query.pageSize;
+    if (offset > 0 - The query.page - 1) * query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} query.page - 1) * query.pageSize;
+    if (offset > 0 - The query.page - 1) * query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (query.page - 1) * query.pageSize;
     if (offset > 0) {
       accountsQuery = accountsQuery.offset(offset);
@@ -67,6 +122,7 @@ export async function GET(request: NextRequest) {
 
     const snapshot = await accountsQuery.get();
     const accounts = snapshot.docs.map((doc) => ({
+      /** User Id */
       userId: doc.id,
       ...doc.data(),
     })) as RipLimitAccountBE[];
@@ -79,10 +135,14 @@ export async function GET(request: NextRequest) {
         const userData = userDoc.data();
         return {
           ...account,
+          /** User */
           user: userData
             ? {
+                /** Email */
                 email: userData.email,
+                /** Display Name */
                 displayName: userData.displayName,
+                /** Photo U R L */
                 photoURL: userData.photoURL,
               }
             : null,
@@ -93,14 +153,21 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(totalCount / query.pageSize);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: usersWithDetails,
+      /** Pagination */
       pagination: {
+        /** Page */
         page: query.page,
+        /** Page Size */
         pageSize: query.pageSize,
         totalCount,
         totalPages,
+        /** Has Next Page */
         hasNextPage: query.page < totalPages,
+        /** Has Previous Page */
         hasPreviousPage: query.page > 1,
       },
     });

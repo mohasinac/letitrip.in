@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/SimilarProducts
+ * @description This file contains the SimilarProducts component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,12 +18,42 @@ import { CardGrid } from "@/components/cards/CardGrid";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * SimilarProductsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SimilarProductsProps
+ */
 interface SimilarProductsProps {
+  /** Product Id */
   productId: string;
   parentCategoryIds: string[]; // Parent category IDs to fetch from
+  /** Current Shop Id */
   currentShopId: string;
+  /** Parent Category Name */
   parentCategoryName?: string;
 }
+
+/**
+ * Function: Similar Products
+ */
+/**
+ * Performs similar products operation
+ *
+ * @returns {any} The similarproducts result
+ *
+ * @example
+ * SimilarProducts();
+ */
+
+/**
+ * Performs similar products operation
+ *
+ * @returns {any} The similarproducts result
+ *
+ * @example
+ * SimilarProducts();
+ */
 
 export function SimilarProducts({
   productId,
@@ -33,6 +72,22 @@ export function SimilarProducts({
     loadSimilarProducts();
   }, [productId, parentCategoryIds]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSimilarProducts = async () => {
     try {
       setLoading(true);
@@ -47,8 +102,11 @@ export function SimilarProducts({
 
       for (const parentId of parentCategoryIds) {
         const response = await productsService.list({
+          /** Category Id */
           categoryId: parentId,
+          /** Status */
           status: "active" as any,
+          /** Limit */
           limit: 20,
         });
 
@@ -72,6 +130,7 @@ export function SimilarProducts({
       setProducts(diversified);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SimilarProducts.loadSimilarProducts",
       });
     } finally {
@@ -80,8 +139,25 @@ export function SimilarProducts({
   };
 
   // Helper to diversify products by shop
+  /**
+   * Performs diversify by shop operation
+   *
+   * @param {ProductCardFE[]} products - The products
+   * @param {string} currentShopId - currentShop identifier
+   *
+   * @returns {string} The diversifybyshop result
+   */
+
+  /**
+   * Performs diversify by shop operation
+   *
+   * @returns {string} The diversifybyshop result
+   */
+
   const diversifyByShop = (
+    /** Products */
     products: ProductCardFE[],
+    /** Current Shop Id */
     currentShopId: string,
   ) => {
     const otherShops: ProductCardFE[] = [];
@@ -100,6 +176,22 @@ export function SimilarProducts({
   };
 
   // Scroll handlers
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
+
   const handleScroll = (direction: "left" | "right") => {
     const container = document.getElementById("similar-products-scroll");
     if (!container) return;
@@ -111,10 +203,24 @@ export function SimilarProducts({
         : container.scrollLeft + scrollAmount;
 
     container.scrollTo({
+      /** Left */
       left: newPosition,
+      /** Behavior */
       behavior: "smooth",
     });
   };
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
 
   const updateScrollButtons = () => {
     const container = document.getElementById("similar-products-scroll");
@@ -336,6 +442,7 @@ export function SimilarProducts({
       {/* CSS to hide scrollbar */}
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
+          /** Display */
           display: none;
         }
       `}</style>

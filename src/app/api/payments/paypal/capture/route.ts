@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/paypal/capture/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PayPal Payment Capture API Route
  * POST /api/payments/paypal/capture
  *
@@ -12,35 +21,88 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * CapturePayPalPaymentRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CapturePayPalPaymentRequest
+ */
 interface CapturePayPalPaymentRequest {
+  /** Order Id */
   orderId: string;
 }
 
+/**
+ * PayPalCaptureResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PayPalCaptureResponse
+ */
 interface PayPalCaptureResponse {
+  /** Id */
   id: string;
+  /** Status */
   status: string;
   purchase_units: Array<{
+    /** Payments */
     payments: {
+      /** Captures */
       captures: Array<{
+        /** Id */
         id: string;
+        /** Status */
         status: string;
+        /** Amount */
         amount: {
           currency_code: string;
+          /** Value */
           value: string;
         };
         create_time: string;
       }>;
     };
   }>;
+  /** Payer */
   payer: {
     email_address: string;
     payer_id: string;
+    /** Name */
     name: {
       given_name: string;
+      /** Surname */
       surname: string;
     };
   };
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -131,13 +193,17 @@ export async function POST(request: NextRequest) {
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
+      /** Method */
       method: "POST",
+      /** Headers */
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        /** Authorization */
         Authorization: `Basic ${Buffer.from(
           `${clientId}:${clientSecret}`
         ).toString("base64")}`,
       },
+      /** Body */
       body: "grant_type=client_credentials",
     });
 
@@ -152,9 +218,12 @@ export async function POST(request: NextRequest) {
     const captureResponse = await fetch(
       `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
       {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
+          /** Authorization */
           Authorization: `Bearer ${accessToken}`,
         },
       }
@@ -176,14 +245,23 @@ export async function POST(request: NextRequest) {
 
     // Update transaction status
     await transactionDoc.ref.update({
+      /** Payment Id */
       paymentId: capture.id,
+      /** Status */
       status: "captured",
+      /** Capture Status */
       captureStatus: capture.status,
+      /** Captured Amount */
       capturedAmount: parseFloat(capture.amount.value),
+      /** Captured At */
       capturedAt: new Date(capture.create_time),
+      /** Payer Email */
       payerEmail: captureData.payer.email_address,
+      /** Payer Id */
       payerId: captureData.payer.payer_id,
+      /** Payer Name */
       payerName: `${captureData.payer.name.given_name} ${captureData.payer.name.surname}`,
+      /** Updated At */
       updatedAt: new Date(),
     });
 
@@ -196,10 +274,15 @@ export async function POST(request: NextRequest) {
 
       if (orderDoc.exists) {
         await orderRef.update({
+          /** Payment Status */
           paymentStatus: "paid",
+          /** Payment Id */
           paymentId: capture.id,
+          /** Payment Gateway */
           paymentGateway: "paypal",
+          /** Paid At */
           paidAt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
         });
       }
@@ -208,24 +291,34 @@ export async function POST(request: NextRequest) {
     // Return formatted response
     return NextResponse.json(
       {
+        /** Id */
         id: capture.id,
+        /** Order Id */
         orderId: orderId,
+        /** Amount */
         amount: parseFloat(capture.amount.value),
+        /** Currency */
         currency: capture.amount.currency_code,
+        /** Status */
         status: capture.status,
+        /** Captured At */
         capturedAt: new Date(capture.create_time).toISOString(),
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "PayPalCaptureAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Payment capture failed",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to capture PayPal payment",
       },
       { status: 500 }

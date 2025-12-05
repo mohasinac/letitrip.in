@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useUrlFilters
+ * @description This file contains functionality related to useUrlFilters
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useUrlFilters Hook
  *
  * Manages filters, sorting, and pagination in URL parameters.
@@ -30,40 +39,113 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+/**
+ * FilterState interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterState
+ */
 export interface FilterState {
   [key: string]: string | number | boolean | string[];
 }
 
+/**
+ * SortState interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SortState
+ */
 export interface SortState {
+  /** Field */
   field: string;
+  /** Order */
   order: "asc" | "desc";
 }
 
+/**
+ * UseUrlFiltersOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseUrlFiltersOptions
+ */
 export interface UseUrlFiltersOptions {
+  /** Initial Filters */
   initialFilters?: FilterState;
+  /** Initial Sort */
   initialSort?: SortState;
+  /** Initial Page */
   initialPage?: number;
+  /** Initial Limit */
   initialLimit?: number;
+  /** Debounce Ms */
   debounceMs?: number;
 }
 
+/**
+ * UseUrlFiltersReturn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseUrlFiltersReturn
+ */
 export interface UseUrlFiltersReturn {
+  /** Filters */
   filters: FilterState;
+  /** Sort */
   sort: SortState | null;
+  /** Page */
   page: number;
+  /** Limit */
   limit: number;
+  /** Update Filter */
   updateFilter: (key: string, value: any) => void;
+  /** Update Filters */
   updateFilters: (newFilters: Partial<FilterState>) => void;
+  /** Clear Filter */
   clearFilter: (key: string) => void;
+  /** Reset Filters */
   resetFilters: () => void;
+  /** Set Sort */
   setSort: (sort: SortState | null) => void;
+  /** Set Page */
   setPage: (page: number) => void;
+  /** Set Limit */
   setLimit: (limit: number) => void;
+  /** Build Query String */
   buildQueryString: () => string;
+  /** Active Filter Count */
   activeFilterCount: number;
 }
 
+/**
+ * Function: Use Url Filters
+ */
+/**
+ * Custom React hook for url filters
+ *
+ * @param {UseUrlFiltersOptions} [options] - Configuration options
+ *
+ * @returns {any} The useurlfilters result
+ *
+ * @example
+ * useUrlFilters(options);
+ */
+
+/**
+ * Custom React hook for url filters
+ *
+ * @param {UseUrlFiltersOptions} [/** Options */
+  options] - The /**  options */
+  options
+ *
+ * @returns {any} The useurlfilters result
+ *
+ * @example
+ * useUrlFilters(/** Options */
+  options);
+ */
+
 export function useUrlFilters(
+  /** Options */
   options: UseUrlFiltersOptions = {}
 ): UseUrlFiltersReturn {
   const {
@@ -227,6 +309,7 @@ export function useUrlFilters(
     updateFilters,
     clearFilter,
     resetFilters,
+    /** Set Sort */
     setSort: handleSetSort,
     setPage,
     setLimit,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopAuctions
+ * @description This file contains the ShopAuctions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -10,15 +19,30 @@ import {
 } from "@/components/filters/AuctionFilters";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
+/**
+ * ShopAuctionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopAuctionsProps
+ */
 export interface ShopAuctionsProps {
+  /** Auctions */
   auctions: AuctionCardFE[];
+  /** Loading */
   loading?: boolean;
+  /** Shop Id */
   shopId: string;
+  /** Shop Name */
   shopName: string;
+  /** Shop Logo */
   shopLogo?: string;
+  /** Is Verified */
   isVerified?: boolean;
+  /** On Sort Change */
   onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
+  /** On Filters Change */
   onFiltersChange?: (filters: AuctionFilterValues) => void;
+  /** Class Name */
   className?: string;
 }
 
@@ -46,6 +70,24 @@ export interface ShopAuctionsProps {
  * />
  * ```
  */
+/**
+ * Performs shop auctions operation
+ *
+ * @returns {any} The shopauctions result
+ *
+ * @example
+ * ShopAuctions();
+ */
+
+/**
+ * Performs shop auctions operation
+ *
+ * @returns {any} The shopauctions result
+ *
+ * @example
+ * ShopAuctions();
+ */
+
 export function ShopAuctions({
   auctions,
   loading = false,
@@ -60,23 +102,67 @@ export function ShopAuctions({
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<AuctionFilterValues>({
+    /** Sort By */
     sortBy: "endTime",
+    /** Sort Order */
     sortOrder: "asc",
   });
+
+  /**
+   * Handles filters change event
+   *
+   * @param {AuctionFilterValues} newFilters - The new filters
+   *
+   * @returns {any} The handlefilterschange result
+   */
+
+  /**
+   * Handles filters change event
+   *
+   * @param {AuctionFilterValues} newFilters - The new filters
+   *
+   * @returns {any} The handlefilterschange result
+   */
 
   const handleFiltersChange = (newFilters: AuctionFilterValues) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
   };
 
+  /**
+   * Handles apply filters event
+   *
+   * @returns {any} The handleapplyfilters result
+   */
+
+  /**
+   * Handles apply filters event
+   *
+   * @returns {any} The handleapplyfilters result
+   */
+
   const handleApplyFilters = () => {
     onFiltersChange?.(filters);
     setShowFilters(false);
   };
 
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
   const handleResetFilters = () => {
     const resetFilters: AuctionFilterValues = {
+      /** Sort By */
       sortBy: "endTime",
+      /** Sort Order */
       sortOrder: "asc",
     };
     setFilters(resetFilters);
@@ -164,22 +250,36 @@ export function ShopAuctions({
                   <AuctionCard
                     key={auction.id}
                     auction={{
+                      /** Id */
                       id: auction.id,
+                      /** Name */
                       name: auction.productName || "",
+                      /** Slug */
                       slug: auction.productSlug || "",
+                      /** Images */
                       images: auction.productImage
                         ? [auction.productImage]
                         : [],
+                      /** Current Bid */
                       currentBid:
                         auction.currentPrice || auction.startingBid || 0,
+                      /** Starting Bid */
                       startingBid: auction.startingBid || 0,
+                      /** Bid Count */
                       bidCount: auction.totalBids || 0,
+                      /** End Time */
                       endTime: auction.endTime,
+                      /** Status */
                       status: auction.status as any,
+                      /** Featured */
                       featured: (auction as any).featured,
+                      /** Shop */
                       shop: {
+                        /** Id */
                         id: shopId,
+                        /** Name */
                         name: shopName,
+                        /** Logo */
                         logo: shopLogo,
                         isVerified,
                       },

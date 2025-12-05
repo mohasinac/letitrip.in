@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ProductInfo
+ * @description This file contains the ProductInfo component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -20,25 +29,70 @@ import { useCart } from "@/hooks/useCart";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { Price } from "@/components/common/values/Price";
 
+/**
+ * ProductInfoProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductInfoProps
+ */
 interface ProductInfoProps {
+  /** Product */
   product: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Actual Price */
     actualPrice?: number;
+    /** Original Price */
     originalPrice?: number;
+    /** Sale Price */
     salePrice: number;
+    /** Stock */
     stock: number;
+    /** Rating */
     rating?: number;
+    /** Review Count */
     reviewCount?: number;
     shop_id: string;
     shop_name: string;
+    /** Returnable */
     returnable?: boolean;
+    /** Condition */
     condition?: "new" | "refurbished" | "used";
+    /** Status */
     status: string;
+    /** Image */
     image?: string;
   };
 }
+
+/**
+ * Function: Product Info
+ */
+/**
+ * Performs product info operation
+ *
+ * @param {ProductInfoProps} { product } - The { product }
+ *
+ * @returns {any} The productinfo result
+ *
+ * @example
+ * ProductInfo({ product });
+ */
+
+/**
+ * Performs product info operation
+ *
+ * @param {ProductInfoProps} { product } - The { product }
+ *
+ * @returns {any} The productinfo result
+ *
+ * @example
+ * ProductInfo({ product });
+ */
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const router = useRouter();
@@ -57,37 +111,94 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const inStock = product.stock > 0 && product.status === "active";
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAddToCart = async () => {
     if (!inStock) return;
 
     try {
       await addItem(product.id, quantity, undefined, {
+        /** Name */
         name: product.name,
+        /** Price */
         price: product.salePrice,
+        /** Image */
         image: product.image || "",
+        /** Shop Id */
         shopId: product.shop_id,
+        /** Shop Name */
         shopName: product.shop_name,
       });
       toast.success("Added to cart!");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductInfo.handleAddToCart",
+        /** Metadata */
         metadata: { productId: product.id },
       });
       toast.error("Failed to add to cart");
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBuyNow = async () => {
     await handleAddToCart();
     router.push("/checkout");
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
+          /** Title */
           title: product.name,
+          /** Url */
           url: globalThis.location?.href || "",
         });
       } catch (error) {

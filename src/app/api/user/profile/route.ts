@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/user/profile/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -7,6 +16,32 @@ import { requireAuth, handleAuthError } from "@/app/api/lib/auth-helpers";
  * GET /api/user/profile
  * Get current user profile
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const user = await requireAuth(req);
@@ -34,6 +69,32 @@ export async function GET(req: NextRequest) {
  * PATCH /api/user/profile
  * Update current user profile
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req);
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req);
+ */
+
 export async function PATCH(req: NextRequest) {
   try {
     const user = await requireAuth(req);
@@ -84,7 +145,9 @@ export async function PATCH(req: NextRequest) {
 
     // Update user document
     const updateData: any = {
+      /** Name */
       name: name.trim(),
+      /** Email */
       email: trimmedEmail.toLowerCase(),
       updated_at: new Date().toISOString(),
     };
@@ -104,7 +167,9 @@ export async function PATCH(req: NextRequest) {
     const { password, ...safeUserData } = updatedUser as any;
 
     return NextResponse.json({
+      /** Message */
       message: "Profile updated successfully",
+      /** User */
       user: safeUserData,
     });
   } catch (error) {

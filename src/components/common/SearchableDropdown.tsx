@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/SearchableDropdown
+ * @description This file contains the SearchableDropdown component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
@@ -16,6 +25,12 @@ import React, {
 // Types
 // ============================================
 
+/**
+ * DropdownOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DropdownOption
+ */
 export interface DropdownOption<T = string> {
   /** Unique value for the option */
   value: T;
@@ -31,6 +46,12 @@ export interface DropdownOption<T = string> {
   group?: string;
 }
 
+/**
+ * SearchableDropdownProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SearchableDropdownProps
+ */
 export interface SearchableDropdownProps<T = string> {
   /** Available options */
   options: DropdownOption<T>[];
@@ -80,7 +101,9 @@ export interface SearchableDropdownProps<T = string> {
   minSearchLength?: number;
   /** Custom render for option */
   renderOption?: (
+    /** Option */
     option: DropdownOption<T>,
+    /** Is Selected */
     isSelected: boolean,
   ) => React.ReactNode;
   /** Name for form submission */
@@ -94,6 +117,22 @@ export interface SearchableDropdownProps<T = string> {
 // ============================================
 
 /** Chevron Down Icon */
+/**
+ * Performs chevron down icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The chevrondownicon result
+ */
+
+/**
+ * Performs chevron down icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The chevrondownicon result
+ */
+
 const ChevronDownIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -111,6 +150,22 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
 );
 
 /** Check Icon */
+/**
+ * Performs check icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The checkicon result
+ */
+
+/**
+ * Performs check icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The checkicon result
+ */
+
 const CheckIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -128,6 +183,22 @@ const CheckIcon = ({ className }: { className?: string }) => (
 );
 
 /** X Icon for chips */
+/**
+ * Performs x icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The xicon result
+ */
+
+/**
+ * Performs x icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The xicon result
+ */
+
 const XIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -141,6 +212,22 @@ const XIcon = ({ className }: { className?: string }) => (
 );
 
 /** Search Icon */
+/**
+ * Performs search icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The searchicon result
+ */
+
+/**
+ * Performs search icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The searchicon result
+ */
+
 const SearchIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -158,6 +245,22 @@ const SearchIcon = ({ className }: { className?: string }) => (
 );
 
 /** Spinner Icon */
+/**
+ * Performs spinner icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The spinnericon result
+ */
+
+/**
+ * Performs spinner icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The spinnericon result
+ */
+
 const SpinnerIcon = ({ className }: { className?: string }) => (
   <svg
     className={`animate-spin ${className}`}
@@ -186,12 +289,34 @@ const SpinnerIcon = ({ className }: { className?: string }) => (
 // Chip Component
 // ============================================
 
+/**
+ * ChipProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ChipProps
+ */
 interface ChipProps {
+  /** Label */
   label: string;
+  /** On Remove */
   onRemove: () => void;
+  /** Variant */
   variant?: "default" | "outline" | "filled";
+  /** Disabled */
   disabled?: boolean;
 }
+
+/**
+ * Performs chip operation
+ *
+ * @returns {any} The chip result
+ */
+
+/**
+ * Performs chip operation
+ *
+ * @returns {any} The chip result
+ */
 
 const Chip = ({
   label,
@@ -200,9 +325,12 @@ const Chip = ({
   disabled,
 }: ChipProps) => {
   const variantClasses = {
+    /** Default */
     default: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200",
+    /** Outline */
     outline:
       "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200",
+    /** Filled */
     filled:
       "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200",
   };
@@ -225,7 +353,9 @@ const Chip = ({
           }}
           className="
             ml-0.5 p-0.5 rounded-full
+            /** Hover */
             hover:bg-gray-200 dark:hover:bg-gray-600
+            /** Focus */
             focus:outline-none focus:ring-1 focus:ring-gray-400
             transition-colors
           "
@@ -241,6 +371,21 @@ const Chip = ({
 // ============================================
 // Main Component
 // ============================================
+
+/**
+ * Function: Searchable Dropdown Inner
+ */
+/**
+ * Performs searchable dropdown inner operation
+ *
+ * @returns {any} The searchabledropdowninner result
+ */
+
+/**
+ * Performs searchable dropdown inner operation
+ *
+ * @returns {any} The searchabledropdowninner result
+ */
 
 function SearchableDropdownInner<T = string>(
   {
@@ -271,6 +416,7 @@ function SearchableDropdownInner<T = string>(
     name,
     id,
   }: SearchableDropdownProps<T>,
+  /** Ref */
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const generatedId = useId();
@@ -395,6 +541,22 @@ function SearchableDropdownInner<T = string>(
       return;
     }
 
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const fetchResults = async () => {
       setAsyncLoading(true);
       try {
@@ -402,7 +564,9 @@ function SearchableDropdownInner<T = string>(
         setAsyncOptions(results);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "SearchableDropdown.onSearch",
+          /** Metadata */
           metadata: { searchQuery: debouncedSearchQuery },
         });
         setAsyncOptions([]);
@@ -492,6 +656,22 @@ function SearchableDropdownInner<T = string>(
   useEffect(() => {
     if (!isOpen) return;
 
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} e - The e
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} e - The e
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (e: MouseEvent) => {
       if (
         containerRef.current &&
@@ -535,6 +715,18 @@ function SearchableDropdownInner<T = string>(
   const showClear = clearable && hasValue && !disabled;
 
   // Render trigger content
+  /**
+   * Renders trigger content
+   *
+   * @returns {any} The rendertriggercontent result
+   */
+
+  /**
+   * Renders trigger content
+   *
+   * @returns {any} The rendertriggercontent result
+   */
+
   const renderTriggerContent = () => {
     if (isMulti && hasValue) {
       return (
@@ -566,6 +758,24 @@ function SearchableDropdownInner<T = string>(
   };
 
   // Render option
+  /**
+   * Renders option item
+   *
+   * @param {DropdownOption<T>} option - The option
+   * @param {number} index - The index
+   *
+   * @returns {number} The renderoptionitem result
+   */
+
+  /**
+   * Renders option item
+   *
+   * @param {DropdownOption<T>} option - The option
+   * @param {number} index - The index
+   *
+   * @returns {number} The renderoptionitem result
+   */
+
   const renderOptionItem = (option: DropdownOption<T>, index: number) => {
     const selected = isSelected(option.value);
     const highlighted = index === highlightedIndex;
@@ -659,6 +869,7 @@ function SearchableDropdownInner<T = string>(
                 ? "border-yellow-500 ring-1 ring-yellow-500"
                 : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
           }
+          /** Focus */
           focus:outline-none focus:ring-1 focus:ring-yellow-500
         `}
       >
@@ -721,6 +932,7 @@ function SearchableDropdownInner<T = string>(
                     bg-white dark:bg-gray-700
                     text-gray-900 dark:text-gray-100
                     placeholder-gray-400 dark:placeholder-gray-500
+                    /** Focus */
                     focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500
                   "
                   onKeyDown={handleKeyDown}
@@ -833,10 +1045,16 @@ function SearchableDropdownInner<T = string>(
 }
 
 // Export with forwardRef
+/**
+ * S
+ * @constant
+ */
 export const SearchableDropdown = forwardRef(SearchableDropdownInner) as <
   T = string,
 >(
+  /** Props */
   props: SearchableDropdownProps<T> & {
+    /** Ref */
     ref?: React.ForwardedRef<HTMLDivElement>;
   },
 ) => React.ReactElement;

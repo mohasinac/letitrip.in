@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/riplimit/purchase/verify/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Purchase Verification API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -27,6 +36,32 @@ import { NextRequest, NextResponse } from "next/server";
  * - razorpayPaymentId: Razorpay payment ID
  * - razorpaySignature: Razorpay signature for verification
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
@@ -45,7 +80,9 @@ export async function POST(request: NextRequest) {
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Missing required payment verification fields",
         },
         { status: 400 }
@@ -70,6 +107,7 @@ export async function POST(request: NextRequest) {
 
     const purchaseDoc = purchasesQuery.docs[0];
     const purchase = {
+      /** Id */
       id: purchaseDoc.id,
       ...purchaseDoc.data(),
     } as RipLimitPurchaseBE;
@@ -91,7 +129,9 @@ export async function POST(request: NextRequest) {
     if (expectedSignature !== razorpaySignature) {
       // Mark purchase as failed
       await purchaseDoc.ref.update({
+        /** Status */
         status: RipLimitPurchaseStatus.FAILED,
+        /** Updated At */
         updatedAt: FieldValue.serverTimestamp(),
       });
 
@@ -110,24 +150,33 @@ export async function POST(request: NextRequest) {
       {
         razorpayOrderId,
         razorpayPaymentId,
+        /** Inr Amount */
         inrAmount: purchase.inrAmount,
       }
     );
 
     // Update purchase record
     await purchaseDoc.ref.update({
+      /** Status */
       status: RipLimitPurchaseStatus.COMPLETED,
       razorpayPaymentId,
       razorpaySignature,
+      /** Transaction Id */
       transactionId: transaction.id,
+      /** Completed At */
       completedAt: Timestamp.now(),
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Rip Limit Amount */
         ripLimitAmount: purchase.ripLimitAmount,
+        /** Transaction Id */
         transactionId: transaction.id,
+        /** Message */
         message: `Successfully purchased ${purchase.ripLimitAmount} RipLimit`,
       },
     });

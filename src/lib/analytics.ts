@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/analytics
+ * @description This file contains functionality related to analytics
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Analytics & Monitoring Helper
  * Uses Firebase Analytics (already in project - FREE tier)
  * Tracks performance metrics and user actions
@@ -22,8 +31,31 @@ if (typeof window !== "undefined") {
 /**
  * Track custom event
  */
+/**
+ * Performs track event operation
+ *
+ * @param {string} eventName - Name of event
+ * @param {Record<string, any>} [params] - The params
+ *
+ * @returns {void} No return value
+ *
+ * @example
+ * trackEvent("example", params);
+ */
+
+/**
+ * Performs track event operation
+ *
+ * @returns {string} The trackevent result
+ *
+ * @example
+ * trackEvent();
+ */
+
 export function trackEvent(
+  /** Event Name */
   eventName: string,
+  /** Params */
   params?: Record<string, any>
 ): void {
   if (!analytics) return;
@@ -32,7 +64,9 @@ export function trackEvent(
     logEvent(analytics, eventName, params);
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "analytics.trackEvent",
+      /** Metadata */
       metadata: { eventName, params },
     });
   }
@@ -41,11 +75,36 @@ export function trackEvent(
 /**
  * Track slow API responses (>1000ms)
  */
+/**
+ * Performs track slow a p i operation
+ *
+ * @param {string} endpoint - The endpoint
+ * @param {number} duration - The duration
+ *
+ * @returns {void} No return value
+ *
+ * @example
+ * trackSlowAPI("example", 123);
+ */
+
+/**
+ * Performs track slow a p i operation
+ *
+ * @param {string} endpoint - The endpoint
+ * @param {number} duration - The duration
+ *
+ * @returns {void} No return value
+ *
+ * @example
+ * trackSlowAPI("example", 123);
+ */
+
 export function trackSlowAPI(endpoint: string, duration: number): void {
   if (duration > 1000) {
     trackEvent("slow_api", {
       endpoint,
       duration_ms: duration,
+      /** Threshold */
       threshold: 1000,
     });
   }
@@ -54,6 +113,34 @@ export function trackSlowAPI(endpoint: string, duration: number): void {
 /**
  * Track API errors
  */
+/**
+ * Performs track a p i error operation
+ *
+ * @param {string} endpoint - The endpoint
+ * @param {any} error - Error object
+ *
+ * @returns {void} No return value
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * trackAPIError("example", error);
+ */
+
+/**
+ * Performs track a p i error operation
+ *
+ * @param {string} endpoint - The endpoint
+ * @param {any} error - Error object
+ *
+ * @returns {void} No return value
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * trackAPIError("example", error);
+ */
+
 export function trackAPIError(endpoint: string, error: any): void {
   trackEvent("api_error", {
     endpoint,
@@ -65,6 +152,30 @@ export function trackAPIError(endpoint: string, error: any): void {
 /**
  * Track cache performance
  */
+/**
+ * Performs track cache hit operation
+ *
+ * @param {string} cacheKey - The cache key
+ * @param {boolean} hit - Whether hit
+ *
+ * @returns {void} No return value
+ *
+ * @example
+ * trackCacheHit("example", true);
+ */
+
+/**
+ * Performs track cache hit operation
+ *
+ * @param {string} cacheKey - The cache key
+ * @param {boolean} hit - Whether hit
+ *
+ * @returns {void} No return value
+ *
+ * @example
+ * trackCacheHit("example", true);
+ */
+
 export function trackCacheHit(cacheKey: string, hit: boolean): void {
   trackEvent("cache_performance", {
     cache_key: cacheKey,

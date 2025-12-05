@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/error
+ * @description This file contains the error component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect } from "react";
@@ -8,7 +17,9 @@ export default function Error({
   error,
   reset,
 }: {
+  /** Error */
   error: Error & { digest?: string };
+  /** Reset */
   reset: () => void;
 }) {
   useEffect(() => {

@@ -1,22 +1,72 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/email/templates/auction.templates
+ * @description This file contains functionality related to auction.templates
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Auction-related Email Templates
  */
 
 interface AuctionWonData {
+  /** Customer Name */
   customerName: string;
+  /** Item Name */
   itemName: string;
+  /** Winning Bid */
   winningBid: number;
+  /** Auction End Time */
   auctionEndTime: string;
+  /** Item Url */
   itemUrl: string;
 }
 
+/**
+ * BidOutbidData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BidOutbidData
+ */
 interface BidOutbidData {
+  /** Customer Name */
   customerName: string;
+  /** Item Name */
   itemName: string;
+  /** Current Bid */
   currentBid: number;
+  /** Your Bid */
   yourBid: number;
+  /** Item Url */
   itemUrl: string;
 }
+
+/**
+ * Retrieves auction won template
+ */
+/**
+ * Retrieves auction won template
+ *
+ * @param {AuctionWonData} data - Data object containing information
+ *
+ * @returns {string} The auctionwontemplate result
+ *
+ * @example
+ * getAuctionWonTemplate(data);
+ */
+
+/**
+ * Retrieves auction won template
+ *
+ * @param {AuctionWonData} data - Data object containing information
+ *
+ * @returns {string} The auctionwontemplate result
+ *
+ * @example
+ * getAuctionWonTemplate(data);
+ */
 
 export function getAuctionWonTemplate(data: AuctionWonData): string {
   return `
@@ -48,11 +98,14 @@ export function getAuctionWonTemplate(data: AuctionWonData): string {
     <div style="text-align: center; margin: 30px 0;">
       <a href="${data.itemUrl}" 
          style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Complete Purchase
       </a>
@@ -73,6 +126,31 @@ export function getAuctionWonTemplate(data: AuctionWonData): string {
 </html>
   `;
 }
+
+/**
+ * Retrieves bid outbid template
+ */
+/**
+ * Retrieves bid outbid template
+ *
+ * @param {BidOutbidData} data - Data object containing information
+ *
+ * @returns {string} The bidoutbidtemplate result
+ *
+ * @example
+ * getBidOutbidTemplate(data);
+ */
+
+/**
+ * Retrieves bid outbid template
+ *
+ * @param {BidOutbidData} data - Data object containing information
+ *
+ * @returns {string} The bidoutbidtemplate result
+ *
+ * @example
+ * getBidOutbidTemplate(data);
+ */
 
 export function getBidOutbidTemplate(data: BidOutbidData): string {
   return `
@@ -104,11 +182,14 @@ export function getBidOutbidTemplate(data: BidOutbidData): string {
     <div style="text-align: center; margin: 30px 0;">
       <a href="${data.itemUrl}" 
          style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Place Higher Bid
       </a>

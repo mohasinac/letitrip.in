@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/PaymentLogo
+ * @description This file contains the PaymentLogo component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -5,12 +14,43 @@ import { logError } from "@/lib/firebase-error-logger";
 import { getPaymentLogo } from "@/lib/payment-logos";
 import { useEffect, useState } from "react";
 
+/**
+ * PaymentLogoProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaymentLogoProps
+ */
 interface PaymentLogoProps {
+  /** Payment Id */
   paymentId: string;
+  /** Name */
   name: string;
+  /** Class Name */
   className?: string;
+  /** Show Name */
   showName?: boolean;
 }
+
+/**
+ * Function: Payment Logo
+ */
+/**
+ * Performs payment logo operation
+ *
+ * @returns {any} The paymentlogo result
+ *
+ * @example
+ * PaymentLogo();
+ */
+
+/**
+ * Performs payment logo operation
+ *
+ * @returns {any} The paymentlogo result
+ *
+ * @example
+ * PaymentLogo();
+ */
 
 export function PaymentLogo({
   paymentId,
@@ -25,6 +65,22 @@ export function PaymentLogo({
   useEffect(() => {
     let mounted = true;
 
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadLogo = async () => {
       try {
         setLoading(true);
@@ -35,7 +91,9 @@ export function PaymentLogo({
         }
       } catch (err) {
         logError(err as Error, {
+          /** Component */
           component: "PaymentLogo.useEffect",
+          /** Metadata */
           metadata: { paymentId },
         });
         if (mounted) {

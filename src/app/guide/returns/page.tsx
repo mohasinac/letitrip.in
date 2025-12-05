@@ -1,9 +1,20 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/guide/returns/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import Link from "next/link";
 import { Package, Clock, RefreshCcw, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Returns & Refunds Guide | Let It Rip",
+  /** Description */
   description:
     "Learn about our return policy, refund process, and how to initiate returns",
 };
@@ -179,15 +190,34 @@ export default function ReturnsGuidePage() {
   );
 }
 
+/**
+ * Function: Process Step
+ */
+/**
+ * Performs process step operation
+ *
+ * @returns {any} The processstep result
+ */
+
+/**
+ * Performs process step operation
+ *
+ * @returns {any} The processstep result
+ */
+
 function ProcessStep({
   icon,
   title,
   description,
   timeframe,
 }: {
+  /** Icon */
   icon: React.ReactNode;
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Timeframe */
   timeframe: string;
 }) {
   return (

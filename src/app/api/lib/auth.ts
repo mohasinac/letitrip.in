@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/auth
+ * @description This file contains functionality related to auth
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Auth Helpers for API Routes
  * Provides getAuthFromRequest for consistent auth patterns across routes
  */
@@ -8,13 +17,25 @@ import { getSessionToken, verifySession, SessionData } from "./session";
 import { getFirestoreAdmin } from "./firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
+/**
+ * AuthResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuthResult
+ */
 export interface AuthResult {
+  /** User */
   user: {
+    /** Uid */
     uid: string;
+    /** Email */
     email: string;
+    /** Name */
     name: string;
   } | null;
+  /** Role */
   role: string | null;
+  /** Session */
   session: SessionData | null;
 }
 
@@ -22,7 +43,37 @@ export interface AuthResult {
  * Get authentication info from request
  * Returns user, role, and session data if authenticated
  */
+/**
+ * Retrieves auth from request
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to authfromrequest result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAuthFromRequest(request);
+ */
+
+/**
+ * Retrieves auth from request
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ *
+ * @returns {Promise<any>} Promise resolving to authfromrequest result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAuthFromRequest(/** Request */
+  request);
+ */
+
 export async function getAuthFromRequest(
+  /** Request */
   request: NextRequest,
 ): Promise<AuthResult> {
   try {
@@ -50,11 +101,16 @@ export async function getAuthFromRequest(
     const userData = userDoc.data();
 
     return {
+      /** User */
       user: {
+        /** Uid */
         uid: session.userId,
+        /** Email */
         email: userData?.email || session.email,
+        /** Name */
         name: userData?.name || "",
       },
+      /** Role */
       role: userData?.role || session.role || "user",
       session,
     };

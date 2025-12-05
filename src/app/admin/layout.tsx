@@ -1,13 +1,26 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/layout
+ * @description This file contains the layout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { AdminLayoutClient } from "./AdminLayoutClient";
 
 export const metadata: Metadata = {
+  /** Title */
   title: {
+    /** Template */
     template: "%s | Admin Dashboard - Letitrip",
+    /** Default */
     default: "Admin Dashboard - Letitrip",
   },
+  /** Description */
   description:
     "Manage users, shops, products, and platform settings on Letitrip",
 };
@@ -15,6 +28,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({
   children,
 }: {
+  /** Children */
   children: React.ReactNode;
 }) {
   return (

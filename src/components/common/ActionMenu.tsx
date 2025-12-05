@@ -1,22 +1,74 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ActionMenu
+ * @description This file contains the ActionMenu component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 
+/**
+ * ActionMenuItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActionMenuItem
+ */
 export interface ActionMenuItem {
+  /** Label */
   label: string;
+  /** On Click */
   onClick: () => void;
+  /** Icon */
   icon?: React.ReactNode;
+  /** Variant */
   variant?: "default" | "danger" | "success";
+  /** Disabled */
   disabled?: boolean;
 }
 
+/**
+ * ActionMenuProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActionMenuProps
+ */
 export interface ActionMenuProps {
+  /** Items */
   items: ActionMenuItem[];
+  /** Label */
   label?: string;
+  /** Icon */
   icon?: React.ReactNode;
+  /** Align */
   align?: "left" | "right";
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Action Menu
+ */
+/**
+ * Performs action menu operation
+ *
+ * @returns {any} The actionmenu result
+ *
+ * @example
+ * ActionMenu();
+ */
+
+/**
+ * Performs action menu operation
+ *
+ * @returns {any} The actionmenu result
+ *
+ * @example
+ * ActionMenu();
+ */
 
 export function ActionMenu({
   items,
@@ -29,11 +81,43 @@ export function ActionMenu({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} event - The event
+     *
+     * @returns {any} The handleescape result
+     */
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} event - The event
+     *
+     * @returns {any} The handleescape result
+     */
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -52,6 +136,22 @@ export function ActionMenu({
     };
   }, [isOpen]);
 
+  /**
+   * Handles item click event
+   *
+   * @param {ActionMenuItem} item - The item
+   *
+   * @returns {any} The handleitemclick result
+   */
+
+  /**
+   * Handles item click event
+   *
+   * @param {ActionMenuItem} item - The item
+   *
+   * @returns {any} The handleitemclick result
+   */
+
   const handleItemClick = (item: ActionMenuItem) => {
     if (!item.disabled) {
       item.onClick();
@@ -60,10 +160,13 @@ export function ActionMenu({
   };
 
   const variantStyles = {
+    /** Default */
     default:
       "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+    /** Danger */
     danger:
       "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+    /** Success */
     success:
       "text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20",
   };

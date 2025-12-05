@@ -1,12 +1,79 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ProductDescription
+ * @description This file contains the ProductDescription component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 
+/**
+ * ProductDescriptionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductDescriptionProps
+ */
 interface ProductDescriptionProps {
+  /** Description */
   description: string;
+  /** Specifications */
   specifications?: Record<string, string>;
+  /** Shipping */
   shipping?: string;
 }
+
+/**
+ * Function: Product Description
+ */
+/**
+ * Performs product description operation
+ *
+ * @param {ProductDescriptionProps} {
+  description,
+  specifications,
+  shipping,
+} - The {
+  description,
+  specifications,
+  shipping,
+}
+ *
+ * @returns {any} The productdescription result
+ *
+ * @example
+ * ProductDescription({
+  description,
+  specifications,
+  shipping,
+});
+ */
+
+/**
+ * Performs product description operation
+ *
+ * @param {ProductDescriptionProps} {
+  description,
+  specifications,
+  shipping,
+} - The {
+  description,
+  specifications,
+  shipping,
+}
+ *
+ * @returns {any} The productdescription result
+ *
+ * @example
+ * ProductDescription({
+  description,
+  specifications,
+  shipping,
+});
+ */
 
 export function ProductDescription({
   description,
@@ -20,8 +87,11 @@ export function ProductDescription({
   const tabs = [
     { id: "description" as const, label: "Description", show: true },
     {
+      /** Id */
       id: "specifications" as const,
+      /** Label */
       label: "Specifications",
+      /** Show */
       show: specifications && Object.keys(specifications).length > 0,
     },
     { id: "shipping" as const, label: "Shipping & Returns", show: true },

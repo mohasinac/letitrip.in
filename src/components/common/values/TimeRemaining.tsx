@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/TimeRemaining
+ * @description This file contains the TimeRemaining component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Time Remaining Display Component
  *
  * Displays countdown time for auctions, sales, etc.
@@ -15,10 +24,20 @@ import React, { useState, useEffect } from "react";
 import { Clock, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * TimeRemainingProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TimeRemainingProps
+ */
 interface TimeRemainingProps {
+  /** End Time */
   endTime: Date | string | number;
+  /** Format */
   format?: "compact" | "full" | "countdown";
+  /** Show Icon */
   showIcon?: boolean;
+  /** Class Name */
   className?: string;
   /** Update interval in milliseconds */
   updateInterval?: number;
@@ -28,14 +47,45 @@ interface TimeRemainingProps {
   urgentThresholdHours?: number;
 }
 
+/**
+ * TimeBreakdown interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TimeBreakdown
+ */
 interface TimeBreakdown {
+  /** Days */
   days: number;
+  /** Hours */
   hours: number;
+  /** Minutes */
   minutes: number;
+  /** Seconds */
   seconds: number;
+  /** Is Ended */
   isEnded: boolean;
+  /** Total Ms */
   totalMs: number;
 }
+
+/**
+ * Retrieves time breakdown
+ */
+/**
+ * Retrieves time breakdown
+ *
+ * @param {Date | string | number} endTime - The end time
+ *
+ * @returns {any} The timebreakdown result
+ */
+
+/**
+ * Retrieves time breakdown
+ *
+ * @param {Date | string | number} endTime - The end time
+ *
+ * @returns {any} The timebreakdown result
+ */
 
 function getTimeBreakdown(endTime: Date | string | number): TimeBreakdown {
   const end = new Date(endTime).getTime();
@@ -44,11 +94,17 @@ function getTimeBreakdown(endTime: Date | string | number): TimeBreakdown {
 
   if (diff <= 0) {
     return {
+      /** Days */
       days: 0,
+      /** Hours */
       hours: 0,
+      /** Minutes */
       minutes: 0,
+      /** Seconds */
       seconds: 0,
+      /** Is Ended */
       isEnded: true,
+      /** Total Ms */
       totalMs: 0,
     };
   }
@@ -63,13 +119,35 @@ function getTimeBreakdown(endTime: Date | string | number): TimeBreakdown {
     hours,
     minutes,
     seconds,
+    /** Is Ended */
     isEnded: false,
+    /** Total Ms */
     totalMs: diff,
   };
 }
 
+/**
+ * Function: Format Time Remaining
+ */
+/**
+ * Formats time remaining
+ *
+ * @param {TimeBreakdown} breakdown - The breakdown
+ * @param {"compact" | "full" | "countdown"} format - The format
+ *
+ * @returns {string} The formattimeremaining result
+ */
+
+/**
+ * Formats time remaining
+ *
+ * @returns {any} The formattimeremaining result
+ */
+
 function formatTimeRemaining(
+  /** Breakdown */
   breakdown: TimeBreakdown,
+  /** Format */
   format: "compact" | "full" | "countdown",
 ): string {
   if (breakdown.isEnded) {
@@ -89,6 +167,22 @@ function formatTimeRemaining(
       return parts.join(" ");
 
     case "countdown":
+      /**
+       * Performs pad operation
+       *
+       * @param {number} n - The n
+       *
+       * @returns {number} The pad result
+       */
+
+      /**
+       * Performs pad operation
+       *
+       * @param {number} n - The n
+       *
+       * @returns {number} The pad result
+       */
+
       const pad = (n: number) => n.toString().padStart(2, "0");
       if (days > 0) {
         return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
@@ -96,6 +190,7 @@ function formatTimeRemaining(
       return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 
     case "compact":
+    /** Default */
     default:
       if (days > 0) {
         return `${days}d ${hours}h`;
@@ -109,6 +204,27 @@ function formatTimeRemaining(
       return `${seconds}s`;
   }
 }
+
+/**
+ * Function: Time Remaining
+ */
+/**
+ * Performs time remaining operation
+ *
+ * @returns {any} The timeremaining result
+ *
+ * @example
+ * TimeRemaining();
+ */
+
+/**
+ * Performs time remaining operation
+ *
+ * @returns {any} The timeremaining result
+ *
+ * @example
+ * TimeRemaining();
+ */
 
 export function TimeRemaining({
   endTime,

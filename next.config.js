@@ -1,3 +1,12 @@
+/**
+ * @fileoverview JavaScript Module
+ * @module next.config
+ * @description This file contains functionality related to next.config
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 // Bundle analyzer configuration
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",

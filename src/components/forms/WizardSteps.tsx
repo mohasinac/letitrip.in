@@ -1,32 +1,74 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/WizardSteps
+ * @description This file contains the WizardSteps component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useRef, useEffect } from "react";
 import { Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * WizardStep interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardStep
+ */
 export interface WizardStep {
+  /** Id */
   id?: string;
+  /** Name */
   name?: string;
   label?: string; // Alternative to name
+  /** Description */
   description?: string;
+  /** Icon */
   icon?: React.ReactNode;
 }
 
+/**
+ * StepState interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StepState
+ */
 export interface StepState {
+  /** Is Complete */
   isComplete: boolean;
+  /** Is Valid */
   isValid: boolean;
+  /** Has Errors */
   hasErrors: boolean;
+  /** Error Count */
   errorCount?: number;
 }
 
+/**
+ * WizardStepsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardStepsProps
+ */
 export interface WizardStepsProps {
+  /** Steps */
   steps: WizardStep[];
+  /** Current Step */
   currentStep: number;
+  /** Completed Steps */
   completedSteps?: number[];
+  /** Error Steps */
   errorSteps?: number[];
   stepStates?: StepState[]; // Alternative to completedSteps/errorSteps
+  /** On Step Click */
   onStepClick?: (index: number) => void;
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "numbered" | "pills";
 }
 
@@ -39,6 +81,32 @@ export interface WizardStepsProps {
  * - Gradient fade indicators at edges
  * - Step states: current, completed, error, pending
  * - Click to navigate to any step
+ */
+/**
+ * Performs wizard steps operation
+ *
+ * @returns {any} The wizardsteps result
+ *
+ * @example
+ * WizardSteps();
+ */
+
+/**
+ * W
+ * @constant
+ */
+/**
+ * Performs wizard steps operation
+ *
+ * @returns {any} The wizardsteps result
+ *
+ * @example
+ * WizardSteps();
+ */
+
+/**
+ * W
+ * @constant
  */
 export const WizardSteps: React.FC<WizardStepsProps> = ({
   steps,
@@ -72,11 +140,33 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
         buttonRect.width / 2;
 
       container.scrollTo({
+        /** Left */
         left: Math.max(0, scrollLeft),
+        /** Behavior */
         behavior: "smooth",
       });
     }
   }, [currentStep]);
+
+  /**
+   * Retrieves step state
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The stepstate result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Retrieves step state
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The stepstate result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const getStepState = (index: number) => {
     // Use stepStates if provided
@@ -95,6 +185,22 @@ export const WizardSteps: React.FC<WizardStepsProps> = ({
   };
 
   // Helper to get step name/label
+  /**
+   * Retrieves step name
+   *
+   * @param {WizardStep} step - The step
+   *
+   * @returns {any} The stepname result
+   */
+
+  /**
+   * Retrieves step name
+   *
+   * @param {WizardStep} step - The step
+   *
+   * @returns {any} The stepname result
+   */
+
   const getStepName = (step: WizardStep) => step.name || step.label || "";
   return (
     <div className={cn("relative", className)}>

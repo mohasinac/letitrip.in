@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/seller/dashboard/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -11,6 +20,22 @@ import {
 /**
  * Calculate average response time from order creation to first status update
  */
+/**
+ * Calculates average response time
+ *
+ * @param {any[]} orders - The orders
+ *
+ * @returns {string} The calculateaverageresponsetime result
+ */
+
+/**
+ * Calculates average response time
+ *
+ * @param {any[]} orders - The orders
+ *
+ * @returns {string} The calculateaverageresponsetime result
+ */
+
 function calculateAverageResponseTime(orders: any[]): string {
   if (orders.length === 0) return "N/A";
 
@@ -27,6 +52,18 @@ function calculateAverageResponseTime(orders: any[]): string {
   const totalHours = processedOrders.reduce((sum: number, order: any) => {
     const created = new Date(order.created_at).getTime();
     const updated = new Date(order.updated_at).getTime();
+    /**
+     * Performs hours operation
+     *
+     * @returns {any} The hours result
+     */
+
+    /**
+     * Performs hours operation
+     *
+     * @returns {any} The hours result
+     */
+
     const hours = (updated - created) / (1000 * 60 * 60);
     return sum + hours;
   }, 0);
@@ -47,8 +84,29 @@ function calculateAverageResponseTime(orders: any[]): string {
 /**
  * Get count of reviews from last 7 days
  */
+/**
+ * Retrieves new reviews count
+ *
+ * @param {FirebaseFirestore.Firestore} db - The db
+ * @param {string} shopId - shop identifier
+ *
+ * @returns {Promise<any>} Promise resolving to newreviewscount result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Retrieves new reviews count
+ *
+ * @returns {Promise<any>} Promise resolving to newreviewscount result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function getNewReviewsCount(
+  /** Db */
   db: FirebaseFirestore.Firestore,
+  /** Shop Id */
   shopId: string,
 ): Promise<number> {
   try {
@@ -75,6 +133,32 @@ async function getNewReviewsCount(
  * Query params:
  * - shop_id (optional - will use user's primary shop if not provided)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const user = await requireRole(req, ["seller", "admin"]);
@@ -114,6 +198,7 @@ export async function GET(req: NextRequest) {
       .where("shop_id", "==", shopId);
     const productsSnapshot = await productsQuery.get();
     const allProducts = productsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -127,6 +212,7 @@ export async function GET(req: NextRequest) {
       .where("shop_id", "==", shopId);
     const ordersSnapshot = await ordersQuery.get();
     const allOrders = ordersSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -173,11 +259,17 @@ export async function GET(req: NextRequest) {
       })
       .slice(0, 5)
       .map((order: any) => ({
+        /** Id */
         id: order.id,
+        /** Order Number */
         orderNumber: order.order_number || `ORD-${order.id.slice(0, 8)}`,
+        /** Customer */
         customer: order.customer_name || "Unknown",
+        /** Amount */
         amount: order.total_amount || 0,
+        /** Status */
         status: order.status || "pending",
+        /** Date */
         date: safeToISOString(order.created_at) || new Date().toISOString(),
       }));
 
@@ -187,6 +279,7 @@ export async function GET(req: NextRequest) {
       .where("shop_id", "==", shopId);
     const orderItemsSnapshot = await orderItemsQuery.get();
     const orderItems = orderItemsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -214,9 +307,13 @@ export async function GET(req: NextRequest) {
         const productData = productDoc.data();
 
         productStats.set(productId, {
+          /** Name */
           name: productData?.name || "Unknown Product",
+          /** Sales */
           sales: itemData.quantity || 1,
+          /** Revenue */
           revenue: (itemData.price || 0) * (itemData.quantity || 1),
+          /** Views */
           views: productData?.views || 0,
         });
       }
@@ -230,29 +327,46 @@ export async function GET(req: NextRequest) {
 
     // Build response
     const response = {
+      /** Stats */
       stats: {
+        /** Shops */
         shops: {
+          /** Total */
           total: 1,
+          /** Active */
           active: shopData.status === "active" ? 1 : 0,
         },
+        /** Products */
         products: {
+          /** Total */
           total: allProducts.length,
+          /** Active */
           active: activeProducts,
         },
+        /** Orders */
         orders: {
+          /** Pending */
           pending: pendingOrders,
+          /** Total */
           total: totalOrders,
         },
+        /** Revenue */
         revenue: {
+          /** This Month */
           thisMonth: currentMonthRevenue,
+          /** Last Month */
           lastMonth: lastMonthRevenue,
         },
       },
       recentOrders,
       topProducts,
+      /** Shop Performance */
       shopPerformance: {
+        /** Average Rating */
         averageRating: shopData.rating || 0,
+        /** Total Ratings */
         totalRatings: shopData.total_ratings || 0,
+        /** Order Fulfillment */
         orderFulfillment:
           totalOrders > 0
             ? Math.round(
@@ -261,14 +375,19 @@ export async function GET(req: NextRequest) {
                   100,
               )
             : 0,
+        /** Response Time */
         responseTime: calculateAverageResponseTime(allOrders),
       },
+      /** Alerts */
       alerts: {
+        /** Low Stock */
         lowStock: allProducts.filter(
           (p: any) => p.stock_quantity !== undefined && p.stock_quantity < 5,
         ).length,
+        /** Pending Shipment */
         pendingShipment: allOrders.filter((o: any) => o.status === "confirmed")
           .length,
+        /** New Reviews */
         newReviews: await getNewReviewsCount(db, shopId),
       },
     };

@@ -1,10 +1,21 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/global-error
+ * @description This file contains the global-error component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 export default function GlobalError({
   error,
   reset,
 }: {
+  /** Error */
   error: Error & { digest?: string };
+  /** Reset */
   reset: () => void;
 }) {
   return (

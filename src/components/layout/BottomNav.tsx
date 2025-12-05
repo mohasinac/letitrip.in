@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/BottomNav
+ * @description This file contains the BottomNav component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -15,6 +24,18 @@ export default function BottomNav() {
   const cartCount = cart?.itemCount || 0;
 
   // Get user initials
+  /**
+   * Retrieves user initials
+   *
+   * @returns {string} The userinitials result
+   */
+
+  /**
+   * Retrieves user initials
+   *
+   * @returns {string} The userinitials result
+   */
+
   const getUserInitials = () => {
     if (!user) return "U";
     const name = user.displayName || user.fullName || user.email;
@@ -27,6 +48,18 @@ export default function BottomNav() {
   };
 
   // Get profile picture URL
+  /**
+   * Retrieves profile picture
+   *
+   * @returns {any} The profilepicture result
+   */
+
+  /**
+   * Retrieves profile picture
+   *
+   * @returns {any} The profilepicture result
+   */
+
   const getProfilePicture = () => {
     return user?.photoURL || null;
   };
@@ -35,23 +68,36 @@ export default function BottomNav() {
     { id: "home", name: "Home", icon: Home, href: "/" },
     { id: "products", name: "Products", icon: ShoppingBag, href: "/products" },
     {
+      /** Id */
       id: "auctions",
+      /** Name */
       name: "Auctions",
+      /** Icon */
       icon: Gavel,
+      /** Href */
       href: "/auctions",
     },
     {
+      /** Id */
       id: "cart",
+      /** Name */
       name: "Cart",
+      /** Icon */
       icon: ShoppingCart,
+      /** Href */
       href: "/cart",
+      /** Badge */
       badge: cartCount,
     },
     {
+      /** Id */
       id: "account",
+      /** Name */
       name: "Account",
       // Custom render for account with avatar
+      /** Href */
       href: isAuthenticated ? "/user" : "/login",
+      /** Is Account */
       isAccount: true,
     },
   ];

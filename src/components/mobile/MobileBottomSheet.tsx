@@ -1,20 +1,65 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileBottomSheet
+ * @description This file contains the MobileBottomSheet component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useRef, useEffect, useState, ReactNode } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * MobileBottomSheetProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileBottomSheetProps
+ */
 interface MobileBottomSheetProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Title */
   title?: string;
+  /** Children */
   children: ReactNode;
+  /** Snap Points */
   snapPoints?: ("content" | "half" | "full")[];
+  /** Initial Snap */
   initialSnap?: "content" | "half" | "full";
+  /** Show Handle */
   showHandle?: boolean;
+  /** Show Close Button */
   showCloseButton?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Mobile Bottom Sheet
+ */
+/**
+ * Performs mobile bottom sheet operation
+ *
+ * @returns {any} The mobilebottomsheet result
+ *
+ * @example
+ * MobileBottomSheet();
+ */
+
+/**
+ * Performs mobile bottom sheet operation
+ *
+ * @returns {any} The mobilebottomsheet result
+ *
+ * @example
+ * MobileBottomSheet();
+ */
 
 export function MobileBottomSheet({
   isOpen,
@@ -47,6 +92,22 @@ export function MobileBottomSheet({
   }, [isOpen]);
 
   // Handle touch start
+  /**
+   * Handles touch start event
+   *
+   * @param {React.TouchEvent} e - The e
+   *
+   * @returns {any} The handletouchstart result
+   */
+
+  /**
+   * Handles touch start event
+   *
+   * @param {React.TouchEvent} e - The e
+   *
+   * @returns {any} The handletouchstart result
+   */
+
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     startY.current = touch.clientY;
@@ -55,6 +116,22 @@ export function MobileBottomSheet({
   };
 
   // Handle touch move
+  /**
+   * Handles touch move event
+   *
+   * @param {React.TouchEvent} e - The e
+   *
+   * @returns {any} The handletouchmove result
+   */
+
+  /**
+   * Handles touch move event
+   *
+   * @param {React.TouchEvent} e - The e
+   *
+   * @returns {any} The handletouchmove result
+   */
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
 
@@ -70,6 +147,18 @@ export function MobileBottomSheet({
   };
 
   // Handle touch end
+  /**
+   * Handles touch end event
+   *
+   * @returns {any} The handletouchend result
+   */
+
+  /**
+   * Handles touch end event
+   *
+   * @returns {any} The handletouchend result
+   */
+
   const handleTouchEnd = () => {
     setIsDragging(false);
     // Close if dragged more than 100px down
@@ -105,7 +194,9 @@ export function MobileBottomSheet({
           className,
         )}
         style={{
+          /** Transform */
           transform: `translateY(${currentY}px)`,
+          /** Transition */
           transition: isDragging ? "none" : "transform 0.3s ease-out",
         }}
         onTouchStart={handleTouchStart}

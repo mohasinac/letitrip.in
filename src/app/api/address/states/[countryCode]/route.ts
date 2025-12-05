@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/address/states/[countryCode]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * States by Country API Route
  * GET /api/address/states/[countryCode]
  *
@@ -9,8 +18,16 @@
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * State interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for State
+ */
 interface State {
+  /** Code */
   code: string;
+  /** Name */
   name: string;
 }
 
@@ -147,14 +164,54 @@ const UK_REGIONS: State[] = [
 ];
 
 const STATE_MAP: Record<string, State[]> = {
+  /** I N */
   IN: INDIAN_STATES,
+  /** U S */
   US: US_STATES,
+  /** C A */
   CA: CANADIAN_PROVINCES,
+  /** A U */
   AU: AUSTRALIAN_STATES,
+  /** G B */
   GB: UK_REGIONS,
 };
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: { countryCode: string } }
 ) {
@@ -167,7 +224,9 @@ export async function GET(
     if (!states) {
       return NextResponse.json(
         {
+          /** Error */
           error: `No states/provinces data available for country: ${countryCode}`,
+          /** States */
           states: [],
           countryCode,
         },
@@ -195,22 +254,29 @@ export async function GET(
 
     return NextResponse.json(
       {
+        /** States */
         states: filteredStates,
         countryCode,
+        /** Count */
         count: filteredStates.length,
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "StatesAPI",
+      /** Method */
       method: "GET",
+      /** Context */
       context: "Failed to retrieve states list",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to retrieve states list",
+        /** States */
         states: [],
       },
       { status: 500 }

@@ -1,9 +1,41 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/email/templates/verification.template
+ * @description This file contains functionality related to verification.template
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Email Verification Template
  */
 
+/**
+ * Retrieves verification email template
+ *
+ * @param {string} name - The name
+ * @param {string} verificationLink - The verification link
+ *
+ * @returns {string} The verificationemailtemplate result
+ *
+ * @example
+ * getVerificationEmailTemplate("example", "example");
+ */
+
+/**
+ * Retrieves verification email template
+ *
+ * @returns {string} The verificationemailtemplate result
+ *
+ * @example
+ * getVerificationEmailTemplate();
+ */
+
 export function getVerificationEmailTemplate(
+  /** Name */
   name: string,
+  /** Verification Link */
   verificationLink: string,
 ): string {
   return `
@@ -29,11 +61,14 @@ export function getVerificationEmailTemplate(
     <div style="text-align: center; margin: 30px 0;">
       <a href="${verificationLink}" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Verify Email Address
       </a>
@@ -64,8 +99,34 @@ export function getVerificationEmailTemplate(
   `;
 }
 
+/**
+ * Retrieves verification email text
+ */
+/**
+ * Retrieves verification email text
+ *
+ * @param {string} name - The name
+ * @param {string} verificationLink - The verification link
+ *
+ * @returns {string} The verificationemailtext result
+ *
+ * @example
+ * getVerificationEmailText("example", "example");
+ */
+
+/**
+ * Retrieves verification email text
+ *
+ * @returns {string} The verificationemailtext result
+ *
+ * @example
+ * getVerificationEmailText();
+ */
+
 export function getVerificationEmailText(
+  /** Name */
   name: string,
+  /** Verification Link */
   verificationLink: string,
 ): string {
   return `Hi ${name},

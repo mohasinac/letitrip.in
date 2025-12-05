@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/app/api/lib/services/otp.service
+ * @description This file contains service functions for otp operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { adminDb } from "@/app/api/lib/firebase/config";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -13,33 +22,72 @@ import { logError } from "@/lib/firebase-error-logger";
  * - Secure verification with attempt tracking
  */
 
+/**
+ * O T P Verification interface
+ * @interface OTPVerification
+ */
 export interface OTPVerification {
+  /** Id */
   id?: string;
+  /** User Id */
   userId: string;
+  /** Type */
   type: "email" | "phone";
   destination: string; // email or phone number
+  /** Otp */
   otp: string;
+  /** Expires At */
   expiresAt: Date;
+  /** Attempts */
   attempts: number;
+  /** Max Attempts */
   maxAttempts: number;
+  /** Verified */
   verified: boolean;
+  /** Verified At */
   verifiedAt?: Date;
+  /** Created At */
   createdAt: Date;
 }
 
+/**
+ * SendOTPRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SendOTPRequest
+ */
 export interface SendOTPRequest {
+  /** User Id */
   userId: string;
+  /** Type */
   type: "email" | "phone";
+  /** Destination */
   destination: string;
 }
 
+/**
+ * VerifyOTPRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VerifyOTPRequest
+ */
 export interface VerifyOTPRequest {
+  /** User Id */
   userId: string;
+  /** Type */
   type: "email" | "phone";
+  /** Destination */
   destination: string;
+  /** Otp */
   otp: string;
 }
 
+/**
+ * OTPService class
+ * 
+ * @class
+ * @description Description of OTPService class functionality
+ */
 class OTPService {
   private readonly OTP_LENGTH = 6;
   private readonly OTP_EXPIRY_MINUTES = 5;
@@ -57,7 +105,9 @@ class OTPService {
    * Check if user has exceeded rate limits
    */
   private async checkRateLimit(
+    /** User Id */
     userId: string,
+    /** Type */
     type: "email" | "phone"
   ): Promise<boolean> {
     try {
@@ -73,7 +123,9 @@ class OTPService {
       return snapshot.size < this.MAX_OTP_PER_HOUR;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.checkRateLimit",
+        /** Metadata */
         metadata: { userId, type },
       });
       throw new Error("Failed to check rate limit");
@@ -84,8 +136,11 @@ class OTPService {
    * Get active (non-expired, non-verified) OTP for destination
    */
   private async getActiveOTP(
+    /** User Id */
     userId: string,
+    /** Type */
     type: "email" | "phone",
+    /** Destination */
     destination: string
   ): Promise<OTPVerification | null> {
     try {
@@ -108,15 +163,21 @@ class OTPService {
 
       const doc = snapshot.docs[0];
       return {
+        /** Id */
         id: doc.id,
         ...doc.data(),
+        /** Created At */
         createdAt: doc.data().createdAt?.toDate(),
+        /** Expires At */
         expiresAt: doc.data().expiresAt?.toDate(),
+        /** Verified At */
         verifiedAt: doc.data().verifiedAt?.toDate(),
       } as OTPVerification;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.getActiveOTP",
+        /** Metadata */
         metadata: { userId, type, destination },
       });
       return null;
@@ -128,6 +189,7 @@ class OTPService {
    * Returns the OTP ID for verification
    */
   async sendOTP(
+    /** Request */
     request: SendOTPRequest
   ): Promise<{ id: string; expiresAt: Date }> {
     try {
@@ -150,7 +212,9 @@ class OTPService {
       if (existingOTP) {
         // Return existing OTP info without generating new one
         return {
+          /** Id */
           id: existingOTP.id!,
+          /** Expires At */
           expiresAt: existingOTP.expiresAt,
         };
       }
@@ -163,14 +227,21 @@ class OTPService {
       );
 
       const otpData: Omit<OTPVerification, "id"> = {
+        /** User Id */
         userId: request.userId,
+        /** Type */
         type: request.type,
+        /** Destination */
         destination: request.destination,
         otp,
         expiresAt,
+        /** Attempts */
         attempts: 0,
+        /** Max Attempts */
         maxAttempts: this.MAX_ATTEMPTS,
+        /** Verified */
         verified: false,
+        /** Created At */
         createdAt: now,
       };
 
@@ -186,12 +257,15 @@ class OTPService {
       );
 
       return {
+        /** Id */
         id: docRef.id,
         expiresAt,
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.sendOTP",
+        /** Metadata */
         metadata: request,
       });
       throw error;
@@ -202,6 +276,7 @@ class OTPService {
    * Verify OTP entered by user
    */
   async verifyOTP(
+    /** Request */
     request: VerifyOTPRequest
   ): Promise<{ success: boolean; message: string }> {
     try {
@@ -214,7 +289,9 @@ class OTPService {
 
       if (!otpDoc) {
         return {
+          /** Success */
           success: false,
+          /** Message */
           message: "No active OTP found. Please request a new one.",
         };
       }
@@ -222,7 +299,9 @@ class OTPService {
       // Check if max attempts exceeded
       if (otpDoc.attempts >= otpDoc.maxAttempts) {
         return {
+          /** Success */
           success: false,
+          /** Message */
           message:
             "Maximum verification attempts exceeded. Please request a new OTP.",
         };
@@ -231,7 +310,9 @@ class OTPService {
       // Check if OTP is expired
       if (new Date() > otpDoc.expiresAt) {
         return {
+          /** Success */
           success: false,
+          /** Message */
           message: "OTP has expired. Please request a new one.",
         };
       }
@@ -241,6 +322,7 @@ class OTPService {
         .collection(COLLECTIONS.OTP_VERIFICATIONS)
         .doc(otpDoc.id!)
         .update({
+          /** Attempts */
           attempts: otpDoc.attempts + 1,
         });
 
@@ -248,7 +330,9 @@ class OTPService {
       if (request.otp !== otpDoc.otp) {
         const remainingAttempts = otpDoc.maxAttempts - (otpDoc.attempts + 1);
         return {
+          /** Success */
           success: false,
+          /** Message */
           message: `Invalid OTP. ${remainingAttempts} attempts remaining.`,
         };
       }
@@ -258,7 +342,9 @@ class OTPService {
         .collection(COLLECTIONS.OTP_VERIFICATIONS)
         .doc(otpDoc.id!)
         .update({
+          /** Verified */
           verified: true,
+          /** Verified At */
           verifiedAt: new Date(),
         });
 
@@ -266,12 +352,16 @@ class OTPService {
       await this.updateUserVerificationStatus(request.userId, request.type);
 
       return {
+        /** Success */
         success: true,
+        /** Message */
         message: "Verification successful!",
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.verifyOTP",
+        /** Metadata */
         metadata: request,
       });
       throw error;
@@ -282,7 +372,9 @@ class OTPService {
    * Update user's emailVerified or phoneVerified status
    */
   private async updateUserVerificationStatus(
+    /** User Id */
     userId: string,
+    /** Type */
     type: "email" | "phone"
   ): Promise<void> {
     try {
@@ -299,7 +391,9 @@ class OTPService {
         });
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.updateUserVerificationStatus",
+        /** Metadata */
         metadata: { userId, type },
       });
       // Don't throw - verification succeeded even if status update fails
@@ -310,6 +404,7 @@ class OTPService {
    * Resend OTP (invalidates previous OTP and generates new one)
    */
   async resendOTP(
+    /** Request */
     request: SendOTPRequest
   ): Promise<{ id: string; expiresAt: Date }> {
     try {
@@ -333,7 +428,9 @@ class OTPService {
       return await this.sendOTP(request);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.resendOTP",
+        /** Metadata */
         metadata: request,
       });
       throw error;
@@ -358,7 +455,9 @@ class OTPService {
       return userDoc.data()?.[field] === true;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OTPService.isVerified",
+        /** Metadata */
         metadata: { userId, type },
       });
       return false;

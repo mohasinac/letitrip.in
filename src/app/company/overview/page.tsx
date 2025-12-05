@@ -1,8 +1,19 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/company/overview/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { Building2, Users, Target, Award, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Company Overview | Let It Rip",
+  /** Description */
   description:
     "Learn about Let It Rip - India's premier auction and e-commerce platform",
 };
@@ -150,9 +161,11 @@ export default function CompanyOverviewPage() {
                   General Inquiries
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-1">
+                  /** Email */
                   Email: info@letitrip.com
                 </p>
                 <p className="text-gray-600 dark:text-gray-400">
+                  /** Phone */
                   Phone: +91 1800-123-4567 (Toll-free)
                 </p>
               </div>
@@ -161,6 +174,7 @@ export default function CompanyOverviewPage() {
                   Support
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-1">
+                  /** Email */
                   Email: support@letitrip.com
                 </p>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -189,13 +203,31 @@ export default function CompanyOverviewPage() {
   );
 }
 
+/**
+ * Function: Value Card
+ */
+/**
+ * Performs value card operation
+ *
+ * @returns {any} The valuecard result
+ */
+
+/**
+ * Performs value card operation
+ *
+ * @returns {any} The valuecard result
+ */
+
 function ValueCard({
   title,
   description,
   emoji,
 }: {
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Emoji */
   emoji: string;
 }) {
   return (
@@ -208,6 +240,25 @@ function ValueCard({
     </div>
   );
 }
+
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @param {{ value} { value, label } - The { value, label }
+ *
+ * @returns {string} The statcard result
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @param {{ value} { value, label } - The { value, label }
+ *
+ * @returns {string} The statcard result
+ */
 
 function StatCard({ value, label }: { value: string; label: string }) {
   return (

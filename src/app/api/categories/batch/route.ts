@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/batch/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
@@ -6,6 +15,32 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * Fetch multiple categories by IDs/slugs
  * Used by homepage featured sections to display admin-curated categories
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -64,22 +99,34 @@ export async function POST(request: NextRequest) {
       .map((id) => categories.find((c) => c.id === id || c.slug === id))
       .filter(Boolean)
       .map((c: any) => ({
+        /** Id */
         id: c.id,
         ...c,
         // Add camelCase aliases
+        /** Parent Id */
         parentId: c.parent_id,
+        /** Parent Ids */
         parentIds: c.parent_ids || [],
+        /** Children Ids */
         childrenIds: c.children_ids || [],
+        /** Product Count */
         productCount: c.product_count || 0,
+        /** Is Active */
         isActive: c.is_active,
+        /** Is Featured */
         isFeatured: c.is_featured,
+        /** Show On Homepage */
         showOnHomepage: c.show_on_homepage,
+        /** Created At */
         createdAt: c.created_at,
+        /** Updated At */
         updatedAt: c.updated_at,
       }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: orderedCategories,
     });
   } catch (error) {

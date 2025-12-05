@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/login/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
@@ -13,21 +22,40 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
+/**
+ * Function: Login Form
+ */
+/**
+ * Performs login form operation
+ *
+ * @returns {any} The loginform result
+ */
+
+/**
+ * Performs login form operation
+ *
+ * @returns {any} The loginform result
+ */
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated } = useAuth();
   const { t } = useI18n();
   const [formData, setFormData] = useState({
+    /** Email */
     email: "",
+    /** Password */
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       // Error is already set by useLoadingState
     },
@@ -40,6 +68,26 @@ function LoginForm() {
       router.replace(redirect);
     }
   }, [isAuthenticated, router, searchParams]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +102,22 @@ function LoginForm() {
       }, 100);
     });
   };
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

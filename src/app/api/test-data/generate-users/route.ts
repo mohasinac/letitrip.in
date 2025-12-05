@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/generate-users/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,6 +14,35 @@ import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,9 +52,13 @@ export async function POST(req: NextRequest) {
 
     for (let i = 0; i < count; i++) {
       const userData = {
+        /** Email */
         email: `${PREFIX}user${i + 1}_${Date.now()}@example.com`,
+        /** Name */
         name: `${PREFIX}${faker.person.fullName()}`,
+        /** Phone */
         phone: `+91${faker.number.int({ min: 6000000000, max: 9999999999 })}`,
+        /** Role */
         role: (() => {
           if (i === 0) return "admin";
           if (i < count * 0.3) return "seller";
@@ -26,10 +68,12 @@ export async function POST(req: NextRequest) {
         email_verified: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        /** Profile */
         profile: {
           avatar: `https://ui-avatars.com/api/?name=${PREFIX}User${
             i + 1
           }&background=random`,
+          /** Bio */
           bio: faker.lorem.sentence(),
         },
       };
@@ -41,6 +85,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, users, count: users.length });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.testData.generateUsers",
     });
     return NextResponse.json(

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/faq/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import FAQSection from "@/components/faq/FAQSection";
 import { HelpCircle, Mail, MessageCircle } from "lucide-react";
@@ -6,9 +15,12 @@ import { FAQ_ITEMS } from "@/constants/faq";
 import { generateFAQSchema, generateJSONLD } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Frequently Asked Questions - Let It Rip",
+  /** Description */
   description:
     "Find answers to common questions about shopping imported products from Japan, China, USA, UK. No customs charges, fast India shipping, COD available.",
+  /** Keywords */
   keywords: [
     "FAQ",
     "help",
@@ -20,19 +32,33 @@ export const metadata: Metadata = {
     "fast shipping India",
     "returns India",
   ],
+  /** Open Graph */
   openGraph: {
+    /** Title */
     title: "FAQ - Let It Rip Help Center",
+    /** Description */
     description:
       "Get answers about imported products, shipping, customs, payments & returns in India",
+    /** Type */
     type: "website",
   },
 };
 
+/**
+ * Performs f a q page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = FAQPage();
+ */
 export default function FAQPage() {
   // Generate FAQ schema for rich snippets
   const faqSchema = generateFAQSchema(
     FAQ_ITEMS.map((item) => ({
+      /** Question */
       question: item.question,
+      /** Answer */
       answer: item.answer,
     })),
   );

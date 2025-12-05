@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { safeToISOString } from "@/lib/date-utils";
@@ -13,6 +22,37 @@ const DEMO_PREFIX = "DEMO_";
  * Get statistics for existing demo data with DEMO_ prefix
  * GET /api/admin/demo/stats
  */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<void>} Promise that resolves when operation completes
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = GET();
+ */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
 export async function GET() {
   try {
     const db = getFirestoreAdmin();
@@ -123,7 +163,9 @@ export async function GET() {
 
     if (!hasData) {
       return NextResponse.json({
+        /** Exists */
         exists: false,
+        /** Summary */
         summary: null,
       });
     }
@@ -154,8 +196,11 @@ export async function GET() {
       homepageSettings.size;
 
     return NextResponse.json({
+      /** Exists */
       exists: true,
+      /** Summary */
       summary: {
+        /** Prefix */
         prefix: DEMO_PREFIX,
         categories,
         users,
@@ -172,6 +217,7 @@ export async function GET() {
         carts,
         notifications,
         settings,
+        /** Created At */
         createdAt: latestCreatedAt
           ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
           : new Date().toISOString(),
@@ -181,8 +227,11 @@ export async function GET() {
     console.error("Demo stats fetch error:", error);
     return NextResponse.json(
       {
+        /** Exists */
         exists: false,
+        /** Summary */
         summary: null,
+        /** Error */
         error: error.message,
       },
       { status: 200 },

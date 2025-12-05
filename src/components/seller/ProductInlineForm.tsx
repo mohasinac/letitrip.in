@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ProductInlineForm
+ * @description This file contains the ProductInlineForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -10,12 +19,43 @@ import { FormTextarea } from "@/components/forms/FormTextarea";
 import { productsService } from "@/services/products.service";
 import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * ProductInlineFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductInlineFormProps
+ */
 interface ProductInlineFormProps {
+  /** Product */
   product?: ProductFE | ProductCardFE;
+  /** Shop Id */
   shopId?: string;
+  /** On Success */
   onSuccess: () => void;
+  /** On Cancel */
   onCancel: () => void;
 }
+
+/**
+ * Function: Product Inline Form
+ */
+/**
+ * Performs product inline form operation
+ *
+ * @returns {any} The productinlineform result
+ *
+ * @example
+ * ProductInlineForm();
+ */
+
+/**
+ * Performs product inline form operation
+ *
+ * @returns {any} The productinlineform result
+ *
+ * @example
+ * ProductInlineForm();
+ */
 
 export function ProductInlineForm({
   product,
@@ -26,15 +66,43 @@ export function ProductInlineForm({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
+    /** Name */
     name: product?.name || "",
+    /** Slug */
     slug: product?.slug || "",
+    /** Price */
     price: product?.price || 0,
+    /** Stock Count */
     stockCount: product?.stockCount || 0,
+    /** Category Id */
     categoryId: product?.categoryId || "",
+    /** Description */
     description: product && "description" in product ? product.description : "",
+    /** Condition */
     condition: product && "condition" in product ? product.condition : "new",
+    /** Status */
     status: product?.status || "draft",
   });
+
+  /**
+   * Performs clear error operation
+   *
+   * @param {string} field - The field
+   *
+   * @returns {string} The clearerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs clear error operation
+   *
+   * @param {string} field - The field
+   *
+   * @returns {string} The clearerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const clearError = (field: string) => {
     if (errors[field]) {
@@ -45,6 +113,26 @@ export function ProductInlineForm({
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,9 +169,13 @@ export function ProductInlineForm({
         await productsService.create({
           ...formData,
           shopId,
+          /** Country Of Origin */
           countryOfOrigin: "India",
+          /** Low Stock Threshold */
           lowStockThreshold: 5,
+          /** Is Returnable */
           isReturnable: true,
+          /** Return Window Days */
           returnWindowDays: 7,
         } as any);
       }
@@ -91,7 +183,9 @@ export function ProductInlineForm({
       onSuccess();
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ProductInlineForm.handleSubmit",
+        /** Metadata */
         metadata: { productSlug: formData.slug },
       });
       setErrors({ form: error.message || "Failed to save product" });

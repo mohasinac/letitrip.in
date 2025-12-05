@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/my-shops/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -23,8 +32,11 @@ export default function MyShopsPage() {
   const [deleteShopId, setDeleteShopId] = useState<string | null>(null);
 
   const {
+    /** Data */
     data: shops,
+    /** Is Loading */
     isLoading: loading,
+    /** Set Data */
     setData: setShops,
     execute,
   } = useLoadingState<ShopFE[]>({ initialData: [] });
@@ -41,6 +53,26 @@ export default function MyShopsPage() {
   // Safe access to shops array
   const shopsList = shops || [];
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (shopId: string) => {
     try {
       const shopToDelete = shopsList.find((shop) => shop.id === shopId);
@@ -51,7 +83,9 @@ export default function MyShopsPage() {
       setDeleteShopId(null);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerShops.handleDelete",
+        /** Metadata */
         metadata: { shopId },
       });
       toast.error("Failed to delete shop. Please try again.");
@@ -125,7 +159,9 @@ export default function MyShopsPage() {
           action={
             !searchQuery
               ? {
+                  /** Label */
                   label: "Create Shop",
+                  /** On Click */
                   onClick: () => {
                     if (globalThis.location)
                       globalThis.location.href = "/seller/my-shops/create";

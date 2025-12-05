@@ -1,7 +1,22 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useSlugValidation
+ * @description This file contains functionality related to useSlugValidation
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { useState, useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { logError } from "@/lib/firebase-error-logger";
 
+/**
+ * UseSlugValidationOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseSlugValidationOptions
+ */
 interface UseSlugValidationOptions {
   /** API endpoint for validation */
   endpoint: string;
@@ -15,6 +30,12 @@ interface UseSlugValidationOptions {
   initialSlug?: string;
 }
 
+/**
+ * SlugValidationResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SlugValidationResult
+ */
 interface SlugValidationResult {
   /** Current slug value */
   slug: string;
@@ -65,6 +86,24 @@ interface SlugValidationResult {
  * });
  * ```
  */
+/**
+ * Custom React hook for slug validation
+ *
+ * @returns {any} The useslugvalidation result
+ *
+ * @example
+ * useSlugValidation();
+ */
+
+/**
+ * Custom React hook for slug validation
+ *
+ * @returns {any} The useslugvalidation result
+ *
+ * @example
+ * useSlugValidation();
+ */
+
 export function useSlugValidation({
   endpoint,
   params = {},
@@ -92,6 +131,7 @@ export function useSlugValidation({
       try {
         // Build query params
         const queryParams = new URLSearchParams({
+          /** Slug */
           slug: slugToValidate,
           ...params,
         });
@@ -116,7 +156,9 @@ export function useSlugValidation({
         setIsAvailable(data.available);
       } catch (err: any) {
         logError(err, {
+          /** Component */
           component: "useSlugValidation.validate",
+          /** Metadata */
           metadata: { slug, endpoint },
         });
         setError(err instanceof Error ? err.message : "Validation failed");

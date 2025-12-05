@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/TagInput
+ * @description This file contains the TagInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useRef, useCallback, KeyboardEvent } from "react";
@@ -9,18 +18,31 @@ import React, { useState, useRef, useCallback, KeyboardEvent } from "react";
  */
 
 interface TagInputProps {
+  /** Value */
   value: string[];
+  /** On Change */
   onChange: (tags: string[]) => void;
+  /** Placeholder */
   placeholder?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
+  /** Max Tags */
   maxTags?: number;
+  /** Max Tag Length */
   maxTagLength?: number;
+  /** Min Tag Length */
   minTagLength?: number;
+  /** Allow Duplicates */
   allowDuplicates?: boolean;
+  /** Suggestions */
   suggestions?: string[];
+  /** Case Sensitive */
   caseSensitive?: boolean;
+  /** Delimiter */
   delimiter?: string | RegExp;
+  /** Class Name */
   className?: string;
 }
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ProductQuickView
+ * @description This file contains the ProductQuickView component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -20,31 +29,84 @@ import {
 import Link from "next/link";
 import { Price } from "@/components/common/values/Price";
 
+/**
+ * ProductQuickViewProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductQuickViewProps
+ */
 export interface ProductQuickViewProps {
+  /** Product */
   product: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Price */
     price: number;
+    /** Original Price */
     originalPrice?: number;
+    /** Images */
     images: string[];
+    /** Description */
     description: string;
+    /** Rating */
     rating?: number;
+    /** Review Count */
     reviewCount?: number;
+    /** In Stock */
     inStock: boolean;
+    /** Stock Count */
     stockCount?: number;
+    /** Condition */
     condition?: "new" | "used" | "refurbished";
+    /** Shop Name */
     shopName: string;
+    /** Shop Slug */
     shopSlug: string;
+    /** Specifications */
     specifications?: { label: string; value: string }[];
   };
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Add To Cart */
   onAddToCart?: (id: string, quantity: number) => void;
+  /** On Toggle Favorite */
   onToggleFavorite?: (id: string) => void;
+  /** Is Favorite */
   isFavorite?: boolean;
 }
 
+/**
+ * Performs product quick view operation
+ *
+ * @returns {any} The productquickview result
+ *
+ * @example
+ * ProductQuickView();
+ */
+
+/**
+ * P
+ * @constant
+ */
+/**
+ * Performs product quick view operation
+ *
+ * @returns {any} The productquickview result
+ *
+ * @example
+ * ProductQuickView();
+ */
+
+/**
+ * P
+ * @constant
+ */
 export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   product,
   isOpen,
@@ -69,6 +131,22 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
         onClose();
@@ -86,11 +164,35 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
       )
     : 0;
 
+  /**
+   * Handles prev image event
+   *
+   * @returns {any} The handleprevimage result
+   */
+
+  /**
+   * Handles prev image event
+   *
+   * @returns {any} The handleprevimage result
+   */
+
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? product.images.length - 1 : prev - 1,
     );
   };
+
+  /**
+   * Handles next image event
+   *
+   * @returns {any} The handlenextimage result
+   */
+
+  /**
+   * Handles next image event
+   *
+   * @returns {any} The handlenextimage result
+   */
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
@@ -98,11 +200,35 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
     );
   };
 
+  /**
+   * Handles add to cart event
+   *
+   * @returns {any} The handleaddtocart result
+   */
+
+  /**
+   * Handles add to cart event
+   *
+   * @returns {any} The handleaddtocart result
+   */
+
   const handleAddToCart = () => {
     if (product.inStock && onAddToCart) {
       onAddToCart(product.id, quantity);
     }
   };
+
+  /**
+   * Handles toggle favorite event
+   *
+   * @returns {any} The handletogglefavorite result
+   */
+
+  /**
+   * Handles toggle favorite event
+   *
+   * @returns {any} The handletogglefavorite result
+   */
 
   const handleToggleFavorite = () => {
     if (onToggleFavorite) {
@@ -110,17 +236,38 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
+          /** Title */
           title: product.name,
+          /** Text */
           text: product.description,
+          /** Url */
           url: `/products/${product.slug}`,
         });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "ProductQuickView.handleShare",
+          /** Metadata */
           metadata: { productSlug: product.slug },
         });
       }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/orders/[id]/invoice/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { withRateLimit } from "@/app/api/middleware/ratelimiter";
@@ -5,7 +14,42 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 import PDFDocument from "pdfkit";
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Req */
+  req, {});
+ */
+
 export async function GET(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -116,7 +160,9 @@ export async function GET(
         const buffer = Buffer.concat(chunks as any);
 
         return new NextResponse(buffer, {
+          /** Status */
           status: 200,
+          /** Headers */
           headers: {
             "Content-Type": "application/pdf",
             "Content-Disposition": `inline; filename="invoice-${id}.pdf"`,
@@ -126,7 +172,9 @@ export async function GET(
         });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.orders.invoice",
+          /** Metadata */
           metadata: { orderId: id },
         });
         return NextResponse.json(

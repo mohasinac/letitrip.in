@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/SimilarCategories
+ * @description This file contains the SimilarCategories component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -8,11 +17,57 @@ import { ChevronLeft, ChevronRight, Folder, Grid3X3 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+/**
+ * SimilarCategoriesProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SimilarCategoriesProps
+ */
 interface SimilarCategoriesProps {
+  /** Category Slug */
   categorySlug: string;
+  /** Category Name */
   categoryName?: string;
+  /** Limit */
   limit?: number;
 }
+
+/**
+ * Function: Similar Categories
+ */
+/**
+ * Performs similar categories operation
+ *
+ * @param {SimilarCategoriesProps} [{
+  categorySlug,
+  categoryName] - Name of {
+  categoryslug,
+  category
+ *
+ * @returns {any} The similarcategories result
+ *
+ * @example
+ * SimilarCategories({
+  categorySlug,
+  categoryName);
+ */
+
+/**
+ * Performs similar categories operation
+ *
+ * @param {SimilarCategoriesProps} [{
+  categorySlug,
+  categoryName] - Name of {
+  categoryslug,
+  category
+ *
+ * @returns {any} The similarcategories result
+ *
+ * @example
+ * SimilarCategories({
+  categorySlug,
+  categoryName);
+ */
 
 export function SimilarCategories({
   categorySlug,
@@ -28,6 +83,22 @@ export function SimilarCategories({
     loadSimilarCategories();
   }, [categorySlug]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSimilarCategories = async () => {
     try {
       setLoading(true);
@@ -38,13 +109,31 @@ export function SimilarCategories({
       setCategories(response || []);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SimilarCategories.loadCategories",
+        /** Metadata */
         metadata: { categorySlug, limit },
       });
     } finally {
       setLoading(false);
     }
   };
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
 
   const handleScroll = (direction: "left" | "right") => {
     const container = document.getElementById("similar-categories-scroll");
@@ -57,10 +146,24 @@ export function SimilarCategories({
         : container.scrollLeft + scrollAmount;
 
     container.scrollTo({
+      /** Left */
       left: newPosition,
+      /** Behavior */
       behavior: "smooth",
     });
   };
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
 
   const updateScrollButtons = () => {
     const container = document.getElementById("similar-categories-scroll");
@@ -205,6 +308,7 @@ export function SimilarCategories({
 
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
+          /** Display */
           display: none;
         }
       `}</style>

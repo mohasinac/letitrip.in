@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/payment-gateway-selector
+ * @description This file contains functionality related to payment-gateway-selector
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Payment Gateway Selector
  *
  * Smart gateway selection logic that chooses the best payment gateway
@@ -29,6 +38,12 @@ import {
 // TYPES
 // ============================================================================
 
+/**
+ * PaymentMethod type
+ * 
+ * @typedef {Object} PaymentMethod
+ * @description Type definition for PaymentMethod
+ */
 export type PaymentMethod =
   | "card"
   | "upi"
@@ -37,20 +52,42 @@ export type PaymentMethod =
   | "emi"
   | "any";
 
+/**
+ * GatewaySelectionParams interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GatewaySelectionParams
+ */
 export interface GatewaySelectionParams {
+  /** Amount */
   amount: number;
+  /** Currency */
   currency: CurrencyCode;
+  /** Country */
   country: CountryCode;
+  /** Payment Method */
   paymentMethod?: PaymentMethod;
+  /** Required Capabilities */
   requiredCapabilities?: Array<keyof PaymentGatewayConfig["capabilities"]>;
   customerPreference?: string; // Gateway ID preferred by customer
 }
 
+/**
+ * GatewayWithScore interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GatewayWithScore
+ */
 export interface GatewayWithScore {
+  /** Gateway */
   gateway: PaymentGatewayConfig;
+  /** Score */
   score: number;
+  /** Fee */
   fee: number;
+  /** Total Amount */
   totalAmount: number;
+  /** Reasons */
   reasons: string[];
 }
 
@@ -69,7 +106,33 @@ export interface GatewayWithScore {
  * 5. Lowest total cost (fee)
  * 6. Gateway priority
  */
+/**
+ * Performs select best gateway operation
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {any} The selectbestgateway result
+ *
+ * @example
+ * selectBestGateway(params);
+ */
+
+/**
+ * Performs select best gateway operation
+ *
+ * @param {GatewaySelectionParams} /** Params */
+  params - The /**  params */
+  params
+ *
+ * @returns {any} The selectbestgateway result
+ *
+ * @example
+ * selectBestGateway(/** Params */
+  params);
+ */
+
 export function selectBestGateway(
+  /** Params */
   params: GatewaySelectionParams
 ): PaymentGatewayConfig | null {
   const {
@@ -150,8 +213,25 @@ export function selectBestGateway(
 /**
  * Filter gateways by payment method capability
  */
+/**
+ * Filters by payment method
+ *
+ * @param {PaymentGatewayConfig[]} gateways - The gateways
+ * @param {PaymentMethod} method - The method
+ *
+ * @returns {any} The filterbypaymentmethod result
+ */
+
+/**
+ * Filters by payment method
+ *
+ * @returns {any} The filterbypaymentmethod result
+ */
+
 function filterByPaymentMethod(
+  /** Gateways */
   gateways: PaymentGatewayConfig[],
+  /** Method */
   method: PaymentMethod
 ): PaymentGatewayConfig[] {
   switch (method) {
@@ -165,6 +245,7 @@ function filterByPaymentMethod(
       return gateways.filter((g) => g.capabilities.wallets);
     case "emi":
       return gateways.filter((g) => g.capabilities.emi);
+    /** Default */
     default:
       return gateways;
   }
@@ -174,9 +255,28 @@ function filterByPaymentMethod(
  * Score gateways based on cost and priority
  * Higher score = better gateway
  */
+/**
+ * Performs score gateways operation
+ *
+ * @param {PaymentGatewayConfig[]} gateways - The gateways
+ * @param {number} amount - The amount
+ * @param {CountryCode} country - The country
+ *
+ * @returns {number} The scoregateways result
+ */
+
+/**
+ * Performs score gateways operation
+ *
+ * @returns {number} The scoregateways result
+ */
+
 function scoreGateways(
+  /** Gateways */
   gateways: PaymentGatewayConfig[],
+  /** Amount */
   amount: number,
+  /** Country */
   country: CountryCode
 ): GatewayWithScore[] {
   const isInternational = country !== "IN";
@@ -189,6 +289,18 @@ function scoreGateways(
     let score = 100; // Base score
 
     // Lower fee = higher score (fee impact: 0-30 points)
+    /**
+     * Performs fee percentage operation
+     *
+     * @returns {any} The feepercentage result
+     */
+
+    /**
+     * Performs fee percentage operation
+     *
+     * @returns {any} The feepercentage result
+     */
+
     const feePercentage = (fee / amount) * 100;
     score -= Math.min(feePercentage * 10, 30);
     reasons.push(`Fee: ${feePercentage.toFixed(2)}%`);
@@ -228,9 +340,34 @@ function scoreGateways(
 /**
  * Calculate total fee for a gateway
  */
+/**
+ * Calculates fee
+ *
+ * @param {string} gatewayId - gateway identifier
+ * @param {number} amount - The amount
+ * @param {CountryCode} country - The country
+ *
+ * @returns {string} The calculatefee result
+ *
+ * @example
+ * calculateFee("example", 123, country);
+ */
+
+/**
+ * Calculates fee
+ *
+ * @returns {string} The calculatefee result
+ *
+ * @example
+ * calculateFee();
+ */
+
 export function calculateFee(
+  /** Gateway Id */
   gatewayId: string,
+  /** Amount */
   amount: number,
+  /** Country */
   country: CountryCode
 ): number {
   const isInternational = country !== "IN";
@@ -240,7 +377,33 @@ export function calculateFee(
 /**
  * Get all suitable gateways ranked by score
  */
+/**
+ * Retrieves ranked gateways
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {any} The rankedgateways result
+ *
+ * @example
+ * getRankedGateways(params);
+ */
+
+/**
+ * Retrieves ranked gateways
+ *
+ * @param {GatewaySelectionParams} /** Params */
+  params - The /**  params */
+  params
+ *
+ * @returns {any} The rankedgateways result
+ *
+ * @example
+ * getRankedGateways(/** Params */
+  params);
+ */
+
 export function getRankedGateways(
+  /** Params */
   params: GatewaySelectionParams
 ): GatewayWithScore[] {
   const {
@@ -283,11 +446,34 @@ export function getRankedGateways(
 /**
  * Check if gateway supports transaction
  */
+/**
+ * Checks if gateway compatible
+ *
+ * @returns {string} The isgatewaycompatible result
+ *
+ * @example
+ * isGatewayCompatible();
+ */
+
+/**
+ * Checks if gateway compatible
+ *
+ * @returns {string} The isgatewaycompatible result
+ *
+ * @example
+ * isGatewayCompatible();
+ */
+
 export function isGatewayCompatible(
+  /** Gateway Id */
   gatewayId: string,
+  /** Params */
   params: {
+    /** Currency */
     currency: CurrencyCode;
+    /** Country */
     country: CountryCode;
+    /** Payment Method */
     paymentMethod?: PaymentMethod;
   }
 ): boolean {
@@ -320,17 +506,45 @@ export function isGatewayCompatible(
 /**
  * Get gateway recommendations with explanations
  */
+/**
+ * Retrieves gateway recommendations
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {string} The gatewayrecommendations result
+ *
+ * @example
+ * getGatewayRecommendations(params);
+ */
+
+/**
+ * Retrieves gateway recommendations
+ *
+ * @param {GatewaySelectionParams} params - The params
+ *
+ * @returns {any} The gatewayrecommendations result
+ *
+ * @example
+ * getGatewayRecommendations(params);
+ */
+
 export function getGatewayRecommendations(params: GatewaySelectionParams): {
+  /** Recommended */
   recommended: PaymentGatewayConfig | null;
+  /** Alternatives */
   alternatives: GatewayWithScore[];
+  /** Reasons */
   reasons: string[];
 } {
   const ranked = getRankedGateways(params);
 
   if (ranked.length === 0) {
     return {
+      /** Recommended */
       recommended: null,
+      /** Alternatives */
       alternatives: [],
+      /** Reasons */
       reasons: [
         "No suitable gateway found",
         `Currency: ${params.currency}`,
@@ -350,6 +564,7 @@ export function getGatewayRecommendations(params: GatewaySelectionParams): {
   ];
 
   return {
+    /** Recommended */
     recommended: best.gateway,
     alternatives,
     reasons,
@@ -359,20 +574,49 @@ export function getGatewayRecommendations(params: GatewaySelectionParams): {
 /**
  * Compare two gateways for a transaction
  */
+/**
+ * Performs compare gateways operation
+ *
+ * @returns {string} The comparegateways result
+ *
+ * @example
+ * compareGateways();
+ */
+
+/**
+ * Performs compare gateways operation
+ *
+ * @returns {string} The comparegateways result
+ *
+ * @example
+ * compareGateways();
+ */
+
 export function compareGateways(
+  /** Gateway Id1 */
   gatewayId1: string,
+  /** Gateway Id2 */
   gatewayId2: string,
+  /** Params */
   params: {
+    /** Amount */
     amount: number;
+    /** Currency */
     currency: CurrencyCode;
+    /** Country */
     country: CountryCode;
   }
 ): {
+  /** Winner */
   winner: string;
+  /** Comparison */
   comparison: {
     [key: string]: {
+      /** Fee */
       fee: number;
+      /** Total Amount */
       totalAmount: number;
+      /** Score */
       score: number;
     };
   };
@@ -392,18 +636,26 @@ export function compareGateways(
   );
 
   return {
+    /** Winner */
     winner: scored[0].gateway.id,
+    /** Comparison */
     comparison: {
       [gatewayId1]: {
+        /** Fee */
         fee: scored.find((s) => s.gateway.id === gatewayId1)?.fee || 0,
+        /** Total Amount */
         totalAmount:
           scored.find((s) => s.gateway.id === gatewayId1)?.totalAmount || 0,
+        /** Score */
         score: scored.find((s) => s.gateway.id === gatewayId1)?.score || 0,
       },
       [gatewayId2]: {
+        /** Fee */
         fee: scored.find((s) => s.gateway.id === gatewayId2)?.fee || 0,
+        /** Total Amount */
         totalAmount:
           scored.find((s) => s.gateway.id === gatewayId2)?.totalAmount || 0,
+        /** Score */
         score: scored.find((s) => s.gateway.id === gatewayId2)?.score || 0,
       },
     },

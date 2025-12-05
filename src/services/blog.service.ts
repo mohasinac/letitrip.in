@@ -1,66 +1,147 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/blog.service
+ * @description This file contains service functions for blog operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { PAGINATION } from "@/constants/limits";
 import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
 import { PaginatedResponseBE } from "@/types/shared/common.types";
 import { apiService } from "./api.service";
 
+/**
+ * BlogPost interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogPost
+ */
 export interface BlogPost {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Slug */
   slug: string;
+  /** Excerpt */
   excerpt: string;
+  /** Content */
   content: string;
+  /** Featured Image */
   featuredImage?: string;
+  /** Author */
   author: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Avatar */
     avatar?: string;
   };
+  /** Category */
   category: string;
+  /** Tags */
   tags: string[];
+  /** Status */
   status: BlogStatus;
+  /** Featured */
   featured: boolean;
+  /** Published At */
   publishedAt?: Date;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
+  /** Views */
   views: number;
+  /** Likes */
   likes: number;
 }
 
+/**
+ * BlogFilters interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogFilters
+ */
 interface BlogFilters {
+  /** Category */
   category?: string;
+  /** Tag */
   tag?: string;
+  /** Author */
   author?: string;
+  /** Status */
   status?: BlogStatus;
+  /** Search */
   search?: string;
+  /** Featured */
   featured?: boolean;
+  /** Page */
   page?: number;
+  /** Limit */
   limit?: number;
+  /** Sort By */
   sortBy?: "publishedAt" | "views" | "likes" | "createdAt";
+  /** Sort Order */
   sortOrder?: "asc" | "desc";
+  /** Start After */
   startAfter?: string;
 }
 
+/**
+ * CreateBlogPostData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CreateBlogPostData
+ */
 interface CreateBlogPostData {
+  /** Title */
   title: string;
+  /** Slug */
   slug: string;
+  /** Excerpt */
   excerpt: string;
+  /** Content */
   content: string;
+  /** Featured Image */
   featuredImage?: string;
+  /** Category */
   category: string;
+  /** Tags */
   tags?: string[];
+  /** Status */
   status: typeof BLOG_STATUS.DRAFT | typeof BLOG_STATUS.PUBLISHED;
+  /** Featured */
   featured?: boolean;
+  /** Published At */
   publishedAt?: Date;
 }
 
+/**
+ * UpdateBlogPostData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UpdateBlogPostData
+ */
 interface UpdateBlogPostData
   extends Partial<Omit<CreateBlogPostData, "status">> {
+  /** Status */
   status?: BlogStatus;
 }
 
+/**
+ * BlogService class
+ * 
+ * @class
+ * @description Description of BlogService class functionality
+ */
 class BlogService {
   // List blog posts (role-filtered)
   async list(
+    /** Filters */
     filters?: BlogFilters
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     const params = new URLSearchParams();
@@ -83,8 +164,11 @@ class BlogService {
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
+      /** Data */
       data: response.data || [],
+      /** Count */
       count: response.count || 0,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -117,8 +201,11 @@ class BlogService {
   // Get featured blog posts
   async getFeatured(): Promise<BlogPost[]> {
     const response = await this.list({
+      /** Featured */
       featured: true,
+      /** Status */
       status: BLOG_STATUS.PUBLISHED,
+      /** Limit */
       limit: 100,
     });
     return Array.isArray(response) ? response : (response as any).data || [];
@@ -127,8 +214,11 @@ class BlogService {
   // Get homepage blog posts
   async getHomepage(): Promise<BlogPost[]> {
     const response = await this.list({
+      /** Featured */
       featured: true,
+      /** Status */
       status: BLOG_STATUS.PUBLISHED,
+      /** Limit */
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     return Array.isArray(response) ? response : (response as any).data || [];
@@ -157,8 +247,11 @@ class BlogService {
 
   // Get posts by category
   async getByCategory(
+    /** Category */
     category: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ category, status: BLOG_STATUS.PUBLISHED, page, limit });
@@ -166,8 +259,11 @@ class BlogService {
 
   // Get posts by tag
   async getByTag(
+    /** Tag */
     tag: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({ tag, status: BLOG_STATUS.PUBLISHED, page, limit });
@@ -175,12 +271,17 @@ class BlogService {
 
   // Get posts by author
   async getByAuthor(
+    /** Author Id */
     authorId: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({
+      /** Author */
       author: authorId,
+      /** Status */
       status: BLOG_STATUS.PUBLISHED,
       page,
       limit,
@@ -189,12 +290,17 @@ class BlogService {
 
   // Search posts
   async search(
+    /** Query */
     query: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number
   ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
     return this.list({
+      /** Search */
       search: query,
+      /** Status */
       status: BLOG_STATUS.PUBLISHED,
       page,
       limit,

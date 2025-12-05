@@ -1,21 +1,69 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/InlineEditor
+ * @description This file contains the InlineEditor component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 
+/**
+ * InlineEditorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InlineEditorProps
+ */
 export interface InlineEditorProps {
+  /** Value */
   value: string;
+  /** On Save */
   onSave: (value: string) => Promise<void> | void;
+  /** On Cancel */
   onCancel?: () => void;
+  /** Type */
   type?: "text" | "number" | "textarea" | "select";
+  /** Options */
   options?: { label: string; value: string | number }[];
+  /** Placeholder */
   placeholder?: string;
+  /** Display Renderer */
   displayRenderer?: (value: string) => React.ReactNode;
+  /** Class Name */
   className?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Required */
   required?: boolean;
+  /** Max Length */
   maxLength?: number;
+  /** Rows */
   rows?: number;
 }
+
+/**
+ * Function: Inline Editor
+ */
+/**
+ * Performs inline editor operation
+ *
+ * @returns {any} The inlineeditor result
+ *
+ * @example
+ * InlineEditor();
+ */
+
+/**
+ * Performs inline editor operation
+ *
+ * @returns {any} The inlineeditor result
+ *
+ * @example
+ * InlineEditor();
+ */
 
 export function InlineEditor({
   value,
@@ -48,6 +96,22 @@ export function InlineEditor({
     }
   }, [isEditing, type]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     if (required && !editValue.trim()) {
       setError("This field is required");
@@ -72,12 +136,44 @@ export function InlineEditor({
     }
   };
 
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCancel = () => {
     setEditValue(value);
     setError(null);
     setIsEditing(false);
     onCancel?.();
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && type !== "textarea") {

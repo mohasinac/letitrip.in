@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/location.service
+ * @description This file contains service functions for location operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Location Service - GPS, Pincode, and Geocoding
  *
  * Handles all location-related operations on the frontend.
@@ -14,6 +23,12 @@ import type {
   ReverseGeocodeResult,
 } from "@/types/shared/location.types";
 
+/**
+ * LocationService class
+ * 
+ * @class
+ * @description Description of LocationService class functionality
+ */
 class LocationService {
   // ============================================================================
   // PINCODE LOOKUP
@@ -27,19 +42,29 @@ class LocationService {
 
     if (cleaned.length !== 6) {
       return {
+        /** Pincode */
         pincode: cleaned,
+        /** Areas */
         areas: [],
+        /** City */
         city: "",
+        /** District */
         district: "",
+        /** State */
         state: "",
+        /** Country */
         country: "India",
+        /** Is Valid */
         isValid: false,
+        /** Has Multiple Areas */
         hasMultipleAreas: false,
       };
     }
 
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: PincodeLookupResult;
     }>(`/location/pincode/${cleaned}`);
 
@@ -65,7 +90,9 @@ class LocationService {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         reject({
+          /** Code */
           code: "NOT_SUPPORTED",
+          /** Message */
           message: "Geolocation is not supported by your browser",
         } as GeolocationError);
         return;
@@ -74,8 +101,11 @@ class LocationService {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
+            /** Latitude */
             latitude: position.coords.latitude,
+            /** Longitude */
             longitude: position.coords.longitude,
+            /** Accuracy */
             accuracy: position.coords.accuracy,
           });
         },
@@ -97,6 +127,7 @@ class LocationService {
               code = "TIMEOUT";
               message = "Location request timed out. Please try again.";
               break;
+            /** Default */
             default:
               code = "POSITION_UNAVAILABLE";
               message = "An unknown error occurred.";
@@ -105,8 +136,11 @@ class LocationService {
           reject({ code, message } as GeolocationError);
         },
         {
+          /** Enable High Accuracy */
           enableHighAccuracy: true,
+          /** Timeout */
           timeout: 10000,
+          /** Maximum Age */
           maximumAge: 30000,
         },
       );
@@ -135,17 +169,22 @@ class LocationService {
    * Note: Requires Google Maps API integration
    */
   async reverseGeocode(
+    /** Coords */
     coords: GeoCoordinates,
   ): Promise<ReverseGeocodeResult | null> {
     try {
       const response = await apiService.get<{
+        /** Success */
         success: boolean;
+        /** Data */
         data: ReverseGeocodeResult;
       }>(`/location/geocode?lat=${coords.latitude}&lng=${coords.longitude}`);
       return response.data;
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "LocationService.reverseGeocode",
+        /** Metadata */
         metadata: { coords },
       });
       return null;

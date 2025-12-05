@@ -1,16 +1,58 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/navigation/TabbedLayout
+ * @description This file contains the TabbedLayout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { TabNav } from "./TabNav";
 import type { Tab } from "@/constants/tabs";
 
+/**
+ * TabbedLayoutProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TabbedLayoutProps
+ */
 interface TabbedLayoutProps {
+  /** Tabs */
   tabs: Tab[];
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Children */
   children: React.ReactNode;
+  /** Actions */
   actions?: React.ReactNode;
+  /** Variant */
   variant?: "default" | "pills" | "underline";
 }
+
+/**
+ * Function: Tabbed Layout
+ */
+/**
+ * Performs tabbed layout operation
+ *
+ * @returns {any} The tabbedlayout result
+ *
+ * @example
+ * TabbedLayout();
+ */
+
+/**
+ * Performs tabbed layout operation
+ *
+ * @returns {any} The tabbedlayout result
+ *
+ * @example
+ * TabbedLayout();
+ */
 
 export function TabbedLayout({
   tabs,

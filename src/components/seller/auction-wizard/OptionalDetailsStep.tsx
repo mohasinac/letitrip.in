@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/auction-wizard/OptionalDetailsStep
+ * @description This file contains the OptionalDetailsStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
@@ -10,12 +19,51 @@ import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { Price } from "@/components/common/values/Price";
 import type { OptionalStepProps } from "./types";
 
+/**
+ * Function: Optional Details Step
+ */
+/**
+ * Performs optional details step operation
+ *
+ * @returns {any} The optionaldetailsstep result
+ *
+ * @example
+ * OptionalDetailsStep();
+ */
+
+/**
+ * Performs optional details step operation
+ *
+ * @returns {any} The optionaldetailsstep result
+ *
+ * @example
+ * OptionalDetailsStep();
+ */
+
 export function OptionalDetailsStep({
   formData,
   setFormData,
   expandedSections,
   toggleSection,
 }: OptionalStepProps) {
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -245,7 +293,9 @@ export function OptionalDetailsStep({
               options={[
                 { value: "draft", label: "Draft (not visible)" },
                 {
+                  /** Value */
                   value: "scheduled",
+                  /** Label */
                   label: "Scheduled (will go live at start time)",
                 },
                 { value: "live", label: "Publish Immediately" },

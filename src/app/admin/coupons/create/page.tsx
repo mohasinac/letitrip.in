@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/coupons/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -16,6 +25,7 @@ import { useState } from "react";
 export default function CreateCouponPage() {
   const router = useRouter();
   const { execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "CreateCouponPage.handleSubmit" });
       toast.error("Failed to create coupon");
@@ -23,18 +33,49 @@ export default function CreateCouponPage() {
   });
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    /** Code */
     code: "",
+    /** Description */
     description: "",
+    /** Type */
     type: "percentage",
+    /** Value */
     value: 0,
+    /** Min Order Value */
     minOrderValue: 0,
+    /** Max Uses */
     maxUses: null,
+    /** Max Uses Per User */
     maxUsesPerUser: 1,
+    /** Valid From */
     validFrom: new Date().toISOString().split("T")[0],
+    /** Valid To */
     validTo: "",
+    /** Is Active */
     isActive: true,
+    /** Applicable To */
     applicableTo: "all",
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +115,7 @@ export default function CreateCouponPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Code */
                       code: e.target.value.toUpperCase(),
                     })
                   }
@@ -115,6 +157,7 @@ export default function CreateCouponPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Value */
                       value: Number(e.target.value),
                     })
                   }
@@ -128,6 +171,7 @@ export default function CreateCouponPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Min Order Value */
                       minOrderValue: Number(e.target.value),
                     })
                   }

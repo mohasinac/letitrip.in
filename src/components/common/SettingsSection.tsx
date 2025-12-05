@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/SettingsSection
+ * @description This file contains the SettingsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * SettingsSection Component
  *
  * A reusable wrapper for settings page sections.
@@ -26,6 +35,12 @@
 
 import { ReactNode } from "react";
 
+/**
+ * SettingsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SettingsSectionProps
+ */
 interface SettingsSectionProps {
   /** Section title */
   title: string;
@@ -40,6 +55,27 @@ interface SettingsSectionProps {
   /** Whether to use compact padding */
   compact?: boolean;
 }
+
+/**
+ * Function: Settings Section
+ */
+/**
+ * Performs settings section operation
+ *
+ * @returns {any} The settingssection result
+ *
+ * @example
+ * SettingsSection();
+ */
+
+/**
+ * Performs settings section operation
+ *
+ * @returns {any} The settingssection result
+ *
+ * @example
+ * SettingsSection();
+ */
 
 export function SettingsSection({
   title,
@@ -89,6 +125,27 @@ interface SettingsGroupProps {
   className?: string;
 }
 
+/**
+ * Function: Settings Group
+ */
+/**
+ * Performs settings group operation
+ *
+ * @returns {any} The settingsgroup result
+ *
+ * @example
+ * SettingsGroup();
+ */
+
+/**
+ * Performs settings group operation
+ *
+ * @returns {any} The settingsgroup result
+ *
+ * @example
+ * SettingsGroup();
+ */
+
 export function SettingsGroup({
   title,
   description,
@@ -129,6 +186,27 @@ interface SettingsRowProps {
   /** Additional CSS classes */
   className?: string;
 }
+
+/**
+ * Function: Settings Row
+ */
+/**
+ * Performs settings row operation
+ *
+ * @returns {any} The settingsrow result
+ *
+ * @example
+ * SettingsRow();
+ */
+
+/**
+ * Performs settings row operation
+ *
+ * @returns {any} The settingsrow result
+ *
+ * @example
+ * SettingsRow();
+ */
 
 export function SettingsRow({
   label,

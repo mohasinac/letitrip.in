@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/products.service
+ * @description This file contains service functions for products operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
@@ -39,21 +48,33 @@ class ProductsService {
    * List products with filters (returns UI-optimized types)
    */
   async list(
+    /** Filters */
     filters?: ProductFiltersFE,
   ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     try {
       // Convert FE filters to BE filters - simplified mapping
       const beFilters: any = {
+        /** Shop Id */
         shopId: filters?.shopId,
+        /** Category Id */
         categoryId: filters?.categoryId,
+        /** Search */
         search: filters?.search,
+        /** Price Min */
         priceMin: filters?.priceRange?.min,
+        /** Price Max */
         priceMax: filters?.priceRange?.max,
+        /** Status */
         status: filters?.status?.[0],
+        /** In Stock */
         inStock: filters?.inStock,
+        /** Featured */
         featured: filters?.featured,
+        /** Page */
         page: filters?.page || 1,
+        /** Limit */
         limit: filters?.limit || 20,
+        /** Sort By */
         sortBy: filters?.sortBy,
       };
 
@@ -62,8 +83,11 @@ class ProductsService {
 
       // Transform BE list items to FE cards
       return {
+        /** Data */
         data: toFEProductCards(response.data || []),
+        /** Count */
         count: response.count || 0,
+        /** Pagination */
         pagination: response.pagination,
       };
     } catch (error) {
@@ -115,7 +139,9 @@ class ProductsService {
    * Update product (accepts partial form data)
    */
   async update(
+    /** Slug */
     slug: string,
+    /** Form Data */
     formData: Partial<ProductFormFE>,
   ): Promise<ProductFE> {
     try {
@@ -188,7 +214,9 @@ class ProductsService {
    * Get seller's other products (returns FE types)
    */
   async getSellerProducts(
+    /** Slug */
     slug: string,
+    /** Limit */
     limit?: number,
   ): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
@@ -230,8 +258,11 @@ class ProductsService {
    */
   async getFeatured(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
+      /** Featured */
       featured: true,
+      /** Status */
       status: "published",
+      /** Limit */
       limit: 100,
     });
     const response =
@@ -244,8 +275,11 @@ class ProductsService {
    */
   async getHomepage(): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(PRODUCT_ROUTES.LIST, {
+      /** Featured */
       featured: true,
+      /** Status */
       status: PRODUCT_STATUS.PUBLISHED,
+      /** Limit */
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
     const response =
@@ -257,8 +291,11 @@ class ProductsService {
    * Bulk actions - supports: publish, unpublish, archive, feature, unfeature, update-stock, delete, update
    */
   async bulkAction(
+    /** Action */
     action: string,
+    /** Product Ids */
     productIds: string[],
+    /** Data */
     data?: any,
   ): Promise<BulkActionResponse> {
     try {
@@ -266,7 +303,9 @@ class ProductsService {
         PRODUCT_ROUTES.BULK,
         {
           action,
+          /** Ids */
           ids: productIds,
+          /** Updates */
           updates: data,
         },
       );
@@ -316,7 +355,9 @@ class ProductsService {
    * Bulk update stock
    */
   async bulkUpdateStock(
+    /** Product Ids */
     productIds: string[],
+    /** Stock Count */
     stockCount: number,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update-stock", productIds, { stockCount });
@@ -333,7 +374,9 @@ class ProductsService {
    * Bulk update products
    */
   async bulkUpdate(
+    /** Product Ids */
     productIds: string[],
+    /** Updates */
     updates: Partial<ProductFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", productIds, toBEProductUpdate(updates));
@@ -343,16 +386,24 @@ class ProductsService {
    * Quick create for inline editing
    */
   async quickCreate(data: {
+    /** Name */
     name: string;
+    /** Price */
     price: number;
+    /** Stock Count */
     stockCount: number;
+    /** Category Id */
     categoryId: string;
+    /** Status */
     status?: string;
+    /** Images */
     images?: string[];
   }): Promise<ProductFE> {
     const productBE = await apiService.post<ProductBE>(PRODUCT_ROUTES.LIST, {
       ...data,
+      /** Description */
       description: "",
+      /** Slug */
       slug: data.name.toLowerCase().replace(/\s+/g, "-"),
     });
     return toFEProduct(productBE);

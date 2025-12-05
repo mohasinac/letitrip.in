@@ -1,9 +1,41 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/email/templates/password-reset.template
+ * @description This file contains functionality related to password-reset.template
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Password Reset Template
  */
 
+/**
+ * Retrieves password reset email template
+ *
+ * @param {string} name - The name
+ * @param {string} resetLink - The reset link
+ *
+ * @returns {string} The passwordresetemailtemplate result
+ *
+ * @example
+ * getPasswordResetEmailTemplate("example", "example");
+ */
+
+/**
+ * Retrieves password reset email template
+ *
+ * @returns {string} The passwordresetemailtemplate result
+ *
+ * @example
+ * getPasswordResetEmailTemplate();
+ */
+
 export function getPasswordResetEmailTemplate(
+  /** Name */
   name: string,
+  /** Reset Link */
   resetLink: string,
 ): string {
   return `
@@ -29,11 +61,14 @@ export function getPasswordResetEmailTemplate(
     <div style="text-align: center; margin: 30px 0;">
       <a href="${resetLink}" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Reset Password
       </a>
@@ -64,8 +99,34 @@ export function getPasswordResetEmailTemplate(
   `;
 }
 
+/**
+ * Retrieves password reset email text
+ */
+/**
+ * Retrieves password reset email text
+ *
+ * @param {string} name - The name
+ * @param {string} resetLink - The reset link
+ *
+ * @returns {string} The passwordresetemailtext result
+ *
+ * @example
+ * getPasswordResetEmailText("example", "example");
+ */
+
+/**
+ * Retrieves password reset email text
+ *
+ * @returns {string} The passwordresetemailtext result
+ *
+ * @example
+ * getPasswordResetEmailText();
+ */
+
 export function getPasswordResetEmailText(
+  /** Name */
   name: string,
+  /** Reset Link */
   resetLink: string,
 ): string {
   return `Hi ${name},

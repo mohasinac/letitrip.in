@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/categories/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -17,6 +26,12 @@ import { CheckCircle, FolderTree, GitBranch, List } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * ViewMode type
+ * 
+ * @typedef {Object} ViewMode
+ * @description Type definition for ViewMode
+ */
 type ViewMode = "list" | "tree";
 
 export default function AdminCategoriesPage() {
@@ -25,10 +40,14 @@ export default function AdminCategoriesPage() {
 
   // Load tree data for tree view
   const {
+    /** Data */
     data: treeData,
+    /** Is Loading */
     isLoading: loadingTree,
+    /** Execute */
     execute: loadTree,
   } = useLoadingState<CategoryCardFE[]>({
+    /** Initial Data */
     initialData: [],
   });
 
@@ -45,8 +64,11 @@ export default function AdminCategoriesPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "category",
+      /** Label */
       label: "Category",
+      /** Render */
       render: (category: CategoryFE) => (
         <div className="flex items-center gap-3">
           {category.image ? (
@@ -74,8 +96,11 @@ export default function AdminCategoriesPage() {
       ),
     },
     {
+      /** Key */
       key: "parent",
+      /** Label */
       label: "Parent",
+      /** Render */
       render: (category: CategoryFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {category.parentIds?.length ? "Has Parent" : "Root Category"}
@@ -83,8 +108,11 @@ export default function AdminCategoriesPage() {
       ),
     },
     {
+      /** Key */
       key: "level",
+      /** Label */
       label: "Level",
+      /** Render */
       render: (category: CategoryFE) => (
         <div className="text-sm text-gray-600 dark:text-gray-400">
           Level {category.level || 0}
@@ -92,8 +120,11 @@ export default function AdminCategoriesPage() {
       ),
     },
     {
+      /** Key */
       key: "products",
+      /** Label */
       label: "Products",
+      /** Render */
       render: (category: CategoryFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {category.productCount || 0}
@@ -101,15 +132,21 @@ export default function AdminCategoriesPage() {
       ),
     },
     {
+      /** Key */
       key: "subcategories",
+      /** Label */
       label: "Subcategories",
+      /** Render */
       render: (category: CategoryFE) => (
         <div className="text-sm text-gray-600 dark:text-gray-400">0</div>
       ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (category: CategoryFE) => (
         <StatusBadge
           status={category.status === "published" ? "active" : "inactive"}
@@ -117,8 +154,11 @@ export default function AdminCategoriesPage() {
       ),
     },
     {
+      /** Key */
       key: "leaf",
+      /** Label */
       label: "Type",
+      /** Render */
       render: (category: CategoryFE) =>
         category.isLeaf ? (
           <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
@@ -133,8 +173,11 @@ export default function AdminCategoriesPage() {
         ),
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (category: CategoryFE) => (
         <DateDisplay date={category.createdAt} format="medium" />
       ),
@@ -144,9 +187,13 @@ export default function AdminCategoriesPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "isActive",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "true", label: "Active" },
@@ -154,9 +201,13 @@ export default function AdminCategoriesPage() {
       ],
     },
     {
+      /** Key */
       key: "isLeaf",
+      /** Label */
       label: "Type",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Types" },
         { value: "true", label: "Leaf Categories" },
@@ -164,9 +215,13 @@ export default function AdminCategoriesPage() {
       ],
     },
     {
+      /** Key */
       key: "level",
+      /** Label */
       label: "Level",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Levels" },
         { value: "0", label: "Level 0" },
@@ -178,13 +233,37 @@ export default function AdminCategoriesPage() {
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -206,23 +285,84 @@ export default function AdminCategoriesPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as CategoryFE[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<CategoryFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<CategoryFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<CategoryFE>) => {
     await categoriesService.update(id, data as any);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await categoriesService.delete(id);
   };
 
   // Handle node click in tree view
+  /**
+   * Handles node click event
+   *
+   * @param {CategoryCardFE} category - The category
+   *
+   * @returns {any} The handlenodeclick result
+   */
+
+  /**
+   * Handles node click event
+   *
+   * @param {CategoryCardFE} category - The category
+   *
+   * @returns {any} The handlenodeclick result
+   */
+
   const handleNodeClick = (category: CategoryCardFE) => {
     router.push(`/admin/categories/${category.slug}/edit`);
   };

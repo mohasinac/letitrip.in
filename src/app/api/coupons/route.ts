@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/coupons/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { couponsSieveConfig } from "@/app/api/lib/sieve/config";
@@ -13,16 +22,27 @@ import { getUserShops } from "../lib/auth-helpers";
 // Extended Sieve config with field mappings for coupons
 const couponsConfig = {
   ...couponsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Shop Id */
     shopId: "shop_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Expires At */
     expiresAt: "end_date",
+    /** Discount Value */
     discountValue: "discount_value",
+    /** Usage Count */
     usageCount: "usage_count",
+    /** Usage Limit */
     usageLimit: "usage_limit",
+    /** Is Active */
     isActive: "is_active",
+    /** Start Date */
     startDate: "start_date",
+    /** End Date */
     endDate: "end_date",
   } as Record<string, string>,
 };
@@ -30,18 +50,45 @@ const couponsConfig = {
 /**
  * Transform coupon document to API response format
  */
+/**
+ * Transforms coupon
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformcoupon result
+ */
+
+/**
+ * Transforms coupon
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformcoupon result
+ */
+
 function transformCoupon(id: string, data: any) {
   return {
     id,
     ...data,
+    /** Shop Id */
     shopId: data.shop_id,
+    /** Discount Value */
     discountValue: data.discount_value,
+    /** Is Active */
     isActive: data.is_active,
+    /** Usage Limit */
     usageLimit: data.usage_limit,
+    /** Usage Count */
     usageCount: data.usage_count,
+    /** Start Date */
     startDate: data.start_date,
+    /** End Date */
     endDate: data.end_date,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -56,6 +103,32 @@ function transformCoupon(id: string, data: any) {
  * - Seller: Own shop coupons (all statuses)
  * - Admin: All coupons
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -64,6 +137,7 @@ export async function GET(request: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -72,8 +146,11 @@ export async function GET(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -128,6 +205,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -148,12 +245,17 @@ export async function GET(request: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -170,6 +272,32 @@ export async function GET(request: NextRequest) {
  * POST /api/coupons
  * Create coupon (seller/admin only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
@@ -221,8 +349,11 @@ export async function POST(request: NextRequest) {
     const docRef = await Collections.coupons().add({
       shop_id,
       code,
+      /** Name */
       name: body.name || code,
+      /** Description */
       description: body.description || "",
+      /** Type */
       type: body.type || "percentage",
       discount_value: body.discount_value || body.discountValue || 0,
       is_active: body.is_active !== false && body.isActive !== false,

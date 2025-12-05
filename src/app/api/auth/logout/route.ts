@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/logout/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -6,6 +15,29 @@ import {
   getSessionToken,
   verifySession,
 } from "../../lib/session";
+
+/**
+ * Function: Logout Handler
+ */
+/**
+ * Performs logout handler operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to logouthandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs logout handler operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to logouthandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function logoutHandler(req: NextRequest) {
   try {
@@ -38,7 +70,9 @@ async function logoutHandler(req: NextRequest) {
     // Even if there's an error, clear the cookie
     const response = NextResponse.json(
       {
+        /** Message */
         message: "Logout completed",
+        /** Error */
         error:
           process.env.NODE_ENV === "production" ? undefined : error.message,
       },
@@ -50,6 +84,35 @@ async function logoutHandler(req: NextRequest) {
     return response;
   }
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
 
 export async function POST(req: NextRequest) {
   // Rate limiting

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/categories/[slug]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import CategoryForm from "@/components/admin/CategoryForm";
@@ -11,12 +20,23 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+/**
+ * Category interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Category
+ */
 interface Category {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Description */
   description?: string;
   parent_id?: string | null;
+  /** Image */
   image?: string;
   is_featured?: boolean;
   show_on_homepage?: boolean;
@@ -31,11 +51,14 @@ export default function EditCategoryPage() {
   const router = useRouter();
   const { user, isAdmin, loading: authLoading } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: category,
     execute,
   } = useLoadingState<Category>({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "EditCategoryPage.loadCategory", slug });
       router.push(notFound.category(slug, error));

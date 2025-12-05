@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/LanguageSelector
+ * @description This file contains the LanguageSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { LANGUAGES, type LanguageCode } from "@/lib/i18n/config";
@@ -5,9 +14,41 @@ import { Check, Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * LanguageSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LanguageSelectorProps
+ */
 interface LanguageSelectorProps {
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Language Selector
+ */
+/**
+ * Performs language selector operation
+ *
+ * @param {LanguageSelectorProps} [{ className] - Name of { class
+ *
+ * @returns {any} The languageselector result
+ *
+ * @example
+ * LanguageSelector({ className);
+ */
+
+/**
+ * Performs language selector operation
+ *
+ * @param {LanguageSelectorProps} [{ className] - Name of { class
+ *
+ * @returns {any} The languageselector result
+ *
+ * @example
+ * LanguageSelector({ className);
+ */
 
 export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
   const { i18n } = useTranslation();
@@ -16,6 +57,22 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
 
   const currentLanguage = i18n.language as LanguageCode;
 
+  /**
+   * Performs change language operation
+   *
+   * @param {LanguageCode} langCode - The lang code
+   *
+   * @returns {any} The changelanguage result
+   */
+
+  /**
+   * Performs change language operation
+   *
+   * @param {LanguageCode} langCode - The lang code
+   *
+   * @returns {any} The changelanguage result
+   */
+
   const changeLanguage = (langCode: LanguageCode) => {
     i18n.changeLanguage(langCode);
     setIsOpen(false);
@@ -23,6 +80,22 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&

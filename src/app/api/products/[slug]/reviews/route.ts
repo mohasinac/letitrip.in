@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/[slug]/reviews/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { strictRateLimiter } from "@/app/api/lib/utils/rate-limiter";
@@ -9,7 +18,42 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/products/[slug]/reviews
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -42,13 +86,17 @@ export async function GET(
     const data = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
+      /** Pagination */
       pagination: { page, limit },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.reviews.GET",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(
@@ -59,8 +107,38 @@ export async function GET(
 }
 
 // POST /api/products/[slug]/reviews
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} context - The context
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST();
+ */
+
 export async function POST(
+  /** Req */
   req: NextRequest,
+  /** Context */
   context: { params: Promise<{ slug: string }> },
 ) {
   let slug: string | undefined;
@@ -73,7 +151,9 @@ export async function POST(
   if (!strictRateLimiter.check(identifier)) {
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Too many review submissions. Please try again later.",
       },
       { status: 429 },
@@ -94,6 +174,24 @@ export async function POST(
     const body = await req.json();
     const rating = Number(body?.rating);
     const title: string | undefined = body?.title?.toString();
+    /**
+     * Performs comment operation
+     *
+     * @param {string[]} [body] - The body
+     * @param {any} 5 - The 5
+     *
+     * @returns {string} The comment result
+     */
+
+    /**
+     * Performs comment operation
+     *
+     * @param {string[]} [body] - The body
+     * @param {any} 5 - The 5
+     *
+     * @returns {string} The comment result
+     */
+
     const comment: string = (body?.comment || "").toString();
     const media: string[] = Array.isArray(body?.media)
       ? body.media.slice(0, 5)
@@ -115,7 +213,9 @@ export async function POST(
     ) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: VALIDATION_MESSAGES.REVIEW.CONTENT_TOO_SHORT,
         },
         { status: 400 },
@@ -145,6 +245,7 @@ export async function POST(
       user_id: user.id,
       user_name: user.name || "",
       rating,
+      /** Title */
       title: title || null,
       comment,
       media,
@@ -158,7 +259,9 @@ export async function POST(
     return NextResponse.json({ success: true, id: docRef.id });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.reviews.POST",
+      /** Metadata */
       metadata: { slug, userId },
     });
     return NextResponse.json(

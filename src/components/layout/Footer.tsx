@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/Footer
+ * @description This file contains the Footer component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -15,6 +24,18 @@ import {
 import { COMPANY_NAME } from "@/constants/navigation";
 
 export default function Footer() {
+  /**
+   * Performs scroll to top operation
+   *
+   * @returns {any} The scrolltotop result
+   */
+
+  /**
+   * Performs scroll to top operation
+   *
+   * @returns {any} The scrolltotop result
+   */
+
   const scrollToTop = () => {
     globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
   };
@@ -114,16 +135,24 @@ export default function Footer() {
             <div className="flex gap-3">
               {SOCIAL_LINKS.map((social) => {
                 const iconMap: Record<string, any> = {
+                  /** Facebook */
                   facebook: Facebook,
+                  /** Youtube */
                   youtube: Youtube,
+                  /** Twitter */
                   twitter: Twitter,
+                  /** Instagram */
                   instagram: Instagram,
                 };
                 const Icon = iconMap[social.icon];
                 const colorMap: Record<string, string> = {
+                  /** Facebook */
                   facebook: "hover:text-blue-600 dark:hover:text-blue-400",
+                  /** Youtube */
                   youtube: "hover:text-red-600 dark:hover:text-red-400",
+                  /** Twitter */
                   twitter: "hover:text-blue-400 dark:hover:text-blue-300",
+                  /** Instagram */
                   instagram: "hover:text-pink-600 dark:hover:text-pink-400",
                 };
                 return (

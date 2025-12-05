@@ -1,28 +1,63 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormSelect
+ * @description This file contains the FormSelect component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { forwardRef, SelectHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormSelectOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormSelectOption
+ */
 export interface FormSelectOption {
+  /** Value */
   value: string;
+  /** Label */
   label: string;
+  /** Disabled */
   disabled?: boolean;
 }
 
+/**
+ * FormSelectProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormSelectProps
+ */
 export interface FormSelectProps extends Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "size"
 > {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Options */
   options: FormSelectOption[];
+  /** Placeholder */
   placeholder?: string;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Compact */
   compact?: boolean;
 }
 
+/**
+ * F
+ * @constant
+ */
 export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
   (
     {

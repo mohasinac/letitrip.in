@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/EmptyState
+ * @description This file contains the EmptyState component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
@@ -11,20 +20,57 @@ import {
   FileText,
 } from "lucide-react";
 
+/**
+ * EmptyStateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmptyStateProps
+ */
 export interface EmptyStateProps {
+  /** Icon */
   icon?: ReactNode;
+  /** Title */
   title: string;
+  /** Description */
   description?: string;
+  /** Action */
   action?: {
+    /** Label */
     label: string;
+    /** On Click */
     onClick: () => void;
   };
+  /** Secondary Action */
   secondaryAction?: {
+    /** Label */
     label: string;
+    /** On Click */
     onClick: () => void;
   };
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Empty State
+ */
+/**
+ * Performs empty state operation
+ *
+ * @returns {any} The emptystate result
+ *
+ * @example
+ * EmptyState();
+ */
+
+/**
+ * Performs empty state operation
+ *
+ * @returns {any} The emptystate result
+ *
+ * @example
+ * EmptyState();
+ */
 
 export function EmptyState({
   icon,
@@ -79,7 +125,12 @@ export function EmptyState({
 }
 
 // Predefined empty state scenarios
+/**
+ * E
+ * @constant
+ */
 export const EmptyStates = {
+  /** No Products */
   NoProducts: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<ShoppingBag className="w-12 h-12" />}
@@ -89,6 +140,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** Empty Cart */
   EmptyCart: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<ShoppingBag className="w-12 h-12" />}
@@ -98,6 +150,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Favorites */
   NoFavorites: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<Heart className="w-12 h-12" />}
@@ -107,6 +160,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Auctions */
   NoAuctions: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<Gavel className="w-12 h-12" />}
@@ -116,6 +170,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Orders */
   NoOrders: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<Package className="w-12 h-12" />}
@@ -125,6 +180,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Search Results */
   NoSearchResults: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<Search className="w-12 h-12" />}
@@ -134,6 +190,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Users */
   NoUsers: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<Users className="w-12 h-12" />}
@@ -143,6 +200,7 @@ export const EmptyStates = {
     />
   ),
 
+  /** No Data */
   NoData: (props: Partial<EmptyStateProps>) => (
     <EmptyState
       icon={<FileText className="w-12 h-12" />}

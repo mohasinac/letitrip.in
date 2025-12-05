@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useResourceList
+ * @description This file contains functionality related to useResourceList
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useResourceList Hook
  * Task 1.8.1 - Common Hooks & Utilities
  *
@@ -170,7 +179,33 @@ export interface UseResourceListReturn<T>
  * });
  * ```
  */
+/**
+ * Custom React hook for resource list
+ *
+ * @param {UseResourceListOptions<T>} options - Configuration options
+ *
+ * @returns {any} The useresourcelist result
+ *
+ * @example
+ * useResourceList(options);
+ */
+
+/**
+ * Custom React hook for resource list
+ *
+ * @param {UseResourceListOptions<T>} /** Options */
+  options - The /**  options */
+  options
+ *
+ * @returns {any} The useresourcelist result
+ *
+ * @example
+ * useResourceList(/** Options */
+  options);
+ */
+
 export function useResourceList<T = any>(
+  /** Options */
   options: UseResourceListOptions<T>
 ): UseResourceListReturn<T> {
   const {
@@ -189,11 +224,17 @@ export function useResourceList<T = any>(
 
   // State
   const [pagination, setPagination] = useState<SievePagination>({
+    /** Page */
     page: initialPage,
+    /** Page Size */
     pageSize: initialPageSize,
+    /** Total Count */
     totalCount: 0,
+    /** Total Pages */
     totalPages: 0,
+    /** Has Next Page */
     hasNextPage: false,
+    /** Has Previous Page */
     hasPreviousPage: false,
   });
   const [filters, setFiltersState] = useState<FilterConfig>(initialFilters);
@@ -202,7 +243,9 @@ export function useResourceList<T = any>(
 
   // Loading state
   const loadingState = useLoadingState<T[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Success */
     onLoadSuccess: (data) => {
       if (onLoadSuccess && pagination) {
         onLoadSuccess(data, pagination);
@@ -218,10 +261,15 @@ export function useResourceList<T = any>(
    */
   const buildUrl = useCallback(
     (
+      /** Page */
       page: number,
+      /** Page Size */
       pageSize: number,
+      /** Current Filters */
       currentFilters: FilterConfig,
+      /** Current Sort */
       currentSort: SortField | null,
+      /** Current Search */
       currentSearch: string
     ): string => {
       const params = new URLSearchParams();
@@ -272,10 +320,15 @@ export function useResourceList<T = any>(
    */
   const fetchData = useCallback(
     async (
+      /** Page */
       page: number,
+      /** Page Size */
       pageSize: number,
+      /** Current Filters */
       currentFilters: FilterConfig,
+      /** Current Sort */
       currentSort: SortField | null,
+      /** Current Search */
       currentSearch: string
     ) => {
       try {
@@ -314,16 +367,23 @@ export function useResourceList<T = any>(
         setError(error);
         setData([]);
         setPagination({
+          /** Page */
           page: 1,
           pageSize,
+          /** Total Count */
           totalCount: 0,
+          /** Total Pages */
           totalPages: 0,
+          /** Has Next Page */
           hasNextPage: false,
+          /** Has Previous Page */
           hasPreviousPage: false,
         });
 
         logError(error, {
+          /** Component */
           component: "useResourceList.fetchData",
+          /** Metadata */
           metadata: { endpoint, page, pageSize },
         });
 
@@ -436,11 +496,17 @@ export function useResourceList<T = any>(
 
   const reset = useCallback(() => {
     setPagination({
+      /** Page */
       page: initialPage,
+      /** Page Size */
       pageSize: initialPageSize,
+      /** Total Count */
       totalCount: 0,
+      /** Total Pages */
       totalPages: 0,
+      /** Has Next Page */
       hasNextPage: false,
+      /** Has Previous Page */
       hasPreviousPage: false,
     });
     setFiltersState(initialFilters);
@@ -465,7 +531,9 @@ export function useResourceList<T = any>(
     data,
     isLoading,
     error,
+    /** Is Initialized */
     isInitialized: loadingState.isInitialized,
+    /** Is Refreshing */
     isRefreshing: loadingState.isRefreshing,
 
     // Pagination
@@ -494,6 +562,7 @@ export function useResourceList<T = any>(
     reset,
     setData,
     setError,
+    /** Clear Error */
     clearError: loadingState.clearError,
   };
 }

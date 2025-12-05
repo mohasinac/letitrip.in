@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/validations/helpers
+ * @description This file contains functionality related to helpers
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Validation Helper Utilities
  *
  * These utilities help add field-level validation to existing forms
@@ -17,9 +26,34 @@ import { logError } from "@/lib/firebase-error-logger";
 /**
  * Validates a single field against a Zod schema
  */
+/**
+ * Validates field
+ *
+ * @param {T} schema - The schema
+ * @param {string} fieldName - Name of field
+ * @param {any} value - The value
+ *
+ * @returns {string} The validatefield result
+ *
+ * @example
+ * validateField(schema, "example", value);
+ */
+
+/**
+ * Validates field
+ *
+ * @returns {string} The validatefield result
+ *
+ * @example
+ * validateField();
+ */
+
 export function validateField<T extends z.ZodType>(
+  /** Schema */
   schema: T,
+  /** Field Name */
   fieldName: string,
+  /** Value */
   value: any,
 ): string | null {
   try {
@@ -36,7 +70,9 @@ export function validateField<T extends z.ZodType>(
     return null;
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "validateField",
+      /** Metadata */
       metadata: { fieldName },
     });
     return null;
@@ -46,8 +82,31 @@ export function validateField<T extends z.ZodType>(
 /**
  * Validates multiple fields against a schema
  */
+/**
+ * Validates step
+ *
+ * @param {T} schema - The schema
+ * @param {any} data - Data object containing information
+ *
+ * @returns {any} The validatestep result
+ *
+ * @example
+ * validateStep(schema, data);
+ */
+
+/**
+ * Validates step
+ *
+ * @returns {any} The validatestep result
+ *
+ * @example
+ * validateStep();
+ */
+
 export function validateStep<T extends z.ZodType>(
+  /** Schema */
   schema: T,
+  /** Data */
   data: any,
 ): Record<string, string> {
   try {
@@ -67,6 +126,7 @@ export function validateStep<T extends z.ZodType>(
     return {};
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "validateStep",
     });
     return {};
@@ -76,6 +136,32 @@ export function validateStep<T extends z.ZodType>(
 /**
  * Check if validation errors exist
  */
+/**
+ * Checks if errors
+ *
+ * @param {Record<string, string>} errors - The errors
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * hasErrors(errors);
+ */
+
+/**
+ * Checks if errors
+ *
+ * @param {Record<string, string>} errors - The errors
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * hasErrors(errors);
+ */
+
 export function hasErrors(errors: Record<string, string>): boolean {
   return Object.keys(errors).length > 0;
 }
@@ -83,8 +169,35 @@ export function hasErrors(errors: Record<string, string>): boolean {
 /**
  * Get error message for a specific field
  */
+/**
+ * Retrieves field error
+ *
+ * @param {Record<string, string>} errors - The errors
+ * @param {string} fieldName - Name of field
+ *
+ * @returns {string} The fielderror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getFieldError(errors, "example");
+ */
+
+/**
+ * Retrieves field error
+ *
+ * @returns {string} The fielderror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getFieldError();
+ */
+
 export function getFieldError(
+  /** Errors */
   errors: Record<string, string>,
+  /** Field Name */
   fieldName: string,
 ): string | undefined {
   return errors[fieldName];
@@ -93,8 +206,35 @@ export function getFieldError(
 /**
  * Validates entire form data against schema
  */
+/**
+ * Validates form
+ *
+ * @param {T} schema - The schema
+ * @param {any} data - Data object containing information
+ *
+ * @returns {Promise<any>} Promise resolving to validateform result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateForm(schema, data);
+ */
+
+/**
+ * Validates form
+ *
+ * @returns {Promise<any>} Promise resolving to validateform result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateForm();
+ */
+
 export async function validateForm<T extends z.ZodType>(
+  /** Schema */
   schema: T,
+  /** Data */
   data: any,
 ): Promise<{ success: boolean; errors: Record<string, string> }> {
   try {
@@ -118,8 +258,35 @@ export async function validateForm<T extends z.ZodType>(
 /**
  * Creates a CSS class string for input fields with validation state
  */
+/**
+ * Retrieves input class name
+ *
+ * @param {string} baseClass - The base class
+ * @param {boolean} hasError - Whether has error
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getInputClassName("example", true);
+ */
+
+/**
+ * Retrieves input class name
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getInputClassName();
+ */
+
 export function getInputClassName(
+  /** Base Class */
   baseClass: string,
+  /** Has Error */
   hasError: boolean,
 ): string {
   const errorClass = hasError
@@ -131,8 +298,32 @@ export function getInputClassName(
 /**
  * Debounce function for async validation (e.g., slug uniqueness check)
  */
+/**
+ * Performs debounce operation
+ *
+ * @param {any[]} ...args - The ...args
+ *
+ * @returns {number} The debounce result
+ *
+ * @example
+ * debounce(...args);
+ */
+
+/**
+ * Performs debounce operation
+ *
+ * @param {any[]} ...args - The ...args
+ *
+ * @returns {number} The debounce result
+ *
+ * @example
+ * debounce(...args);
+ */
+
 export function debounce<T extends (...args: any[]) => any>(
+  /** Func */
   func: T,
+  /** Delay */
   delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;

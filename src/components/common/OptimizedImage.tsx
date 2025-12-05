@@ -1,20 +1,47 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/OptimizedImage
+ * @description This file contains the OptimizedImage component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import Image from "next/image";
 import { useState } from "react";
 
+/**
+ * OptimizedImageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OptimizedImageProps
+ */
 interface OptimizedImageProps {
+  /** Src */
   src: string;
+  /** Alt */
   alt: string;
+  /** Width */
   width?: number;
+  /** Height */
   height?: number;
+  /** Class Name */
   className?: string;
+  /** Fill */
   fill?: boolean;
+  /** Priority */
   priority?: boolean;
+  /** Quality */
   quality?: number;
+  /** Sizes */
   sizes?: string;
+  /** Object Fit */
   objectFit?: "contain" | "cover" | "fill" | "none" | "scale-down";
   focusX?: number; // 0-100, percentage from left
   focusY?: number; // 0-100, percentage from top
+  /** On Load */
   onLoad?: () => void;
+  /** On Error */
   onError?: () => void;
 }
 
@@ -61,11 +88,39 @@ export default function OptimizedImage({
   // Fallback image for errors
   const fallbackImage = "/images/placeholder.png";
 
+  /**
+   * Handles error event
+   *
+   * @returns {any} The handleerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles error event
+   *
+   * @returns {any} The handleerror result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleError = () => {
     setIsError(true);
     setImgSrc(fallbackImage);
     onError?.();
   };
+
+  /**
+   * Handles load event
+   *
+   * @returns {any} The handleload result
+   */
+
+  /**
+   * Handles load event
+   *
+   * @returns {any} The handleload result
+   */
 
   const handleLoad = () => {
     onLoad?.();
@@ -85,13 +140,19 @@ export default function OptimizedImage({
 
   // Common props for both fill and fixed size images
   const commonProps = {
+    /** Src */
     src: imgSrc,
+    /** Alt */
     alt: alt || "Image",
     quality,
     priority,
+    /** On Error */
     onError: handleError,
+    /** On Load */
     onLoad: handleLoad,
+    /** Class Name */
     className: `${className} ${isError ? "opacity-50" : ""}`,
+    /** Style */
     style: fill
       ? { objectFit, objectPosition: `${focusX}% ${focusY}%` }
       : { objectPosition: `${focusX}% ${focusY}%` },

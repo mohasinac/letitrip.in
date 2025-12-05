@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/TaxDetailsSelectorWithCreate
+ * @description This file contains the TaxDetailsSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -25,34 +34,55 @@ import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Tax Details Interface
+/**
+ * TaxDetails interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TaxDetails
+ */
 export interface TaxDetails {
+  /** Id */
   id: string;
+  /** Business Name */
   businessName: string;
+  /** Gstin */
   gstin: string;
+  /** Pan */
   pan: string;
+  /** Cin */
   cin?: string;
+  /** Registered Address */
   registeredAddress: string;
+  /** State Code */
   stateCode: string;
+  /** Is Verified */
   isVerified: boolean;
+  /** Is Default */
   isDefault: boolean;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
 }
 
 // Validation Schema
 const TaxDetailsSchema = z.object({
+  /** Business Name */
   businessName: z
     .string()
     .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT)
     .max(VALIDATION_RULES.NAME.MAX_LENGTH, VALIDATION_MESSAGES.NAME.TOO_LONG),
+  /** Gstin */
   gstin: z
     .string()
     .length(15, "GSTIN must be 15 characters")
     .refine((val) => isValidGST(val), VALIDATION_MESSAGES.TAX.GST_INVALID),
+  /** Pan */
   pan: z
     .string()
     .length(VALIDATION_RULES.PAN.LENGTH, "PAN must be 10 characters")
     .refine((val) => isValidPAN(val), VALIDATION_MESSAGES.TAX.PAN_INVALID),
+  /** Cin */
   cin: z
     .string()
     .optional()
@@ -61,24 +91,67 @@ const TaxDetailsSchema = z.object({
         !val || /^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/.test(val),
       "Invalid CIN format",
     ),
+  /** Registered Address */
   registeredAddress: z
     .string()
     .min(10, "Address must be at least 10 characters"),
+  /** State Code */
   stateCode: z.string().length(2, "State code must be 2 digits"),
+  /** Is Default */
   isDefault: z.boolean(),
 });
 
+/**
+ * TaxDetailsFormData type
+ * 
+ * @typedef {Object} TaxDetailsFormData
+ * @description Type definition for TaxDetailsFormData
+ */
 type TaxDetailsFormData = z.infer<typeof TaxDetailsSchema>;
 
+/**
+ * TaxDetailsSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TaxDetailsSelectorWithCreateProps
+ */
 export interface TaxDetailsSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (taxDetailsId: string, taxDetails: TaxDetails) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Auto Select Default */
   autoSelectDefault?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Tax Details Selector With Create
+ */
+/**
+ * Performs tax details selector with create operation
+ *
+ * @returns {any} The taxdetailsselectorwithcreate result
+ *
+ * @example
+ * TaxDetailsSelectorWithCreate();
+ */
+
+/**
+ * Performs tax details selector with create operation
+ *
+ * @returns {any} The taxdetailsselectorwithcreate result
+ *
+ * @example
+ * TaxDetailsSelectorWithCreate();
+ */
 
 export function TaxDetailsSelectorWithCreate({
   value,
@@ -90,14 +163,20 @@ export function TaxDetailsSelectorWithCreate({
   className = "",
 }: TaxDetailsSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: taxDetailsList,
+    /** Set Data */
     setData: setTaxDetailsList,
     execute,
   } = useLoadingState<TaxDetails[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "TaxDetailsSelectorWithCreate.loadTaxDetails",
       });
       toast.error("Failed to load tax details");
@@ -113,10 +192,14 @@ export function TaxDetailsSelectorWithCreate({
     handleSubmit,
     watch,
     setValue,
+    /** Form State */
     formState: { errors },
   } = useForm<TaxDetailsFormData>({
+    /** Resolver */
     resolver: zodResolver(TaxDetailsSchema),
+    /** Default Values */
     defaultValues: {
+      /** Is Default */
       isDefault: false,
     },
   });
@@ -131,6 +214,26 @@ export function TaxDetailsSelectorWithCreate({
   // Auto-select default tax details
   useEffect(() => {
     if (autoSelectDefault && (taxDetailsList || []).length > 0 && !selectedId) {
+      /**
+       * Performs default tax details operation
+       *
+       * @param {any} taxDetailsList || []).find(
+        (tax - The tax details list || []).find(
+        (tax
+       *
+       * @returns {any} The defaulttaxdetails result
+       */
+
+      /**
+       * Performs default tax details operation
+       *
+       * @param {any} taxDetailsList || []).find(
+        (tax - The tax details list || []).find(
+        (tax
+       *
+       * @returns {any} The defaulttaxdetails result
+       */
+
       const defaultTaxDetails = (taxDetailsList || []).find(
         (tax) => tax.isDefault,
       );
@@ -148,6 +251,22 @@ export function TaxDetailsSelectorWithCreate({
     }
   }, [gstin]);
 
+  /**
+   * Fetches tax details from server
+   *
+   * @returns {Promise<any>} Promise resolving to taxdetails result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches tax details from server
+   *
+   * @returns {Promise<any>} Promise resolving to taxdetails result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadTaxDetails = () =>
     execute(async () => {
       // TODO: Implement actual API call
@@ -157,6 +276,26 @@ export function TaxDetailsSelectorWithCreate({
       // Mock data for now
       return [];
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} gstinValue - The gstin value
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} gstinValue - The gstin value
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const extractFromGSTIN = async (gstinValue: string) => {
     try {
@@ -178,6 +317,7 @@ export function TaxDetailsSelectorWithCreate({
       toast.success("PAN and state code auto-filled from GSTIN");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "TaxDetailsSelectorWithCreate.extractFromGSTIN",
       });
     } finally {
@@ -185,10 +325,46 @@ export function TaxDetailsSelectorWithCreate({
     }
   };
 
+  /**
+   * Handles tax details select event
+   *
+   * @param {TaxDetails} taxDetails - The tax details
+   *
+   * @returns {any} The handletaxdetailsselect result
+   */
+
+  /**
+   * Handles tax details select event
+   *
+   * @param {TaxDetails} taxDetails - The tax details
+   *
+   * @returns {any} The handletaxdetailsselect result
+   */
+
   const handleTaxDetailsSelect = (taxDetails: TaxDetails) => {
     setSelectedId(taxDetails.id);
     onChange(taxDetails.id, taxDetails);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {TaxDetailsFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {TaxDetailsFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const onSubmit = async (data: TaxDetailsFormData) => {
     try {
@@ -199,16 +375,27 @@ export function TaxDetailsSelectorWithCreate({
 
       // Mock data for now
       const newTaxDetails: TaxDetails = {
+        /** Id */
         id: `tax_${Date.now()}`,
+        /** Business Name */
         businessName: data.businessName,
+        /** Gstin */
         gstin: data.gstin,
+        /** Pan */
         pan: data.pan,
+        /** Cin */
         cin: data.cin,
+        /** Registered Address */
         registeredAddress: data.registeredAddress,
+        /** State Code */
         stateCode: data.stateCode,
+        /** Is Verified */
         isVerified: false,
+        /** Is Default */
         isDefault: data.isDefault,
+        /** Created At */
         createdAt: new Date(),
+        /** Updated At */
         updatedAt: new Date(),
       };
 
@@ -219,6 +406,7 @@ export function TaxDetailsSelectorWithCreate({
       toast.success("Tax details added successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "TaxDetailsSelectorWithCreate.addTaxDetails",
       });
       toast.error("Failed to add tax details");
@@ -226,6 +414,22 @@ export function TaxDetailsSelectorWithCreate({
       setSubmitting(false);
     }
   };
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {boolean} isVerified - Whether is verified
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {boolean} isVerified - Whether is verified
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
 
   const getVerificationBadge = (isVerified: boolean) => {
     if (isVerified) {
@@ -243,6 +447,22 @@ export function TaxDetailsSelectorWithCreate({
       </span>
     );
   };
+
+  /**
+   * Retrieves state from code
+   *
+   * @param {string} code - The code
+   *
+   * @returns {string} The statefromcode result
+   */
+
+  /**
+   * Retrieves state from code
+   *
+   * @param {string} code - The code
+   *
+   * @returns {string} The statefromcode result
+   */
 
   const getStateFromCode = (code: string): string => {
     const stateCodes: Record<string, string> = {

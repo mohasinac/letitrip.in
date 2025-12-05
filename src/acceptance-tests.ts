@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/acceptance-tests
+ * @description This file contains functionality related to acceptance-tests
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Acceptance Tests for Auction Platform
  * These tests define the expected behavior of complete user workflows
  */
@@ -8,90 +17,123 @@ import assert from "node:assert";
 
 // Mock services for acceptance testing
 const mockAuthService = {
+  /** Sign Up */
   signUp: async (email: string, password: string) => {
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
     return { uid: "user123", email };
   },
+  /** Sign In */
   signIn: async (email: string, password: string) => {
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
     return { uid: "user123", email };
   },
+  /** Sign Out */
   signOut: async () => true,
 };
 
 const mockProductService = {
+  /** Create Product */
   createProduct: async (productData: any) => {
     if (!productData.name || !productData.price) {
       throw new Error("Product name and price are required");
     }
     return {
+      /** Id */
       id: "prod123",
       ...productData,
       status: "active", // Default status for new products
     };
   },
+  /** Get Products */
   getProducts: async (filters?: any) => [
     {
+      /** Id */
       id: "prod1",
+      /** Name */
       name: "Test Product",
+      /** Price */
       price: 100,
+      /** Status */
       status: "active",
+      /** Category */
       category: "electronics",
     },
   ],
+  /** Update Product */
   updateProduct: async (id: string, updates: any) => ({
     id,
     name: "Consistency Test Product", // Preserve original data
+    /** Price */
     price: 500,
     ...updates,
   }),
 };
 
 const mockAuctionService = {
+  /** Create Auction */
   createAuction: async (auctionData: any) => {
     if (!auctionData.productId || auctionData.startingBid < 0) {
       throw new Error("Valid auction data required");
     }
     return { id: "auction123", ...auctionData };
   },
+  /** Place Bid */
   placeBid: async (auctionId: string, bidAmount: number, userId: string) => {
     if (bidAmount <= 0) {
       throw new Error("Bid amount must be positive");
     }
     return {
+      /** Id */
       id: "bid123",
       auctionId,
+      /** Amount */
       amount: bidAmount,
       userId,
+      /** Timestamp */
       timestamp: new Date().toISOString(),
     };
   },
+  /** Get Active Auctions */
   getActiveAuctions: async () => [
     {
+      /** Id */
       id: "auction1",
+      /** Product Id */
       productId: "prod1",
+      /** Current Bid */
       currentBid: 150,
+      /** End Time */
       endTime: "2025-12-01T00:00:00Z",
     },
   ],
 };
 
 const mockCartService = {
+  /** Add To Cart */
   addToCart: async (productId: string, userId: string, quantity: number) => ({
+    /** Id */
     id: "cart123",
+    /** Items */
     items: [{ productId, quantity }],
   }),
+  /** Get Cart */
   getCart: async (userId: string) => ({
+    /** Id */
     id: "cart123",
+    /** Items */
     items: [{ productId: "prod1", quantity: 2 }],
+    /** Total */
     total: 200,
   }),
+  /** Checkout */
   checkout: async (cartId: string) => ({
+    /** Order Id */
     orderId: "order123",
+    /** Status */
     status: "confirmed",
   }),
 };
@@ -101,8 +143,11 @@ describe("Auction Platform - Acceptance Tests", () => {
     it("should allow new user to register and sign in", async () => {
       // Given: A new user wants to register
       const userData = {
+        /** Email */
         email: "test@example.com",
+        /** Password */
         password: "StrongPass123!",
+        /** Name */
         name: "Test User",
       };
 
@@ -141,12 +186,19 @@ describe("Auction Platform - Acceptance Tests", () => {
     it("should allow seller to create and manage products", async () => {
       // Given: A seller with product data
       const productData = {
+        /** Name */
         name: "Wireless Headphones",
+        /** Description */
         description: "High-quality wireless headphones",
+        /** Price */
         price: 2999,
+        /** Category */
         category: "electronics",
+        /** Images */
         images: ["image1.jpg", "image2.jpg"],
+        /** Stock */
         stock: 50,
+        /** Condition */
         condition: "new",
       };
 
@@ -171,8 +223,11 @@ describe("Auction Platform - Acceptance Tests", () => {
     it("should allow filtering products by category and price", async () => {
       // Given: Products exist in different categories
       const filters = {
+        /** Category */
         category: "electronics",
+        /** Min Price */
         minPrice: 100,
+        /** Max Price */
         maxPrice: 5000,
       };
 
@@ -192,10 +247,14 @@ describe("Auction Platform - Acceptance Tests", () => {
     it("should allow creating auctions and placing bids", async () => {
       // Given: A product and auction data
       const auctionData = {
+        /** Product Id */
         productId: "prod1",
+        /** Starting Bid */
         startingBid: 100,
+        /** Reserve Price */
         reservePrice: 500,
         duration: 7, // days
+        /** End Time */
         endTime: "2025-12-01T00:00:00Z",
       };
 
@@ -319,17 +378,24 @@ describe("Auction Platform - Acceptance Tests", () => {
 
       // Step 2: Seller creates product
       const product = await mockProductService.createProduct({
+        /** Name */
         name: "Test Product",
+        /** Price */
         price: 1000,
+        /** Description */
         description: "A test product",
+        /** Images */
         images: ["test.jpg"],
       });
       assert(product.id, "Product should be created");
 
       // Step 3: Seller creates auction
       const auction = await mockAuctionService.createAuction({
+        /** Product Id */
         productId: product.id,
+        /** Starting Bid */
         startingBid: 100,
+        /** End Time */
         endTime: "2025-12-01T00:00:00Z",
       });
       assert(auction.id, "Auction should be created");
@@ -362,8 +428,11 @@ describe("Auction Platform - Acceptance Tests", () => {
     it("should maintain data consistency across operations", async () => {
       // Create a product
       const product = await mockProductService.createProduct({
+        /** Name */
         name: "Consistency Test Product",
+        /** Price */
         price: 500,
+        /** Images */
         images: ["test.jpg"],
       });
 
@@ -371,6 +440,7 @@ describe("Auction Platform - Acceptance Tests", () => {
       const updatedProduct = await mockProductService.updateProduct(
         product.id,
         {
+          /** Price */
           price: 600,
         },
       );

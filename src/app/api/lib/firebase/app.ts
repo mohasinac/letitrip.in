@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/firebase/app
+ * @description This file contains functionality related to app
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Firebase Client-Side Configuration
  *
  * 🔒 SECURITY POLICY: Minimal Client-Side Firebase
@@ -28,12 +37,19 @@ import { getAnalytics, Analytics } from "firebase/analytics";
 
 // Minimal config - only what's needed for Realtime DB and Analytics
 const firebaseConfig = {
+  /** Api Key */
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  /** Auth Domain */
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  /** Project Id */
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  /** Storage Bucket */
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  /** Messaging Sender Id */
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  /** App Id */
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  /** Database U R L */
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 

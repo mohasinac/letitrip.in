@@ -1,24 +1,53 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormInput
+ * @description This file contains the FormInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormInputProps
+ */
 export interface FormInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "size"
 > {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Left Icon */
   leftIcon?: React.ReactNode;
+  /** Right Icon */
   rightIcon?: React.ReactNode;
+  /** Left Addon */
   leftAddon?: string;
+  /** Right Addon */
   rightAddon?: string;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Show Char Count */
   showCharCount?: boolean;
+  /** Compact */
   compact?: boolean;
 }
 
+/**
+ * F
+ * @constant
+ */
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   (
     {

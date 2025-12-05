@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/media/image-processor
+ * @description This file contains functionality related to image-processor
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Image Processing Utilities
  * Handles image manipulation (crop, rotate, resize, filters)
  */
@@ -12,8 +21,35 @@ import type {
 /**
  * Resize image while maintaining aspect ratio
  */
+/**
+ * Performs resize image operation
+ *
+ * @param {File} file - The file
+ * @param {ImageProcessingOptions} options - Configuration options
+ *
+ * @returns {Promise<any>} Promise resolving to resizeimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resizeImage(file, options);
+ */
+
+/**
+ * Performs resize image operation
+ *
+ * @returns {Promise<any>} Promise resolving to resizeimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resizeImage();
+ */
+
 export async function resizeImage(
+  /** File */
   file: File,
+  /** Options */
   options: ImageProcessingOptions,
 ): Promise<Blob> {
   const {
@@ -88,9 +124,34 @@ export async function resizeImage(
 /**
  * Crop image
  */
+/**
+ * Performs crop image operation
+ *
+ * @returns {Promise<any>} Promise resolving to cropimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * cropImage();
+ */
+
+/**
+ * Performs crop image operation
+ *
+ * @returns {Promise<any>} Promise resolving to cropimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * cropImage();
+ */
+
 export async function cropImage(
+  /** File */
   file: File,
+  /** Crop Area */
   cropArea: CropArea,
+  /** Output Format */
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
   quality = 0.9,
 ): Promise<Blob> {
@@ -149,9 +210,34 @@ export async function cropImage(
 /**
  * Rotate image
  */
+/**
+ * Performs rotate image operation
+ *
+ * @returns {Promise<any>} Promise resolving to rotateimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * rotateImage();
+ */
+
+/**
+ * Performs rotate image operation
+ *
+ * @returns {Promise<any>} Promise resolving to rotateimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * rotateImage();
+ */
+
 export async function rotateImage(
+  /** File */
   file: File,
+  /** Degrees */
   degrees: number,
+  /** Output Format */
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
   quality = 0.9,
 ): Promise<Blob> {
@@ -208,10 +294,36 @@ export async function rotateImage(
 /**
  * Flip image
  */
+/**
+ * Performs flip image operation
+ *
+ * @returns {Promise<any>} Promise resolving to flipimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * flipImage();
+ */
+
+/**
+ * Performs flip image operation
+ *
+ * @returns {Promise<any>} Promise resolving to flipimage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * flipImage();
+ */
+
 export async function flipImage(
+  /** File */
   file: File,
+  /** Horizontal */
   horizontal: boolean,
+  /** Vertical */
   vertical: boolean,
+  /** Output Format */
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
   quality = 0.9,
 ): Promise<Blob> {
@@ -265,9 +377,34 @@ export async function flipImage(
 /**
  * Apply image filters and adjustments
  */
+/**
+ * Performs apply image edits operation
+ *
+ * @returns {Promise<any>} Promise resolving to applyimageedits result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * applyImageEdits();
+ */
+
+/**
+ * Performs apply image edits operation
+ *
+ * @returns {Promise<any>} Promise resolving to applyimageedits result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * applyImageEdits();
+ */
+
 export async function applyImageEdits(
+  /** File */
   file: File,
+  /** Editor State */
   editorState: EditorState,
+  /** Output Format */
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
   quality = 0.9,
 ): Promise<Blob> {
@@ -354,10 +491,26 @@ export async function applyImageEdits(
 /**
  * Apply CSS-like filters
  */
+/**
+ * Performs apply filter operation
+ *
+ * @returns {number} The applyfilter result
+ */
+
+/**
+ * Performs apply filter operation
+ *
+ * @returns {number} The applyfilter result
+ */
+
 function applyFilter(
+  /** Ctx */
   ctx: CanvasRenderingContext2D,
+  /** Width */
   width: number,
+  /** Height */
   height: number,
+  /** Filter */
   filter: NonNullable<EditorState["filter"]>,
 ) {
   const imageData = ctx.getImageData(0, 0, width, height);
@@ -366,6 +519,18 @@ function applyFilter(
   switch (filter) {
     case "grayscale":
       for (let i = 0; i < data.length; i += 4) {
+        /**
+         * Performs avg operation
+         *
+         * @returns {any} The avg result
+         */
+
+        /**
+         * Performs avg operation
+         *
+         * @returns {any} The avg result
+         */
+
         const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
         data[i] = avg;
         data[i + 1] = avg;
@@ -414,17 +579,73 @@ function applyFilter(
 /**
  * Apply brightness, contrast, saturation adjustments
  */
+/**
+ * Performs apply adjustments operation
+ *
+ * @returns {number} The applyadjustments result
+ */
+
+/**
+ * Performs apply adjustments operation
+ *
+ * @returns {number} The applyadjustments result
+ */
+
 function applyAdjustments(
+  /** Ctx */
   ctx: CanvasRenderingContext2D,
+  /** Width */
   width: number,
+  /** Height */
   height: number,
+  /** Editor State */
   editorState: EditorState,
 ) {
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
 
   const brightness = editorState.brightness / 100;
+  /**
+   * Performs contrast operation
+   *
+   * @param {any} [editorState.contrast + 100) / 100;
+  const saturation] - The editor state.contrast + 100) / 100;
+  const saturation
+   *
+   * @returns {any} The contrast result
+   */
+
+  /**
+   * Performs contrast operation
+   *
+   * @returns {any} The contrast result
+   */
+
   const contrast = (editorState.contrast + 100) / 100;
+  /**
+   * Performs saturation operation
+   *
+   * @param {number} [editorState.saturation + 100) / 100;
+
+  for (let i] - The editor state.saturation + 100) / 100;
+
+  for (let i
+   *
+   * @returns {any} The saturation result
+   */
+
+  /**
+   * Performs saturation operation
+   *
+   * @param {number} [editorState.saturation + 100) / 100;
+
+  for (let i] - The editor state.saturation + 100) / 100;
+
+  for (let i
+   *
+   * @returns {any} The saturation result
+   */
+
   const saturation = (editorState.saturation + 100) / 100;
 
   for (let i = 0; i < data.length; i += 4) {
@@ -456,6 +677,30 @@ function applyAdjustments(
 /**
  * Convert blob to File
  */
+/**
+ * Performs blob to file operation
+ *
+ * @param {Blob} blob - The blob
+ * @param {string} filename - The filename
+ *
+ * @returns {string} The blobtofile result
+ *
+ * @example
+ * blobToFile(blob, "example");
+ */
+
+/**
+ * Performs blob to file operation
+ *
+ * @param {Blob} blob - The blob
+ * @param {string} filename - The filename
+ *
+ * @returns {string} The blobtofile result
+ *
+ * @example
+ * blobToFile(blob, "example");
+ */
+
 export function blobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: blob.type });
 }

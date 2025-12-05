@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/google/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getAuthAdmin, getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { cookies } from "next/headers";
@@ -12,13 +21,47 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 interface GoogleAuthRequest {
+  /** Id Token */
   idToken: string;
+  /** User Data */
   userData?: {
+    /** Display Name */
     displayName?: string;
+    /** Email */
     email?: string;
+    /** Photo U R L */
     photoURL?: string;
   };
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,8 +110,11 @@ export async function POST(request: NextRequest) {
       // Update existing user with latest Google info
       const existingData = userDoc.data();
       const updateData: Record<string, any> = {
+        /** Last Login At */
         lastLoginAt: new Date().toISOString(),
+        /** Updated At */
         updatedAt: new Date().toISOString(),
+        /** Is Email Verified */
         isEmailVerified: email_verified || existingData?.isEmailVerified,
       };
 
@@ -103,34 +149,59 @@ export async function POST(request: NextRequest) {
       user = {
         uid,
         email,
+        /** Name */
         name: displayName,
+        /** Role */
         role: "user",
+        /** Status */
         status: "active",
+        /** Is Email Verified */
         isEmailVerified: email_verified || false,
+        /** Provider */
         provider: "google",
+        /** Profile */
         profile: {
+          /** Avatar */
           avatar: picture || userData?.photoURL || null,
+          /** Bio */
           bio: null,
+          /** Address */
           address: null,
         },
+        /** Preferences */
         preferences: {
+          /** Notifications */
           notifications: {
+            /** Email */
             email: true,
+            /** Push */
             push: true,
+            /** Order Updates */
             orderUpdates: true,
+            /** Auction Updates */
             auctionUpdates: true,
+            /** Promotions */
             promotions: false,
           },
+          /** Currency */
           currency: "INR",
+          /** Language */
           language: "en",
         },
+        /** Stats */
         stats: {
+          /** Total Orders */
           totalOrders: 0,
+          /** Total Spent */
           totalSpent: 0,
+          /** Total Sales */
           totalSales: 0,
         },
+        /** Created At */
         createdAt: now,
+        /** Updated At */
         updatedAt: now,
+        /** Last Login At */
         lastLoginAt: now,
       };
 
@@ -146,24 +217,38 @@ export async function POST(request: NextRequest) {
     // Set the session cookie
     const cookieStore = await cookies();
     cookieStore.set("session", sessionCookie, {
+      /** Max Age */
       maxAge: expiresIn / 1000,
+      /** Http Only */
       httpOnly: true,
+      /** Secure */
       secure: process.env.NODE_ENV === "production",
+      /** Same Site */
       sameSite: "lax",
+      /** Path */
       path: "/",
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: isNewUser
         ? "Account created successfully with Google"
         : "Signed in successfully with Google",
+      /** User */
       user: {
+        /** Uid */
         uid: user.uid,
+        /** Email */
         email: user.email,
+        /** Name */
         name: user.name,
+        /** Role */
         role: user.role,
+        /** Is Email Verified */
         isEmailVerified: user.isEmailVerified,
+        /** Profile */
         profile: user.profile,
       },
       isNewUser,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/shops/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -95,6 +104,35 @@ const SHOP_BANNERS = [
   "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
 ];
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -110,9 +148,13 @@ export async function POST(request: NextRequest) {
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdShops: Array<{
+      /** Id */
       id: string;
+      /** Owner Id */
       ownerId: string;
+      /** Name */
       name: string;
+      /** Slug */
       slug: string;
     }> = [];
 
@@ -127,18 +169,26 @@ export async function POST(request: NextRequest) {
 
       const shopRef = db.collection(COLLECTIONS.SHOPS).doc();
       await shopRef.set({
+        /** Name */
         name: shopName,
+        /** Slug */
         slug: shopSlug,
+        /** Description */
         description: `Premium Beyblade shop - Attack, Defense, Stamina types and accessories. Authentic Takara Tomy and Hasbro products!`,
+        /** Tagline */
         tagline: [
           "Let it rip!",
           "Authentic Beyblades only",
           "Fast shipping worldwide",
           "Blader's choice",
         ][i % 4],
+        /** Email */
         email: `shop${i + 1}@demo.letitrip.in`,
+        /** Phone */
         phone: `+91-${8000000000 + i}`,
+        /** Whatsapp */
         whatsapp: `+91-${8000000000 + i}`,
+        /** Address */
         address: `${100 + i} ${STREETS[i % STREETS.length]}, ${city.city}, ${city.state} ${city.pincode}`,
         owner_id: seller.id,
         is_active: true,
@@ -146,19 +196,24 @@ export async function POST(request: NextRequest) {
         is_verified: true,
         is_featured: i < 10,
         show_on_homepage: i < 5,
+        /** Status */
         status: "active",
+        /** Logo */
         logo: SHOP_LOGOS[i % SHOP_LOGOS.length],
+        /** Banner */
         banner: SHOP_BANNERS[i % SHOP_BANNERS.length],
         cover_images: [
           SHOP_BANNERS[i % SHOP_BANNERS.length],
           SHOP_BANNERS[(i + 1) % SHOP_BANNERS.length],
           SHOP_BANNERS[(i + 2) % SHOP_BANNERS.length],
         ],
+        /** Gallery */
         gallery: [
           `https://images.unsplash.com/photo-${1560000000000 + i * 1000}?w=600&h=400&fit=crop`,
           `https://images.unsplash.com/photo-${1570000000000 + i * 1000}?w=600&h=400&fit=crop`,
           `https://images.unsplash.com/photo-${1580000000000 + i * 1000}?w=600&h=400&fit=crop`,
         ],
+        /** Rating */
         rating: 3.5 + Math.random() * 1.5,
         review_count: Math.floor(Math.random() * 200) + 10,
         product_count: 0,
@@ -170,21 +225,35 @@ export async function POST(request: NextRequest) {
           instagram: `https://instagram.com/demo_shop_${i}`,
           twitter: `https://twitter.com/demo_shop_${i}`,
         },
+        /** Settings */
         settings: {
+          /** Min Order Amount */
           minOrderAmount: 200 + (i % 5) * 100,
+          /** Shipping Charge */
           shippingCharge: 40 + (i % 3) * 10,
+          /** Free Shipping Threshold */
           freeShippingThreshold: 1500 + (i % 5) * 500,
+          /** Accepts C O D */
           acceptsCOD: i % 3 !== 0,
+          /** Accepts Returns */
           acceptsReturns: true,
+          /** Return Window */
           returnWindow: 7,
         },
         business_hours: {
+          /** Monday */
           monday: { open: "09:00", close: "21:00" },
+          /** Tuesday */
           tuesday: { open: "09:00", close: "21:00" },
+          /** Wednesday */
           wednesday: { open: "09:00", close: "21:00" },
+          /** Thursday */
           thursday: { open: "09:00", close: "21:00" },
+          /** Friday */
           friday: { open: "09:00", close: "21:00" },
+          /** Saturday */
           saturday: { open: "10:00", close: "20:00" },
+          /** Sunday */
           sunday: { open: "10:00", close: "18:00" },
         },
         created_at: timestamp,
@@ -192,18 +261,27 @@ export async function POST(request: NextRequest) {
       });
 
       createdShops.push({
+        /** Id */
         id: shopRef.id,
+        /** Owner Id */
         ownerId: seller.id,
+        /** Name */
         name: shopName,
+        /** Slug */
         slug: shopSlug,
       });
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "shops",
+      /** Data */
       data: {
+        /** Count */
         count: createdShops.length,
+        /** Shops */
         shops: createdShops,
       },
     });

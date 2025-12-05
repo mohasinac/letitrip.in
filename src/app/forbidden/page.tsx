@@ -1,9 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/forbidden/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ShieldAlert, Home, Mail, ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
+
+/**
+ * Function: Forbidden Content
+ */
+/**
+ * Performs forbidden content operation
+ *
+ * @returns {any} The forbiddencontent result
+ */
+
+/**
+ * Performs forbidden content operation
+ *
+ * @returns {any} The forbiddencontent result
+ */
 
 function ForbiddenContent() {
   const searchParams = useSearchParams();
@@ -16,43 +40,70 @@ function ForbiddenContent() {
   const decodedDetails = details ? decodeURIComponent(details) : null;
   const isDevelopment = process.env.NODE_ENV === "development";
 
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
   const getMessage = () => {
     if (reason === "insufficient-permissions") {
       return {
+        /** Title */
         title: "Insufficient Permissions",
+        /** Message */
         message:
           "You don't have the necessary permissions to access this resource.",
+        /** Suggestion */
         suggestion: "Contact an administrator to request access.",
       };
     }
     if (reason === "wrong-role") {
       return {
+        /** Title */
         title: "Access Denied - Wrong Role",
+        /** Message */
         message: `This resource requires ${
           requiredRole || "higher"
         } privileges.`,
+        /** Suggestion */
         suggestion: "Your current role doesn't have access to this area.",
       };
     }
     if (reason === "account-suspended") {
       return {
+        /** Title */
         title: "Account Suspended",
+        /** Message */
         message: "Your account has been temporarily suspended.",
+        /** Suggestion */
         suggestion: "Please contact support to resolve this issue.",
       };
     }
     if (reason === "email-not-verified") {
       return {
+        /** Title */
         title: "Email Verification Required",
+        /** Message */
         message:
           "You need to verify your email address to access this feature.",
+        /** Suggestion */
         suggestion: "Please check your inbox for the verification link.",
       };
     }
 
     return {
+      /** Title */
       title: "Access Forbidden",
+      /** Message */
       message: "You don't have permission to access this resource.",
+      /** Suggestion */
       suggestion: "Contact support if you believe this is an error.",
     };
   };

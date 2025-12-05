@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/register/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
@@ -16,9 +25,13 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
   const [formData, setFormData] = useState({
+    /** Name */
     name: "",
+    /** Email */
     email: "",
+    /** Password */
     password: "",
+    /** Confirm Password */
     confirmPassword: "",
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -26,14 +39,36 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationError, setValidationError] = useState("");
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       // Error is already set by useLoadingState
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +94,13 @@ export default function RegisterPage() {
 
     await execute(async () => {
       await register({
+        /** Name */
         name: formData.name,
+        /** Email */
         email: formData.email,
+        /** Password */
         password: formData.password,
+        /** Role */
         role: "user",
       });
 
@@ -71,6 +110,22 @@ export default function RegisterPage() {
       }, 100);
     });
   };
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

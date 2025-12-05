@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/media/upload/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
@@ -5,12 +14,53 @@ import { STORAGE_PATHS } from "@/constants/storage";
 
 export const runtime = "nodejs";
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     console.log("[Media Upload] Starting upload process...");
 
     const form = await request.formData();
     const file = form.get("file") as File | null;
+    /**
+     * Performs context operation
+     *
+     * @returns {any} The context result
+     */
+
+    /**
+     * Performs context operation
+     *
+     * @returns {any} The context result
+     */
+
     const context = (form.get("context") as string) || "product";
     const contextId = form.get("contextId") as string | null;
 
@@ -33,6 +83,18 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const contentType = file.type || "application/octet-stream";
+    /**
+     * Performs original name operation
+     *
+     * @returns {any} The originalname result
+     */
+
+    /**
+     * Performs original name operation
+     *
+     * @returns {any} The originalname result
+     */
+
     const originalName = (file as any).name || "upload";
 
     // Build storage path
@@ -82,8 +144,11 @@ export async function POST(request: NextRequest) {
     console.log("[Media Upload] Uploading to Firebase Storage...");
     await fileRef.save(buffer, {
       contentType,
+      /** Resumable */
       resumable: false,
+      /** Public */
       public: true,
+      /** Metadata */
       metadata: { cacheControl: "public, max-age=31536000" },
     });
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/ImageEditor
+ * @description This file contains the ImageEditor component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/error-logger";
@@ -17,11 +26,22 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 
+/**
+ * ImageEditorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ImageEditorProps
+ */
 interface ImageEditorProps {
+  /** Media */
   media: MediaFile;
+  /** On Save */
   onSave: (editedMedia: MediaFile) => void;
+  /** On Cancel */
   onCancel: () => void;
+  /** Show Focus Point */
   showFocusPoint?: boolean;
+  /** Aspect Ratio */
   aspectRatio?: number;
 }
 
@@ -40,19 +60,30 @@ export default function ImageEditor({
   onSave,
   onCancel,
   showFocusPoint = true,
+  /** Aspect Ratio */
   aspectRatio: initialAspectRatio,
 }: ImageEditorProps) {
   const [editorState, setEditorState] = useState<EditorState>({
+    /** Rotation */
     rotation: 0,
+    /** Flip */
     flip: {
+      /** Horizontal */
       horizontal: false,
+      /** Vertical */
       vertical: false,
     },
+    /** Zoom */
     zoom: 1,
+    /** Brightness */
     brightness: 0,
+    /** Contrast */
     contrast: 0,
+    /** Saturation */
     saturation: 0,
+    /** Filter */
     filter: "none",
+    /** Focus Point */
     focusPoint: { x: 50, y: 50 },
   });
 
@@ -80,6 +111,22 @@ export default function ImageEditor({
     updatePreview();
   }, [editorState]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const updatePreview = async () => {
     try {
       const editedBlob = await applyImageEdits(media.file, editorState);
@@ -99,8 +146,29 @@ export default function ImageEditor({
   );
 
   // Create cropped image from canvas
+  /**
+   * Performs async operation
+   *
+   * @param {string} imageSrc - The image src
+   * @param {Area} pixelCrop - The pixel crop
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const getCroppedImage = async (
+    /** Image Src */
     imageSrc: string,
+    /** Pixel Crop */
     pixelCrop: Area,
   ): Promise<Blob> => {
     const image = new window.Image();
@@ -140,6 +208,22 @@ export default function ImageEditor({
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     setIsProcessing(true);
     try {
@@ -150,6 +234,7 @@ export default function ImageEditor({
         processedBlob = await getCroppedImage(media.preview, croppedAreaPixels);
         // Then apply other edits on the cropped image
         const croppedFile = new File([processedBlob], media.file.name, {
+          /** Type */
           type: "image/jpeg",
         });
         processedBlob = await applyImageEdits(croppedFile, editorState);
@@ -159,17 +244,24 @@ export default function ImageEditor({
       }
 
       const editedFile = new File([processedBlob], media.file.name, {
+        /** Type */
         type: "image/jpeg",
       });
 
       const editedMedia: MediaFile = {
         ...media,
+        /** File */
         file: editedFile,
+        /** Preview */
         preview: URL.createObjectURL(processedBlob),
+        /** Metadata */
         metadata: {
           ...media.metadata!,
+          /** Size */
           size: editedFile.size,
+          /** Focus X */
           focusX: editorState.focusPoint?.x ?? 50,
+          /** Focus Y */
           focusY: editorState.focusPoint?.y ?? 50,
         },
       };
@@ -177,7 +269,9 @@ export default function ImageEditor({
       onSave(editedMedia);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ImageEditor.handleSave",
+        /** Metadata */
         metadata: { mediaId: media.id },
       });
     } finally {
@@ -185,35 +279,93 @@ export default function ImageEditor({
     }
   };
 
+  /**
+   * Performs rotate operation
+   *
+   * @returns {any} The rotate result
+   */
+
+  /**
+   * Performs rotate operation
+   *
+   * @returns {any} The rotate result
+   */
+
   const rotate = () => {
     setEditorState((prev) => ({
       ...prev,
+      /** Rotation */
       rotation: ((prev.rotation || 0) + 90) % 360,
     }));
   };
 
+  /**
+   * Performs flip horizontal operation
+   *
+   * @returns {any} The fliphorizontal result
+   */
+
+  /**
+   * Performs flip horizontal operation
+   *
+   * @returns {any} The fliphorizontal result
+   */
+
   const flipHorizontal = () => {
     setEditorState((prev) => ({
       ...prev,
+      /** Flip */
       flip: {
         ...prev.flip,
+        /** Horizontal */
         horizontal: !prev.flip.horizontal,
       },
     }));
   };
 
+  /**
+   * Performs flip vertical operation
+   *
+   * @returns {any} The flipvertical result
+   */
+
+  /**
+   * Performs flip vertical operation
+   *
+   * @returns {any} The flipvertical result
+   */
+
   const flipVertical = () => {
     setEditorState((prev) => ({
       ...prev,
+      /** Flip */
       flip: {
         ...prev.flip,
+        /** Vertical */
         vertical: !prev.flip.vertical,
       },
     }));
   };
 
+  /**
+   * Updates existing adjustment
+   *
+   * @param {"brightness" | "contrast" | "saturation"} key - The key
+   * @param {number} value - The value
+   *
+   * @returns {number} The updateadjustment result
+   */
+
+  /**
+   * Updates existing adjustment
+   *
+   * @returns {number} The updateadjustment result
+   */
+
   const updateAdjustment = (
+    /** Key */
     key: "brightness" | "contrast" | "saturation",
+    /** Value */
     value: number,
   ) => {
     setEditorState((prev) => ({
@@ -222,6 +374,22 @@ export default function ImageEditor({
     }));
   };
 
+  /**
+   * Updates existing filter
+   *
+   * @param {EditorState["filter"]} filter - The filter
+   *
+   * @returns {any} The updatefilter result
+   */
+
+  /**
+   * Updates existing filter
+   *
+   * @param {EditorState["filter"]} filter - The filter
+   *
+   * @returns {any} The updatefilter result
+   */
+
   const updateFilter = (filter: EditorState["filter"]) => {
     setEditorState((prev) => ({
       ...prev,
@@ -229,18 +397,40 @@ export default function ImageEditor({
     }));
   };
 
+  /**
+   * Performs reset all operation
+   *
+   * @returns {any} The resetall result
+   */
+
+  /**
+   * Performs reset all operation
+   *
+   * @returns {any} The resetall result
+   */
+
   const resetAll = () => {
     setEditorState({
+      /** Rotation */
       rotation: 0,
+      /** Flip */
       flip: {
+        /** Horizontal */
         horizontal: false,
+        /** Vertical */
         vertical: false,
       },
+      /** Zoom */
       zoom: 1,
+      /** Brightness */
       brightness: 0,
+      /** Contrast */
       contrast: 0,
+      /** Saturation */
       saturation: 0,
+      /** Filter */
       filter: "none",
+      /** Focus Point */
       focusPoint: { x: 50, y: 50 },
     });
     setCrop({ x: 0, y: 0 });
@@ -262,8 +452,11 @@ export default function ImageEditor({
 
       setEditorState((prev) => ({
         ...prev,
+        /** Focus Point */
         focusPoint: {
+          /** X */
           x: Math.max(0, Math.min(100, x)),
+          /** Y */
           y: Math.max(0, Math.min(100, y)),
         },
       }));
@@ -348,7 +541,9 @@ export default function ImageEditor({
                 onZoomChange={setCropZoom}
                 showGrid
                 classes={{
+                  /** Container Class Name */
                   containerClassName: "!bg-black",
+                  /** Crop Area Class Name */
                   cropAreaClassName: "!border-2 !border-blue-500",
                 }}
               />
@@ -366,6 +561,7 @@ export default function ImageEditor({
                   height={600}
                   className="max-w-full max-h-full object-contain"
                   style={{
+                    /** Transform */
                     transform: `rotate(${editorState.rotation}deg) scaleX(${
                       editorState.flip.horizontal ? -1 : 1
                     }) scaleY(${editorState.flip.vertical ? -1 : 1})`,
@@ -396,13 +592,16 @@ export default function ImageEditor({
                   <div
                     className="absolute w-10 h-10 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                     style={{
+                      /** Left */
                       left: `${editorState.focusPoint.x}%`,
+                      /** Top */
                       top: `${editorState.focusPoint.y}%`,
                     }}
                   >
                     <div
                       className="w-full h-full border-2 border-white rounded-full animate-pulse"
                       style={{
+                        /** Box Shadow */
                         boxShadow:
                           "0 0 0 3px rgba(59, 130, 246, 0.8), inset 0 0 0 1px rgba(255,255,255,0.5)",
                       }}
@@ -649,6 +848,7 @@ export default function ImageEditor({
                         height={180}
                         className="w-full h-full object-cover"
                         style={{
+                          /** Object Position */
                           objectPosition: `${
                             editorState.focusPoint?.x || 50
                           }% ${editorState.focusPoint?.y || 50}%`,
@@ -668,6 +868,7 @@ export default function ImageEditor({
                         height={96}
                         className="w-full h-full object-cover"
                         style={{
+                          /** Object Position */
                           objectPosition: `${
                             editorState.focusPoint?.x || 50
                           }% ${editorState.focusPoint?.y || 50}%`,

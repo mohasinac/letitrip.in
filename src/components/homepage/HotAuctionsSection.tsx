@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/HotAuctionsSection
+ * @description This file contains the HotAuctionsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,10 +17,49 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
 
+/**
+ * HotAuctionsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HotAuctionsSectionProps
+ */
 interface HotAuctionsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Hot Auctions Section
+ */
+/**
+ * Performs hot auctions section operation
+ *
+ * @param {HotAuctionsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The hotauctionssection result
+ *
+ * @example
+ * HotAuctionsSection({
+  limit);
+ */
+
+/**
+ * Performs hot auctions section operation
+ *
+ * @param {HotAuctionsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The hotauctionssection result
+ *
+ * @example
+ * HotAuctionsSection({
+  limit);
+ */
 
 export function HotAuctionsSection({
   limit = 10,
@@ -24,6 +72,22 @@ export function HotAuctionsSection({
     loadAuctions();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAuctions = async () => {
     try {
       setLoading(true);
@@ -32,11 +96,13 @@ export function HotAuctionsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_hot_auctions_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "HotAuctionsSection.loadAuctions",
       });
     } finally {
@@ -77,22 +143,34 @@ export function HotAuctionsSection({
           <AuctionCard
             key={auction.id}
             auction={{
+              /** Id */
               id: auction.id,
+              /** Name */
               name: auction.name,
+              /** Slug */
               slug: auction.slug,
+              /** Images */
               images: auction.images,
+              /** Current Bid */
               currentBid: auction.currentBid,
+              /** Starting Bid */
               startingBid: auction.startingBid,
+              /** Bid Count */
               bidCount: auction.bidCount,
+              /** End Time */
               endTime: auction.endTime,
+              /** Status */
               status:
                 auction.status === "upcoming"
                   ? "pending"
                   : auction.status === "live"
                     ? "active"
                     : auction.status,
+              /** Shop */
               shop: {
+                /** Id */
                 id: auction.shopId,
+                /** Name */
                 name: auction.shopName,
               },
             }}

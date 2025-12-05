@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/sieve/parser
+ * @description This file contains functionality related to parser
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Sieve Query Parser
  * Epic: E026 - Sieve-style Pagination
  *
@@ -55,8 +64,33 @@ const OPERATOR_PATTERNS: { pattern: string; operator: FilterOperator }[] = [
 /**
  * Parse a sieve query from URL search params
  */
+/**
+ * Parses sieve query
+ *
+ * @param {URLSearchParams} searchParams - The search params
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {any} The parsesievequery result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * parseSieveQuery(searchParams, config);
+ */
+
+/**
+ * Parses sieve query
+ *
+ * @returns {any} The parsesievequery result
+ *
+ * @example
+ * parseSieveQuery();
+ */
+
 export function parseSieveQuery(
+  /** Search Params */
   searchParams: URLSearchParams,
+  /** Config */
   config?: SieveConfig,
 ): SieveParseResult {
   const errors: SieveError[] = [];
@@ -88,6 +122,7 @@ export function parseSieveQuery(
   const query: SieveQuery = {
     page,
     pageSize,
+    /** Sorts */
     sorts:
       sorts.length > 0
         ? sorts
@@ -103,8 +138,27 @@ export function parseSieveQuery(
 /**
  * Parse pagination parameters
  */
+/**
+ * Parses pagination
+ *
+ * @param {URLSearchParams} searchParams - The search params
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {number} The parsepagination result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Parses pagination
+ *
+ * @returns {any} The parsepagination result
+ */
+
 function parsePagination(
+  /** Search Params */
   searchParams: URLSearchParams,
+  /** Config */
   config?: SieveConfig,
 ): { page: number; pageSize: number; paginationErrors: SieveError[] } {
   const errors: SieveError[] = [];
@@ -118,8 +172,11 @@ function parsePagination(
     const parsed = parseInt(pageParam, 10);
     if (isNaN(parsed) || parsed < 1) {
       errors.push({
+        /** Type */
         type: "invalid_pagination",
+        /** Field */
         field: "page",
+        /** Message */
         message: `Invalid page number: ${pageParam}. Must be a positive integer.`,
       });
     } else {
@@ -134,8 +191,11 @@ function parsePagination(
     const parsed = parseInt(pageSizeParam, 10);
     if (isNaN(parsed) || parsed < 1) {
       errors.push({
+        /** Type */
         type: "invalid_pagination",
+        /** Field */
         field: "pageSize",
+        /** Message */
         message: `Invalid page size: ${pageSizeParam}. Must be a positive integer.`,
       });
     } else {
@@ -150,8 +210,27 @@ function parsePagination(
  * Parse sort parameters
  * Format: field1,-field2 (- prefix = descending)
  */
+/**
+ * Parses sorts
+ *
+ * @param {string} sortsParam - The sorts param
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {string} The parsesorts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Parses sorts
+ *
+ * @returns {string} The parsesorts result
+ */
+
 function parseSorts(
+  /** Sorts Param */
   sortsParam: string,
+  /** Config */
   config?: SieveConfig,
 ): { sorts: SortField[]; sortErrors: SieveError[]; sortWarnings: string[] } {
   const errors: SieveError[] = [];
@@ -179,6 +258,7 @@ function parseSorts(
 
     sorts.push({
       field,
+      /** Direction */
       direction: isDescending ? "desc" : "asc",
     });
   }
@@ -190,12 +270,32 @@ function parseSorts(
  * Parse filter parameters
  * Format: field1==value1,field2>value2
  */
+/**
+ * Parses filters
+ *
+ * @param {string} filtersParam - The filters param
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {string} The parsefilters result
+ */
+
+/**
+ * Parses filters
+ *
+ * @returns {string} The parsefilters result
+ */
+
 function parseFilters(
+  /** Filters Param */
   filtersParam: string,
+  /** Config */
   config?: SieveConfig,
 ): {
+  /** Filters */
   filters: FilterCondition[];
+  /** Filter Errors */
   filterErrors: SieveError[];
+  /** Filter Warnings */
   filterWarnings: string[];
 } {
   const errors: SieveError[] = [];
@@ -230,6 +330,22 @@ function parseFilters(
 /**
  * Split filter string by comma, handling escaped commas
  */
+/**
+ * Performs split filters operation
+ *
+ * @param {string} filtersParam - The filters param
+ *
+ * @returns {string} The splitfilters result
+ */
+
+/**
+ * Performs split filters operation
+ *
+ * @param {string} filtersParam - The filters param
+ *
+ * @returns {string} The splitfilters result
+ */
+
 function splitFilters(filtersParam: string): string[] {
   const result: string[] = [];
   let current = "";
@@ -262,8 +378,27 @@ function splitFilters(filtersParam: string): string[] {
 /**
  * Parse a single filter condition
  */
+/**
+ * Parses filter condition
+ *
+ * @param {string} filterStr - The filter str
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Parses filter condition
+ *
+ * @returns {string} The parsefiltercondition result
+ */
+
 function parseFilterCondition(
+  /** Filter Str */
   filterStr: string,
+  /** Config */
   config?: SieveConfig,
 ): { condition?: FilterCondition; error?: SieveError; isWarning?: boolean } {
   // Find the operator
@@ -280,11 +415,15 @@ function parseFilterCondition(
         );
         if (!fieldConfig) {
           return {
+            /** Error */
             error: {
+              /** Type */
               type: "unknown_field",
               field,
+              /** Message */
               message: `Field '${field}' is not filterable. Ignored.`,
             },
+            /** Is Warning */
             isWarning: true,
           };
         }
@@ -292,9 +431,12 @@ function parseFilterCondition(
         // Validate operator for field
         if (!fieldConfig.operators.includes(operator)) {
           return {
+            /** Error */
             error: {
+              /** Type */
               type: "invalid_filter",
               field,
+              /** Message */
               message: `Operator '${operator}' is not allowed for field '${field}'.`,
             },
           };
@@ -309,7 +451,9 @@ function parseFilterCondition(
       const isNegated = operator.startsWith("!");
 
       return {
+        /** Condition */
         condition: {
+          /** Field */
           field: config?.fieldMappings?.[field] || field,
           operator,
           value,
@@ -321,8 +465,11 @@ function parseFilterCondition(
   }
 
   return {
+    /** Error */
     error: {
+      /** Type */
       type: "invalid_filter",
+      /** Message */
       message: `Could not parse filter: '${filterStr}'. No valid operator found.`,
     },
   };
@@ -331,10 +478,26 @@ function parseFilterCondition(
 /**
  * Parse filter value to appropriate type
  */
+/**
+ * Parses filter value
+ *
+ * @returns {string} The parsefiltervalue result
+ */
+
+/**
+ * Parses filter value
+ *
+ * @returns {string} The parsefiltervalue result
+ */
+
 function parseFilterValue(
+  /** Value Str */
   valueStr: string,
+  /** Operator */
   operator: FilterOperator,
+  /** Config */
   config?: SieveConfig,
+  /** Field */
   field?: string,
 ): FilterValue {
   // Null operators
@@ -372,6 +535,28 @@ function parseFilterValue(
 /**
  * Build query string from SieveQuery object
  */
+/**
+ * Performs build sieve query string operation
+ *
+ * @param {Partial<SieveQuery>} query - The query
+ *
+ * @returns {string} The buildsievequerystring result
+ *
+ * @example
+ * buildSieveQueryString(query);
+ */
+
+/**
+ * Performs build sieve query string operation
+ *
+ * @param {Partial<SieveQuery>} query - The query
+ *
+ * @returns {string} The buildsievequerystring result
+ *
+ * @example
+ * buildSieveQueryString(query);
+ */
+
 export function buildSieveQueryString(query: Partial<SieveQuery>): string {
   const params = new URLSearchParams();
 
@@ -405,14 +590,41 @@ export function buildSieveQueryString(query: Partial<SieveQuery>): string {
 /**
  * Merge current query with new values
  */
+/**
+ * Performs merge sieve query operation
+ *
+ * @param {SieveQuery} current - The current
+ * @param {Partial<SieveQuery>} updates - The updates
+ *
+ * @returns {any} The mergesievequery result
+ *
+ * @example
+ * mergeSieveQuery(current, updates);
+ */
+
+/**
+ * Performs merge sieve query operation
+ *
+ * @returns {any} The mergesievequery result
+ *
+ * @example
+ * mergeSieveQuery();
+ */
+
 export function mergeSieveQuery(
+  /** Current */
   current: SieveQuery,
+  /** Updates */
   updates: Partial<SieveQuery>,
 ): SieveQuery {
   return {
+    /** Page */
     page: updates.page ?? current.page,
+    /** Page Size */
     pageSize: updates.pageSize ?? current.pageSize,
+    /** Sorts */
     sorts: updates.sorts ?? current.sorts,
+    /** Filters */
     filters: updates.filters ?? current.filters,
   };
 }
@@ -420,11 +632,37 @@ export function mergeSieveQuery(
 /**
  * Create a default empty query
  */
+/**
+ * Creates a new default sieve query
+ *
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {any} The defaultsievequery result
+ *
+ * @example
+ * createDefaultSieveQuery(config);
+ */
+
+/**
+ * Creates a new default sieve query
+ *
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {any} The defaultsievequery result
+ *
+ * @example
+ * createDefaultSieveQuery(config);
+ */
+
 export function createDefaultSieveQuery(config?: SieveConfig): SieveQuery {
   return {
+    /** Page */
     page: DEFAULT_PAGE,
+    /** Page Size */
     pageSize: config?.defaultPageSize ?? DEFAULT_PAGE_SIZE,
+    /** Sorts */
     sorts: config?.defaultSort ? [config.defaultSort] : [],
+    /** Filters */
     filters: [],
   };
 }
@@ -434,8 +672,31 @@ export function createDefaultSieveQuery(config?: SieveConfig): SieveQuery {
 /**
  * Parse sieve query from URL string
  */
+/**
+ * Parses sieve from u r l
+ *
+ * @param {string} url - The url
+ * @param {SieveConfig} [config] - The config
+ *
+ * @returns {string} The parsesievefromurl result
+ *
+ * @example
+ * parseSieveFromURL("example", config);
+ */
+
+/**
+ * Parses sieve from u r l
+ *
+ * @returns {string} The parsesievefromurl result
+ *
+ * @example
+ * parseSieveFromURL();
+ */
+
 export function parseSieveFromURL(
+  /** Url */
   url: string,
+  /** Config */
   config?: SieveConfig,
 ): SieveParseResult {
   const urlObj = new URL(url, "http://localhost");
@@ -445,8 +706,31 @@ export function parseSieveFromURL(
 /**
  * Update URL with sieve query
  */
+/**
+ * Updates existing u r l with sieve
+ *
+ * @param {string} baseUrl - The base url
+ * @param {Partial<SieveQuery>} query - The query
+ *
+ * @returns {string} The updateurlwithsieve result
+ *
+ * @example
+ * updateURLWithSieve("example", query);
+ */
+
+/**
+ * Updates existing u r l with sieve
+ *
+ * @returns {string} The updateurlwithsieve result
+ *
+ * @example
+ * updateURLWithSieve();
+ */
+
 export function updateURLWithSieve(
+  /** Base Url */
   baseUrl: string,
+  /** Query */
   query: Partial<SieveQuery>,
 ): string {
   const url = new URL(baseUrl, "http://localhost");

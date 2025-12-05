@@ -1,22 +1,69 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/homepage/SectionCard
+ * @description This file contains the SectionCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp } from "lucide-react";
 import { ReactNode } from "react";
 
+/**
+ * SectionCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SectionCardProps
+ */
 interface SectionCardProps {
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Enabled */
   enabled: boolean;
+  /** On Toggle */
   onToggle: () => void;
+  /** Expanded */
   expanded?: boolean;
+  /** On Toggle Expand */
   onToggleExpand?: () => void;
+  /** Children */
   children?: ReactNode;
+  /** Order Index */
   orderIndex?: number;
+  /** Total Sections */
   totalSections?: number;
+  /** On Move Up */
   onMoveUp?: () => void;
+  /** On Move Down */
   onMoveDown?: () => void;
 }
+
+/**
+ * Function: Section Card
+ */
+/**
+ * Performs section card operation
+ *
+ * @returns {any} The sectioncard result
+ *
+ * @example
+ * SectionCard();
+ */
+
+/**
+ * Performs section card operation
+ *
+ * @returns {any} The sectioncard result
+ *
+ * @example
+ * SectionCard();
+ */
 
 export function SectionCard({
   title,

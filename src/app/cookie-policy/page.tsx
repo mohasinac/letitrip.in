@@ -1,13 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/cookie-policy/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Cookie Policy - Let It Rip",
+  /** Description */
   description:
     "Learn about how Let It Rip uses cookies and tracking technologies to improve your shopping experience. Cookie types, purposes, and how to manage them.",
+  /** Robots */
   robots: "index, follow",
 };
 
+/**
+ * Performs cookie policy page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = CookiePolicyPage();
+ */
 export default function CookiePolicyPage() {
   return (
     <LegalPageLayout
@@ -339,6 +359,7 @@ export default function CookiePolicyPage() {
       <h3>5.1 Cookie Consent Banner</h3>
       <p>
         When you first visit our site, you'll see a cookie consent banner. You
+        /** Can */
         can:
       </p>
       <ul>

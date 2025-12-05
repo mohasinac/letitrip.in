@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/FeaturedProductsSection
+ * @description This file contains the FeaturedProductsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,10 +18,49 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * FeaturedProductsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedProductsSectionProps
+ */
 interface FeaturedProductsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Featured Products Section
+ */
+/**
+ * Performs featured products section operation
+ *
+ * @param {FeaturedProductsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredproductssection result
+ *
+ * @example
+ * FeaturedProductsSection({
+  limit);
+ */
+
+/**
+ * Performs featured products section operation
+ *
+ * @param {FeaturedProductsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredproductssection result
+ *
+ * @example
+ * FeaturedProductsSection({
+  limit);
+ */
 
 export function FeaturedProductsSection({
   limit = 10,
@@ -25,6 +73,22 @@ export function FeaturedProductsSection({
     loadProducts();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -33,11 +97,13 @@ export function FeaturedProductsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_featured_products_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedProductsSection.loadProducts",
       });
     } finally {

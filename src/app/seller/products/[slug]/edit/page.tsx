@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/products/[slug]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PageState } from "@/components/common/PageState";
@@ -22,8 +31,11 @@ import { toast } from "sonner";
 const STEPS = [
   { id: "basic", name: "Basic Info", description: "Name, price, and category" },
   {
+    /** Id */
     id: "details",
+    /** Name */
     name: "Details",
+    /** Description */
     description: "Description and specifications",
   },
   { id: "inventory", name: "Inventory", description: "Stock and SKU" },
@@ -39,14 +51,23 @@ export default function EditProductPage() {
   const [saving, setSaving] = useState(false);
   const [product, setProduct] = useState<ProductFE | null>(null);
   const [formData, setFormData] = useState<ProductEditFormData>({
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Price */
     price: 0,
+    /** Category Id */
     categoryId: "",
+    /** Description */
     description: "",
+    /** Stock Count */
     stockCount: 0,
+    /** Sku */
     sku: "",
+    /** Condition */
     condition: "new" as ProductCondition,
+    /** Status */
     status: "draft" as ProductStatus,
   });
 
@@ -58,14 +79,23 @@ export default function EditProductPage() {
       const data = await productsService.getBySlug(slug);
       setProduct(data);
       setFormData({
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Price */
         price: data.price,
+        /** Category Id */
         categoryId: data.categoryId,
+        /** Description */
         description: data.description || "",
+        /** Stock Count */
         stockCount: data.stockCount,
+        /** Sku */
         sku: data.sku || "",
+        /** Condition */
         condition: (data.condition || "new") as ProductCondition,
+        /** Status */
         status: data.status as ProductStatus,
       });
     });
@@ -75,17 +105,57 @@ export default function EditProductPage() {
     loadProduct();
   }, [loadProduct]);
 
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
+
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async () => {
     try {
@@ -94,7 +164,9 @@ export default function EditProductPage() {
       router.push("/seller/products");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerProductEdit.handleSubmit",
+        /** Metadata */
         metadata: { slug },
       });
       toast.error("Failed to update product");

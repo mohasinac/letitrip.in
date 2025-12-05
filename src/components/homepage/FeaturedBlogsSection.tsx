@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/FeaturedBlogsSection
+ * @description This file contains the FeaturedBlogsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,10 +19,49 @@ import { analyticsService } from "@/services/analytics.service";
 import type { BlogPostFE } from "@/services/homepage.service";
 import { ExternalLink } from "lucide-react";
 
+/**
+ * FeaturedBlogsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedBlogsSectionProps
+ */
 interface FeaturedBlogsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Featured Blogs Section
+ */
+/**
+ * Performs featured blogs section operation
+ *
+ * @param {FeaturedBlogsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredblogssection result
+ *
+ * @example
+ * FeaturedBlogsSection({
+  limit);
+ */
+
+/**
+ * Performs featured blogs section operation
+ *
+ * @param {FeaturedBlogsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredblogssection result
+ *
+ * @example
+ * FeaturedBlogsSection({
+  limit);
+ */
 
 export function FeaturedBlogsSection({
   limit = 10,
@@ -26,6 +74,22 @@ export function FeaturedBlogsSection({
     loadBlogs();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadBlogs = async () => {
     try {
       setLoading(true);
@@ -34,6 +98,7 @@ export function FeaturedBlogsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_featured_blogs_viewed", {
+          /** Count */
           count: data.length,
         });
       }
@@ -89,7 +154,9 @@ export function FeaturedBlogsSection({
             excerpt={blog.excerpt}
             featuredImage={blog.image}
             author={{
+              /** Id */
               id: "author",
+              /** Name */
               name: blog.author,
             }}
             publishedAt={blog.publishedAt}

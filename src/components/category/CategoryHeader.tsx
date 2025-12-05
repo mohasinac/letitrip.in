@@ -1,21 +1,47 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/CategoryHeader
+ * @description This file contains the CategoryHeader component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ChevronRight, Package } from "lucide-react";
 import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 
+/**
+ * CategoryHeaderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryHeaderProps
+ */
 export interface CategoryHeaderProps {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Description */
   description?: string | null;
+  /** Image */
   image?: string | null;
+  /** Product Count */
   productCount: number;
+  /** Parent Category */
   parentCategory?: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
   } | null;
+  /** Class Name */
   className?: string;
 }
 
@@ -45,6 +71,24 @@ export interface CategoryHeaderProps {
  * />
  * ```
  */
+/**
+ * Performs category header operation
+ *
+ * @returns {any} The categoryheader result
+ *
+ * @example
+ * CategoryHeader();
+ */
+
+/**
+ * Performs category header operation
+ *
+ * @returns {any} The categoryheader result
+ *
+ * @example
+ * CategoryHeader();
+ */
+
 export function CategoryHeader({
   id,
   name,

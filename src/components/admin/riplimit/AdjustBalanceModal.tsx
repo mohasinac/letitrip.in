@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/riplimit/AdjustBalanceModal
+ * @description This file contains the AdjustBalanceModal component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
@@ -6,29 +15,79 @@ import { Button } from "@/components/ui/Button";
 import { X } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * RipLimitUser interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitUser
+ */
 interface RipLimitUser {
+  /** User Id */
   userId: string;
+  /** Available Balance */
   availableBalance: number;
+  /** Blocked Balance */
   blockedBalance: number;
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: boolean;
+  /** Is Blocked */
   isBlocked: boolean;
+  /** Unpaid Auction Ids */
   unpaidAuctionIds: string[];
+  /** Created At */
   createdAt: { _seconds: number };
+  /** Updated At */
   updatedAt: { _seconds: number };
+  /** User */
   user: {
+    /** Email */
     email: string;
+    /** Display Name */
     displayName?: string;
+    /** Photo U R L */
     photoURL?: string;
   } | null;
 }
 
+/**
+ * AdjustBalanceModalProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AdjustBalanceModalProps
+ */
 interface AdjustBalanceModalProps {
+  /** User */
   user: RipLimitUser;
+  /** Is Open */
   isOpen: boolean;
+  /** Is Processing */
   isProcessing: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Adjust */
   onAdjust: (amount: number, reason: string) => Promise<void>;
 }
+
+/**
+ * Function: Adjust Balance Modal
+ */
+/**
+ * Performs adjust balance modal operation
+ *
+ * @returns {any} The adjustbalancemodal result
+ *
+ * @example
+ * AdjustBalanceModal();
+ */
+
+/**
+ * Performs adjust balance modal operation
+ *
+ * @returns {any} The adjustbalancemodal result
+ *
+ * @example
+ * AdjustBalanceModal();
+ */
 
 export function AdjustBalanceModal({
   user,
@@ -40,7 +99,43 @@ export function AdjustBalanceModal({
   const [adjustAmount, setAdjustAmount] = useState<number>(0);
   const [adjustReason, setAdjustReason] = useState("");
 
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {Promise<any>} Promise resolving to formatrl result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Formats r l
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {Promise<any>} Promise resolving to formatrl result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const formatRL = (amount: number) => `${amount.toLocaleString("en-IN")} RL`;
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async () => {
     if (adjustAmount === 0 || !adjustReason.trim()) return;

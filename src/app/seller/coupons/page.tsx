@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/coupons/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -21,12 +30,18 @@ import { useCallback, useEffect, useState } from "react";
 
 const COUPON_FILTERS: FilterSection[] = [
   {
+    /** Title */
     title: "Status",
+    /** Fields */
     fields: [
       {
+        /** Key */
         key: "status",
+        /** Label */
         label: "Status",
+        /** Type */
         type: "checkbox",
+        /** Options */
         options: [
           { label: "Active", value: "active" },
           { label: "Expired", value: "expired" },
@@ -36,12 +51,18 @@ const COUPON_FILTERS: FilterSection[] = [
     ],
   },
   {
+    /** Title */
     title: "Type",
+    /** Fields */
     fields: [
       {
+        /** Key */
         key: "type",
+        /** Label */
         label: "Coupon Type",
+        /** Type */
         type: "checkbox",
+        /** Options */
         options: [
           { label: "Percentage", value: "percentage" },
           { label: "Fixed Amount", value: "fixed" },
@@ -77,10 +98,46 @@ export default function CouponsPage() {
     });
   }, [user, execute]);
 
+  /**
+   * Handles copy code event
+   *
+   * @param {string} code - The code
+   *
+   * @returns {string} The handlecopycode result
+   */
+
+  /**
+   * Handles copy code event
+   *
+   * @param {string} code - The code
+   *
+   * @returns {string} The handlecopycode result
+   */
+
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     toast.success("Coupon code copied to clipboard");
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDelete = async (code: string) => {
     if (!confirm("Are you sure you want to delete this coupon?")) return;
@@ -91,7 +148,9 @@ export default function CouponsPage() {
       toast.success("Coupon deleted successfully");
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "SellerCoupons.handleDeleteCoupon",
+        /** Metadata */
         metadata: { code },
       });
       toast.error("Failed to delete coupon");
@@ -225,6 +284,7 @@ export default function CouponsPage() {
                     <div className="mt-4 space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">
+                          /** Discount */
                           Discount:
                         </span>
                         <span className="font-medium text-gray-900 dark:text-white">
@@ -237,6 +297,7 @@ export default function CouponsPage() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">
+                          /** Usage */
                           Usage:
                         </span>
                         <span className="font-medium text-gray-900 dark:text-white">

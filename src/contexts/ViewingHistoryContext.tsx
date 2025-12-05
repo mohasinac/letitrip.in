@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/contexts/ViewingHistoryContext
+ * @description This file contains the ViewingHistoryContext component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, {
@@ -14,6 +23,12 @@ import {
   type ViewingHistoryItem,
 } from "@/constants/navigation";
 
+/**
+ * ViewingHistoryContextType interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ViewingHistoryContextType
+ */
 interface ViewingHistoryContextType {
   /** All history items */
   history: ViewingHistoryItem[];
@@ -35,10 +50,55 @@ const ViewingHistoryContext = createContext<
   ViewingHistoryContextType | undefined
 >(undefined);
 
+/**
+ * ViewingHistoryProviderProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ViewingHistoryProviderProps
+ */
 interface ViewingHistoryProviderProps {
+  /** Children */
   children: React.ReactNode;
+  /** Recently Viewed Limit */
   recentlyViewedLimit?: number;
 }
+
+/**
+ * Function: Viewing History Provider
+ */
+/**
+ * Performs viewing history provider operation
+ *
+ * @param {ViewingHistoryProviderProps} [{
+  children,
+  recentlyViewedLimit] - The {
+  children,
+  recently viewed limit
+ *
+ * @returns {any} The viewinghistoryprovider result
+ *
+ * @example
+ * ViewingHistoryProvider({
+  children,
+  recentlyViewedLimit);
+ */
+
+/**
+ * Performs viewing history provider operation
+ *
+ * @param {ViewingHistoryProviderProps} [{
+  children,
+  recentlyViewedLimit] - The {
+  children,
+  recently viewed limit
+ *
+ * @returns {any} The viewinghistoryprovider result
+ *
+ * @example
+ * ViewingHistoryProvider({
+  children,
+  recentlyViewedLimit);
+ */
 
 export function ViewingHistoryProvider({
   children,
@@ -53,6 +113,22 @@ export function ViewingHistoryProvider({
 
   // Listen for storage changes (for cross-tab sync)
   useEffect(() => {
+    /**
+     * Handles storage change event
+     *
+     * @param {StorageEvent} e - The e
+     *
+     * @returns {any} The handlestoragechange result
+     */
+
+    /**
+     * Handles storage change event
+     *
+     * @param {StorageEvent} e - The e
+     *
+     * @returns {any} The handlestoragechange result
+     */
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === VIEWING_HISTORY_CONFIG.STORAGE_KEY) {
         setHistory(viewingHistoryService.getHistory());
@@ -126,6 +202,28 @@ export function ViewingHistoryProvider({
 /**
  * Hook to access viewing history context
  */
+/**
+ * Custom React hook for viewing history
+ *
+ * @returns {any} The useviewinghistory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useViewingHistory();
+ */
+
+/**
+ * Custom React hook for viewing history
+ *
+ * @returns {any} The useviewinghistory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useViewingHistory();
+ */
+
 export function useViewingHistory(): ViewingHistoryContextType {
   const context = useContext(ViewingHistoryContext);
   if (context === undefined) {

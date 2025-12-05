@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/AuctionsSection
+ * @description This file contains the AuctionsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,11 +17,51 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
 
+/**
+ * AuctionsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionsSectionProps
+ */
 interface AuctionsSectionProps {
+  /** Hot Limit */
   hotLimit?: number;
+  /** Featured Limit */
   featuredLimit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Auctions Section
+ */
+/**
+ * Performs auctions section operation
+ *
+ * @param {AuctionsSectionProps} [{
+  hotLimit] - The {
+  hot limit
+ *
+ * @returns {any} The auctionssection result
+ *
+ * @example
+ * AuctionsSection({
+  hotLimit);
+ */
+
+/**
+ * Performs auctions section operation
+ *
+ * @param {AuctionsSectionProps} [{
+  hotLimit] - The {
+  hot limit
+ *
+ * @returns {any} The auctionssection result
+ *
+ * @example
+ * AuctionsSection({
+  hotLimit);
+ */
 
 export function AuctionsSection({
   hotLimit = 8,
@@ -27,6 +76,22 @@ export function AuctionsSection({
     loadAuctions();
   }, [hotLimit, featuredLimit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAuctions = async () => {
     try {
       setLoading(true);
@@ -40,7 +105,9 @@ export function AuctionsSection({
 
       if (hot.length > 0 || featured.length > 0) {
         analyticsService.trackEvent("homepage_auctions_viewed", {
+          /** Hot Count */
           hotCount: hot.length,
+          /** Featured Count */
           featuredCount: featured.length,
         });
       }
@@ -87,22 +154,34 @@ export function AuctionsSection({
               <AuctionCard
                 key={auction.id}
                 auction={{
+                  /** Id */
                   id: auction.id,
+                  /** Name */
                   name: auction.name,
+                  /** Slug */
                   slug: auction.slug,
+                  /** Images */
                   images: auction.images,
+                  /** Current Bid */
                   currentBid: auction.currentBid,
+                  /** Starting Bid */
                   startingBid: auction.startingBid,
+                  /** Bid Count */
                   bidCount: auction.bidCount,
+                  /** End Time */
                   endTime: auction.endTime,
+                  /** Status */
                   status:
                     auction.status === "upcoming"
                       ? "pending"
                       : auction.status === "live"
                         ? "active"
                         : auction.status,
+                  /** Shop */
                   shop: {
+                    /** Id */
                     id: auction.shopId,
+                    /** Name */
                     name: auction.shopName,
                   },
                 }}
@@ -124,23 +203,36 @@ export function AuctionsSection({
               <AuctionCard
                 key={auction.id}
                 auction={{
+                  /** Id */
                   id: auction.id,
+                  /** Name */
                   name: auction.name,
+                  /** Slug */
                   slug: auction.slug,
+                  /** Images */
                   images: auction.images,
+                  /** Current Bid */
                   currentBid: auction.currentBid,
+                  /** Starting Bid */
                   startingBid: auction.startingBid,
+                  /** Bid Count */
                   bidCount: auction.bidCount,
+                  /** End Time */
                   endTime: auction.endTime,
+                  /** Status */
                   status:
                     auction.status === "upcoming"
                       ? "pending"
                       : auction.status === "live"
                         ? "active"
                         : auction.status,
+                  /** Featured */
                   featured: true,
+                  /** Shop */
                   shop: {
+                    /** Id */
                     id: auction.shopId,
+                    /** Name */
                     name: auction.shopName,
                   },
                 }}

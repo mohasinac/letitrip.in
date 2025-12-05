@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/MediaMetadataForm
+ * @description This file contains the MediaMetadataForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -5,10 +14,20 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { MediaMetadata } from "@/types/media";
 
+/**
+ * MediaMetadataFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaMetadataFormProps
+ */
 interface MediaMetadataFormProps {
+  /** Metadata */
   metadata: MediaMetadata;
+  /** On Change */
   onChange: (metadata: MediaMetadata) => void;
+  /** Auto Slug */
   autoSlug?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -24,6 +43,22 @@ export default function MediaMetadataForm({
     setLocalMetadata(metadata);
   }, [metadata]);
 
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
   const generateSlug = (text: string): string => {
     return text
       .toLowerCase()
@@ -32,6 +67,22 @@ export default function MediaMetadataForm({
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
   };
+
+  /**
+   * Handles description change event
+   *
+   * @param {string} description - The description
+   *
+   * @returns {string} The handledescriptionchange result
+   */
+
+  /**
+   * Handles description change event
+   *
+   * @param {string} description - The description
+   *
+   * @returns {string} The handledescriptionchange result
+   */
 
   const handleDescriptionChange = (description: string) => {
     const updated = { ...localMetadata, description };
@@ -45,11 +96,43 @@ export default function MediaMetadataForm({
     onChange(updated);
   };
 
+  /**
+   * Handles slug change event
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The handleslugchange result
+   */
+
+  /**
+   * Handles slug change event
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {string} The handleslugchange result
+   */
+
   const handleSlugChange = (slug: string) => {
     const updated = { ...localMetadata, slug };
     setLocalMetadata(updated);
     onChange(updated);
   };
+
+  /**
+   * Handles alt change event
+   *
+   * @param {string} alt - The alt
+   *
+   * @returns {string} The handlealtchange result
+   */
+
+  /**
+   * Handles alt change event
+   *
+   * @param {string} alt - The alt
+   *
+   * @returns {string} The handlealtchange result
+   */
 
   const handleAltChange = (alt: string) => {
     const updated = { ...localMetadata, alt };
@@ -57,11 +140,43 @@ export default function MediaMetadataForm({
     onChange(updated);
   };
 
+  /**
+   * Handles caption change event
+   *
+   * @param {string} caption - The caption
+   *
+   * @returns {string} The handlecaptionchange result
+   */
+
+  /**
+   * Handles caption change event
+   *
+   * @param {string} caption - The caption
+   *
+   * @returns {string} The handlecaptionchange result
+   */
+
   const handleCaptionChange = (caption: string) => {
     const updated = { ...localMetadata, caption };
     setLocalMetadata(updated);
     onChange(updated);
   };
+
+  /**
+   * Handles tags change event
+   *
+   * @param {string} tagsString - The tags string
+   *
+   * @returns {string} The handletagschange result
+   */
+
+  /**
+   * Handles tags change event
+   *
+   * @param {string} tagsString - The tags string
+   *
+   * @returns {string} The handletagschange result
+   */
 
   const handleTagsChange = (tagsString: string) => {
     const tags = tagsString

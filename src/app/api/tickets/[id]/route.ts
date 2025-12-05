@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/tickets/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { requireAuth, requireRole } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
@@ -12,7 +21,39 @@ import { NextRequest, NextResponse } from "next/server";
  * - Seller: Can view tickets related to their shops
  * - Admin: Can view all tickets
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -60,8 +101,10 @@ export async function GET(
           return null;
         }
         return {
+          /** Id */
           id: doc.id,
           ...data,
+          /** Created At */
           createdAt: data.createdAt?.toDate?.() || data.createdAt,
         };
       })
@@ -77,20 +120,29 @@ export async function GET(
       if (userDoc.exists) {
         const data = userDoc.data();
         userData = {
+          /** Id */
           id: userDoc.id,
+          /** Name */
           name: data?.name,
+          /** Email */
           email: data?.email,
         };
       }
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: ticketDoc.id,
         ...ticketData,
+        /** Created At */
         createdAt: ticketData?.createdAt?.toDate?.() || ticketData?.createdAt,
+        /** Updated At */
         updatedAt: ticketData?.updatedAt?.toDate?.() || ticketData?.updatedAt,
+        /** Resolved At */
         resolvedAt:
           ticketData?.resolvedAt?.toDate?.() || ticketData?.resolvedAt,
         messages,
@@ -99,7 +151,9 @@ export async function GET(
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.tickets.getDetail",
+      /** Metadata */
       metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -113,7 +167,39 @@ export async function GET(
  * - Seller: Can update shop-related tickets (limited fields)
  * - Admin: Can update any ticket (all fields)
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -151,6 +237,7 @@ export async function PATCH(
     }
 
     const updates: any = {
+      /** Updated At */
       updatedAt: new Date(),
     };
 
@@ -180,15 +267,20 @@ export async function PATCH(
     await ticketRef.update(updates);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: ticketId,
         ...updates,
       },
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.tickets.update",
+      /** Metadata */
       metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -199,7 +291,39 @@ export async function PATCH(
  * DELETE /api/tickets/[id]
  * Delete ticket (admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -233,12 +357,16 @@ export async function DELETE(
     await batch.commit();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Ticket deleted successfully",
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.tickets.delete",
+      /** Metadata */
       metadata: { ticketId },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });

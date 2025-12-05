@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/PeriodSelector
+ * @description This file contains the PeriodSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PeriodSelector Component
  *
  * A reusable time period selector for analytics and reports.
@@ -12,8 +21,16 @@
 
 "use client";
 
+/**
+ * Period interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Period
+ */
 interface Period {
+  /** Label */
   label: string;
+  /** Value */
   value: string;
 }
 
@@ -24,6 +41,12 @@ const DEFAULT_PERIODS: Period[] = [
   { label: "This Year", value: "year" },
 ];
 
+/**
+ * PeriodSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PeriodSelectorProps
+ */
 interface PeriodSelectorProps {
   /** Currently selected period value */
   value: string;
@@ -34,6 +57,27 @@ interface PeriodSelectorProps {
   /** Additional CSS classes */
   className?: string;
 }
+
+/**
+ * Function: Period Selector
+ */
+/**
+ * Performs period selector operation
+ *
+ * @returns {any} The periodselector result
+ *
+ * @example
+ * PeriodSelector();
+ */
+
+/**
+ * Performs period selector operation
+ *
+ * @returns {any} The periodselector result
+ *
+ * @example
+ * PeriodSelector();
+ */
 
 export function PeriodSelector({
   value,

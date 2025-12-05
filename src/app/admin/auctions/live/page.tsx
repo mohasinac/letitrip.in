@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/auctions/live/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -32,24 +41,50 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // Stats card component
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ */
+
 function StatCard({
   title,
   value,
+  /** Icon */
   icon: Icon,
   trend,
   color,
 }: {
+  /** Title */
   title: string;
+  /** Value */
   value: string | number;
+  /** Icon */
   icon: React.ElementType;
+  /** Trend */
   trend?: { value: number; label: string };
+  /** Color */
   color: string;
 }) {
   const colorClasses: Record<string, string> = {
+    /** Green */
     green: "bg-green-100 text-green-600",
+    /** Blue */
     blue: "bg-blue-100 text-blue-600",
+    /** Purple */
     purple: "bg-purple-100 text-purple-600",
+    /** Orange */
     orange: "bg-orange-100 text-orange-600",
+    /** Red */
     red: "bg-red-100 text-red-600",
   };
 
@@ -83,20 +118,51 @@ function StatCard({
 }
 
 // Live auction row component
+/**
+ * Function: Live Auction Row
+ */
+/**
+ * Performs live auction row operation
+ *
+ * @returns {any} The liveauctionrow result
+ */
+
+/**
+ * Performs live auction row operation
+ *
+ * @returns {any} The liveauctionrow result
+ */
+
 function LiveAuctionRow({
   auction,
   onPause,
   onEnd,
   onView,
 }: {
+  /** Auction */
   auction: AuctionCardFE;
+  /** On Pause */
   onPause: (id: string) => void;
+  /** On End */
   onEnd: (id: string) => void;
+  /** On View */
   onView: (slug: string) => void;
 }) {
   const [timeLeft, setTimeLeft] = useState<string>("");
 
   useEffect(() => {
+    /**
+     * Updates existing time
+     *
+     * @returns {any} The updatetime result
+     */
+
+    /**
+     * Updates existing time
+     *
+     * @returns {any} The updatetime result
+     */
+
     const updateTime = () => {
       const end = new Date(auction.endTime).getTime();
       const now = Date.now();
@@ -128,13 +194,44 @@ function LiveAuctionRow({
     return () => clearInterval(interval);
   }, [auction.endTime]);
 
+  /**
+   * Formats price
+   *
+   * @param {number} price - The price
+   *
+   * @returns {number} The formatprice result
+   */
+
+  /**
+   * Formats price
+   *
+   * @param {number} price - The price
+   *
+   * @returns {number} The formatprice result
+   */
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  /**
+   * Checks if ending
+   *
+   * @returns {any} The isending result
+   */
+
+  /**
+   * Checks if ending
+   *
+   * @returns {any} The isending result
+   */
 
   const isEnding = () => {
     const end = new Date(auction.endTime).getTime();
@@ -142,6 +239,18 @@ function LiveAuctionRow({
     const diff = end - now;
     return diff <= 60 * 60 * 1000; // Less than 1 hour
   };
+
+  /**
+   * Checks if hot auction
+   *
+   * @returns {any} The ishotauction result
+   */
+
+  /**
+   * Checks if hot auction
+   *
+   * @returns {any} The ishotauction result
+   */
 
   const isHotAuction = () => {
     return (auction.bidCount || 0) > 10;
@@ -195,6 +304,7 @@ function LiveAuctionRow({
         </div>
         {auction.reservePrice && (
           <div className="text-xs text-gray-500">
+            /** Reserve */
             Reserve: {formatPrice(auction.reservePrice)}
           </div>
         )}
@@ -255,13 +365,18 @@ function LiveAuctionRow({
 export default function LiveAuctionsPage() {
   const { isAdmin } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: auctions,
+    /** Set Data */
     setData: setAuctions,
     execute,
   } = useLoadingState<AuctionCardFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "LiveAuctionsPage.loadLiveAuctions" });
       toast.error("Failed to load live auctions");
@@ -275,10 +390,15 @@ export default function LiveAuctionsPage() {
 
   // Stats
   const [stats, setStats] = useState({
+    /** Live Count */
     liveCount: 0,
+    /** Total Bids */
     totalBids: 0,
+    /** Total Value */
     totalValue: 0,
+    /** Ending Soon */
     endingSoon: 0,
+    /** Scheduled Count */
     scheduledCount: 0,
   });
 
@@ -287,7 +407,9 @@ export default function LiveAuctionsPage() {
 
     await execute(async () => {
       const response = await auctionsService.list({
+        /** Status */
         status: AuctionStatus.ACTIVE,
+        /** Limit */
         limit: 50,
       });
 
@@ -298,26 +420,34 @@ export default function LiveAuctionsPage() {
       const oneHour = 60 * 60 * 1000;
 
       setStats({
+        /** Live Count */
         liveCount: liveAuctions.length,
+        /** Total Bids */
         totalBids: liveAuctions.reduce((sum, a) => sum + (a.bidCount || 0), 0),
+        /** Total Value */
         totalValue: liveAuctions.reduce(
           (sum, a) =>
             sum + (a.currentBid || a.startingBid || a.currentPrice || 0),
           0,
         ),
+        /** Ending Soon */
         endingSoon: liveAuctions.filter(
           (a) => new Date(a.endTime).getTime() - now < oneHour,
         ).length,
+        /** Scheduled Count */
         scheduledCount: 0,
       });
 
       // Load scheduled count separately
       const scheduledResponse = await auctionsService.list({
+        /** Status */
         status: AuctionStatus.SCHEDULED,
+        /** Limit */
         limit: 1,
       });
       setStats((prev) => ({
         ...prev,
+        /** Scheduled Count */
         scheduledCount: scheduledResponse.count || 0,
       }));
 
@@ -342,6 +472,26 @@ export default function LiveAuctionsPage() {
     return () => clearInterval(interval);
   }, [autoRefresh, loadLiveAuctions]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handlePauseAuction = async (id: string) => {
     try {
       await auctionsService.update(id, { status: AuctionStatus.SCHEDULED });
@@ -353,6 +503,26 @@ export default function LiveAuctionsPage() {
       toast.error("Failed to pause auction");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleEndAuction = async (id: string) => {
     try {
@@ -366,10 +536,29 @@ export default function LiveAuctionsPage() {
     }
   };
 
+  /**
+   * Formats price
+   *
+   * @param {number} price - The price
+   *
+   * @returns {number} The formatprice result
+   */
+
+  /**
+   * Formats price
+   *
+   * @param {number} price - The price
+   *
+   * @returns {number} The formatprice result
+   */
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(price);
   };

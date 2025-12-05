@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/MobileSidebar
+ * @description This file contains the MobileSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -20,20 +29,34 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
+/**
+ * MobileSidebarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileSidebarProps
+ */
 interface MobileSidebarProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
 }
 
 const adminIcons: Record<string, any> = {
+  /** Dashboard */
   dashboard: LayoutDashboard,
+  /** Users */
   users: Users,
+  /** Products */
   products: Package,
 };
 
 const sellerIcons: Record<string, any> = {
+  /** Overview */
   overview: LayoutDashboard,
+  /** Products */
   products: Package,
+  /** Orders */
   orders: ShoppingBag,
 };
 
@@ -50,15 +73,59 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
   if (!isOpen) return null;
 
+  /**
+   * Performs toggle admin section operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleadminsection result
+   */
+
+  /**
+   * Performs toggle admin section operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleadminsection result
+   */
+
   const toggleAdminSection = (id: string) => {
     setAdminSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
+  /**
+   * Performs toggle seller section operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The togglesellersection result
+   */
+
+  /**
+   * Performs toggle seller section operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The togglesellersection result
+   */
 
   const toggleSellerSection = (id: string) => {
     setSellerSectionOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   // Get user initials
+  /**
+   * Retrieves user initials
+   *
+   * @returns {any} The userinitials result
+   */
+
+  /**
+   * Retrieves user initials
+   *
+   * @returns {any} The userinitials result
+   */
+
   const getUserInitials = () => {
     if (!user) return "U";
     const name = user.displayName || user.fullName || user.email;
@@ -71,6 +138,18 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   };
 
   // Get display name
+  /**
+   * Retrieves display name
+   *
+   * @returns {any} The displayname result
+   */
+
+  /**
+   * Retrieves display name
+   *
+   * @returns {any} The displayname result
+   */
+
   const getDisplayName = () => {
     if (!user) return "Guest";
     return (

@@ -1,8 +1,29 @@
+/**
+ * @fileoverview Configuration
+ * @module src/app/api/lib/firebase/config
+ * @description This file contains functionality related to config
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 // Initialize Firebase Admin
+/**
+ * Performs initialize firebase admin operation
+ *
+ * @returns {any} The initializefirebaseadmin result
+ */
+
+/**
+ * Performs initialize firebase admin operation
+ *
+ * @returns {any} The initializefirebaseadmin result
+ */
+
 const initializeFirebaseAdmin = () => {
   if (getApps().length === 0) {
     // Get environment variables
@@ -28,6 +49,7 @@ const initializeFirebaseAdmin = () => {
     }
 
     initializeApp({
+      /** Credential */
       credential: cert({
         projectId,
         clientEmail,

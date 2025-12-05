@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/types/shared/pagination.types
+ * @description This file contains TypeScript type definitions for pagination
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PAGINATION AND FILTERING TYPES
  * Used for list responses and search queries
  */
@@ -11,8 +20,11 @@ import { SortOrder, SortField } from "./common.types";
  * Pagination Parameters (Request)
  */
 export interface PaginationParams {
+  /** Page */
   page?: number;
+  /** Limit */
   limit?: number;
+  /** Offset */
   offset?: number;
 }
 
@@ -20,9 +32,13 @@ export interface PaginationParams {
  * Cursor-based pagination metadata
  */
 export interface CursorPaginationMeta {
+  /** Limit */
   limit: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Next Cursor */
   nextCursor: string | null;
+  /** Count */
   count: number;
 }
 
@@ -30,11 +46,17 @@ export interface CursorPaginationMeta {
  * Offset-based pagination metadata
  */
 export interface OffsetPaginationMeta {
+  /** Page */
   page: number;
+  /** Limit */
   limit: number;
+  /** Total */
   total?: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Has Prev Page */
   hasPrevPage: boolean;
+  /** Total Pages */
   totalPages?: number;
 }
 
@@ -47,9 +69,13 @@ export type PaginationMeta = CursorPaginationMeta | OffsetPaginationMeta;
  * Paginated Response
  */
 export interface PaginatedResponse<T> {
+  /** Success */
   success: boolean;
+  /** Data */
   data: T[];
+  /** Count */
   count: number;
+  /** Pagination */
   pagination: PaginationMeta;
 }
 
@@ -59,7 +85,9 @@ export interface PaginatedResponse<T> {
  * Sort Parameters
  */
 export interface SortParams<T = any> {
+  /** Field */
   field: SortField<T>;
+  /** Order */
   order: SortOrder;
 }
 
@@ -85,8 +113,11 @@ export type FilterOperator =
  * Single Filter
  */
 export interface Filter {
+  /** Field */
   field: string;
+  /** Operator */
   operator: FilterOperator;
+  /** Value */
   value: any;
 }
 
@@ -94,7 +125,9 @@ export interface Filter {
  * Filter Group (AND/OR)
  */
 export interface FilterGroup {
+  /** Operator */
   operator: "AND" | "OR";
+  /** Filters */
   filters: (Filter | FilterGroup)[];
 }
 
@@ -102,7 +135,9 @@ export interface FilterGroup {
  * Search Parameters
  */
 export interface SearchParams {
+  /** Query */
   query?: string;
+  /** Fields */
   fields?: string[];
 }
 
@@ -120,7 +155,9 @@ export interface DateFilter {
  * Price Filter Parameters
  */
 export interface PriceFilter {
+  /** Min */
   min?: number;
+  /** Max */
   max?: number;
 }
 
@@ -128,6 +165,7 @@ export interface PriceFilter {
  * Status Filter Parameters
  */
 export interface StatusFilter {
+  /** Status */
   status?: string | string[];
 }
 
@@ -135,8 +173,11 @@ export interface StatusFilter {
  * Category Filter Parameters
  */
 export interface CategoryFilter {
+  /** Category Id */
   categoryId?: string;
+  /** Category Ids */
   categoryIds?: string[];
+  /** Include Subcategories */
   includeSubcategories?: boolean;
 }
 
@@ -144,8 +185,11 @@ export interface CategoryFilter {
  * User Filter Parameters
  */
 export interface UserFilter {
+  /** User Id */
   userId?: string;
+  /** User Ids */
   userIds?: string[];
+  /** Role */
   role?: string;
 }
 
@@ -153,7 +197,9 @@ export interface UserFilter {
  * Shop Filter Parameters
  */
 export interface ShopFilter {
+  /** Shop Id */
   shopId?: string;
+  /** Shop Ids */
   shopIds?: string[];
 }
 
@@ -164,16 +210,23 @@ export interface ShopFilter {
  */
 export interface ListQueryParams {
   // Pagination
+  /** Page */
   page?: number;
+  /** Limit */
   limit?: number;
+  /** Offset */
   offset?: number;
 
   // Sorting
+  /** Sort By */
   sortBy?: string;
+  /** Sort Order */
   sortOrder?: SortOrder;
 
   // Search
+  /** Search */
   search?: string;
+  /** Search Fields */
   searchFields?: string[];
 
   // Filters (as query params)
@@ -184,7 +237,10 @@ export interface ListQueryParams {
  * Advanced Query Parameters (structured filters)
  */
 export interface AdvancedQueryParams extends PaginationParams {
+  /** Sort */
   sort?: SortParams;
+  /** Search */
   search?: SearchParams;
+  /** Filters */
   filters?: FilterGroup;
 }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/shops/[slug]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AuctionFilterValues } from "@/components/filters/AuctionFilters";
@@ -24,12 +33,26 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * ShopPageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopPageProps
+ */
 interface ShopPageProps {
+  /** Params */
   params: Promise<{
+    /** Slug */
     slug: string;
   }>;
 }
 
+/**
+ * TabType type
+ * 
+ * @typedef {Object} TabType
+ * @description Type definition for TabType
+ */
 type TabType = "products" | "auctions" | "reviews" | "about";
 
 export default function ShopPage({ params }: ShopPageProps) {
@@ -42,14 +65,20 @@ export default function ShopPage({ params }: ShopPageProps) {
   const [productsLoading, setProductsLoading] = useState(false);
   const [auctionsLoading, setAuctionsLoading] = useState(false);
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: shop,
+    /** Set Data */
     setData: setShop,
     execute,
   } = useLoadingState<ShopFE>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "ShopPage.loadShop",
+        /** Metadata */
         metadata: { slug },
       });
       router.push(notFound.shop(slug, err));
@@ -64,7 +93,9 @@ export default function ShopPage({ params }: ShopPageProps) {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [productFilters, setProductFilters] = useState<ProductFilterValues>({});
   const [auctionFilters, setAuctionFilters] = useState<AuctionFilterValues>({
+    /** Sort By */
     sortBy: "endTime",
+    /** Sort Order */
     sortOrder: "asc",
   });
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
@@ -83,10 +114,42 @@ export default function ShopPage({ params }: ShopPageProps) {
     }
   }, [shop, sortBy, sortOrder, activeTab]);
 
+  /**
+   * Fetches shop from server
+   *
+   * @returns {Promise<any>} Promise resolving to shop result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches shop from server
+   *
+   * @returns {Promise<any>} Promise resolving to shop result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadShop = () =>
     execute(async () => {
       return await shopsService.getBySlug(slug);
     });
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadProducts = async () => {
     try {
@@ -110,23 +173,32 @@ export default function ShopPage({ params }: ShopPageProps) {
       }
 
       const response = await productsService.list({
+        /** Shop Id */
         shopId: slug,
+        /** Sort By */
         sortBy: apiSortBy,
+        /** Category Id */
         categoryId: productFilters.categories?.[0],
+        /** Price Range */
         priceRange:
           productFilters.priceMin || productFilters.priceMax
             ? {
+                /** Min */
                 min: productFilters.priceMin || 0,
+                /** Max */
                 max: productFilters.priceMax || 999999,
               }
             : undefined,
+        /** In Stock */
         inStock:
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
               ? false
               : undefined,
+        /** Featured */
         featured: productFilters.featured,
+        /** Rating */
         rating: productFilters.rating,
       });
 
@@ -143,7 +215,9 @@ export default function ShopPage({ params }: ShopPageProps) {
       setAvailableBrands(brands);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ShopPage.loadProducts",
+        /** Metadata */
         metadata: { shopId: shop?.id },
       });
     } finally {
@@ -151,11 +225,29 @@ export default function ShopPage({ params }: ShopPageProps) {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAuctions = async () => {
     try {
       setAuctionsLoading(true);
       const apiFilters: any = {
+        /** Shop Id */
         shopId: slug,
+        /** Limit */
         limit: 100,
       };
       if (auctionFilters.status && auctionFilters.status.length > 0) {
@@ -177,7 +269,9 @@ export default function ShopPage({ params }: ShopPageProps) {
       setAuctions(response.data || []);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ShopPage.loadAuctions",
+        /** Metadata */
         metadata: { shopId: shop?.id },
       });
     } finally {
@@ -185,39 +279,128 @@ export default function ShopPage({ params }: ShopPageProps) {
     }
   };
 
+  /**
+   * Handles product sort event
+   *
+   * @param {string} newSortBy - The new sort by
+   * @param {"asc" | "desc"} newSortOrder - The new sort order
+   *
+   * @returns {string} The handleproductsort result
+   */
+
+  /**
+   * Handles product sort event
+   *
+   * @returns {string} The handleproductsort result
+   */
+
   const handleProductSort = (
+    /** New Sort By */
     newSortBy: string,
+    /** New Sort Order */
     newSortOrder: "asc" | "desc",
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   };
+
+  /**
+   * Handles product filters event
+   *
+   * @param {ProductFilterValues} filters - The filters
+   *
+   * @returns {any} The handleproductfilters result
+   */
+
+  /**
+   * Handles product filters event
+   *
+   * @param {ProductFilterValues} filters - The filters
+   *
+   * @returns {any} The handleproductfilters result
+   */
 
   const handleProductFilters = (filters: ProductFilterValues) => {
     setProductFilters(filters);
     loadProducts();
   };
 
+  /**
+   * Handles auction sort event
+   *
+   * @param {string} newSortBy - The new sort by
+   * @param {"asc" | "desc"} newSortOrder - The new sort order
+   *
+   * @returns {string} The handleauctionsort result
+   */
+
+  /**
+   * Handles auction sort event
+   *
+   * @returns {string} The handleauctionsort result
+   */
+
   const handleAuctionSort = (
+    /** New Sort By */
     newSortBy: string,
+    /** New Sort Order */
     newSortOrder: "asc" | "desc",
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   };
 
+  /**
+   * Handles auction filters event
+   *
+   * @param {AuctionFilterValues} filters - The filters
+   *
+   * @returns {any} The handleauctionfilters result
+   */
+
+  /**
+   * Handles auction filters event
+   *
+   * @param {AuctionFilterValues} filters - The filters
+   *
+   * @returns {any} The handleauctionfilters result
+   */
+
   const handleAuctionFilters = (filters: AuctionFilterValues) => {
     setAuctionFilters(filters);
     loadAuctions();
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAddToCart = async (
+    /** Product Id */
     productId: string,
+    /** Product Details */
     productDetails?: {
+      /** Name */
       name: string;
+      /** Price */
       price: number;
+      /** Image */
       image: string;
+      /** Shop Id */
       shopId: string;
+      /** Shop Name */
       shopName: string;
     },
   ) => {
@@ -226,10 +409,15 @@ export default function ShopPage({ params }: ShopPageProps) {
         const product = products.find((p) => p.id === productId);
         if (!product) throw new Error("Product not found");
         productDetails = {
+          /** Name */
           name: product.name,
+          /** Price */
           price: product.price,
+          /** Image */
           image: product.images?.[0] || "",
+          /** Shop Id */
           shopId: product.shopId,
+          /** Shop Name */
           shopName: shop?.name || "",
         };
       }

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/email/inbox/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Email Inbox API Route
  *
  * Fetch received emails (simulated or from email provider)
@@ -12,18 +21,61 @@ import { logError } from "@/lib/firebase-error-logger";
 import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * InboxEmail interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InboxEmail
+ */
 interface InboxEmail {
+  /** Id */
   id: string;
+  /** From */
   from: string;
+  /** To */
   to: string;
+  /** Subject */
   subject: string;
+  /** Body */
   body: string;
+  /** Received At */
   receivedAt: Date;
+  /** Read */
   read: boolean;
+  /** Labels */
   labels: string[];
 }
 
 // GET - Retrieve inbox emails
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -56,14 +108,17 @@ export async function GET(req: NextRequest) {
 
     const snapshot = await query.get();
     const emails = snapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
+      /** Received At */
       receivedAt: doc.data().receivedAt?.toDate?.()?.toISOString() || null,
     }));
 
     return NextResponse.json({ emails });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailInboxAPI.GET",
     });
     return NextResponse.json(
@@ -74,6 +129,35 @@ export async function GET(req: NextRequest) {
 }
 
 // POST - Create inbox email (for testing/simulation)
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -104,25 +188,35 @@ export async function POST(req: NextRequest) {
       from,
       to,
       subject,
+      /** Body */
       body: emailBody,
+      /** Received At */
       receivedAt: admin.firestore.FieldValue.serverTimestamp() as any,
+      /** Read */
       read: false,
+      /** Labels */
       labels: labels || [],
     };
 
     await emailRef.set(email);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Id */
       id: emailRef.id,
+      /** Email */
       email: {
+        /** Id */
         id: emailRef.id,
         ...email,
+        /** Received At */
         receivedAt: new Date().toISOString(),
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailInboxAPI.POST",
     });
     return NextResponse.json(
@@ -133,6 +227,35 @@ export async function POST(req: NextRequest) {
 }
 
 // PATCH - Mark email as read/unread
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req);
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req);
+ */
+
 export async function PATCH(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -169,6 +292,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailInboxAPI.PATCH",
     });
     return NextResponse.json(
@@ -179,6 +303,35 @@ export async function PATCH(req: NextRequest) {
 }
 
 // DELETE - Delete inbox email
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
 export async function DELETE(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -211,6 +364,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailInboxAPI.DELETE",
     });
     return NextResponse.json(

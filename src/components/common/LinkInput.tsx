@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/LinkInput
+ * @description This file contains the LinkInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
@@ -12,6 +21,22 @@ import {
 /**
  * Icon for external links
  */
+/**
+ * Performs external icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The externalicon result
+ */
+
+/**
+ * Performs external icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The externalicon result
+ */
+
 const ExternalIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -36,6 +61,22 @@ const ExternalIcon = ({ className }: { className?: string }) => (
 /**
  * Icon for internal links
  */
+/**
+ * Performs internal icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The internalicon result
+ */
+
+/**
+ * Performs internal icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The internalicon result
+ */
+
 const InternalIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -52,6 +93,12 @@ const InternalIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * LinkInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LinkInputProps
+ */
 export interface LinkInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "value" | "onChange"
@@ -106,11 +153,30 @@ export interface LinkInputProps extends Omit<
  *   showPreview
  * />
  */
+/**
+ * Performs link input operation
+ *
+ * @returns {any} The linkinput result
+ *
+ * @example
+ * LinkInput();
+ */
+
+/**
+ * Performs link input operation
+ *
+ * @returns {any} The linkinput result
+ *
+ * @example
+ * LinkInput();
+ */
+
 export function LinkInput({
   value,
   onChange,
   label,
   helperText,
+  /** Error */
   error: externalError,
   required,
   allowExternal = true,
@@ -134,9 +200,13 @@ export function LinkInput({
   const finalValidationOptions: LinkValidationOptions = useMemo(
     () => ({
       allowRelative,
+      /** Allow External */
       allowExternal: onlyInternal ? false : allowExternal,
+      /** Allow Email */
       allowEmail: !onlyInternal,
+      /** Allow Phone */
       allowPhone: !onlyInternal,
+      /** Allow Anchor */
       allowAnchor: true,
       ...validationOptions,
     }),
@@ -147,10 +217,15 @@ export function LinkInput({
   const validation = useMemo(() => {
     if (!value || value.trim() === "") {
       return {
+        /** Is Valid */
         isValid: true,
+        /** Error */
         error: undefined,
+        /** Type */
         type: "internal" as LinkType,
+        /** Resolved Url */
         resolvedUrl: undefined,
+        /** Is Internal */
         isInternal: true,
       };
     }
@@ -163,7 +238,9 @@ export function LinkInput({
       if (customError) {
         return {
           ...result,
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: customError,
         };
       }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/events/[id]/register/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,7 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const registerSchema = z.object({
+  /** Form Data */
   formData: z.record(z.string(), z.any()).optional(),
+  /** Additional Info */
   additionalInfo: z.string().optional(),
 });
 
@@ -13,7 +24,39 @@ const registerSchema = z.object({
  * POST /api/events/[id]/register
  * Register for event (authenticated users)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Request */
+  request, {});
+ */
+
 export async function POST(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -87,8 +130,11 @@ export async function POST(
     if (!validation.success) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Validation failed",
+          /** Details */
           details: validation.error.issues,
         },
         { status: 400 },
@@ -102,15 +148,25 @@ export async function POST(
     const now = new Date().toISOString();
 
     await registrationRef.set({
+      /** Id */
       id: registrationRef.id,
+      /** Event Id */
       eventId: id,
+      /** User Id */
       userId: user.id,
+      /** User Name */
       userName: user.name,
+      /** User Email */
       userEmail: user.email,
+      /** Form Data */
       formData: registrationData.formData || {},
+      /** Additional Info */
       additionalInfo: registrationData.additionalInfo || "",
+      /** Status */
       status: "confirmed",
+      /** Registered At */
       registeredAt: now,
+      /** Created At */
       createdAt: now,
     });
 
@@ -118,15 +174,21 @@ export async function POST(
     await Collections.events()
       .doc(id)
       .update({
+        /** Participant Count */
         participantCount: (eventData.participantCount || 0) + 1,
       });
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Registration */
         registration: {
+          /** Id */
           id: registrationRef.id,
+          /** Event Id */
           eventId: id,
+          /** User Id */
           userId: user.id,
         },
       },
@@ -134,7 +196,9 @@ export async function POST(
     );
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EventsAPI.register",
+      /** Action */
       action: "register_for_event",
     });
     return NextResponse.json(
@@ -148,7 +212,39 @@ export async function POST(
  * GET /api/events/[id]/register
  * Check registration status (authenticated users)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -170,7 +266,9 @@ export async function GET(
 
     if (registrationSnapshot.empty) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Registered */
         registered: false,
       });
     }
@@ -178,16 +276,22 @@ export async function GET(
     const registration = registrationSnapshot.docs[0];
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Registered */
       registered: true,
+      /** Registration */
       registration: {
+        /** Id */
         id: registration.id,
         ...registration.data(),
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EventsAPI.checkRegistration",
+      /** Action */
       action: "check_registration_status",
     });
     return NextResponse.json(

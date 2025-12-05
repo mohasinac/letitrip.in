@@ -1,14 +1,32 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormRadio
+ * @description This file contains the FormRadio component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { forwardRef, InputHTMLAttributes, useId } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormRadioProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormRadioProps
+ */
 export interface FormRadioProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type"
 > {
+  /** Label */
   label: string;
+  /** Description */
   description?: string;
+  /** Has Error */
   hasError?: boolean;
 }
 
@@ -64,18 +82,57 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
 
 FormRadio.displayName = "FormRadio";
 
+/**
+ * FormRadioGroupProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormRadioGroupProps
+ */
 export interface FormRadioGroupProps {
+  /** Name */
   name: string;
+  /** Label */
   label?: string;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Children */
   children: React.ReactNode;
+  /** Class Name */
   className?: string;
+  /** Orientation */
   orientation?: "horizontal" | "vertical";
 }
 
 /**
  * FormRadioGroup - Group of radio buttons with shared name
+ */
+/**
+ * Performs form radio group operation
+ *
+ * @returns {any} The formradiogroup result
+ *
+ * @example
+ * FormRadioGroup();
+ */
+
+/**
+ * F
+ * @constant
+ */
+/**
+ * Performs form radio group operation
+ *
+ * @returns {any} The formradiogroup result
+ *
+ * @example
+ * FormRadioGroup();
+ */
+
+/**
+ * F
+ * @constant
  */
 export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
   name,

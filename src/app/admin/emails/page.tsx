@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/emails/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -23,25 +32,53 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * EmailLog interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailLog
+ */
 interface EmailLog {
+  /** Id */
   id: string;
+  /** To */
   to: string;
+  /** Template */
   template: string;
+  /** Status */
   status: "sent" | "delivered" | "opened" | "clicked" | "bounced" | "failed";
+  /** Sent At */
   sentAt: string;
+  /** Subject */
   subject?: string;
+  /** Error */
   error?: string;
 }
 
+/**
+ * EmailStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailStats
+ */
 interface EmailStats {
+  /** Sent */
   sent: number;
+  /** Delivered */
   delivered: number;
+  /** Opened */
   opened: number;
+  /** Clicked */
   clicked: number;
+  /** Bounced */
   bounced: number;
+  /** Failed */
   failed: number;
+  /** Delivery Rate */
   deliveryRate: number;
+  /** Open Rate */
   openRate: number;
+  /** Click Rate */
   clickRate: number;
 }
 
@@ -83,6 +120,22 @@ export default function AdminEmailsPage() {
     loadData();
   }, [statusFilter, templateFilter, dateFrom, dateTo]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -107,12 +160,29 @@ export default function AdminEmailsPage() {
       setStats(statsData.stats || null);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AdminEmailsPage.loadData",
       });
     } finally {
       setLoading(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleExport = async () => {
     try {
@@ -140,6 +210,7 @@ export default function AdminEmailsPage() {
       document.body.removeChild(a);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AdminEmailsPage.handleExport",
       });
     } finally {
@@ -147,17 +218,39 @@ export default function AdminEmailsPage() {
     }
   };
 
+  /**
+   * Retrieves status badge
+   *
+   * @param {EmailLog["status"]} status - The status
+   *
+   * @returns {any} The statusbadge result
+   */
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {EmailLog["status"]} status - The status
+   *
+   * @returns {any} The statusbadge result
+   */
+
   const getStatusBadge = (status: EmailLog["status"]) => {
     const variants = {
+      /** Sent */
       sent: "bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300",
+      /** Delivered */
       delivered:
         "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300",
+      /** Opened */
       opened:
         "bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300",
+      /** Clicked */
       clicked:
         "bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300",
+      /** Bounced */
       bounced:
         "bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300",
+      /** Failed */
       failed: "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300",
     };
 

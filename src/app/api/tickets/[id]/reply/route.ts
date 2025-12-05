@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/tickets/[id]/reply/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
@@ -13,7 +22,39 @@ import { NextRequest, NextResponse } from "next/server";
  * - Seller: Can reply to shop-related tickets
  * - Admin: Can reply to any ticket (with internal message option)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Request */
+  request, {});
+ */
+
 export async function POST(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -35,6 +76,7 @@ export async function POST(
     // Validation
     if (!message || message.trim().length < 1) {
       throw new ValidationError("Validation failed", {
+        /** Message */
         message: "Message cannot be empty",
       });
     }
@@ -64,11 +106,17 @@ export async function POST(
     const now = new Date();
     const messageData = {
       ticketId,
+      /** Sender Id */
       senderId: user.uid,
+      /** Sender Role */
       senderRole: user.role,
+      /** Message */
       message: message.trim(),
+      /** Attachments */
       attachments: attachments || [],
+      /** Is Internal */
       isInternal: messageIsInternal,
+      /** Created At */
       createdAt: now,
     };
 
@@ -94,8 +142,11 @@ export async function POST(
     await ticketRef.update(updates);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: messageRef.id,
         ...messageData,
       },
@@ -108,7 +159,9 @@ export async function POST(
       );
     }
     logError(error as Error, {
+      /** Component */
       component: "API.tickets.reply",
+      /** Metadata */
       metadata: { ticketId, userId: user?.uid },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/context/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -9,64 +18,138 @@ const PREFIX = "TEST_";
  * GET - Fetch current test data context
  * Returns organized test data for use in workflows
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
     const context: any = {
+      /** Users */
       users: {
+        /** Admin */
         admin: [],
+        /** Sellers */
         sellers: [],
+        /** Customers */
         customers: [],
+        /** All */
         all: [],
       },
+      /** Shops */
       shops: {
+        /** Verified */
         verified: [],
+        /** Unverified */
         unverified: [],
+        /** Featured */
         featured: [],
+        /** All */
         all: [],
+        /** By Owner Id */
         byOwnerId: {},
       },
+      /** Categories */
       categories: {
+        /** Root */
         root: [],
+        /** Children */
         children: [],
+        /** All */
         all: [],
+        /** By Parent Id */
         byParentId: {},
       },
+      /** Products */
       products: {
+        /** Published */
         published: [],
+        /** Draft */
         draft: [],
+        /** Featured */
         featured: [],
+        /** In Stock */
         inStock: [],
+        /** All */
         all: [],
+        /** By Shop Id */
         byShopId: {},
+        /** By Category Id */
         byCategoryId: {},
       },
+      /** Auctions */
       auctions: {
+        /** Live */
         live: [],
+        /** Scheduled */
         scheduled: [],
+        /** Draft */
         draft: [],
+        /** Featured */
         featured: [],
+        /** All */
         all: [],
+        /** By Shop Id */
         byShopId: {},
       },
+      /** Coupons */
       coupons: {
+        /** Active */
         active: [],
+        /** Inactive */
         inactive: [],
+        /** All */
         all: [],
+        /** By Shop Id */
         byShopId: {},
       },
+      /** Orders */
       orders: {
+        /** Pending */
         pending: [],
+        /** Confirmed */
         confirmed: [],
+        /** Shipped */
         shipped: [],
+        /** Delivered */
         delivered: [],
+        /** All */
         all: [],
+        /** By User Id */
         byUserId: {},
+        /** By Shop Id */
         byShopId: {},
       },
+      /** Metadata */
       metadata: {
+        /** Generated At */
         generatedAt: new Date().toISOString(),
+        /** Total Items */
         totalItems: 0,
+        /** Prefix */
         prefix: PREFIX,
       },
     };
@@ -82,11 +165,17 @@ export async function GET(req: NextRequest) {
     usersSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const user = {
+        /** Id */
         id: doc.id,
+        /** Email */
         email: data.email,
+        /** Name */
         name: data.name,
+        /** Role */
         role: data.role,
+        /** Phone */
         phone: data.phone,
+        /** Avatar */
         avatar: data.profile?.avatar,
       };
 
@@ -107,13 +196,21 @@ export async function GET(req: NextRequest) {
     shopsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const shop = {
+        /** Id */
         id: doc.id,
+        /** Owner Id */
         ownerId: data.owner_id,
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Email */
         email: data.email,
+        /** Phone */
         phone: data.phone,
+        /** Is Verified */
         isVerified: data.is_verified,
+        /** Featured */
         featured: data.is_featured,
       };
 
@@ -139,11 +236,17 @@ export async function GET(req: NextRequest) {
     categoriesSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const category = {
+        /** Id */
         id: doc.id,
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Parent Id */
         parentId: data.parent_id,
+        /** Level */
         level: data.level || 0,
+        /** Product Count */
         productCount: data.product_count || 0,
       };
 
@@ -170,15 +273,25 @@ export async function GET(req: NextRequest) {
     productsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const product = {
+        /** Id */
         id: doc.id,
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Category Id */
         categoryId: data.category_id,
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Price */
         price: data.price,
+        /** Stock Count */
         stockCount: data.stock_count || 0,
+        /** Status */
         status: data.status,
+        /** Featured */
         featured: data.is_featured,
+        /** Sku */
         sku: data.sku,
       };
 
@@ -211,17 +324,29 @@ export async function GET(req: NextRequest) {
     auctionsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const auction = {
+        /** Id */
         id: doc.id,
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Category Id */
         categoryId: data.category_id,
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Starting Bid */
         startingBid: data.starting_bid,
+        /** Current Bid */
         currentBid: data.current_bid,
+        /** Status */
         status: data.status,
+        /** Featured */
         featured: data.is_featured,
+        /** Start Time */
         startTime: data.start_time,
+        /** End Time */
         endTime: data.end_time,
+        /** Bid Count */
         bidCount: data.bid_count || 0,
       };
 
@@ -249,12 +374,19 @@ export async function GET(req: NextRequest) {
     couponsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const coupon = {
+        /** Id */
         id: doc.id,
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Code */
         code: data.code,
+        /** Discount Type */
         discountType: data.discount_type,
+        /** Discount Value */
         discountValue: data.discount_value,
+        /** Min Order Value */
         minOrderValue: data.min_order_value,
+        /** Is Active */
         isActive: data.is_active,
       };
 
@@ -279,13 +411,21 @@ export async function GET(req: NextRequest) {
     ordersSnapshot.docs.forEach((doc) => {
       const data = doc.data();
       const order = {
+        /** Id */
         id: doc.id,
+        /** User Id */
         userId: data.user_id,
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Order Number */
         orderNumber: data.order_number,
+        /** Status */
         status: data.status,
+        /** Payment Status */
         paymentStatus: data.payment_status,
+        /** Total */
         total: data.total,
+        /** Item Count */
         itemCount: data.items?.length || 0,
       };
 
@@ -329,12 +469,40 @@ export async function GET(req: NextRequest) {
 /**
  * DELETE - Clear test data context cache
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
 export async function DELETE(req: NextRequest) {
   try {
     // This endpoint can be used to clear any cached context
     // For now, it's a placeholder for future caching implementation
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Test data context cache cleared",
     });
   } catch (error: any) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/reviews/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/firebase-error-logger";
@@ -41,33 +50,68 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * Review interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Review
+ */
 interface Review {
+  /** Id */
   id: string;
+  /** Product Id */
   productId: string;
+  /** Product Slug */
   productSlug: string;
+  /** Product Name */
   productName: string;
+  /** Product Image */
   productImage?: string;
+  /** User Id */
   userId: string;
+  /** User Name */
   userName: string;
+  /** Rating */
   rating: number;
+  /** Title */
   title?: string;
+  /** Content */
   content: string;
+  /** Images */
   images?: string[];
+  /** Verified Purchase */
   verifiedPurchase: boolean;
+  /** Helpful Count */
   helpfulCount: number;
+  /** Seller Response */
   sellerResponse?: {
+    /** Content */
     content: string;
+    /** Responded At */
     respondedAt: string;
   };
+  /** Created At */
   createdAt: string;
+  /** Status */
   status: "pending" | "published" | "flagged";
 }
 
+/**
+ * ReviewStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewStats
+ */
 interface ReviewStats {
+  /** Total Reviews */
   totalReviews: number;
+  /** Average Rating */
   averageRating: number;
+  /** Rating Distribution */
   ratingDistribution: Record<number, number>;
+  /** Pending Responses */
   pendingResponses: number;
+  /** Responded Percentage */
   respondedPercentage: number;
 }
 
@@ -75,10 +119,15 @@ export default function SellerReviewsPage() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats>({
+    /** Total Reviews */
     totalReviews: 0,
+    /** Average Rating */
     averageRating: 0,
+    /** Rating Distribution */
     ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    /** Pending Responses */
     pendingResponses: 0,
+    /** Responded Percentage */
     respondedPercentage: 0,
   });
 
@@ -115,18 +164,37 @@ export default function SellerReviewsPage() {
     loadReviews();
   }, [currentPage, selectedProduct, ratingFilter, statusFilter]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadProducts = async () => {
     try {
       // Get products for this seller's shop(s)
       const response = await productsService.list({});
       setProducts(
         (response.data || []).map((p: { id: string; name: string }) => ({
+          /** Id */
           id: p.id,
+          /** Name */
           name: p.name,
         })),
       );
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerReviews.loadProducts",
       });
     }
@@ -138,8 +206,11 @@ export default function SellerReviewsPage() {
     await execute(async () => {
       // Build filters
       const filters: Record<string, string | number | boolean> = {
+        /** Seller Id */
         sellerId: user.id,
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: pageSize,
       };
 
@@ -162,27 +233,59 @@ export default function SellerReviewsPage() {
       const response = await reviewsService.list(filters);
 
       // Transform response to our Review type
+      /**
+       * Performs review data operation
+       *
+       * @param {any} response.data || []).map((r - The response.data || []).map((r
+       *
+       * @returns {any} The reviewdata result
+       */
+
+      /**
+       * Performs review data operation
+       *
+       * @param {any} response.data || []).map((r - The response.data || []).map((r
+       *
+       * @returns {any} The reviewdata result
+       */
+
       const reviewData: Review[] = (response.data || []).map((r) => ({
+        /** Id */
         id: r.id,
+        /** Product Id */
         productId: r.productId || "",
         productSlug: r.productSlug || r.productId || "", // Use productSlug if available, fallback to productId
         productName: "Product", // Will be fetched separately if needed
+        /** Product Image */
         productImage: undefined,
+        /** User Id */
         userId: r.userId,
+        /** User Name */
         userName: r.userName || "Anonymous",
+        /** Rating */
         rating: r.rating,
+        /** Title */
         title: r.title || undefined,
+        /** Content */
         content: r.comment || "",
+        /** Images */
         images: r.images,
+        /** Verified Purchase */
         verifiedPurchase: r.isVerifiedPurchase || r.verifiedPurchase || false,
+        /** Helpful Count */
         helpfulCount: r.helpful || r.helpfulCount || 0,
+        /** Seller Response */
         sellerResponse: r.replyText
           ? {
+              /** Content */
               content: r.replyText,
+              /** Responded At */
               respondedAt: r.replyAt?.toString() || new Date().toISOString(),
             }
           : undefined,
+        /** Created At */
         createdAt: r.createdAt?.toString() || new Date().toISOString(),
+        /** Status */
         status:
           r.status === "approved"
             ? "published"
@@ -223,9 +326,13 @@ export default function SellerReviewsPage() {
 
       setStats({
         totalReviews,
+        /** Average Rating */
         averageRating: Math.round(avgRating * 10) / 10,
+        /** Rating Distribution */
         ratingDistribution: distribution,
+        /** Pending Responses */
         pendingResponses: needsResponse,
+        /** Responded Percentage */
         respondedPercentage:
           reviewData.length > 0
             ? Math.round((responded / reviewData.length) * 100)
@@ -233,6 +340,22 @@ export default function SellerReviewsPage() {
       });
     });
   }, [user, currentPage, selectedProduct, ratingFilter, statusFilter, execute]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleRespond = async () => {
     if (!respondingTo || !responseText.trim()) return;
@@ -242,6 +365,7 @@ export default function SellerReviewsPage() {
 
       // Use moderate endpoint to add seller reply
       await apiService.patch(`/api/reviews/${respondingTo.id}/moderate`, {
+        /** Reply Text */
         replyText: responseText.trim(),
       });
 
@@ -251,8 +375,11 @@ export default function SellerReviewsPage() {
           r.id === respondingTo.id
             ? {
                 ...r,
+                /** Seller Response */
                 sellerResponse: {
+                  /** Content */
                   content: responseText.trim(),
+                  /** Responded At */
                   respondedAt: new Date().toISOString(),
                 },
               }
@@ -264,7 +391,9 @@ export default function SellerReviewsPage() {
       setResponseText("");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerReviews.handleSubmitResponse",
+        /** Metadata */
         metadata: { reviewId: respondingTo },
       });
     } finally {
@@ -283,6 +412,22 @@ export default function SellerReviewsPage() {
     }
     return true;
   });
+
+  /**
+   * Renders stars
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The renderstars result
+   */
+
+  /**
+   * Renders stars
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The renderstars result
+   */
 
   const renderStars = (rating: number) => {
     return (
@@ -480,7 +625,9 @@ export default function SellerReviewsPage() {
             options={[
               { value: "", label: "All Products" },
               ...products.map((product) => ({
+                /** Value */
                 value: product.id,
+                /** Label */
                 label: product.name,
               })),
             ]}
@@ -587,6 +734,7 @@ export default function SellerReviewsPage() {
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {review.createdAt &&
                       formatDistanceToNow(new Date(review.createdAt), {
+                        /** Add Suffix */
                         addSuffix: true,
                       })}
                   </span>

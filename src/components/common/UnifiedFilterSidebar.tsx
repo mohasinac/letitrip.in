@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/UnifiedFilterSidebar
+ * @description This file contains the UnifiedFilterSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Search, X } from "lucide-react";
@@ -6,24 +15,67 @@ import { FilterField, FilterSection } from "./FilterSidebar";
 import { FilterSectionComponent } from "./filters/FilterSectionComponent";
 import { PriceRangeFilter } from "./filters/PriceRangeFilter";
 
+/**
+ * UnifiedFilterSidebarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UnifiedFilterSidebarProps
+ */
 export interface UnifiedFilterSidebarProps {
+  /** Sections */
   sections: FilterSection[];
+  /** Values */
   values: Record<string, any>;
+  /** On Change */
   onChange: (key: string, value: any) => void;
+  /** On Apply */
   onApply: (pendingValues?: Record<string, any>) => void;
+  /** On Reset */
   onReset: () => void;
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose?: () => void;
+  /** Class Name */
   className?: string;
+  /** Result Count */
   resultCount?: number;
+  /** Is Loading */
   isLoading?: boolean;
+  /** Searchable */
   searchable?: boolean;
+  /** Mobile */
   mobile?: boolean;
+  /** Show Inline Search */
   showInlineSearch?: boolean;
+  /** Inline Search Value */
   inlineSearchValue?: string;
+  /** On Inline Search Change */
   onInlineSearchChange?: (value: string) => void;
+  /** Inline Search Placeholder */
   inlineSearchPlaceholder?: string;
 }
+
+/**
+ * Function: Unified Filter Sidebar
+ */
+/**
+ * Performs unified filter sidebar operation
+ *
+ * @returns {any} The unifiedfiltersidebar result
+ *
+ * @example
+ * UnifiedFilterSidebar();
+ */
+
+/**
+ * Performs unified filter sidebar operation
+ *
+ * @returns {any} The unifiedfiltersidebar result
+ *
+ * @example
+ * UnifiedFilterSidebar();
+ */
 
 export function UnifiedFilterSidebar({
   sections,
@@ -272,6 +324,7 @@ export function UnifiedFilterSidebar({
                 onChange={(e) =>
                   handlePendingChange(field.key, {
                     ...value,
+                    /** From */
                     from: e.target.value,
                   })
                 }
@@ -284,6 +337,7 @@ export function UnifiedFilterSidebar({
                 onChange={(e) =>
                   handlePendingChange(field.key, {
                     ...value,
+                    /** To */
                     to: e.target.value,
                   })
                 }
@@ -303,6 +357,7 @@ export function UnifiedFilterSidebar({
                   onChange={(e) =>
                     handlePendingChange(field.key, {
                       ...value,
+                      /** Min */
                       min: e.target.value,
                     })
                   }
@@ -319,6 +374,7 @@ export function UnifiedFilterSidebar({
                   onChange={(e) =>
                     handlePendingChange(field.key, {
                       ...value,
+                      /** Max */
                       max: e.target.value,
                     })
                   }
@@ -332,6 +388,7 @@ export function UnifiedFilterSidebar({
             </div>
           );
 
+        /** Default */
         default:
           return null;
       }
@@ -357,6 +414,7 @@ export function UnifiedFilterSidebar({
               if (filteredOptions.length > 0) {
                 return {
                   ...field,
+                  /** Options */
                   options: filteredOptions,
                   _highlighted: true,
                 };
@@ -372,6 +430,7 @@ export function UnifiedFilterSidebar({
         if (filteredFields.length > 0) {
           return {
             ...section,
+            /** Fields */
             fields: filteredFields,
             _highlighted: sectionMatches,
           };

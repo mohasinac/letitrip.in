@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/coupons/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import CouponForm from "@/components/seller/CouponForm";
@@ -14,6 +23,26 @@ export default function CreateCouponPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFormFE} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFormFE} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (data: CouponFormFE) => {
     try {
       setIsSubmitting(true);
@@ -25,7 +54,9 @@ export default function CreateCouponPage() {
       router.push(`/seller/coupons/${newCoupon.code}/edit`);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerCouponCreate.handleSubmit",
+        /** Metadata */
         metadata: { couponData: data },
       });
       toast.error(

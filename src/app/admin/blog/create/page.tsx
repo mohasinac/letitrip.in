@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/blog/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BasicInfoStep } from "@/components/admin/blog-wizard/BasicInfoStep";
@@ -29,9 +38,13 @@ import { toast } from "sonner";
 
 const STEPS = [
   {
+    /** Id */
     id: 1,
+    /** Name */
     name: "Basic Info",
+    /** Icon */
     icon: FileText,
+    /** Description */
     description: "Title, slug & excerpt",
   },
   { id: 2, name: "Media", icon: ImageIcon, description: "Featured image" },
@@ -43,6 +56,7 @@ export default function CreateBlogPostPage() {
   const router = useRouter();
   const { isAdmin } = useAuth();
   const { execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "CreateBlogPostPage.handleSubmit" });
       toast.error("Failed to create blog post");
@@ -54,13 +68,21 @@ export default function CreateBlogPostPage() {
 
   // Form state
   const [formData, setFormData] = useState<BlogFormData>({
+    /** Title */
     title: "",
+    /** Slug */
     slug: "",
+    /** Excerpt */
     excerpt: "",
+    /** Content */
     content: "",
+    /** Category */
     category: "",
+    /** Tags */
     tags: [],
+    /** Status */
     status: "draft",
+    /** Featured */
     featured: false,
   });
 
@@ -68,6 +90,24 @@ export default function CreateBlogPostPage() {
   const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
     useMediaUploadWithCleanup();
   const uploadedUrls = getUploadedUrls();
+
+  /**
+   * Handles change event
+   *
+   * @param {keyof BlogFormData} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {keyof BlogFormData} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {any} The handlechange result
+   */
 
   const handleChange = (field: keyof BlogFormData, value: unknown) => {
     setFormData((prev: BlogFormData) => ({
@@ -79,6 +119,26 @@ export default function CreateBlogPostPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -87,6 +147,7 @@ export default function CreateBlogPostPage() {
     if (!file.type.startsWith("image/")) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage: "Please select a valid image file",
       }));
       return;
@@ -95,6 +156,7 @@ export default function CreateBlogPostPage() {
     if (file.size > 5 * 1024 * 1024) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage: "Image size must be less than 5MB",
       }));
       return;
@@ -106,11 +168,32 @@ export default function CreateBlogPostPage() {
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage:
           error instanceof Error ? error.message : "Failed to upload image",
       }));
     }
   };
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates step
+   *
+   * @param {number} step - The step
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -134,16 +217,64 @@ export default function CreateBlogPostPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   */
+
   const nextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
     }
   };
 
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const prevStep = () => {
     setErrors({});
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {"draft" | "published"} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {"draft" | "published"} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (status: "draft" | "published") => {
     if (!validateStep(currentStep)) return;
@@ -154,7 +285,9 @@ export default function CreateBlogPostPage() {
       await blogService.create({
         ...formData,
         status,
+        /** Featured Image */
         featuredImage: uploadedUrls[0],
+        /** Published At */
         publishedAt: status === "published" ? new Date() : undefined,
       });
 
@@ -168,6 +301,18 @@ export default function CreateBlogPostPage() {
       setLoading(false);
     }
   };
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
 
   const handleCancel = () => {
     if (formData.title || formData.content || uploadedUrls.length > 0) {

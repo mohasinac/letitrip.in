@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/auctions/[slug]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PageState } from "@/components/common/PageState";
@@ -36,19 +45,47 @@ export default function EditAuctionPage() {
     });
   }, [slug, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {any} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {any} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
       setSubmitError("");
 
       const updateData: any = {
+        /** Name */
         name: data.name,
+        /** Slug */
         slug: data.slug,
+        /** Description */
         description: data.description,
+        /** Starting Bid */
         startingBid: data.startingBid,
+        /** Reserve Price */
         reservePrice: data.reservePrice,
+        /** Start Time */
         startTime: data.startTime,
+        /** End Time */
         endTime: data.endTime,
+        /** Status */
         status: data.status,
       };
 
@@ -65,7 +102,9 @@ export default function EditAuctionPage() {
       router.push("/seller/auctions");
     } catch (err: any) {
       logError(err as Error, {
+        /** Component */
         component: "AuctionEdit.updateAuction",
+        /** Metadata */
         metadata: { slug, auctionId: auction?.id },
       });
       setSubmitError(err.message || "Failed to update auction");

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/BlogCard
+ * @description This file contains the BlogCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -7,29 +16,79 @@ import { Calendar, User, Clock, Eye, Heart, Tag } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
 import { safeToISOString } from "@/lib/date-utils";
 
+/**
+ * BlogCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogCardProps
+ */
 export interface BlogCardProps {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Slug */
   slug: string;
+  /** Excerpt */
   excerpt: string;
+  /** Featured Image */
   featuredImage?: string;
+  /** Author */
   author: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Avatar */
     avatar?: string;
   };
+  /** Category */
   category: string;
+  /** Tags */
   tags?: string[];
+  /** Published At */
   publishedAt?: Date | string;
+  /** Views */
   views?: number;
+  /** Likes */
   likes?: number;
+  /** Featured */
   featured?: boolean;
   readTime?: number; // in minutes
+  /** Compact */
   compact?: boolean;
+  /** On Like */
   onLike?: (id: string) => void;
+  /** Is Liked */
   isLiked?: boolean;
 }
 
+/**
+ * Performs blog card operation
+ *
+ * @returns {any} The blogcard result
+ *
+ * @example
+ * BlogCard();
+ */
+
+/**
+ * B
+ * @constant
+ */
+/**
+ * Performs blog card operation
+ *
+ * @returns {any} The blogcard result
+ *
+ * @example
+ * BlogCard();
+ */
+
+/**
+ * B
+ * @constant
+ */
 export const BlogCard: React.FC<BlogCardProps> = ({
   id,
   title,
@@ -50,6 +109,22 @@ export const BlogCard: React.FC<BlogCardProps> = ({
 }) => {
   const publishDate =
     typeof publishedAt === "string" ? new Date(publishedAt) : publishedAt;
+
+  /**
+   * Handles like event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlelike result
+   */
+
+  /**
+   * Handles like event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlelike result
+   */
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/checkout/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { VerificationGate } from "@/components/auth/VerificationGate";
@@ -27,18 +36,37 @@ import { useEffect, useMemo, useState } from "react";
 
 declare global {
   interface Window {
+    /** Razorpay */
     Razorpay: any;
   }
 }
 
+/**
+ * CheckoutStep type
+ * 
+ * @typedef {Object} CheckoutStep
+ * @description Type definition for CheckoutStep
+ */
 type CheckoutStep = "address" | "payment" | "review";
 
+/**
+ * ShopGroup interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopGroup
+ */
 interface ShopGroup {
+  /** Shop Id */
   shopId: string;
+  /** Shop Name */
   shopName: string;
+  /** Items */
   items: any[];
+  /** Coupon */
   coupon?: {
+    /** Code */
     code: string;
+    /** Discount Amount */
     discountAmount: number;
   } | null;
 }
@@ -74,9 +102,13 @@ export default function CheckoutPage() {
     cart.items.forEach((item: any) => {
       if (!groups[item.shopId]) {
         groups[item.shopId] = {
+          /** Shop Id */
           shopId: item.shopId,
+          /** Shop Name */
           shopName: item.shopName || "Unknown Shop",
+          /** Items */
           items: [],
+          /** Coupon */
           coupon: shopCoupons[item.shopId] || null,
         };
       }
@@ -119,6 +151,22 @@ export default function CheckoutPage() {
 
   const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
 
+  /**
+   * Handles continue event
+   *
+   * @returns {any} The handlecontinue result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles continue event
+   *
+   * @returns {any} The handlecontinue result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleContinue = () => {
     // Clear previous errors
     setValidationErrors({});
@@ -150,6 +198,18 @@ export default function CheckoutPage() {
     }
   };
 
+  /**
+   * Handles back event
+   *
+   * @returns {any} The handleback result
+   */
+
+  /**
+   * Handles back event
+   *
+   * @returns {any} The handleback result
+   */
+
   const handleBack = () => {
     if (currentStep === "payment") {
       setCurrentStep("address");
@@ -157,6 +217,28 @@ export default function CheckoutPage() {
       setCurrentStep("payment");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   * @param {string} code - The code
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleApplyCoupon = async (shopId: string, code: string) => {
     try {
@@ -181,12 +263,34 @@ export default function CheckoutPage() {
       }));
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CheckoutPage.handleApplyCoupon",
+        /** Metadata */
         metadata: { shopId, code },
       });
       setError(error.message || "Failed to apply coupon. Please try again.");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} shopId - shop identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleRemoveCoupon = async (shopId: string) => {
     try {
@@ -198,12 +302,30 @@ export default function CheckoutPage() {
       });
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CheckoutPage.handleRemoveCoupon",
+        /** Metadata */
         metadata: { shopId },
       });
       setError(error.message || "Failed to remove coupon.");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handlePlaceOrder = async () => {
     try {
@@ -220,14 +342,21 @@ export default function CheckoutPage() {
 
       const orderData = {
         shippingAddressId,
+        /** Billing Address Id */
         billingAddressId: useSameAddress ? shippingAddressId : billingAddressId,
         paymentMethod,
+        /** Shop Orders */
         shopOrders: shopGroups.map((shop) => ({
+          /** Shop Id */
           shopId: shop.shopId,
+          /** Shop Name */
           shopName: shop.shopName,
+          /** Items */
           items: shop.items,
+          /** Coupon Code */
           couponCode: shop.coupon?.code,
         })),
+        /** Notes */
         notes: notes || undefined,
       };
 
@@ -244,12 +373,18 @@ export default function CheckoutPage() {
         // Initialize Razorpay
         const orderIds = result.orders.map((o: any) => o.id);
         const options = {
+          /** Key */
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "test_key",
+          /** Amount */
           amount: result.amount,
+          /** Currency */
           currency: result.currency,
+          /** Name */
           name: "Letitrip",
+          /** Description */
           description: `${result.orders.length} order(s) - Total ₹${result.total}`,
           order_id: result.razorpay_order_id,
+          /** Handler */
           handler: async function (response: any) {
             try {
               await checkoutService.verifyPayment({
@@ -265,7 +400,9 @@ export default function CheckoutPage() {
               );
             } catch (error: any) {
               logError(error as Error, {
+                /** Component */
                 component: "CheckoutPage.razorpayHandler",
+                /** Metadata */
                 metadata: {
                   orderIds,
                   razorpay_order_id: response.razorpay_order_id,
@@ -278,14 +415,21 @@ export default function CheckoutPage() {
               setProcessing(false);
             }
           },
+          /** Prefill */
           prefill: {
+            /** Name */
             name: user?.fullName || user?.email,
+            /** Email */
             email: user?.email,
           },
+          /** Theme */
           theme: {
+            /** Color */
             color: "#3B82F6",
           },
+          /** Modal */
           modal: {
+            /** Ondismiss */
             ondismiss: function () {
               setError(
                 "Payment was cancelled. Your order has not been placed.",
@@ -298,7 +442,9 @@ export default function CheckoutPage() {
         const razorpay = new window.Razorpay(options);
         razorpay.on("payment.failed", function (response: any) {
           logError(new Error("Payment failed"), {
+            /** Component */
             component: "CheckoutPage.razorpayPaymentFailed",
+            /** Metadata */
             metadata: { error: response.error },
           });
           setError(
@@ -315,7 +461,9 @@ export default function CheckoutPage() {
       }
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CheckoutPage.handlePlaceOrder",
+        /** Metadata */
         metadata: {
           shippingAddressId,
           paymentMethod,

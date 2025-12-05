@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/SellerLayoutClient
+ * @description This file contains the SellerLayoutClient component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -8,9 +17,41 @@ import {
   sellerMobileNavItems,
 } from "@/components/layout/MobileNavRow";
 
+/**
+ * SellerLayoutClientProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SellerLayoutClientProps
+ */
 interface SellerLayoutClientProps {
+  /** Children */
   children: React.ReactNode;
 }
+
+/**
+ * Function: Seller Layout Client
+ */
+/**
+ * Performs seller layout client operation
+ *
+ * @param {SellerLayoutClientProps} { children } - The { children }
+ *
+ * @returns {any} The sellerlayoutclient result
+ *
+ * @example
+ * SellerLayoutClient({ children });
+ */
+
+/**
+ * Performs seller layout client operation
+ *
+ * @param {SellerLayoutClientProps} { children } - The { children }
+ *
+ * @returns {any} The sellerlayoutclient result
+ *
+ * @example
+ * SellerLayoutClient({ children });
+ */
 
 export function SellerLayoutClient({ children }: SellerLayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

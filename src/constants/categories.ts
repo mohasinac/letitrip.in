@@ -1,16 +1,37 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/constants/categories
+ * @description This file contains functionality related to categories
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Product Categories Configuration
  * Main product lines and collectibles we sell
  */
 
+/**
+ * Product Category interface
+ * @interface ProductCategory
+ */
 export interface ProductCategory {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Description */
   description: string;
+  /** Icon */
   icon: string;
+  /** Keywords */
   keywords: string[];
+  /** Featured */
   featured: boolean;
+  /** Subcategories */
   subcategories?: string[];
 }
 
@@ -19,12 +40,18 @@ export interface ProductCategory {
  */
 export const PRODUCT_CATEGORIES: ProductCategory[] = [
   {
+    /** Id */
     id: "beyblades",
+    /** Name */
     name: "Beyblades",
+    /** Slug */
     slug: "beyblades",
+    /** Description */
     description:
       "Authentic Beyblades from Japan - Takara Tomy originals, burst series, metal fusion, and more",
+    /** Icon */
     icon: "circle-dot",
+    /** Keywords */
     keywords: [
       "beyblades",
       "beyblade burst",
@@ -35,7 +62,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "beyblade parts",
       "authentic beyblades India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Beyblade Burst",
       "Beyblade X",
@@ -46,12 +75,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "pokemon-tcg",
+    /** Name */
     name: "Pokemon TCG",
+    /** Slug */
     slug: "pokemon-tcg",
+    /** Description */
     description:
       "Official Pokemon Trading Card Game cards - booster packs, elite trainer boxes, collections, and singles",
+    /** Icon */
     icon: "sparkles",
+    /** Keywords */
     keywords: [
       "Pokemon cards",
       "Pokemon TCG",
@@ -62,7 +97,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "Pokemon card singles",
       "authentic Pokemon cards India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Booster Packs",
       "Elite Trainer Boxes",
@@ -73,12 +110,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "yugioh-tcg",
+    /** Name */
     name: "Yu-Gi-Oh! TCG",
+    /** Slug */
     slug: "yugioh-tcg",
+    /** Description */
     description:
       "Original Yu-Gi-Oh! Trading Card Game - booster packs, structure decks, tins, and rare cards",
+    /** Icon */
     icon: "zap",
+    /** Keywords */
     keywords: [
       "Yu-Gi-Oh cards",
       "Yu-Gi-Oh TCG",
@@ -89,7 +132,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "Yu-Gi-Oh card singles",
       "authentic Yu-Gi-Oh cards India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Booster Packs",
       "Structure Decks",
@@ -100,12 +145,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "transformers",
+    /** Name */
     name: "Transformers",
+    /** Slug */
     slug: "transformers",
+    /** Description */
     description:
       "Authentic Transformers action figures - generations, studio series, masterpiece, and more",
+    /** Icon */
     icon: "box",
+    /** Keywords */
     keywords: [
       "Transformers toys",
       "Transformers action figures",
@@ -116,7 +167,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "Transformers masterpiece",
       "authentic Transformers India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Studio Series",
       "Generations",
@@ -127,12 +180,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "hot-wheels",
+    /** Name */
     name: "Hot Wheels",
+    /** Slug */
     slug: "hot-wheels",
+    /** Description */
     description:
       "Die-cast Hot Wheels cars - premium editions, collector sets, race tracks, and rare releases",
+    /** Icon */
     icon: "car",
+    /** Keywords */
     keywords: [
       "Hot Wheels",
       "Hot Wheels cars",
@@ -143,7 +202,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "die-cast cars",
       "Hot Wheels India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Basic Cars",
       "Premium Series",
@@ -154,12 +215,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "stickers",
+    /** Name */
     name: "Stickers",
+    /** Slug */
     slug: "stickers",
+    /** Description */
     description:
       "Collectible stickers - anime, gaming, pop culture, holographic, and custom designs",
+    /** Icon */
     icon: "star",
+    /** Keywords */
     keywords: [
       "collectible stickers",
       "anime stickers",
@@ -170,7 +237,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "Japanese stickers",
       "sticker packs India",
     ],
+    /** Featured */
     featured: true,
+    /** Subcategories */
     subcategories: [
       "Anime Stickers",
       "Gaming Stickers",
@@ -181,12 +250,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "crafts",
+    /** Name */
     name: "Crafts & Supplies",
+    /** Slug */
     slug: "crafts",
+    /** Description */
     description:
       "Craft supplies and DIY materials - Japanese washi tape, origami, art supplies, and more",
+    /** Icon */
     icon: "palette",
+    /** Keywords */
     keywords: [
       "craft supplies",
       "DIY materials",
@@ -197,7 +272,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "hobby supplies",
       "imported craft materials India",
     ],
+    /** Featured */
     featured: false,
+    /** Subcategories */
     subcategories: [
       "Washi Tape",
       "Origami Supplies",
@@ -208,12 +285,18 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     ],
   },
   {
+    /** Id */
     id: "collectibles",
+    /** Name */
     name: "Other Collectibles",
+    /** Slug */
     slug: "collectibles",
+    /** Description */
     description:
       "Various collectibles - figurines, model kits, accessories, and limited editions",
+    /** Icon */
     icon: "gift",
+    /** Keywords */
     keywords: [
       "collectibles",
       "figurines",
@@ -224,7 +307,9 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       "imported collectibles",
       "rare collectibles India",
     ],
+    /** Featured */
     featured: false,
+    /** Subcategories */
     subcategories: [
       "Figurines",
       "Model Kits",
@@ -239,6 +324,24 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
 /**
  * Get featured categories only
  */
+/**
+ * Retrieves featured categories
+ *
+ * @returns {any} The featuredcategories result
+ *
+ * @example
+ * getFeaturedCategories();
+ */
+
+/**
+ * Retrieves featured categories
+ *
+ * @returns {any} The featuredcategories result
+ *
+ * @example
+ * getFeaturedCategories();
+ */
+
 export const getFeaturedCategories = () => {
   return PRODUCT_CATEGORIES.filter((cat) => cat.featured);
 };
@@ -246,6 +349,28 @@ export const getFeaturedCategories = () => {
 /**
  * Get category by slug
  */
+/**
+ * Retrieves category by slug
+ *
+ * @param {string} slug - URL-friendly identifier
+ *
+ * @returns {string} The categorybyslug result
+ *
+ * @example
+ * getCategoryBySlug("example");
+ */
+
+/**
+ * Retrieves category by slug
+ *
+ * @param {string} slug - URL-friendly identifier
+ *
+ * @returns {string} The categorybyslug result
+ *
+ * @example
+ * getCategoryBySlug("example");
+ */
+
 export const getCategoryBySlug = (slug: string) => {
   return PRODUCT_CATEGORIES.find((cat) => cat.slug === slug);
 };
@@ -253,6 +378,24 @@ export const getCategoryBySlug = (slug: string) => {
 /**
  * Get all category slugs for sitemap generation
  */
+/**
+ * Retrieves all category slugs
+ *
+ * @returns {any} The allcategoryslugs result
+ *
+ * @example
+ * getAllCategorySlugs();
+ */
+
+/**
+ * Retrieves all category slugs
+ *
+ * @returns {any} The allcategoryslugs result
+ *
+ * @example
+ * getAllCategorySlugs();
+ */
+
 export const getAllCategorySlugs = () => {
   return PRODUCT_CATEGORIES.map((cat) => cat.slug);
 };
@@ -261,20 +404,25 @@ export const getAllCategorySlugs = () => {
  * SEO-optimized category descriptions for meta tags
  */
 export const CATEGORY_META_DESCRIPTIONS: Record<string, string> = {
+  /** Beyblades */
   beyblades:
     "Buy authentic Beyblades in India - Takara Tomy originals, Burst series, Metal Fusion, stadiums & launchers. Fast delivery, no customs charges, COD available.",
   "pokemon-tcg":
     "Buy Pokemon TCG cards in India - booster packs, elite trainer boxes, rare cards & singles. Authentic Pokemon cards, fast delivery, no customs charges.",
   "yugioh-tcg":
     "Buy Yu-Gi-Oh! TCG cards in India - booster packs, structure decks, tins & rare cards. Authentic Yu-Gi-Oh cards, fast delivery, no customs charges.",
+  /** Transformers */
   transformers:
     "Buy authentic Transformers in India - Studio Series, Generations, Masterpiece & more. Hasbro & Takara originals, fast delivery, no customs charges.",
   "hot-wheels":
     "Buy Hot Wheels cars in India - premium editions, collector sets, track sets & rare releases. Authentic die-cast cars, fast delivery, no customs charges.",
+  /** Stickers */
   stickers:
     "Buy collectible stickers in India - anime, gaming, holographic & vinyl stickers. Japanese imports, custom designs, fast delivery, no customs charges.",
+  /** Crafts */
   crafts:
     "Buy craft supplies in India - Japanese washi tape, origami, art supplies & DIY materials. Imported hobby supplies, fast delivery, no customs charges.",
+  /** Collectibles */
   collectibles:
     "Buy collectibles in India - figurines, model kits, anime figures & limited editions. Authentic imported collectibles, fast delivery, no customs charges.",
 };

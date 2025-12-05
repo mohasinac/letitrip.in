@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/otp.service
+ * @description This file contains service functions for otp operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 
 /**
@@ -11,28 +20,56 @@ import { apiService } from "./api.service";
  * - Rate limiting handled by backend
  */
 
+/**
+ * Send O T P Response interface
+ * @interface SendOTPResponse
+ */
 export interface SendOTPResponse {
+  /** Success */
   success: boolean;
+  /** Message */
   message?: string;
+  /** Otp Id */
   otpId?: string;
+  /** Expires At */
   expiresAt?: string;
+  /** Already Verified */
   alreadyVerified?: boolean;
+  /** Error */
   error?: string;
 }
 
+/**
+ * VerifyOTPResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VerifyOTPResponse
+ */
 export interface VerifyOTPResponse {
+  /** Success */
   success: boolean;
+  /** Message */
   message: string;
+  /** Error */
   error?: string;
 }
 
+/**
+ * OTPClientService class
+ * 
+ * @class
+ * @description Description of OTPClientService class functionality
+ */
 class OTPClientService {
   /**
    * Send OTP - generic method
    */
   async sendOTP(params: {
+    /** User Id */
     userId: string;
+    /** Type */
     type: "email" | "phone";
+    /** Destination */
     destination: string;
   }): Promise<any> {
     if (params.type === "email") {
@@ -46,9 +83,13 @@ class OTPClientService {
    * Verify OTP - generic method
    */
   async verifyOTP(params: {
+    /** User Id */
     userId: string;
+    /** Type */
     type: "email" | "phone";
+    /** Destination */
     destination: string;
+    /** Otp */
     otp: string;
   }): Promise<VerifyOTPResponse> {
     if (params.type === "email") {

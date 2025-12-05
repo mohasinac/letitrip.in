@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/search/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -12,6 +21,21 @@ import { productsService } from "@/services/products.service";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+
+/**
+ * Function: Search Content
+ */
+/**
+ * Performs search content operation
+ *
+ * @returns {any} The searchcontent result
+ */
+
+/**
+ * Performs search content operation
+ *
+ * @returns {any} The searchcontent result
+ */
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -31,15 +55,22 @@ function SearchContent() {
   const [totalCount, setTotalCount] = useState(0);
 
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: results,
+    /** Set Data */
     setData: setResults,
     execute,
   } = useLoadingState<any>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "SearchPage.performSearch",
+        /** Metadata */
         metadata: { query },
       });
     },
@@ -55,28 +86,74 @@ function SearchContent() {
     }
   }, [query, activeTab, contentType, page, pageSize]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} searchQuery - The search query
+   * @param {number} currentPage - The current page
+   * @param {number} currentPageSize - The current page size
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const performSearch = async (
+    /** Search Query */
     searchQuery: string,
+    /** Current Page */
     currentPage: number,
+    /** Current Page Size */
     currentPageSize: number,
   ) => {
     await execute(async () => {
       const response = await productsService.list({
+        /** Search */
         search: searchQuery,
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: currentPageSize,
       });
       // For now, just return products - proper multi-type search would need separate services
       const searchResults = {
+        /** Products */
         products: response?.data || [],
+        /** Shops */
         shops: [],
+        /** Categories */
         categories: [],
+        /** Total */
         total: response?.count || 0,
       };
       setTotalCount(response?.count || 0);
       return searchResults;
     });
   };
+
+  /**
+   * Handles page change event
+   *
+   * @param {number} newPage - The new page
+   *
+   * @returns {number} The handlepagechange result
+   */
+
+  /**
+   * Handles page change event
+   *
+   * @param {number} newPage - The new page
+   *
+   * @returns {number} The handlepagechange result
+   */
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -85,6 +162,22 @@ function SearchContent() {
     router.push(`/search?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  /**
+   * Handles page size change event
+   *
+   * @param {number} newPageSize - The new page size
+   *
+   * @returns {number} The handlepagesizechange result
+   */
+
+  /**
+   * Handles page size change event
+   *
+   * @param {number} newPageSize - The new page size
+   *
+   * @returns {number} The handlepagesizechange result
+   */
 
   const handlePageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
@@ -98,14 +191,20 @@ function SearchContent() {
   const tabs = [
     { id: "all", label: "All", count: results?.total || 0 },
     {
+      /** Id */
       id: "products",
+      /** Label */
       label: "Products",
+      /** Count */
       count: results?.products?.length || 0,
     },
     { id: "shops", label: "Shops", count: results?.shops?.length || 0 },
     {
+      /** Id */
       id: "categories",
+      /** Label */
       label: "Categories",
+      /** Count */
       count: results?.categories?.length || 0,
     },
   ];
@@ -168,7 +267,9 @@ function SearchContent() {
             title="Enter a search term"
             description="Type something in the search bar to find products, shops, auctions, and more."
             action={{
+              /** Label */
               label: "Browse Categories",
+              /** On Click */
               onClick: () => router.push("/categories"),
             }}
           />
@@ -230,7 +331,9 @@ function SearchContent() {
             title="No results found"
             description={`We couldn't find any results for "${query}". Try different keywords or browse our categories.`}
             action={{
+              /** Label */
               label: "Browse Categories",
+              /** On Click */
               onClick: () => router.push("/categories"),
             }}
           />

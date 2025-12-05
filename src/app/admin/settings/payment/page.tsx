@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/payment/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -39,15 +48,21 @@ export default function AdminPaymentSettingsPage() {
   const [payuSaltModified, setPayuSaltModified] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: settings,
+    /** Set Data */
     setData: setSettings,
     execute,
   } = useLoadingState<PaymentSettings | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AdminPaymentSettings.loadSettings",
       });
     },
@@ -57,12 +72,48 @@ export default function AdminPaymentSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     await execute(async () => {
       const data = await settingsService.getPayment();
       return data;
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,13 +157,31 @@ export default function AdminPaymentSettingsPage() {
     }
   };
 
+  /**
+   * Updates existing razorpay
+   *
+   * @param {keyof PaymentSettings["razorpay"]} field - The field
+   * @param {string | boolean} value - The value
+   *
+   * @returns {string} The updaterazorpay result
+   */
+
+  /**
+   * Updates existing razorpay
+   *
+   * @returns {string} The updaterazorpay result
+   */
+
   const updateRazorpay = (
+    /** Field */
     field: keyof PaymentSettings["razorpay"],
+    /** Value */
     value: string | boolean
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Razorpay */
       razorpay: {
         ...settings.razorpay,
         [field]: value,
@@ -123,13 +192,31 @@ export default function AdminPaymentSettingsPage() {
     }
   };
 
+  /**
+   * Updates existing payu
+   *
+   * @param {keyof PaymentSettings["payu"]} field - The field
+   * @param {string | boolean} value - The value
+   *
+   * @returns {string} The updatepayu result
+   */
+
+  /**
+   * Updates existing payu
+   *
+   * @returns {string} The updatepayu result
+   */
+
   const updatePayu = (
+    /** Field */
     field: keyof PaymentSettings["payu"],
+    /** Value */
     value: string | boolean
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Payu */
       payu: {
         ...settings.payu,
         [field]: value,
@@ -140,13 +227,31 @@ export default function AdminPaymentSettingsPage() {
     }
   };
 
+  /**
+   * Updates existing cod
+   *
+   * @param {keyof PaymentSettings["cod"]} field - The field
+   * @param {boolean | number} value - The value
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Updates existing cod
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
   const updateCod = (
+    /** Field */
     field: keyof PaymentSettings["cod"],
+    /** Value */
     value: boolean | number
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Cod */
       cod: {
         ...settings.cod,
         [field]: value,
@@ -154,8 +259,25 @@ export default function AdminPaymentSettingsPage() {
     });
   };
 
+  /**
+   * Updates existing currency
+   *
+   * @param {"currency" | "currencySymbol"} field - The field
+   * @param {string} value - The value
+   *
+   * @returns {string} The updatecurrency result
+   */
+
+  /**
+   * Updates existing currency
+   *
+   * @returns {string} The updatecurrency result
+   */
+
   const updateCurrency = (
+    /** Field */
     field: "currency" | "currencySymbol",
+    /** Value */
     value: string
   ) => {
     if (!settings) return;
@@ -201,21 +323,33 @@ export default function AdminPaymentSettingsPage() {
 
   const tabs = [
     {
+      /** Id */
       id: "razorpay" as const,
+      /** Label */
       label: "Razorpay",
+      /** Icon */
       icon: "💳",
+      /** Enabled */
       enabled: settings.razorpay.enabled,
     },
     {
+      /** Id */
       id: "payu" as const,
+      /** Label */
       label: "PayU",
+      /** Icon */
       icon: "🏦",
+      /** Enabled */
       enabled: settings.payu.enabled,
     },
     {
+      /** Id */
       id: "cod" as const,
+      /** Label */
       label: "Cash on Delivery",
+      /** Icon */
       icon: "💵",
+      /** Enabled */
       enabled: settings.cod.enabled,
     },
     { id: "currency" as const, label: "Currency", icon: "₹", enabled: true },
@@ -630,15 +764,34 @@ export default function AdminPaymentSettingsPage() {
   );
 }
 
+/**
+ * Function: Payment Method Status
+ */
+/**
+ * Performs payment method status operation
+ *
+ * @returns {any} The paymentmethodstatus result
+ */
+
+/**
+ * Performs payment method status operation
+ *
+ * @returns {any} The paymentmethodstatus result
+ */
+
 function PaymentMethodStatus({
   name,
   enabled,
   testMode,
   configured,
 }: {
+  /** Name */
   name: string;
+  /** Enabled */
   enabled: boolean;
+  /** Test Mode */
   testMode?: boolean;
+  /** Configured */
   configured: boolean;
 }) {
   return (

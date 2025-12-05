@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/Breadcrumb
+ * @description This file contains the Breadcrumb component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -6,9 +15,18 @@ import { ChevronRight, Home } from "lucide-react";
 import { useMemo } from "react";
 import { generateBreadcrumbSchema, generateJSONLD } from "@/lib/seo/schema";
 
+/**
+ * BreadcrumbItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BreadcrumbItem
+ */
 interface BreadcrumbItem {
+  /** Label */
   label: string;
+  /** Href */
   href: string;
+  /** Is Current Page */
   isCurrentPage?: boolean;
 }
 
@@ -69,8 +87,11 @@ export default function Breadcrumb() {
 
     // Always add home
     items.push({
+      /** Label */
       label: "Home",
+      /** Href */
       href: "/",
+      /** Is Current Page */
       isCurrentPage: false,
     });
 
@@ -93,7 +114,9 @@ export default function Breadcrumb() {
 
       items.push({
         label,
+        /** Href */
         href: currentPath,
+        /** Is Current Page */
         isCurrentPage: isLast,
       });
     });
@@ -107,7 +130,9 @@ export default function Breadcrumb() {
 
     return generateBreadcrumbSchema(
       breadcrumbs.map((item) => ({
+        /** Name */
         name: item.label,
+        /** Url */
         url: item.href,
       })),
     );

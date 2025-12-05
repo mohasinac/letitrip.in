@@ -1,9 +1,39 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-wizard/OptionalDetailsStep
+ * @description This file contains the OptionalDetailsStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { Price } from "@/components/common/values/Price";
 import type { OptionalStepProps } from "./types";
+
+/**
+ * Function: Optional Details Step
+ */
+/**
+ * Performs optional details step operation
+ *
+ * @returns {any} The optionaldetailsstep result
+ *
+ * @example
+ * OptionalDetailsStep();
+ */
+
+/**
+ * Performs optional details step operation
+ *
+ * @returns {any} The optionaldetailsstep result
+ *
+ * @example
+ * OptionalDetailsStep();
+ */
 
 export function OptionalDetailsStep({
   formData,
@@ -55,6 +85,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Description */
                   description: e.target.value,
                 })
               }
@@ -67,6 +98,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Condition */
                   condition: e.target.value as any,
                 })
               }
@@ -87,6 +119,7 @@ export function OptionalDetailsStep({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Compare At Price */
                     compareAtPrice: parseFloat(e.target.value) || 0,
                   })
                 }
@@ -101,6 +134,7 @@ export function OptionalDetailsStep({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Weight */
                     weight: parseFloat(e.target.value) || 0,
                   })
                 }
@@ -135,6 +169,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Shipping Class */
                   shippingClass: e.target.value as any,
                 })
               }
@@ -153,6 +188,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Return Policy */
                   returnPolicy: e.target.value,
                 })
               }
@@ -166,6 +202,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Warranty Info */
                   warrantyInfo: e.target.value,
                 })
               }
@@ -217,6 +254,7 @@ export function OptionalDetailsStep({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Meta Description */
                     metaDescription: e.target.value,
                   })
                 }
@@ -234,6 +272,7 @@ export function OptionalDetailsStep({
               onChange={(e) =>
                 setFormData({
                   ...formData,
+                  /** Status */
                   status: e.target.value as any,
                 })
               }

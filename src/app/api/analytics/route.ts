@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/analytics/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../lib/session";
 import { Collections } from "../lib/firebase/collections";
@@ -10,6 +19,32 @@ import { safeToISOString } from "@/lib/date-utils";
  * - start_date: ISO date string
  * - end_date: ISO date string
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -37,7 +72,9 @@ export async function GET(request: NextRequest) {
     if (role === "seller" && !shopId) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "shop_id is required",
         },
         { status: 400 },
@@ -52,14 +89,23 @@ export async function GET(request: NextRequest) {
 
     // Build analytics data
     const analytics = {
+      /** Revenue */
       revenue: { total: 0, average: 0, trend: 0 },
+      /** Orders */
       orders: { total: 0, pending: 0, completed: 0, cancelled: 0 },
+      /** Products */
       products: { total: 0, active: 0, outOfStock: 0 },
+      /** Customers */
       customers: { total: 0, new: 0, returning: 0 },
+      /** Conversion Rate */
       conversionRate: 0,
+      /** Average Order Value */
       averageOrderValue: 0,
+      /** Sales Over Time */
       salesOverTime: [] as any[],
+      /** Top Products */
       topProducts: [] as any[],
+      /** Revenue By Category */
       revenueByCategory: [] as any[],
     };
 
@@ -158,6 +204,7 @@ export async function GET(request: NextRequest) {
       // Admin view - all shops
       const ordersSnapshot = await ordersQuery.limit(1000).get();
       const orders = ordersSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
         ...doc.data(),
       }));
@@ -211,6 +258,7 @@ export async function GET(request: NextRequest) {
         .get();
 
       const products = productsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
         ...doc.data(),
       }));
@@ -237,8 +285,11 @@ export async function GET(request: NextRequest) {
       orderItemsSnapshot.docs.forEach((doc: any) => {
         const item: any = doc.data();
         const existing = productSales.get(item.product_id) || {
+          /** Name */
           name: item.product_name || "Unknown",
+          /** Revenue */
           revenue: 0,
+          /** Quantity */
           quantity: 0,
         };
         existing.revenue += (item.price || 0) * (item.quantity || 0);
@@ -254,6 +305,7 @@ export async function GET(request: NextRequest) {
       // Admin view
       const productsSnapshot = await Collections.products().limit(1000).get();
       const products = productsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
         ...doc.data(),
       }));
@@ -275,14 +327,18 @@ export async function GET(request: NextRequest) {
         : 0;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: analytics,
     });
   } catch (error) {
     console.error("Error fetching analytics:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Failed to fetch analytics",
       },
       { status: 500 },

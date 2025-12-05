@@ -1,14 +1,55 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/homepage/SliderControl
+ * @description This file contains the SliderControl component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormLabel } from "@/components/forms/FormLabel";
 
+/**
+ * SliderControlProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SliderControlProps
+ */
 interface SliderControlProps {
+  /** Label */
   label: string;
+  /** Value */
   value: number;
+  /** Min */
   min: number;
+  /** Max */
   max: number;
+  /** On Change */
   onChange: (value: number) => void;
 }
+
+/**
+ * Function: Slider Control
+ */
+/**
+ * Performs slider control operation
+ *
+ * @returns {any} The slidercontrol result
+ *
+ * @example
+ * SliderControl();
+ */
+
+/**
+ * Performs slider control operation
+ *
+ * @returns {any} The slidercontrol result
+ *
+ * @example
+ * SliderControl();
+ */
 
 export function SliderControl({
   label,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/support-tickets/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -17,14 +26,31 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * AssignTicketData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AssignTicketData
+ */
 interface AssignTicketData {
+  /** Assigned To */
   assignedTo: string;
+  /** Notes */
   notes?: string;
 }
 
+/**
+ * ReplyToTicketData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReplyToTicketData
+ */
 interface ReplyToTicketData {
+  /** Message */
   message: string;
+  /** Attachments */
   attachments?: string[];
+  /** Is Internal */
   isInternal: boolean;
 }
 
@@ -35,6 +61,21 @@ export default function TicketDetailPage() {
     </AuthGuard>
   );
 }
+
+/**
+ * Function: Ticket Detail Content
+ */
+/**
+ * Performs ticket detail content operation
+ *
+ * @returns {any} The ticketdetailcontent result
+ */
+
+/**
+ * Performs ticket detail content operation
+ *
+ * @returns {any} The ticketdetailcontent result
+ */
 
 function TicketDetailContent() {
   const params = useParams();
@@ -48,16 +89,23 @@ function TicketDetailContent() {
   const [replying, setReplying] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: ticket,
+    /** Set Data */
     setData: setTicket,
     execute,
   } = useLoadingState<SupportTicketFE | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "SupportTicketDetail.loadTicket",
+        /** Metadata */
         metadata: { ticketId },
       });
     },
@@ -87,9 +135,39 @@ function TicketDetailContent() {
     scrollToBottom();
   }, [messages]);
 
+  /**
+   * Performs scroll to bottom operation
+   *
+   * @returns {Promise<any>} Promise resolving to scrolltobottom result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs scroll to bottom operation
+   *
+   * @returns {any} The scrolltobottom result
+   */
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadTicket = async () => {
     await execute(async () => {
@@ -99,6 +177,22 @@ function TicketDetailContent() {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadMessages = async () => {
     try {
       const response = await supportService.getMessages(ticketId, 1, 100);
@@ -107,6 +201,26 @@ function TicketDetailContent() {
       console.error("Failed to load messages:", err);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +237,9 @@ function TicketDetailContent() {
       }
 
       const replyData: ReplyToTicketData = {
+        /** Message */
         message: replyMessage,
+        /** Attachments */
         attachments: uploadedUrls.length > 0 ? uploadedUrls : undefined,
         isInternal,
       };
@@ -144,6 +260,22 @@ function TicketDetailContent() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAssign = async () => {
     if (!assignedTo.trim()) {
       toast.error("Please enter an agent ID to assign");
@@ -154,6 +286,7 @@ function TicketDetailContent() {
       setAssigning(true);
       const data: AssignTicketData = {
         assignedTo,
+        /** Notes */
         notes: assignNotes || undefined,
       };
       await supportService.assignTicket(ticketId, data);
@@ -166,6 +299,22 @@ function TicketDetailContent() {
       setAssigning(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleEscalate = async () => {
     if (!escalateReason.trim()) {
@@ -188,6 +337,26 @@ function TicketDetailContent() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {TicketStatus} newStatus - The new status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {TicketStatus} newStatus - The new status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleUpdateStatus = async (newStatus: TicketStatus) => {
     try {
       setUpdating(true);
@@ -200,6 +369,22 @@ function TicketDetailContent() {
       setUpdating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleClose = async () => {
     if (!confirm("Are you sure you want to close this ticket?")) return;
@@ -216,14 +401,62 @@ function TicketDetailContent() {
     }
   };
 
+  /**
+   * Handles file change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlefilechange result
+   */
+
+  /**
+   * Handles file change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlefilechange result
+   */
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setAttachments((prev) => [...prev, ...files]);
   };
 
+  /**
+   * Deletes attachment
+   *
+   * @param {number} index - The index
+   *
+   * @returns {string} The removeattachment result
+   */
+
+  /**
+   * Deletes attachment
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The removeattachment result
+   */
+
   const removeAttachment = (index: number) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
+
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
+
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -235,10 +468,27 @@ function TicketDetailContent() {
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "low":
         return "bg-green-100 text-green-800 border-green-200";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -250,10 +500,27 @@ function TicketDetailContent() {
         return "bg-green-100 text-green-800 border-green-200";
       case "closed":
         return "bg-gray-100 text-gray-800 border-gray-200";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+  /**
+   * Formats status
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The formatstatus result
+   */
+
+  /**
+   * Formats status
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The formatstatus result
+   */
 
   const formatStatus = (status: string) => {
     return status.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -496,6 +763,7 @@ function TicketDetailContent() {
               {ticket.attachments && ticket.attachments.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    /** Attachments */
                     Attachments:
                   </h4>
                   <div className="space-y-1">

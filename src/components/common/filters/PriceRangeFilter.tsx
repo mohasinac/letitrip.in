@@ -1,16 +1,59 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/filters/PriceRangeFilter
+ * @description This file contains the PriceRangeFilter component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
 
+/**
+ * PriceRangeFilterProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PriceRangeFilterProps
+ */
 export interface PriceRangeFilterProps {
+  /** Min */
   min?: number;
+  /** Max */
   max?: number;
+  /** Value */
   value?: { min?: string; max?: string };
+  /** On Change */
   onChange: (value: { min?: string; max?: string }) => void;
+  /** Currency */
   currency?: string;
+  /** Step */
   step?: number;
+  /** Placeholder */
   placeholder?: { min?: string; max?: string };
 }
+
+/**
+ * Function: Price Range Filter
+ */
+/**
+ * Performs price range filter operation
+ *
+ * @returns {any} The pricerangefilter result
+ *
+ * @example
+ * PriceRangeFilter();
+ */
+
+/**
+ * Performs price range filter operation
+ *
+ * @returns {any} The pricerangefilter result
+ *
+ * @example
+ * PriceRangeFilter();
+ */
 
 export function PriceRangeFilter({
   min = 0,
@@ -27,11 +70,43 @@ export function PriceRangeFilter({
     setLocalValue(value);
   }, [value]);
 
+  /**
+   * Handles min change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handleminchange result
+   */
+
+  /**
+   * Handles min change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handleminchange result
+   */
+
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = { ...localValue, min: e.target.value };
     setLocalValue(newValue);
     onChange(newValue);
   };
+
+  /**
+   * Handles max change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlemaxchange result
+   */
+
+  /**
+   * Handles max change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlemaxchange result
+   */
 
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = { ...localValue, max: e.target.value };

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/riplimit/transactions/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Transactions API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -20,6 +29,32 @@ import { NextRequest, NextResponse } from "next/server";
  * - page: Page number (default: 1)
  * - pageSize: Items per page (default: 20, max: 100)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     // Authenticate user
@@ -50,24 +85,34 @@ export async function GET(request: NextRequest) {
 
     const { transactions, total } = await getTransactionHistory(auth.user.uid, {
       type,
+      /** Limit */
       limit: query.pageSize,
+      /** Offset */
       offset: (query.page - 1) * query.pageSize,
     });
 
     const totalPages = Math.ceil(total / query.pageSize);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         transactions,
         total,
       },
+      /** Pagination */
       pagination: {
+        /** Page */
         page: query.page,
+        /** Page Size */
         pageSize: query.pageSize,
+        /** Total Count */
         totalCount: total,
         totalPages,
+        /** Has Next Page */
         hasNextPage: query.page < totalPages,
+        /** Has Previous Page */
         hasPreviousPage: query.page > 1,
       },
     });

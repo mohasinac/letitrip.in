@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/SearchBar
+ * @description This file contains the SearchBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -22,14 +31,31 @@ import {
   useState,
 } from "react";
 
+/**
+ * SearchBarRef interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SearchBarRef
+ */
 export interface SearchBarRef {
+  /** Focus Search */
   focusSearch: () => void;
+  /** Show */
   show: () => void;
+  /** Hide */
   hide: () => void;
 }
 
+/**
+ * SearchBarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SearchBarProps
+ */
 interface SearchBarProps {
+  /** Is Visible */
   isVisible?: boolean;
+  /** On Close */
   onClose?: () => void;
 }
 
@@ -68,6 +94,22 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
 
     // Close suggestions when clicking outside
     useEffect(() => {
+      /**
+       * Handles click outside event
+       *
+       * @param {MouseEvent} e - The e
+       *
+       * @returns {any} The handleclickoutside result
+       */
+
+      /**
+       * Handles click outside event
+       *
+       * @param {MouseEvent} e - The e
+       *
+       * @returns {any} The handleclickoutside result
+       */
+
       const handleClickOutside = (e: MouseEvent) => {
         if (
           searchBarRef.current &&
@@ -92,20 +134,41 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
     );
 
     useImperativeHandle(ref, () => ({
+      /** Focus Search */
       focusSearch: () => {
         searchInputRef.current?.focus();
         searchInputRef.current?.scrollIntoView({
+          /** Behavior */
           behavior: "smooth",
+          /** Block */
           block: "center",
         });
       },
+      /** Show */
       show: () => {
         searchInputRef.current?.focus();
       },
+      /** Hide */
       hide: () => {
         setSearchQuery("");
       },
     }));
+
+    /**
+     * Handles search event
+     *
+     * @param {React.FormEvent} e - The e
+     *
+     * @returns {any} The handlesearch result
+     */
+
+    /**
+     * Handles search event
+     *
+     * @param {React.FormEvent} e - The e
+     *
+     * @returns {any} The handlesearch result
+     */
 
     const handleSearch = (e: React.FormEvent) => {
       e.preventDefault();
@@ -130,6 +193,22 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       const searchUrl = `/search?${params.toString()}`;
       router.push(searchUrl);
     };
+
+    /**
+     * Handles key down event
+     *
+     * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlekeydown result
+     */
+
+    /**
+     * Handles key down event
+     *
+     * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+     *
+     * @returns {any} The handlekeydown result
+     */
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (!showSuggestions || suggestions.length === 0) {
@@ -168,10 +247,38 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       }
     };
 
+    /**
+     * Handles content type change event
+     *
+     * @param {ContentType} type - The type
+     *
+     * @returns {any} The handlecontenttypechange result
+     */
+
+    /**
+     * Handles content type change event
+     *
+     * @param {ContentType} type - The type
+     *
+     * @returns {any} The handlecontenttypechange result
+     */
+
     const handleContentTypeChange = (type: ContentType) => {
       setContentType(type);
       setShowSuggestions(false);
     };
+
+    /**
+     * Handles input focus event
+     *
+     * @returns {any} The handleinputfocus result
+     */
+
+    /**
+     * Handles input focus event
+     *
+     * @returns {any} The handleinputfocus result
+     */
 
     const handleInputFocus = () => {
       if (

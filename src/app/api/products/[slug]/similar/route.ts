@@ -1,9 +1,53 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/[slug]/similar/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/products/[slug]/similar - up to 10, diverse shops
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -65,7 +109,9 @@ export async function GET(
     return NextResponse.json({ success: true, data: results.slice(0, limit) });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.similar.GET",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(

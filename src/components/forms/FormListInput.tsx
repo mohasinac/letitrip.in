@@ -1,22 +1,69 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormListInput
+ * @description This file contains the FormListInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormListInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormListInputProps
+ */
 export interface FormListInputProps {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Placeholder */
   placeholder?: string;
+  /** Value */
   value: string[];
+  /** On Change */
   onChange: (value: string[]) => void;
+  /** Max Items */
   maxItems?: number;
+  /** Required */
   required?: boolean;
+  /** Disabled */
   disabled?: boolean;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Add Button Text */
   addButtonText?: string;
 }
+
+/**
+ * Function: Form List Input
+ */
+/**
+ * Performs form list input operation
+ *
+ * @returns {any} The formlistinput result
+ *
+ * @example
+ * FormListInput();
+ */
+
+/**
+ * Performs form list input operation
+ *
+ * @returns {any} The formlistinput result
+ *
+ * @example
+ * FormListInput();
+ */
 
 export function FormListInput({
   label,
@@ -34,6 +81,18 @@ export function FormListInput({
   const [inputValue, setInputValue] = useState("");
   const inputId = label?.toLowerCase().replace(/\s+/g, "-") || "list-input";
 
+  /**
+   * Handles add event
+   *
+   * @returns {any} The handleadd result
+   */
+
+  /**
+   * Handles add event
+   *
+   * @returns {any} The handleadd result
+   */
+
   const handleAdd = () => {
     const trimmedValue = inputValue.trim();
     if (!trimmedValue) return;
@@ -44,9 +103,41 @@ export function FormListInput({
     setInputValue("");
   };
 
+  /**
+   * Handles remove event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handleremove result
+   */
+
+  /**
+   * Handles remove event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handleremove result
+   */
+
   const handleRemove = (index: number) => {
     onChange(value.filter((_, i) => i !== index));
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

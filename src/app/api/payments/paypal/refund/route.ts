@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/paypal/refund/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PayPal Payment Refund API Route
  * POST /api/payments/paypal/refund
  *
@@ -12,23 +21,71 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * RefundPayPalPaymentRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RefundPayPalPaymentRequest
+ */
 interface RefundPayPalPaymentRequest {
+  /** Capture Id */
   captureId: string;
   amount?: number; // Optional for partial refunds
+  /** Currency */
   currency?: string;
+  /** Note */
   note?: string;
 }
 
+/**
+ * PayPalRefundResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PayPalRefundResponse
+ */
 interface PayPalRefundResponse {
+  /** Id */
   id: string;
+  /** Status */
   status: string;
+  /** Amount */
   amount: {
     currency_code: string;
+    /** Value */
     value: string;
   };
   create_time: string;
   update_time: string;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -124,13 +181,17 @@ export async function POST(request: NextRequest) {
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
+      /** Method */
       method: "POST",
+      /** Headers */
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        /** Authorization */
         Authorization: `Basic ${Buffer.from(
           `${clientId}:${clientSecret}`
         ).toString("base64")}`,
       },
+      /** Body */
       body: "grant_type=client_credentials",
     });
 
@@ -147,6 +208,7 @@ export async function POST(request: NextRequest) {
     if (amount !== undefined && currency) {
       refundRequest.amount = {
         currency_code: currency.toUpperCase(),
+        /** Value */
         value: amount.toFixed(2),
       };
     }
@@ -159,11 +221,15 @@ export async function POST(request: NextRequest) {
     const refundResponse = await fetch(
       `${baseUrl}/v2/payments/captures/${captureId}/refund`,
       {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
+          /** Authorization */
           Authorization: `Bearer ${accessToken}`,
         },
+        /** Body */
         body: JSON.stringify(refundRequest),
       }
     );
@@ -180,27 +246,45 @@ export async function POST(request: NextRequest) {
       .collection(COLLECTIONS.PAYMENT_REFUNDS)
       .doc(refund.id)
       .set({
+        /** Refund Id */
         refundId: refund.id,
+        /** Payment Id */
         paymentId: captureId,
+        /** Transaction Id */
         transactionId: transactionDoc.id,
+        /** Order Id */
         orderId: transactionData?.orderId || null,
+        /** User Id */
         userId: transactionData?.userId || authResult.user.uid,
+        /** Gateway */
         gateway: "paypal",
+        /** Amount */
         amount: parseFloat(refund.amount.value),
+        /** Currency */
         currency: refund.amount.currency_code,
+        /** Status */
         status: refund.status,
+        /** Note */
         note: note || null,
+        /** Created At */
         createdAt: new Date(refund.create_time),
+        /** Updated At */
         updatedAt: new Date(refund.update_time),
+        /** Initiated By */
         initiatedBy: authResult.user.uid,
       });
 
     // Update transaction status
     await transactionDoc.ref.update({
+      /** Refund Status */
       refundStatus: "refunded",
+      /** Refund Amount */
       refundAmount: parseFloat(refund.amount.value),
+      /** Refund Id */
       refundId: refund.id,
+      /** Refunded At */
       refundedAt: new Date(),
+      /** Updated At */
       updatedAt: new Date(),
     });
 
@@ -213,10 +297,15 @@ export async function POST(request: NextRequest) {
 
       if (orderDoc.exists) {
         await orderRef.update({
+          /** Refund Status */
           refundStatus: "refunded",
+          /** Refund Amount */
           refundAmount: parseFloat(refund.amount.value),
+          /** Refund Id */
           refundId: refund.id,
+          /** Refunded At */
           refundedAt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
         });
       }
@@ -225,24 +314,34 @@ export async function POST(request: NextRequest) {
     // Return formatted response
     return NextResponse.json(
       {
+        /** Id */
         id: refund.id,
+        /** Capture Id */
         captureId: captureId,
+        /** Amount */
         amount: parseFloat(refund.amount.value),
+        /** Currency */
         currency: refund.amount.currency_code,
+        /** Status */
         status: refund.status,
+        /** Created At */
         createdAt: new Date(refund.create_time).toISOString(),
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "PayPalRefundAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Payment refund failed",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to process PayPal refund",
       },
       { status: 500 }

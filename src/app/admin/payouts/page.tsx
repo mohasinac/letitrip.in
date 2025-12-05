@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/payouts/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -19,8 +28,11 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 export default function AdminPayoutsPage() {
   const router = useRouter();
   const {
+    /** Data */
     data: payouts,
+    /** Is Loading */
     isLoading: loading,
+    /** Execute */
     execute: loadPayouts,
   } = useLoadingState<any[]>();
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -32,18 +44,27 @@ export default function AdminPayoutsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalPayouts, setTotalPayouts] = useState(0);
   const [stats, setStats] = useState({
+    /** Total */
     total: 0,
+    /** Pending */
     pending: 0,
+    /** Processed */
     processed: 0,
+    /** Rejected */
     rejected: 0,
+    /** Total Amount */
     totalAmount: 0,
   });
 
   const PAYOUT_FILTERS = [
     {
+      /** Id */
       id: "status",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "checkbox" as const,
+      /** Options */
       options: [
         { value: "pending", label: "Pending" },
         { value: "processing", label: "Processing" },
@@ -52,8 +73,11 @@ export default function AdminPayoutsPage() {
       ],
     },
     {
+      /** Id */
       id: "dateRange",
+      /** Label */
       label: "Date Range",
+      /** Type */
       type: "date-range" as const,
     },
   ];
@@ -61,8 +85,11 @@ export default function AdminPayoutsPage() {
   const fetchPayouts = useCallback(async () => {
     const response = await payoutsService.getPayouts({
       ...filterValues,
+      /** Search */
       search: searchQuery || undefined,
+      /** Page */
       page: currentPage,
+      /** Limit */
       limit: 20,
     });
     setTotalPages(Math.ceil(response.total / response.limit));
@@ -71,14 +98,19 @@ export default function AdminPayoutsPage() {
     // Load stats
     const statsData = await payoutsService.getPayoutStats();
     setStats({
+      /** Total */
       total:
         statsData.totalCompleted +
         statsData.totalPending +
         statsData.totalProcessing +
         statsData.totalFailed,
+      /** Pending */
       pending: statsData.totalPending,
+      /** Processed */
       processed: statsData.totalCompleted,
+      /** Rejected */
       rejected: statsData.totalFailed,
+      /** Total Amount */
       totalAmount: statsData.completedAmount,
     });
     return response.payouts || [];
@@ -87,6 +119,26 @@ export default function AdminPayoutsPage() {
   useEffect(() => {
     loadPayouts(fetchPayouts);
   }, [fetchPayouts, loadPayouts]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleProcessPayout = async (id: string) => {
     if (!confirm("Process this payout?")) return;
@@ -103,6 +155,26 @@ export default function AdminPayoutsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRejectPayout = async (id: string) => {
     const reason = prompt("Reason for rejection:");
     if (!reason) return;
@@ -115,6 +187,22 @@ export default function AdminPayoutsPage() {
       toast.error(error.message || "Failed to reject payout");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleBulkProcess = async () => {
     if (selectedPayouts.size === 0) {
@@ -138,9 +226,27 @@ export default function AdminPayoutsPage() {
     }
   };
 
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
     }).format(amount);
   };
@@ -221,8 +327,11 @@ export default function AdminPayoutsPage() {
                   selectedCount={selectedPayouts.size}
                   actions={[
                     {
+                      /** Id */
                       id: "process",
+                      /** Label */
                       label: "Process Selected",
+                      /** Variant */
                       variant: "success",
                     },
                   ]}

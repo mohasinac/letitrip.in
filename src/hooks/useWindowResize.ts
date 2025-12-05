@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useWindowResize
+ * @description This file contains functionality related to useWindowResize
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useWindowResize Hook
  * Task 1.8.2 - Common Hooks & Utilities
  *
@@ -98,7 +107,33 @@ export interface UseWindowResizeReturn extends WindowSize {
  * });
  * ```
  */
+/**
+ * Custom React hook for window resize
+ *
+ * @param {UseWindowResizeOptions} [options] - Configuration options
+ *
+ * @returns {any} The usewindowresize result
+ *
+ * @example
+ * useWindowResize(options);
+ */
+
+/**
+ * Custom React hook for window resize
+ *
+ * @param {UseWindowResizeOptions} [/** Options */
+  options] - The /**  options */
+  options
+ *
+ * @returns {any} The usewindowresize result
+ *
+ * @example
+ * useWindowResize(/** Options */
+  options);
+ */
+
 export function useWindowResize(
+  /** Options */
   options: UseWindowResizeOptions = {}
 ): UseWindowResizeReturn {
   const {
@@ -115,7 +150,9 @@ export function useWindowResize(
       return { width: 0, height: 0 };
     }
     return {
+      /** Width */
       width: window.innerWidth,
+      /** Height */
       height: window.innerHeight,
     };
   }, []);
@@ -130,6 +167,18 @@ export function useWindowResize(
     }
 
     let timeoutId: NodeJS.Timeout | null = null;
+
+    /**
+     * Handles resize event
+     *
+     * @returns {any} The handleresize result
+     */
+
+    /**
+     * Handles resize event
+     *
+     * @returns {any} The handleresize result
+     */
 
     const handleResize = () => {
       // Clear previous timeout
@@ -171,7 +220,9 @@ export function useWindowResize(
   const isLargeDesktop = windowSize.width >= desktopBreakpoint;
 
   return {
+    /** Width */
     width: windowSize.width,
+    /** Height */
     height: windowSize.height,
     isMobile,
     isTablet,
@@ -188,6 +239,28 @@ export function useWindowResize(
  * const width = useWindowWidth();
  * ```
  */
+/**
+ * Custom React hook for window width
+ *
+ * @param {number} [debounceMs] - The debounce ms
+ *
+ * @returns {number} The usewindowwidth result
+ *
+ * @example
+ * useWindowWidth(123);
+ */
+
+/**
+ * Custom React hook for window width
+ *
+ * @param {number} [debounceMs] - The debounce ms
+ *
+ * @returns {number} The usewindowwidth result
+ *
+ * @example
+ * useWindowWidth(123);
+ */
+
 export function useWindowWidth(debounceMs: number = 200): number {
   const { width } = useWindowResize({ debounceMs });
   return width;
@@ -201,6 +274,28 @@ export function useWindowWidth(debounceMs: number = 200): number {
  * const height = useWindowHeight();
  * ```
  */
+/**
+ * Custom React hook for window height
+ *
+ * @param {number} [debounceMs] - The debounce ms
+ *
+ * @returns {number} The usewindowheight result
+ *
+ * @example
+ * useWindowHeight(123);
+ */
+
+/**
+ * Custom React hook for window height
+ *
+ * @param {number} [debounceMs] - The debounce ms
+ *
+ * @returns {number} The usewindowheight result
+ *
+ * @example
+ * useWindowHeight(123);
+ */
+
 export function useWindowHeight(debounceMs: number = 200): number {
   const { height } = useWindowResize({ debounceMs });
   return height;
@@ -214,10 +309,36 @@ export function useWindowHeight(debounceMs: number = 200): number {
  * const { isMobile, isDesktop } = useBreakpoint();
  * ```
  */
+/**
+ * Custom React hook for breakpoint
+ *
+ * @param {UseWindowResizeOptions} [options] - Configuration options
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * useBreakpoint(options);
+ */
+
+/**
+ * Custom React hook for breakpoint
+ *
+ * @param {UseWindowResizeOptions} [options] - Configuration options
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * useBreakpoint(options);
+ */
+
 export function useBreakpoint(options?: UseWindowResizeOptions): {
+  /** Is Mobile */
   isMobile: boolean;
+  /** Is Tablet */
   isTablet: boolean;
+  /** Is Desktop */
   isDesktop: boolean;
+  /** Is Large Desktop */
   isLargeDesktop: boolean;
 } {
   const { isMobile, isTablet, isDesktop, isLargeDesktop } =

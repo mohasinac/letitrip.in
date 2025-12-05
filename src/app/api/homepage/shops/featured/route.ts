@@ -1,6 +1,44 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/homepage/shops/featured/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,29 +80,49 @@ export async function GET(request: NextRequest) {
       const items = inStockProducts.map((productDoc) => {
         const product = productDoc.data();
         return {
+          /** Id */
           id: productDoc.id,
+          /** Slug */
           slug: product.slug,
+          /** Name */
           name: product.name,
+          /** Description */
           description: product.description,
+          /** Price */
           price: product.price,
+          /** Images */
           images: product.images || [],
+          /** Rating */
           rating: product.rating || 0,
+          /** Review Count */
           reviewCount: product.review_count || 0,
+          /** In Stock */
           inStock: true,
+          /** Shop Id */
           shopId: product.shop_id,
+          /** Shop Name */
           shopName: product.shop_name,
         };
       });
 
       shops.push({
+        /** Shop */
         shop: {
+          /** Id */
           id: doc.id,
+          /** Slug */
           slug: data.slug,
+          /** Name */
           name: data.name,
+          /** Description */
           description: data.description,
+          /** Logo */
           logo: data.logo,
+          /** Banner */
           banner: data.banner,
+          /** Rating */
           rating: data.rating || 0,
+          /** Review Count */
           reviewCount: data.review_count || 0,
         },
         items,

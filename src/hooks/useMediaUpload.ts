@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useMediaUpload
+ * @description This file contains functionality related to useMediaUpload
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useMediaUpload Hook
  *
  * Hook for media uploads with retry logic and validation
@@ -7,27 +16,86 @@
 import { useState, useCallback } from "react";
 import { useUploadContext } from "@/contexts/UploadContext";
 
+/**
+ * MediaUploadOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaUploadOptions
+ */
 export interface MediaUploadOptions {
   maxSize?: number; // Max file size in bytes
   allowedTypes?: string[]; // Allowed MIME types
   maxRetries?: number; // Maximum retry attempts
+  /** On Progress */
   onProgress?: (progress: number) => void;
+  /** On Success */
   onSuccess?: (url: string) => void;
+  /** On Error */
   onError?: (error: string) => void;
 }
 
 // Simple validation function
+/**
+ * Function: Validate File
+ */
+/**
+ * Validates file
+ *
+ * @param {File} file - The file
+ * @param {number} [maxSize] - The max size
+ * @param {string[]} [allowedTypes] - The allowed types
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Validates file
+ *
+ * @returns {number} The validatefile result
+ */
+
 function validateFile(
+  /** File */
   file: File,
+  /** Max Size */
   maxSize?: number,
+  /** Allowed Types */
   allowedTypes?: string[],
 ): { isValid: boolean; error?: string } {
   // Check file size
   if (maxSize && file.size > maxSize) {
+    /**
+     * Performs max size m b operation
+     *
+     * @returns {any} The maxsizemb result
+     */
+
+    /**
+     * Performs max size m b operation
+     *
+     * @returns {any} The maxsizemb result
+     */
+
     const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(2);
+    /**
+     * Performs file size m b operation
+     *
+     * @returns {any} The filesizemb result
+     */
+
+    /**
+     * Performs file size m b operation
+     *
+     * @returns {any} The filesizemb result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
     return {
+      /** Is Valid */
       isValid: false,
+      /** Error */
       error: `File size (${fileSizeMB}MB) exceeds maximum (${maxSizeMB}MB)`,
     };
   }
@@ -36,7 +104,9 @@ function validateFile(
   if (allowedTypes && allowedTypes.length > 0) {
     if (!allowedTypes.includes(file.type)) {
       return {
+        /** Is Valid */
         isValid: false,
+        /** Error */
         error: `File type ${file.type} is not allowed`,
       };
     }
@@ -44,6 +114,31 @@ function validateFile(
 
   return { isValid: true };
 }
+
+/**
+ * Function: Use Media Upload
+ */
+/**
+ * Custom React hook for media upload
+ *
+ * @param {MediaUploadOptions} [options] - Configuration options
+ *
+ * @returns {any} The usemediaupload result
+ *
+ * @example
+ * useMediaUpload(options);
+ */
+
+/**
+ * Custom React hook for media upload
+ *
+ * @param {MediaUploadOptions} [options] - Configuration options
+ *
+ * @returns {any} The usemediaupload result
+ *
+ * @example
+ * useMediaUpload(options);
+ */
 
 export function useMediaUpload(options: MediaUploadOptions = {}) {
   const {
@@ -146,9 +241,12 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         // Update context as successful
         updateUpload(id, {
+          /** Status */
           status: "success",
+          /** Progress */
           progress: 100,
           url,
+          /** Uploaded At */
           uploadedAt: new Date(),
         });
 
@@ -165,8 +263,11 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         if (uploadId) {
           updateUpload(uploadId, {
+            /** Status */
             status: "error",
+            /** Error */
             error: errorMessage,
+            /** Progress */
             progress: 0,
           });
         }

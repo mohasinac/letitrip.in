@@ -1,11 +1,29 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/faq/FAQItem
+ * @description This file contains the FAQItem component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
+/**
+ * FAQItemProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FAQItemProps
+ */
 interface FAQItemProps {
+  /** Question */
   question: string;
+  /** Answer */
   answer: string;
+  /** Default Open */
   defaultOpen?: boolean;
 }
 

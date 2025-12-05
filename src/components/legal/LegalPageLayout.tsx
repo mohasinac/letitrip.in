@@ -1,11 +1,31 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/legal/LegalPageLayout
+ * @description This file contains the LegalPageLayout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { ReactNode } from "react";
 import { FileText, Calendar, Shield } from "lucide-react";
 
+/**
+ * LegalPageLayoutProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LegalPageLayoutProps
+ */
 interface LegalPageLayoutProps {
+  /** Title */
   title: string;
+  /** Last Updated */
   lastUpdated: string;
+  /** Version */
   version: string;
+  /** Children */
   children: ReactNode;
+  /** Effective Date */
   effectiveDate?: string;
 }
 

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/types/frontend/support-ticket.types
+ * @description This file contains TypeScript type definitions for support-ticket
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Frontend Support Ticket Types
  *
  * Support ticket types optimized for UI display and forms
@@ -16,44 +25,71 @@ import type {
  * Frontend Support Ticket (for display in UI)
  */
 export interface SupportTicketFE {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
+  /** Shop Id */
   shopId?: string;
+  /** Order Id */
   orderId?: string;
 
+  /** Category */
   category: TicketCategory;
+  /** Priority */
   priority: TicketPriority;
 
+  /** Subject */
   subject: string;
+  /** Description */
   description: string;
+  /** Attachments */
   attachments?: string[];
 
+  /** Status */
   status: TicketStatus;
 
+  /** Assigned To */
   assignedTo?: string;
 
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
+  /** Resolved At */
   resolvedAt?: Date;
 
   // UI helpers
+  /** Is Open */
   isOpen: boolean;
+  /** Is Resolved */
   isResolved: boolean;
+  /** Is Closed */
   isClosed: boolean;
+  /** Is Escalated */
   isEscalated: boolean;
+  /** Can Reply */
   canReply: boolean;
+  /** Can Close */
   canClose: boolean;
   formattedCreatedAt: string; // "Jan 15, 2025 10:30 AM"
   formattedUpdatedAt: string; // "2 hours ago"
+  /** Formatted Resolved At */
   formattedResolvedAt?: string;
   categoryLabel: string; // "Order Issue"
   priorityLabel: string; // "High"
+  /** Status Badge */
   statusBadge: {
+    /** Text */
     text: string;
+    /** Variant */
     variant: "success" | "warning" | "error" | "info" | "default";
   };
+  /** Priority Badge */
   priorityBadge: {
+    /** Text */
     text: string;
+    /** Variant */
     variant: "success" | "warning" | "error" | "info";
   };
   responseTime?: string; // "Responded in 2 hours"
@@ -64,25 +100,42 @@ export interface SupportTicketFE {
  * Support Ticket Card (for list views)
  */
 export interface SupportTicketCardFE {
+  /** Id */
   id: string;
+  /** Subject */
   subject: string;
+  /** Category */
   category: TicketCategory;
+  /** Priority */
   priority: TicketPriority;
+  /** Status */
   status: TicketStatus;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
 
   // UI helpers
+  /** Category Label */
   categoryLabel: string;
+  /** Priority Label */
   priorityLabel: string;
+  /** Formatted Created At */
   formattedCreatedAt: string;
+  /** Formatted Updated At */
   formattedUpdatedAt: string;
+  /** Status Badge */
   statusBadge: {
+    /** Text */
     text: string;
+    /** Variant */
     variant: "success" | "warning" | "error" | "info" | "default";
   };
+  /** Priority Badge */
   priorityBadge: {
+    /** Text */
     text: string;
+    /** Variant */
     variant: "success" | "warning" | "error" | "info";
   };
 }
@@ -91,16 +144,24 @@ export interface SupportTicketCardFE {
  * Frontend Support Ticket Message (for display)
  */
 export interface SupportTicketMessageFE {
+  /** Id */
   id: string;
+  /** Ticket Id */
   ticketId: string;
+  /** Sender Id */
   senderId: string;
+  /** Sender Role */
   senderRole: UserRole;
 
+  /** Message */
   message: string;
+  /** Attachments */
   attachments?: string[];
 
+  /** Is Internal */
   isInternal: boolean;
 
+  /** Created At */
   createdAt: Date;
 
   // UI helpers
@@ -116,12 +177,19 @@ export interface SupportTicketMessageFE {
  * Support Ticket Form (for create/edit)
  */
 export interface SupportTicketFormFE {
+  /** Category */
   category: TicketCategory;
+  /** Priority */
   priority?: TicketPriority;
+  /** Subject */
   subject: string;
+  /** Description */
   description: string;
+  /** Attachments */
   attachments?: string[];
+  /** Shop Id */
   shopId?: string;
+  /** Order Id */
   orderId?: string;
 }
 
@@ -129,8 +197,11 @@ export interface SupportTicketFormFE {
  * Reply to Ticket Form
  */
 export interface ReplyToTicketFormFE {
+  /** Message */
   message: string;
+  /** Attachments */
   attachments?: string[];
+  /** Is Internal */
   isInternal?: boolean;
 }
 
@@ -138,8 +209,11 @@ export interface ReplyToTicketFormFE {
  * Update Ticket Form
  */
 export interface UpdateTicketFormFE {
+  /** Status */
   status?: TicketStatus;
+  /** Priority */
   priority?: TicketPriority;
+  /** Subject */
   subject?: string;
 }
 
@@ -147,7 +221,9 @@ export interface UpdateTicketFormFE {
  * Assign Ticket Form
  */
 export interface AssignTicketFormFE {
+  /** Assigned To */
   assignedTo: string;
+  /** Notes */
   notes?: string;
 }
 
@@ -155,7 +231,9 @@ export interface AssignTicketFormFE {
  * Escalate Ticket Form
  */
 export interface EscalateTicketFormFE {
+  /** Reason */
   reason: string;
+  /** Notes */
   notes?: string;
 }
 
@@ -163,12 +241,19 @@ export interface EscalateTicketFormFE {
  * Support Ticket Filters (for frontend filtering)
  */
 export interface SupportTicketFiltersFE {
+  /** Status */
   status?: TicketStatus;
+  /** Category */
   category?: TicketCategory;
+  /** Priority */
   priority?: TicketPriority;
+  /** Shop Id */
   shopId?: string;
+  /** Order Id */
   orderId?: string;
+  /** Assigned To */
   assignedTo?: string;
+  /** Search */
   search?: string;
 }
 
@@ -176,11 +261,17 @@ export interface SupportTicketFiltersFE {
  * Support Ticket Stats (for dashboard)
  */
 export interface SupportTicketStatsFE {
+  /** Total */
   total: number;
+  /** Open */
   open: number;
+  /** In Progress */
   inProgress: number;
+  /** Resolved */
   resolved: number;
+  /** Closed */
   closed: number;
+  /** Escalated */
   escalated: number;
   averageResponseTime: string; // "2 hours"
   averageResolutionTime: string; // "1 day"

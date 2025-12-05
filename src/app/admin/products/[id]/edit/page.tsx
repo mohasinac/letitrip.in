@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/products/[id]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -37,6 +46,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Helper type for specifications array in form
+/**
+ * ProductSpecification type
+ * 
+ * @typedef {Object} ProductSpecification
+ * @description Type definition for ProductSpecification
+ */
 type ProductSpecification = { name: string; value: string };
 
 export default function AdminEditProductPage() {
@@ -46,12 +61,15 @@ export default function AdminEditProductPage() {
   const { user, isAdmin } = useAuth();
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "AdminEditProductPage.loadData",
         productId,
       });
@@ -66,30 +84,55 @@ export default function AdminEditProductPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [formData, setFormData] = useState({
+    /** Shop Id */
     shopId: "",
+    /** Category Id */
     categoryId: "",
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Description */
     description: "",
+    /** Short Description */
     shortDescription: "",
+    /** Price */
     price: 0,
+    /** Original Price */
     originalPrice: 0,
+    /** Cost Price */
     costPrice: 0,
+    /** Stock Count */
     stockCount: 0,
+    /** Low Stock Threshold */
     lowStockThreshold: 10,
+    /** Sku */
     sku: "",
+    /** Condition */
     condition: "new" as ProductCondition,
+    /** Brand */
     brand: "",
+    /** Manufacturer */
     manufacturer: "",
+    /** Country Of Origin */
     countryOfOrigin: "India",
+    /** Tags */
     tags: [] as string[],
+    /** Is Returnable */
     isReturnable: true,
+    /** Return Window Days */
     returnWindowDays: 7,
+    /** Warranty */
     warranty: "",
+    /** Meta Title */
     metaTitle: "",
+    /** Meta Description */
     metaDescription: "",
+    /** Status */
     status: "draft" as ProductStatus,
+    /** Featured */
     featured: false,
+    /** Shipping Class */
     shippingClass: ShippingClass.STANDARD,
   });
 
@@ -107,9 +150,11 @@ export default function AdminEditProductPage() {
     confirmNavigation,
     hasUploadedMedia,
   } = useMediaUploadWithCleanup({
+    /** On Upload Success */
     onUploadSuccess: (url) => {
       setFormData((prev) => ({
         ...prev,
+        /** Images */
         images: [...(product?.images || []), url],
       }));
     },
@@ -120,6 +165,22 @@ export default function AdminEditProductPage() {
       loadData();
     }
   }, [user, isAdmin, productId]);
+
+  /**
+   * Fetches data from server
+   *
+   * @returns {Promise<any>} Promise resolving to data result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches data from server
+   *
+   * @returns {Promise<any>} Promise resolving to data result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadData = () =>
     execute(async () => {
@@ -135,30 +196,55 @@ export default function AdminEditProductPage() {
 
       // Populate form
       setFormData({
+        /** Shop Id */
         shopId: productData.shopId,
+        /** Category Id */
         categoryId: productData.categoryId,
+        /** Name */
         name: productData.name,
+        /** Slug */
         slug: productData.slug,
+        /** Description */
         description: productData.description || "",
+        /** Short Description */
         shortDescription: productData.shortDescription || "",
+        /** Price */
         price: productData.price,
+        /** Original Price */
         originalPrice: productData.originalPrice || 0,
+        /** Cost Price */
         costPrice: productData.costPrice || 0,
+        /** Stock Count */
         stockCount: productData.stockCount,
+        /** Low Stock Threshold */
         lowStockThreshold: productData.lowStockThreshold || 10,
+        /** Sku */
         sku: productData.sku || "",
+        /** Condition */
         condition: productData.condition,
+        /** Brand */
         brand: productData.brand || "",
+        /** Manufacturer */
         manufacturer: productData.manufacturer || "",
+        /** Country Of Origin */
         countryOfOrigin: productData.countryOfOrigin || "India",
+        /** Tags */
         tags: productData.tags || [],
+        /** Is Returnable */
         isReturnable: productData.isReturnable ?? true,
+        /** Return Window Days */
         returnWindowDays: productData.returnWindowDays || 7,
+        /** Warranty */
         warranty: productData.warranty || "",
+        /** Meta Title */
         metaTitle: productData.metaTitle || "",
+        /** Meta Description */
         metaDescription: productData.metaDescription || "",
+        /** Status */
         status: productData.status,
+        /** Featured */
         featured: productData.featured || false,
+        /** Shipping Class */
         shippingClass: (productData.shippingClass ||
           "standard") as ShippingClass,
       });
@@ -173,6 +259,18 @@ export default function AdminEditProductPage() {
       setSpecifications(specsArray);
     });
 
+  /**
+   * Handles add specification event
+   *
+   * @returns {any} The handleaddspecification result
+   */
+
+  /**
+   * Handles add specification event
+   *
+   * @returns {any} The handleaddspecification result
+   */
+
   const handleAddSpecification = () => {
     if (newSpec.name && newSpec.value) {
       setSpecifications([...specifications, { ...newSpec }]);
@@ -180,40 +278,143 @@ export default function AdminEditProductPage() {
     }
   };
 
+  /**
+   * Handles remove specification event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handleremovespecification result
+   */
+
+  /**
+   * Handles remove specification event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handleremovespecification result
+   */
+
   const handleRemoveSpecification = (index: number) => {
     setSpecifications(specifications.filter((_, i) => i !== index));
   };
+
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
+
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
       setFormData({
         ...formData,
+        /** Tags */
         tags: [...formData.tags, tagInput.trim()],
       });
       setTagInput("");
     }
   };
 
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
+
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
+
   const handleRemoveTag = (tag: string) => {
     setFormData({
       ...formData,
+      /** Tags */
       tags: formData.tags.filter((t) => t !== tag),
     });
   };
+
+  /**
+   * Handles remove image event
+   *
+   * @param {string} url - The url
+   *
+   * @returns {string} The handleremoveimage result
+   */
+
+  /**
+   * Handles remove image event
+   *
+   * @param {string} url - The url
+   *
+   * @returns {string} The handleremoveimage result
+   */
 
   const handleRemoveImage = (url: string) => {
     if (!product) return;
     setProduct({
       ...product,
+      /** Images */
       images: product.images.filter((img) => img !== url),
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleImageUpload = async (files: any[]) => {
     if (files.length > 0) {
       await uploadMedia(files[0].file, "product", productId);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,8 +430,11 @@ export default function AdminEditProductPage() {
 
       const updateData = {
         ...formData,
+        /** Specifications */
         specifications: specsRecord,
+        /** Images */
         images: product?.images || [],
+        /** Videos */
         videos: product?.videos || [],
       };
 
@@ -246,6 +450,22 @@ export default function AdminEditProductPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     try {
       setDeleting(true);
@@ -259,6 +479,22 @@ export default function AdminEditProductPage() {
       setDeleting(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancel = async () => {
     if (hasUploadedMedia) {
@@ -397,6 +633,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Short Description */
                     shortDescription: e.target.value,
                   })
                 }
@@ -473,6 +710,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Price */
                     price: parseFloat(e.target.value),
                   })
                 }
@@ -487,6 +725,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Original Price */
                     originalPrice: parseFloat(e.target.value) || 0,
                   })
                 }
@@ -501,6 +740,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Cost Price */
                     costPrice: parseFloat(e.target.value) || 0,
                   })
                 }
@@ -524,6 +764,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Stock Count */
                     stockCount: parseInt(e.target.value),
                   })
                 }
@@ -537,6 +778,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Low Stock Threshold */
                     lowStockThreshold: parseInt(e.target.value),
                   })
                 }
@@ -565,6 +807,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Condition */
                     condition: e.target.value as ProductCondition,
                   })
                 }
@@ -580,6 +823,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Shipping Class */
                     shippingClass: e.target.value as any,
                   })
                 }
@@ -610,6 +854,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Country Of Origin */
                     countryOfOrigin: e.target.value,
                   })
                 }
@@ -709,6 +954,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Meta Description */
                     metaDescription: e.target.value,
                   })
                 }
@@ -777,7 +1023,9 @@ export default function AdminEditProductPage() {
                 }
                 placeholder="Select Shop"
                 options={shops.map((shop) => ({
+                  /** Value */
                   value: shop.id,
+                  /** Label */
                   label: shop.name,
                 }))}
               />
@@ -790,7 +1038,9 @@ export default function AdminEditProductPage() {
                 }
                 placeholder="Select Category"
                 options={categories.map((category) => ({
+                  /** Value */
                   value: category.id,
+                  /** Label */
                   label: category.name,
                 }))}
               />
@@ -801,6 +1051,7 @@ export default function AdminEditProductPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
+                    /** Status */
                     status: e.target.value as ProductStatus,
                   })
                 }
@@ -842,6 +1093,7 @@ export default function AdminEditProductPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
+                      /** Return Window Days */
                       returnWindowDays: parseInt(e.target.value),
                     })
                   }

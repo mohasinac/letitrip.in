@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/status/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,23 +14,71 @@ import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<void>} Promise that resolves when operation completes
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = GET();
+ */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
 export async function GET() {
   try {
     const db = getFirestoreAdmin();
     const stats = {
+      /** Users */
       users: 0,
+      /** Shops */
       shops: 0,
+      /** Categories */
       categories: 0,
+      /** Products */
       products: 0,
+      /** Auctions */
       auctions: 0,
+      /** Reviews */
       reviews: 0,
+      /** Orders */
       orders: 0,
+      /** Tickets */
       tickets: 0,
+      /** Coupons */
       coupons: 0,
+      /** Hero Slides */
       heroSlides: 0,
+      /** Featured Products */
       featuredProducts: 0,
+      /** Featured Auctions */
       featuredAuctions: 0,
+      /** Featured Shops */
       featuredShops: 0,
+      /** Homepage Items */
       homepageItems: 0,
     };
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/[slug]/similar/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
@@ -5,7 +14,39 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * GET /api/categories/[slug]/similar
  * Fetch similar categories (siblings or related)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -55,14 +96,18 @@ export async function GET(
       .slice(0, limit);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: similar,
     });
   } catch (error: any) {
     console.error("Similar categories error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to fetch similar categories",
       },
       { status: 500 },

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ProductImageManager
+ * @description This file contains the ProductImageManager component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useCallback } from "react";
@@ -27,25 +36,63 @@ import { mediaService } from "@/services/media.service";
 import CameraCapture from "@/components/media/CameraCapture";
 import { MediaFile } from "@/types/media";
 
+/**
+ * ProductImage interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductImage
+ */
 interface ProductImage {
+  /** Id */
   id: string;
+  /** Url */
   url: string;
+  /** File */
   file?: File;
+  /** Uploading */
   uploading?: boolean;
+  /** Error */
   error?: string;
+  /** Progress */
   progress?: number;
 }
 
+/**
+ * ProductImageManagerProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductImageManagerProps
+ */
 interface ProductImageManagerProps {
   images: string[]; // Existing image URLs
+  /** Max Images */
   maxImages?: number;
+  /** On Images Change */
   onImagesChange: (urls: string[]) => void;
+  /** Shop Id */
   shopId: string;
+  /** Product Id */
   productId: string;
+  /** Disabled */
   disabled?: boolean;
 }
 
 // Sortable Image Item Component
+/**
+ * Function: Sortable Image Item
+ */
+/**
+ * Performs sortable image item operation
+ *
+ * @returns {any} The sortableimageitem result
+ */
+
+/**
+ * Performs sortable image item operation
+ *
+ * @returns {any} The sortableimageitem result
+ */
+
 function SortableImageItem({
   image,
   index,
@@ -53,16 +100,22 @@ function SortableImageItem({
   onRemove,
   onRetry,
 }: {
+  /** Image */
   image: ProductImage;
+  /** Index */
   index: number;
+  /** Is Primary */
   isPrimary: boolean;
+  /** On Remove */
   onRemove: () => void;
+  /** On Retry */
   onRetry: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: image.id });
 
   const style = {
+    /** Transform */
     transform: CSS.Transform.toString(transform),
     transition,
   };
@@ -153,6 +206,7 @@ export default function ProductImageManager({
 }: ProductImageManagerProps) {
   const [productImages, setProductImages] = useState<ProductImage[]>(
     images.map((url, index) => ({
+      /** Id */
       id: `existing-${index}`,
       url,
     })),
@@ -163,6 +217,26 @@ export default function ProductImageManager({
   const canAddMore = productImages.length < maxImages && !disabled;
 
   // Handle file selection
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -188,21 +262,61 @@ export default function ProductImageManager({
     [productImages],
   );
 
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledragover result
+   */
+
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   *
+   * @returns {any} The handledragover result
+   */
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
   // Process files and upload
+  /**
+   * Performs async operation
+   *
+   * @param {File[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {File[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleFiles = async (files: File[]) => {
     if (!canAddMore) return;
 
     const filesToUpload = files.slice(0, maxImages - productImages.length);
     const newImages: ProductImage[] = filesToUpload.map((file) => ({
+      /** Id */
       id: `new-${Date.now()}-${Math.random()}`,
+      /** Url */
       url: URL.createObjectURL(file),
       file,
+      /** Uploading */
       uploading: true,
+      /** Progress */
       progress: 0,
     }));
 
@@ -219,6 +333,26 @@ export default function ProductImageManager({
   };
 
   // Upload single image to Firebase Storage (via API)
+  /**
+   * Performs async operation
+   *
+   * @param {ProductImage} image - The image
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {ProductImage} image - The image
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const uploadImage = async (image: ProductImage) => {
     try {
       if (!image.file) throw new Error("No file to upload");
@@ -234,9 +368,13 @@ export default function ProductImageManager({
 
       // Perform upload through media service
       const res = await mediaService.upload({
+        /** File */
         file: image.file,
+        /** Context */
         context: "product",
+        /** Context Id */
         contextId: productId,
+        /** Description */
         description: `product-image-${productId}`,
       });
 
@@ -254,7 +392,9 @@ export default function ProductImageManager({
       onImagesChange(allUrls);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductImageManager.uploadImage",
+        /** Metadata */
         metadata: { imageId: image.id },
       });
       setProductImages((prev) =>
@@ -262,7 +402,9 @@ export default function ProductImageManager({
           img.id === image.id
             ? {
                 ...img,
+                /** Uploading */
                 uploading: false,
+                /** Error */
                 error: error instanceof Error ? error.message : "Upload failed",
               }
             : img,
@@ -272,6 +414,26 @@ export default function ProductImageManager({
   };
 
   // Retry failed upload
+  /**
+   * Performs async operation
+   *
+   * @param {string} imageId - image identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} imageId - image identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRetry = async (imageId: string) => {
     const image = productImages.find((img) => img.id === imageId);
     if (!image || !image.file) return;
@@ -288,6 +450,22 @@ export default function ProductImageManager({
   };
 
   // Remove image
+  /**
+   * Handles remove event
+   *
+   * @param {string} imageId - image identifier
+   *
+   * @returns {string} The handleremove result
+   */
+
+  /**
+   * Handles remove event
+   *
+   * @param {string} imageId - image identifier
+   *
+   * @returns {string} The handleremove result
+   */
+
   const handleRemove = (imageId: string) => {
     setProductImages((prev) => prev.filter((img) => img.id !== imageId));
 
@@ -300,6 +478,22 @@ export default function ProductImageManager({
   };
 
   // Handle drag end (reorder)
+  /**
+   * Handles drag end event
+   *
+   * @param {DragEndEvent} event - The event
+   *
+   * @returns {any} The handledragend result
+   */
+
+  /**
+   * Handles drag end event
+   *
+   * @param {DragEndEvent} event - The event
+   *
+   * @returns {any} The handledragend result
+   */
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -319,16 +513,41 @@ export default function ProductImageManager({
   };
 
   // Handle camera capture
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile} mediaFile - The media file
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCameraCapture = async (mediaFile: MediaFile) => {
     setShowCamera(false);
 
     if (!canAddMore) return;
 
     const newImage: ProductImage = {
+      /** Id */
       id: `camera-${Date.now()}`,
+      /** Url */
       url: mediaFile.preview,
+      /** File */
       file: mediaFile.file,
+      /** Uploading */
       uploading: true,
+      /** Progress */
       progress: 0,
     };
 

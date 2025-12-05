@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/notifications/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -33,42 +42,88 @@ import { formatDistanceToNow } from "date-fns";
 
 // Icon mapping for notification types
 const typeIcons: Record<NotificationType, React.ReactNode> = {
+  /** Order */
   order: <Package className="h-5 w-5" />,
+  /** Auction */
   auction: <Bell className="h-5 w-5" />,
+  /** Bid */
   bid: <TrendingUp className="h-5 w-5" />,
+  /** Message */
   message: <MessageSquare className="h-5 w-5" />,
+  /** System */
   system: <Bell className="h-5 w-5" />,
+  /** Payment */
   payment: <CreditCard className="h-5 w-5" />,
+  /** Shipping */
   shipping: <Truck className="h-5 w-5" />,
+  /** Review */
   review: <Star className="h-5 w-5" />,
 };
 
 // Color mapping for notification types
 const typeColors: Record<NotificationType, string> = {
+  /** Order */
   order: "bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+  /** Auction */
   auction:
     "bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
+  /** Bid */
   bid: "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400",
+  /** Message */
   message:
     "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400",
+  /** System */
   system: "bg-gray-100 text-gray-600 dark:bg-gray-900/20 dark:text-gray-400",
+  /** Payment */
   payment:
     "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400",
+  /** Shipping */
   shipping:
     "bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400",
+  /** Review */
   review: "bg-pink-100 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400",
 };
+
+/**
+ * Function: Notification Item
+ */
+/**
+ * Performs notification item operation
+ *
+ * @returns {any} The notificationitem result
+ */
+
+/**
+ * Performs notification item operation
+ *
+ * @returns {any} The notificationitem result
+ */
 
 function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
 }: {
+  /** Notification */
   notification: NotificationFE;
+  /** On Mark As Read */
   onMarkAsRead: (id: string) => void;
+  /** On Delete */
   onDelete: (id: string) => void;
 }) {
   const router = useRouter();
+
+  /**
+   * Handles click event
+   *
+   * @returns {any} The handleclick result
+   */
+
+  /**
+   * Handles click event
+   *
+   * @returns {any} The handleclick result
+   */
 
   const handleClick = () => {
     if (!notification.read) {
@@ -159,6 +214,21 @@ function NotificationItem({
   );
 }
 
+/**
+ * Function: Notifications Content
+ */
+/**
+ * Performs notifications content operation
+ *
+ * @returns {any} The notificationscontent result
+ */
+
+/**
+ * Performs notifications content operation
+ *
+ * @returns {any} The notificationscontent result
+ */
+
 function NotificationsContent() {
   const [notifications, setNotifications] = useState<NotificationFE[]>([]);
   const [page, setPage] = useState(1);
@@ -173,7 +243,9 @@ function NotificationsContent() {
     await execute(async () => {
       const response = await notificationService.list({
         page,
+        /** Page Size */
         pageSize: 20,
+        /** Unread Only */
         unreadOnly: showUnreadOnly,
       });
       setNotifications(response.notifications);
@@ -185,6 +257,26 @@ function NotificationsContent() {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleMarkAsRead = async (id: string) => {
     try {
       await notificationService.markAsRead([id]);
@@ -195,12 +287,30 @@ function NotificationsContent() {
       );
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "NotificationsPage.handleMarkAsRead",
+        /** Metadata */
         metadata: { notificationId: id },
       });
       toast.error("Failed to mark notification as read");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleMarkAllAsRead = async () => {
     setActionLoading(true);
@@ -211,6 +321,7 @@ function NotificationsContent() {
       );
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "NotificationsPage.handleMarkAllAsRead",
       });
       toast.error("Failed to mark all as read");
@@ -219,18 +330,56 @@ function NotificationsContent() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     try {
       await notificationService.delete(id);
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "NotificationsPage.handleDelete",
+        /** Metadata */
         metadata: { notificationId: id },
       });
       toast.error("Failed to delete notification");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDeleteRead = async () => {
     setActionLoading(true);
@@ -239,6 +388,7 @@ function NotificationsContent() {
       setNotifications((prev) => prev.filter((n) => !n.read));
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "NotificationsPage.handleDeleteRead",
       });
       toast.error("Failed to delete read notifications");

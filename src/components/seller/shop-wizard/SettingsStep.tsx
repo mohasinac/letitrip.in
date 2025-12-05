@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/SettingsStep
+ * @description This file contains the SettingsStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormField } from "@/components/forms/FormField";
@@ -5,9 +14,18 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import type { ShopFormData, OnShopChange } from "./types";
 
+/**
+ * SettingsStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SettingsStepProps
+ */
 interface SettingsStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnShopChange;
+  /** Errors */
   errors: Record<string, string>;
 }
 

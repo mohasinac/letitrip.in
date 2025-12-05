@@ -1,11 +1,28 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/category-wizard/MediaStep
+ * @description This file contains the MediaStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import type { CategoryFormData, OnChange } from "./types";
 
+/**
+ * MediaStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaStepProps
+ */
 interface MediaStepProps {
+  /** Form Data */
   formData: CategoryFormData;
+  /** On Change */
   onChange: OnChange;
 }
 

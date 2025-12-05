@@ -1,9 +1,47 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/SellerHeader
+ * @description This file contains the SellerHeader component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import Link from "next/link";
 import { Bell, Menu, Search, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+
+/**
+ * Function: Seller Header
+ */
+/**
+ * Performs seller header operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = SellerHeader();
+ */
+/**
+ * Performs seller header operation
+ *
+ * @returns {any} The sellerheader result
+ *
+ * @example
+ * SellerHeader();
+ */
+
+/**
+ * Performs seller header operation
+ *
+ * @returns {any} The sellerheader result
+ *
+ * @example
+ * SellerHeader();
+ */
 
 export function SellerHeader() {
   const { user, logout } = useAuth();

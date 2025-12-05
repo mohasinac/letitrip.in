@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/types/transforms/user.transforms
+ * @description This file contains functionality related to user.transforms
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * USER TYPE TRANSFORMATIONS
  *
  * Functions to convert between Backend (BE) and Frontend (FE) user types.
@@ -22,6 +31,22 @@ import {
 /**
  * Parse Firestore Timestamp or ISO string to Date
  */
+/**
+ * Parses date
+ *
+ * @param {Timestamp | string | null} date - The date
+ *
+ * @returns {any} The parsedate result
+ */
+
+/**
+ * Parses date
+ *
+ * @param {Timestamp | string | null} date - The date
+ *
+ * @returns {any} The parsedate result
+ */
+
 function parseDate(date: Timestamp | string | null): Date | null {
   if (!date) return null;
   if (date instanceof Timestamp) {
@@ -33,10 +58,29 @@ function parseDate(date: Timestamp | string | null): Date | null {
 /**
  * Format price as Indian Rupees
  */
+/**
+ * Formats price
+ *
+ * @param {number} price - The price
+ *
+ * @returns {string} The formatprice result
+ */
+
+/**
+ * Formats price
+ *
+ * @param {number} price - The price
+ *
+ * @returns {string} The formatprice result
+ */
+
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("en-IN", {
+    /** Style */
     style: "currency",
+    /** Currency */
     currency: "INR",
+    /** Maximum Fraction Digits */
     maximumFractionDigits: 0,
   }).format(price);
 }
@@ -44,6 +88,22 @@ function formatPrice(price: number): string {
 /**
  * Round rating to nearest 0.5
  */
+/**
+ * Performs round rating operation
+ *
+ * @param {number} rating - The rating
+ *
+ * @returns {number} The roundrating result
+ */
+
+/**
+ * Performs round rating operation
+ *
+ * @param {number} rating - The rating
+ *
+ * @returns {number} The roundrating result
+ */
+
 function roundRating(rating: number): number {
   return Math.round(rating * 2) / 2;
 }
@@ -51,9 +111,28 @@ function roundRating(rating: number): number {
 /**
  * Get user initials from name
  */
+/**
+ * Retrieves initials
+ *
+ * @param {string | null} displayName - Name of display
+ * @param {string | null} firstName - Name of first
+ * @param {string | null} lastName - Name of last
+ *
+ * @returns {string} The initials result
+ */
+
+/**
+ * Retrieves initials
+ *
+ * @returns {string} The initials result
+ */
+
 function getInitials(
+  /** Display Name */
   displayName: string | null,
+  /** First Name */
   firstName: string | null,
+  /** Last Name */
   lastName: string | null,
 ): string {
   if (firstName && lastName) {
@@ -72,10 +151,26 @@ function getInitials(
 /**
  * Get full name from user data
  */
+/**
+ * Retrieves full name
+ *
+ * @returns {string} The fullname result
+ */
+
+/**
+ * Retrieves full name
+ *
+ * @returns {string} The fullname result
+ */
+
 function getFullName(
+  /** Display Name */
   displayName: string | null,
+  /** First Name */
   firstName: string | null,
+  /** Last Name */
   lastName: string | null,
+  /** Email */
   email: string,
 ): string {
   if (firstName && lastName) {
@@ -90,6 +185,22 @@ function getFullName(
 /**
  * Format relative time
  */
+/**
+ * Formats relative time
+ *
+ * @param {Date | null} date - The date
+ *
+ * @returns {string} The formatrelativetime result
+ */
+
+/**
+ * Formats relative time
+ *
+ * @param {Date | null} date - The date
+ *
+ * @returns {string} The formatrelativetime result
+ */
+
 function formatRelativeTime(date: Date | null): string {
   if (!date) return "Never";
 
@@ -119,9 +230,27 @@ function formatRelativeTime(date: Date | null): string {
 /**
  * Format member since date
  */
+/**
+ * Formats member since
+ *
+ * @param {Date} date - The date
+ *
+ * @returns {string} The formatmembersince result
+ */
+
+/**
+ * Formats member since
+ *
+ * @param {Date} date - The date
+ *
+ * @returns {string} The formatmembersince result
+ */
+
 function formatMemberSince(date: Date): string {
   return `Member since ${date.toLocaleDateString("en-US", {
+    /** Month */
     month: "short",
+    /** Year */
     year: "numeric",
   })}`;
 }
@@ -129,6 +258,22 @@ function formatMemberSince(date: Date): string {
 /**
  * Calculate account age
  */
+/**
+ * Calculates account age
+ *
+ * @param {Date} createdAt - The created at
+ *
+ * @returns {string} The calculateaccountage result
+ */
+
+/**
+ * Calculates account age
+ *
+ * @param {Date} createdAt - The created at
+ *
+ * @returns {string} The calculateaccountage result
+ */
+
 function calculateAccountAge(createdAt: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - createdAt.getTime();
@@ -146,6 +291,24 @@ function calculateAccountAge(createdAt: Date): string {
 /**
  * Generate user badges
  */
+/**
+ * Performs generate user badges operation
+ *
+ * @param {UserBE} user - The user
+ * @param {Date} createdAt - The created at
+ *
+ * @returns {string} The userbadges result
+ */
+
+/**
+ * Performs generate user badges operation
+ *
+ * @param {UserBE} user - The user
+ * @param {Date} createdAt - The created at
+ *
+ * @returns {string} The userbadges result
+ */
+
 function generateUserBadges(user: UserBE, createdAt: Date): string[] {
   const badges: string[] = [];
 
@@ -188,6 +351,28 @@ function generateUserBadges(user: UserBE, createdAt: Date): string[] {
 /**
  * Transform Backend User to Frontend User
  */
+/**
+ * Performs to f e user operation
+ *
+ * @param {UserBE} userBE - The user b e
+ *
+ * @returns {any} The tofeuser result
+ *
+ * @example
+ * toFEUser(userBE);
+ */
+
+/**
+ * Performs to f e user operation
+ *
+ * @param {UserBE} userBE - The user b e
+ *
+ * @returns {any} The tofeuser result
+ *
+ * @example
+ * toFEUser(userBE);
+ */
+
 export function toFEUser(userBE: UserBE): UserFE {
   const createdAt = parseDate(userBE.createdAt) || new Date();
   const updatedAt = parseDate(userBE.updatedAt) || new Date();
@@ -206,43 +391,73 @@ export function toFEUser(userBE: UserBE): UserFE {
   );
 
   return {
+    /** Id */
     id: userBE.id,
+    /** Uid */
     uid: userBE.uid,
+    /** Email */
     email: userBE.email,
+    /** Display Name */
     displayName: userBE.displayName,
+    /** Photo U R L */
     photoURL: userBE.photoURL,
+    /** Phone Number */
     phoneNumber: userBE.phoneNumber,
     phone: userBE.phoneNumber, // Alias for compatibility
+    /** Role */
     role: userBE.role,
+    /** Status */
     status: userBE.status,
 
+    /** First Name */
     firstName: userBE.firstName,
+    /** Last Name */
     lastName: userBE.lastName,
     fullName,
     initials,
+    /** Bio */
     bio: userBE.bio,
+    /** Location */
     location: userBE.location,
 
+    /** Email Verified */
     emailVerified: userBE.emailVerified,
+    /** Phone Verified */
     phoneVerified: userBE.phoneVerified,
+    /** Is Verified */
     isVerified: userBE.emailVerified && userBE.phoneVerified,
 
+    /** Shop Id */
     shopId: userBE.shopId,
+    /** Shop Name */
     shopName: userBE.shopName,
+    /** Shop Slug */
     shopSlug: userBE.shopSlug,
+    /** Has Shop */
     hasShop: userBE.shopId !== null,
 
+    /** Total Orders */
     totalOrders: userBE.totalOrders,
+    /** Total Spent */
     totalSpent: userBE.totalSpent,
+    /** Total Sales */
     totalSales: userBE.totalSales,
+    /** Total Products */
     totalProducts: userBE.totalProducts,
+    /** Total Auctions */
     totalAuctions: userBE.totalAuctions,
+    /** Rating */
     rating: userBE.rating,
+    /** Review Count */
     reviewCount: userBE.reviewCount,
 
+    /** Formatted Total Spent */
     formattedTotalSpent: formatPrice(userBE.totalSpent),
+    /** Formatted Total Sales */
     formattedTotalSales: formatPrice(userBE.totalSales),
+    /** Rating Stars */
     ratingStars: roundRating(userBE.rating),
+    /** Rating Display */
     ratingDisplay:
       userBE.reviewCount > 0
         ? `${userBE.rating.toFixed(1)} (${userBE.reviewCount} review${
@@ -250,25 +465,37 @@ export function toFEUser(userBE: UserBE): UserFE {
           })`
         : "No reviews",
 
+    /** Notifications */
     notifications: userBE.notifications,
 
     createdAt,
     updatedAt,
     lastLoginAt,
 
+    /** Member Since */
     memberSince: formatMemberSince(createdAt),
+    /** Last Login Display */
     lastLoginDisplay: formatRelativeTime(lastLoginAt),
+    /** Account Age */
     accountAge: calculateAccountAge(createdAt),
 
+    /** Is Active */
     isActive: userBE.status === "active",
+    /** Is Blocked */
     isBlocked: userBE.status === "blocked",
+    /** Is Suspended */
     isSuspended: userBE.status === "suspended",
+    /** Is Admin */
     isAdmin: userBE.role === "admin",
+    /** Is Seller */
     isSeller: userBE.role === "seller",
+    /** Is User */
     isUser: userBE.role === "user",
 
+    /** Badges */
     badges: generateUserBadges(userBE, createdAt),
 
+    /** Metadata */
     metadata: userBE.metadata,
   };
 }
@@ -276,25 +503,59 @@ export function toFEUser(userBE: UserBE): UserFE {
 /**
  * Transform Backend User List Item to Frontend User Card
  */
+/**
+ * Performs to f e user card operation
+ *
+ * @param {UserListItemBE} userBE - The user b e
+ *
+ * @returns {any} The tofeusercard result
+ *
+ * @example
+ * toFEUserCard(userBE);
+ */
+
+/**
+ * Performs to f e user card operation
+ *
+ * @param {UserListItemBE} userBE - The user b e
+ *
+ * @returns {any} The tofeusercard result
+ *
+ * @example
+ * toFEUserCard(userBE);
+ */
+
 export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
   const fullName = getFullName(userBE.displayName, null, null, userBE.email);
   const initials = getInitials(userBE.displayName, null, null);
   const createdAt = parseDate(userBE.createdAt) || new Date();
 
   return {
+    /** Id */
     id: userBE.id,
+    /** Uid */
     uid: userBE.uid,
+    /** Email */
     email: userBE.email,
     fullName,
     initials,
+    /** Photo U R L */
     photoURL: userBE.photoURL,
+    /** Role */
     role: userBE.role,
+    /** Status */
     status: userBE.status,
+    /** Is Active */
     isActive: userBE.status === "active",
+    /** Is Verified */
     isVerified: userBE.emailVerified,
+    /** Rating */
     rating: 0,
+    /** Rating Display */
     ratingDisplay: "No reviews",
+    /** Member Since */
     memberSince: formatMemberSince(createdAt),
+    /** Badges */
     badges: userBE.emailVerified ? ["Verified"] : [],
   };
 }
@@ -302,16 +563,49 @@ export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
 /**
  * Transform Frontend User Profile Form to Backend Update Request
  */
+/**
+ * Performs to b e user profile update operation
+ *
+ * @param {UserProfileFormFE} formData - The form data
+ *
+ * @returns {any} The tobeuserprofileupdate result
+ *
+ * @example
+ * toBEUserProfileUpdate(formData);
+ */
+
+/**
+ * Performs to b e user profile update operation
+ *
+ * @param {UserProfileFormFE} /** Form Data */
+  formData - The /**  form  data */
+  form data
+ *
+ * @returns {any} The tobeuserprofileupdate result
+ *
+ * @example
+ * toBEUserProfileUpdate(/** Form Data */
+  formData);
+ */
+
 export function toBEUserProfileUpdate(
+  /** Form Data */
   formData: UserProfileFormFE,
 ): UpdateUserProfileBE {
   return {
+    /** Display Name */
     displayName: formData.displayName || undefined,
+    /** First Name */
     firstName: formData.firstName || undefined,
+    /** Last Name */
     lastName: formData.lastName || undefined,
+    /** Phone Number */
     phoneNumber: formData.phoneNumber || undefined,
+    /** Bio */
     bio: formData.bio || undefined,
+    /** Location */
     location: formData.location || undefined,
+    /** Photo U R L */
     photoURL: formData.photoURL || undefined,
   };
 }
@@ -319,10 +613,37 @@ export function toBEUserProfileUpdate(
 /**
  * Transform Frontend User Preferences Form to Backend Update Request
  */
+/**
+ * Performs to b e user preferences update operation
+ *
+ * @param {UserPreferencesFormFE} formData - The form data
+ *
+ * @returns {any} The tobeuserpreferencesupdate result
+ *
+ * @example
+ * toBEUserPreferencesUpdate(formData);
+ */
+
+/**
+ * Performs to b e user preferences update operation
+ *
+ * @param {UserPreferencesFormFE} /** Form Data */
+  formData - The /**  form  data */
+  form data
+ *
+ * @returns {any} The tobeuserpreferencesupdate result
+ *
+ * @example
+ * toBEUserPreferencesUpdate(/** Form Data */
+  formData);
+ */
+
 export function toBEUserPreferencesUpdate(
+  /** Form Data */
   formData: UserPreferencesFormFE,
 ): UpdateUserPreferencesBE {
   return {
+    /** Notifications */
     notifications: formData.notifications,
   };
 }
@@ -330,6 +651,28 @@ export function toBEUserPreferencesUpdate(
 /**
  * Batch transform Backend Users to Frontend Users
  */
+/**
+ * Performs to f e users operation
+ *
+ * @param {UserBE[]} usersBE - The users b e
+ *
+ * @returns {any} The tofeusers result
+ *
+ * @example
+ * toFEUsers(usersBE);
+ */
+
+/**
+ * Performs to f e users operation
+ *
+ * @param {UserBE[]} usersBE - The users b e
+ *
+ * @returns {any} The tofeusers result
+ *
+ * @example
+ * toFEUsers(usersBE);
+ */
+
 export function toFEUsers(usersBE: UserBE[]): UserFE[] {
   return usersBE.map(toFEUser);
 }
@@ -337,6 +680,28 @@ export function toFEUsers(usersBE: UserBE[]): UserFE[] {
 /**
  * Batch transform Backend User List Items to Frontend User Cards
  */
+/**
+ * Performs to f e user cards operation
+ *
+ * @param {UserListItemBE[]} usersBE - The users b e
+ *
+ * @returns {any} The tofeusercards result
+ *
+ * @example
+ * toFEUserCards(usersBE);
+ */
+
+/**
+ * Performs to f e user cards operation
+ *
+ * @param {UserListItemBE[]} usersBE - The users b e
+ *
+ * @returns {any} The tofeusercards result
+ *
+ * @example
+ * toFEUserCards(usersBE);
+ */
+
 export function toFEUserCards(usersBE: UserListItemBE[]): UserCardFE[] {
   return usersBE.map(toFEUserCard);
 }
@@ -344,14 +709,43 @@ export function toFEUserCards(usersBE: UserListItemBE[]): UserCardFE[] {
 /**
  * Transform user profile form to backend update request
  */
+/**
+ * Performs to b e update user request operation
+ *
+ * @param {UserProfileFormFE} formData - The form data
+ *
+ * @returns {any} The tobeupdateuserrequest result
+ *
+ * @example
+ * toBEUpdateUserRequest(formData);
+ */
+
+/**
+ * Performs to b e update user request operation
+ *
+ * @param {UserProfileFormFE} formData - The form data
+ *
+ * @returns {any} The tobeupdateuserrequest result
+ *
+ * @example
+ * toBEUpdateUserRequest(formData);
+ */
+
 export function toBEUpdateUserRequest(formData: UserProfileFormFE) {
   return {
+    /** Display Name */
     displayName: formData.displayName || undefined,
+    /** First Name */
     firstName: formData.firstName || undefined,
+    /** Last Name */
     lastName: formData.lastName || undefined,
+    /** Phone Number */
     phoneNumber: formData.phoneNumber || undefined,
+    /** Bio */
     bio: formData.bio || undefined,
+    /** Location */
     location: formData.location || undefined,
+    /** Photo U R L */
     photoURL: formData.photoURL || undefined,
   };
 }
@@ -359,9 +753,34 @@ export function toBEUpdateUserRequest(formData: UserProfileFormFE) {
 /**
  * Transform ban user parameters to backend request
  */
+/**
+ * Performs to b e ban user request operation
+ *
+ * @param {boolean} isBanned - Whether is banned
+ * @param {string} [banReason] - The ban reason
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * toBEBanUserRequest(true, "example");
+ */
+
+/**
+ * Performs to b e ban user request operation
+ *
+ * @param {boolean} isBanned - Whether is banned
+ * @param {string} [banReason] - The ban reason
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * toBEBanUserRequest(true, "example");
+ */
+
 export function toBEBanUserRequest(isBanned: boolean, banReason?: string) {
   return {
     isBanned,
+    /** Ban Reason */
     banReason: banReason || undefined,
   };
 }
@@ -369,9 +788,34 @@ export function toBEBanUserRequest(isBanned: boolean, banReason?: string) {
 /**
  * Transform change role parameters to backend request
  */
+/**
+ * Performs to b e change role request operation
+ *
+ * @param {string} role - The role
+ * @param {string} [notes] - The notes
+ *
+ * @returns {string} The tobechangerolerequest result
+ *
+ * @example
+ * toBEChangeRoleRequest("example", "example");
+ */
+
+/**
+ * Performs to b e change role request operation
+ *
+ * @param {string} role - The role
+ * @param {string} [notes] - The notes
+ *
+ * @returns {string} The tobechangerolerequest result
+ *
+ * @example
+ * toBEChangeRoleRequest("example", "example");
+ */
+
 export function toBEChangeRoleRequest(role: string, notes?: string) {
   return {
     role,
+    /** Notes */
     notes: notes || undefined,
   };
 }

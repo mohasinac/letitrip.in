@@ -1,10 +1,54 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/user/addresses/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "../../../lib/firebase/admin";
 import { getCurrentUser } from "../../../lib/session";
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -36,7 +80,9 @@ export async function GET(
     return NextResponse.json({ address });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.user.addresses.getById",
+      /** Metadata */
       metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(
@@ -46,7 +92,42 @@ export async function GET(
   }
 }
 
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -97,6 +178,7 @@ export async function PATCH(
     // Update address
     const updateData = {
       ...data,
+      /** Updated At */
       updatedAt: new Date().toISOString(),
     };
 
@@ -108,7 +190,9 @@ export async function PATCH(
     return NextResponse.json({ address: updatedAddress });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.user.addresses.update",
+      /** Metadata */
       metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(
@@ -118,7 +202,42 @@ export async function PATCH(
   }
 }
 
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -152,7 +271,9 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.user.addresses.delete",
+      /** Metadata */
       metadata: { addressId: id, userId: user?.id },
     });
     return NextResponse.json(

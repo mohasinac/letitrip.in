@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/categories.service
+ * @description This file contains service functions for categories operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
 import { logError } from "@/lib/firebase-error-logger";
@@ -20,9 +29,16 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
+/**
+ * CategoriesService class
+ * 
+ * @class
+ * @description Description of CategoriesService class functionality
+ */
 class CategoriesService {
   // List categories
   async list(
+    /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<CategoryFE>> {
     const params = new URLSearchParams();
@@ -42,8 +58,11 @@ class CategoriesService {
       await apiService.get<PaginatedResponseBE<CategoryBE>>(endpoint);
 
     return {
+      /** Data */
       data: toFECategories(response.data || []),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -57,7 +76,9 @@ class CategoriesService {
   // Get category by slug
   async getBySlug(slug: string): Promise<CategoryFE> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE;
     }>(`/categories/${slug}`);
     return toFECategory(response.data);
@@ -74,7 +95,9 @@ class CategoriesService {
       : "/categories/tree";
 
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryTreeNodeBE[];
     }>(endpoint);
     return (response.data || []).map(toFECategoryTreeNode);
@@ -83,7 +106,9 @@ class CategoriesService {
   // Get leaf categories (for product creation)
   async getLeaves(): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>("/categories/leaves");
     return toFECategories(response.data || []);
@@ -93,7 +118,9 @@ class CategoriesService {
   async create(formData: CategoryFormFE): Promise<CategoryFE> {
     const request = toBECreateCategoryRequest(formData);
     const response = await apiService.post<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE;
     }>("/categories", request);
     return toFECategory(response.data);
@@ -101,12 +128,16 @@ class CategoriesService {
 
   // Update category (admin only)
   async update(
+    /** Slug */
     slug: string,
+    /** Form Data */
     formData: Partial<CategoryFormFE>,
   ): Promise<CategoryFE> {
     const request = toBECreateCategoryRequest(formData as CategoryFormFE);
     const response = await apiService.patch<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE;
     }>(`/categories/${slug}`, request);
     return toFECategory(response.data);
@@ -119,11 +150,15 @@ class CategoriesService {
 
   // Add parent to category (admin only)
   async addParent(
+    /** Slug */
     slug: string,
+    /** Parent Id */
     parentId: string,
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
+      /** Success */
       success: boolean;
+      /** Message */
       message: string;
     }>(`/categories/${slug}/add-parent`, { parentId });
     return { message: response.message };
@@ -131,11 +166,15 @@ class CategoriesService {
 
   // Remove parent from category (admin only)
   async removeParent(
+    /** Slug */
     slug: string,
+    /** Parent Id */
     parentId: string,
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
+      /** Success */
       success: boolean;
+      /** Message */
       message: string;
     }>(`/categories/${slug}/remove-parent`, { parentId });
     return { message: response.message };
@@ -144,7 +183,9 @@ class CategoriesService {
   // Get all parents of a category
   async getParents(slug: string): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>(`/categories/${slug}/parents`);
     return toFECategories(response.data || []);
@@ -153,7 +194,9 @@ class CategoriesService {
   // Get all direct children of a category
   async getChildren(slug: string): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>(`/categories/${slug}/children`);
     return toFECategories(response.data || []);
@@ -162,7 +205,9 @@ class CategoriesService {
   // Get featured categories
   async getFeatured(): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>("/categories/featured");
     return toFECategories(response.data || []);
@@ -171,7 +216,9 @@ class CategoriesService {
   // Get homepage categories
   async getHomepage(): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>("/categories/homepage");
     return toFECategories(response.data || []);
@@ -180,7 +227,9 @@ class CategoriesService {
   // Search categories
   async search(query: string): Promise<CategoryFE[]> {
     const response = await apiService.get<{
+      /** Success */
       success: boolean;
+      /** Data */
       data: CategoryBE[];
     }>(`/categories/search?q=${encodeURIComponent(query)}`);
     return toFECategories(response.data || []);
@@ -188,6 +237,7 @@ class CategoriesService {
 
   // Reorder categories (admin only)
   async reorder(
+    /** Orders */
     orders: { id: string; sortOrder: number }[],
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/categories/reorder", {
@@ -197,10 +247,15 @@ class CategoriesService {
 
   // Get products in a category (includes subcategories' products)
   async getCategoryProducts(
+    /** Slug */
     slug: string,
+    /** Filters */
     filters?: {
+      /** Page */
       page?: number;
+      /** Limit */
       limit?: number;
+      /** Include Subcategories */
       includeSubcategories?: boolean;
       [key: string]: any;
     },
@@ -222,8 +277,11 @@ class CategoriesService {
     const res =
       await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
     return {
+      /** Data */
       data: res.data.map(toFEProductCard),
+      /** Count */
       count: res.count,
+      /** Pagination */
       pagination: res.pagination,
     };
   }
@@ -238,7 +296,9 @@ class CategoriesService {
 
   // Get similar categories (siblings or related)
   async getSimilarCategories(
+    /** Slug */
     slug: string,
+    /** Limit */
     limit?: number,
   ): Promise<CategoryFE[]> {
     const params = new URLSearchParams();
@@ -278,7 +338,9 @@ class CategoriesService {
           (category as any).parentId || (category as any).parent_id || null;
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "CategoriesService.getBreadcrumb",
+          /** Metadata */
           metadata: { currentId },
         });
         break;
@@ -291,6 +353,7 @@ class CategoriesService {
   // Bulk operations (admin only)
   async bulkActivate(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "activate",
       ids,
     });
@@ -298,6 +361,7 @@ class CategoriesService {
 
   async bulkDeactivate(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "deactivate",
       ids,
     });
@@ -305,6 +369,7 @@ class CategoriesService {
 
   async bulkFeature(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "feature",
       ids,
     });
@@ -312,6 +377,7 @@ class CategoriesService {
 
   async bulkUnfeature(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "unfeature",
       ids,
     });
@@ -319,16 +385,20 @@ class CategoriesService {
 
   async bulkDelete(ids: string[]): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "delete",
       ids,
     });
   }
 
   async bulkUpdate(
+    /** Ids */
     ids: string[],
+    /** Updates */
     updates: Partial<CategoryFormFE>,
   ): Promise<void> {
     await apiService.post("/categories/bulk", {
+      /** Action */
       action: "update",
       ids,
       updates,
@@ -346,7 +416,9 @@ class CategoriesService {
       return toFECategories(response.data || []);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "CategoriesService.getByIds",
+        /** Metadata */
         metadata: { ids },
       });
       return [];

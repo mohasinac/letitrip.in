@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/tickets/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -12,11 +21,15 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 
 const statusColors = {
+  /** Open */
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   "in-progress":
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  /** Resolved */
   resolved: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  /** Closed */
   closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+  /** Escalated */
   escalated: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
 };
 
@@ -24,20 +37,26 @@ const categoryLabels = {
   "order-issue": "Order Issue",
   "return-refund": "Return/Refund",
   "product-question": "Product Question",
+  /** Account */
   account: "Account",
+  /** Payment */
   payment: "Payment",
+  /** Other */
   other: "Other",
 };
 
 export default function UserTicketsPage() {
   const router = useRouter();
   const {
+    /** Data */
     data: ticketsData,
     isLoading,
     error,
     execute,
   } = useLoadingState<{
+    /** Data */
     data: SupportTicketFE[];
+    /** Pagination */
     pagination: any;
   }>();
   const tickets = ticketsData?.data || [];
@@ -48,7 +67,9 @@ export default function UserTicketsPage() {
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const [filter, setFilter] = useState({
+    /** Status */
     status: "",
+    /** Category */
     category: "",
   });
 
@@ -56,9 +77,12 @@ export default function UserTicketsPage() {
     const startAfter = cursors[currentPage - 1];
     const response = await execute(() =>
       supportService.listTickets({
+        /** Status */
         status: filter.status as any,
+        /** Category */
         category: filter.category as any,
         startAfter,
+        /** Limit */
         limit: 20,
       } as any),
     );
@@ -86,6 +110,18 @@ export default function UserTicketsPage() {
     fetchTickets();
   }, [fetchTickets]);
 
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
@@ -93,12 +129,36 @@ export default function UserTicketsPage() {
     }
   };
 
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
+
+  /**
+   * Handles filter change event
+   *
+   * @returns {any} The handlefilterchange result
+   */
+
+  /**
+   * Handles filter change event
+   *
+   * @returns {any} The handlefilterchange result
+   */
 
   const handleFilterChange = () => {
     setCurrentPage(1);

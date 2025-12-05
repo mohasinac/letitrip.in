@@ -1,17 +1,45 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/rbac-permissions
+ * @description This file contains functionality related to rbac-permissions
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Role-Based Access Control (RBAC) Permission Helpers
  * Fine-grained permission checks for resources
  */
 
+/**
+ * User Role type definition
+ * @typedef {UserRole}
+ */
 export type UserRole = "admin" | "seller" | "user" | "guest";
 
+/**
+ * AuthUser interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuthUser
+ */
 export interface AuthUser {
+  /** Uid */
   uid: string;
+  /** Email */
   email: string;
+  /** Role */
   role: UserRole;
   shopId?: string; // For sellers
 }
 
+/**
+ * ResourceType type
+ * 
+ * @typedef {Object} ResourceType
+ * @description Type definition for ResourceType
+ */
 export type ResourceType =
   | "hero_slides"
   | "categories"
@@ -25,14 +53,45 @@ export type ResourceType =
   | "payouts"
   | "users";
 
+/**
+ * Action type
+ * 
+ * @typedef {Object} Action
+ * @description Type definition for Action
+ */
 export type Action = "read" | "create" | "update" | "delete" | "bulk";
 
 /**
  * Check if user can read a resource
  */
+/**
+ * Checks if read resource
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {ResourceType} resourceType - The resource type
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * canReadResource(user, resourceType, data);
+ */
+
+/**
+ * Checks if read resource
+ *
+ * @returns {any} The canreadresource result
+ *
+ * @example
+ * canReadResource();
+ */
+
 export function canReadResource(
+  /** User */
   user: AuthUser | null,
+  /** Resource Type */
   resourceType: ResourceType,
+  /** Data */
   data?: any,
 ): boolean {
   // Public resources - anyone can read active/published items
@@ -103,10 +162,32 @@ export function canReadResource(
 /**
  * Check if user can create a resource
  */
+/**
+ * Checks if write resource
+ *
+ * @returns {any} The canwriteresource result
+ *
+ * @example
+ * canWriteResource();
+ */
+
+/**
+ * Checks if write resource
+ *
+ * @returns {any} The canwriteresource result
+ *
+ * @example
+ * canWriteResource();
+ */
+
 export function canWriteResource(
+  /** User */
   user: AuthUser | null,
+  /** Resource Type */
   resourceType: ResourceType,
+  /** Action */
   action: "create" | "update" = "create",
+  /** Data */
   data?: any,
 ): boolean {
   if (!user) {
@@ -187,9 +268,34 @@ export function canWriteResource(
 /**
  * Check if user can delete a resource
  */
+/**
+ * Checks if delete resource
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {ResourceType} resourceType - The resource type
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * canDeleteResource(user, resourceType, data);
+ */
+
+/**
+ * Checks if delete resource
+ *
+ * @returns {any} The candeleteresource result
+ *
+ * @example
+ * canDeleteResource();
+ */
+
 export function canDeleteResource(
+  /** User */
   user: AuthUser | null,
+  /** Resource Type */
   resourceType: ResourceType,
+  /** Data */
   data?: any,
 ): boolean {
   if (!user) {
@@ -229,9 +335,34 @@ export function canDeleteResource(
 /**
  * Filter data based on user role and permissions
  */
+/**
+ * Filters data by role
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {ResourceType} resourceType - The resource type
+ * @param {T[]} data - Data object containing information
+ *
+ * @returns {any} The filterdatabyrole result
+ *
+ * @example
+ * filterDataByRole(user, resourceType, data);
+ */
+
+/**
+ * Filters data by role
+ *
+ * @returns {any} The filterdatabyrole result
+ *
+ * @example
+ * filterDataByRole();
+ */
+
 export function filterDataByRole<T extends Record<string, any>>(
+  /** User */
   user: AuthUser | null,
+  /** Resource Type */
   resourceType: ResourceType,
+  /** Data */
   data: T[],
 ): T[] {
   // Admin sees everything
@@ -297,6 +428,30 @@ export function filterDataByRole<T extends Record<string, any>>(
 /**
  * Check if user owns a resource
  */
+/**
+ * Checks if resource owner
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {any} data - Data object containing information
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isResourceOwner(user, data);
+ */
+
+/**
+ * Checks if resource owner
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {any} data - Data object containing information
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isResourceOwner(user, data);
+ */
+
 export function isResourceOwner(user: AuthUser | null, data: any): boolean {
   if (!user) {
     return false;
@@ -314,11 +469,37 @@ export function isResourceOwner(user: AuthUser | null, data: any): boolean {
 /**
  * Get role hierarchy level (higher = more permissions)
  */
+/**
+ * Retrieves role level
+ *
+ * @param {UserRole} role - The role
+ *
+ * @returns {number} The rolelevel result
+ *
+ * @example
+ * getRoleLevel(role);
+ */
+
+/**
+ * Retrieves role level
+ *
+ * @param {UserRole} role - The role
+ *
+ * @returns {number} The rolelevel result
+ *
+ * @example
+ * getRoleLevel(role);
+ */
+
 export function getRoleLevel(role: UserRole): number {
   const levels: Record<UserRole, number> = {
+    /** Admin */
     admin: 100,
+    /** Seller */
     seller: 50,
+    /** User */
     user: 10,
+    /** Guest */
     guest: 0,
   };
   return levels[role] || 0;
@@ -327,8 +508,31 @@ export function getRoleLevel(role: UserRole): number {
 /**
  * Check if user has at least the required role
  */
+/**
+ * Checks if role
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {UserRole} requiredRole - The required role
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasRole(user, requiredRole);
+ */
+
+/**
+ * Checks if role
+ *
+ * @returns {any} The hasrole result
+ *
+ * @example
+ * hasRole();
+ */
+
 export function hasRole(
+  /** User */
   user: AuthUser | null,
+  /** Required Role */
   requiredRole: UserRole,
 ): boolean {
   if (!user) {
@@ -340,6 +544,30 @@ export function hasRole(
 /**
  * Check if user has any of the required roles
  */
+/**
+ * Checks if any role
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {UserRole[]} roles - The roles
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasAnyRole(user, roles);
+ */
+
+/**
+ * Checks if any role
+ *
+ * @param {AuthUser | null} user - The user
+ * @param {UserRole[]} roles - The roles
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasAnyRole(user, roles);
+ */
+
 export function hasAnyRole(user: AuthUser | null, roles: UserRole[]): boolean {
   if (!user) {
     return roles.includes("guest");

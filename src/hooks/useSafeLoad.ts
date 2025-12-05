@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useSafeLoad
+ * @description This file contains functionality related to useSafeLoad
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { useEffect, useRef, useCallback, useState } from "react";
 import { logError } from "@/lib/firebase-error-logger";
 
@@ -34,8 +43,38 @@ interface UseSafeLoadOptions {
   skipIfLoaded?: boolean;
 }
 
+/**
+ * Function: Use Safe Load
+ */
+/**
+ * Custom React hook for safe load
+ *
+ * @param {(} loadFn - The load fn
+ *
+ * @returns {any} The usesafeload result
+ *
+ * @example
+ * useSafeLoad(loadFn);
+ */
+
+/**
+ * Custom React hook for safe load
+ *
+ * @param {(} /** Load Fn */
+  loadFn - The /**  load  fn */
+  load fn
+ *
+ * @returns {any} The usesafeload result
+ *
+ * @example
+ * useSafeLoad(/** Load Fn */
+  loadFn);
+ */
+
 export function useSafeLoad(
+  /** Load Fn */
   loadFn: () => Promise<void> | void,
+  /** Options */
   options: UseSafeLoadOptions = {},
 ) {
   const {
@@ -133,14 +172,48 @@ export function useSafeLoad(
  * ```
  */
 interface UseAdminLoadOptions {
+  /** User */
   user: any;
+  /** Required Role */
   requiredRole?: "admin" | "seller" | "user";
+  /** Deps */
   deps?: any[];
+  /** Debounce */
   debounce?: number;
 }
 
+/**
+ * Function: Use Admin Load
+ */
+/**
+ * Custom React hook for admin load
+ *
+ * @param {(} loadFn - The load fn
+ *
+ * @returns {any} The useadminload result
+ *
+ * @example
+ * useAdminLoad(loadFn);
+ */
+
+/**
+ * Custom React hook for admin load
+ *
+ * @param {(} /** Load Fn */
+  loadFn - The /**  load  fn */
+  load fn
+ *
+ * @returns {any} The useadminload result
+ *
+ * @example
+ * useAdminLoad(/** Load Fn */
+  loadFn);
+ */
+
 export function useAdminLoad(
+  /** Load Fn */
   loadFn: () => Promise<void> | void,
+  /** Options */
   options: UseAdminLoadOptions,
 ) {
   const { user, requiredRole = "admin", deps = [], debounce = 0 } = options;
@@ -149,6 +222,7 @@ export function useAdminLoad(
 
   return useSafeLoad(loadFn, {
     enabled,
+    /** Deps */
     deps: [user?.uid, user?.role, ...deps],
     debounce,
   });

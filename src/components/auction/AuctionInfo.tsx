@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auction/AuctionInfo
+ * @description This file contains the AuctionInfo component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { VerificationGate } from "@/components/auth/VerificationGate";
@@ -6,21 +15,42 @@ import { AlertCircle, Clock, Eye, Gavel, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * AuctionInfoProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionInfoProps
+ */
 export interface AuctionInfoProps {
+  /** Auction Id */
   auctionId: string;
+  /** Current Bid */
   currentBid: number;
+  /** Starting Bid */
   startingBid: number;
+  /** Reserve Price */
   reservePrice?: number;
+  /** Has Reserve Met */
   hasReserveMet?: boolean;
+  /** End Time */
   endTime: string;
+  /** Bid Count */
   bidCount: number;
+  /** Buy Now Price */
   buyNowPrice?: number;
+  /** Min Bid Increment */
   minBidIncrement: number;
+  /** Is Watching */
   isWatching?: boolean;
+  /** Can Bid */
   canBid?: boolean;
+  /** On Place Bid */
   onPlaceBid?: (amount: number) => Promise<void>;
+  /** On Buy Now */
   onBuyNow?: () => Promise<void>;
+  /** On Toggle Watch */
   onToggleWatch?: () => Promise<void>;
+  /** Class Name */
   className?: string;
 }
 
@@ -52,6 +82,24 @@ export interface AuctionInfoProps {
  * />
  * ```
  */
+/**
+ * Performs auction info operation
+ *
+ * @returns {any} The auctioninfo result
+ *
+ * @example
+ * AuctionInfo();
+ */
+
+/**
+ * Performs auction info operation
+ *
+ * @returns {any} The auctioninfo result
+ *
+ * @example
+ * AuctionInfo();
+ */
+
 export function AuctionInfo({
   auctionId,
   currentBid,
@@ -74,9 +122,43 @@ export function AuctionInfo({
   );
   const [placing, setPlacing] = useState(false);
 
+  /**
+   * Handles increment bid event
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {Promise<any>} Promise resolving to handleincrementbid result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles increment bid event
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The handleincrementbid result
+   */
+
   const handleIncrementBid = (amount: number) => {
     setBidAmount((prev) => prev + amount);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handlePlaceBid = async () => {
     if (!onPlaceBid) return;
@@ -104,6 +186,22 @@ export function AuctionInfo({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBuyNow = async () => {
     if (!onBuyNow) return;
 
@@ -114,6 +212,22 @@ export function AuctionInfo({
       toast.error(error.message || "Failed to purchase");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleToggleWatch = async () => {
     if (!onToggleWatch) return;

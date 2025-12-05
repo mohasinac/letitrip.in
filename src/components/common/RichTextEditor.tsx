@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/RichTextEditor
+ * @description This file contains the RichTextEditor component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { logError } from "@/lib/firebase-error-logger";
@@ -70,28 +79,59 @@ type EditorTool =
   | "subscript"
   | "superscript";
 
+/**
+ * EditorButton interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EditorButton
+ */
 interface EditorButton {
+  /** Tool */
   tool: EditorTool;
+  /** Icon */
   icon: React.ReactNode;
+  /** Label */
   label: string;
+  /** Command */
   command?: string;
+  /** Value */
   value?: string;
+  /** Has Dropdown */
   hasDropdown?: boolean;
+  /** Group */
   group?: string;
 }
 
+/**
+ * RichTextEditorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RichTextEditorProps
+ */
 interface RichTextEditorProps {
+  /** Id */
   id?: string;
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (value: string) => void;
+  /** Placeholder */
   placeholder?: string;
+  /** Min Height */
   minHeight?: number;
+  /** Max Height */
   maxHeight?: number;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
+  /** Show Char Count */
   showCharCount?: boolean;
+  /** Max Chars */
   maxChars?: number;
+  /** Tools */
   tools?: EditorTool[];
+  /** Class Name */
   className?: string;
   /** Context for image uploads (product, shop, auction, etc.) */
   imageUploadContext?: "product" | "shop" | "auction" | "category" | "blog";
@@ -162,194 +202,331 @@ const HIGHLIGHT_COLORS = [
 
 const EDITOR_BUTTONS: EditorButton[] = [
   {
+    /** Tool */
     tool: "bold",
+    /** Icon */
     icon: <Bold className="w-4 h-4" />,
+    /** Label */
     label: "Bold (Ctrl+B)",
+    /** Command */
     command: "bold",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "italic",
+    /** Icon */
     icon: <Italic className="w-4 h-4" />,
+    /** Label */
     label: "Italic (Ctrl+I)",
+    /** Command */
     command: "italic",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "underline",
+    /** Icon */
     icon: <Underline className="w-4 h-4" />,
+    /** Label */
     label: "Underline (Ctrl+U)",
+    /** Command */
     command: "underline",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "strikethrough",
+    /** Icon */
     icon: <Strikethrough className="w-4 h-4" />,
+    /** Label */
     label: "Strikethrough",
+    /** Command */
     command: "strikeThrough",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "subscript",
+    /** Icon */
     icon: <Subscript className="w-4 h-4" />,
+    /** Label */
     label: "Subscript",
+    /** Command */
     command: "subscript",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "superscript",
+    /** Icon */
     icon: <Superscript className="w-4 h-4" />,
+    /** Label */
     label: "Superscript",
+    /** Command */
     command: "superscript",
+    /** Group */
     group: "format",
   },
   {
+    /** Tool */
     tool: "h1",
+    /** Icon */
     icon: <Heading1 className="w-4 h-4" />,
+    /** Label */
     label: "Heading 1",
+    /** Command */
     command: "formatBlock",
+    /** Value */
     value: "h1",
+    /** Group */
     group: "heading",
   },
   {
+    /** Tool */
     tool: "h2",
+    /** Icon */
     icon: <Heading2 className="w-4 h-4" />,
+    /** Label */
     label: "Heading 2",
+    /** Command */
     command: "formatBlock",
+    /** Value */
     value: "h2",
+    /** Group */
     group: "heading",
   },
   {
+    /** Tool */
     tool: "h3",
+    /** Icon */
     icon: <Heading3 className="w-4 h-4" />,
+    /** Label */
     label: "Heading 3",
+    /** Command */
     command: "formatBlock",
+    /** Value */
     value: "h3",
+    /** Group */
     group: "heading",
   },
   {
+    /** Tool */
     tool: "ul",
+    /** Icon */
     icon: <List className="w-4 h-4" />,
+    /** Label */
     label: "Bullet List",
+    /** Command */
     command: "insertUnorderedList",
+    /** Group */
     group: "list",
   },
   {
+    /** Tool */
     tool: "ol",
+    /** Icon */
     icon: <ListOrdered className="w-4 h-4" />,
+    /** Label */
     label: "Numbered List",
+    /** Command */
     command: "insertOrderedList",
+    /** Group */
     group: "list",
   },
   {
+    /** Tool */
     tool: "alignLeft",
+    /** Icon */
     icon: <AlignLeft className="w-4 h-4" />,
+    /** Label */
     label: "Align Left",
+    /** Command */
     command: "justifyLeft",
+    /** Group */
     group: "align",
   },
   {
+    /** Tool */
     tool: "alignCenter",
+    /** Icon */
     icon: <AlignCenter className="w-4 h-4" />,
+    /** Label */
     label: "Align Center",
+    /** Command */
     command: "justifyCenter",
+    /** Group */
     group: "align",
   },
   {
+    /** Tool */
     tool: "alignRight",
+    /** Icon */
     icon: <AlignRight className="w-4 h-4" />,
+    /** Label */
     label: "Align Right",
+    /** Command */
     command: "justifyRight",
+    /** Group */
     group: "align",
   },
   {
+    /** Tool */
     tool: "alignJustify",
+    /** Icon */
     icon: <AlignJustify className="w-4 h-4" />,
+    /** Label */
     label: "Justify",
+    /** Command */
     command: "justifyFull",
+    /** Group */
     group: "align",
   },
   {
+    /** Tool */
     tool: "textColor",
+    /** Icon */
     icon: <Palette className="w-4 h-4" />,
+    /** Label */
     label: "Text Color",
+    /** Has Dropdown */
     hasDropdown: true,
+    /** Group */
     group: "color",
   },
   {
+    /** Tool */
     tool: "highlight",
+    /** Icon */
     icon: <Highlighter className="w-4 h-4" />,
+    /** Label */
     label: "Highlight",
+    /** Has Dropdown */
     hasDropdown: true,
+    /** Group */
     group: "color",
   },
   {
+    /** Tool */
     tool: "link",
+    /** Icon */
     icon: <LinkIcon className="w-4 h-4" />,
+    /** Label */
     label: "Insert Link",
+    /** Command */
     command: "createLink",
+    /** Group */
     group: "insert",
   },
   {
+    /** Tool */
     tool: "image",
+    /** Icon */
     icon: <ImageIcon className="w-4 h-4" />,
+    /** Label */
     label: "Insert Image",
+    /** Has Dropdown */
     hasDropdown: true,
+    /** Group */
     group: "insert",
   },
   {
+    /** Tool */
     tool: "table",
+    /** Icon */
     icon: <TableIcon className="w-4 h-4" />,
+    /** Label */
     label: "Insert Table",
+    /** Has Dropdown */
     hasDropdown: true,
+    /** Group */
     group: "insert",
   },
   {
+    /** Tool */
     tool: "horizontalRule",
+    /** Icon */
     icon: <Minus className="w-4 h-4" />,
+    /** Label */
     label: "Horizontal Rule",
+    /** Command */
     command: "insertHorizontalRule",
+    /** Group */
     group: "insert",
   },
   {
+    /** Tool */
     tool: "blockquote",
+    /** Icon */
     icon: <Quote className="w-4 h-4" />,
+    /** Label */
     label: "Quote",
+    /** Command */
     command: "formatBlock",
+    /** Value */
     value: "blockquote",
+    /** Group */
     group: "block",
   },
   {
+    /** Tool */
     tool: "code",
+    /** Icon */
     icon: <Code2 className="w-4 h-4" />,
+    /** Label */
     label: "Inline Code",
+    /** Group */
     group: "block",
   },
   {
+    /** Tool */
     tool: "codeBlock",
+    /** Icon */
     icon: <Code2 className="w-4 h-4" />,
+    /** Label */
     label: "Code Block",
+    /** Group */
     group: "block",
   },
   {
+    /** Tool */
     tool: "undo",
+    /** Icon */
     icon: <Undo2 className="w-4 h-4" />,
+    /** Label */
     label: "Undo (Ctrl+Z)",
+    /** Command */
     command: "undo",
+    /** Group */
     group: "history",
   },
   {
+    /** Tool */
     tool: "redo",
+    /** Icon */
     icon: <Redo2 className="w-4 h-4" />,
+    /** Label */
     label: "Redo (Ctrl+Y)",
+    /** Command */
     command: "redo",
+    /** Group */
     group: "history",
   },
   {
+    /** Tool */
     tool: "clear",
+    /** Icon */
     icon: <RemoveFormatting className="w-4 h-4" />,
+    /** Label */
     label: "Clear Formatting",
+    /** Command */
     command: "removeFormat",
+    /** Group */
     group: "history",
   },
 ];
@@ -549,7 +726,9 @@ export default function RichTextEditor({
         }
 
         const response = await fetch("/api/media/upload", {
+          /** Method */
           method: "POST",
+          /** Body */
           body: formData,
         });
 
@@ -566,9 +745,13 @@ export default function RichTextEditor({
         }
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "RichTextEditor.handleImageUpload",
+          /** Metadata */
           metadata: {
+            /** Context */
             context: imageUploadContext,
+            /** Context Id */
             contextId: imageUploadContextId,
           },
         });
@@ -809,6 +992,22 @@ export default function RichTextEditor({
 
   // Close dropdowns when clicking outside
   React.useEffect(() => {
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} e - The e
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} e - The e
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest(".rich-text-toolbar-dropdown")) {
@@ -923,8 +1122,11 @@ export default function RichTextEditor({
                   disabled={disabled}
                   className={`
                     p-1.5 rounded text-gray-700 dark:text-gray-300
+                    /** Hover */
                     hover:bg-gray-200 dark:hover:bg-gray-700
+                    /** Active */
                     active:bg-gray-300 dark:active:bg-gray-600
+                    /** Disabled */
                     disabled:cursor-not-allowed disabled:opacity-50
                     transition-colors
                     ${
@@ -956,6 +1158,7 @@ export default function RichTextEditor({
                             onClick={() => handleTextColor(color.value)}
                             className="w-8 h-8 rounded border border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform"
                             style={{
+                              /** Background Color */
                               backgroundColor: color.value || "transparent",
                             }}
                             title={color.name}
@@ -980,6 +1183,7 @@ export default function RichTextEditor({
                             onClick={() => handleHighlight(color.value)}
                             className="w-8 h-8 rounded border border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform"
                             style={{
+                              /** Background Color */
                               backgroundColor: color.value || "transparent",
                             }}
                             title={color.name}
@@ -1066,6 +1270,7 @@ export default function RichTextEditor({
                         onChange={(e) =>
                           setTableSize({
                             ...tableSize,
+                            /** Rows */
                             rows: Math.max(
                               1,
                               Math.min(10, parseInt(e.target.value) || 1),
@@ -1083,6 +1288,7 @@ export default function RichTextEditor({
                         onChange={(e) =>
                           setTableSize({
                             ...tableSize,
+                            /** Cols */
                             cols: Math.max(
                               1,
                               Math.min(10, parseInt(e.target.value) || 1),
@@ -1128,6 +1334,7 @@ export default function RichTextEditor({
           }
           ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           border-x border-b rounded-b-lg
+          /** Focus */
           focus:ring-2 focus:ring-blue-500
           
           [&_table]:border-collapse [&_table]:w-full [&_table]:my-2
@@ -1141,9 +1348,13 @@ export default function RichTextEditor({
           [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline
         `}
         style={{
+          /** Min Height */
           minHeight: `${minHeight}px`,
+          /** Max Height */
           maxHeight: `${maxHeight}px`,
+          /** Text Align */
           textAlign: "left",
+          /** Unicode Bidi */
           unicodeBidi: "plaintext",
         }}
         data-placeholder={!value ? placeholder : ""}
@@ -1177,11 +1388,14 @@ export default function RichTextEditor({
       {/* CSS for placeholder */}
       <style jsx>{`
         [contenteditable][data-placeholder]:empty:before {
+          /** Content */
           content: attr(data-placeholder);
+          /** Color */
           color: #9ca3af;
           pointer-events: none;
         }
         [contenteditable]:focus {
+          /** Outline */
           outline: none;
         }
       `}</style>

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/emails/stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin Email Statistics API Route
  *
  * Get email statistics (sent, delivered, opened, clicked, bounced, failed)
@@ -13,6 +22,35 @@ import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET - Retrieve email statistics
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -50,11 +88,17 @@ export async function GET(req: NextRequest) {
 
     // Calculate statistics
     const stats = {
+      /** Sent */
       sent: 0,
+      /** Delivered */
       delivered: 0,
+      /** Opened */
       opened: 0,
+      /** Clicked */
       clicked: 0,
+      /** Bounced */
       bounced: 0,
+      /** Failed */
       failed: 0,
     };
 
@@ -97,6 +141,7 @@ export async function GET(req: NextRequest) {
       stats.opened > 0 ? Math.round((stats.clicked / stats.opened) * 100) : 0;
 
     return NextResponse.json({
+      /** Stats */
       stats: {
         ...stats,
         deliveryRate,
@@ -106,6 +151,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEmailStatsAPI.GET",
     });
     return NextResponse.json(

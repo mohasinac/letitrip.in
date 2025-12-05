@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/Pagination
+ * @description This file contains the Pagination component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Pagination Component
  *
  * A reusable pagination component for list pages.
@@ -33,6 +42,12 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+/**
+ * PaginationProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaginationProps
+ */
 interface PaginationProps {
   /** Current page number (1-based) */
   currentPage: number;
@@ -54,6 +69,27 @@ interface PaginationProps {
   className?: string;
 }
 
+/**
+ * Function: Pagination
+ */
+/**
+ * Performs pagination operation
+ *
+ * @returns {any} The pagination result
+ *
+ * @example
+ * Pagination();
+ */
+
+/**
+ * Performs pagination operation
+ *
+ * @returns {any} The pagination result
+ *
+ * @example
+ * Pagination();
+ */
+
 export function Pagination({
   currentPage,
   totalPages,
@@ -67,11 +103,35 @@ export function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1 && !totalItems) return null;
 
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
   const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
     }
   };
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
 
   const handleNext = () => {
     if (currentPage < totalPages) {
@@ -79,11 +139,35 @@ export function Pagination({
     }
   };
 
+  /**
+   * Handles first event
+   *
+   * @returns {any} The handlefirst result
+   */
+
+  /**
+   * Handles first event
+   *
+   * @returns {any} The handlefirst result
+   */
+
   const handleFirst = () => {
     if (currentPage > 1) {
       onPageChange(1);
     }
   };
+
+  /**
+   * Handles last event
+   *
+   * @returns {any} The handlelast result
+   */
+
+  /**
+   * Handles last event
+   *
+   * @returns {any} The handlelast result
+   */
 
   const handleLast = () => {
     if (currentPage < totalPages) {
@@ -186,11 +270,36 @@ export function Pagination({
  * A minimal pagination component for simple use cases.
  */
 interface SimplePaginationProps {
+  /** Current Page */
   currentPage: number;
+  /** Total Pages */
   totalPages: number;
+  /** On Page Change */
   onPageChange: (page: number) => void;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Simple Pagination
+ */
+/**
+ * Performs simple pagination operation
+ *
+ * @returns {any} The simplepagination result
+ *
+ * @example
+ * SimplePagination();
+ */
+
+/**
+ * Performs simple pagination operation
+ *
+ * @returns {any} The simplepagination result
+ *
+ * @example
+ * SimplePagination();
+ */
 
 export function SimplePagination({
   currentPage,

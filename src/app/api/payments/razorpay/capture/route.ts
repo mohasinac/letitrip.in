@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/razorpay/capture/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Razorpay Payment Capture API Route
  * POST /api/payments/razorpay/capture
  *
@@ -12,34 +21,66 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * CapturePaymentRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CapturePaymentRequest
+ */
 interface CapturePaymentRequest {
+  /** Payment Id */
   paymentId: string;
+  /** Amount */
   amount: number;
+  /** Currency */
   currency: string;
 }
 
+/**
+ * RazorpayPaymentResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RazorpayPaymentResponse
+ */
 interface RazorpayPaymentResponse {
+  /** Id */
   id: string;
+  /** Entity */
   entity: string;
+  /** Amount */
   amount: number;
+  /** Currency */
   currency: string;
+  /** Status */
   status: string;
   order_id: string;
   invoice_id: string | null;
+  /** International */
   international: boolean;
+  /** Method */
   method: string;
   amount_refunded: number;
   refund_status: string | null;
+  /** Captured */
   captured: boolean;
+  /** Description */
   description: string;
   card_id: string | null;
+  /** Bank */
   bank: string | null;
+  /** Wallet */
   wallet: string | null;
+  /** Vpa */
   vpa: string | null;
+  /** Email */
   email: string;
+  /** Contact */
   contact: string;
+  /** Notes */
   notes: Record<string, string>;
+  /** Fee */
   fee: number;
+  /** Tax */
   tax: number;
   error_code: string | null;
   error_description: string | null;
@@ -48,6 +89,35 @@ interface RazorpayPaymentResponse {
   error_reason: string | null;
   created_at: number;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -115,6 +185,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Import Razorpay SDK dynamically
+    /**
+     * Performs razorpay operation
+     *
+     * @returns {any} The razorpay result
+     */
+
+    /**
+     * Performs razorpay operation
+     *
+     * @returns {any} The razorpay result
+     */
+
     const Razorpay = (await import("razorpay" as any)) as any;
     const razorpay = new Razorpay.default({
       key_id: keyId,
@@ -153,9 +235,13 @@ export async function POST(request: NextRequest) {
 
       // Update transaction status
       await transactionDoc.ref.update({
+        /** Status */
         status: "captured",
+        /** Captured Amount */
         capturedAmount: amount,
+        /** Captured At */
         capturedAt: new Date(capturedPayment.created_at * 1000),
+        /** Updated At */
         updatedAt: new Date(),
       });
 
@@ -168,8 +254,11 @@ export async function POST(request: NextRequest) {
 
         if (orderDoc.exists) {
           await orderRef.update({
+            /** Payment Status */
             paymentStatus: "captured",
+            /** Captured At */
             capturedAt: new Date(),
+            /** Updated At */
             updatedAt: new Date(),
           });
         }
@@ -179,24 +268,34 @@ export async function POST(request: NextRequest) {
     // Return formatted response
     return NextResponse.json(
       {
+        /** Id */
         id: capturedPayment.id,
+        /** Amount */
         amount: amount,
+        /** Currency */
         currency: currency.toUpperCase(),
+        /** Status */
         status: capturedPayment.status,
+        /** Captured */
         captured: capturedPayment.captured,
+        /** Captured At */
         capturedAt: new Date(capturedPayment.created_at * 1000).toISOString(),
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "RazorpayCaptureAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Payment capture failed",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to capture payment",
       },
       { status: 500 }

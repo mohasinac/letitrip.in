@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/blog/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { blogSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
@@ -9,10 +18,15 @@ const COLLECTION = "blog_posts";
 // Extended Sieve config with field mappings for blog posts
 const blogConfig = {
   ...blogSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Created At */
     createdAt: "created_at",
+    /** Published At */
     publishedAt: "publishedAt",
+    /** View Count */
     viewCount: "view_count",
+    /** Featured */
     featured: "is_featured",
   } as Record<string, string>,
 };
@@ -20,11 +34,31 @@ const blogConfig = {
 /**
  * Transform blog post document to API response format
  */
+/**
+ * Transforms blog post
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformblogpost result
+ */
+
+/**
+ * Transforms blog post
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformblogpost result
+ */
+
 function transformBlogPost(id: string, data: any) {
   return {
     id,
     ...data,
+    /** Featured */
     featured: data.is_featured,
+    /** View Count */
     viewCount: data.view_count,
   };
 }
@@ -34,6 +68,32 @@ function transformBlogPost(id: string, data: any) {
  * List blog posts with Sieve pagination
  * Query Format: ?page=1&pageSize=20&sorts=-publishedAt&filters=status==published
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -41,6 +101,7 @@ export async function GET(req: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -49,8 +110,11 @@ export async function GET(req: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -102,6 +166,26 @@ export async function GET(req: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -122,12 +206,17 @@ export async function GET(req: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -141,6 +230,35 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/blog - Create new blog post (admin only)
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -180,18 +298,29 @@ export async function POST(req: NextRequest) {
     const post = {
       title,
       slug,
+      /** Excerpt */
       excerpt: excerpt || "",
       content,
+      /** Featured Image */
       featuredImage: featuredImage || null,
+      /** Author */
       author: author || { name: "Admin", id: "admin" },
+      /** Category */
       category: category || "Uncategorized",
+      /** Tags */
       tags: tags || [],
+      /** Status */
       status: status || "draft",
       is_featured: featured || false,
+      /** Views */
       views: 0,
+      /** Likes */
       likes: 0,
+      /** Published At */
       publishedAt: status === "published" ? now : null,
+      /** Created At */
       createdAt: now,
+      /** Updated At */
       updatedAt: now,
     };
 
@@ -199,6 +328,7 @@ export async function POST(req: NextRequest) {
     await db.collection(COLLECTION).doc(slug).set(post);
 
     return NextResponse.json({
+      /** Id */
       id: slug,
       ...post,
     });

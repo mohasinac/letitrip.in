@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/debug/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,13 +14,51 @@ import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<void>} Promise that resolves when operation completes
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = GET();
+ */
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
 export async function GET() {
   try {
     const db = getFirestoreAdmin();
     const debug: any = {
+      /** Prefix */
       prefix: PREFIX,
+      /** Samples */
       samples: {},
+      /** Counts */
       counts: {},
+      /** Errors */
       errors: [],
     };
 
@@ -22,8 +69,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.users = usersSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Email */
         email: doc.data().email,
+        /** Display Name */
         displayName: doc.data().display_name,
       }));
       debug.counts.allUsers = usersSnapshot.size;
@@ -36,8 +86,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.testUsers = testUsersSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Email */
         email: doc.data().email,
+        /** Display Name */
         displayName: doc.data().display_name,
       }));
       debug.counts.testUsers = testUsersSnapshot.size;
@@ -52,8 +105,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.shops = shopsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.allShops = shopsSnapshot.size;
@@ -66,8 +122,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.testShops = testShopsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.testShops = testShopsSnapshot.size;
@@ -82,8 +141,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.products = productsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.allProducts = productsSnapshot.size;
@@ -96,8 +158,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.testProducts = testProductsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.testProducts = testProductsSnapshot.size;
@@ -112,8 +177,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.auctions = auctionsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.allAuctions = auctionsSnapshot.size;
@@ -126,8 +194,11 @@ export async function GET() {
         .limit(5)
         .get();
       debug.samples.testAuctions = testAuctionsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
+        /** Name */
         name: doc.data().name,
+        /** Slug */
         slug: doc.data().slug,
       }));
       debug.counts.testAuctions = testAuctionsSnapshot.size;

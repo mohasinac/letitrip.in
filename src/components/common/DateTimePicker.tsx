@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/DateTimePicker
+ * @description This file contains the DateTimePicker component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
@@ -10,20 +19,38 @@ import React, { useState, useMemo, useCallback } from "react";
 
 type DateTimeMode = "date" | "time" | "datetime";
 
+/**
+ * DateTimePickerProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DateTimePickerProps
+ */
 interface DateTimePickerProps {
+  /** Id */
   id?: string;
+  /** Value */
   value: Date | null;
+  /** On Change */
   onChange: (date: Date | null) => void;
+  /** Mode */
   mode?: DateTimeMode;
+  /** Min Date */
   minDate?: Date;
+  /** Max Date */
   maxDate?: Date;
   minTime?: string; // Format: "HH:mm"
   maxTime?: string; // Format: "HH:mm"
+  /** Placeholder */
   placeholder?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
+  /** Show Clear */
   showClear?: boolean;
+  /** Use12 Hour */
   use12Hour?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -67,14 +94,20 @@ export default function DateTimePicker({
     if (!value) return "";
 
     const dateStr = value.toLocaleDateString("en-IN", {
+      /** Day */
       day: "2-digit",
+      /** Month */
       month: "short",
+      /** Year */
       year: "numeric",
     });
 
     const timeStr = value.toLocaleTimeString("en-IN", {
+      /** Hour */
       hour: "2-digit",
+      /** Minute */
       minute: "2-digit",
+      /** Hour12 */
       hour12: use12Hour,
     });
 

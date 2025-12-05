@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/blog/tags/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -28,16 +37,43 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // Types
+/**
+ * BlogTag interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogTag
+ */
 interface BlogTag {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Post Count */
   postCount: number;
+  /** Created At */
   createdAt: string;
+  /** Updated At */
   updatedAt: string;
 }
 
 // Tag form modal
+/**
+ * Function: Tag Modal
+ */
+/**
+ * Performs tag modal operation
+ *
+ * @returns {any} The tagmodal result
+ */
+
+/**
+ * Performs tag modal operation
+ *
+ * @returns {any} The tagmodal result
+ */
+
 function TagModal({
   isOpen,
   onClose,
@@ -45,10 +81,15 @@ function TagModal({
   onSave,
   saving,
 }: {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Tag */
   tag: BlogTag | null;
+  /** On Save */
   onSave: (data: { name: string; slug: string }) => void;
+  /** Saving */
   saving: boolean;
 }) {
   const [name, setName] = useState("");
@@ -64,6 +105,22 @@ function TagModal({
     }
   }, [tag, isOpen]);
 
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
   const generateSlug = (text: string) => {
     return text
       .toLowerCase()
@@ -73,12 +130,44 @@ function TagModal({
       .trim();
   };
 
+  /**
+   * Handles name change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlenamechange result
+   */
+
+  /**
+   * Handles name change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlenamechange result
+   */
+
   const handleNameChange = (value: string) => {
     setName(value);
     if (!tag) {
       setSlug(generateSlug(value));
     }
   };
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,18 +238,53 @@ function TagModal({
 }
 
 // Bulk add tags modal
+/**
+ * Function: Bulk Add Modal
+ */
+/**
+ * Performs bulk add modal operation
+ *
+ * @returns {any} The bulkaddmodal result
+ */
+
+/**
+ * Performs bulk add modal operation
+ *
+ * @returns {any} The bulkaddmodal result
+ */
+
 function BulkAddModal({
   isOpen,
   onClose,
   onSave,
   saving,
 }: {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Save */
   onSave: (tags: string[]) => void;
+  /** Saving */
   saving: boolean;
 }) {
   const [tagsText, setTagsText] = useState("");
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,13 +352,18 @@ function BulkAddModal({
 export default function BlogTagsPage() {
   const { isAdmin } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: tags,
+    /** Set Data */
     setData: setTags,
     execute,
   } = useLoadingState<BlogTag[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "BlogTagsPage.loadTags" });
       toast.error("Failed to load blog tags");
@@ -252,54 +381,120 @@ export default function BlogTagsPage() {
     loadTags();
   }, []);
 
+  /**
+   * Fetches tags from server
+   *
+   * @returns {Promise<any>} Promise resolving to tags result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches tags from server
+   *
+   * @returns {Promise<any>} Promise resolving to tags result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadTags = () =>
     execute(async () => {
       const response = await apiService.get<{ data: BlogTag[] }>("/blog/tags");
       setTags(
         response.data || [
           {
+            /** Id */
             id: "1",
+            /** Name */
             name: "Tutorial",
+            /** Slug */
             slug: "tutorial",
+            /** Post Count */
             postCount: 8,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "2",
+            /** Name */
             name: "News",
+            /** Slug */
             slug: "news",
+            /** Post Count */
             postCount: 5,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "3",
+            /** Name */
             name: "Tips",
+            /** Slug */
             slug: "tips",
+            /** Post Count */
             postCount: 12,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "4",
+            /** Name */
             name: "Guide",
+            /** Slug */
             slug: "guide",
+            /** Post Count */
             postCount: 6,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "5",
+            /** Name */
             name: "Announcement",
+            /** Slug */
             slug: "announcement",
+            /** Post Count */
             postCount: 3,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
         ],
       );
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {{ name} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {{ name} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSave = async (data: { name: string; slug: string }) => {
     try {
@@ -325,9 +520,13 @@ export default function BlogTagsPage() {
             ...tags,
             response.data || {
               ...data,
+              /** Id */
               id: Date.now().toString(),
+              /** Post Count */
               postCount: 0,
+              /** Created At */
               createdAt: new Date().toISOString(),
+              /** Updated At */
               updatedAt: new Date().toISOString(),
             },
           ]);
@@ -345,9 +544,45 @@ export default function BlogTagsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string[]} tagNames - The tag names
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string[]} tagNames - The tag names
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBulkAdd = async (tagNames: string[]) => {
     try {
       setSaving(true);
+
+      /**
+       * Performs generate slug operation
+       *
+       * @param {string} text - The text
+       *
+       * @returns {string} The slug result
+       */
+
+      /**
+       * Performs generate slug operation
+       *
+       * @param {string} text - The text
+       *
+       * @returns {string} The slug result
+       */
 
       const generateSlug = (text: string) => {
         return text
@@ -371,22 +606,30 @@ export default function BlogTagsPage() {
             );
             newTags.push(
               response.data || {
+                /** Id */
                 id: Date.now().toString(),
                 name,
                 slug,
+                /** Post Count */
                 postCount: 0,
+                /** Created At */
                 createdAt: new Date().toISOString(),
+                /** Updated At */
                 updatedAt: new Date().toISOString(),
               },
             );
           } catch {
             // Add locally if API fails
             newTags.push({
+              /** Id */
               id: Date.now().toString() + Math.random(),
               name,
               slug,
+              /** Post Count */
               postCount: 0,
+              /** Created At */
               createdAt: new Date().toISOString(),
+              /** Updated At */
               updatedAt: new Date().toISOString(),
             });
           }
@@ -406,6 +649,22 @@ export default function BlogTagsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     if (!deleteId) return;
 
@@ -422,6 +681,22 @@ export default function BlogTagsPage() {
       setDeleteId(null);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleBulkDelete = async () => {
     try {

@@ -1,12 +1,43 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { ValidationError } from "@/lib/api-errors";
 
 // Build update object for each action
+/**
+ * Function: Build Category Update
+ */
+/**
+ * Performs build category update operation
+ *
+ * @param {string} action - The action
+ * @param {string} now - The now
+ * @param {any} [updates] - The updates
+ *
+ * @returns {string} The buildcategoryupdate result
+ */
+
+/**
+ * Performs build category update operation
+ *
+ * @returns {string} The buildcategoryupdate result
+ */
+
 function buildCategoryUpdate(
+  /** Action */
   action: string,
+  /** Now */
   now: string,
+  /** Updates */
   updates?: any,
 ): Record<string, any> | null {
   switch (action) {
@@ -21,15 +52,42 @@ function buildCategoryUpdate(
     case "update":
       if (!updates || typeof updates !== "object") return null;
       return { ...updates, updated_at: now };
+    /** Default */
     default:
       return null;
   }
 }
 
 // Delete category with parent cleanup
+/**
+ * Deletes category
+ */
+/**
+ * Deletes category
+ *
+ * @param {string} categoryId - category identifier
+ * @param {any} categoryData - The category data
+ * @param {string} now - The now
+ *
+ * @returns {Promise<any>} Promise resolving to deletecategory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Deletes category
+ *
+ * @returns {Promise<any>} Promise resolving to deletecategory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function deleteCategory(
+  /** Category Id */
   categoryId: string,
+  /** Category Data */
   categoryData: any,
+  /** Now */
   now: string,
 ): Promise<string | null> {
   const childrenIds = categoryData.children_ids || [];
@@ -55,6 +113,26 @@ async function deleteCategory(
     const parentDoc = await parentRef.get();
     if (parentDoc.exists) {
       const parentData: any = parentDoc.data();
+      /**
+       * Updates existing updated children ids
+       *
+       * @param {string} parentData.children_ids || []).filter(
+        (id - The parent data.children_ids || []).filter(
+        (id
+       *
+       * @returns {string} The updatedchildrenids result
+       */
+
+      /**
+       * Updates existing updated children ids
+       *
+       * @param {string} parentData.children_ids || []).filter(
+        (id - The parent data.children_ids || []).filter(
+        (id
+       *
+       * @returns {string} The updatedchildrenids result
+       */
+
       const updatedChildrenIds = (parentData.children_ids || []).filter(
         (id: string) => id !== categoryId,
       );
@@ -76,6 +154,32 @@ async function deleteCategory(
  * Bulk operations on categories (admin only)
  * Actions: activate, deactivate, feature, unfeature, delete, update
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const roleResult = await requireRole(request, ["admin"]);
@@ -89,12 +193,14 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!action) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: "Action is required",
       });
     }
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       throw new ValidationError("Validation failed", {
+        /** Ids */
         ids: "At least one category ID is required",
       });
     }
@@ -109,12 +215,15 @@ export async function POST(request: NextRequest) {
     ];
     if (!validActions.includes(action)) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: `Invalid action. Must be one of: ${validActions.join(", ")}`,
       });
     }
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -151,7 +260,9 @@ export async function POST(request: NextRequest) {
         const update = buildCategoryUpdate(action, now, updates);
         if (!update) {
           results.failed.push({
+            /** Id */
             id: categoryId,
+            /** Error */
             error:
               action === "update"
                 ? "Updates object required"
@@ -168,8 +279,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: results,
+      /** Message */
       message: `Bulk ${action} completed. Success: ${results.success.length}, Failed: ${results.failed.length}`,
     });
   } catch (error: any) {

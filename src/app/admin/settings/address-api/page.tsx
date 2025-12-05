@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/address-api/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -35,21 +44,45 @@ import { useEffect, useState } from "react";
 // TYPES
 // ============================================================================
 
+/**
+ * AddressAPISettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressAPISettings
+ */
 interface AddressAPISettings {
+  /** Postal Pincode Enabled */
   postalPincodeEnabled: boolean;
+  /** Postal Pincode Api Key */
   postalPincodeApiKey?: string;
+  /** Zippopotam Enabled */
   zippopotamEnabled: boolean;
+  /** Fallback Enabled */
   fallbackEnabled: boolean;
+  /** Cache Enabled */
   cacheEnabled: boolean;
+  /** Cache Time */
   cacheTime: number;
 }
 
+/**
+ * APIStatus interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for APIStatus
+ */
 interface APIStatus {
+  /** Name */
   name: string;
+  /** Status */
   status: "online" | "offline" | "testing" | "unknown";
+  /** Response Time */
   responseTime?: number;
+  /** Last Checked */
   lastChecked?: Date;
+  /** Rate Limit Used */
   rateLimitUsed?: number;
+  /** Rate Limit Total */
   rateLimitTotal?: number;
 }
 
@@ -59,20 +92,28 @@ interface APIStatus {
 
 export default function AddressAPISettingsPage() {
   const [settings, setSettings] = useState<AddressAPISettings>({
+    /** Postal Pincode Enabled */
     postalPincodeEnabled: true,
+    /** Zippopotam Enabled */
     zippopotamEnabled: true,
+    /** Fallback Enabled */
     fallbackEnabled: true,
+    /** Cache Enabled */
     cacheEnabled: true,
     cacheTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 
   const [apiStatuses, setApiStatuses] = useState<APIStatus[]>([
     {
+      /** Name */
       name: "Postal Pincode API",
+      /** Status */
       status: "unknown",
     },
     {
+      /** Name */
       name: "Zippopotam API",
+      /** Status */
       status: "unknown",
     },
   ]);
@@ -86,6 +127,22 @@ export default function AddressAPISettingsPage() {
     checkAPIStatuses();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     try {
       const response = await apiService.get<AddressAPISettings>(
@@ -96,10 +153,27 @@ export default function AddressAPISettingsPage() {
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressAPISettingsPage.loadSettings",
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const checkAPIStatuses = async () => {
     // Check Postal Pincode API
@@ -115,8 +189,10 @@ export default function AddressAPISettingsPage() {
           api.name === "Postal Pincode API"
             ? {
                 ...api,
+                /** Status */
                 status: response?.status === "ok" ? "online" : "offline",
                 responseTime,
+                /** Last Checked */
                 lastChecked: new Date(),
               }
             : api
@@ -145,8 +221,10 @@ export default function AddressAPISettingsPage() {
           api.name === "Zippopotam API"
             ? {
                 ...api,
+                /** Status */
                 status: response?.status === "ok" ? "online" : "offline",
                 responseTime,
+                /** Last Checked */
                 lastChecked: new Date(),
               }
             : api
@@ -163,6 +241,22 @@ export default function AddressAPISettingsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     await saveSettings(async () => {
       await apiService.put("/admin/settings/address-api", settings);
@@ -170,6 +264,26 @@ export default function AddressAPISettingsPage() {
       setTimeout(() => setSaveSuccess(false), 3000);
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} apiName - Name of api
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} apiName - Name of api
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleTestAPI = async (apiName: string) => {
     setApiStatuses((prev) =>
@@ -190,8 +304,10 @@ export default function AddressAPISettingsPage() {
             api.name === apiName
               ? {
                   ...api,
+                  /** Status */
                   status: response ? "online" : "offline",
                   responseTime,
+                  /** Last Checked */
                   lastChecked: new Date(),
                 }
               : api
@@ -208,8 +324,10 @@ export default function AddressAPISettingsPage() {
             api.name === apiName
               ? {
                   ...api,
+                  /** Status */
                   status: response ? "online" : "offline",
                   responseTime,
+                  /** Last Checked */
                   lastChecked: new Date(),
                 }
               : api
@@ -219,6 +337,22 @@ export default function AddressAPISettingsPage() {
     });
   };
 
+  /**
+   * Retrieves status icon
+   *
+   * @param {APIStatus["status"]} status - The status
+   *
+   * @returns {any} The statusicon result
+   */
+
+  /**
+   * Retrieves status icon
+   *
+   * @param {APIStatus["status"]} status - The status
+   *
+   * @returns {any} The statusicon result
+   */
+
   const getStatusIcon = (status: APIStatus["status"]) => {
     switch (status) {
       case "online":
@@ -227,10 +361,27 @@ export default function AddressAPISettingsPage() {
         return <XCircle className="h-5 w-5 text-red-500" />;
       case "testing":
         return <RefreshCcw className="h-5 w-5 text-blue-500 animate-spin" />;
+      /** Default */
       default:
         return <AlertCircle className="h-5 w-5 text-gray-400" />;
     }
   };
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {APIStatus["status"]} status - The status
+   *
+   * @returns {any} The statusbadge result
+   */
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {APIStatus["status"]} status - The status
+   *
+   * @returns {any} The statusbadge result
+   */
 
   const getStatusBadge = (status: APIStatus["status"]) => {
     const baseClasses = "px-2 py-1 rounded text-xs font-medium";
@@ -259,6 +410,7 @@ export default function AddressAPISettingsPage() {
             Testing...
           </span>
         );
+      /** Default */
       default:
         return (
           <span
@@ -388,6 +540,7 @@ export default function AddressAPISettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Postal Pincode Enabled */
                         postalPincodeEnabled: e.target.checked,
                       })
                     }
@@ -406,6 +559,7 @@ export default function AddressAPISettingsPage() {
                       onChange={(e) =>
                         setSettings({
                           ...settings,
+                          /** Postal Pincode Api Key */
                           postalPincodeApiKey: e.target.value,
                         })
                       }
@@ -431,6 +585,7 @@ export default function AddressAPISettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Zippopotam Enabled */
                         zippopotamEnabled: e.target.checked,
                       })
                     }
@@ -456,6 +611,7 @@ export default function AddressAPISettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Cache Enabled */
                         cacheEnabled: e.target.checked,
                       })
                     }
@@ -473,6 +629,7 @@ export default function AddressAPISettingsPage() {
                       onChange={(e) =>
                         setSettings({
                           ...settings,
+                          /** Cache Time */
                           cacheTime: parseInt(e.target.value),
                         })
                       }
@@ -480,15 +637,21 @@ export default function AddressAPISettingsPage() {
                         { value: String(60 * 60 * 1000), label: "1 Hour" },
                         { value: String(6 * 60 * 60 * 1000), label: "6 Hours" },
                         {
+                          /** Value */
                           value: String(12 * 60 * 60 * 1000),
+                          /** Label */
                           label: "12 Hours",
                         },
                         {
+                          /** Value */
                           value: String(24 * 60 * 60 * 1000),
+                          /** Label */
                           label: "24 Hours",
                         },
                         {
+                          /** Value */
                           value: String(7 * 24 * 60 * 60 * 1000),
+                          /** Label */
                           label: "7 Days",
                         },
                       ]}
@@ -512,6 +675,7 @@ export default function AddressAPISettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Fallback Enabled */
                         fallbackEnabled: e.target.checked,
                       })
                     }

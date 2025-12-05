@@ -1,9 +1,47 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/my-bids/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../lib/session";
 
 // GET /api/auctions/my-bids - authenticated user's bids
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   let userId: string | undefined;
   try {
@@ -24,6 +62,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.auctions.my-bids",
       userId,
     });

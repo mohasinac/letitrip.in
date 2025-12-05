@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/BankAccountSelectorWithCreate
+ * @description This file contains the BankAccountSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -25,27 +34,46 @@ import { logError } from "@/lib/error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 // Bank Account Interface
+/**
+ * BankAccount interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BankAccount
+ */
 export interface BankAccount {
+  /** Id */
   id: string;
+  /** Account Holder Name */
   accountHolderName: string;
+  /** Account Number */
   accountNumber: string;
+  /** Account Type */
   accountType: "savings" | "current";
+  /** Ifsc Code */
   ifscCode: string;
+  /** Bank Name */
   bankName: string;
+  /** Branch Name */
   branchName: string;
+  /** Is Default */
   isDefault: boolean;
+  /** Is Verified */
   isVerified: boolean;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
 }
 
 // Validation Schema
 const BankAccountSchema = z
   .object({
+    /** Account Holder Name */
     accountHolderName: z
       .string()
       .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT)
       .max(VALIDATION_RULES.NAME.MAX_LENGTH, VALIDATION_MESSAGES.NAME.TOO_LONG),
+    /** Account Number */
     accountNumber: z
       .string()
       .min(
@@ -60,32 +88,80 @@ const BankAccountSchema = z
         VALIDATION_RULES.BANK_ACCOUNT.PATTERN,
         "Account number must contain only digits",
       ),
+    /** Confirm Account Number */
     confirmAccountNumber: z.string(),
+    /** Account Type */
     accountType: z.enum(["savings", "current"]),
+    /** Ifsc Code */
     ifscCode: z
       .string()
       .length(VALIDATION_RULES.IFSC.LENGTH, "IFSC code must be 11 characters")
       .refine((val) => isValidIFSC(val), VALIDATION_MESSAGES.BANK.IFSC_INVALID),
+    /** Bank Name */
     bankName: z.string().min(2, "Bank name is required"),
+    /** Branch Name */
     branchName: z.string().min(2, "Branch name is required"),
+    /** Is Default */
     isDefault: z.boolean(),
   })
   .refine((data) => data.accountNumber === data.confirmAccountNumber, {
+    /** Message */
     message: "Account numbers do not match",
+    /** Path */
     path: ["confirmAccountNumber"],
   });
 
+/**
+ * BankAccountFormData type
+ * 
+ * @typedef {Object} BankAccountFormData
+ * @description Type definition for BankAccountFormData
+ */
 type BankAccountFormData = z.infer<typeof BankAccountSchema>;
 
+/**
+ * BankAccountSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BankAccountSelectorWithCreateProps
+ */
 export interface BankAccountSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (accountId: string, account: BankAccount) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Auto Select Default */
   autoSelectDefault?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Bank Account Selector With Create
+ */
+/**
+ * Performs bank account selector with create operation
+ *
+ * @returns {any} The bankaccountselectorwithcreate result
+ *
+ * @example
+ * BankAccountSelectorWithCreate();
+ */
+
+/**
+ * Performs bank account selector with create operation
+ *
+ * @returns {any} The bankaccountselectorwithcreate result
+ *
+ * @example
+ * BankAccountSelectorWithCreate();
+ */
 
 export function BankAccountSelectorWithCreate({
   value,
@@ -97,11 +173,15 @@ export function BankAccountSelectorWithCreate({
   className = "",
 }: BankAccountSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: accounts,
+    /** Set Data */
     setData: setAccounts,
     execute,
   } = useLoadingState<BankAccount[]>({
+    /** Initial Data */
     initialData: [],
   });
 
@@ -115,11 +195,16 @@ export function BankAccountSelectorWithCreate({
     handleSubmit,
     watch,
     setValue,
+    /** Form State */
     formState: { errors },
   } = useForm<BankAccountFormData>({
+    /** Resolver */
     resolver: zodResolver(BankAccountSchema),
+    /** Default Values */
     defaultValues: {
+      /** Account Type */
       accountType: "savings",
+      /** Is Default */
       isDefault: false,
     },
   });
@@ -148,6 +233,22 @@ export function BankAccountSelectorWithCreate({
     }
   }, [ifscCode]);
 
+  /**
+   * Fetches bank accounts from server
+   *
+   * @returns {Promise<any>} Promise resolving to bankaccounts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches bank accounts from server
+   *
+   * @returns {Promise<any>} Promise resolving to bankaccounts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadBankAccounts = () =>
     execute(async () => {
       try {
@@ -157,13 +258,35 @@ export function BankAccountSelectorWithCreate({
         return [];
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "BankAccountSelectorWithCreate",
+          /** Action */
           action: "loadBankAccounts",
         });
         toast.error("Failed to load bank accounts");
         return [];
       }
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} ifsc - The ifsc
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} ifsc - The ifsc
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const lookupIFSC = async (ifsc: string) => {
     try {
@@ -175,8 +298,11 @@ export function BankAccountSelectorWithCreate({
 
       // Mock data for now
       const mockBanks: Record<string, { bank: string; branch: string }> = {
+        /** S B I N0001234 */
         SBIN0001234: { bank: "State Bank of India", branch: "Mumbai Main" },
+        /** H D F C0000123 */
         HDFC0000123: { bank: "HDFC Bank", branch: "Delhi Branch" },
+        /** I C I C0001234 */
         ICIC0001234: { bank: "ICICI Bank", branch: "Bangalore Branch" },
       };
 
@@ -188,7 +314,9 @@ export function BankAccountSelectorWithCreate({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "BankAccountSelectorWithCreate",
+        /** Action */
         action: "lookupIFSC",
       });
     } finally {
@@ -196,10 +324,46 @@ export function BankAccountSelectorWithCreate({
     }
   };
 
+  /**
+   * Handles account select event
+   *
+   * @param {BankAccount} account - The account
+   *
+   * @returns {any} The handleaccountselect result
+   */
+
+  /**
+   * Handles account select event
+   *
+   * @param {BankAccount} account - The account
+   *
+   * @returns {any} The handleaccountselect result
+   */
+
   const handleAccountSelect = (account: BankAccount) => {
     setSelectedId(account.id);
     onChange(account.id, account);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {BankAccountFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {BankAccountFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const onSubmit = async (data: BankAccountFormData) => {
     try {
@@ -210,16 +374,27 @@ export function BankAccountSelectorWithCreate({
 
       // Mock data for now
       const newAccount: BankAccount = {
+        /** Id */
         id: `ba_${Date.now()}`,
+        /** Account Holder Name */
         accountHolderName: data.accountHolderName,
+        /** Account Number */
         accountNumber: data.accountNumber,
+        /** Account Type */
         accountType: data.accountType,
+        /** Ifsc Code */
         ifscCode: data.ifscCode,
+        /** Bank Name */
         bankName: data.bankName,
+        /** Branch Name */
         branchName: data.branchName,
+        /** Is Default */
         isDefault: data.isDefault,
+        /** Is Verified */
         isVerified: false,
+        /** Created At */
         createdAt: new Date(),
+        /** Updated At */
         updatedAt: new Date(),
       };
 
@@ -231,7 +406,9 @@ export function BankAccountSelectorWithCreate({
       toast.success("Bank account added successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "BankAccountSelectorWithCreate",
+        /** Action */
         action: "addAccount",
       });
       toast.error("Failed to add bank account");
@@ -239,6 +416,22 @@ export function BankAccountSelectorWithCreate({
       setIsSubmitting(false);
     }
   };
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {boolean} isVerified - Whether is verified
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Retrieves verification badge
+   *
+   * @param {boolean} isVerified - Whether is verified
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
 
   const getVerificationBadge = (isVerified: boolean) => {
     if (isVerified) {

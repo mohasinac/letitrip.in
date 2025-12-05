@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/checkout/create-order/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { withIPTracking } from "@/app/api/middleware/ip-tracker";
 import crypto from "crypto";
@@ -7,19 +16,51 @@ import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
 
 const ShopOrderSchema = z.object({
+  /** Shop Id */
   shopId: z.string(),
+  /** Shop Name */
   shopName: z.string(),
+  /** Items */
   items: z.array(z.any()),
+  /** Coupon Code */
   couponCode: z.string().optional(),
 });
 
 const CreateOrderSchema = z.object({
+  /** Shipping Address Id */
   shippingAddressId: z.string().min(1, "Shipping address is required"),
+  /** Billing Address Id */
   billingAddressId: z.string().optional(),
+  /** Payment Method */
   paymentMethod: z.enum(["razorpay", "cod"]),
+  /** Shop Orders */
   shopOrders: z.array(ShopOrderSchema),
+  /** Notes */
   notes: z.string().optional(),
 });
+
+/**
+ * Creates order handler
+ */
+/**
+ * Creates a new order handler
+ *
+ * @param {Request} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to orderhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Creates a new order handler
+ *
+ * @param {Request} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to orderhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function createOrderHandler(request: Request) {
   try {
@@ -124,6 +165,7 @@ async function createOrderHandler(request: Request) {
         if (product.stock_count < item.quantity) {
           return NextResponse.json(
             {
+              /** Error */
               error: `Insufficient stock for ${product.name}. Only ${product.stock_count} available`,
             },
             { status: 400 }
@@ -149,9 +191,13 @@ async function createOrderHandler(request: Request) {
           product_id: item.productId,
           product_name: product.name,
           product_image: product.images?.[0] || null,
+          /** Variant */
           variant: item.variant || null,
+          /** Quantity */
           quantity: item.quantity,
+          /** Price */
           price: product.price,
+          /** Subtotal */
           subtotal: itemSubtotal,
         };
       });
@@ -169,6 +215,7 @@ async function createOrderHandler(request: Request) {
 
         if (!couponSnapshot.empty) {
           const coupon: any = {
+            /** Id */
             id: couponSnapshot.docs[0].id,
             ...couponSnapshot.docs[0].data(),
           };
@@ -199,6 +246,7 @@ async function createOrderHandler(request: Request) {
             }
 
             couponData = {
+              /** Code */
               code: coupon.code,
               discount_type: coupon.discount_type,
               discount_value: coupon.discount_value,
@@ -207,7 +255,9 @@ async function createOrderHandler(request: Request) {
 
             // Track for usage update
             usedCoupons.push({
+              /** Ref */
               ref: couponSnapshot.docs[0].ref,
+              /** Used Count */
               usedCount: coupon.used_count || 0,
             });
           }
@@ -233,38 +283,59 @@ async function createOrderHandler(request: Request) {
         user_name: user.name || user.email,
         shop_id: shopId,
         shop_name: shopName,
+        /** Items */
         items: orderItems,
+        /** Subtotal */
         subtotal: shopSubtotal,
         discount,
         shipping,
         tax,
+        /** Total */
         total: shopTotal,
+        /** Coupon */
         coupon: couponData,
         shipping_address: {
+          /** Id */
           id: shippingAddressId,
+          /** Name */
           name: shippingAddress?.name,
+          /** Phone */
           phone: shippingAddress?.phone,
+          /** Line1 */
           line1: shippingAddress?.line1,
+          /** Line2 */
           line2: shippingAddress?.line2,
+          /** City */
           city: shippingAddress?.city,
+          /** State */
           state: shippingAddress?.state,
           postal_code: shippingAddress?.pincode,
+          /** Country */
           country: shippingAddress?.country || "India",
         },
         billing_address: {
+          /** Id */
           id: billingAddressId || shippingAddressId,
+          /** Name */
           name: billingAddress?.name,
+          /** Phone */
           phone: billingAddress?.phone,
+          /** Line1 */
           line1: billingAddress?.line1,
+          /** Line2 */
           line2: billingAddress?.line2,
+          /** City */
           city: billingAddress?.city,
+          /** State */
           state: billingAddress?.state,
           postal_code: billingAddress?.pincode,
+          /** Country */
           country: billingAddress?.country || "India",
         },
         payment_method: paymentMethod,
         payment_status: paymentMethod === "cod" ? "pending" : "awaiting",
         order_status: "pending",
+        /** Notes */
         notes: notes || null,
         created_at: new Date(),
         updated_at: new Date(),
@@ -272,10 +343,12 @@ async function createOrderHandler(request: Request) {
 
       const orderRef = await Collections.orders().add(orderData);
       orderRefs.push({
+        /** Id */
         id: orderRef.id,
         orderId,
         shopId,
         shopName,
+        /** Total */
         total: shopTotal,
       });
 
@@ -332,11 +405,15 @@ async function createOrderHandler(request: Request) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Orders */
       orders: orderRefs,
       razorpay_order_id: razorpayOrderId,
       amount: Math.round(grandTotal * 100), // Amount in paise for Razorpay
+      /** Currency */
       currency: "INR",
+      /** Total */
       total: grandTotal,
     });
   } catch (error: any) {
@@ -349,9 +426,17 @@ async function createOrderHandler(request: Request) {
 }
 
 // Export with IP tracking and rate limiting (max 10 attempts per 15 minutes for payment operations)
+/**
+ * Post
+ * @constant
+ */
 export const POST = withIPTracking(createOrderHandler, {
+  /** Action */
   action: "order_placed",
+  /** Check Rate Limit */
   checkRateLimit: true,
+  /** Max Attempts */
   maxAttempts: 10,
+  /** Window Minutes */
   windowMinutes: 15,
 });

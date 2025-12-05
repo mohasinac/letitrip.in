@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/orders/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -9,15 +18,26 @@ import { Package, User, Store } from "lucide-react";
 import { getOrderBulkActions } from "@/constants/bulk-actions";
 import { toInlineFields } from "@/constants/form-fields";
 import type { OrderFE } from "@/types/frontend/order.types";
+/**
+ * Order type
+ * 
+ * @typedef {Object} Order
+ * @description Type definition for Order
+ */
 type Order = OrderFE;
 
 // Order fields configuration
 const ORDER_FIELDS = [
   {
+    /** Key */
     key: "paymentStatus",
+    /** Label */
     label: "Payment Status",
+    /** Type */
     type: "select" as const,
+    /** Required */
     required: true,
+    /** Options */
     options: [
       { value: "pending", label: "Pending" },
       { value: "paid", label: "Paid" },
@@ -26,10 +46,15 @@ const ORDER_FIELDS = [
     ],
   },
   {
+    /** Key */
     key: "fulfillmentStatus",
+    /** Label */
     label: "Fulfillment Status",
+    /** Type */
     type: "select" as const,
+    /** Required */
     required: true,
+    /** Options */
     options: [
       { value: "pending", label: "Pending" },
       { value: "processing", label: "Processing" },
@@ -44,8 +69,11 @@ export default function AdminOrdersPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "order",
+      /** Label */
       label: "Order",
+      /** Render */
       render: (order: Order) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
@@ -63,8 +91,11 @@ export default function AdminOrdersPage() {
       ),
     },
     {
+      /** Key */
       key: "customer",
+      /** Label */
       label: "Customer",
+      /** Render */
       render: (order: Order) => (
         <div className="flex items-center gap-2 text-sm">
           <User className="w-4 h-4 text-gray-400" />
@@ -75,8 +106,11 @@ export default function AdminOrdersPage() {
       ),
     },
     {
+      /** Key */
       key: "seller",
+      /** Label */
       label: "Shop",
+      /** Render */
       render: (order: Order) => (
         <div className="flex items-center gap-2 text-sm">
           <Store className="w-4 h-4 text-gray-400" />
@@ -87,13 +121,19 @@ export default function AdminOrdersPage() {
       ),
     },
     {
+      /** Key */
       key: "total",
+      /** Label */
       label: "Total",
+      /** Render */
       render: (order: Order) => <Price amount={order.total || 0} />,
     },
     {
+      /** Key */
       key: "payment",
+      /** Label */
       label: "Payment",
+      /** Render */
       render: (order: Order) => (
         <div className="text-sm">
           <StatusBadge status={order.paymentStatus || "pending"} />
@@ -104,15 +144,21 @@ export default function AdminOrdersPage() {
       ),
     },
     {
+      /** Key */
       key: "fulfillment",
+      /** Label */
       label: "Fulfillment",
+      /** Render */
       render: (order: Order) => (
         <StatusBadge status={order.status || "pending"} />
       ),
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (order: Order) => (
         <DateDisplay date={order.createdAt} format="medium" />
       ),
@@ -122,9 +168,13 @@ export default function AdminOrdersPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "paymentStatus",
+      /** Label */
       label: "Payment Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "pending", label: "Pending" },
@@ -134,9 +184,13 @@ export default function AdminOrdersPage() {
       ],
     },
     {
+      /** Key */
       key: "fulfillmentStatus",
+      /** Label */
       label: "Fulfillment Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "pending", label: "Pending" },
@@ -147,25 +201,55 @@ export default function AdminOrdersPage() {
       ],
     },
     {
+      /** Key */
       key: "minTotal",
+      /** Label */
       label: "Min Total",
+      /** Type */
       type: "text" as const,
     },
     {
+      /** Key */
       key: "maxTotal",
+      /** Label */
       label: "Max Total",
+      /** Type */
       type: "text" as const,
     },
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -196,19 +280,64 @@ export default function AdminOrdersPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as any as Order[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<Order>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<Order>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<Order>) => {
     // Orders don't have update method, only status updates
     // await ordersService.updateStatus(id, data.paymentStatus);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     // Orders cannot be deleted, only cancelled
     // await ordersService.updateStatus(id, "cancelled");

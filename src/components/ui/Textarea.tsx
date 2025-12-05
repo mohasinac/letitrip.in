@@ -1,19 +1,44 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/Textarea
+ * @description This file contains the Textarea component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * TextareaProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TextareaProps
+ */
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Show Char Count */
   showCharCount?: boolean;
+  /** Max Length */
   maxLength?: number;
   /** Compact mode for desktop, larger for mobile by default */
   size?: "sm" | "md" | "lg";
 }
 
+/**
+ * T
+ * @constant
+ */
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
@@ -37,8 +62,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const charCount = value?.toString().length || 0;
 
     const sizeClasses = {
+      /** Sm */
       sm: "px-3 py-1.5 text-sm min-h-[72px]",
+      /** Md */
       md: "px-4 py-2 md:py-2 min-h-[96px] text-base",
+      /** Lg */
       lg: "px-4 py-3 min-h-[120px] text-base",
     };
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/CategoryCard
+ * @description This file contains the CategoryCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -6,19 +15,61 @@ import Image from "next/image";
 import { Package } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
 
+/**
+ * CategoryCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryCardProps
+ */
 export interface CategoryCardProps {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Image */
   image?: string;
+  /** Description */
   description?: string;
+  /** Product Count */
   productCount: number;
+  /** Featured */
   featured?: boolean;
+  /** Parent Category */
   parentCategory?: string;
+  /** Subcategory Count */
   subcategoryCount?: number;
+  /** Variant */
   variant?: "default" | "compact" | "large";
 }
 
+/**
+ * Performs category card operation
+ *
+ * @returns {any} The categorycard result
+ *
+ * @example
+ * CategoryCard();
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs category card operation
+ *
+ * @returns {any} The categorycard result
+ *
+ * @example
+ * CategoryCard();
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const CategoryCard: React.FC<CategoryCardProps> = ({
   id,
   name,
@@ -32,14 +83,20 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   variant = "default",
 }) => {
   const sizeClasses = {
+    /** Compact */
     compact: "aspect-square",
+    /** Default */
     default: "aspect-[4/3]",
+    /** Large */
     large: "aspect-[16/9]",
   };
 
   const textSizeClasses = {
+    /** Compact */
     compact: "text-sm",
+    /** Default */
     default: "text-base",
+    /** Large */
     large: "text-lg",
   };
 

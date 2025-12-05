@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/email/templates/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Email Templates API Route
  *
  * Manage email templates
@@ -12,19 +21,63 @@ import { logError } from "@/lib/firebase-error-logger";
 import admin from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * EmailTemplate interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailTemplate
+ */
 interface EmailTemplate {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Type */
   type: string;
+  /** Subject */
   subject: string;
+  /** Content */
   content: string;
+  /** Variables */
   variables: string[];
+  /** Enabled */
   enabled: boolean;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
 }
 
 // GET - List all email templates
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -56,15 +109,19 @@ export async function GET(req: NextRequest) {
 
     const snapshot = await query.get();
     const templates = snapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
+      /** Created At */
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+      /** Updated At */
       updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || null,
     }));
 
     return NextResponse.json({ templates });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailTemplatesAPI.GET",
     });
     return NextResponse.json(
@@ -75,6 +132,35 @@ export async function GET(req: NextRequest) {
 }
 
 // POST - Create new email template
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -106,26 +192,37 @@ export async function POST(req: NextRequest) {
       type,
       subject,
       content,
+      /** Variables */
       variables: variables || [],
+      /** Enabled */
       enabled: enabled !== undefined ? enabled : true,
+      /** Created At */
       createdAt: admin.firestore.FieldValue.serverTimestamp() as any,
+      /** Updated At */
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as any,
     };
 
     await templateRef.set(template);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Id */
       id: templateRef.id,
+      /** Template */
       template: {
+        /** Id */
         id: templateRef.id,
         ...template,
+        /** Created At */
         createdAt: new Date().toISOString(),
+        /** Updated At */
         updatedAt: new Date().toISOString(),
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailTemplatesAPI.POST",
     });
     return NextResponse.json(
@@ -136,6 +233,35 @@ export async function POST(req: NextRequest) {
 }
 
 // PUT - Update email template
+/**
+ * Function: P U T
+ */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
 export async function PUT(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -170,6 +296,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const updateData: Partial<EmailTemplate> = {
+      /** Updated At */
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as any,
     };
 
@@ -185,6 +312,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailTemplatesAPI.PUT",
     });
     return NextResponse.json(
@@ -195,6 +323,35 @@ export async function PUT(req: NextRequest) {
 }
 
 // DELETE - Delete email template
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
 export async function DELETE(req: NextRequest) {
   try {
     const authResult = await getAuthFromRequest(req);
@@ -233,6 +390,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EmailTemplatesAPI.DELETE",
     });
     return NextResponse.json(

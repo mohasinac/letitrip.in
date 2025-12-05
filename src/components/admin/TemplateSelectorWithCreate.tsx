@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/TemplateSelectorWithCreate
+ * @description This file contains the TemplateSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -26,15 +35,30 @@ import {
 } from "@/constants/validation-messages";
 
 // Template Interface
+/**
+ * Template interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Template
+ */
 export interface Template {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Category */
   category: "email" | "sms" | "notification";
+  /** Subject */
   subject?: string;
+  /** Body */
   body: string;
+  /** Variables */
   variables: string[];
+  /** Is Active */
   isActive: boolean;
+  /** Created At */
   createdAt: Date;
+  /** Updated At */
   updatedAt: Date;
 }
 
@@ -56,24 +80,69 @@ const TEMPLATE_VARIABLES = [
 ];
 
 const TemplateSchema = z.object({
+  /** Name */
   name: z.string().min(3, "Name must be at least 3 characters"),
+  /** Category */
   category: z.enum(["email", "sms", "notification"]),
+  /** Subject */
   subject: z.string().optional(),
+  /** Body */
   body: z.string().min(10, "Body must be at least 10 characters"),
+  /** Is Active */
   isActive: z.boolean(),
 });
 
+/**
+ * TemplateFormData type
+ * 
+ * @typedef {Object} TemplateFormData
+ * @description Type definition for TemplateFormData
+ */
 type TemplateFormData = z.infer<typeof TemplateSchema>;
 
+/**
+ * TemplateSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TemplateSelectorWithCreateProps
+ */
 export interface TemplateSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (templateId: string, template: Template) => void;
+  /** Category */
   category?: "email" | "sms" | "notification" | "all";
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Template Selector With Create
+ */
+/**
+ * Performs template selector with create operation
+ *
+ * @returns {any} The templateselectorwithcreate result
+ *
+ * @example
+ * TemplateSelectorWithCreate();
+ */
+
+/**
+ * Performs template selector with create operation
+ *
+ * @returns {any} The templateselectorwithcreate result
+ *
+ * @example
+ * TemplateSelectorWithCreate();
+ */
 
 export function TemplateSelectorWithCreate({
   value,
@@ -85,14 +154,20 @@ export function TemplateSelectorWithCreate({
   className = "",
 }: TemplateSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: templates,
+    /** Set Data */
     setData: setTemplates,
     execute,
   } = useLoadingState<Template[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "TemplateSelectorWithCreate.loadTemplates",
       });
       toast.error("Failed to load templates");
@@ -109,11 +184,16 @@ export function TemplateSelectorWithCreate({
     handleSubmit,
     watch,
     setValue,
+    /** Form State */
     formState: { errors },
   } = useForm<TemplateFormData>({
+    /** Resolver */
     resolver: zodResolver(TemplateSchema),
+    /** Default Values */
     defaultValues: {
+      /** Category */
       category: category === "all" ? "email" : category,
+      /** Is Active */
       isActive: true,
     },
   });
@@ -125,6 +205,22 @@ export function TemplateSelectorWithCreate({
     loadTemplates();
   }, [category]);
 
+  /**
+   * Fetches templates from server
+   *
+   * @returns {Promise<any>} Promise resolving to templates result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches templates from server
+   *
+   * @returns {Promise<any>} Promise resolving to templates result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadTemplates = () =>
     execute(async () => {
       // TODO: Implement actual API
@@ -133,14 +229,23 @@ export function TemplateSelectorWithCreate({
       // Mock data
       const mockTemplates: Template[] = [
         {
+          /** Id */
           id: "1",
+          /** Name */
           name: "Order Confirmation",
+          /** Category */
           category: "email",
+          /** Subject */
           subject: "Your Order #{{order_id}} Confirmed",
+          /** Body */
           body: "Hi {{user_name}},\n\nThank you for your order! Your order #{{order_id}} totaling {{order_total}} has been confirmed.",
+          /** Variables */
           variables: ["{{user_name}}", "{{order_id}}", "{{order_total}}"],
+          /** Is Active */
           isActive: true,
+          /** Created At */
           createdAt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
         },
       ];
@@ -150,15 +255,63 @@ export function TemplateSelectorWithCreate({
         : mockTemplates.filter((t) => t.category === category);
     });
 
+  /**
+   * Handles template select event
+   *
+   * @param {Template} template - The template
+   *
+   * @returns {any} The handletemplateselect result
+   */
+
+  /**
+   * Handles template select event
+   *
+   * @param {Template} template - The template
+   *
+   * @returns {any} The handletemplateselect result
+   */
+
   const handleTemplateSelect = (template: Template) => {
     setSelectedId(template.id);
     onChange(template.id, template);
   };
 
+  /**
+   * Handles preview event
+   *
+   * @param {Template} template - The template
+   *
+   * @returns {any} The handlepreview result
+   */
+
+  /**
+   * Handles preview event
+   *
+   * @param {Template} template - The template
+   *
+   * @returns {any} The handlepreview result
+   */
+
   const handlePreview = (template: Template) => {
     setPreviewTemplate(template);
     setShowPreview(true);
   };
+
+  /**
+   * Performs extract variables operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The extractvariables result
+   */
+
+  /**
+   * Performs extract variables operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The extractvariables result
+   */
 
   const extractVariables = (text: string): string[] => {
     const regex = /\{\{([^}]+)\}\}/g;
@@ -166,15 +319,67 @@ export function TemplateSelectorWithCreate({
     return [...new Set(matches)];
   };
 
+  /**
+   * Performs insert variable operation
+   *
+   * @param {string} variable - The variable
+   *
+   * @returns {string} The insertvariable result
+   */
+
+  /**
+   * Performs insert variable operation
+   *
+   * @param {string} variable - The variable
+   *
+   * @returns {string} The insertvariable result
+   */
+
   const insertVariable = (variable: string) => {
     const currentBody = templateBody || "";
     setValue("body", `${currentBody}${variable}`);
   };
 
+  /**
+   * Performs copy to clipboard operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The copytoclipboard result
+   */
+
+  /**
+   * Performs copy to clipboard operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The copytoclipboard result
+   */
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard");
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {TemplateFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {TemplateFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const onSubmit = async (data: TemplateFormData) => {
     try {
@@ -184,14 +389,22 @@ export function TemplateSelectorWithCreate({
 
       // TODO: Implement actual API
       const newTemplate: Template = {
+        /** Id */
         id: `template_${Date.now()}`,
+        /** Name */
         name: data.name,
+        /** Category */
         category: data.category,
+        /** Subject */
         subject: data.subject,
+        /** Body */
         body: data.body,
         variables,
+        /** Is Active */
         isActive: data.isActive,
+        /** Created At */
         createdAt: new Date(),
+        /** Updated At */
         updatedAt: new Date(),
       };
 
@@ -202,6 +415,7 @@ export function TemplateSelectorWithCreate({
       toast.success("Template created successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "TemplateSelectorWithCreate.createTemplate",
       });
       toast.error("Failed to create template");
@@ -298,6 +512,7 @@ export function TemplateSelectorWithCreate({
 
                     {template.subject && (
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        /** Subject */
                         Subject: {template.subject}
                       </p>
                     )}

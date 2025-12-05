@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/[slug]/stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { safeToISOString } from "@/lib/date-utils";
@@ -6,7 +15,42 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../../lib/session";
 
 // GET /api/shops/[slug]/stats - seller/admin analytics
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -46,6 +90,7 @@ export async function GET(
       .where("shop_id", "==", shop.id)
       .get();
     const allProducts = productsSnap.docs.map((d) => ({
+      /** Id */
       id: d.id,
       ...d.data(),
     }));
@@ -98,6 +143,18 @@ export async function GET(
     const dailyMap: Record<string, number> = {};
     for (const d of recentOrdersSnap.docs) {
       const o: any = d.data();
+      /**
+       * Performs day operation
+       *
+       * @returns {any} The day result
+       */
+
+      /**
+       * Performs day operation
+       *
+       * @returns {any} The day result
+       */
+
       const day = (o.created_at || "").slice(0, 10);
       if (!day) continue;
       if (!dailyMap[day]) dailyMap[day] = 0;
@@ -110,21 +167,31 @@ export async function GET(
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Shop */
         shop: { id: shop.id, name: shop.name, slug: shop.slug },
+        /** Metrics */
         metrics: {
           productCount,
           orderCount,
           revenue,
           reviewCount,
+          /** Avg Rating */
           avgRating: Number(avgRating.toFixed(2)),
           returnsCount,
+          /** Low Stock Count */
           lowStockCount: lowStock.length,
         },
+        /** Low Stock */
         lowStock: lowStock.slice(0, 10).map((p) => ({
+          /** Id */
           id: p.id,
+          /** Name */
           name: p.name,
+          /** Stock */
           stock: p.stock_quantity ?? p.stockCount ?? 0,
         })),
         dailySales,
@@ -132,7 +199,9 @@ export async function GET(
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.stats",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(

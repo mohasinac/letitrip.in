@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/reviews/ReviewsListClient
+ * @description This file contains the ReviewsListClient component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReviewCard } from "@/components/cards/ReviewCard";
@@ -11,24 +20,35 @@ import { toast } from "sonner";
 
 export default function ReviewsListClient() {
   const [filters, setFilters] = useState<ReviewFiltersFE>({
+    /** Status */
     status: "approved",
+    /** Page */
     page: 1,
+    /** Limit */
     limit: 20,
+    /** Sort By */
     sortBy: "recent",
   });
   const [totalPages, setTotalPages] = useState(1);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: reviews,
+    /** Set Data */
     setData: setReviews,
     execute,
   } = useLoadingState<ReviewFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "ReviewsListClient.fetchReviews",
+        /** Metadata */
         metadata: { filters },
       });
     },
@@ -37,6 +57,22 @@ export default function ReviewsListClient() {
   useEffect(() => {
     fetchReviews();
   }, [filters]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchReviews = async () => {
     await execute(async () => {
@@ -56,6 +92,26 @@ export default function ReviewsListClient() {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} reviewId - review identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} reviewId - review identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleMarkHelpful = async (reviewId: string) => {
     try {
       await reviewsService.markHelpful(reviewId);
@@ -71,33 +127,84 @@ export default function ReviewsListClient() {
       }
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "ReviewsListClient.markHelpful",
+        /** Metadata */
         metadata: { reviewId },
       });
       toast.error("Failed to mark review as helpful");
     }
   };
 
+  /**
+   * Handles rating filter event
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The handleratingfilter result
+   */
+
+  /**
+   * Handles rating filter event
+   *
+   * @param {number} rating - The rating
+   *
+   * @returns {number} The handleratingfilter result
+   */
+
   const handleRatingFilter = (rating: number) => {
     setFilters((prev) => ({
       ...prev,
+      /** Rating */
       rating: prev.rating === rating ? undefined : rating,
+      /** Page */
       page: 1,
     }));
   };
 
+  /**
+   * Handles verified filter event
+   *
+   * @returns {any} The handleverifiedfilter result
+   */
+
+  /**
+   * Handles verified filter event
+   *
+   * @returns {any} The handleverifiedfilter result
+   */
+
   const handleVerifiedFilter = () => {
     setFilters((prev) => ({
       ...prev,
+      /** Is Verified Purchase */
       isVerifiedPurchase: !prev.isVerifiedPurchase,
+      /** Page */
       page: 1,
     }));
   };
+
+  /**
+   * Handles sort change event
+   *
+   * @param {ReviewFiltersFE["sortBy"]} sortBy - The sort by
+   *
+   * @returns {any} The handlesortchange result
+   */
+
+  /**
+   * Handles sort change event
+   *
+   * @param {ReviewFiltersFE["sortBy"]} sortBy - The sort by
+   *
+   * @returns {any} The handlesortchange result
+   */
 
   const handleSortChange = (sortBy: ReviewFiltersFE["sortBy"]) => {
     setFilters((prev) => ({
       ...prev,
       sortBy,
+      /** Page */
       page: 1,
     }));
   };
@@ -105,7 +212,9 @@ export default function ReviewsListClient() {
   // Calculate rating distribution (would be better from API)
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
+    /** Count */
     count: reviews?.filter((r) => r.rating === rating).length || 0,
+    /** Percentage */
     percentage:
       reviews && reviews.length > 0
         ? (reviews.filter((r) => r.rating === rating).length / reviews.length) *
@@ -346,6 +455,7 @@ export default function ReviewsListClient() {
                     onClick={() =>
                       setFilters((prev) => ({
                         ...prev,
+                        /** Page */
                         page: Math.max(1, (prev.page || 1) - 1),
                       }))
                     }
@@ -363,6 +473,7 @@ export default function ReviewsListClient() {
                     onClick={() =>
                       setFilters((prev) => ({
                         ...prev,
+                        /** Page */
                         page: Math.min(totalPages, (prev.page || 1) + 1),
                       }))
                     }
@@ -392,9 +503,13 @@ export default function ReviewsListClient() {
                 <button
                   onClick={() =>
                     setFilters({
+                      /** Status */
                       status: "approved",
+                      /** Page */
                       page: 1,
+                      /** Limit */
                       limit: 20,
+                      /** Sort By */
                       sortBy: "recent",
                     })
                   }

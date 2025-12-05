@@ -1,15 +1,36 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/Checkbox
+ * @description This file contains the Checkbox component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 
+/**
+ * CheckboxProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CheckboxProps
+ */
 export interface CheckboxProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "type"
 > {
+  /** Label */
   label?: string;
+  /** Description */
   description?: string;
 }
 
+/**
+ * C
+ * @constant
+ */
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ label, description, className = "", id, ...props }, ref) => {
     const checkboxId = id || label?.toLowerCase().replace(/\s+/g, "-");
@@ -22,8 +43,11 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           id={checkboxId}
           className={`
             w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded
+            /** Focus */
             focus:ring-blue-500 focus:ring-2
+            /** Disabled */
             disabled:opacity-50 disabled:cursor-not-allowed
+            /** Dark */
             dark:bg-gray-800
             ${className}
           `}
@@ -43,8 +67,11 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           id={checkboxId}
           className={`
             w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded mt-0.5
+            /** Focus */
             focus:ring-blue-500 focus:ring-2
+            /** Disabled */
             disabled:opacity-50 disabled:cursor-not-allowed
+            /** Dark */
             dark:bg-gray-800
             ${className}
           `}

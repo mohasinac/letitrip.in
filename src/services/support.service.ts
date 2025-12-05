@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/support.service
+ * @description This file contains service functions for support operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { TICKET_ROUTES } from "@/constants/api-routes";
 import type {
@@ -40,6 +49,7 @@ import {
 class SupportService {
   // List tickets (role-filtered: user sees own, seller sees shop, admin sees all)
   async listTickets(
+    /** Filters */
     filters?: Partial<SupportTicketFiltersBE>,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
     const params = new URLSearchParams();
@@ -61,8 +71,11 @@ class SupportService {
       await apiService.get<PaginatedResponseBE<SupportTicketBE>>(endpoint);
 
     return {
+      /** Data */
       data: toFESupportTickets(response.data),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -82,7 +95,9 @@ class SupportService {
 
   // Update ticket (owner with limited fields, admin with all fields)
   async updateTicket(
+    /** Id */
     id: string,
+    /** Data */
     data: UpdateTicketFormFE,
   ): Promise<SupportTicketFE> {
     const request = toBEUpdateSupportTicketRequest(data);
@@ -96,6 +111,7 @@ class SupportService {
   // Close ticket (now uses PATCH with status update)
   async closeTicket(id: string): Promise<SupportTicketFE> {
     const response: any = await apiService.patch(TICKET_ROUTES.BY_ID(id), {
+      /** Status */
       status: "closed",
     });
     return toFESupportTicket(response.data);
@@ -103,8 +119,11 @@ class SupportService {
 
   // Get ticket messages
   async getMessages(
+    /** Ticket Id */
     ticketId: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number,
   ): Promise<PaginatedResponseFE<SupportTicketMessageFE>> {
     const params = new URLSearchParams();
@@ -122,15 +141,20 @@ class SupportService {
       );
 
     return {
+      /** Data */
       data: toFESupportTicketMessages(response.data),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
 
   // Reply to ticket (owner, seller, or admin)
   async replyToTicket(
+    /** Ticket Id */
     ticketId: string,
+    /** Data */
     data: ReplyToTicketFormFE,
   ): Promise<SupportTicketMessageFE> {
     const request = toBEReplyToTicketRequest(data);
@@ -143,13 +167,18 @@ class SupportService {
 
   // Assign ticket (admin only - now uses bulk endpoint)
   async assignTicket(
+    /** Id */
     id: string,
+    /** Data */
     data: AssignTicketFormFE,
   ): Promise<SupportTicketFE> {
     const request = toBEAssignTicketRequest(data);
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "assign",
+      /** Ids */
       ids: [id],
+      /** Updates */
       updates: request,
     });
     return this.getTicket(id);
@@ -158,7 +187,9 @@ class SupportService {
   // Escalate ticket (admin only - now uses bulk endpoint)
   async escalateTicket(id: string): Promise<SupportTicketFE> {
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "escalate",
+      /** Ids */
       ids: [id],
     });
     return this.getTicket(id);
@@ -167,16 +198,20 @@ class SupportService {
   // Bulk operations (admin only)
   async bulkDelete(ids: string[]): Promise<void> {
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "delete",
       ids,
     });
   }
 
   async bulkUpdate(
+    /** Ids */
     ids: string[],
+    /** Updates */
     updates: Partial<UpdateTicketFormFE>,
   ): Promise<void> {
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "update",
       ids,
       updates,
@@ -185,6 +220,7 @@ class SupportService {
 
   async bulkResolve(ids: string[]): Promise<void> {
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "resolve",
       ids,
     });
@@ -192,6 +228,7 @@ class SupportService {
 
   async bulkClose(ids: string[]): Promise<void> {
     await apiService.post(TICKET_ROUTES.BULK, {
+      /** Action */
       action: "close",
       ids,
     });
@@ -203,7 +240,9 @@ class SupportService {
     formData.append("file", file);
 
     const response = await fetch("/api/support/attachments", {
+      /** Method */
       method: "POST",
+      /** Body */
       body: formData,
     });
 
@@ -217,16 +256,26 @@ class SupportService {
 
   // Get ticket statistics (admin only)
   async getStats(filters?: {
+    /** Shop Id */
     shopId?: string;
+    /** Start Date */
     startDate?: string;
+    /** End Date */
     endDate?: string;
   }): Promise<{
+    /** Total Tickets */
     totalTickets: number;
+    /** Open Tickets */
     openTickets: number;
+    /** Resolved Tickets */
     resolvedTickets: number;
+    /** Average Response Time */
     averageResponseTime: number;
+    /** Average Resolution Time */
     averageResolutionTime: number;
+    /** Tickets By Category */
     ticketsByCategory: Record<TicketCategory, number>;
+    /** Tickets By Priority */
     ticketsByPriority: Record<TicketPriority, number>;
   }> {
     const params = new URLSearchParams();
@@ -249,6 +298,7 @@ class SupportService {
 
   // Get my tickets
   async getMyTickets(
+    /** Filters */
     filters?: Omit<Partial<SupportTicketFiltersBE>, "assignedTo">,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
     return this.listTickets(filters);
@@ -256,6 +306,7 @@ class SupportService {
 
   // Get ticket count
   async getTicketCount(
+    /** Filters */
     filters?: Pick<Partial<SupportTicketFiltersBE>, "status" | "category">,
   ): Promise<{ count: number }> {
     const params = new URLSearchParams();

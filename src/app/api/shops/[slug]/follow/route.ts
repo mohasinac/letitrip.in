@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/[slug]/follow/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -9,6 +18,29 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 // Helper to get current user (temporary - replace with actual auth)
+/**
+ * Retrieves current user
+ */
+/**
+ * Retrieves current user
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to currentuser result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Retrieves current user
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to currentuser result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function getCurrentUser(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
   if (!userId) return null;
@@ -21,7 +53,42 @@ async function getCurrentUser(req: NextRequest) {
 }
 
 // POST - Follow shop
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Request */
+  request, {});
+ */
+
 export async function POST(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -91,12 +158,16 @@ export async function POST(
       });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Shop followed successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.follow.POST",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
@@ -107,7 +178,42 @@ export async function POST(
 }
 
 // DELETE - Unfollow shop
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -174,12 +280,16 @@ export async function DELETE(
       });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Shop unfollowed successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.follow.DELETE",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(
@@ -190,7 +300,42 @@ export async function DELETE(
 }
 
 // GET - Check if following
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -231,7 +376,9 @@ export async function GET(
     return NextResponse.json({ isFollowing: followDoc.exists });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.shops.follow.GET",
+      /** Metadata */
       metadata: { slug: await params.then((p) => p.slug) },
     });
     return NextResponse.json(

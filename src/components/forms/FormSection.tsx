@@ -1,16 +1,58 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormSection
+ * @description This file contains the FormSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormSectionProps
+ */
 export interface FormSectionProps {
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Children */
   children: ReactNode;
+  /** Class Name */
   className?: string;
+  /** Columns */
   columns?: 1 | 2 | 3;
+  /** Gap */
   gap?: "sm" | "md" | "lg";
 }
+
+/**
+ * Function: Form Section
+ */
+/**
+ * Performs form section operation
+ *
+ * @returns {any} The formsection result
+ *
+ * @example
+ * FormSection();
+ */
+
+/**
+ * Performs form section operation
+ *
+ * @returns {any} The formsection result
+ *
+ * @example
+ * FormSection();
+ */
 
 export function FormSection({
   title,
@@ -21,8 +63,11 @@ export function FormSection({
   gap = "md",
 }: FormSectionProps) {
   const gapClasses = {
+    /** Sm */
     sm: "gap-3",
+    /** Md */
     md: "gap-4",
+    /** Lg */
     lg: "gap-6",
   };
 
@@ -55,12 +100,43 @@ export function FormSection({
   );
 }
 
+/**
+ * FormRowProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormRowProps
+ */
 export interface FormRowProps {
+  /** Children */
   children: ReactNode;
+  /** Class Name */
   className?: string;
+  /** Columns */
   columns?: 2 | 3 | 4;
+  /** Gap */
   gap?: "sm" | "md" | "lg";
 }
+
+/**
+ * Function: Form Row
+ */
+/**
+ * Performs form row operation
+ *
+ * @returns {any} The formrow result
+ *
+ * @example
+ * FormRow();
+ */
+
+/**
+ * Performs form row operation
+ *
+ * @returns {any} The formrow result
+ *
+ * @example
+ * FormRow();
+ */
 
 export function FormRow({
   children,
@@ -69,8 +145,11 @@ export function FormRow({
   gap = "md",
 }: FormRowProps) {
   const gapClasses = {
+    /** Sm */
     sm: "gap-3",
+    /** Md */
     md: "gap-4",
+    /** Lg */
     lg: "gap-6",
   };
 
@@ -89,12 +168,43 @@ export function FormRow({
   );
 }
 
+/**
+ * FormActionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormActionsProps
+ */
 export interface FormActionsProps {
+  /** Children */
   children: ReactNode;
+  /** Class Name */
   className?: string;
+  /** Align */
   align?: "left" | "right" | "center" | "between";
+  /** Sticky */
   sticky?: boolean;
 }
+
+/**
+ * Function: Form Actions
+ */
+/**
+ * Performs form actions operation
+ *
+ * @returns {any} The formactions result
+ *
+ * @example
+ * FormActions();
+ */
+
+/**
+ * Performs form actions operation
+ *
+ * @returns {any} The formactions result
+ *
+ * @example
+ * FormActions();
+ */
 
 export function FormActions({
   children,
@@ -103,9 +213,13 @@ export function FormActions({
   sticky = false,
 }: FormActionsProps) {
   const alignClasses = {
+    /** Left */
     left: "justify-start",
+    /** Right */
     right: "justify-end",
+    /** Center */
     center: "justify-center",
+    /** Between */
     between: "justify-between",
   };
 

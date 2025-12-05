@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ContentTypeFilter
+ * @description This file contains the ContentTypeFilter component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -14,6 +23,12 @@ import {
 // Types
 // ============================================================================
 
+/**
+ * ContentType type
+ * 
+ * @typedef {Object} ContentType
+ * @description Type definition for ContentType
+ */
 export type ContentType =
   | "all"
   | "products"
@@ -22,21 +37,48 @@ export type ContentType =
   | "categories"
   | "blog";
 
+/**
+ * ContentTypeOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContentTypeOption
+ */
 export interface ContentTypeOption {
+  /** Value */
   value: ContentType;
+  /** Label */
   label: string;
+  /** Icon */
   icon: React.ReactNode;
+  /** Placeholder */
   placeholder: string;
 }
 
+/**
+ * ContentTypeFacets interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContentTypeFacets
+ */
 export interface ContentTypeFacets {
+  /** Products */
   products: number;
+  /** Auctions */
   auctions: number;
+  /** Shops */
   shops: number;
+  /** Categories */
   categories: number;
+  /** Blog */
   blog: number;
 }
 
+/**
+ * ContentTypeFilterProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContentTypeFilterProps
+ */
 export interface ContentTypeFilterProps {
   /** Currently selected content type */
   value: ContentType;
@@ -60,41 +102,69 @@ export interface ContentTypeFilterProps {
 // Constants
 // ============================================================================
 
+/**
+ * Content Type Options
+ * @constant
+ */
 export const CONTENT_TYPE_OPTIONS: ContentTypeOption[] = [
   {
+    /** Value */
     value: "all",
+    /** Label */
     label: "All",
+    /** Icon */
     icon: <Search className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search everything...",
   },
   {
+    /** Value */
     value: "products",
+    /** Label */
     label: "Products",
+    /** Icon */
     icon: <Package className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search products...",
   },
   {
+    /** Value */
     value: "auctions",
+    /** Label */
     label: "Auctions",
+    /** Icon */
     icon: <Gavel className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search auctions...",
   },
   {
+    /** Value */
     value: "shops",
+    /** Label */
     label: "Shops",
+    /** Icon */
     icon: <Store className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search shops...",
   },
   {
+    /** Value */
     value: "categories",
+    /** Label */
     label: "Categories",
+    /** Icon */
     icon: <FolderTree className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search categories...",
   },
   {
+    /** Value */
     value: "blog",
+    /** Label */
     label: "Blog",
+    /** Icon */
     icon: <FileText className="w-4 h-4" />,
+    /** Placeholder */
     placeholder: "Search blog posts...",
   },
 ];
@@ -102,6 +172,28 @@ export const CONTENT_TYPE_OPTIONS: ContentTypeOption[] = [
 /**
  * Get placeholder text for a content type
  */
+/**
+ * Retrieves content type placeholder
+ *
+ * @param {ContentType} type - The type
+ *
+ * @returns {string} The contenttypeplaceholder result
+ *
+ * @example
+ * getContentTypePlaceholder(type);
+ */
+
+/**
+ * Retrieves content type placeholder
+ *
+ * @param {ContentType} type - The type
+ *
+ * @returns {string} The contenttypeplaceholder result
+ *
+ * @example
+ * getContentTypePlaceholder(type);
+ */
+
 export function getContentTypePlaceholder(type: ContentType): string {
   const option = CONTENT_TYPE_OPTIONS.find((o) => o.value === type);
   return option?.placeholder || "Search...";
@@ -110,6 +202,22 @@ export function getContentTypePlaceholder(type: ContentType): string {
 /**
  * Get the total count from facets
  */
+/**
+ * Retrieves total count
+ *
+ * @param {ContentTypeFacets} [facets] - The facets
+ *
+ * @returns {number} The totalcount result
+ */
+
+/**
+ * Retrieves total count
+ *
+ * @param {ContentTypeFacets} [facets] - The facets
+ *
+ * @returns {number} The totalcount result
+ */
+
 function getTotalCount(facets?: ContentTypeFacets): number {
   if (!facets) return 0;
   return (
@@ -125,6 +233,21 @@ function getTotalCount(facets?: ContentTypeFacets): number {
 // Chips Variant
 // ============================================================================
 
+/**
+ * Function: Chips Variant
+ */
+/**
+ * Performs chips variant operation
+ *
+ * @returns {any} The chipsvariant result
+ */
+
+/**
+ * Performs chips variant operation
+ *
+ * @returns {any} The chipsvariant result
+ */
+
 function ChipsVariant({
   value,
   onChange,
@@ -134,14 +257,20 @@ function ChipsVariant({
   disabled,
 }: ContentTypeFilterProps) {
   const sizeClasses = {
+    /** Sm */
     sm: "px-2 py-1 text-xs gap-1",
+    /** Md */
     md: "px-3 py-1.5 text-sm gap-1.5",
+    /** Lg */
     lg: "px-4 py-2 text-base gap-2",
   };
 
   const iconSizes = {
+    /** Sm */
     sm: "w-3 h-3",
+    /** Md */
     md: "w-4 h-4",
+    /** Lg */
     lg: "w-5 h-5",
   };
 
@@ -170,11 +299,13 @@ function ChipsVariant({
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               }
               ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+              /** Focus */
               focus:outline-none focus:ring-2 focus:ring-primary/50
             `}
             aria-pressed={isSelected}
           >
             {React.cloneElement(option.icon as React.ReactElement, {
+              /** Class Name */
               className: iconSizes[size || "md"],
             })}
             <span>{option.label}</span>
@@ -199,6 +330,21 @@ function ChipsVariant({
 // Dropdown Variant
 // ============================================================================
 
+/**
+ * Function: Dropdown Variant
+ */
+/**
+ * Performs dropdown variant operation
+ *
+ * @returns {any} The dropdownvariant result
+ */
+
+/**
+ * Performs dropdown variant operation
+ *
+ * @returns {any} The dropdownvariant result
+ */
+
 function DropdownVariant({
   value,
   onChange,
@@ -215,6 +361,22 @@ function DropdownVariant({
 
   // Close on click outside
   React.useEffect(() => {
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -229,8 +391,11 @@ function DropdownVariant({
   }, []);
 
   const sizeClasses = {
+    /** Sm */
     sm: "px-2 py-1 text-xs",
+    /** Md */
     md: "px-3 py-2 text-sm",
+    /** Lg */
     lg: "px-4 py-2.5 text-base",
   };
 
@@ -243,9 +408,11 @@ function DropdownVariant({
         className={`
           h-full w-full inline-flex items-center justify-between gap-2
           bg-transparent hover:bg-gray-100
+          /** Dark */
           dark:hover:bg-gray-600
           ${sizeClasses[size || "md"]}
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+          /** Focus */
           focus:outline-none
           text-gray-700 dark:text-gray-300
         `}
@@ -295,6 +462,7 @@ function DropdownVariant({
                 }}
                 className={`
                   w-full flex items-center gap-2 px-3 py-2 text-left
+                  /** Hover */
                   hover:bg-gray-100 dark:hover:bg-gray-700
                   ${
                     isSelected
@@ -333,6 +501,21 @@ function DropdownVariant({
 // Tabs Variant
 // ============================================================================
 
+/**
+ * Function: Tabs Variant
+ */
+/**
+ * Performs tabs variant operation
+ *
+ * @returns {any} The tabsvariant result
+ */
+
+/**
+ * Performs tabs variant operation
+ *
+ * @returns {any} The tabsvariant result
+ */
+
 function TabsVariant({
   value,
   onChange,
@@ -367,6 +550,7 @@ function TabsVariant({
               }
               ${isEmpty ? "opacity-40 cursor-not-allowed" : ""}
               ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+              /** Focus */
               focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary/50
             `}
           >
@@ -396,6 +580,27 @@ function TabsVariant({
 // ============================================================================
 // Main Component
 // ============================================================================
+
+/**
+ * Function: Content Type Filter
+ */
+/**
+ * Performs content type filter operation
+ *
+ * @returns {any} The contenttypefilter result
+ *
+ * @example
+ * ContentTypeFilter();
+ */
+
+/**
+ * Performs content type filter operation
+ *
+ * @returns {any} The contenttypefilter result
+ *
+ * @example
+ * ContentTypeFilter();
+ */
 
 export function ContentTypeFilter({
   value,

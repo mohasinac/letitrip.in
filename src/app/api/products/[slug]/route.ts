@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/[slug]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import {
@@ -14,7 +23,39 @@ import { NextRequest, NextResponse } from "next/server";
  * - Public: Published products only
  * - Owner/Admin: All statuses
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -61,44 +102,77 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: doc.id,
         ...data,
         // Add camelCase aliases for all snake_case fields
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Seller Id */
         sellerId: data.seller_id,
+        /** Category Id */
         categoryId: data.category_id,
+        /** Category Ids */
         categoryIds: data.category_ids,
+        /** Stock Count */
         stockCount: data.stock_count,
+        /** Low Stock Threshold */
         lowStockThreshold: data.low_stock_threshold,
+        /** Track Inventory */
         trackInventory: data.track_inventory,
+        /** Featured */
         featured: data.is_featured,
+        /** Is Active */
         isActive: data.is_active,
+        /** Is Deleted */
         isDeleted: data.is_deleted,
+        /** Is Returnable */
         isReturnable: data.is_returnable,
+        /** Compare At Price */
         compareAtPrice: data.compare_at_price,
+        /** Tax Rate */
         taxRate: data.tax_rate,
+        /** Return Window Days */
         returnWindowDays: data.return_window_days,
+        /** Return Policy */
         returnPolicy: data.return_policy,
+        /** Warranty Info */
         warrantyInfo: data.warranty_info,
+        /** Shipping Class */
         shippingClass: data.shipping_class,
+        /** View Count */
         viewCount: data.view_count,
+        /** Sales Count */
         salesCount: data.sales_count,
+        /** Favorite Count */
         favoriteCount: data.favorite_count,
+        /** Review Count */
         reviewCount: data.review_count,
+        /** Average Rating */
         averageRating: data.average_rating,
+        /** Country Of Origin */
         countryOfOrigin: data.country_of_origin,
+        /** Meta Title */
         metaTitle: data.meta_title,
+        /** Meta Description */
         metaDescription: data.meta_description,
+        /** Created At */
         createdAt: data.created_at,
+        /** Updated At */
         updatedAt: data.updated_at,
+        /** Has Variants */
         hasVariants: data.has_variants,
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.GET",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(
@@ -112,7 +186,39 @@ export async function GET(
  * PATCH /api/products/[slug]
  * Update product (owner/admin only)
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -150,7 +256,9 @@ export async function PATCH(
       if (!ownsShop) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "You do not have permission to update this product",
           },
           { status: 403 },
@@ -206,6 +314,7 @@ export async function PATCH(
         }
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.products.slug.PATCH.updateCategoryCounts",
         });
         // Don't fail the request if count update fails
@@ -213,44 +322,77 @@ export async function PATCH(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: updatedDoc.id,
         ...updatedData,
         // Add camelCase aliases for all snake_case fields
+        /** Shop Id */
         shopId: updatedData.shop_id,
+        /** Seller Id */
         sellerId: updatedData.seller_id,
+        /** Category Id */
         categoryId: updatedData.category_id,
+        /** Category Ids */
         categoryIds: updatedData.category_ids,
+        /** Stock Count */
         stockCount: updatedData.stock_count,
+        /** Low Stock Threshold */
         lowStockThreshold: updatedData.low_stock_threshold,
+        /** Track Inventory */
         trackInventory: updatedData.track_inventory,
+        /** Featured */
         featured: updatedData.is_featured,
+        /** Is Active */
         isActive: updatedData.is_active,
+        /** Is Deleted */
         isDeleted: updatedData.is_deleted,
+        /** Is Returnable */
         isReturnable: updatedData.is_returnable,
+        /** Compare At Price */
         compareAtPrice: updatedData.compare_at_price,
+        /** Tax Rate */
         taxRate: updatedData.tax_rate,
+        /** Return Window Days */
         returnWindowDays: updatedData.return_window_days,
+        /** Return Policy */
         returnPolicy: updatedData.return_policy,
+        /** Warranty Info */
         warrantyInfo: updatedData.warranty_info,
+        /** Shipping Class */
         shippingClass: updatedData.shipping_class,
+        /** View Count */
         viewCount: updatedData.view_count,
+        /** Sales Count */
         salesCount: updatedData.sales_count,
+        /** Favorite Count */
         favoriteCount: updatedData.favorite_count,
+        /** Review Count */
         reviewCount: updatedData.review_count,
+        /** Average Rating */
         averageRating: updatedData.average_rating,
+        /** Country Of Origin */
         countryOfOrigin: updatedData.country_of_origin,
+        /** Meta Title */
         metaTitle: updatedData.meta_title,
+        /** Meta Description */
         metaDescription: updatedData.meta_description,
+        /** Created At */
         createdAt: updatedData.created_at,
+        /** Updated At */
         updatedAt: updatedData.updated_at,
+        /** Has Variants */
         hasVariants: updatedData.has_variants,
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.PATCH",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(
@@ -264,7 +406,39 @@ export async function PATCH(
  * DELETE /api/products/[slug]
  * Delete product (owner/admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -302,7 +476,9 @@ export async function DELETE(
       if (!ownsShop) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "You do not have permission to delete this product",
           },
           { status: 403 },
@@ -318,19 +494,25 @@ export async function DELETE(
         await updateCategoryProductCounts(productData.category_id);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.products.slug.DELETE.updateCategoryCounts",
+          /** Metadata */
           metadata: { categoryId: productData.category_id },
         });
       }
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Product deleted successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.DELETE",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(

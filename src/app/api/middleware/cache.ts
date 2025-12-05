@@ -1,17 +1,60 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/middleware/cache
+ * @description This file contains functionality related to cache
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { memoryCache } from "@/app/api/lib/utils/memory-cache";
 
+/**
+ * CacheEntry interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CacheEntry
+ */
 interface CacheEntry {
+  /** Data */
   data: any;
+  /** Timestamp */
   timestamp: number;
+  /** Etag */
   etag: string;
 }
 
+/**
+ * CacheConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CacheConfig
+ */
 interface CacheConfig {
   ttl?: number; // Time to live in seconds
   key?: string; // Custom cache key
   revalidate?: number; // Next.js revalidation time
 }
+
+/**
+ * Function: Generate E Tag
+ */
+/**
+ * Performs generate e tag operation
+ *
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The etag result
+ */
+
+/**
+ * Performs generate e tag operation
+ *
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The etag result
+ */
 
 function generateETag(data: any): string {
   const str = typeof data === "string" ? data : JSON.stringify(data);
@@ -24,13 +67,40 @@ function generateETag(data: any): string {
   return `"${Math.abs(hash).toString(36)}"`;
 }
 
+/**
+ * Function: Cache
+ */
+/**
+ * Performs cache operation
+ *
+ * @param {CacheConfig} [config] - The config
+ *
+ * @returns {any} The cache result
+ *
+ * @example
+ * cache(config);
+ */
+
+/**
+ * Performs cache operation
+ *
+ * @param {CacheConfig} [config] - The config
+ *
+ * @returns {any} The cache result
+ *
+ * @example
+ * cache(config);
+ */
+
 export function cache(config: CacheConfig = {}) {
   const {
     ttl = 300, // 5 minutes default (in seconds)
+    /** Key */
     key: customKey,
   } = config;
 
   return {
+    /** Get */
     get: (req: NextRequest): CacheEntry | null => {
       const url = new URL(req.url);
       const cacheKey = customKey || `cache:${url.pathname}${url.search}`;
@@ -47,6 +117,7 @@ export function cache(config: CacheConfig = {}) {
       return cached;
     },
 
+    /** Set */
     set: (req: NextRequest, data: any): void => {
       const url = new URL(req.url);
       const cacheKey = customKey || `cache:${url.pathname}${url.search}`;
@@ -54,6 +125,7 @@ export function cache(config: CacheConfig = {}) {
       const etag = generateETag(data);
       const entry: CacheEntry = {
         data,
+        /** Timestamp */
         timestamp: Date.now(),
         etag,
       };
@@ -61,6 +133,7 @@ export function cache(config: CacheConfig = {}) {
       memoryCache.set(cacheKey, entry, ttl);
     },
 
+    /** Invalidate */
     invalidate: (pattern?: string): void => {
       if (!pattern) {
         memoryCache.clear();
@@ -78,9 +151,49 @@ export function cache(config: CacheConfig = {}) {
 }
 
 // Middleware wrapper for API routes
+/**
+ * Function: With Cache
+ */
+/**
+ * Performs with cache operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {(req} handler - The handler
+ *
+ * @returns {Promise<any>} Promise resolving to withcache result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withCache(req, handler);
+ */
+
+/**
+ * Performs with cache operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {(req} /** Handler */
+  handler - The /**  handler */
+  handler
+ *
+ * @returns {Promise<any>} Promise resolving to withcache result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * withCache(/** Req */
+  req, /** Handler */
+  handler);
+ */
+
 export async function withCache(
+  /** Req */
   req: NextRequest,
+  /** Handler */
   handler: (req: NextRequest) => Promise<NextResponse>,
+  /** Config */
   config?: CacheConfig,
 ) {
   // Only cache GET requests
@@ -95,8 +208,11 @@ export async function withCache(
     if (cached.data === null) {
       // ETag matched - return 304
       return new NextResponse(null, {
+        /** Status */
         status: 304,
+        /** Headers */
         headers: {
+          /** E Tag */
           ETag: cached.etag,
           "Cache-Control": `public, max-age=${Math.floor((config?.ttl || 300000) / 1000)}`,
         },
@@ -105,7 +221,9 @@ export async function withCache(
 
     // Return cached response
     return NextResponse.json(cached.data, {
+      /** Headers */
       headers: {
+        /** E Tag */
         ETag: cached.etag,
         "Cache-Control": `public, max-age=${Math.floor((config?.ttl || 300000) / 1000)}`,
         "X-Cache": "HIT",
@@ -125,7 +243,9 @@ export async function withCache(
 
       // Add cache headers
       const newResponse = NextResponse.json(data, {
+        /** Status */
         status: response.status,
+        /** Headers */
         headers: response.headers,
       });
       newResponse.headers.set("X-Cache", "MISS");

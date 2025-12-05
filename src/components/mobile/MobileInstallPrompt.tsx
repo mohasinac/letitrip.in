@@ -1,13 +1,51 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileInstallPrompt
+ * @description This file contains the MobileInstallPrompt component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
 import { X, Download, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * BeforeInstallPromptEvent interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BeforeInstallPromptEvent
+ */
 interface BeforeInstallPromptEvent extends Event {
+  /** Prompt */
   prompt: () => Promise<void>;
+  /** User Choice */
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
+
+/**
+ * Function: Mobile Install Prompt
+ */
+/**
+ * Performs mobile install prompt operation
+ *
+ * @returns {any} The mobileinstallprompt result
+ *
+ * @example
+ * MobileInstallPrompt();
+ */
+
+/**
+ * Performs mobile install prompt operation
+ *
+ * @returns {any} The mobileinstallprompt result
+ *
+ * @example
+ * MobileInstallPrompt();
+ */
 
 export function MobileInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
@@ -39,6 +77,22 @@ export function MobileInstallPrompt() {
     }
 
     // Listen for beforeinstallprompt event (Chrome/Edge/etc)
+    /**
+     * Handles before install prompt event
+     *
+     * @param {Event} e - The e
+     *
+     * @returns {any} The handlebeforeinstallprompt result
+     */
+
+    /**
+     * Handles before install prompt event
+     *
+     * @param {Event} e - The e
+     *
+     * @returns {any} The handlebeforeinstallprompt result
+     */
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -68,6 +122,22 @@ export function MobileInstallPrompt() {
     };
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleInstall = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -78,6 +148,18 @@ export function MobileInstallPrompt() {
       }
     }
   };
+
+  /**
+   * Handles dismiss event
+   *
+   * @returns {any} The handledismiss result
+   */
+
+  /**
+   * Handles dismiss event
+   *
+   * @returns {any} The handledismiss result
+   */
 
   const handleDismiss = () => {
     setShowPrompt(false);

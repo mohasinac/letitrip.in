@@ -1,9 +1,30 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/ui/Heading
+ * @description This file contains the Heading component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * HeadingLevel type
+ * 
+ * @typedef {Object} HeadingLevel
+ * @description Type definition for HeadingLevel
+ */
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+/**
+ * HeadingTag type
+ * 
+ * @typedef {Object} HeadingTag
+ * @description Type definition for HeadingTag
+ */
 type HeadingTag =
   | "h1"
   | "h2"
@@ -15,9 +36,18 @@ type HeadingTag =
   | "span"
   | "div";
 
+/**
+ * HeadingProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeadingProps
+ */
 export interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  /** Level */
   level?: HeadingLevel;
+  /** As */
   as?: HeadingTag;
+  /** Children */
   children: React.ReactNode;
 }
 
@@ -43,6 +73,32 @@ const sizeClasses: Record<HeadingLevel, string> = {
  * <Heading level={1}>Page Title</Heading>
  * <Heading level={2}>Section Title</Heading>
  * <Heading level={3} as="h2">Visually h3, semantically h2</Heading>
+ */
+/**
+ * Performs heading operation
+ *
+ * @returns {any} The heading result
+ *
+ * @example
+ * Heading();
+ */
+
+/**
+ * H
+ * @constant
+ */
+/**
+ * Performs heading operation
+ *
+ * @returns {any} The heading result
+ *
+ * @example
+ * Heading();
+ */
+
+/**
+ * H
+ * @constant
  */
 export const Heading: React.FC<HeadingProps> = ({
   level = 2,

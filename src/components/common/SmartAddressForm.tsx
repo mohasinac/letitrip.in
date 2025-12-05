@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/SmartAddressForm
+ * @description This file contains the SmartAddressForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormLabel } from "@/components/forms/FormLabel";
@@ -36,11 +45,14 @@ import { StateSelector } from "./StateSelector";
 
 // Validation schema
 const SmartAddressSchema = z.object({
+  /** Full Name */
   fullName: z.string().min(2, "Name must be at least 2 characters"),
+  /** Mobile Number */
   mobileNumber: z
     .string()
     .length(10, "Mobile must be 10 digits")
     .refine((val) => isValidIndianPhone(val), "Invalid mobile number"),
+  /** Alternate Mobile Number */
   alternateMobileNumber: z
     .string()
     .optional()
@@ -48,13 +60,21 @@ const SmartAddressSchema = z.object({
       (val) => !val || (val.length === 10 && isValidIndianPhone(val)),
       "Invalid mobile number",
     ),
+  /** Country Code */
   countryCode: z.string(),
+  /** Address Line1 */
   addressLine1: z.string().min(5, "Address must be at least 5 characters"),
+  /** Address Line2 */
   addressLine2: z.string().optional(),
+  /** Landmark */
   landmark: z.string().optional(),
+  /** Area */
   area: z.string().min(2, "Area is required"),
+  /** City */
   city: z.string().min(2, "City is required"),
+  /** District */
   district: z.string().optional(),
+  /** State */
   state: z
     .string()
     .min(2, "State is required")
@@ -63,32 +83,79 @@ const SmartAddressSchema = z.object({
         ALL_INDIAN_STATES.includes(val as (typeof ALL_INDIAN_STATES)[number]),
       "Invalid state",
     ),
+  /** Country */
   country: z.string(),
+  /** Pincode */
   pincode: z
     .string()
     .length(6, "Pincode must be 6 digits")
     .refine((val) => isValidPincode(val), "Invalid pincode"),
+  /** Latitude */
   latitude: z.number().optional(),
+  /** Longitude */
   longitude: z.number().optional(),
+  /** Type */
   type: z.enum(["home", "work", "other"]),
+  /** Custom Label */
   customLabel: z
     .string()
     .max(50, "Label must be 50 characters or less")
     .optional(),
+  /** Is Default */
   isDefault: z.boolean(),
 });
 
+/**
+ * SmartAddressFormData type
+ * 
+ * @typedef {Object} SmartAddressFormData
+ * @description Type definition for SmartAddressFormData
+ */
 type SmartAddressFormData = z.infer<typeof SmartAddressSchema>;
 
+/**
+ * SmartAddressFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SmartAddressFormProps
+ */
 export interface SmartAddressFormProps {
+  /** Address Id */
   addressId?: string | null;
+  /** On Close */
   onClose: () => void;
+  /** On Success */
   onSuccess?: (address: AddressFE) => void;
+  /** Initial Data */
   initialData?: Partial<SmartAddressFormData>;
+  /** Mode */
   mode?: "modal" | "inline";
+  /** Show G P S */
   showGPS?: boolean;
+  /** Title */
   title?: string;
 }
+
+/**
+ * Function: Smart Address Form
+ */
+/**
+ * Performs smart address form operation
+ *
+ * @returns {any} The smartaddressform result
+ *
+ * @example
+ * SmartAddressForm();
+ */
+
+/**
+ * Performs smart address form operation
+ *
+ * @returns {any} The smartaddressform result
+ *
+ * @example
+ * SmartAddressForm();
+ */
 
 export function SmartAddressForm({
   addressId,
@@ -112,13 +179,20 @@ export function SmartAddressForm({
     control,
     setValue,
     watch,
+    /** Form State */
     formState: { errors },
   } = useForm<SmartAddressFormData>({
+    /** Resolver */
     resolver: zodResolver(SmartAddressSchema),
+    /** Default Values */
     defaultValues: {
+      /** Is Default */
       isDefault: false,
+      /** Country */
       country: "India",
+      /** Country Code */
       countryCode: DEFAULT_COUNTRY_CODE,
+      /** Type */
       type: "home",
       ...initialData,
     },
@@ -152,7 +226,9 @@ export function SmartAddressForm({
       setValue("isDefault", address.isDefault);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SmartAddressForm.fetchAddress",
+        /** Metadata */
         metadata: { addressId },
       });
     } finally {
@@ -215,22 +291,52 @@ export function SmartAddressForm({
     [setValue],
   );
 
+  /**
+   * Performs async operation
+   *
+   * @param {SmartAddressFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {SmartAddressFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const onSubmit = async (data: SmartAddressFormData) => {
     try {
       setLoading(true);
 
       // Transform to old API format for compatibility
       const addressData = {
+        /** Full Name */
         fullName: data.fullName,
+        /** Phone Number */
         phoneNumber: `${data.countryCode}${data.mobileNumber}`,
+        /** Address Line1 */
         addressLine1: data.addressLine1,
+        /** Address Line2 */
         addressLine2:
           [data.addressLine2, data.landmark].filter(Boolean).join(", ") || "",
+        /** City */
         city: data.city,
+        /** State */
         state: data.state,
+        /** Postal Code */
         postalCode: data.pincode,
+        /** Country */
         country: data.country,
+        /** Address Type */
         addressType: data.type,
+        /** Is Default */
         isDefault: data.isDefault,
       };
 
@@ -245,7 +351,9 @@ export function SmartAddressForm({
       onClose();
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SmartAddressForm.onSubmit",
+        /** Metadata */
         metadata: { isEditing, addressId },
       });
       toast.error(error.message || "Something went wrong");

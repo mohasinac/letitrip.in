@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedProductsSection
+ * @description This file contains the FeaturedProductsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,17 +19,37 @@ import { apiService } from "@/services/api.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import { ShoppingBag } from "lucide-react";
 
+/**
+ * FeaturedItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedItem
+ */
 interface FeaturedItem {
+  /** Id */
   id: string;
+  /** Type */
   type: string;
+  /** Item Id */
   itemId: string;
+  /** Name */
   name: string;
+  /** Image */
   image?: string;
+  /** Position */
   position: number;
+  /** Active */
   active: boolean;
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Max Products */
   maxProducts?: number;
 }
 
@@ -31,6 +60,22 @@ export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
   useEffect(() => {
     fetchFeaturedProducts();
   }, [maxProducts]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchFeaturedProducts = async () => {
     try {
@@ -66,13 +111,16 @@ export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
 
       // Fallback: Query products with featured=true flag
       const response = await productsService.list({
+        /** Featured */
         featured: true,
+        /** Limit */
         limit: maxProducts,
       });
 
       setProducts(response.data || []);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedProductsSection.fetchFeaturedProducts",
       });
       setProducts([]);

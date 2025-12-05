@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/category-wizard/SeoStep
+ * @description This file contains the SeoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
@@ -6,10 +15,20 @@ import { FormLabel } from "@/components/forms/FormLabel";
 import SlugInput from "@/components/common/SlugInput";
 import type { CategoryFormData, OnChange } from "./types";
 
+/**
+ * SeoStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SeoStepProps
+ */
 interface SeoStepProps {
+  /** Form Data */
   formData: CategoryFormData;
+  /** Slug Error */
   slugError?: string;
+  /** On Change */
   onChange: OnChange;
+  /** Validate Slug */
   validateSlug: (slug: string) => void;
 }
 

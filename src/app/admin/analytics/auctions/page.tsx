@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/analytics/auctions/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -34,9 +43,32 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // Auction status distribution
+/**
+ * Function: Auction Status Chart
+ */
+/**
+ * Performs auction status chart operation
+ *
+ * @param {{
+  data} {
+  data,
+} - The {
+  data,
+}
+ *
+ * @returns {string} The auctionstatuschart result
+ */
+
+/**
+ * Performs auction status chart operation
+ *
+ * @returns {string} The auctionstatuschart result
+ */
+
 function AuctionStatusChart({
   data,
 }: {
+  /** Data */
   data: { status: string; count: number; color: string }[];
 }) {
   const total = data.reduce((sum, item) => sum + item.count, 0);
@@ -63,7 +95,9 @@ function AuctionStatusChart({
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
+                  /** Width */
                   width: `${(item.count / maxCount) * 100}%`,
+                  /** Background Color */
                   backgroundColor: item.color,
                 }}
               />
@@ -87,6 +121,25 @@ function AuctionStatusChart({
 }
 
 // Bidding activity chart
+/**
+ * Function: Bidding Activity Chart
+ */
+/**
+ * Performs bidding activity chart operation
+ *
+ * @param {{ loading} { loading } - The { loading }
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs bidding activity chart operation
+ *
+ * @param {{ loading} { loading } - The { loading }
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function BiddingActivityChart({ loading }: { loading: boolean }) {
   const mockData = [
     { hour: "00:00", bids: 45 },
@@ -145,49 +198,114 @@ function BiddingActivityChart({ loading }: { loading: boolean }) {
 }
 
 // Top auctions table
+/**
+ * Function: Top Auctions Table
+ */
+/**
+ * Performs top auctions table operation
+ *
+ * @param {{ loading} { loading } - The { loading }
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
+/**
+ * Performs top auctions table operation
+ *
+ * @param {{ loading} { loading } - The { loading }
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ */
+
 function TopAuctionsTable({ loading }: { loading: boolean }) {
   const mockAuctions = [
     {
+      /** Id */
       id: "1",
+      /** Title */
       title: "Vintage Watch Collection",
+      /** Bids */
       bids: 156,
+      /** Current Bid */
       currentBid: 45000,
+      /** Watchers */
       watchers: 234,
+      /** Status */
       status: "live",
     },
     {
+      /** Id */
       id: "2",
+      /** Title */
       title: "Rare Coin Set",
+      /** Bids */
       bids: 89,
+      /** Current Bid */
       currentBid: 28500,
+      /** Watchers */
       watchers: 167,
+      /** Status */
       status: "live",
     },
     {
+      /** Id */
       id: "3",
+      /** Title */
       title: "Antique Furniture",
+      /** Bids */
       bids: 67,
+      /** Current Bid */
       currentBid: 72000,
+      /** Watchers */
       watchers: 98,
+      /** Status */
       status: "ending",
     },
     {
+      /** Id */
       id: "4",
+      /** Title */
       title: "Art Painting",
+      /** Bids */
       bids: 45,
+      /** Current Bid */
       currentBid: 125000,
+      /** Watchers */
       watchers: 312,
+      /** Status */
       status: "live",
     },
     {
+      /** Id */
       id: "5",
+      /** Title */
       title: "Electronics Bundle",
+      /** Bids */
       bids: 34,
+      /** Current Bid */
       currentBid: 15600,
+      /** Watchers */
       watchers: 89,
+      /** Status */
       status: "ended",
     },
   ];
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusbadge result
+   */
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusbadge result
+   */
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -211,6 +329,7 @@ function TopAuctionsTable({ loading }: { loading: boolean }) {
             Ended
           </span>
         );
+      /** Default */
       default:
         return null;
     }
@@ -291,6 +410,21 @@ function TopAuctionsTable({ loading }: { loading: boolean }) {
 }
 
 // Category performance
+/**
+ * Function: Category Performance
+ */
+/**
+ * Performs category performance operation
+ *
+ * @returns {any} The categoryperformance result
+ */
+
+/**
+ * Performs category performance operation
+ *
+ * @returns {any} The categoryperformance result
+ */
+
 function CategoryPerformance() {
   const categories = [
     { name: "Electronics", auctions: 234, revenue: 4500000, success: 78 },
@@ -341,12 +475,15 @@ function CategoryPerformance() {
 export default function AdminAuctionsAnalyticsPage() {
   const [period, setPeriod] = useState("month");
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "AdminAuctionsAnalyticsPage.loadData",
         period,
       });
@@ -355,15 +492,25 @@ export default function AdminAuctionsAnalyticsPage() {
 
   // Mock stats
   const stats = {
+    /** Total Auctions */
     totalAuctions: 1256,
+    /** Active Auctions */
     activeAuctions: 342,
+    /** Success Rate */
     successRate: 78.5,
+    /** Average Bids */
     averageBids: 23,
+    /** Total Bids */
     totalBids: 28450,
+    /** Total Revenue */
     totalRevenue: 18500000,
+    /** Auctions Growth */
     auctionsGrowth: 12.5,
+    /** Active Growth */
     activeGrowth: 8.2,
+    /** Success Growth */
     successGrowth: 2.3,
+    /** Bids Growth */
     bidsGrowth: 15.8,
   };
 

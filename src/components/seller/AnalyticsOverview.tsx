@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/AnalyticsOverview
+ * @description This file contains the AnalyticsOverview component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -10,29 +19,71 @@ import {
 } from "lucide-react";
 import { StatsCard } from "@/components/common/StatsCard";
 
+/**
+ * AnalyticsData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AnalyticsData
+ */
 interface AnalyticsData {
+  /** Revenue */
   revenue: { total: number; average: number; trend: number };
+  /** Orders */
   orders: {
+    /** Total */
     total: number;
+    /** Pending */
     pending: number;
+    /** Completed */
     completed: number;
+    /** Cancelled */
     cancelled: number;
   };
+  /** Products */
   products: { total: number; active: number; outOfStock: number };
+  /** Customers */
   customers: { total: number; new: number; returning: number };
+  /** Conversion Rate */
   conversionRate: number;
+  /** Average Order Value */
   averageOrderValue: number;
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Data */
   data: AnalyticsData;
 }
 
 export default function AnalyticsOverview({ data }: Props) {
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(amount);
   };
@@ -46,7 +97,9 @@ export default function AnalyticsOverview({ data }: Props) {
         trend={
           data.revenue.trend !== 0
             ? {
+                /** Value */
                 value: Math.abs(data.revenue.trend),
+                /** Is Positive */
                 isPositive: data.revenue.trend > 0,
               }
             : undefined

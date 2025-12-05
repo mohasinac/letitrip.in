@@ -1,20 +1,46 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/WizardActionBar
+ * @description This file contains the WizardActionBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Save, CheckCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * WizardActionBarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardActionBarProps
+ */
 export interface WizardActionBarProps {
+  /** On Save Draft */
   onSaveDraft?: () => void;
+  /** On Validate */
   onValidate?: () => void;
+  /** On Submit */
   onSubmit: () => void;
+  /** Is Submitting */
   isSubmitting?: boolean;
+  /** Is Saving */
   isSaving?: boolean;
+  /** Is Valid */
   isValid?: boolean;
+  /** Submit Label */
   submitLabel?: string;
+  /** Draft Label */
   draftLabel?: string;
+  /** Show Validate */
   showValidate?: boolean;
+  /** Show Save Draft */
   showSaveDraft?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -27,6 +53,32 @@ export interface WizardActionBarProps {
  * - Submit button changes based on form validity
  * - Loading states for async actions
  * - Dark mode support
+ */
+/**
+ * Performs wizard action bar operation
+ *
+ * @returns {any} The wizardactionbar result
+ *
+ * @example
+ * WizardActionBar();
+ */
+
+/**
+ * W
+ * @constant
+ */
+/**
+ * Performs wizard action bar operation
+ *
+ * @returns {any} The wizardactionbar result
+ *
+ * @example
+ * WizardActionBar();
+ */
+
+/**
+ * W
+ * @constant
  */
 export const WizardActionBar: React.FC<WizardActionBarProps> = ({
   onSaveDraft,

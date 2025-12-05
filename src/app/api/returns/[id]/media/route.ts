@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/returns/[id]/media/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
@@ -11,7 +20,42 @@ const MAX_FILES_PER_CONFIRM = 8;
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "mp4", "webm"];
 
 // GET: Generate signed URLs for client-side direct upload (batch)
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Req */
+  req, {});
+ */
+
 export async function GET(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -65,9 +109,13 @@ export async function GET(
           const path = `returns/media/${id}/${key}`;
           const file = bucket.file(path);
           const [url] = await file.getSignedUrl({
+            /** Version */
             version: "v4",
+            /** Action */
             action: "write",
+            /** Expires */
             expires: Date.now() + 10 * 60 * 1000,
+            /** Content Type */
             contentType: "application/octet-stream",
           });
           uploads.push({ uploadUrl: url, path });
@@ -76,7 +124,9 @@ export async function GET(
         return NextResponse.json({ success: true, data: { uploads } });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.returns.media.getSignedUrls",
+          /** Metadata */
           metadata: { returnId: id },
         });
         return NextResponse.json(
@@ -90,7 +140,42 @@ export async function GET(
 }
 
 // POST: Confirm uploaded file paths (client performed direct upload). Append to document if valid.
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Req */
+  req, {});
+ */
+
 export async function POST(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -169,13 +254,16 @@ export async function POST(
         );
 
         await retRef.update({
+          /** Media */
           media: [...(ret.media || []), ...urls],
           updated_at: new Date().toISOString(),
         });
         return NextResponse.json({ success: true, data: { urls } });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.returns.media.confirmUpload",
+          /** Metadata */
           metadata: { returnId: postId },
         });
         return NextResponse.json(

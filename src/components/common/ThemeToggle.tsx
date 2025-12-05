@@ -1,9 +1,34 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ThemeToggle
+ * @description This file contains the ThemeToggle component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import { useTheme, Theme } from "@/contexts/ThemeContext";
 
 // Icons as inline SVGs to avoid dependencies
+/**
+ * Performs sun icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The sunicon result
+ */
+
+/**
+ * Performs sun icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The sunicon result
+ */
+
 const SunIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -28,6 +53,22 @@ const SunIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * Performs moon icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The moonicon result
+ */
+
+/**
+ * Performs moon icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The moonicon result
+ */
+
 const MoonIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -44,9 +85,18 @@ const MoonIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * ThemeOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ThemeOption
+ */
 interface ThemeOption {
+  /** Value */
   value: Theme;
+  /** Label */
   label: string;
+  /** Icon */
   icon: React.ReactNode;
 }
 
@@ -55,6 +105,12 @@ const themeOptions: ThemeOption[] = [
   { value: "dark", label: "Dark", icon: <MoonIcon className="w-4 h-4" /> },
 ];
 
+/**
+ * ThemeToggleProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ThemeToggleProps
+ */
 interface ThemeToggleProps {
   /** Variant style */
   variant?: "button" | "dropdown";
@@ -79,6 +135,24 @@ interface ThemeToggleProps {
  * // Dropdown with label
  * <ThemeToggle variant="dropdown" showLabel />
  */
+/**
+ * Performs theme toggle operation
+ *
+ * @returns {any} The themetoggle result
+ *
+ * @example
+ * ThemeToggle();
+ */
+
+/**
+ * Performs theme toggle operation
+ *
+ * @returns {any} The themetoggle result
+ *
+ * @example
+ * ThemeToggle();
+ */
+
 export function ThemeToggle({
   variant = "button",
   className = "",
@@ -94,6 +168,22 @@ export function ThemeToggle({
   useEffect(() => {
     if (!isOpen) return;
 
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
+    /**
+     * Handles click outside event
+     *
+     * @param {MouseEvent} event - The event
+     *
+     * @returns {any} The handleclickoutside result
+     */
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -108,6 +198,22 @@ export function ThemeToggle({
   }, [isOpen]);
 
   // Handle keyboard navigation
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} event - The event
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} event - The event
+   *
+   * @returns {any} The handlekeydown result
+   */
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (variant === "dropdown") {
       if (event.key === "Escape") {
@@ -122,6 +228,18 @@ export function ThemeToggle({
   };
 
   // Get current icon based on theme
+  /**
+   * Retrieves current icon
+   *
+   * @returns {any} The currenticon result
+   */
+
+  /**
+   * Retrieves current icon
+   *
+   * @returns {any} The currenticon result
+   */
+
   const getCurrentIcon = () => {
     return theme === "light" ? (
       <SunIcon className={iconSizeClass} />
@@ -131,6 +249,18 @@ export function ThemeToggle({
   };
 
   // Toggle between light and dark
+  /**
+   * Performs cycle theme operation
+   *
+   * @returns {any} The cycletheme result
+   */
+
+  /**
+   * Performs cycle theme operation
+   *
+   * @returns {any} The cycletheme result
+   */
+
   const cycleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -138,14 +268,20 @@ export function ThemeToggle({
 
   // Size classes
   const sizeClasses = {
+    /** Sm */
     sm: "p-1.5",
+    /** Md */
     md: "p-2",
+    /** Lg */
     lg: "p-3",
   };
 
   const iconSizeClass = {
+    /** Sm */
     sm: "w-6 h-6",
+    /** Md */
     md: "w-6 h-6",
+    /** Lg */
     lg: "w-6 h-6",
   }[size];
 
@@ -157,7 +293,9 @@ export function ThemeToggle({
     inline-flex items-center justify-center gap-2
     p-2 rounded
     text-gray-900 dark:text-white
+    /** Hover */
     hover:bg-gray-100 dark:hover:bg-gray-700
+    /** Focus */
     focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500
     transition-colors duration-200
     ${className}

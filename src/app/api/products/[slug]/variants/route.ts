@@ -1,8 +1,48 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/[slug]/variants/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextResponse } from "next/server";
 
 // GET /api/products/[slug]/variants - same leaf category
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -25,6 +65,42 @@ export async function GET(
     let data: any[] = [];
     try {
       // Try indexed query first
+      /**
+       * Performs same leaf operation
+       *
+       * @param {any} await Collections.products()
+        .where("category_id" - The await  collections.products()
+        .where("category_id"
+       * @param {any} ["] - The "
+       * @param {any} prod.category_id)
+        .where("slug" - The prod.category_id)
+        .where("slug"
+       * @param {string} ["!] - The "!
+       * @param {any} [slug)) as any;
+      const sameLeafSnap] - The slug)) as any;
+      const same leaf snap
+       *
+       * @returns {any} The sameleaf result
+       */
+
+      /**
+       * Performs same leaf operation
+       *
+       * @param {any} await Collections.products()
+        .where("category_id" - The await  collections.products()
+        .where("category_id"
+       * @param {any} ["] - The "
+       * @param {any} prod.category_id)
+        .where("slug" - The prod.category_id)
+        .where("slug"
+       * @param {string} ["!] - The "!
+       * @param {any} [slug)) as any;
+      const sameLeafSnap] - The slug)) as any;
+      const same leaf snap
+       *
+       * @returns {any} The sameleaf result
+       */
+
       const sameLeaf = (await Collections.products()
         .where("category_id", "==", prod.category_id)
         .where("slug", "!=", slug)) as any;
@@ -45,7 +121,9 @@ export async function GET(
     return NextResponse.json({ success: true, data });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.slug.variants.GET",
+      /** Metadata */
       metadata: { slug },
     });
     return NextResponse.json(

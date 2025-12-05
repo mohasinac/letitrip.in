@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/media/delete/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 
@@ -9,6 +18,32 @@ export const runtime = "nodejs";
  *
  * Body: { path: string } or { url: string }
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
@@ -73,8 +108,11 @@ export async function DELETE(request: NextRequest) {
     await fileRef.delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "File deleted successfully",
+      /** Path */
       path: filePath,
     });
   } catch (error) {
@@ -90,6 +128,32 @@ export async function DELETE(request: NextRequest) {
  * POST /api/media/delete
  * Alternative method for DELETE (for compatibility)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   return DELETE(request);
 }

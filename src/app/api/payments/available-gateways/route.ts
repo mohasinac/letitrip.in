@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/available-gateways/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Available Payment Gateways API Route
  * GET /api/payments/available-gateways
  *
@@ -12,27 +21,79 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * AvailableGatewayResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AvailableGatewayResponse
+ */
 interface AvailableGatewayResponse {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Type */
   type: string;
+  /** Logo */
   logo: string;
+  /** Capabilities */
   capabilities: {
+    /** Refunds */
     refunds: boolean;
+    /** Partial Refunds */
     partialRefunds: boolean;
+    /** Card Payments */
     cardPayments: boolean;
+    /** Net Banking */
     netBanking: boolean;
+    /** Upi */
     upi: boolean;
+    /** Wallets */
     wallets: boolean;
+    /** Emi */
     emi: boolean;
+    /** International Cards */
     internationalCards: boolean;
   };
+  /** Fees */
   fees: {
+    /** Percentage */
     percentage: number;
+    /** Fixed */
     fixed: number;
+    /** Currency */
     currency: string;
   };
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -52,7 +113,9 @@ export async function GET(request: NextRequest) {
     if (!settingsDoc.exists) {
       return NextResponse.json(
         {
+          /** Gateways */
           gateways: [],
+          /** Message */
           message: "No payment gateways configured",
         },
         { status: 200 }
@@ -95,14 +158,23 @@ export async function GET(request: NextRequest) {
         : gateway.fees.international;
 
       availableGateways.push({
+        /** Id */
         id: gateway.id,
+        /** Name */
         name: gateway.name,
+        /** Type */
         type: gateway.type,
+        /** Logo */
         logo: gateway.logo,
+        /** Capabilities */
         capabilities: gateway.capabilities,
+        /** Fees */
         fees: {
+          /** Percentage */
           percentage: fees.percentage,
+          /** Fixed */
           fixed: fees.fixed,
+          /** Currency */
           currency: fees.currency,
         },
       });
@@ -124,8 +196,11 @@ export async function GET(request: NextRequest) {
 
         return {
           ...gateway,
+          /** Calculated Fees */
           calculatedFees: {
+            /** Fee Amount */
             feeAmount: parseFloat(feeAmount.toFixed(2)),
+            /** Total Amount */
             totalAmount: parseFloat(totalAmount.toFixed(2)),
           },
         };
@@ -135,26 +210,34 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Gateways */
         gateways: gatewaysWithFees,
+        /** Filters */
         filters: {
           country,
           currency,
           amount,
         },
+        /** Count */
         count: gatewaysWithFees.length,
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "AvailableGatewaysAPI",
+      /** Method */
       method: "GET",
+      /** Context */
       context: "Failed to retrieve available gateways",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to retrieve available gateways",
+        /** Gateways */
         gateways: [],
       },
       { status: 500 }

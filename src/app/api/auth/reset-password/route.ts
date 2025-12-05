@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/reset-password/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { authRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { COLLECTIONS } from "@/constants/database";
 import {
@@ -16,6 +25,32 @@ const RESET_TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hour in milliseconds
  * Request password reset (POST /api/auth/reset-password)
  * Sends a reset link to the user's email
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   // Rate limiting
   const identifier =
@@ -39,6 +74,7 @@ export async function POST(req: NextRequest) {
 
     // Always return success to prevent email enumeration
     const successResponse = {
+      /** Message */
       message:
         "If an account exists with this email, you will receive a password reset link shortly.",
     };
@@ -68,8 +104,11 @@ export async function POST(req: NextRequest) {
 
     // Store reset token in Firestore
     await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
+      /** Password Reset Token */
       passwordResetToken: resetTokenHash,
+      /** Password Reset Token Expiry */
       passwordResetTokenExpiry: resetTokenExpiry.toISOString(),
+      /** Updated At */
       updatedAt: new Date().toISOString(),
     });
 
@@ -104,6 +143,32 @@ export async function POST(req: NextRequest) {
 /**
  * Reset password with token (PUT /api/auth/reset-password)
  */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(req);
+ */
+
 export async function PUT(req: NextRequest) {
   // Rate limiting
   const identifier =
@@ -184,8 +249,11 @@ export async function PUT(req: NextRequest) {
     // Update password and clear reset token
     await adminDb.collection(COLLECTIONS.USERS).doc(userData.uid).update({
       hashedPassword,
+      /** Password Reset Token */
       passwordResetToken: null,
+      /** Password Reset Token Expiry */
       passwordResetTokenExpiry: null,
+      /** Updated At */
       updatedAt: new Date().toISOString(),
     });
 
@@ -203,6 +271,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Message */
         message:
           "Password has been reset successfully. Please log in with your new password.",
       },

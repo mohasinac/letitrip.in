@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/PhoneNumber
+ * @description This file contains the PhoneNumber component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Phone Number Display Component
  *
  * Displays phone numbers in Indian format with optional click-to-call.
@@ -15,12 +24,43 @@ import { Phone } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
+/**
+ * PhoneNumberProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PhoneNumberProps
+ */
 interface PhoneNumberProps {
+  /** Value */
   value: string;
+  /** Clickable */
   clickable?: boolean;
+  /** Show Icon */
   showIcon?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Phone Number
+ */
+/**
+ * Performs phone number operation
+ *
+ * @returns {any} The phonenumber result
+ *
+ * @example
+ * PhoneNumber();
+ */
+
+/**
+ * Performs phone number operation
+ *
+ * @returns {any} The phonenumber result
+ *
+ * @example
+ * PhoneNumber();
+ */
 
 export function PhoneNumber({
   value,
@@ -35,6 +75,18 @@ export function PhoneNumber({
   const telNumber = cleanNumber.startsWith("91")
     ? `+${cleanNumber}`
     : `+91${cleanNumber}`;
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
 
   const content = (
     <>

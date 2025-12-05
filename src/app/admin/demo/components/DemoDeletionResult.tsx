@@ -1,13 +1,73 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoDeletionResult
+ * @description This file contains the DemoDeletionResult component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { CheckCircle, Package } from "lucide-react";
 import { DeletionBreakdown } from "./types";
 import { COLLECTION_CONFIG } from "./config";
 
+/**
+ * DemoDeletionResultProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoDeletionResultProps
+ */
 interface DemoDeletionResultProps {
+  /** Total */
   total: number;
+  /** Breakdown */
   breakdown: DeletionBreakdown[];
 }
+
+/**
+ * Function: Demo Deletion Result
+ */
+/**
+ * Performs demo deletion result operation
+ *
+ * @param {DemoDeletionResultProps} {
+  total,
+  breakdown,
+} - The {
+  total,
+  breakdown,
+}
+ *
+ * @returns {any} The demodeletionresult result
+ *
+ * @example
+ * DemoDeletionResult({
+  total,
+  breakdown,
+});
+ */
+
+/**
+ * Performs demo deletion result operation
+ *
+ * @param {DemoDeletionResultProps} {
+  total,
+  breakdown,
+} - The {
+  total,
+  breakdown,
+}
+ *
+ * @returns {any} The demodeletionresult result
+ *
+ * @example
+ * DemoDeletionResult({
+  total,
+  breakdown,
+});
+ */
 
 export function DemoDeletionResult({
   total,
@@ -26,8 +86,11 @@ export function DemoDeletionResult({
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {breakdown.map((item) => {
             const config = COLLECTION_CONFIG[item.collection] || {
+              /** Icon */
               icon: Package,
+              /** Color */
               color: "text-gray-600",
+              /** Label */
               label: item.collection,
             };
             const CollIcon = config.icon;

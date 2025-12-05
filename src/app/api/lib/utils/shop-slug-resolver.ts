@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/utils/shop-slug-resolver
+ * @description This file contains functionality related to shop-slug-resolver
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Shop Slug Resolution Utilities
  *
  * Helper functions for resolving shop slugs to IDs in API routes.
@@ -21,7 +30,36 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * }
  * ```
  */
+/**
+ * Performs resolve shop slug operation
+ *
+ * @param {string} shopSlug - The shop slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolveshopslug result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resolveShopSlug("example");
+ */
+
+/**
+ * Performs resolve shop slug operation
+ *
+ * @param {string} /** Shop Slug */
+  shopSlug - The /**  shop  slug */
+  shop slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolveshopslug result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resolveShopSlug("example");
+ */
+
 export async function resolveShopSlug(
+  /** Shop Slug */
   shopSlug: string,
 ): Promise<string | null> {
   try {
@@ -56,7 +94,36 @@ export async function resolveShopSlug(
  * console.log(shop.id, shop.name, shop.owner_id);
  * ```
  */
+/**
+ * Performs resolve shop slug to data operation
+ *
+ * @param {string} shopSlug - The shop slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolveshopslugtodata result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resolveShopSlugToData("example");
+ */
+
+/**
+ * Performs resolve shop slug to data operation
+ *
+ * @param {string} /** Shop Slug */
+  shopSlug - The /**  shop  slug */
+  shop slug
+ *
+ * @returns {Promise<any>} Promise resolving to resolveshopslugtodata result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * resolveShopSlugToData("example");
+ */
+
 export async function resolveShopSlugToData(
+  /** Shop Slug */
   shopSlug: string,
 ): Promise<{ id: string; [key: string]: any } | null> {
   try {
@@ -71,6 +138,7 @@ export async function resolveShopSlugToData(
 
     const doc = snapshot.docs[0];
     return {
+      /** Id */
       id: doc.id,
       ...doc.data(),
     };
@@ -92,7 +160,37 @@ export async function resolveShopSlugToData(
  * console.log(slugToIdMap.get('shop-1')); // 'shop_123abc'
  * ```
  */
+/**
+ * Performs batch resolve shop slugs operation
+ *
+ * @param {string[]} shopSlugs - The shop slugs
+ *
+ * @returns {Promise<any>} Promise resolving to batchresolveshopslugs result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * batchResolveShopSlugs(shopSlugs);
+ */
+
+/**
+ * Performs batch resolve shop slugs operation
+ *
+ * @param {string[]} /** Shop Slugs */
+  shopSlugs - The /**  shop  slugs */
+  shop slugs
+ *
+ * @returns {Promise<any>} Promise resolving to batchresolveshopslugs result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * batchResolveShopSlugs(/** Shop Slugs */
+  shopSlugs);
+ */
+
 export async function batchResolveShopSlugs(
+  /** Shop Slugs */
   shopSlugs: string[],
 ): Promise<Map<string, string>> {
   const map = new Map<string, string>();
@@ -140,8 +238,35 @@ export async function batchResolveShopSlugs(
  * }
  * ```
  */
+/**
+ * Validates shop ownership
+ *
+ * @param {string} shopSlug - The shop slug
+ * @param {string} userId - user identifier
+ *
+ * @returns {Promise<any>} Promise resolving to validateshopownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateShopOwnership("example", "example");
+ */
+
+/**
+ * Validates shop ownership
+ *
+ * @returns {Promise<any>} Promise resolving to validateshopownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validateShopOwnership();
+ */
+
 export async function validateShopOwnership(
+  /** Shop Slug */
   shopSlug: string,
+  /** User Id */
   userId: string,
 ): Promise<boolean> {
   try {
@@ -177,8 +302,35 @@ export async function validateShopOwnership(
  * // Use result.shopId for queries
  * ```
  */
+/**
+ * Retrieves shop id and validate ownership
+ *
+ * @param {string} shopSlug - The shop slug
+ * @param {string} userId - user identifier
+ *
+ * @returns {Promise<any>} Promise resolving to shopidandvalidateownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getShopIdAndValidateOwnership("example", "example");
+ */
+
+/**
+ * Retrieves shop id and validate ownership
+ *
+ * @returns {Promise<any>} Promise resolving to shopidandvalidateownership result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getShopIdAndValidateOwnership();
+ */
+
 export async function getShopIdAndValidateOwnership(
+  /** Shop Slug */
   shopSlug: string,
+  /** User Id */
   userId: string,
 ): Promise<{ shopId: string; isOwner: boolean } | null> {
   try {
@@ -195,7 +347,9 @@ export async function getShopIdAndValidateOwnership(
     const data = doc.data();
 
     return {
+      /** Shop Id */
       shopId: doc.id,
+      /** Is Owner */
       isOwner: data.owner_id === userId,
     };
   } catch (error) {
@@ -207,6 +361,24 @@ export async function getShopIdAndValidateOwnership(
 /**
  * Helper function to chunk array into smaller arrays
  */
+/**
+ * Performs chunk array operation
+ *
+ * @param {T[]} array - The array
+ * @param {number} size - The size
+ *
+ * @returns {number} The chunkarray result
+ */
+
+/**
+ * Performs chunk array operation
+ *
+ * @param {T[]} array - The array
+ * @param {number} size - The size
+ *
+ * @returns {number} The chunkarray result
+ */
+
 function chunkArray<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < array.length; i += size) {

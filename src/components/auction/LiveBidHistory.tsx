@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/auction/LiveBidHistory
+ * @description This file contains the LiveBidHistory component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Live Bid History
  *
  * Real-time bid history with Socket.io updates
@@ -12,18 +21,36 @@ import { formatPrice } from "@/lib/price.utils";
 import { Clock, TrendingUp, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * Bid interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Bid
+ */
 interface Bid {
+  /** Id */
   id: string;
   user_id: string;
+  /** Amount */
   amount: number;
   created_at: string;
   is_winning: boolean;
 }
 
+/**
+ * LiveBidHistoryProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LiveBidHistoryProps
+ */
 interface LiveBidHistoryProps {
+  /** Auction Id */
   auctionId: string;
+  /** Bids */
   bids: Bid[];
+  /** Current Bid */
   currentBid: number;
+  /** Class Name */
   className?: string;
 }
 
@@ -67,6 +94,7 @@ export default function LiveBidHistory({
           </span>
         </div>
         <div className="mt-1 text-sm text-gray-600">
+          /** Current */
           Current:{" "}
           <span className="font-bold text-green-600">
             {formatPrice(currentBid)}
@@ -140,6 +168,22 @@ export default function LiveBidHistory({
  * Mask user ID for privacy
  * Example: user123456 → u***56
  */
+/**
+ * Performs mask user id operation
+ *
+ * @param {string} userId - user identifier
+ *
+ * @returns {string} The maskuserid result
+ */
+
+/**
+ * Performs mask user id operation
+ *
+ * @param {string} userId - user identifier
+ *
+ * @returns {string} The maskuserid result
+ */
+
 function maskUserId(userId: string): string {
   if (userId.length <= 4) return userId;
   const start = userId.substring(0, 1);

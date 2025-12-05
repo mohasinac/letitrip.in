@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/products/[slug]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
@@ -15,9 +24,35 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * EditProductPageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EditProductPageProps
+ */
 interface EditProductPageProps {
+  /** Params */
   params: Promise<{ slug: string }>;
 }
+
+/**
+ * Function: Edit Product Content
+ */
+/**
+ * Performs edit product content operation
+ *
+ * @param {EditProductPageProps} { params } - The { params }
+ *
+ * @returns {any} The editproductcontent result
+ */
+
+/**
+ * Performs edit product content operation
+ *
+ * @param {EditProductPageProps} { params } - The { params }
+ *
+ * @returns {any} The editproductcontent result
+ */
 
 function EditProductContent({ params }: EditProductPageProps) {
   const router = useRouter();
@@ -26,16 +61,23 @@ function EditProductContent({ params }: EditProductPageProps) {
   const [slug, setSlug] = useState<string>("");
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: product,
+    /** Set Data */
     setData: setProduct,
     execute,
   } = useLoadingState<ProductFE | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "ProductEdit.loadData",
+        /** Metadata */
         metadata: { slug },
       });
     },
@@ -45,6 +87,22 @@ function EditProductContent({ params }: EditProductPageProps) {
 
   // Load params
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadParams = async () => {
       const { slug: productSlug } = await params;
       setSlug(productSlug);
@@ -54,6 +112,22 @@ function EditProductContent({ params }: EditProductPageProps) {
 
   // Load product and shops
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadData = async () => {
       if (!user || !slug) return;
 
@@ -72,6 +146,26 @@ function EditProductContent({ params }: EditProductPageProps) {
     loadData();
   }, [user, slug, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {ProductFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {ProductFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (formData: ProductFormFE) => {
     if (!user || !product) {
       return;
@@ -87,7 +181,9 @@ function EditProductContent({ params }: EditProductPageProps) {
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ProductEdit.handleSubmit",
+        /** Metadata */
         metadata: { slug: product.slug },
       });
     } finally {

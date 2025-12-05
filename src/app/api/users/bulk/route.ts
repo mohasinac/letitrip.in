@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/users/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
@@ -16,6 +25,32 @@ import { NextRequest, NextResponse } from "next/server";
  * - verify-phone: Verify phone
  * - delete: Delete users
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let body: any;
   try {
@@ -34,7 +69,9 @@ export async function POST(request: NextRequest) {
     }
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as Array<{ id: string; error: string }>,
     };
 
@@ -88,6 +125,7 @@ export async function POST(request: NextRequest) {
             results.success.push(id);
             continue;
 
+          /** Default */
           default:
             results.failed.push({ id, error: `Unknown action: ${action}` });
             continue;
@@ -101,18 +139,25 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       action,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: ids.length,
+        /** Succeeded */
         succeeded: results.success.length,
+        /** Failed */
         failed: results.failed.length,
       },
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.users.bulk",
+      /** Metadata */
       metadata: { action: body?.action, idsCount: body?.ids?.length },
     });
     return NextResponse.json(

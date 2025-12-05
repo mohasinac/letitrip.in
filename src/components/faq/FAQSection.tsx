@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/faq/FAQSection
+ * @description This file contains the FAQSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -9,11 +18,22 @@ import {
 } from "@/constants/faq";
 import * as Icons from "lucide-react";
 
+/**
+ * FAQSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FAQSectionProps
+ */
 interface FAQSectionProps {
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Show Search */
   showSearch?: boolean;
+  /** Max Items To Show */
   maxItemsToShow?: number;
+  /** Default Category */
   defaultCategory?: string;
 }
 
@@ -48,6 +68,22 @@ export default function FAQSection({
   if (maxItemsToShow) {
     faqs = faqs.slice(0, maxItemsToShow);
   }
+
+  /**
+   * Retrieves icon
+   *
+   * @param {string} iconName - Name of icon
+   *
+   * @returns {string} The icon result
+   */
+
+  /**
+   * Retrieves icon
+   *
+   * @param {string} iconName - Name of icon
+   *
+   * @returns {string} The icon result
+   */
 
   const getIcon = (iconName: string) => {
     const Icon = Icons[iconName as keyof typeof Icons] as any;

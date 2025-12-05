@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/navigation/TabNav
+ * @description This file contains the TabNav component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -5,11 +14,67 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { Tab } from "@/constants/tabs";
 
+/**
+ * TabNavProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TabNavProps
+ */
 interface TabNavProps {
+  /** Tabs */
   tabs: Tab[];
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "default" | "pills" | "underline";
 }
+
+/**
+ * Function: Tab Nav
+ */
+/**
+ * Performs tab nav operation
+ *
+ * @param {TabNavProps} [{
+  tabs,
+  className,
+  variant] - The {
+  tabs,
+  /**
+   * Name class
+   * @class name
+   */
+  class name,
+  variant
+ *
+ * @returns {any} The tabnav result
+ *
+ * @example
+ * TabNav({
+  tabs,
+  className,
+  variant);
+ */
+
+/**
+ * Performs tab nav operation
+ *
+ * @param {TabNavProps} [{
+  tabs,
+  className,
+  variant] - The {
+  tabs,
+  class name,
+  variant
+ *
+ * @returns {any} The tabnav result
+ *
+ * @example
+ * TabNav({
+  tabs,
+  className,
+  variant);
+ */
 
 export function TabNav({
   tabs,
@@ -19,6 +84,22 @@ export function TabNav({
   const pathname = usePathname();
 
   // Check if a tab is active - exact match or starts with href (for nested routes)
+  /**
+   * Checks if active
+   *
+   * @param {Tab} tab - The tab
+   *
+   * @returns {any} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {Tab} tab - The tab
+   *
+   * @returns {any} The isactive result
+   */
+
   const isActive = (tab: Tab) => {
     // Exact match
     if (pathname === tab.href) return true;

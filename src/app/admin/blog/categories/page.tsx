@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/blog/categories/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -29,19 +38,49 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // Types
+/**
+ * BlogCategory interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BlogCategory
+ */
 interface BlogCategory {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Description */
   description?: string;
+  /** Parent Id */
   parentId?: string;
+  /** Post Count */
   postCount: number;
+  /** Order */
   order: number;
+  /** Created At */
   createdAt: string;
+  /** Updated At */
   updatedAt: string;
 }
 
 // Category form modal
+/**
+ * Function: Category Modal
+ */
+/**
+ * Performs category modal operation
+ *
+ * @returns {any} The categorymodal result
+ */
+
+/**
+ * Performs category modal operation
+ *
+ * @returns {any} The categorymodal result
+ */
+
 function CategoryModal({
   isOpen,
   onClose,
@@ -50,11 +89,17 @@ function CategoryModal({
   onSave,
   saving,
 }: {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Category */
   category: BlogCategory | null;
+  /** Categories */
   categories: BlogCategory[];
+  /** On Save */
   onSave: (data: Partial<BlogCategory>) => void;
+  /** Saving */
   saving: boolean;
 }) {
   const [name, setName] = useState("");
@@ -76,6 +121,22 @@ function CategoryModal({
     }
   }, [category, isOpen]);
 
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The slug result
+   */
+
   const generateSlug = (text: string) => {
     return text
       .toLowerCase()
@@ -85,6 +146,22 @@ function CategoryModal({
       .trim();
   };
 
+  /**
+   * Handles name change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlenamechange result
+   */
+
+  /**
+   * Handles name change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlenamechange result
+   */
+
   const handleNameChange = (value: string) => {
     setName(value);
     if (!category) {
@@ -92,12 +169,30 @@ function CategoryModal({
     }
   };
 
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   */
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
       name,
       slug,
+      /** Description */
       description: description || undefined,
+      /** Parent Id */
       parentId: parentId || undefined,
     });
   };
@@ -156,7 +251,9 @@ function CategoryModal({
             onChange={(e) => setParentId(e.target.value)}
             placeholder="None (Top Level)"
             options={availableParents.map((cat) => ({
+              /** Value */
               value: cat.id,
+              /** Label */
               label: cat.name,
             }))}
           />
@@ -190,6 +287,21 @@ function CategoryModal({
 }
 
 // Category row component
+/**
+ * Function: Category Row
+ */
+/**
+ * Performs category row operation
+ *
+ * @returns {any} The categoryrow result
+ */
+
+/**
+ * Performs category row operation
+ *
+ * @returns {any} The categoryrow result
+ */
+
 function CategoryRow({
   category,
   categories,
@@ -197,10 +309,15 @@ function CategoryRow({
   onDelete,
   level = 0,
 }: {
+  /** Category */
   category: BlogCategory;
+  /** Categories */
   categories: BlogCategory[];
+  /** On Edit */
   onEdit: (category: BlogCategory) => void;
+  /** On Delete */
   onDelete: (id: string) => void;
+  /** Level */
   level?: number;
 }) {
   const children = categories.filter((c) => c.parentId === category.id);
@@ -279,13 +396,18 @@ function CategoryRow({
 export default function BlogCategoriesPage() {
   const { isAdmin } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: categories,
+    /** Set Data */
     setData: setCategories,
     execute,
   } = useLoadingState<BlogCategory[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "BlogCategoriesPage.loadCategories" });
       toast.error("Failed to load blog categories");
@@ -301,6 +423,22 @@ export default function BlogCategoriesPage() {
     loadCategories();
   }, []);
 
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategories = () =>
     execute(async () => {
       const response = await apiService.get<{ data: BlogCategory[] }>(
@@ -309,38 +447,82 @@ export default function BlogCategoriesPage() {
       setCategories(
         response.data || [
           {
+            /** Id */
             id: "1",
+            /** Name */
             name: "Guides",
+            /** Slug */
             slug: "guides",
+            /** Description */
             description: "How-to guides and tutorials",
+            /** Post Count */
             postCount: 12,
+            /** Order */
             order: 0,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "2",
+            /** Name */
             name: "News",
+            /** Slug */
             slug: "news",
+            /** Description */
             description: "Latest platform news and updates",
+            /** Post Count */
             postCount: 8,
+            /** Order */
             order: 1,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
           {
+            /** Id */
             id: "3",
+            /** Name */
             name: "Tips & Tricks",
+            /** Slug */
             slug: "tips-tricks",
+            /** Description */
             description: "Helpful tips for buyers and sellers",
+            /** Post Count */
             postCount: 15,
+            /** Order */
             order: 2,
+            /** Created At */
             createdAt: new Date().toISOString(),
+            /** Updated At */
             updatedAt: new Date().toISOString(),
           },
         ],
       );
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {Partial<BlogCategory>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {Partial<BlogCategory>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSave = async (data: Partial<BlogCategory>) => {
     try {
@@ -371,7 +553,9 @@ export default function BlogCategoriesPage() {
             response.data ||
               ({
                 ...data,
+                /** Id */
                 id: Date.now().toString(),
+                /** Post Count */
                 postCount: 0,
               } as BlogCategory),
           ]);
@@ -388,6 +572,22 @@ export default function BlogCategoriesPage() {
       setSaving(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -408,10 +608,38 @@ export default function BlogCategoriesPage() {
     }
   };
 
+  /**
+   * Performs open edit modal operation
+   *
+   * @param {BlogCategory} category - The category
+   *
+   * @returns {any} The openeditmodal result
+   */
+
+  /**
+   * Performs open edit modal operation
+   *
+   * @param {BlogCategory} category - The category
+   *
+   * @returns {any} The openeditmodal result
+   */
+
   const openEditModal = (category: BlogCategory) => {
     setEditCategory(category);
     setModalOpen(true);
   };
+
+  /**
+   * Performs open create modal operation
+   *
+   * @returns {any} The opencreatemodal result
+   */
+
+  /**
+   * Performs open create modal operation
+   *
+   * @returns {any} The opencreatemodal result
+   */
 
   const openCreateModal = () => {
     setEditCategory(null);

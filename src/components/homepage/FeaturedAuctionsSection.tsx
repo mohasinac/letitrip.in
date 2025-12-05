@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/FeaturedAuctionsSection
+ * @description This file contains the FeaturedAuctionsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,10 +17,49 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
 
+/**
+ * FeaturedAuctionsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedAuctionsSectionProps
+ */
 interface FeaturedAuctionsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Featured Auctions Section
+ */
+/**
+ * Performs featured auctions section operation
+ *
+ * @param {FeaturedAuctionsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredauctionssection result
+ *
+ * @example
+ * FeaturedAuctionsSection({
+  limit);
+ */
+
+/**
+ * Performs featured auctions section operation
+ *
+ * @param {FeaturedAuctionsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The featuredauctionssection result
+ *
+ * @example
+ * FeaturedAuctionsSection({
+  limit);
+ */
 
 export function FeaturedAuctionsSection({
   limit = 10,
@@ -24,6 +72,22 @@ export function FeaturedAuctionsSection({
     loadAuctions();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAuctions = async () => {
     try {
       setLoading(true);
@@ -32,11 +96,13 @@ export function FeaturedAuctionsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_featured_auctions_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedAuctionsSection.loadAuctions",
       });
     } finally {
@@ -77,23 +143,36 @@ export function FeaturedAuctionsSection({
           <AuctionCard
             key={auction.id}
             auction={{
+              /** Id */
               id: auction.id,
+              /** Name */
               name: auction.name,
+              /** Slug */
               slug: auction.slug,
+              /** Images */
               images: auction.images,
+              /** Current Bid */
               currentBid: auction.currentBid,
+              /** Starting Bid */
               startingBid: auction.startingBid,
+              /** Bid Count */
               bidCount: auction.bidCount,
+              /** End Time */
               endTime: auction.endTime,
+              /** Status */
               status:
                 auction.status === "upcoming"
                   ? "pending"
                   : auction.status === "live"
                     ? "active"
                     : auction.status,
+              /** Featured */
               featured: true,
+              /** Shop */
               shop: {
+                /** Id */
                 id: auction.shopId,
+                /** Name */
                 name: auction.shopName,
               },
             }}

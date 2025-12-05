@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/won-auctions/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PageState } from "@/components/common/PageState";
@@ -21,10 +30,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect } from "react";
 
+/**
+ * Performs won auctions page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = WonAuctionsPage();
+ */
 export default function WonAuctionsPage() {
   const { user } = useAuth();
   const {
+    /** Data */
     data: auctions,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,

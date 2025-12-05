@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/StatsCard
+ * @description This file contains the StatsCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * StatsCard Component
  *
  * A simple statistics card for dashboards. Supports dark mode.
@@ -18,18 +27,54 @@
 
 import { ReactNode } from "react";
 
+/**
+ * StatsCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatsCardProps
+ */
 export interface StatsCardProps {
+  /** Title */
   title: string;
+  /** Value */
   value: string | number | ReactNode;
+  /** Icon */
   icon?: ReactNode;
+  /** Trend */
   trend?: {
+    /** Value */
     value: number;
+    /** Is Positive */
     isPositive: boolean;
   };
+  /** Description */
   description?: string;
+  /** Class Name */
   className?: string;
+  /** On Click */
   onClick?: () => void;
 }
+
+/**
+ * Function: Stats Card
+ */
+/**
+ * Performs stats card operation
+ *
+ * @returns {any} The statscard result
+ *
+ * @example
+ * StatsCard();
+ */
+
+/**
+ * Performs stats card operation
+ *
+ * @returns {any} The statscard result
+ *
+ * @example
+ * StatsCard();
+ */
 
 export function StatsCard({
   title,
@@ -111,9 +156,11 @@ export function StatsCard({
  * ```
  */
 interface StatsCardGridProps {
+  /** Children */
   children: ReactNode;
   /** Number of columns on large screens (default: 4) */
   columns?: 2 | 3 | 4 | 5 | 6;
+  /** Class Name */
   className?: string;
 }
 
@@ -124,6 +171,43 @@ const columnClasses: Record<number, string> = {
   5: "grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
   6: "grid-cols-2 md:grid-cols-3 lg:grid-cols-6",
 };
+
+/**
+ * Function: Stats Card Grid
+ */
+/**
+ * Performs stats card grid operation
+ *
+ * @param {StatsCardGridProps} [{
+  children,
+  columns] - The {
+  children,
+  columns
+ *
+ * @returns {any} The statscardgrid result
+ *
+ * @example
+ * StatsCardGrid({
+  children,
+  columns);
+ */
+
+/**
+ * Performs stats card grid operation
+ *
+ * @param {StatsCardGridProps} [{
+  children,
+  columns] - The {
+  children,
+  columns
+ *
+ * @returns {any} The statscardgrid result
+ *
+ * @example
+ * StatsCardGrid({
+  children,
+  columns);
+ */
 
 export function StatsCardGrid({
   children,

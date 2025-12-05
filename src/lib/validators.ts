@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/lib/validators
+ * @description This file contains functionality related to validators
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Validation Utilities
  *
  * Centralized validation functions for common data types
@@ -10,6 +19,28 @@
  * @param email - Email address to validate
  * @returns true if valid email format
  */
+/**
+ * Validates email
+ *
+ * @param {string} email - The email
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateEmail("example");
+ */
+
+/**
+ * Validates email
+ *
+ * @param {string} email - The email
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateEmail("example");
+ */
+
 export function validateEmail(email: string): boolean {
   if (!email) return false;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,6 +53,28 @@ export function validateEmail(email: string): boolean {
  * @param phone - Phone number to validate (digits only)
  * @returns true if valid Indian phone number
  */
+/**
+ * Validates phone
+ *
+ * @param {string} phone - The phone
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePhone("example");
+ */
+
+/**
+ * Validates phone
+ *
+ * @param {string} phone - The phone
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePhone("example");
+ */
+
 export function validatePhone(phone: string): boolean {
   if (!phone) return false;
   const cleaned = phone.replace(/\D/g, "");
@@ -34,6 +87,28 @@ export function validatePhone(phone: string): boolean {
  * @param url - URL to validate
  * @returns true if valid URL format
  */
+/**
+ * Validates url
+ *
+ * @param {string} url - The url
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateUrl("example");
+ */
+
+/**
+ * Validates url
+ *
+ * @param {string} url - The url
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateUrl("example");
+ */
+
 export function validateUrl(url: string): boolean {
   if (!url) return false;
   try {
@@ -50,6 +125,28 @@ export function validateUrl(url: string): boolean {
  * @param pincode - Pincode to validate
  * @returns true if valid Indian pincode
  */
+/**
+ * Validates pincode
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePincode("example");
+ */
+
+/**
+ * Validates pincode
+ *
+ * @param {string} pincode - The pincode
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePincode("example");
+ */
+
 export function validatePincode(pincode: string): boolean {
   if (!pincode) return false;
   const cleaned = pincode.replace(/\D/g, "");
@@ -62,8 +159,34 @@ export function validatePincode(pincode: string): boolean {
  * @param password - Password to validate
  * @returns Object with validation result and error messages
  */
+/**
+ * Validates password
+ *
+ * @param {string} password - The password
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePassword("example");
+ */
+
+/**
+ * Validates password
+ *
+ * @param {string} password - The password
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * validatePassword("example");
+ */
+
 export function validatePassword(password: string): {
+  /** Is Valid */
   isValid: boolean;
+  /** Errors */
   errors: string[];
 } {
   const errors: string[] = [];
@@ -89,6 +212,7 @@ export function validatePassword(password: string): {
   }
 
   return {
+    /** Is Valid */
     isValid: errors.length === 0,
     errors,
   };
@@ -100,6 +224,28 @@ export function validatePassword(password: string): {
  * @param sku - SKU to validate
  * @returns true if valid SKU format
  */
+/**
+ * Validates s k u
+ *
+ * @param {string} sku - The sku
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateSKU("example");
+ */
+
+/**
+ * Validates s k u
+ *
+ * @param {string} sku - The sku
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateSKU("example");
+ */
+
 export function validateSKU(sku: string): boolean {
   if (!sku || sku.length < 3) return false;
   return /^[A-Z0-9-_]+$/i.test(sku);
@@ -111,6 +257,28 @@ export function validateSKU(sku: string): boolean {
  * @param slug - Slug to validate
  * @returns true if valid slug format
  */
+/**
+ * Validates slug
+ *
+ * @param {string} slug - URL-friendly identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateSlug("example");
+ */
+
+/**
+ * Validates slug
+ *
+ * @param {string} slug - URL-friendly identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateSlug("example");
+ */
+
 export function validateSlug(slug: string): boolean {
   if (!slug) return false;
   if (!/^[a-z0-9-]+$/.test(slug)) return false;
@@ -124,6 +292,28 @@ export function validateSlug(slug: string): boolean {
  * @param gst - GST number to validate
  * @returns true if valid GST format
  */
+/**
+ * Validates g s t
+ *
+ * @param {string} gst - The gst
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateGST("example");
+ */
+
+/**
+ * Validates g s t
+ *
+ * @param {string} gst - The gst
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validateGST("example");
+ */
+
 export function validateGST(gst: string): boolean {
   if (!gst) return false;
   const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -136,6 +326,28 @@ export function validateGST(gst: string): boolean {
  * @param pan - PAN number to validate
  * @returns true if valid PAN format
  */
+/**
+ * Validates p a n
+ *
+ * @param {string} pan - The pan
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePAN("example");
+ */
+
+/**
+ * Validates p a n
+ *
+ * @param {string} pan - The pan
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * validatePAN("example");
+ */
+
 export function validatePAN(pan: string): boolean {
   if (!pan) return false;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;

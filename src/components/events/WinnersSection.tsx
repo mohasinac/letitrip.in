@@ -1,20 +1,51 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/events/WinnersSection
+ * @description This file contains the WinnersSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Award, Medal, Trophy } from "lucide-react";
 
+/**
+ * Winner interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Winner
+ */
 export interface Winner {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Name */
   name?: string;
+  /** Description */
   description?: string;
+  /** Image Url */
   imageUrl?: string;
+  /** Rank */
   rank: number;
+  /** Score */
   score?: number;
 }
 
+/**
+ * WinnersSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WinnersSectionProps
+ */
 export interface WinnersSectionProps {
+  /** Winners */
   winners: Winner[];
+  /** Title */
   title?: string;
+  /** Show Scores */
   showScores?: boolean;
 }
 
@@ -39,11 +70,61 @@ export interface WinnersSectionProps {
  * />
  * ```
  */
+/**
+ * Performs winners section operation
+ *
+ * @param {WinnersSectionProps} [{
+  winners,
+  title] - The {
+  winners,
+  title
+ *
+ * @returns {any} The winnerssection result
+ *
+ * @example
+ * WinnersSection({
+  winners,
+  title);
+ */
+
+/**
+ * Performs winners section operation
+ *
+ * @param {WinnersSectionProps} [{
+  winners,
+  title] - The {
+  winners,
+  title
+ *
+ * @returns {any} The winnerssection result
+ *
+ * @example
+ * WinnersSection({
+  winners,
+  title);
+ */
+
 export function WinnersSection({
   winners,
   title = "Winners",
   showScores = false,
 }: WinnersSectionProps) {
+  /**
+   * Retrieves rank icon
+   *
+   * @param {number} rank - The rank
+   *
+   * @returns {number} The rankicon result
+   */
+
+  /**
+   * Retrieves rank icon
+   *
+   * @param {number} rank - The rank
+   *
+   * @returns {number} The rankicon result
+   */
+
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -52,10 +133,27 @@ export function WinnersSection({
         return <Medal className="w-6 h-6 text-gray-400" />;
       case 3:
         return <Award className="w-6 h-6 text-orange-600" />;
+      /** Default */
       default:
         return null;
     }
   };
+
+  /**
+   * Retrieves rank badge color
+   *
+   * @param {number} rank - The rank
+   *
+   * @returns {number} The rankbadgecolor result
+   */
+
+  /**
+   * Retrieves rank badge color
+   *
+   * @param {number} rank - The rank
+   *
+   * @returns {number} The rankbadgecolor result
+   */
 
   const getRankBadgeColor = (rank: number) => {
     switch (rank) {
@@ -65,6 +163,7 @@ export function WinnersSection({
         return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600";
       case 3:
         return "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700";
+      /** Default */
       default:
         return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700";
     }
@@ -181,6 +280,21 @@ export function WinnersSection({
   );
 }
 
+/**
+ * Function: Winner Card
+ */
+/**
+ * Performs winner card operation
+ *
+ * @returns {any} The winnercard result
+ */
+
+/**
+ * Performs winner card operation
+ *
+ * @returns {any} The winnercard result
+ */
+
 function WinnerCard({
   winner,
   showScores,
@@ -188,10 +302,15 @@ function WinnerCard({
   getRankBadgeColor,
   isFirst = false,
 }: {
+  /** Winner */
   winner: Winner;
+  /** Show Scores */
   showScores: boolean;
+  /** Get Rank Icon */
   getRankIcon: (rank: number) => JSX.Element | null;
+  /** Get Rank Badge Color */
   getRankBadgeColor: (rank: number) => string;
+  /** Is First */
   isFirst?: boolean;
 }) {
   return (

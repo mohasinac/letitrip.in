@@ -1,13 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/privacy-policy/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Privacy Policy - Let It Rip",
+  /** Description */
   description:
     "Learn how Let It Rip collects, uses, and protects your personal information. Our commitment to your privacy and data security.",
+  /** Robots */
   robots: "index, follow",
 };
 
+/**
+ * Performs privacy policy page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = PrivacyPolicyPage();
+ */
 export default function PrivacyPolicyPage() {
   return (
     <LegalPageLayout
@@ -198,6 +218,7 @@ export default function PrivacyPolicyPage() {
       <h2>5. Data Security</h2>
       <p>
         We implement industry-standard security measures to protect your
+        /** Information */
         information:
       </p>
       <ul>
@@ -258,6 +279,7 @@ export default function PrivacyPolicyPage() {
       </ul>
       <p>
         <em>
+          /** Note */
           Note: Some data may be retained for legal compliance (e.g.,
           transaction records for 7 years).
         </em>
@@ -272,6 +294,7 @@ export default function PrivacyPolicyPage() {
       </ul>
       <p>
         <em>
+          /** Note */
           Note: You will still receive transactional emails (order
           confirmations, shipping updates, etc.).
         </em>

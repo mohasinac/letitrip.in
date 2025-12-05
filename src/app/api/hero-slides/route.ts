@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/hero-slides/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { heroSlidesSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
@@ -13,10 +22,15 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for hero slides
 const slidesConfig = {
   ...heroSlidesSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Order */
     order: "position",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Is Active */
     isActive: "is_active",
   } as Record<string, string>,
 };
@@ -24,15 +38,37 @@ const slidesConfig = {
 /**
  * Transform slide document to API response format
  */
+/**
+ * Transforms slide for admin
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformslideforadmin result
+ */
+
+/**
+ * Transforms slide for admin
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformslideforadmin result
+ */
+
 function transformSlideForAdmin(id: string, data: any) {
   return {
     id,
+    /** Title */
     title: data.title,
+    /** Subtitle */
     subtitle: data.subtitle || "",
+    /** Description */
     description: data.description || "",
     image_url: data.image_url,
     link_url: data.link_url || "",
     cta_text: data.cta_text || "Shop Now",
+    /** Position */
     position: data.position,
     is_active: data.is_active,
     created_at: data.created_at,
@@ -40,16 +76,45 @@ function transformSlideForAdmin(id: string, data: any) {
   };
 }
 
+/**
+ * Function: Transform Slide For Public
+ */
+/**
+ * Transforms slide for public
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformslideforpublic result
+ */
+
+/**
+ * Transforms slide for public
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformslideforpublic result
+ */
+
 function transformSlideForPublic(id: string, data: any) {
   return {
     id,
+    /** Image */
     image: data.image_url,
+    /** Title */
     title: data.title,
+    /** Subtitle */
     subtitle: data.subtitle || "",
+    /** Description */
     description: data.description || "",
+    /** Cta Text */
     ctaText: data.cta_text || "Shop Now",
+    /** Cta Link */
     ctaLink: data.link_url || "/",
+    /** Order */
     order: data.position,
+    /** Enabled */
     enabled: data.is_active,
   };
 }
@@ -60,6 +125,32 @@ function transformSlideForPublic(id: string, data: any) {
  * Public: Returns only active slides
  * Admin: Returns all slides
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -69,6 +160,7 @@ export async function GET(req: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -77,8 +169,11 @@ export async function GET(req: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -119,6 +214,26 @@ export async function GET(req: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -141,13 +256,19 @@ export async function GET(req: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       slides,
+      /** Data */
       data: slides,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -155,6 +276,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching hero slides:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }
@@ -167,6 +289,32 @@ export async function GET(req: NextRequest) {
  * POST /api/hero-slides
  * Admin only: Create new hero slide
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     // Require admin role
@@ -199,12 +347,16 @@ export async function POST(req: NextRequest) {
 
     // Create slide data
     const slideData = {
+      /** Title */
       title: body.title,
+      /** Subtitle */
       subtitle: body.subtitle || "",
+      /** Description */
       description: body.description || "",
       image_url: body.image_url,
       link_url: body.link_url || "",
       cta_text: body.cta_text || "Shop Now",
+      /** Position */
       position: body.position ?? maxPosition + 1,
       is_active: body.is_active ?? true,
       created_at: new Date().toISOString(),
@@ -215,7 +367,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Slide */
         slide: {
+          /** Id */
           id: docRef.id,
           ...slideData,
         },
@@ -226,6 +380,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating hero slide:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }

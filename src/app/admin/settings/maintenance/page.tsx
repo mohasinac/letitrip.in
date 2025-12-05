@@ -1,12 +1,31 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/maintenance/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { NotImplementedPage } from "@/components/common/NotImplemented";
 import { Wrench } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Maintenance Mode | Admin Settings",
+  /** Description */
   description: "Configure maintenance mode and access control",
 };
 
+/**
+ * Performs admin maintenance page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = AdminMaintenancePage();
+ */
 export default function AdminMaintenancePage() {
   return (
     <NotImplementedPage

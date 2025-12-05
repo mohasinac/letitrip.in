@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/users/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -155,12 +164,46 @@ const AVATAR_IMAGES = [
 // Role distribution percentages (for 10 users base)
 // Admin is always 1 (Mohsin) regardless of scale
 const USER_ROLES_BASE = {
+  /** Admin */
   admin: 1,
+  /** Moderator */
   moderator: 3,
+  /** Support */
   support: 5,
+  /** Seller */
   seller: 5,
+  /** User */
   user: 4,
 };
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {Request} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {Request} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: Request) {
   try {
@@ -171,22 +214,31 @@ export async function POST(request: Request) {
     // Admin is always 1 (Mohsin) regardless of scale
     const USER_ROLES = {
       admin: 1, // Always 1 admin - Mohsin
+      /** Moderator */
       moderator: Math.max(
         1,
         Math.round((USER_ROLES_BASE.moderator * scale) / 10),
       ),
+      /** Support */
       support: Math.max(1, Math.round((USER_ROLES_BASE.support * scale) / 10)),
+      /** Seller */
       seller: Math.max(1, Math.round((USER_ROLES_BASE.seller * scale) / 10)),
+      /** User */
       user: Math.max(1, Math.round((USER_ROLES_BASE.user * scale) / 10)),
     };
 
     const db = getFirestoreAdmin();
     const timestamp = new Date();
     const createdUsers: Array<{
+      /** Id */
       id: string;
+      /** Role */
       role: string;
+      /** Name */
       name: string;
+      /** Email */
       email: string;
+      /** Password */
       password: string;
     }> = [];
 
@@ -227,48 +279,74 @@ export async function POST(request: Request) {
         ];
 
         await userRef.set({
+          /** Name */
           name: `${DEMO_PREFIX}${fullName}`,
           display_name: displayName,
           email,
           role,
+          /** Is Active */
           isActive: true,
+          /** Is Verified */
           isVerified: true,
+          /** Phone */
           phone: `+91-${9000000000 + userIndex}`,
+          /** Avatar */
           avatar: AVATAR_IMAGES[userIndex % AVATAR_IMAGES.length],
           cover_image: `https://images.unsplash.com/photo-${1550000000000 + userIndex * 1000}?w=1200&h=400&fit=crop`,
+          /** Bio */
           bio: bioOptions[userIndex % bioOptions.length],
           social_links: {
             twitter: `https://twitter.com/demo_${firstName.toLowerCase()}`,
             instagram: `https://instagram.com/demo_${firstName.toLowerCase()}`,
           },
+          /** Preferences */
           preferences: {
+            /** Newsletter */
             newsletter: Math.random() > 0.3,
+            /** Notifications */
             notifications: true,
+            /** Language */
             language: "en",
+            /** Currency */
             currency: "INR",
           },
+          /** Addresses */
           addresses: [
             {
+              /** Id */
               id: `addr-${userRef.id}-1`,
+              /** Street */
               street: `${100 + userIndex} ${STREETS[userIndex % STREETS.length]}`,
+              /** City */
               city: city.city,
+              /** State */
               state: city.state,
+              /** Pincode */
               pincode: city.pincode,
+              /** Country */
               country: "India",
+              /** Is Default */
               isDefault: true,
+              /** Label */
               label: "Home",
             },
           ],
+          /** Created At */
           createdAt: timestamp,
+          /** Updated At */
           updatedAt: timestamp,
+          /** Password Hash */
           passwordHash: "$2a$10$demoHashForTestingOnlyDemo123",
         });
 
         createdUsers.push({
+          /** Id */
           id: userRef.id,
           role,
+          /** Name */
           name: fullName,
           email,
+          /** Password */
           password: "Demo@123",
         });
         userIndex++;
@@ -282,42 +360,68 @@ export async function POST(request: Request) {
     const supportStaff = createdUsers.filter((u) => u.role === "support");
 
     const credentials = {
+      /** Admins */
       admins: admins.map((u) => ({
+        /** Email */
         email: u.email,
+        /** Password */
         password: u.password,
+        /** Name */
         name: u.name,
       })),
+      /** Moderators */
       moderators: moderators.map((u) => ({
+        /** Email */
         email: u.email,
+        /** Password */
         password: u.password,
+        /** Name */
         name: u.name,
       })),
+      /** Support */
       support: supportStaff.map((u) => ({
+        /** Email */
         email: u.email,
+        /** Password */
         password: u.password,
+        /** Name */
         name: u.name,
       })),
+      /** Sellers */
       sellers: sellers
         .slice(0, 10)
         .map((u) => ({ email: u.email, password: u.password, name: u.name })),
+      /** Buyers */
       buyers: buyers
         .slice(0, 10)
         .map((u) => ({ email: u.email, password: u.password, name: u.name })),
     };
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "users",
+      /** Data */
       data: {
+        /** Count */
         count: createdUsers.length,
+        /** Users By Role */
         usersByRole: {
+          /** Admins */
           admins: admins.length,
+          /** Moderators */
           moderators: moderators.length,
+          /** Support */
           support: supportStaff.length,
+          /** Sellers */
           sellers: sellers.length,
+          /** Buyers */
           buyers: buyers.length,
         },
+        /** Sellers */
         sellers: sellers.map((s) => ({ id: s.id, name: s.name })),
+        /** Buyers */
         buyers: buyers.map((b) => ({ id: b.id, name: b.name })),
         credentials,
       },

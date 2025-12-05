@@ -1,23 +1,71 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormKeyValueInput
+ * @description This file contains the FormKeyValueInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormKeyValueInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormKeyValueInputProps
+ */
 export interface FormKeyValueInputProps {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Key Placeholder */
   keyPlaceholder?: string;
+  /** Value Placeholder */
   valuePlaceholder?: string;
+  /** Value */
   value: Record<string, string>;
+  /** On Change */
   onChange: (value: Record<string, string>) => void;
+  /** Max Items */
   maxItems?: number;
+  /** Required */
   required?: boolean;
+  /** Disabled */
   disabled?: boolean;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Add Button Text */
   addButtonText?: string;
 }
+
+/**
+ * Function: Form Key Value Input
+ */
+/**
+ * Performs form key value input operation
+ *
+ * @returns {any} The formkeyvalueinput result
+ *
+ * @example
+ * FormKeyValueInput();
+ */
+
+/**
+ * Performs form key value input operation
+ *
+ * @returns {any} The formkeyvalueinput result
+ *
+ * @example
+ * FormKeyValueInput();
+ */
 
 export function FormKeyValueInput({
   label,
@@ -43,6 +91,18 @@ export function FormKeyValueInput({
   const entries = Object.entries(value);
   const canAdd = !disabled && (!maxItems || entries.length < maxItems);
 
+  /**
+   * Handles add event
+   *
+   * @returns {any} The handleadd result
+   */
+
+  /**
+   * Handles add event
+   *
+   * @returns {any} The handleadd result
+   */
+
   const handleAdd = () => {
     const trimmedKey = keyInput.trim();
     const trimmedValue = valueInput.trim();
@@ -57,11 +117,43 @@ export function FormKeyValueInput({
     setValueInput("");
   };
 
+  /**
+   * Handles remove event
+   *
+   * @param {string} key - The key
+   *
+   * @returns {string} The handleremove result
+   */
+
+  /**
+   * Handles remove event
+   *
+   * @param {string} key - The key
+   *
+   * @returns {string} The handleremove result
+   */
+
   const handleRemove = (key: string) => {
     const newValue = { ...value };
     delete newValue[key];
     onChange(newValue);
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/products/ComparisonBar
+ * @description This file contains the ComparisonBar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -5,6 +14,35 @@ import Link from "next/link";
 import { X, GitCompare, Trash2 } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
+
+/**
+ * Function: Comparison Bar
+ */
+/**
+ * Performs comparison bar operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ComparisonBar();
+ */
+/**
+ * Performs comparison bar operation
+ *
+ * @returns {any} The comparisonbar result
+ *
+ * @example
+ * ComparisonBar();
+ */
+
+/**
+ * Performs comparison bar operation
+ *
+ * @returns {any} The comparisonbar result
+ *
+ * @example
+ * ComparisonBar();
+ */
 
 export function ComparisonBar() {
   const { products, removeFromComparison, clearComparison, canCompare, count } =
@@ -87,15 +125,20 @@ export function ComparisonBar() {
       <style jsx>{`
         @keyframes slide-up {
           from {
+            /** Transform */
             transform: translateY(100%);
+            /** Opacity */
             opacity: 0;
           }
           to {
+            /** Transform */
             transform: translateY(0);
+            /** Opacity */
             opacity: 1;
           }
         }
         .animate-slide-up {
+          /** Animation */
           animation: slide-up 0.3s ease-out;
         }
       `}</style>

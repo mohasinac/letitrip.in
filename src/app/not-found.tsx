@@ -1,9 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/not-found
+ * @description This file contains the not-found component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AlertCircle, Home, Search, ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
+
+/**
+ * Function: Not Found Content
+ */
+/**
+ * Performs not found content operation
+ *
+ * @returns {any} The notfoundcontent result
+ */
+
+/**
+ * Performs not found content operation
+ *
+ * @returns {any} The notfoundcontent result
+ */
 
 function NotFoundContent() {
   const searchParams = useSearchParams();
@@ -15,55 +39,92 @@ function NotFoundContent() {
   const decodedDetails = details ? decodeURIComponent(details) : null;
   const isDevelopment = process.env.NODE_ENV === "development";
 
+  /**
+   * Retrieves error message
+   *
+   * @returns {any} The errormessage result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Retrieves error message
+   *
+   * @returns {any} The errormessage result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const getErrorMessage = () => {
     if (reason === "product-not-found") {
       return {
+        /** Title */
         title: "Product Not Found",
+        /** Message */
         message:
           "The product you're looking for doesn't exist or has been removed.",
+        /** Icon */
         icon: "📦",
       };
     }
     if (reason === "shop-not-found") {
       return {
+        /** Title */
         title: "Shop Not Found",
+        /** Message */
         message: "This shop doesn't exist or may have been closed.",
+        /** Icon */
         icon: "🏪",
       };
     }
     if (reason === "auction-not-found") {
       return {
+        /** Title */
         title: "Auction Not Found",
+        /** Message */
         message: "This auction doesn't exist or has ended.",
+        /** Icon */
         icon: "🔨",
       };
     }
     if (reason === "category-not-found") {
       return {
+        /** Title */
         title: "Category Not Found",
+        /** Message */
         message: "This category doesn't exist in our system.",
+        /** Icon */
         icon: "📂",
       };
     }
     if (reason === "user-not-found") {
       return {
+        /** Title */
         title: "User Not Found",
+        /** Message */
         message: "The user profile you're looking for doesn't exist.",
+        /** Icon */
         icon: "👤",
       };
     }
     if (reason === "order-not-found") {
       return {
+        /** Title */
         title: "Order Not Found",
+        /** Message */
         message: "We couldn't find this order in our system.",
+        /** Icon */
         icon: "📋",
       };
     }
 
     // Default 404
     return {
+      /** Title */
       title: "Page Not Found",
+      /** Message */
       message: "The page you're looking for doesn't exist or has been moved.",
+      /** Icon */
       icon: "🔍",
     };
   };

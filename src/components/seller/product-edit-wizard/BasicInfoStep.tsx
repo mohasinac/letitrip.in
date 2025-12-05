@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-edit-wizard/BasicInfoStep
+ * @description This file contains the BasicInfoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import SlugInput from "@/components/common/SlugInput";
@@ -5,6 +14,31 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { StepProps } from "./types";
+
+/**
+ * Function: Basic Info Step
+ */
+/**
+ * Performs basic info step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The basicinfostep result
+ *
+ * @example
+ * BasicInfoStep({ formData, setFormData });
+ */
+
+/**
+ * Performs basic info step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The basicinfostep result
+ *
+ * @example
+ * BasicInfoStep({ formData, setFormData });
+ */
 
 export function BasicInfoStep({ formData, setFormData }: StepProps) {
   return (
@@ -34,6 +68,7 @@ export function BasicInfoStep({ formData, setFormData }: StepProps) {
         onChange={(e) =>
           setFormData({
             ...formData,
+            /** Price */
             price: parseFloat(e.target.value) || 0,
           })
         }

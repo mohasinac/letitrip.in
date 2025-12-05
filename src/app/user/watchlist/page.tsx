@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/watchlist/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuctionCard from "@/components/cards/AuctionCard";
@@ -16,10 +25,13 @@ import { useCallback, useEffect } from "react";
 export default function WatchlistPage() {
   const { user } = useAuth();
   const {
+    /** Data */
     data: auctions,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
+    /** Set Data */
     setData: setAuctions,
     retry,
   } = useLoadingState<AuctionCardFE[]>({ initialData: [] });
@@ -35,18 +47,60 @@ export default function WatchlistPage() {
     }
   }, [user, execute, loadWatchlist]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} auctionId - auction identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} auctionId - auction identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleRemoveFromWatchlist = async (auctionId: string) => {
     try {
       await auctionsService.toggleWatch(auctionId);
 
       // Remove from local state
+      /**
+       * Updates existing updated auctions
+       *
+       * @param {any} auctions || []).filter(
+        (auction - The auctions || []).filter(
+        (auction
+       *
+       * @returns {any} The updatedauctions result
+       */
+
+      /**
+       * Updates existing updated auctions
+       *
+       * @param {any} auctions || []).filter(
+        (auction - The auctions || []).filter(
+        (auction
+       *
+       * @returns {any} The updatedauctions result
+       */
+
       const updatedAuctions = (auctions || []).filter(
         (auction) => auction.id !== auctionId,
       );
       setAuctions(updatedAuctions);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "UserWatchlist.removeFromWatchlist",
+        /** Metadata */
         metadata: { auctionId },
       });
     }
@@ -152,9 +206,13 @@ export default function WatchlistPage() {
                 auction={
                   {
                     ...auction,
+                    /** Name */
                     name: auction.productName || "",
+                    /** Slug */
                     slug: auction.productSlug || "",
+                    /** Images */
                     images: [auction.productImage],
+                    /** Current Bid */
                     currentBid: auction.currentBid || auction.startingBid || 0,
                   } as any
                 }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/products/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -25,6 +34,21 @@ import { Filter, Grid, List, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 
+/**
+ * Function: Products Content
+ */
+/**
+ * Performs products content operation
+ *
+ * @returns {any} The productscontent result
+ */
+
+/**
+ * Performs products content operation
+ *
+ * @returns {any} The productscontent result
+ */
+
 function ProductsContent() {
   const router = useRouter();
   const { addItem } = useCart();
@@ -35,6 +59,7 @@ function ProductsContent() {
     filters,
     updateFilter,
     updateFilters,
+    /** Reset Filters */
     resetFilters: resetUrlFilters,
     sort,
     setSort,
@@ -43,26 +68,40 @@ function ProductsContent() {
     limit,
     setLimit,
   } = useUrlFilters({
+    /** Initial Filters */
     initialFilters: {
+      /** Category Id */
       categoryId: "",
+      /** Shop Id */
       shopId: "",
+      /** Min Price */
       minPrice: "",
+      /** Max Price */
       maxPrice: "",
+      /** Status */
       status: "",
+      /** Featured */
       featured: "",
+      /** Search */
       search: "",
+      /** View */
       view: "grid",
     },
+    /** Initial Sort */
     initialSort: { field: "createdAt", order: "desc" },
+    /** Initial Page */
     initialPage: 1,
+    /** Initial Limit */
     initialLimit: 20,
   });
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "ProductsContent.loadProducts" });
       toast.error("Failed to load products");
@@ -75,6 +114,34 @@ function ProductsContent() {
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
 
   // Extract view from filters
+  /**
+   * Performs view operation
+   *
+   * @param {any} filters.view as "grid" | "table") || "grid";
+
+  // Load filter options on mount
+  useEffect(( - The filters.view as "grid" | "table") || "grid";
+
+  //  load filter options on mount
+  use effect((
+   *
+   * @returns {any} The view result
+   */
+
+  /**
+   * Performs view operation
+   *
+   * @param {any} filters.view as "grid" | "table") || "grid";
+
+  // Load filter options on mount
+  useEffect(( - The filters.view as "grid" | "table") || "grid";
+
+  //  load filter options on mount
+  use effect((
+   *
+   * @returns {any} The view result
+   */
+
   const view = (filters.view as "grid" | "table") || "grid";
 
   // Load filter options on mount
@@ -87,6 +154,22 @@ function ProductsContent() {
     loadProducts();
   }, [filters, sort, page, limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadFilterOptions = async () => {
     try {
       const [categoriesData, shopsData] = await Promise.all([
@@ -98,13 +181,18 @@ function ProductsContent() {
         if (section.title === "Categories") {
           return {
             ...section,
+            /** Fields */
             fields: section.fields.map((field) => {
               if (field.key === "category_id") {
                 return {
                   ...field,
+                  /** Options */
                   options: (categoriesData?.data || []).map((cat) => ({
+                    /** Label */
                     label: cat.name,
+                    /** Value */
                     value: cat.id,
+                    /** Count */
                     count: cat.productCount || 0,
                   })),
                 };
@@ -117,13 +205,18 @@ function ProductsContent() {
         if (section.title === "Shops") {
           return {
             ...section,
+            /** Fields */
             fields: section.fields.map((field) => {
               if (field.key === "shop_id") {
                 return {
                   ...field,
+                  /** Options */
                   options: (shopsData.data || []).map((shop) => ({
+                    /** Label */
                     label: shop.name,
+                    /** Value */
                     value: shop.id,
+                    /** Count */
                     count: shop.productCount || 0,
                   })),
                 };
@@ -139,10 +232,27 @@ function ProductsContent() {
       setFilterOptions(updatedFilters);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductsPage.loadFilterOptions",
       });
     }
   };
+
+  /**
+   * Fetches products from server
+   *
+   * @returns {Promise<any>} Promise resolving to products result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches products from server
+   *
+   * @returns {Promise<any>} Promise resolving to products result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadProducts = () =>
     execute(async () => {
@@ -161,8 +271,11 @@ function ProductsContent() {
 
       const response = await productsService.list({
         ...filterParams,
+        /** Sort By */
         sortBy: sort?.field || "createdAt",
+        /** Sort Order */
         sortOrder: sort?.order || "desc",
+        /** Start After */
         startAfter: startAfter || undefined,
         limit,
       } as any);
@@ -189,12 +302,19 @@ function ProductsContent() {
 
   const handleAddToCart = useCallback(
     async (
+      /** Product Id */
       productId: string,
+      /** Product Details */
       productDetails?: {
+        /** Name */
         name: string;
+        /** Price */
         price: number;
+        /** Image */
         image: string;
+        /** Shop Id */
         shopId: string;
+        /** Shop Name */
         shopName: string;
       },
     ) => {
@@ -205,10 +325,15 @@ function ProductsContent() {
             throw new Error("Product not found");
           }
           productDetails = {
+            /** Name */
             name: product.name,
+            /** Price */
             price: product.price,
+            /** Image */
             image: product.images?.[0] || "",
+            /** Shop Id */
             shopId: product.shopId,
+            /** Shop Name */
             shopName: product.shop?.name || "Unknown Shop",
           };
         }
@@ -246,7 +371,9 @@ function ProductsContent() {
                 value={sort?.field || "createdAt"}
                 onChange={(e) =>
                   setSort({
+                    /** Field */
                     field: e.target.value,
+                    /** Order */
                     order: sort?.order || "desc",
                   })
                 }
@@ -264,7 +391,9 @@ function ProductsContent() {
                 value={sort?.order || "desc"}
                 onChange={(e) =>
                   setSort({
+                    /** Field */
                     field: sort?.field || "createdAt",
+                    /** Order */
                     order: e.target.value as "asc" | "desc",
                   })
                 }
@@ -347,7 +476,9 @@ function ProductsContent() {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 <EmptyStates.NoProducts
                   action={{
+                    /** Label */
                     label: "Clear filters",
+                    /** On Click */
                     onClick: handleResetFilters,
                   }}
                 />

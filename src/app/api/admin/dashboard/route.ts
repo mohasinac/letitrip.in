@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/dashboard/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -9,6 +18,32 @@ import { getCurrentUser } from "@/app/api/lib/session";
  *
  * Admin only endpoint
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -32,6 +67,7 @@ export async function GET(req: NextRequest) {
     // Get all users
     const usersSnapshot = await db.collection(COLLECTIONS.USERS).get();
     const allUsers = usersSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -51,6 +87,7 @@ export async function GET(req: NextRequest) {
     // Get all shops
     const shopsSnapshot = await db.collection(COLLECTIONS.SHOPS).get();
     const allShops = shopsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -69,6 +106,7 @@ export async function GET(req: NextRequest) {
     // Get all products
     const productsSnapshot = await db.collection(COLLECTIONS.PRODUCTS).get();
     const allProducts = productsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -83,6 +121,7 @@ export async function GET(req: NextRequest) {
     // Get all orders
     const ordersSnapshot = await db.collection(COLLECTIONS.ORDERS).get();
     const allOrders = ordersSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -185,27 +224,41 @@ export async function GET(req: NextRequest) {
     // Get recent activities (simulated - in production, use an activities collection)
     const recentActivities = [
       {
+        /** Type */
         type: "user",
+        /** Message */
         message: "New user registered",
+        /** Timestamp */
         timestamp: new Date().toISOString(),
+        /** Icon */
         icon: "Users",
       },
       {
+        /** Type */
         type: "shop",
+        /** Message */
         message: "New shop pending approval",
+        /** Timestamp */
         timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+        /** Icon */
         icon: "Store",
+        /** Link */
         link: "/admin/shops",
       },
       {
+        /** Type */
         type: "product",
+        /** Message */
         message: `${last30DaysProducts} new products listed`,
+        /** Timestamp */
         timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+        /** Icon */
         icon: "Package",
       },
     ];
 
     const response = {
+      /** Stats */
       stats: {
         totalUsers,
         totalSellers,
@@ -225,21 +278,34 @@ export async function GET(req: NextRequest) {
         activeUsers,
         bannedUsers,
       },
+      /** Trends */
       trends: {
+        /** Users */
         users: {
+          /** Value */
           value: usersTrend,
+          /** Is Positive */
           isPositive: parseFloat(usersTrend) >= 0,
         },
+        /** Shops */
         shops: {
+          /** Value */
           value: shopsTrend,
+          /** Is Positive */
           isPositive: parseFloat(shopsTrend) >= 0,
         },
+        /** Products */
         products: {
+          /** Value */
           value: productsTrend,
+          /** Is Positive */
           isPositive: parseFloat(productsTrend) >= 0,
         },
+        /** Orders */
         orders: {
+          /** Value */
           value: ordersTrend,
+          /** Is Positive */
           isPositive: parseFloat(ordersTrend) >= 0,
         },
       },

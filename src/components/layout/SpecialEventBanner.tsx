@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/SpecialEventBanner
+ * @description This file contains the SpecialEventBanner component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -10,27 +19,54 @@ import { logError } from "@/lib/firebase-error-logger";
 export default function SpecialEventBanner() {
   const [isVisible, setIsVisible] = useState(true);
   const [bannerSettings, setBannerSettings] = useState<{
+    /** Enabled */
     enabled: boolean;
+    /** Content */
     content: string;
+    /** Link */
     link?: string;
+    /** Background Color */
     backgroundColor?: string;
+    /** Text Color */
     textColor?: string;
+    /** Background Image */
     backgroundImage?: string;
+    /** Gradient */
     gradient?: {
+      /** From */
       from: string;
+      /** To */
       to: string;
+      /** Direction */
       direction?: string;
     };
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadSettings = async () => {
       try {
         const data = await homepageService.getBanner();
         setBannerSettings(data);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "SpecialEventBanner.loadSettings",
         });
       } finally {
@@ -63,11 +99,24 @@ export default function SpecialEventBanner() {
   // Apply text color
   bannerStyle.color = bannerSettings.textColor || defaultTextColor;
 
+  /**
+   * Performs banner content operation
+   *
+   * @returns {any} The bannercontent result
+   */
+
+  /**
+   * Performs banner content operation
+   *
+   * @returns {any} The bannercontent result
+   */
+
   const BannerContent = () => (
     <div
       className="prose prose-sm max-w-none text-center"
       dangerouslySetInnerHTML={{ __html: bannerSettings.content }}
       style={{
+        /** Color */
         color: "inherit",
       }}
     />
@@ -112,13 +161,16 @@ export default function SpecialEventBanner() {
       </div>
       <style jsx global>{`
         #special-event-banner .prose p {
+          /** Margin */
           margin: 0;
+          /** Display */
           display: inline;
         }
         #special-event-banner .prose strong {
           font-weight: 600;
         }
         #special-event-banner .prose a {
+          /** Color */
           color: inherit;
           text-decoration: underline;
         }

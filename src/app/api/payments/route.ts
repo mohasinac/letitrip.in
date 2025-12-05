@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payments/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { executeOffsetPaginatedQuery } from "@/app/api/lib/utils/pagination";
 import {
@@ -14,6 +23,32 @@ import { NextRequest, NextResponse } from "next/server";
  * - Seller: Can view shop payments
  * - User: Can view own payments
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -40,13 +75,21 @@ export async function GET(request: NextRequest) {
       // Seller can only see their shop's payments
       if (!user.shopId) {
         return NextResponse.json({
+          /** Success */
           success: true,
+          /** Data */
           data: [],
+          /** Count */
           count: 0,
+          /** Pagination */
           pagination: {
+            /** Page */
             page: 1,
+            /** Limit */
             limit: 20,
+            /** Has Next Page */
             hasNextPage: false,
+            /** Has Prev Page */
             hasPrevPage: false,
           },
         });
@@ -91,6 +134,7 @@ export async function GET(request: NextRequest) {
       query,
       searchParams,
       (doc) => ({
+        /** Id */
         id: doc.id,
         ...doc.data(),
       }),
@@ -112,6 +156,32 @@ export async function GET(request: NextRequest) {
  * POST /api/payments
  * Create a payment record (system/admin only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const authResult = await requireRole(request, ["admin"]);
@@ -133,7 +203,9 @@ export async function POST(request: NextRequest) {
     if (!order_id || !user_id || !amount || !gateway) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Missing required fields: order_id, user_id, amount, gateway",
         },
         { status: 400 },
@@ -157,8 +229,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Message */
         message: "Payment created successfully",
+        /** Data */
         data: { id: docRef.id, ...payment },
       },
       { status: 201 },

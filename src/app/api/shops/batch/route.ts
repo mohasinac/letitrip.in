@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/batch/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,6 +16,32 @@ import { NextRequest, NextResponse } from "next/server";
  * Fetch multiple shops by IDs/slugs
  * Used by homepage featured sections to display admin-curated shops
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -65,20 +100,30 @@ export async function POST(request: NextRequest) {
       .map((id) => shops.find((s) => s.id === id || s.slug === id))
       .filter(Boolean)
       .map((s: any) => ({
+        /** Id */
         id: s.id,
         ...s,
         // Add camelCase aliases
+        /** Owner Id */
         ownerId: s.owner_id,
+        /** Product Count */
         productCount: s.product_count || 0,
+        /** Auction Count */
         auctionCount: s.auction_count || 0,
+        /** Is Verified */
         isVerified: s.is_verified,
+        /** Is Active */
         isActive: s.is_active,
+        /** Created At */
         createdAt: s.created_at,
+        /** Updated At */
         updatedAt: s.updated_at,
       }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: orderedShops,
     });
   } catch (error) {

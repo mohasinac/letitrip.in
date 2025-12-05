@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/MediaPreviewCard
+ * @description This file contains the MediaPreviewCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { formatDuration, formatFileSize } from "@/lib/formatters";
@@ -5,12 +14,24 @@ import { MediaFile } from "@/types/media";
 import { AlertCircle, CheckCircle2, Edit2, RotateCw, X } from "lucide-react";
 import Image from "next/image";
 
+/**
+ * MediaPreviewCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaPreviewCardProps
+ */
 interface MediaPreviewCardProps {
+  /** Media */
   media: MediaFile;
+  /** On Remove */
   onRemove?: () => void;
+  /** On Edit */
   onEdit?: () => void;
+  /** On Retry */
   onRetry?: () => void;
+  /** Show Actions */
   showActions?: boolean;
+  /** Class Name */
   className?: string;
 }
 

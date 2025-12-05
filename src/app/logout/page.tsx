@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/logout/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { COMPANY_NAME } from "@/constants/navigation";
@@ -17,6 +26,22 @@ export default function LogoutPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const performLogout = async () => {
       try {
         // Small delay to show the UI
@@ -34,6 +59,7 @@ export default function LogoutPage() {
         }, 1500);
       } catch (err: any) {
         logError(err as Error, {
+          /** Component */
           component: "Logout.performLogout",
         });
         setStatus("error");

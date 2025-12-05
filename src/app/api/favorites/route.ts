@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/favorites/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { favoritesSieveConfig } from "@/app/api/lib/sieve/config";
@@ -9,9 +18,13 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for favorites
 const favoritesConfig = {
   ...favoritesSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** User Id */
     userId: "user_id",
+    /** Item Id */
     itemId: "product_id",
+    /** Created At */
     createdAt: "created_at",
   } as Record<string, string>,
 };
@@ -21,6 +34,32 @@ const favoritesConfig = {
  * Get user's favorites with Sieve pagination
  * Query Format: ?page=1&pageSize=20&sorts=-createdAt
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -38,6 +77,7 @@ export async function GET(req: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -46,8 +86,11 @@ export async function GET(req: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -86,6 +129,26 @@ export async function GET(req: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -99,6 +162,7 @@ export async function GET(req: NextRequest) {
     // Execute query
     const snapshot = await query.get();
     const favorites = snapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -115,6 +179,7 @@ export async function GET(req: NextRequest) {
       if (productDoc.exists) {
         const favorite = favorites.find((f: any) => f.product_id === productId);
         products.push({
+          /** Id */
           id: productDoc.id,
           ...productDoc.data(),
           favorited_at: favorite ? (favorite as any).created_at : null,
@@ -126,12 +191,18 @@ export async function GET(req: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: products,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -145,6 +216,35 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/favorites - Add to favorites
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -193,6 +293,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Id */
         id: docRef.id,
         ...favoriteData,
       },

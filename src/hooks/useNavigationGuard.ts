@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useNavigationGuard
+ * @description This file contains functionality related to useNavigationGuard
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useNavigationGuard Hook
  *
  * Prevents navigation away from a page with unsaved changes.
@@ -10,6 +19,12 @@ import { useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { logError } from "@/lib/firebase-error-logger";
 
+/**
+ * NavigationGuardOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavigationGuardOptions
+ */
 export interface NavigationGuardOptions {
   /**
    * Whether to enable the navigation guard
@@ -34,6 +49,31 @@ export interface NavigationGuardOptions {
   onCancel?: () => void;
 }
 
+/**
+ * Function: Use Navigation Guard
+ */
+/**
+ * Custom React hook for navigation guard
+ *
+ * @param {NavigationGuardOptions} options - Configuration options
+ *
+ * @returns {any} The usenavigationguard result
+ *
+ * @example
+ * useNavigationGuard(options);
+ */
+
+/**
+ * Custom React hook for navigation guard
+ *
+ * @param {NavigationGuardOptions} options - Configuration options
+ *
+ * @returns {any} The usenavigationguard result
+ *
+ * @example
+ * useNavigationGuard(options);
+ */
+
 export function useNavigationGuard(options: NavigationGuardOptions) {
   const {
     enabled,
@@ -50,6 +90,22 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
    */
   useEffect(() => {
     if (!enabled) return;
+
+    /**
+     * Handles before unload event
+     *
+     * @param {BeforeUnloadEvent} e - The e
+     *
+     * @returns {any} The handlebeforeunload result
+     */
+
+    /**
+     * Handles before unload event
+     *
+     * @param {BeforeUnloadEvent} e - The e
+     *
+     * @returns {any} The handlebeforeunload result
+     */
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       // Modern browsers ignore custom messages and show their own
@@ -75,6 +131,26 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
 
     let isBlocking = false;
 
+    /**
+     * Performs async operation
+     *
+     * @param {PopStateEvent} e - The e
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @param {PopStateEvent} e - The e
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const handlePopState = async (e: PopStateEvent) => {
       if (isNavigatingRef.current) return;
 
@@ -90,6 +166,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
             await onNavigate();
           } catch (error: any) {
             logError(error as Error, {
+              /** Component */
               component: "useNavigationGuard.onNavigate.beforeUnload",
             });
           }
@@ -140,6 +217,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
             await onNavigate();
           } catch (error: any) {
             logError(error as Error, {
+              /** Component */
               component: "useNavigationGuard.onNavigate.confirmNavigation",
             });
           }
@@ -162,6 +240,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
 
   return {
     confirmNavigation,
+    /** Is Navigating */
     isNavigating: isNavigatingRef.current,
   };
 }

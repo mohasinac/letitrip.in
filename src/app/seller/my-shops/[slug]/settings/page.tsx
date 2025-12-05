@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/my-shops/[slug]/settings/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -47,65 +56,147 @@ import { toast } from "sonner";
 
 // ==================== TYPES ====================
 
+/**
+ * TabId type
+ * 
+ * @typedef {Object} TabId
+ * @description Type definition for TabId
+ */
 type TabId = "general" | "shipping" | "payment" | "policies" | "team";
 
+/**
+ * GeneralSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GeneralSettings
+ */
 interface GeneralSettings {
+  /** Name */
   name: string;
+  /** Description */
   description: string;
+  /** Logo */
   logo: string | null;
+  /** Banner */
   banner: string | null;
+  /** Email */
   email: string;
+  /** Phone */
   phone: string;
+  /** Address */
   address: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** Postal Code */
   postalCode: string;
+  /** Accepts Orders */
   acceptsOrders: boolean;
+  /** Min Order Amount */
   minOrderAmount: number;
 }
 
+/**
+ * ShippingSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShippingSettings
+ */
 interface ShippingSettings {
+  /** Shipping Charge */
   shippingCharge: number;
+  /** Free Shipping Above */
   freeShippingAbove: number | null;
+  /** Enabled Regions */
   enabledRegions: string[];
   processingTime: string; // e.g., "1-2 business days"
   shippingPartners: string[]; // e.g., ["delhivery", "bluedart"]
   packageWeight: number; // default weight in kg
 }
 
+/**
+ * PaymentSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PaymentSettings
+ */
 interface PaymentSettings {
   enabledGateways: string[]; // e.g., ["razorpay", "paypal"]
   acceptedMethods: string[]; // e.g., ["card", "upi", "netbanking"]
+  /** Cod Enabled */
   codEnabled: boolean;
+  /** Cod Charge */
   codCharge: number;
 }
 
+/**
+ * PolicySettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PolicySettings
+ */
 interface PolicySettings {
+  /** Return Policy */
   returnPolicy: string;
+  /** Cancellation Policy */
   cancellationPolicy: string;
+  /** Privacy Policy */
   privacyPolicy: string;
+  /** Terms Of Service */
   termsOfService: string;
+  /** Shipping Policy */
   shippingPolicy: string;
 }
 
+/**
+ * TeamMember interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TeamMember
+ */
 interface TeamMember {
+  /** Id */
   id: string;
+  /** Email */
   email: string;
+  /** Name */
   name: string;
+  /** Role */
   role: "admin" | "manager" | "staff";
+  /** Status */
   status: "active" | "pending";
+  /** Added At */
   addedAt: string;
 }
 
+/**
+ * TeamSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TeamSettings
+ */
 interface TeamSettings {
+  /** Members */
   members: TeamMember[];
 }
 
+/**
+ * ShopSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopSettings
+ */
 interface ShopSettings {
+  /** General */
   general: GeneralSettings;
+  /** Shipping */
   shipping: ShippingSettings;
+  /** Payment */
   payment: PaymentSettings;
+  /** Policies */
   policies: PolicySettings;
+  /** Team */
   team: TeamSettings;
 }
 
@@ -199,7 +290,9 @@ export default function ShopSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<ShopSettings | null>(null);
   const [newTeamMember, setNewTeamMember] = useState<{
+    /** Email */
     email: string;
+    /** Role */
     role: "admin" | "manager" | "staff";
   }>({ email: "", role: "staff" });
 
@@ -215,7 +308,9 @@ export default function ShopSettingsPage() {
       return response.settings;
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "ShopSettingsPage.loadSettings",
+        /** Metadata */
         metadata: { slug },
       });
       throw err;
@@ -238,6 +333,7 @@ export default function ShopSettingsPage() {
       setSaving(true);
       try {
         await apiService.put(`/api/shops/${slug}/settings/${section}`, {
+          /** Settings */
           settings: settings[section],
         });
         toast.success(
@@ -245,7 +341,9 @@ export default function ShopSettingsPage() {
         );
       } catch (err) {
         logError(err as Error, {
+          /** Component */
           component: "ShopSettingsPage.saveSettings",
+          /** Metadata */
           metadata: { slug, section },
         });
         toast.error("Failed to save settings");
@@ -266,7 +364,9 @@ export default function ShopSettingsPage() {
     setSaving(true);
     try {
       await apiService.post(`/api/shops/${slug}/team`, {
+        /** Email */
         email: newTeamMember.email,
+        /** Role */
         role: newTeamMember.role,
       });
       toast.success("Team member invited");
@@ -278,7 +378,9 @@ export default function ShopSettingsPage() {
       }
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "ShopSettingsPage.addTeamMember",
+        /** Metadata */
         metadata: { slug },
       });
       toast.error("Failed to add team member");
@@ -301,7 +403,9 @@ export default function ShopSettingsPage() {
         }
       } catch (err) {
         logError(err as Error, {
+          /** Component */
           component: "ShopSettingsPage.removeTeamMember",
+          /** Metadata */
           metadata: { slug, memberId },
         });
         toast.error("Failed to remove team member");
@@ -458,18 +562,48 @@ export default function ShopSettingsPage() {
 
 // ==================== TAB CONTENT ====================
 
+/**
+ * Function: Render Tab Content
+ */
+/**
+ * Renders tab content
+ *
+ * @param {TabId} tab - The tab
+ * @param {ShopSettings} settings - The settings
+ * @param {(settings} setSettings - The set settings
+ *
+ * @returns {any} The rendertabcontent result
+ */
+
+/**
+ * Renders tab content
+ *
+ * @returns {any} The rendertabcontent result
+ */
+
 function renderTabContent(
+  /** Tab */
   tab: TabId,
+  /** Settings */
   settings: ShopSettings,
+  /** Set Settings */
   setSettings: (settings: ShopSettings) => void,
+  /** Save Settings */
   saveSettings: (section: TabId) => Promise<void>,
+  /** Saving */
   saving: boolean,
+  /** New Team Member */
   newTeamMember: { email: string; role: "admin" | "manager" | "staff" },
+  /** Set New Team Member */
   setNewTeamMember: (member: {
+    /** Email */
     email: string;
+    /** Role */
     role: "admin" | "manager" | "staff";
   }) => void,
+  /** Add Team Member */
   addTeamMember: () => Promise<void>,
+  /** Remove Team Member */
   removeTeamMember: (memberId: string) => Promise<void>
 ) {
   switch (tab) {
@@ -520,6 +654,7 @@ function renderTabContent(
           saving={saving}
         />
       );
+    /** Default */
     default:
       return null;
   }
@@ -527,15 +662,34 @@ function renderTabContent(
 
 // ==================== GENERAL SETTINGS TAB ====================
 
+/**
+ * Function: General Settings Tab
+ */
+/**
+ * Performs general settings tab operation
+ *
+ * @returns {any} The generalsettingstab result
+ */
+
+/**
+ * Performs general settings tab operation
+ *
+ * @returns {any} The generalsettingstab result
+ */
+
 function GeneralSettingsTab({
   settings,
   onChange,
   onSave,
   saving,
 }: {
+  /** Settings */
   settings: GeneralSettings;
+  /** On Change */
   onChange: (settings: GeneralSettings) => void;
+  /** On Save */
   onSave: () => void;
+  /** Saving */
   saving: boolean;
 }) {
   return (
@@ -721,6 +875,7 @@ function GeneralSettingsTab({
                 onChange={(e) =>
                   onChange({
                     ...settings,
+                    /** Min Order Amount */
                     minOrderAmount: parseFloat(e.target.value) || 0,
                   })
                 }
@@ -736,31 +891,84 @@ function GeneralSettingsTab({
 
 // ==================== SHIPPING SETTINGS TAB ====================
 
+/**
+ * Function: Shipping Settings Tab
+ */
+/**
+ * Performs shipping settings tab operation
+ *
+ * @returns {any} The shippingsettingstab result
+ */
+
+/**
+ * Performs shipping settings tab operation
+ *
+ * @returns {any} The shippingsettingstab result
+ */
+
 function ShippingSettingsTab({
   settings,
   onChange,
   onSave,
   saving,
 }: {
+  /** Settings */
   settings: ShippingSettings;
+  /** On Change */
   onChange: (settings: ShippingSettings) => void;
+  /** On Save */
   onSave: () => void;
+  /** Saving */
   saving: boolean;
 }) {
+  /**
+   * Performs toggle region operation
+   *
+   * @param {string} region - The region
+   *
+   * @returns {string} The toggleregion result
+   */
+
+  /**
+   * Performs toggle region operation
+   *
+   * @param {string} region - The region
+   *
+   * @returns {string} The toggleregion result
+   */
+
   const toggleRegion = (region: string) => {
     const enabled = settings.enabledRegions.includes(region);
     onChange({
       ...settings,
+      /** Enabled Regions */
       enabledRegions: enabled
         ? settings.enabledRegions.filter((r) => r !== region)
         : [...settings.enabledRegions, region],
     });
   };
 
+  /**
+   * Performs toggle partner operation
+   *
+   * @param {string} partner - The partner
+   *
+   * @returns {string} The togglepartner result
+   */
+
+  /**
+   * Performs toggle partner operation
+   *
+   * @param {string} partner - The partner
+   *
+   * @returns {string} The togglepartner result
+   */
+
   const togglePartner = (partner: string) => {
     const enabled = settings.shippingPartners.includes(partner);
     onChange({
       ...settings,
+      /** Shipping Partners */
       shippingPartners: enabled
         ? settings.shippingPartners.filter((p) => p !== partner)
         : [...settings.shippingPartners, partner],
@@ -807,6 +1015,7 @@ function ShippingSettingsTab({
             onChange={(e) =>
               onChange({
                 ...settings,
+                /** Shipping Charge */
                 shippingCharge: parseFloat(e.target.value) || 0,
               })
             }
@@ -828,6 +1037,7 @@ function ShippingSettingsTab({
             onChange={(e) =>
               onChange({
                 ...settings,
+                /** Free Shipping Above */
                 freeShippingAbove: e.target.value
                   ? parseFloat(e.target.value)
                   : null,
@@ -868,6 +1078,7 @@ function ShippingSettingsTab({
             onChange={(e) =>
               onChange({
                 ...settings,
+                /** Package Weight */
                 packageWeight: parseFloat(e.target.value) || 0,
               })
             }
@@ -929,31 +1140,84 @@ function ShippingSettingsTab({
 
 // ==================== PAYMENT SETTINGS TAB ====================
 
+/**
+ * Function: Payment Settings Tab
+ */
+/**
+ * Performs payment settings tab operation
+ *
+ * @returns {any} The paymentsettingstab result
+ */
+
+/**
+ * Performs payment settings tab operation
+ *
+ * @returns {any} The paymentsettingstab result
+ */
+
 function PaymentSettingsTab({
   settings,
   onChange,
   onSave,
   saving,
 }: {
+  /** Settings */
   settings: PaymentSettings;
+  /** On Change */
   onChange: (settings: PaymentSettings) => void;
+  /** On Save */
   onSave: () => void;
+  /** Saving */
   saving: boolean;
 }) {
+  /**
+   * Performs toggle gateway operation
+   *
+   * @param {string} gateway - The gateway
+   *
+   * @returns {string} The togglegateway result
+   */
+
+  /**
+   * Performs toggle gateway operation
+   *
+   * @param {string} gateway - The gateway
+   *
+   * @returns {string} The togglegateway result
+   */
+
   const toggleGateway = (gateway: string) => {
     const enabled = settings.enabledGateways.includes(gateway);
     onChange({
       ...settings,
+      /** Enabled Gateways */
       enabledGateways: enabled
         ? settings.enabledGateways.filter((g) => g !== gateway)
         : [...settings.enabledGateways, gateway],
     });
   };
 
+  /**
+   * Performs toggle method operation
+   *
+   * @param {string} method - The method
+   *
+   * @returns {string} The togglemethod result
+   */
+
+  /**
+   * Performs toggle method operation
+   *
+   * @param {string} method - The method
+   *
+   * @returns {string} The togglemethod result
+   */
+
   const toggleMethod = (method: string) => {
     const enabled = settings.acceptedMethods.includes(method);
     onChange({
       ...settings,
+      /** Accepted Methods */
       acceptedMethods: enabled
         ? settings.acceptedMethods.filter((m) => m !== method)
         : [...settings.acceptedMethods, method],
@@ -1073,6 +1337,7 @@ function PaymentSettingsTab({
                   onChange={(e) =>
                     onChange({
                       ...settings,
+                      /** Cod Charge */
                       codCharge: parseFloat(e.target.value) || 0,
                     })
                   }
@@ -1089,15 +1354,34 @@ function PaymentSettingsTab({
 
 // ==================== POLICIES SETTINGS TAB ====================
 
+/**
+ * Function: Policies Settings Tab
+ */
+/**
+ * Performs policies settings tab operation
+ *
+ * @returns {any} The policiessettingstab result
+ */
+
+/**
+ * Performs policies settings tab operation
+ *
+ * @returns {any} The policiessettingstab result
+ */
+
 function PoliciesSettingsTab({
   settings,
   onChange,
   onSave,
   saving,
 }: {
+  /** Settings */
   settings: PolicySettings;
+  /** On Change */
   onChange: (settings: PolicySettings) => void;
+  /** On Save */
   onSave: () => void;
+  /** Saving */
   saving: boolean;
 }) {
   return (
@@ -1204,6 +1488,21 @@ function PoliciesSettingsTab({
 
 // ==================== TEAM SETTINGS TAB ====================
 
+/**
+ * Function: Team Settings Tab
+ */
+/**
+ * Performs team settings tab operation
+ *
+ * @returns {any} The teamsettingstab result
+ */
+
+/**
+ * Performs team settings tab operation
+ *
+ * @returns {any} The teamsettingstab result
+ */
+
 function TeamSettingsTab({
   settings,
   newMember,
@@ -1212,14 +1511,22 @@ function TeamSettingsTab({
   onRemoveMember,
   saving,
 }: {
+  /** Settings */
   settings: TeamSettings;
+  /** New Member */
   newMember: { email: string; role: "admin" | "manager" | "staff" };
+  /** On New Member Change */
   onNewMemberChange: (member: {
+    /** Email */
     email: string;
+    /** Role */
     role: "admin" | "manager" | "staff";
   }) => void;
+  /** On Add Member */
   onAddMember: () => Promise<void>;
+  /** On Remove Member */
   onRemoveMember: (memberId: string) => Promise<void>;
+  /** Saving */
   saving: boolean;
 }) {
   return (
@@ -1254,6 +1561,7 @@ function TeamSettingsTab({
               onChange={(e) =>
                 onNewMemberChange({
                   ...newMember,
+                  /** Role */
                   role: e.target.value as "admin" | "manager" | "staff",
                 })
               }

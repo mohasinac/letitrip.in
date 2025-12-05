@@ -1,9 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/unauthorized/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Shield, Home, LogIn, ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
+
+/**
+ * Function: Unauthorized Content
+ */
+/**
+ * Performs unauthorized content operation
+ *
+ * @returns {any} The unauthorizedcontent result
+ */
+
+/**
+ * Performs unauthorized content operation
+ *
+ * @returns {any} The unauthorizedcontent result
+ */
 
 function UnauthorizedContent() {
   const searchParams = useSearchParams();
@@ -15,32 +39,56 @@ function UnauthorizedContent() {
   const decodedDetails = details ? decodeURIComponent(details) : null;
   const isDevelopment = process.env.NODE_ENV === "development";
 
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
+  /**
+   * Retrieves message
+   *
+   * @returns {any} The message result
+   */
+
   const getMessage = () => {
     if (reason === "not-logged-in") {
       return {
+        /** Title */
         title: "Authentication Required",
+        /** Message */
         message: "You need to sign in to access this page.",
+        /** Suggestion */
         suggestion: "Please log in with your account to continue.",
       };
     }
     if (reason === "session-expired") {
       return {
+        /** Title */
         title: "Session Expired",
+        /** Message */
         message: "Your session has expired for security reasons.",
+        /** Suggestion */
         suggestion: "Please log in again to continue.",
       };
     }
     if (reason === "invalid-token") {
       return {
+        /** Title */
         title: "Invalid Authentication",
+        /** Message */
         message: "Your authentication token is invalid or has been revoked.",
+        /** Suggestion */
         suggestion: "Please log in again to get a new token.",
       };
     }
 
     return {
+      /** Title */
       title: "Unauthorized Access",
+      /** Message */
       message: "You need to be logged in to access this page.",
+      /** Suggestion */
       suggestion: "Please sign in to continue.",
     };
   };

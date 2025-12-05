@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/blog/[id]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -23,15 +32,21 @@ export default function EditBlogPostPage() {
   const params = useParams();
   const { isAdmin } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loadingPost,
     error,
+    /** Data */
     data: post,
+    /** Set Data */
     setData: setPost,
     execute,
   } = useLoadingState<BlogPost>({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "EditBlogPostPage.loadPost",
+        /** Post Id */
         postId: params.id,
       });
       toast.error("Failed to load blog post");
@@ -42,14 +57,23 @@ export default function EditBlogPostPage() {
 
   // Form state
   const [formData, setFormData] = useState({
+    /** Title */
     title: "",
+    /** Slug */
     slug: "",
+    /** Excerpt */
     excerpt: "",
+    /** Content */
     content: "",
+    /** Category */
     category: "",
+    /** Tags */
     tags: [] as string[],
+    /** Status */
     status: "draft" as "draft" | "published",
+    /** Featured */
     featured: false,
+    /** Featured Image */
     featuredImage: "",
   });
 
@@ -78,24 +102,66 @@ export default function EditBlogPostPage() {
     }
   }, [params.id, isAdmin]);
 
+  /**
+   * Fetches post from server
+   *
+   * @returns {Promise<any>} Promise resolving to post result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches post from server
+   *
+   * @returns {Promise<any>} Promise resolving to post result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadPost = () =>
     execute(async () => {
       const data = await blogService.getById(params.id as string);
       setFormData({
+        /** Title */
         title: data.title,
+        /** Slug */
         slug: data.slug,
+        /** Excerpt */
         excerpt: data.excerpt,
+        /** Content */
         content: data.content,
+        /** Category */
         category: data.category,
+        /** Tags */
         tags: data.tags,
+        /** Status */
         status: data.status as "draft" | "published",
+        /** Featured */
         featured: data.featured,
+        /** Featured Image */
         featuredImage: data.featuredImage || "",
       });
       return data;
     });
 
+  /**
+   * Handles input change event
+   *
+   * @param {React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >} e - The e
+   *
+   * @returns {any} The handleinputchange result
+   */
+
+  /**
+   * Handles input change event
+   *
+   * @returns {any} The handleinputchange result
+   */
+
   const handleInputChange = (
+    /** E */
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
@@ -113,22 +179,72 @@ export default function EditBlogPostPage() {
     }
   };
 
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
+
+  /**
+   * Handles add tag event
+   *
+   * @returns {any} The handleaddtag result
+   */
+
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
       setFormData((prev) => ({
         ...prev,
+        /** Tags */
         tags: [...prev.tags, tagInput.trim()],
       }));
       setTagInput("");
     }
   };
 
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
+
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tag - The tag
+   *
+   * @returns {string} The handleremovetag result
+   */
+
   const handleRemoveTag = (tag: string) => {
     setFormData((prev) => ({
       ...prev,
+      /** Tags */
       tags: prev.tags.filter((t) => t !== tag),
     }));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,6 +254,7 @@ export default function EditBlogPostPage() {
     if (!file.type.startsWith("image/")) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage: "Please select a valid image file",
       }));
       return;
@@ -146,6 +263,7 @@ export default function EditBlogPostPage() {
     if (file.size > 5 * 1024 * 1024) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage: "Image size must be less than 5MB",
       }));
       return;
@@ -157,11 +275,24 @@ export default function EditBlogPostPage() {
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
+        /** Featured Image */
         featuredImage:
           error instanceof Error ? error.message : "Failed to upload image",
       }));
     }
   };
+
+  /**
+   * Handles remove image event
+   *
+   * @returns {any} The handleremoveimage result
+   */
+
+  /**
+   * Handles remove image event
+   *
+   * @returns {any} The handleremoveimage result
+   */
 
   const handleRemoveImage = () => {
     if (uploadedUrls.length > 0) {
@@ -170,6 +301,22 @@ export default function EditBlogPostPage() {
       setFormData((prev) => ({ ...prev, featuredImage: "" }));
     }
   };
+
+  /**
+   * Validates form
+   *
+   * @returns {any} The validateform result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates form
+   *
+   * @returns {any} The validateform result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -194,6 +341,26 @@ export default function EditBlogPostPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {"draft" | "published"} [status] - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {"draft" | "published"} [status] - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (status?: "draft" | "published") => {
     if (!validateForm()) return;
 
@@ -206,6 +373,7 @@ export default function EditBlogPostPage() {
       const updateData: any = {
         ...formData,
         category,
+        /** Status */
         status: finalStatus,
       };
 
@@ -234,6 +402,18 @@ export default function EditBlogPostPage() {
       setLoading(false);
     }
   };
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
 
   const handleCancel = () => {
     if (uploadedUrls.length > 0) {

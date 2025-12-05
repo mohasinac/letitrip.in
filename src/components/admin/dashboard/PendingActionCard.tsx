@@ -1,18 +1,60 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/dashboard/PendingActionCard
+ * @description This file contains the PendingActionCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
 
+/**
+ * PendingActionCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PendingActionCardProps
+ */
 interface PendingActionCardProps {
+  /** Title */
   title: string;
+  /** Count */
   count: number;
+  /** Href */
   href: string;
+  /** Icon */
   icon: LucideIcon;
+  /** Color */
   color: string;
 }
+
+/**
+ * Function: Pending Action Card
+ */
+/**
+ * Performs pending action card operation
+ *
+ * @returns {any} The pendingactioncard result
+ *
+ * @example
+ * PendingActionCard();
+ */
+
+/**
+ * Performs pending action card operation
+ *
+ * @returns {any} The pendingactioncard result
+ *
+ * @example
+ * PendingActionCard();
+ */
 
 export function PendingActionCard({
   title,
   count,
   href,
+  /** Icon */
   icon: Icon,
   color,
 }: PendingActionCardProps) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { auctionsSieveConfig } from "@/app/api/lib/sieve/config";
@@ -17,15 +26,25 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for auctions
 const auctionsConfig = {
   ...auctionsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Category Id */
     categoryId: "category_id",
+    /** Shop Id */
     shopId: "shop_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Start Time */
     startTime: "start_time",
+    /** End Time */
     endTime: "end_time",
+    /** Current Bid */
     currentBid: "current_bid",
+    /** Starting Price */
     startingPrice: "starting_bid",
+    /** Bid Count */
     bidCount: "bid_count",
+    /** Featured */
     featured: "is_featured",
   } as Record<string, string>,
 };
@@ -33,20 +52,48 @@ const auctionsConfig = {
 /**
  * Transform auction document to API response format
  */
+/**
+ * Transforms auction
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformauction result
+ */
+
+/**
+ * Transforms auction
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformauction result
+ */
+
 function transformAuction(id: string, data: any) {
   return {
     id,
     ...data,
     // Add camelCase aliases
+    /** Shop Id */
     shopId: data.shop_id,
+    /** Category Id */
     categoryId: data.category_id,
+    /** Current Bid */
     currentBid: data.current_bid,
+    /** Starting Bid */
     startingBid: data.starting_bid,
+    /** Bid Count */
     bidCount: data.bid_count,
+    /** Start Time */
     startTime: data.start_time,
+    /** End Time */
     endTime: data.end_time,
+    /** Featured */
     featured: data.is_featured,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -61,6 +108,32 @@ function transformAuction(id: string, data: any) {
  * - Seller: Own auctions (all statuses)
  * - Admin: All auctions
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -69,6 +142,7 @@ export async function GET(request: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -77,8 +151,11 @@ export async function GET(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -103,14 +180,23 @@ export async function GET(request: NextRequest) {
     } else if (role === "seller") {
       if (!shopId) {
         return NextResponse.json({
+          /** Success */
           success: true,
+          /** Data */
           data: [],
+          /** Pagination */
           pagination: {
+            /** Page */
             page: 1,
+            /** Page Size */
             pageSize: sieveQuery.pageSize,
+            /** Total Count */
             totalCount: 0,
+            /** Total Pages */
             totalPages: 0,
+            /** Has Next Page */
             hasNextPage: false,
+            /** Has Previous Page */
             hasPreviousPage: false,
           },
         });
@@ -179,6 +265,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -199,12 +305,17 @@ export async function GET(request: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -213,16 +324,21 @@ export async function GET(request: NextRequest) {
 
     if (process.env.NODE_ENV === "development") {
       console.error("Error details:", {
+        /** Message */
         message: error instanceof Error ? error.message : String(error),
+        /** Stack */
         stack: error instanceof Error ? error.stack : undefined,
       });
     }
 
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Failed to list auctions",
         ...(process.env.NODE_ENV === "development" && {
+          /** Details */
           details: error instanceof Error ? error.message : String(error),
         }),
       },
@@ -235,6 +351,32 @@ export async function GET(request: NextRequest) {
  * POST /api/auctions
  * Create auction (seller/admin only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
@@ -244,7 +386,9 @@ export async function POST(request: NextRequest) {
     if (role !== "seller" && role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Only sellers and admins can create auctions",
         },
         { status: 403 }
@@ -313,7 +457,9 @@ export async function POST(request: NextRequest) {
       if ((activeCount.data().count || 0) >= 5) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "Active auction limit reached for this shop",
           },
           { status: 400 }
@@ -335,11 +481,13 @@ export async function POST(request: NextRequest) {
       shop_id,
       name,
       slug,
+      /** Description */
       description: body.description || "",
       category_id: category_id || null,
       starting_bid,
       current_bid: starting_bid,
       bid_count: 0,
+      /** Status */
       status: "active",
       start_time: body.start_time || now,
       end_time,

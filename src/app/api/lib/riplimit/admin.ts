@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/riplimit/admin
+ * @description This file contains functionality related to admin
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Admin Database Operations
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -25,14 +34,44 @@ import { creditBalance } from "./transactions";
 /**
  * Get admin stats
  */
+/**
+ * Retrieves admin stats
+ *
+ * @returns {Promise<any>} Promise resolving to adminstats result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAdminStats();
+ */
+
+/**
+ * Retrieves admin stats
+ *
+ * @returns {Promise<any>} Promise resolving to adminstats result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAdminStats();
+ */
+
 export async function getAdminStats(): Promise<{
+  /** Total Circulation */
   totalCirculation: number;
+  /** Total Available */
   totalAvailable: number;
+  /** Total Blocked */
   totalBlocked: number;
+  /** Total Revenue */
   totalRevenue: number;
+  /** Total Refunded */
   totalRefunded: number;
+  /** Net Revenue */
   netRevenue: number;
+  /** User Count */
   userCount: number;
+  /** Unpaid User Count */
   unpaidUserCount: number;
 }> {
   const db = getFirestoreAdmin();
@@ -78,12 +117,15 @@ export async function getAdminStats(): Promise<{
   });
 
   return {
+    /** Total Circulation */
     totalCirculation: totalAvailable + totalBlocked,
     totalAvailable,
     totalBlocked,
     totalRevenue,
     totalRefunded,
+    /** Net Revenue */
     netRevenue: totalRevenue - totalRefunded,
+    /** User Count */
     userCount: accountsSnapshot.size,
     unpaidUserCount,
   };
@@ -92,10 +134,36 @@ export async function getAdminStats(): Promise<{
 /**
  * Admin adjust user balance
  */
+/**
+ * Performs admin adjust balance operation
+ *
+ * @returns {Promise<any>} Promise resolving to adminadjustbalance result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * adminAdjustBalance();
+ */
+
+/**
+ * Performs admin adjust balance operation
+ *
+ * @returns {Promise<any>} Promise resolving to adminadjustbalance result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * adminAdjustBalance();
+ */
+
 export async function adminAdjustBalance(
+  /** User Id */
   userId: string,
+  /** Amount */
   amount: number,
+  /** Reason */
   reason: string,
+  /** Admin Id */
   adminId: string,
 ): Promise<RipLimitTransactionBE> {
   return creditBalance(
@@ -104,6 +172,7 @@ export async function adminAdjustBalance(
     RipLimitTransactionType.ADJUSTMENT,
     reason,
     {
+      /** Adjusted By */
       adjustedBy: adminId,
       reason,
     },
@@ -113,9 +182,38 @@ export async function adminAdjustBalance(
 /**
  * Admin clear unpaid auction flag
  */
+/**
+ * Performs admin clear unpaid auction operation
+ *
+ * @param {string} userId - user identifier
+ * @param {string} auctionId - auction identifier
+ * @param {string} adminId - admin identifier
+ *
+ * @returns {Promise<any>} Promise resolving to adminclearunpaidauction result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * adminClearUnpaidAuction("example", "example", "example");
+ */
+
+/**
+ * Performs admin clear unpaid auction operation
+ *
+ * @returns {Promise<any>} Promise resolving to adminclearunpaidauction result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * adminClearUnpaidAuction();
+ */
+
 export async function adminClearUnpaidAuction(
+  /** User Id */
   userId: string,
+  /** Auction Id */
   auctionId: string,
+  /** Admin Id */
   adminId: string,
 ): Promise<void> {
   const db = getFirestoreAdmin();
@@ -130,8 +228,11 @@ export async function adminClearUnpaidAuction(
     );
 
     t.update(accountRef, {
+      /** Unpaid Auction Ids */
       unpaidAuctionIds: newUnpaidIds,
+      /** Has Unpaid Auctions */
       hasUnpaidAuctions: newUnpaidIds.length > 0,
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -144,7 +245,9 @@ export async function adminClearUnpaidAuction(
     if (blockedBidDoc.exists) {
       const blockedBid = blockedBidDoc.data() as RipLimitBlockedBidBE;
       t.update(accountRef, {
+        /** Available Balance */
         availableBalance: FieldValue.increment(blockedBid.amount),
+        /** Blocked Balance */
         blockedBalance: FieldValue.increment(-blockedBid.amount),
       });
       t.delete(blockedBidRef);
@@ -155,14 +258,22 @@ export async function adminClearUnpaidAuction(
         .doc();
       t.set(transactionRef, {
         userId,
+        /** Type */
         type: RipLimitTransactionType.BID_RELEASE,
+        /** Amount */
         amount: blockedBid.amount,
+        /** Inr Amount */
         inrAmount: ripLimitToInr(blockedBid.amount),
+        /** Balance After */
         balanceAfter: account.availableBalance + blockedBid.amount,
         auctionId,
+        /** Status */
         status: RipLimitTransactionStatus.COMPLETED,
+        /** Description */
         description: `Admin cleared unpaid auction`,
+        /** Metadata */
         metadata: { clearedBy: adminId },
+        /** Created At */
         createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -172,7 +283,36 @@ export async function adminClearUnpaidAuction(
 /**
  * Get user account details for admin
  */
+/**
+ * Retrieves admin user details
+ *
+ * @param {string} userId - user identifier
+ *
+ * @returns {Promise<any>} Promise resolving to adminuserdetails result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAdminUserDetails("example");
+ */
+
+/**
+ * Retrieves admin user details
+ *
+ * @param {string} /** User Id */
+  userId - /** User Id */
+  user identifier
+ *
+ * @returns {Promise<any>} Promise resolving to adminuserdetails result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getAdminUserDetails("example");
+ */
+
 export async function getAdminUserDetails(
+  /** User Id */
   userId: string,
 ): Promise<RipLimitAccountBE | null> {
   const db = getFirestoreAdmin();
@@ -191,10 +331,36 @@ export async function getAdminUserDetails(
 /**
  * List all user accounts with pagination for admin
  */
+/**
+ * Performs list all accounts operation
+ *
+ * @returns {Promise<any>} Promise resolving to listallaccounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * listAllAccounts();
+ */
+
+/**
+ * Performs list all accounts operation
+ *
+ * @returns {Promise<any>} Promise resolving to listallaccounts result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * listAllAccounts();
+ */
+
 export async function listAllAccounts(
+  /** Options */
   options: {
+    /** Limit */
     limit?: number;
+    /** Offset */
     offset?: number;
+    /** Filter */
     filter?: "unpaid" | "blocked" | "all";
   } = {},
 ): Promise<{ accounts: RipLimitAccountBE[]; total: number }> {
@@ -223,6 +389,7 @@ export async function listAllAccounts(
 
   const snapshot = await query.get();
   const accounts = snapshot.docs.map((doc) => ({
+    /** User Id */
     userId: doc.id,
     ...doc.data(),
   })) as RipLimitAccountBE[];

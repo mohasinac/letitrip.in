@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Weight
+ * @description This file contains the Weight component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Weight Display Component
  *
  * Displays weight with automatic unit conversion (g, kg).
@@ -14,12 +23,43 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * WeightProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WeightProps
+ */
 interface WeightProps {
+  /** Grams */
   grams: number;
+  /** Show Both */
   showBoth?: boolean;
+  /** Class Name */
   className?: string;
+  /** Precision */
   precision?: number;
 }
+
+/**
+ * Function: Weight
+ */
+/**
+ * Performs weight operation
+ *
+ * @returns {any} The weight result
+ *
+ * @example
+ * Weight();
+ */
+
+/**
+ * Performs weight operation
+ *
+ * @returns {any} The weight result
+ *
+ * @example
+ * Weight();
+ */
 
 export function Weight({
   grams,

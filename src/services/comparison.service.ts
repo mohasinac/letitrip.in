@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/comparison.service
+ * @description This file contains service functions for comparison operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Product Comparison Service
  * Client-side localStorage service for managing product comparison
  */
@@ -6,6 +15,18 @@
 import { COMPARISON_CONFIG } from "@/constants/comparison";
 import type { ProductCardProps } from "@/components/cards/ProductCard";
 
+/**
+ * ComparisonProduct type
+ * 
+ * @typedef {Object} ComparisonProduct
+ * @description Type definition for ComparisonProduct
+ */
+/**
+ * ComparisonProduct type definition
+ *
+ * @typedef {Pick<ProductCardProps, "id" | "name" | "slug" | "price" | "originalPrice" | "image" | "rating" | "reviewCount" | "shopName" | "shopSlug" | "inStock" | "condition">} ComparisonProduct
+ * @description Type definition for ComparisonProduct
+ */
 export type ComparisonProduct = Pick<
   ProductCardProps,
   | "id"
@@ -22,6 +43,12 @@ export type ComparisonProduct = Pick<
   | "condition"
 >;
 
+/**
+ * ComparisonService class
+ * 
+ * @class
+ * @description Description of ComparisonService class functionality
+ */
 class ComparisonService {
   private getStorageKey(): string {
     return COMPARISON_CONFIG.STORAGE_KEY;

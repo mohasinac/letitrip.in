@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/addresses/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -12,11 +21,29 @@ import { CheckCircle, Edit, MapPin, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * Function: Addresses Content
+ */
+/**
+ * Performs addresses content operation
+ *
+ * @returns {any} The addressescontent result
+ */
+
+/**
+ * Performs addresses content operation
+ *
+ * @returns {any} The addressescontent result
+ */
+
 function AddressesContent() {
   const {
+    /** Data */
     data: addresses,
+    /** Is Loading */
     isLoading: loading,
     execute,
+    /** Set Data */
     setData: setAddresses,
   } = useLoadingState<AddressFE[]>({ initialData: [] });
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -31,20 +58,76 @@ function AddressesContent() {
     execute(loadAddresses);
   }, [execute, loadAddresses]);
 
+  /**
+   * Handles open form event
+   *
+   * @param {string} [addressId] - address identifier
+   *
+   * @returns {string} The handleopenform result
+   */
+
+  /**
+   * Handles open form event
+   *
+   * @param {string} [addressId] - address identifier
+   *
+   * @returns {string} The handleopenform result
+   */
+
   const handleOpenForm = (addressId?: string) => {
     setEditingAddressId(addressId || null);
     setShowAddressForm(true);
   };
+
+  /**
+   * Handles form close event
+   *
+   * @returns {any} The handleformclose result
+   */
+
+  /**
+   * Handles form close event
+   *
+   * @returns {any} The handleformclose result
+   */
 
   const handleFormClose = () => {
     setShowAddressForm(false);
     setEditingAddressId(null);
   };
 
+  /**
+   * Handles form success event
+   *
+   * @returns {any} The handleformsuccess result
+   */
+
+  /**
+   * Handles form success event
+   *
+   * @returns {any} The handleformsuccess result
+   */
+
   const handleFormSuccess = () => {
     execute(loadAddresses);
     handleFormClose();
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
@@ -56,12 +139,34 @@ function AddressesContent() {
       toast.success("Address deleted successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressesPage.handleDelete",
+        /** Metadata */
         metadata: { addressId: deleteId },
       });
       toast.error("Failed to delete address");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSetDefault = async (id: string) => {
     try {
@@ -69,7 +174,9 @@ function AddressesContent() {
       execute(loadAddresses);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressesPage.setDefault",
+        /** Metadata */
         metadata: { addressId: id },
       });
       toast.error("Failed to set default address");

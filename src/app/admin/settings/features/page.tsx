@@ -1,12 +1,31 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/features/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { NotImplementedPage } from "@/components/common/NotImplemented";
 import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Feature Flags | Admin Settings",
+  /** Description */
   description: "Enable or disable platform features",
 };
 
+/**
+ * Performs admin feature flags page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = AdminFeatureFlagsPage();
+ */
 export default function AdminFeatureFlagsPage() {
   return (
     <NotImplementedPage

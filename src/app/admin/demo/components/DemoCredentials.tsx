@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoCredentials
+ * @description This file contains the DemoCredentials component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -12,19 +21,61 @@ import {
 import { toast } from "sonner";
 import { CredentialsData, UserCredential } from "./types";
 
+/**
+ * CredentialCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CredentialCardProps
+ */
 interface CredentialCardProps {
+  /** Title */
   title: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Icon Color */
   iconColor: string;
+  /** Users */
   users: UserCredential[];
 }
 
+/**
+ * Function: Credential Card
+ */
+/**
+ * Performs credential card operation
+ *
+ * @returns {any} The credentialcard result
+ */
+
+/**
+ * Performs credential card operation
+ *
+ * @returns {any} The credentialcard result
+ */
+
 function CredentialCard({
   title,
+  /** Icon */
   icon: Icon,
   iconColor,
   users,
 }: CredentialCardProps) {
+  /**
+   * Performs copy email operation
+   *
+   * @param {string} email - The email
+   *
+   * @returns {string} The copyemail result
+   */
+
+  /**
+   * Performs copy email operation
+   *
+   * @param {string} email - The email
+   *
+   * @returns {string} The copyemail result
+   */
+
   const copyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
     toast.success(`Copied: ${email}`);
@@ -68,9 +119,41 @@ function CredentialCard({
   );
 }
 
+/**
+ * DemoCredentialsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoCredentialsProps
+ */
 interface DemoCredentialsProps {
+  /** Credentials */
   credentials: CredentialsData;
 }
+
+/**
+ * Function: Demo Credentials
+ */
+/**
+ * Performs demo credentials operation
+ *
+ * @param {DemoCredentialsProps} { credentials } - The { credentials }
+ *
+ * @returns {any} The democredentials result
+ *
+ * @example
+ * DemoCredentials({ credentials });
+ */
+
+/**
+ * Performs demo credentials operation
+ *
+ * @param {DemoCredentialsProps} { credentials } - The { credentials }
+ *
+ * @returns {any} The democredentials result
+ *
+ * @example
+ * DemoCredentials({ credentials });
+ */
 
 export function DemoCredentials({ credentials }: DemoCredentialsProps) {
   return (

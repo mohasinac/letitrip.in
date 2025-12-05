@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/header-stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Header Stats API
  * Epic: Performance Optimization
  *
@@ -17,6 +26,35 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -25,10 +63,15 @@ export async function GET(request: NextRequest) {
     // If not authenticated, return zeros
     if (!userId) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Stats */
         stats: {
+          /** Cart Count */
           cartCount: 0,
+          /** Notification Count */
           notificationCount: 0,
+          /** Message Count */
           messageCount: 0,
         },
       });
@@ -62,21 +105,29 @@ export async function GET(request: NextRequest) {
       ]);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Stats */
       stats: {
+        /** Cart Count */
         cartCount: cartSnapshot.data().count,
+        /** Notification Count */
         notificationCount: notificationSnapshot.data().count,
+        /** Message Count */
         messageCount: messageSnapshot.data().count,
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "HeaderStatsAPI.GET",
     });
 
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Failed to fetch header stats",
       },
       { status: 500 },

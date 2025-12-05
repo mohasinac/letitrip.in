@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/AdminLayoutClient
+ * @description This file contains the AdminLayoutClient component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -8,9 +17,41 @@ import {
   adminMobileNavItems,
 } from "@/components/layout/MobileNavRow";
 
+/**
+ * AdminLayoutClientProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AdminLayoutClientProps
+ */
 interface AdminLayoutClientProps {
+  /** Children */
   children: React.ReactNode;
 }
+
+/**
+ * Function: Admin Layout Client
+ */
+/**
+ * Performs admin layout client operation
+ *
+ * @param {AdminLayoutClientProps} { children } - The { children }
+ *
+ * @returns {any} The adminlayoutclient result
+ *
+ * @example
+ * AdminLayoutClient({ children });
+ */
+
+/**
+ * Performs admin layout client operation
+ *
+ * @param {AdminLayoutClientProps} { children } - The { children }
+ *
+ * @returns {any} The adminlayoutclient result
+ *
+ * @example
+ * AdminLayoutClient({ children });
+ */
 
 export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

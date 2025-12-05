@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/auction/AutoBidSetup
+ * @description This file contains the AutoBidSetup component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Auto-Bid Setup Component
  *
  * Allows users to set maximum bid and let system auto-bid for them
@@ -11,14 +20,28 @@ import { formatPrice } from "@/lib/price.utils";
 import { AlertTriangle, Check, X, Zap } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * AutoBidSetupProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AutoBidSetupProps
+ */
 interface AutoBidSetupProps {
+  /** Auction Id */
   auctionId: string;
+  /** Current Bid */
   currentBid: number;
+  /** Reserve Price */
   reservePrice?: number;
+  /** Min Increment */
   minIncrement?: number;
+  /** On Setup */
   onSetup: (maxBid: number) => void;
+  /** On Cancel */
   onCancel: () => void;
+  /** Is Active */
   isActive: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -42,6 +65,18 @@ export default function AutoBidSetup({
     reservePrice || currentBid + minIncrement * 100,
   ];
 
+  /**
+   * Handles setup event
+   *
+   * @returns {any} The handlesetup result
+   */
+
+  /**
+   * Handles setup event
+   *
+   * @returns {any} The handlesetup result
+   */
+
   const handleSetup = () => {
     const amount = parseInt(maxBid);
     if (amount > currentBid) {
@@ -50,6 +85,18 @@ export default function AutoBidSetup({
       setMaxBid("");
     }
   };
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
+
+  /**
+   * Handles cancel event
+   *
+   * @returns {any} The handlecancel result
+   */
 
   const handleCancel = () => {
     onCancel();

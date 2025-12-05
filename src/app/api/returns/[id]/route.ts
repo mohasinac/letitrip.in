@@ -1,8 +1,48 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/returns/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_req, {});
+ */
 
 export async function GET(
   _req: NextRequest,
@@ -19,12 +59,16 @@ export async function GET(
         { status: 404 },
       );
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: doc.id, ...doc.data() },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.get",
+      /** Metadata */
       metadata: { returnId: id },
     });
     return NextResponse.json(
@@ -34,7 +78,42 @@ export async function GET(
   }
 }
 
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Req */
+  req, {});
+ */
+
 export async function PATCH(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -82,12 +161,16 @@ export async function PATCH(
     await ref.update(payload);
     const updated = await ref.get();
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.update",
+      /** Metadata */
       metadata: { returnId: id },
     });
     return NextResponse.json(

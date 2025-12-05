@@ -1,9 +1,53 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/cart/[itemId]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
 
 // PATCH /api/cart/[itemId] - Update cart item quantity
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
@@ -64,7 +108,9 @@ export async function PATCH(
     if (product.stock_count < quantity) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: `Only ${product.stock_count} items available`,
         },
         { status: 400 },
@@ -79,8 +125,11 @@ export async function PATCH(
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: itemId, quantity },
+      /** Message */
       message: "Cart item updated",
     });
   } catch (error) {
@@ -93,7 +142,42 @@ export async function PATCH(
 }
 
 // DELETE /api/cart/[itemId] - Remove cart item
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
@@ -132,7 +216,9 @@ export async function DELETE(
     await itemDoc.ref.delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Item removed from cart",
     });
   } catch (error) {

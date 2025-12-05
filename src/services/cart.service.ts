@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/cart.service
+ * @description This file contains service functions for cart operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { CartBE } from "@/types/backend/cart.types";
 import {
@@ -62,6 +71,7 @@ class CartService {
    */
   async mergeGuestCart(guestItems: CartItemFE[]): Promise<CartFE> {
     const cartBE = await apiService.post<CartBE>("/cart/merge", {
+      /** Guest Cart Items */
       guestCartItems: guestItems,
     });
     return toFECart(cartBE);
@@ -95,7 +105,9 @@ class CartService {
    * Validate cart (check stock, prices)
    */
   async validate(): Promise<{
+    /** Valid */
     valid: boolean;
+    /** Errors */
     errors: Array<{ itemId: string; productId: string; error: string }>;
   }> {
     return apiService.get("/cart/validate");
@@ -122,6 +134,7 @@ class CartService {
   }
 
   addToGuestCart(
+    /** Item */
     item: Omit<
       CartItemFE,
       | "id"
@@ -152,16 +165,27 @@ class CartService {
       const now = new Date();
       cart.push({
         ...item,
+        /** Id */
         id: `guest_${Date.now()}_${Math.random()}`,
+        /** Added At */
         addedAt: now,
+        /** Formatted Price */
         formattedPrice: `₹${item.price}`,
+        /** Formatted Subtotal */
         formattedSubtotal: `₹${item.subtotal}`,
+        /** Formatted Total */
         formattedTotal: `₹${item.total}`,
+        /** Is Out Of Stock */
         isOutOfStock: !item.isAvailable,
+        /** Is Low Stock */
         isLowStock: item.maxQuantity <= 5,
+        /** Can Increment */
         canIncrement: item.quantity < item.maxQuantity,
+        /** Can Decrement */
         canDecrement: item.quantity > 1,
+        /** Has Discount */
         hasDiscount: item.discount > 0,
+        /** Added Time Ago */
         addedTimeAgo: "Just added",
       } as CartItemFE);
     }
@@ -171,32 +195,55 @@ class CartService {
 
   // Add to guest cart with full product details
   addToGuestCartWithDetails(product: {
+    /** Product Id */
     productId: string;
+    /** Name */
     name: string;
+    /** Price */
     price: number;
+    /** Image */
     image: string;
+    /** Shop Id */
     shopId: string;
+    /** Shop Name */
     shopName: string;
+    /** Quantity */
     quantity: number;
+    /** Variant Id */
     variantId?: string;
   }): void {
     const subtotal = product.price * product.quantity;
     this.addToGuestCart({
+      /** Product Id */
       productId: product.productId,
+      /** Product Name */
       productName: product.name,
+      /** Product Slug */
       productSlug: product.name.toLowerCase().replace(/\s+/g, "-"),
+      /** Product Image */
       productImage: product.image,
+      /** Variant Id */
       variantId: product.variantId || null,
+      /** Variant Name */
       variantName: null,
+      /** Sku */
       sku: "",
+      /** Price */
       price: product.price,
+      /** Quantity */
       quantity: product.quantity,
+      /** Max Quantity */
       maxQuantity: 100,
       subtotal,
+      /** Discount */
       discount: 0,
+      /** Total */
       total: subtotal,
+      /** Shop Id */
       shopId: product.shopId,
+      /** Shop Name */
       shopName: product.shopName,
+      /** Is Available */
       isAvailable: true,
     });
   }

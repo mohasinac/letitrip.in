@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ProductVariants
+ * @description This file contains the ProductVariants component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,12 +16,43 @@ import { ProductCard } from "@/components/cards/ProductCard";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * ProductVariantsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductVariantsProps
+ */
 interface ProductVariantsProps {
+  /** Product Id */
   productId: string;
+  /** Category Id */
   categoryId: string;
+  /** Current Shop Id */
   currentShopId: string;
+  /** Category Name */
   categoryName?: string;
 }
+
+/**
+ * Function: Product Variants
+ */
+/**
+ * Performs product variants operation
+ *
+ * @returns {any} The productvariants result
+ *
+ * @example
+ * ProductVariants();
+ */
+
+/**
+ * Performs product variants operation
+ *
+ * @returns {any} The productvariants result
+ *
+ * @example
+ * ProductVariants();
+ */
 
 export function ProductVariants({
   productId,
@@ -29,17 +69,55 @@ export function ProductVariants({
     loadVariants();
   }, [productId, categoryId]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadVariants = async () => {
     try {
       setLoading(true);
       // Fetch products from EXACT same category only
       const response = await productsService.list({
         categoryId,
+        /** Status */
         status: "active" as any,
+        /** Limit */
         limit: 20,
       });
 
       // Filter out current product and ensure exact category match
+      /**
+       * Filters filtered
+       *
+       * @param {ProductCardFE} response.data || []).filter(
+        (p - The response.data || []).filter(
+        (p
+       *
+       * @returns {any} The filtered result
+       */
+
+      /**
+       * Filters filtered
+       *
+       * @param {ProductCardFE} response.data || []).filter(
+        (p - The response.data || []).filter(
+        (p
+       *
+       * @returns {any} The filtered result
+       */
+
       const filtered = (response.data || []).filter(
         (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId,
       );
@@ -47,13 +125,31 @@ export function ProductVariants({
       setProducts(filtered.slice(0, 12)); // Max 12 variants
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductVariants.loadVariants",
+        /** Metadata */
         metadata: { productId },
       });
     } finally {
       setLoading(false);
     }
   };
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
+
+  /**
+   * Handles scroll event
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The handlescroll result
+   */
 
   const handleScroll = (direction: "left" | "right") => {
     const container = document.getElementById("product-variants-scroll");
@@ -66,10 +162,24 @@ export function ProductVariants({
         : container.scrollLeft + scrollAmount;
 
     container.scrollTo({
+      /** Left */
       left: newPosition,
+      /** Behavior */
       behavior: "smooth",
     });
   };
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
+
+  /**
+   * Updates existing scroll buttons
+   *
+   * @returns {any} The updatescrollbuttons result
+   */
 
   const updateScrollButtons = () => {
     const container = document.getElementById("product-variants-scroll");
@@ -174,6 +284,7 @@ export function ProductVariants({
 
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
+          /** Display */
           display: none;
         }
       `}</style>

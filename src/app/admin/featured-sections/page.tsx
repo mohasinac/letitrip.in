@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/featured-sections/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -54,47 +63,93 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // Section configuration interface
+/**
+ * SectionConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SectionConfig
+ */
 interface SectionConfig {
+  /** Key */
   key: string;
+  /** Title */
   title: string;
+  /** Icon */
   icon: React.ReactNode;
+  /** Description */
   description: string;
+  /** Max Items */
   maxItems: number;
 }
 
 // Section configurations
 const SECTIONS: SectionConfig[] = [
   {
+    /** Key */
     key: "products",
+    /** Title */
     title: "Featured Products",
+    /** Icon */
     icon: <Package className="h-5 w-5" />,
+    /** Description */
     description: "Products showcased on the homepage",
+    /** Max Items */
     maxItems: 20,
   },
   {
+    /** Key */
     key: "auctions",
+    /** Title */
     title: "Featured Auctions",
+    /** Icon */
     icon: <Gavel className="h-5 w-5" />,
+    /** Description */
     description: "Highlighted live and upcoming auctions",
+    /** Max Items */
     maxItems: 20,
   },
   {
+    /** Key */
     key: "shops",
+    /** Title */
     title: "Featured Shops",
+    /** Icon */
     icon: <Store className="h-5 w-5" />,
+    /** Description */
     description: "Top shops displayed on homepage",
+    /** Max Items */
     maxItems: 10,
   },
   {
+    /** Key */
     key: "categories",
+    /** Title */
     title: "Featured Categories",
+    /** Icon */
     icon: <Grid3X3 className="h-5 w-5" />,
+    /** Description */
     description: "Categories with promotional visibility",
+    /** Max Items */
     maxItems: 10,
   },
 ];
 
 // Sortable Item Component
+/**
+ * Function: Sortable Item
+ */
+/**
+ * Performs sortable item operation
+ *
+ * @returns {any} The sortableitem result
+ */
+
+/**
+ * Performs sortable item operation
+ *
+ * @returns {any} The sortableitem result
+ */
+
 function SortableItem({
   item,
   onToggle,
@@ -104,12 +159,19 @@ function SortableItem({
   isFirst,
   isLast,
 }: {
+  /** Item */
   item: FeaturedItem;
+  /** On Toggle */
   onToggle: (id: string) => void;
+  /** On Remove */
   onRemove: (id: string) => void;
+  /** On Move Up */
   onMoveUp: (id: string) => void;
+  /** On Move Down */
   onMoveDown: (id: string) => void;
+  /** Is First */
   isFirst: boolean;
+  /** Is Last */
   isLast: boolean;
 }) {
   const {
@@ -122,10 +184,28 @@ function SortableItem({
   } = useSortable({ id: item.id });
 
   const style = {
+    /** Transform */
     transform: CSS.Transform.toString(transform),
     transition,
+    /** Opacity */
     opacity: isDragging ? 0.5 : 1,
   };
+
+  /**
+   * Retrieves type icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The typeicon result
+   */
+
+  /**
+   * Retrieves type icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The typeicon result
+   */
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -137,10 +217,29 @@ function SortableItem({
         return <Store className="h-4 w-4 text-green-500" />;
       case "category":
         return <Grid3X3 className="h-4 w-4 text-orange-500" />;
+      /** Default */
       default:
         return null;
     }
   };
+
+  /**
+   * Retrieves view link
+   *
+   * @param {string} type - The type
+   * @param {string} itemId - item identifier
+   *
+   * @returns {string} The viewlink result
+   */
+
+  /**
+   * Retrieves view link
+   *
+   * @param {string} type - The type
+   * @param {string} itemId - item identifier
+   *
+   * @returns {string} The viewlink result
+   */
 
   const getViewLink = (type: string, itemId: string) => {
     switch (type) {
@@ -152,6 +251,7 @@ function SortableItem({
         return `/shops/${itemId}`;
       case "category":
         return `/categories/${itemId}`;
+      /** Default */
       default:
         return "#";
     }
@@ -251,6 +351,21 @@ function SortableItem({
 }
 
 // Add Item Modal
+/**
+ * Function: Add Item Modal
+ */
+/**
+ * Performs add item modal operation
+ *
+ * @returns {any} The additemmodal result
+ */
+
+/**
+ * Performs add item modal operation
+ *
+ * @returns {any} The additemmodal result
+ */
+
 function AddItemModal({
   isOpen,
   onClose,
@@ -258,20 +373,45 @@ function AddItemModal({
   existingIds,
   onAdd,
 }: {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Section */
   section: SectionConfig | null;
+  /** Existing Ids */
   existingIds: string[];
+  /** On Add */
   onAdd: (item: {
+    /** Type */
     type: string;
+    /** Item Id */
     itemId: string;
+    /** Name */
     name: string;
+    /** Image */
     image?: string;
   }) => void;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  /**
+   * Performs type from section operation
+   *
+   * @param {string} sectionKey - The section key
+   *
+   * @returns {string} The typefromsection result
+   */
+
+  /**
+   * Performs type from section operation
+   *
+   * @param {string} sectionKey - The section key
+   *
+   * @returns {string} The typefromsection result
+   */
 
   const typeFromSection = (sectionKey: string): string => {
     switch (sectionKey) {
@@ -283,10 +423,27 @@ function AddItemModal({
         return "shop";
       case "categories":
         return "category";
+      /** Default */
       default:
         return "product";
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const searchItems = async () => {
     if (!section || !searchQuery.trim()) {
@@ -324,6 +481,26 @@ function AddItemModal({
 
       const response = await apiService.get<{ data: any[] }>(endpoint);
       // Filter out already featured items
+      /**
+       * Filters filtered
+       *
+       * @param {any} response.data || []).filter(
+        (item - The response.data || []).filter(
+        (item
+       *
+       * @returns {any} The filtered result
+       */
+
+      /**
+       * Filters filtered
+       *
+       * @param {any} response.data || []).filter(
+        (item - The response.data || []).filter(
+        (item
+       *
+       * @returns {any} The filtered result
+       */
+
       const filtered = (response.data || []).filter(
         (item: any) => !existingIds.includes(item.id || item.slug),
       );
@@ -348,9 +525,41 @@ function AddItemModal({
 
   const type = typeFromSection(section.key);
 
+  /**
+   * Retrieves item name
+   *
+   * @param {any} item - The item
+   *
+   * @returns {string} The itemname result
+   */
+
+  /**
+   * Retrieves item name
+   *
+   * @param {any} item - The item
+   *
+   * @returns {string} The itemname result
+   */
+
   const getItemName = (item: any): string => {
     return item.name || item.title || item.shopName || "Unnamed";
   };
+
+  /**
+   * Retrieves item image
+   *
+   * @param {any} item - The item
+   *
+   * @returns {string} The itemimage result
+   */
+
+  /**
+   * Retrieves item image
+   *
+   * @param {any} item - The item
+   *
+   * @returns {string} The itemimage result
+   */
 
   const getItemImage = (item: any): string | undefined => {
     if (item.images && item.images.length > 0) return item.images[0];
@@ -404,8 +613,11 @@ function AddItemModal({
                   onClick={() => {
                     onAdd({
                       type,
+                      /** Item Id */
                       itemId: item.id || item.slug,
+                      /** Name */
                       name: getItemName(item),
+                      /** Image */
                       image: getItemImage(item),
                     });
                   }}
@@ -431,6 +643,7 @@ function AddItemModal({
                       {getItemName(item)}
                     </p>
                     <p className="text-xs text-gray-500">
+                      /** I D */
                       ID: {item.id || item.slug}
                     </p>
                   </div>
@@ -459,10 +672,12 @@ export default function FeaturedSectionsPage() {
   const [activeSection, setActiveSection] = useState<string>("products");
   const [items, setItems] = useState<Record<string, FeaturedItem[]>>({});
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "FeaturedSectionsPage.loadFeaturedItems" });
     },
@@ -475,6 +690,7 @@ export default function FeaturedSectionsPage() {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
+      /** Coordinate Getter */
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
@@ -482,6 +698,22 @@ export default function FeaturedSectionsPage() {
   useEffect(() => {
     loadFeaturedItems();
   }, []);
+
+  /**
+   * Fetches featured items from server
+   *
+   * @returns {Promise<any>} Promise resolving to featureditems result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches featured items from server
+   *
+   * @returns {Promise<any>} Promise resolving to featureditems result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadFeaturedItems = () =>
     execute(async () => {
@@ -504,6 +736,22 @@ export default function FeaturedSectionsPage() {
       setItems(initialized);
     });
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const saveChanges = async () => {
     try {
       setSaving(true);
@@ -519,6 +767,22 @@ export default function FeaturedSectionsPage() {
     }
   };
 
+  /**
+   * Handles drag end event
+   *
+   * @param {DragEndEvent} event - The event
+   *
+   * @returns {any} The handledragend result
+   */
+
+  /**
+   * Handles drag end event
+   *
+   * @param {DragEndEvent} event - The event
+   *
+   * @returns {any} The handledragend result
+   */
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -531,6 +795,7 @@ export default function FeaturedSectionsPage() {
         const reordered = arrayMove(sectionItems, oldIndex, newIndex).map(
           (item, index) => ({
             ...item,
+            /** Position */
             position: index,
           }),
         );
@@ -544,10 +809,26 @@ export default function FeaturedSectionsPage() {
     }
   };
 
+  /**
+   * Handles add item event
+   *
+   * @returns {string} The handleadditem result
+   */
+
+  /**
+   * Handles add item event
+   *
+   * @returns {string} The handleadditem result
+   */
+
   const handleAddItem = (item: {
+    /** Type */
     type: string;
+    /** Item Id */
     itemId: string;
+    /** Name */
     name: string;
+    /** Image */
     image?: string;
   }) => {
     const sectionItems = items[activeSection] || [];
@@ -559,14 +840,23 @@ export default function FeaturedSectionsPage() {
     }
 
     const newItem: FeaturedItem = {
+      /** Id */
       id: `${item.type}-${item.itemId}-${Date.now()}`,
+      /** Type */
       type: item.type as FeaturedItem["type"],
+      /** Item Id */
       itemId: item.itemId,
+      /** Name */
       name: item.name,
+      /** Image */
       image: item.image,
+      /** Position */
       position: sectionItems.length,
+      /** Section */
       section: activeSection,
+      /** Active */
       active: true,
+      /** Created At */
       createdAt: new Date().toISOString(),
     };
 
@@ -579,6 +869,22 @@ export default function FeaturedSectionsPage() {
     toast.success(`Added ${item.name} to featured`);
   };
 
+  /**
+   * Handles toggle item event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handletoggleitem result
+   */
+
+  /**
+   * Handles toggle item event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handletoggleitem result
+   */
+
   const handleToggleItem = (id: string) => {
     setItems((prev) => ({
       ...prev,
@@ -588,6 +894,22 @@ export default function FeaturedSectionsPage() {
     }));
     setHasChanges(true);
   };
+
+  /**
+   * Handles remove item event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleremoveitem result
+   */
+
+  /**
+   * Handles remove item event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleremoveitem result
+   */
 
   const handleRemoveItem = (id: string) => {
     setItems((prev) => ({
@@ -601,6 +923,22 @@ export default function FeaturedSectionsPage() {
     toast.success("Item removed from featured");
   };
 
+  /**
+   * Handles move up event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handlemoveup result
+   */
+
+  /**
+   * Handles move up event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handlemoveup result
+   */
+
   const handleMoveUp = (id: string) => {
     const sectionItems = items[activeSection] || [];
     const index = sectionItems.findIndex((i) => i.id === id);
@@ -608,6 +946,7 @@ export default function FeaturedSectionsPage() {
       const reordered = arrayMove(sectionItems, index, index - 1).map(
         (item, idx) => ({
           ...item,
+          /** Position */
           position: idx,
         }),
       );
@@ -619,6 +958,22 @@ export default function FeaturedSectionsPage() {
     }
   };
 
+  /**
+   * Handles move down event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handlemovedown result
+   */
+
+  /**
+   * Handles move down event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handlemovedown result
+   */
+
   const handleMoveDown = (id: string) => {
     const sectionItems = items[activeSection] || [];
     const index = sectionItems.findIndex((i) => i.id === id);
@@ -626,6 +981,7 @@ export default function FeaturedSectionsPage() {
       const reordered = arrayMove(sectionItems, index, index + 1).map(
         (item, idx) => ({
           ...item,
+          /** Position */
           position: idx,
         }),
       );
@@ -719,6 +1075,26 @@ export default function FeaturedSectionsPage() {
         {/* Section Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           {SECTIONS.map((section) => {
+            /**
+             * Performs count operation
+             *
+             * @param {any} items[section.key] || []).filter(
+              (i - The items[section.key] || []).filter(
+              (i
+             *
+             * @returns {any} The count result
+             */
+
+            /**
+             * Performs count operation
+             *
+             * @param {any} items[section.key] || []).filter(
+              (i - The items[section.key] || []).filter(
+              (i
+             *
+             * @returns {any} The count result
+             */
+
             const count = (items[section.key] || []).filter(
               (i) => i.active,
             ).length;

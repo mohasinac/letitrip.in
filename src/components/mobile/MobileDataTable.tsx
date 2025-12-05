@@ -1,28 +1,84 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileDataTable
+ * @description This file contains the MobileDataTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Column interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Column
+ */
 interface Column<T> {
+  /** Key */
   key: keyof T | string;
+  /** Header */
   header: string;
+  /** Render */
   render?: (item: T) => ReactNode;
+  /** Class Name */
   className?: string;
+  /** Mobile Hide */
   mobileHide?: boolean;
 }
 
+/**
+ * MobileDataTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileDataTableProps
+ */
 interface MobileDataTableProps<T> {
+  /** Data */
   data: T[];
+  /** Columns */
   columns: Column<T>[];
+  /** Key Extractor */
   keyExtractor: (item: T) => string;
+  /** On Row Click */
   onRowClick?: (item: T) => void;
+  /** Empty State */
   emptyState?: ReactNode;
+  /** Is Loading */
   isLoading?: boolean;
+  /** Loading Rows */
   loadingRows?: number;
+  /** Render Mobile Card */
   renderMobileCard?: (item: T) => ReactNode;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Mobile Data Table
+ */
+/**
+ * Performs mobile data table operation
+ *
+ * @returns {any} The mobiledatatable result
+ *
+ * @example
+ * MobileDataTable();
+ */
+
+/**
+ * Performs mobile data table operation
+ *
+ * @returns {any} The mobiledatatable result
+ *
+ * @example
+ * MobileDataTable();
+ */
 
 export function MobileDataTable<T extends Record<string, any>>({
   data,
@@ -36,6 +92,24 @@ export function MobileDataTable<T extends Record<string, any>>({
   className,
 }: MobileDataTableProps<T>) {
   // Get value from nested key (e.g., "user.name")
+  /**
+   * Retrieves value
+   *
+   * @param {T} item - The item
+   * @param {string} key - The key
+   *
+   * @returns {string} The value result
+   */
+
+  /**
+   * Retrieves value
+   *
+   * @param {T} item - The item
+   * @param {string} key - The key
+   *
+   * @returns {string} The value result
+   */
+
   const getValue = (item: T, key: string): any => {
     const keys = key.split(".");
     let value: any = item;

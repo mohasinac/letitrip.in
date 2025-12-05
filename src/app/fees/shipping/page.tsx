@@ -1,42 +1,73 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/fees/shipping/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { Plane, Package, DollarSign, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "International Shipping | Let It Rip",
+  /** Description */
   description: "Information about international shipping rates and policies",
 };
 
 export default function InternationalShippingPage() {
   const regions = [
     {
+      /** Name */
       name: "Asia Pacific",
+      /** Countries */
       countries:
         "Singapore, Malaysia, Thailand, Indonesia, Vietnam, Philippines",
+      /** Base Rate */
       baseRate: "₹1,500",
+      /** Delivery Time */
       deliveryTime: "5-10 business days",
     },
     {
+      /** Name */
       name: "Middle East",
+      /** Countries */
       countries: "UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman",
+      /** Base Rate */
       baseRate: "₹2,000",
+      /** Delivery Time */
       deliveryTime: "7-14 business days",
     },
     {
+      /** Name */
       name: "Europe",
+      /** Countries */
       countries: "UK, Germany, France, Italy, Spain, Netherlands",
+      /** Base Rate */
       baseRate: "₹2,500",
+      /** Delivery Time */
       deliveryTime: "10-15 business days",
     },
     {
+      /** Name */
       name: "North America",
+      /** Countries */
       countries: "USA, Canada, Mexico",
+      /** Base Rate */
       baseRate: "₹2,800",
+      /** Delivery Time */
       deliveryTime: "10-18 business days",
     },
     {
+      /** Name */
       name: "Australia & New Zealand",
+      /** Countries */
       countries: "Australia, New Zealand",
+      /** Base Rate */
       baseRate: "₹2,600",
+      /** Delivery Time */
       deliveryTime: "12-18 business days",
     },
   ];
@@ -241,13 +272,31 @@ export default function InternationalShippingPage() {
   );
 }
 
+/**
+ * Function: Info Card
+ */
+/**
+ * Performs info card operation
+ *
+ * @returns {any} The infocard result
+ */
+
+/**
+ * Performs info card operation
+ *
+ * @returns {any} The infocard result
+ */
+
 function InfoCard({
   icon,
   title,
   description,
 }: {
+  /** Icon */
   icon: React.ReactNode;
+  /** Title */
   title: string;
+  /** Description */
   description: string;
 }) {
   return (

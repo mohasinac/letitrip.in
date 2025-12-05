@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/events/PollVoting
+ * @description This file contains the PollVoting component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -6,19 +15,37 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * PollVotingProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PollVotingProps
+ */
 export interface PollVotingProps {
+  /** Event Id */
   eventId: string;
+  /** Options */
   options: Array<{
+    /** Id */
     id: string;
+    /** Title */
     title: string;
+    /** Description */
     description?: string;
+    /** Vote Count */
     voteCount: number;
+    /** Percentage */
     percentage: number;
   }>;
+  /** Total Votes */
   totalVotes: number;
+  /** User Vote */
   userVote?: string | null;
+  /** Allow Multiple Votes */
   allowMultipleVotes?: boolean;
+  /** Is Active */
   isActive?: boolean;
+  /** On Vote */
   onVote?: (optionId: string) => Promise<void>;
 }
 
@@ -44,6 +71,24 @@ export interface PollVotingProps {
  * />
  * ```
  */
+/**
+ * Performs poll voting operation
+ *
+ * @returns {any} The pollvoting result
+ *
+ * @example
+ * PollVoting();
+ */
+
+/**
+ * Performs poll voting operation
+ *
+ * @returns {any} The pollvoting result
+ *
+ * @example
+ * PollVoting();
+ */
+
 export function PollVoting({
   eventId,
   options,
@@ -59,14 +104,37 @@ export function PollVoting({
   const [hasVoted, setHasVoted] = useState<boolean>(!!userVote);
 
   const { execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "PollVoting.handleVote",
+        /** Metadata */
         metadata: { eventId, selectedOption },
       });
       toast.error("Failed to submit vote");
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} optionId - option identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} optionId - option identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleVote = async (optionId: string) => {
     if (!isActive) {
@@ -120,6 +188,7 @@ export function PollVoting({
                 <div
                   className="absolute inset-0 bg-purple-100 dark:bg-purple-900/30 transition-all"
                   style={{
+                    /** Width */
                     width: `${option.percentage}%`,
                   }}
                 />

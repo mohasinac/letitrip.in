@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/[id]/bid/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { placeBid } from "@/app/api/lib/firebase/transactions";
 import { withIPTracking } from "@/app/api/middleware/ip-tracker";
@@ -5,8 +14,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../../lib/session";
 
 // GET bids list
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} context - The context
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
+  /** Context */
   context: { params: Promise<{ id: string }> }
 ) {
   const { params } = context;
@@ -15,6 +54,18 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const startAfter = searchParams.get("startAfter");
     const limit = parseInt(searchParams.get("limit") || "20", 10);
+    /**
+     * Sorts order
+     *
+     * @returns {any} The sortorder result
+     */
+
+    /**
+     * Sorts order
+     *
+     * @returns {any} The sortorder result
+     */
+
     const sortOrder = (searchParams.get("sortOrder") || "desc") as
       | "asc"
       | "desc";
@@ -47,9 +98,12 @@ export async function GET(
         : null;
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
+      /** Count */
       count: data.length,
+      /** Pagination */
       pagination: {
         limit,
         hasNextPage,
@@ -65,8 +119,32 @@ export async function GET(
   }
 }
 
+/**
+ * Function: Place Bid Handler
+ */
+/**
+ * Performs place bid handler operation
+ *
+ * @param {Request} request - The request
+ * @param {{ params} [context] - The context
+ *
+ * @returns {Promise<any>} Promise resolving to placebidhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs place bid handler operation
+ *
+ * @returns {Promise<any>} Promise resolving to placebidhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function placeBidHandler(
+  /** Request */
   request: Request,
+  /** Context */
   context?: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -96,14 +174,18 @@ async function placeBidHandler(
     const bidDoc = await Collections.bids().doc(bidId).get();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: bidDoc.id, ...bidDoc.data() },
     });
   } catch (error) {
     console.error("Place bid error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: (error as Error).message || "Failed to place bid",
       },
       { status: 400 }
@@ -112,9 +194,17 @@ async function placeBidHandler(
 }
 
 // Export with IP tracking and rate limiting (max 20 bids per 15 minutes)
+/**
+ * Post
+ * @constant
+ */
 export const POST = withIPTracking(placeBidHandler, {
+  /** Action */
   action: "bid_placed",
+  /** Check Rate Limit */
   checkRateLimit: true,
+  /** Max Attempts */
   maxAttempts: 20,
+  /** Window Minutes */
   windowMinutes: 15,
 });

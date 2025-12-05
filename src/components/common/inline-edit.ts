@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/components/common/inline-edit
+ * @description This file contains functionality related to inline-edit
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Inline Edit & Quick Create Components
  * Export all components for easy importing
  */

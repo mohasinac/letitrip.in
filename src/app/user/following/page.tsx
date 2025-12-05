@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/following/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useCallback } from "react";
@@ -11,10 +20,20 @@ import { CardGrid } from "@/components/cards/CardGrid";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
+/**
+ * Performs following page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = FollowingPage();
+ */
 export default function FollowingPage() {
   const router = useRouter();
   const {
+    /** Data */
     data: shops,
+    /** Is Loading */
     isLoading: loading,
     execute,
   } = useLoadingState<ShopCardFE[]>({ initialData: [] });
@@ -64,7 +83,9 @@ export default function FollowingPage() {
             title="Not following any shops yet"
             description="Start following your favorite shops to get updates on new products and special offers"
             action={{
+              /** Label */
               label: "Browse Shops",
+              /** On Click */
               onClick: () => router.push("/shops"),
             }}
           />

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/coupons/[id]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { toast } from "@/components/admin/Toast";
@@ -18,10 +27,12 @@ export default function EditCouponPage() {
   const couponId = params.id as string;
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "EditCouponPage.loadCoupon", couponId });
       toast.error("Failed to load coupon");
@@ -29,16 +40,27 @@ export default function EditCouponPage() {
   });
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
+    /** Code */
     code: "",
+    /** Description */
     description: "",
+    /** Type */
     type: "percentage",
+    /** Value */
     value: 0,
+    /** Min Order Value */
     minOrderValue: 0,
+    /** Max Uses */
     maxUses: null as number | null,
+    /** Max Uses Per User */
     maxUsesPerUser: 1,
+    /** Valid From */
     validFrom: "",
+    /** Valid To */
     validTo: "",
+    /** Is Active */
     isActive: true,
+    /** Applicable To */
     applicableTo: "all",
   });
 
@@ -46,28 +68,75 @@ export default function EditCouponPage() {
     loadCoupon();
   }, [couponId]);
 
+  /**
+   * Fetches coupon from server
+   *
+   * @returns {Promise<any>} Promise resolving to coupon result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches coupon from server
+   *
+   * @returns {Promise<any>} Promise resolving to coupon result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCoupon = () =>
     execute(async () => {
       const coupon: any = await couponsService.getById(couponId);
 
       setFormData({
+        /** Code */
         code: coupon.code || "",
+        /** Description */
         description: coupon.description || "",
+        /** Type */
         type: coupon.type || "percentage",
+        /** Value */
         value: coupon.value || 0,
+        /** Min Order Value */
         minOrderValue: coupon.minOrderValue || 0,
+        /** Max Uses */
         maxUses: coupon.maxUses,
+        /** Max Uses Per User */
         maxUsesPerUser: coupon.maxUsesPerUser || 1,
+        /** Valid From */
         validFrom: coupon.validFrom
           ? new Date(coupon.validFrom).toISOString().split("T")[0]
           : "",
+        /** Valid To */
         validTo: coupon.validTo
           ? new Date(coupon.validTo).toISOString().split("T")[0]
           : "",
+        /** Is Active */
         isActive: coupon.isActive ?? true,
+        /** Applicable To */
         applicableTo: coupon.applicableTo || "all",
       });
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +164,24 @@ export default function EditCouponPage() {
     }
   };
 
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @returns {any} The handlechange result
+   */
+
   const handleChange = (
+    /** E */
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
@@ -103,6 +189,26 @@ export default function EditCouponPage() {
     const { name, value, type } = e.target;
 
     if (type === "checkbox") {
+      /**
+       * Performs checked operation
+       *
+       * @param {any} e.target as HTMLInputElement).checked;
+      setFormData((prev - The e.target as  h t m l input element).checked;
+      set form data((prev
+       *
+       * @returns {any} The checked result
+       */
+
+      /**
+       * Performs checked operation
+       *
+       * @param {any} e.target as HTMLInputElement).checked;
+      setFormData((prev - The e.target as  h t m l input element).checked;
+      set form data((prev
+       *
+       * @returns {any} The checked result
+       */
+
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else if (type === "number") {
@@ -222,6 +328,7 @@ export default function EditCouponPage() {
                   const value = e.target.value;
                   setFormData((prev) => ({
                     ...prev,
+                    /** Max Uses */
                     maxUses: value ? parseInt(value) : null,
                   }));
                 }}

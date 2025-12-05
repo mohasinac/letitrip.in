@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/InlineEditRow
+ * @description This file contains the InlineEditRow component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import InlineCategorySelectorWithCreate from "@/components/seller/InlineCategorySelectorWithCreate";
@@ -6,6 +15,27 @@ import { InlineEditRowProps, InlineField } from "@/types/inline-edit";
 import { Check, Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { InlineImageUpload } from "./InlineImageUpload";
+
+/**
+ * Function: Inline Edit Row
+ */
+/**
+ * Performs inline edit row operation
+ *
+ * @returns {any} The inlineeditrow result
+ *
+ * @example
+ * InlineEditRow();
+ */
+
+/**
+ * Performs inline edit row operation
+ *
+ * @returns {any} The inlineeditrow result
+ *
+ * @example
+ * InlineEditRow();
+ */
 
 export function InlineEditRow({
   fields,
@@ -22,6 +52,24 @@ export function InlineEditRow({
   useEffect(() => {
     setValues(initialValues);
   }, [initialValues]);
+
+  /**
+   * Handles change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
 
   const handleChange = (key: string, value: any) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -42,6 +90,22 @@ export function InlineEditRow({
       }
     }
   };
+
+  /**
+   * Validates field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {string} The validatefield result
+   */
+
+  /**
+   * Validates field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {string} The validatefield result
+   */
 
   const validateField = (field: InlineField): string | null => {
     const value = values[field.key];
@@ -72,6 +136,22 @@ export function InlineEditRow({
     return null;
   };
 
+  /**
+   * Validates all
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Validates all
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateAll = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -86,6 +166,22 @@ export function InlineEditRow({
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     if (!validateAll()) {
       return;
@@ -95,11 +191,29 @@ export function InlineEditRow({
       await onSave(values);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "InlineEditRow.handleSave",
+        /** Metadata */
         metadata: { values },
       });
     }
   };
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
+
+  /**
+   * Handles key down event
+   *
+   * @param {React.KeyboardEvent} e - The e
+   *
+   * @returns {any} The handlekeydown result
+   */
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -110,6 +224,26 @@ export function InlineEditRow({
       onCancel();
     }
   };
+
+  /**
+   * Renders field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {any} The renderfield result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Renders field
+   *
+   * @param {InlineField} field - The field
+   *
+   * @returns {any} The renderfield result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const renderField = (field: InlineField) => {
     const value = values[field.key];
@@ -293,6 +427,7 @@ export function InlineEditRow({
           </div>
         );
 
+      /** Default */
       default:
         return null;
     }

@@ -1,23 +1,79 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/CouponFilters
+ * @description This file contains the CouponFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * CouponFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CouponFilterValues
+ */
 export interface CouponFilterValues {
+  /** Discount Type */
   discountType?: string[];
+  /** Status */
   status?: "active" | "inactive" | "expired";
+  /** Expiry From */
   expiryFrom?: string;
+  /** Expiry To */
   expiryTo?: string;
+  /** Shop Id */
   shopId?: string;
 }
 
+/**
+ * CouponFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CouponFiltersProps
+ */
 interface CouponFiltersProps {
+  /** Filters */
   filters: CouponFilterValues;
+  /** On Change */
   onChange: (filters: CouponFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs coupon filters operation
+ *
+ * @returns {any} The couponfilters result
+ *
+ * @example
+ * CouponFilters();
+ */
+
+/**
+ * C
+ * @constant
+ */
+/**
+ * Performs coupon filters operation
+ *
+ * @returns {any} The couponfilters result
+ *
+ * @example
+ * CouponFilters();
+ */
+
+/**
+ * C
+ * @constant
+ */
 export const CouponFilters: React.FC<CouponFiltersProps> = ({
   filters,
   onChange,
@@ -27,11 +83,29 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof CouponFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: CouponFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
 
   const toggleArrayFilter = (value: string) => {
     const current = filters.discountType || [];
@@ -40,6 +114,7 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
       : [...current, value];
     onChange({
       ...filters,
+      /** Discount Type */
       discountType: updated.length > 0 ? updated : undefined,
     });
   };

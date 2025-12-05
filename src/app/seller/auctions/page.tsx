@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/auctions/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -11,6 +20,14 @@ import { formatDistanceToNow } from "date-fns";
 import { Clock, ExternalLink, Eye } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Performs seller auctions page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = SellerAuctionsPage();
+ */
 export default function SellerAuctionsPage() {
   return (
     <SellerResourcePage<AuctionCardFE>
@@ -18,22 +35,32 @@ export default function SellerAuctionsPage() {
       resourceNamePlural="Auctions"
       loadData={async (options) => {
         const response = await auctionsService.list({
+          /** Search */
           search: options.search,
           ...options.filters,
+          /** Page */
           page: 1,
+          /** Limit */
           limit: 50,
         });
         return {
+          /** Items */
           items: response.data || [],
+          /** Next Cursor */
           nextCursor: null,
+          /** Has Next Page */
           hasNextPage: false,
         };
       }}
       columns={[
         {
+          /** Key */
           key: "productImage",
+          /** Label */
           label: "Image",
+          /** Width */
           width: "80px",
+          /** Render */
           render: (auction) => (
             <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
               {auction.productImage ? (
@@ -53,24 +80,33 @@ export default function SellerAuctionsPage() {
           ),
         },
         {
+          /** Key */
           key: "productName",
+          /** Label */
           label: "Auction",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (auction) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
                 {auction.productName}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                /** I D */
                 ID: {auction.id.substring(0, 8)}
               </div>
             </div>
           ),
         },
         {
+          /** Key */
           key: "currentPrice",
+          /** Label */
           label: "Current Bid",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (auction) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
@@ -80,6 +116,7 @@ export default function SellerAuctionsPage() {
               </div>
               {auction.startingBid && (
                 <div className="text-xs text-gray-500 dark:text-gray-400">
+                  /** Start */
                   Start: <Price amount={auction.startingBid} />
                 </div>
               )}
@@ -87,8 +124,11 @@ export default function SellerAuctionsPage() {
           ),
         },
         {
+          /** Key */
           key: "bidCount",
+          /** Label */
           label: "Bids",
+          /** Render */
           render: (auction) => (
             <span className="text-sm font-medium text-gray-900 dark:text-white">
               {auction.bidCount || 0}
@@ -96,8 +136,11 @@ export default function SellerAuctionsPage() {
           ),
         },
         {
+          /** Key */
           key: "endTime",
+          /** Label */
           label: "Ends",
+          /** Render */
           render: (auction) => (
             <div>
               <div className="text-sm text-gray-900 dark:text-white">
@@ -105,6 +148,7 @@ export default function SellerAuctionsPage() {
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 {formatDistanceToNow(new Date(auction.endTime), {
+                  /** Add Suffix */
                   addSuffix: true,
                 })}
               </div>
@@ -112,13 +156,19 @@ export default function SellerAuctionsPage() {
           ),
         },
         {
+          /** Key */
           key: "status",
+          /** Label */
           label: "Status",
+          /** Render */
           render: (auction) => <StatusBadge status={auction.status} />,
         },
         {
+          /** Key */
           key: "actions",
+          /** Label */
           label: "Actions",
+          /** Render */
           render: (auction) => (
             <div className="flex items-center justify-end gap-2">
               <Link
@@ -143,32 +193,51 @@ export default function SellerAuctionsPage() {
       ]}
       fields={[
         {
+          /** Name */
           name: "productName",
+          /** Label */
           label: "Product Name",
+          /** Type */
           type: "text",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "startingPrice",
+          /** Label */
           label: "Starting Price",
+          /** Type */
           type: "number",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "reservePrice",
+          /** Label */
           label: "Reserve Price",
+          /** Type */
           type: "number",
         },
         {
+          /** Name */
           name: "endTime",
+          /** Label */
           label: "End Time",
+          /** Type */
           type: "date",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "status",
+          /** Label */
           label: "Status",
+          /** Type */
           type: "select",
+          /** Required */
           required: true,
         },
       ]}
@@ -223,6 +292,7 @@ export default function SellerAuctionsPage() {
                   <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {formatDistanceToNow(new Date(auction.endTime), {
+                      /** Add Suffix */
                       addSuffix: true,
                     })}
                   </div>
@@ -276,6 +346,7 @@ export default function SellerAuctionsPage() {
                 <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {formatDistanceToNow(new Date(auction.endTime), {
+                    /** Add Suffix */
                     addSuffix: true,
                   })}
                 </div>

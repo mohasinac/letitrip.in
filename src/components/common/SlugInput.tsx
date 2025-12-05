@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/SlugInput
+ * @description This file contains the SlugInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -9,24 +18,57 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
  */
 
 interface SlugInputProps {
+  /** Id */
   id?: string;
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (slug: string) => void;
   sourceText?: string; // Text to auto-generate slug from (e.g., title)
   baseUrl?: string; // Base URL for preview
+  /** Placeholder */
   placeholder?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
   validateUnique?: (slug: string) => Promise<boolean>; // Check if slug is unique
+  /** Max Length */
   maxLength?: number;
   prefix?: string; // Optional prefix (e.g., "product-", "shop-")
   suffix?: string; // Optional suffix (e.g., "-2024")
+  /** Show Preview */
   showPreview?: boolean;
+  /** Allow Manual Edit */
   allowManualEdit?: boolean;
+  /** Class Name */
   className?: string;
 }
 
 // Generate slug from text
+/**
+ * Function: Generate Slug
+ */
+/**
+ * Performs generate slug operation
+ *
+ * @param {string} text - The text
+ * @param {string} [prefix] - The prefix
+ * @param {string} [suffix] - The suffix
+ *
+ * @returns {string} The slug result
+ */
+
+/**
+ * Performs generate slug operation
+ *
+ * @param {string} text - The text
+ * @param {string} [prefix] - The prefix
+ * @param {string} [suffix] - The suffix
+ *
+ * @returns {string} The slug result
+ */
+
 function generateSlug(text: string, prefix = "", suffix = ""): string {
   if (!text) return "";
 
@@ -102,6 +144,22 @@ export default function SlugInput({
   }, [localValue, validateUnique]);
 
   // Handle input change
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {any} The handlechange result
+   */
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     const slugValue = generateSlug(newValue, prefix, suffix);
@@ -111,6 +169,18 @@ export default function SlugInput({
   };
 
   // Handle regenerate
+  /**
+   * Handles regenerate event
+   *
+   * @returns {any} The handleregenerate result
+   */
+
+  /**
+   * Handles regenerate event
+   *
+   * @returns {any} The handleregenerate result
+   */
+
   const handleRegenerate = () => {
     if (sourceText) {
       const newSlug = generateSlug(sourceText, prefix, suffix);
@@ -235,6 +305,7 @@ export default function SlugInput({
               px-2 py-1 text-xs rounded
               bg-gray-100 hover:bg-gray-200
               text-gray-700
+              /** Disabled */
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-colors
             `}

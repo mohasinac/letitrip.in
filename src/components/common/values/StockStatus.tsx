@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/StockStatus
+ * @description This file contains the StockStatus component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Stock Status Display Component
  *
  * Displays stock availability with appropriate colors.
@@ -15,26 +24,65 @@ import React from "react";
 import { AlertTriangle, XCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * StockStatusProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StockStatusProps
+ */
 interface StockStatusProps {
+  /** Count */
   count: number;
+  /** Low Stock Threshold */
   lowStockThreshold?: number;
+  /** Show Count */
   showCount?: boolean;
+  /** Show Icon */
   showIcon?: boolean;
+  /** Size */
   size?: "sm" | "md" | "lg";
+  /** Class Name */
   className?: string;
 }
 
 const sizeClasses = {
+  /** Sm */
   sm: "text-xs px-2 py-0.5",
+  /** Md */
   md: "text-sm px-2.5 py-1",
+  /** Lg */
   lg: "text-base px-3 py-1.5",
 };
 
 const iconSizes = {
+  /** Sm */
   sm: 12,
+  /** Md */
   md: 14,
+  /** Lg */
   lg: 16,
 };
+
+/**
+ * Function: Stock Status
+ */
+/**
+ * Performs stock status operation
+ *
+ * @returns {any} The stockstatus result
+ *
+ * @example
+ * StockStatus();
+ */
+
+/**
+ * Performs stock status operation
+ *
+ * @returns {any} The stockstatus result
+ *
+ * @example
+ * StockStatus();
+ */
 
 export function StockStatus({
   count,

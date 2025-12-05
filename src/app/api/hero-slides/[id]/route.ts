@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/hero-slides/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import {
@@ -17,7 +26,39 @@ import {
  * Public: Returns slide if active
  * Admin: Returns any slide
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Req */
+  req, {});
+ */
+
 export async function GET(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -43,27 +84,41 @@ export async function GET(
     const slide =
       user?.role === "admin"
         ? {
+            /** Id */
             id: doc.id,
+            /** Title */
             title: data.title,
+            /** Subtitle */
             subtitle: data.subtitle || "",
+            /** Description */
             description: data.description || "",
             image_url: data.image_url,
             link_url: data.link_url || "",
             cta_text: data.cta_text || "Shop Now",
+            /** Position */
             position: data.position,
             is_active: data.is_active,
             created_at: data.created_at,
             updated_at: data.updated_at,
           }
         : {
+            /** Id */
             id: doc.id,
+            /** Image */
             image: data.image_url,
+            /** Title */
             title: data.title,
+            /** Subtitle */
             subtitle: data.subtitle || "",
+            /** Description */
             description: data.description || "",
+            /** Cta Text */
             ctaText: data.cta_text || "Shop Now",
+            /** Cta Link */
             ctaLink: data.link_url || "/",
+            /** Order */
             order: data.position,
+            /** Enabled */
             enabled: data.is_active,
           };
 
@@ -72,6 +127,7 @@ export async function GET(
     console.error("Error fetching hero slide:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }
@@ -86,7 +142,39 @@ export async function GET(
  * PATCH /api/hero-slides/[id]
  * Admin only: Update hero slide
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Req */
+  req, {});
+ */
+
 export async function PATCH(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -131,14 +219,20 @@ export async function PATCH(
     const updatedData = updatedDoc.data()!;
 
     return NextResponse.json({
+      /** Slide */
       slide: {
+        /** Id */
         id: updatedDoc.id,
+        /** Title */
         title: updatedData.title,
+        /** Subtitle */
         subtitle: updatedData.subtitle || "",
+        /** Description */
         description: updatedData.description || "",
         image_url: updatedData.image_url,
         link_url: updatedData.link_url || "",
         cta_text: updatedData.cta_text || "Shop Now",
+        /** Position */
         position: updatedData.position,
         is_active: updatedData.is_active,
         created_at: updatedData.created_at,
@@ -149,6 +243,7 @@ export async function PATCH(
     console.error("Error updating hero slide:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }
@@ -163,7 +258,39 @@ export async function PATCH(
  * DELETE /api/hero-slides/[id]
  * Admin only: Delete hero slide
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Req */
+  req, {});
+ */
+
 export async function DELETE(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -192,6 +319,7 @@ export async function DELETE(
     console.error("Error deleting hero slide:", error);
     if (error instanceof ApiError) {
       return NextResponse.json(errorToJson(error), {
+        /** Status */
         status: error.statusCode,
       });
     }

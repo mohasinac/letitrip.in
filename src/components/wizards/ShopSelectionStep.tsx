@@ -1,17 +1,40 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/wizards/ShopSelectionStep
+ * @description This file contains the ShopSelectionStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { Plus, Store } from "lucide-react";
 import ShopSelector from "@/components/seller/ShopSelector";
 
+/**
+ * ShopSelectionStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopSelectionStepProps
+ */
 export interface ShopSelectionStepProps {
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (shopId: string) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Show Create Link */
   showCreateLink?: boolean;
+  /** Create Link Url */
   createLinkUrl?: string;
 }
 
@@ -39,6 +62,24 @@ export interface ShopSelectionStepProps {
  * />
  * ```
  */
+/**
+ * Performs shop selection step operation
+ *
+ * @returns {any} The shopselectionstep result
+ *
+ * @example
+ * ShopSelectionStep();
+ */
+
+/**
+ * Performs shop selection step operation
+ *
+ * @returns {any} The shopselectionstep result
+ *
+ * @example
+ * ShopSelectionStep();
+ */
+
 export function ShopSelectionStep({
   value,
   onChange,

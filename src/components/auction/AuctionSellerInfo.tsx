@@ -1,19 +1,45 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auction/AuctionSellerInfo
+ * @description This file contains the AuctionSellerInfo component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { Store, Star, Calendar, MessageCircle } from "lucide-react";
 
+/**
+ * AuctionSellerInfoProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionSellerInfoProps
+ */
 export interface AuctionSellerInfoProps {
+  /** Seller Id */
   sellerId: string;
+  /** Seller Name */
   sellerName: string;
+  /** Seller Avatar */
   sellerAvatar?: string;
+  /** Seller Rating */
   sellerRating: number;
+  /** Seller Review Count */
   sellerReviewCount: number;
+  /** Member Since */
   memberSince: string;
+  /** Shop Id */
   shopId?: string;
+  /** Shop Name */
   shopName?: string;
+  /** Shop Slug */
   shopSlug?: string;
+  /** On Contact Seller */
   onContactSeller?: () => void;
+  /** Class Name */
   className?: string;
 }
 
@@ -44,6 +70,24 @@ export interface AuctionSellerInfoProps {
  * />
  * ```
  */
+/**
+ * Performs auction seller info operation
+ *
+ * @returns {any} The auctionsellerinfo result
+ *
+ * @example
+ * AuctionSellerInfo();
+ */
+
+/**
+ * Performs auction seller info operation
+ *
+ * @returns {any} The auctionsellerinfo result
+ *
+ * @example
+ * AuctionSellerInfo();
+ */
+
 export function AuctionSellerInfo({
   sellerId,
   sellerName,
@@ -112,7 +156,9 @@ export function AuctionSellerInfo({
         <span>
           Member since{" "}
           {memberSinceDate.toLocaleDateString("en-US", {
+            /** Year */
             year: "numeric",
+            /** Month */
             month: "long",
           })}
           {memberYears > 0 &&

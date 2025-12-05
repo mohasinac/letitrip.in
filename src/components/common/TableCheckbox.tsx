@@ -1,7 +1,37 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/TableCheckbox
+ * @description This file contains the TableCheckbox component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useRef } from "react";
 import { TableCheckboxProps } from "@/types/inline-edit";
+
+/**
+ * Function: Table Checkbox
+ */
+/**
+ * Performs table checkbox operation
+ *
+ * @returns {any} The tablecheckbox result
+ *
+ * @example
+ * TableCheckbox();
+ */
+
+/**
+ * Performs table checkbox operation
+ *
+ * @returns {any} The tablecheckbox result
+ *
+ * @example
+ * TableCheckbox();
+ */
 
 export function TableCheckbox({
   checked,

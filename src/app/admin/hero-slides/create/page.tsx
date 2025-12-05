@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/hero-slides/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -19,6 +28,7 @@ import { toast } from "sonner";
 export default function CreateHeroSlidePage() {
   const router = useRouter();
   const { execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "CreateHeroSlidePage.handleSubmit" });
       toast.error("Failed to create hero slide");
@@ -27,13 +37,21 @@ export default function CreateHeroSlidePage() {
   const [loading, setLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<MediaFile[]>([]);
   const [formData, setFormData] = useState({
+    /** Title */
     title: "",
+    /** Subtitle */
     subtitle: "",
+    /** Description */
     description: "",
+    /** Image */
     image: "",
+    /** Cta Link */
     ctaLink: "",
+    /** Cta Text */
     ctaText: "Shop Now",
+    /** Is Active */
     isActive: true,
+    /** Order */
     order: 0,
   });
 
@@ -46,18 +64,43 @@ export default function CreateHeroSlidePage() {
     isCleaning,
     hasUploadedMedia,
   } = useMediaUploadWithCleanup({
+    /** Enable Navigation Guard */
     enableNavigationGuard: true,
+    /** Navigation Guard Message */
     navigationGuardMessage: "You have uploaded an image. Leave and delete it?",
+    /** On Upload Success */
     onUploadSuccess: (url) => {
       setFormData((prev) => ({ ...prev, image: url }));
     },
+    /** On Upload Error */
     onUploadError: (error) => {
       toast.error(`Upload failed: ${error}`);
     },
+    /** On Cleanup Complete */
     onCleanupComplete: () => {
       setUploadedFiles([]);
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleFilesAdded = async (files: MediaFile[]) => {
     if (files.length === 0) return;
@@ -70,6 +113,26 @@ export default function CreateHeroSlidePage() {
       console.error("Failed to upload image:", error);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,6 +151,22 @@ export default function CreateHeroSlidePage() {
     });
     setLoading(false);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancel = async () => {
     if (hasUploadedMedia) {

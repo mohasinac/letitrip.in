@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/NotImplemented
+ * @description This file contains the NotImplemented component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -9,14 +18,28 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+/**
+ * NotImplementedProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NotImplementedProps
+ */
 interface NotImplementedProps {
+  /** Title */
   title?: string;
+  /** Description */
   description?: string;
+  /** Feature Name */
   featureName?: string;
+  /** Back Href */
   backHref?: string;
+  /** Back Label */
   backLabel?: string;
+  /** Expected Date */
   expectedDate?: string;
+  /** Ticket Url */
   ticketUrl?: string;
+  /** Icon */
   icon?: React.ReactNode;
 }
 
@@ -35,6 +58,24 @@ interface NotImplementedProps {
  *   expectedDate="Q1 2025"
  * />
  */
+/**
+ * Performs not implemented operation
+ *
+ * @returns {any} The notimplemented result
+ *
+ * @example
+ * NotImplemented();
+ */
+
+/**
+ * Performs not implemented operation
+ *
+ * @returns {any} The notimplemented result
+ *
+ * @example
+ * NotImplemented();
+ */
+
 export function NotImplemented({
   title = "Coming Soon",
   description = "This feature is currently under development and will be available soon.",
@@ -74,6 +115,7 @@ export function NotImplemented({
         {/* Expected Date */}
         {expectedDate && (
           <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+            /** Expected */
             Expected:{" "}
             <span className="font-medium text-gray-700 dark:text-gray-300">
               {expectedDate}
@@ -121,6 +163,28 @@ export function NotImplemented({
  *
  * Full page wrapper for the NotImplemented component with consistent styling.
  */
+/**
+ * Performs not implemented page operation
+ *
+ * @param {NotImplementedProps} props - The props
+ *
+ * @returns {any} The notimplementedpage result
+ *
+ * @example
+ * NotImplementedPage(props);
+ */
+
+/**
+ * Performs not implemented page operation
+ *
+ * @param {NotImplementedProps} props - The props
+ *
+ * @returns {any} The notimplementedpage result
+ *
+ * @example
+ * NotImplementedPage(props);
+ */
+
 export function NotImplementedPage(props: NotImplementedProps) {
   return (
     <div className="container mx-auto px-4 py-8">

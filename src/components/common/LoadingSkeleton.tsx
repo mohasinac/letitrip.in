@@ -1,10 +1,22 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/LoadingSkeleton
+ * @description This file contains the LoadingSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Loading skeleton component for better loading states
  */
 
 interface LoadingSkeletonProps {
+  /** Type */
   type?: "card" | "list" | "detail" | "grid";
+  /** Count */
   count?: number;
+  /** Class Name */
   className?: string;
 }
 

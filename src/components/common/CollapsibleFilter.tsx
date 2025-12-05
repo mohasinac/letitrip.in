@@ -1,29 +1,89 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/CollapsibleFilter
+ * @description This file contains the CollapsibleFilter component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FilterOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterOption
+ */
 interface FilterOption {
+  /** Label */
   label: string;
+  /** Value */
   value: string;
+  /** Count */
   count?: number;
 }
 
+/**
+ * FilterSection interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterSection
+ */
 interface FilterSection {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Options */
   options: FilterOption[];
+  /** Type */
   type: "checkbox" | "radio" | "range";
+  /** Searchable */
   searchable?: boolean;
 }
 
+/**
+ * CollapsibleFilterProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CollapsibleFilterProps
+ */
 interface CollapsibleFilterProps {
+  /** Sections */
   sections: FilterSection[];
+  /** Active Filters */
   activeFilters: Record<string, any>;
+  /** On Change */
   onChange: (filterId: string, value: any) => void;
+  /** On Clear */
   onClear: (filterId?: string) => void;
 }
+
+/**
+ * Function: Collapsible Filter
+ */
+/**
+ * Performs collapsible filter operation
+ *
+ * @returns {any} The collapsiblefilter result
+ *
+ * @example
+ * CollapsibleFilter();
+ */
+
+/**
+ * Performs collapsible filter operation
+ *
+ * @returns {any} The collapsiblefilter result
+ *
+ * @example
+ * CollapsibleFilter();
+ */
 
 export function CollapsibleFilter({
   sections,
@@ -41,9 +101,41 @@ export function CollapsibleFilter({
     {},
   );
 
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} sectionId - section identifier
+   *
+   * @returns {string} The togglesection result
+   */
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} sectionId - section identifier
+   *
+   * @returns {string} The togglesection result
+   */
+
   const toggleSection = (sectionId: string) => {
     setExpanded((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
   };
+
+  /**
+   * Retrieves active count
+   *
+   * @param {string} sectionId - section identifier
+   *
+   * @returns {string} The activecount result
+   */
+
+  /**
+   * Retrieves active count
+   *
+   * @param {string} sectionId - section identifier
+   *
+   * @returns {string} The activecount result
+   */
 
   const getActiveCount = (sectionId: string) => {
     const value = activeFilters[sectionId];
@@ -52,6 +144,18 @@ export function CollapsibleFilter({
     return 0;
   };
 
+  /**
+   * Retrieves total active count
+   *
+   * @returns {any} The totalactivecount result
+   */
+
+  /**
+   * Retrieves total active count
+   *
+   * @returns {any} The totalactivecount result
+   */
+
   const getTotalActiveCount = () => {
     return Object.values(activeFilters).reduce((acc, value) => {
       if (Array.isArray(value)) return acc + value.length;
@@ -59,6 +163,22 @@ export function CollapsibleFilter({
       return acc;
     }, 0);
   };
+
+  /**
+   * Filters options
+   *
+   * @param {FilterSection} section - The section
+   *
+   * @returns {any} The filteroptions result
+   */
+
+  /**
+   * Filters options
+   *
+   * @param {FilterSection} section - The section
+   *
+   * @returns {any} The filteroptions result
+   */
 
   const filterOptions = (section: FilterSection) => {
     const query = searchQueries[section.id]?.toLowerCase() || "";

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/CategorySelectorWithCreate
+ * @description This file contains the CategorySelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -18,13 +27,26 @@ import {
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useDebounce } from "@/hooks/useDebounce";
 
+/**
+ * CategorySelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategorySelectorWithCreateProps
+ */
 interface CategorySelectorWithCreateProps {
+  /** Value */
   value: string | null;
+  /** On Change */
   onChange: (categoryId: string | null, category: CategoryType | null) => void;
+  /** Error */
   error?: string;
+  /** Disabled */
   disabled?: boolean;
+  /** Placeholder */
   placeholder?: string;
+  /** Class Name */
   className?: string;
+  /** Required */
   required?: boolean;
   onCategoryCreated?: (category: CategoryType) => void; // Callback when new category is created
 }
@@ -40,14 +62,20 @@ export default function CategorySelectorWithCreate({
   onCategoryCreated,
 }: CategorySelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: categories,
+    /** Set Data */
     setData: setCategories,
     execute,
   } = useLoadingState<CategoryType[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "CategorySelectorWithCreate.loadCategories",
       });
     },
@@ -61,8 +89,11 @@ export default function CategorySelectorWithCreate({
 
   // Create category form state
   const [createForm, setCreateForm] = useState({
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Description */
     description: "",
   });
   const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
@@ -71,19 +102,42 @@ export default function CategorySelectorWithCreate({
     loadCategories();
   }, [refreshKey]);
 
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches categories from server
+   *
+   * @returns {Promise<any>} Promise resolving to categories result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCategories = () =>
     execute(async () => {
       const response = await categoriesService.list({
+        /** Is Active */
         isActive: true,
         _t: Date.now(),
       });
       return response.data.map((cat: any) => ({
+        /** Id */
         id: cat.id,
+        /** Name */
         name: cat.name,
+        /** Slug */
         slug: cat.slug,
         parent_id: cat.parentId || null,
+        /** Parent Ids */
         parentIds: cat.parentIds || [],
+        /** Children Ids */
         childrenIds: cat.childrenIds || [],
+        /** Level */
         level: cat.level || 0,
         has_children:
           !cat.isLeaf && (cat.childrenIds?.length > 0 || cat.hasChildren),
@@ -91,6 +145,18 @@ export default function CategorySelectorWithCreate({
         product_count: cat.productCount || 0,
       }));
     });
+
+  /**
+   * Validates create form
+   *
+   * @returns {any} The validatecreateform result
+   */
+
+  /**
+   * Validates create form
+   *
+   * @returns {any} The validatecreateform result
+   */
 
   const validateCreateForm = () => {
     const errors: Record<string, string> = {};
@@ -114,6 +180,22 @@ export default function CategorySelectorWithCreate({
     return Object.keys(errors).length === 0;
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCreateCategory = async () => {
     if (!validateCreateForm()) {
       return;
@@ -123,23 +205,36 @@ export default function CategorySelectorWithCreate({
       setCreating(true);
 
       const newCategory = await categoriesService.create({
+        /** Name */
         name: createForm.name.trim(),
+        /** Slug */
         slug: createForm.slug.trim(),
+        /** Description */
         description: createForm.description.trim() || "",
+        /** Image */
         image: null,
+        /** Icon */
         icon: null,
+        /** Parent Ids */
         parentIds: [],
+        /** Order */
         order: 0,
+        /** Featured */
         featured: false,
+        /** Is Active */
         isActive: true,
       });
 
       // Transform the newly created category
       const transformedCategory: CategoryType = {
+        /** Id */
         id: newCategory.id,
+        /** Name */
         name: newCategory.name,
+        /** Slug */
         slug: newCategory.slug,
         parent_id: null,
+        /** Level */
         level: 0,
         has_children: false,
         is_active: true,
@@ -163,9 +258,11 @@ export default function CategorySelectorWithCreate({
       setSearchQuery("");
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CategorySelectorWithCreate.createCategory",
       });
       setCreateErrors({
+        /** Submit */
         submit:
           error?.message || "Failed to create category. Please try again.",
       });
@@ -174,14 +271,45 @@ export default function CategorySelectorWithCreate({
     }
   };
 
+  /**
+   * Handles open create dialog event
+   *
+   * @returns {any} The handleopencreatedialog result
+   */
+
+  /**
+   * Handles open create dialog event
+   *
+   * @returns {any} The handleopencreatedialog result
+   */
+
   const handleOpenCreateDialog = () => {
     setCreateForm({
+      /** Name */
       name: searchQuery,
+      /** Slug */
       slug: searchQuery.toLowerCase().replace(/\s+/g, "-"),
+      /** Description */
       description: "",
     });
     setShowCreateDialog(true);
   };
+
+  /**
+   * Handles close create dialog event
+   *
+   * @returns {any} The handleclosecreatedialog result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles close create dialog event
+   *
+   * @returns {any} The handleclosecreatedialog result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCloseCreateDialog = () => {
     setShowCreateDialog(false);
@@ -260,6 +388,7 @@ export default function CategorySelectorWithCreate({
                 onChange={(e) => {
                   setCreateForm((prev) => ({
                     ...prev,
+                    /** Name */
                     name: e.target.value,
                   }));
                   setCreateErrors((prev) => ({ ...prev, name: "" }));
@@ -297,6 +426,7 @@ export default function CategorySelectorWithCreate({
                 onChange={(e) =>
                   setCreateForm((prev) => ({
                     ...prev,
+                    /** Description */
                     description: e.target.value,
                   }))
                 }

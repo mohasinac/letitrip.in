@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/shops/[id]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -54,70 +63,113 @@ export default function AdminEditShopPage() {
   >("info");
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: shop,
+    /** Set Data */
     setData: setShop,
     execute,
   } = useLoadingState<ShopFE | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AdminEditShop.loadShop",
+        /** Metadata */
         metadata: { shopId },
       });
     },
   });
 
   const [formData, setFormData] = useState({
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Description */
     description: "",
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
+    /** Location */
     location: "",
+    /** Address */
     address: {
+      /** Line1 */
       line1: "",
+      /** Line2 */
       line2: "",
+      /** City */
       city: "",
+      /** State */
       state: "",
+      /** Pincode */
       pincode: "",
+      /** Country */
       country: "India",
     },
+    /** Website */
     website: "",
+    /** Facebook */
     facebook: "",
+    /** Instagram */
     instagram: "",
+    /** Twitter */
     twitter: "",
+    /** Gst */
     gst: "",
+    /** Pan */
     pan: "",
+    /** Return Policy */
     returnPolicy: "",
+    /** Shipping Policy */
     shippingPolicy: "",
+    /** Bank Details */
     bankDetails: {
+      /** Account Holder Name */
       accountHolderName: "",
+      /** Account Number */
       accountNumber: "",
+      /** Ifsc Code */
       ifscCode: "",
+      /** Bank Name */
       bankName: "",
+      /** Branch Name */
       branchName: "",
     },
+    /** Upi Id */
     upiId: "",
   });
 
   // Media upload for logo/banner
   const {
+    /** Upload Media */
     uploadMedia: uploadLogo,
+    /** Is Uploading */
     isUploading: isUploadingLogo,
+    /** Clear Tracking */
     clearTracking: clearLogoTracking,
   } = useMediaUploadWithCleanup({
+    /** On Upload Success */
     onUploadSuccess: (url) => {
       if (shop) setShop({ ...shop, logo: url });
     },
   });
 
   const {
+    /** Upload Media */
     uploadMedia: uploadBanner,
+    /** Is Uploading */
     isUploading: isUploadingBanner,
+    /** Clear Tracking */
     clearTracking: clearBannerTracking,
   } = useMediaUploadWithCleanup({
+    /** On Upload Success */
     onUploadSuccess: (url) => {
       if (shop) setShop({ ...shop, banner: url });
     },
@@ -129,6 +181,22 @@ export default function AdminEditShopPage() {
     }
   }, [user, isAdmin, shopId]);
 
+  /**
+   * Fetches shop data from server
+   *
+   * @returns {Promise<any>} Promise resolving to shopdata result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches shop data from server
+   *
+   * @returns {Promise<any>} Promise resolving to shopdata result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadShopData = () =>
     execute(async () => {
       // Load shop by slug (shopId is actually slug in route)
@@ -137,7 +205,9 @@ export default function AdminEditShopPage() {
 
       // Load shop products
       const productsData = await shopsService.getShopProducts(shopId, {
+        /** Page */
         page: 1,
+        /** Limit */
         limit: 10,
       });
       setShopProducts(productsData.data || []);
@@ -152,40 +222,88 @@ export default function AdminEditShopPage() {
 
       // Populate form with available fields from ShopFE
       setFormData({
+        /** Name */
         name: shopData.name,
+        /** Slug */
         slug: shopData.slug,
+        /** Description */
         description: shopData.description || "",
+        /** Email */
         email: shopData.email || "",
+        /** Phone */
         phone: shopData.phone || "",
+        /** Location */
         location: `${shopData.city || ""}, ${shopData.state || ""}`
           .trim()
           .replace(/^,|,$/g, ""),
+        /** Address */
         address: {
+          /** Line1 */
           line1: shopData.address || "",
+          /** Line2 */
           line2: "",
+          /** City */
           city: shopData.city || "",
+          /** State */
           state: shopData.state || "",
+          /** Pincode */
           pincode: shopData.postalCode || "",
+          /** Country */
           country: "India",
         },
+        /** Website */
         website: shopData.website || "",
+        /** Facebook */
         facebook: shopData.socialLinks?.facebook || "",
+        /** Instagram */
         instagram: shopData.socialLinks?.instagram || "",
+        /** Twitter */
         twitter: shopData.socialLinks?.twitter || "",
+        /** Gst */
         gst: shopData.gst || "",
+        /** Pan */
         pan: shopData.pan || "",
+        /** Return Policy */
         returnPolicy: shopData.policies?.returnPolicy || "",
+        /** Shipping Policy */
         shippingPolicy: shopData.policies?.shippingPolicy || "",
+        /** Bank Details */
         bankDetails: {
+          /** Account Holder Name */
           accountHolderName: shopData.bankDetails?.accountHolderName || "",
+          /** Account Number */
           accountNumber: shopData.bankDetails?.accountNumber || "",
+          /** Ifsc Code */
           ifscCode: shopData.bankDetails?.ifscCode || "",
+          /** Bank Name */
           bankName: shopData.bankDetails?.bankName || "",
+          /** Branch Name */
           branchName: shopData.bankDetails?.branchName || "",
         },
+        /** Upi Id */
         upiId: shopData.upiId || "",
       });
     });
+
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleLogoUpload = async (files: any[]) => {
     if (files.length > 0) {
@@ -193,11 +311,51 @@ export default function AdminEditShopPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {any[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBannerUpload = async (files: any[]) => {
     if (files.length > 0) {
       await uploadBanner(files[0].file, "shop", shopId);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,16 +365,26 @@ export default function AdminEditShopPage() {
 
       // Convert formData to ShopFormFE shape
       const updateData = {
+        /** Name */
         name: formData.name,
+        /** Slug */
         slug: formData.slug,
+        /** Description */
         description: formData.description,
+        /** Logo */
         logo: shop?.logo || null,
+        /** Banner */
         banner: shop?.banner || null,
+        /** Email */
         email: formData.email,
+        /** Phone */
         phone: formData.phone,
         address: formData.address.line1, // ShopFormFE expects string not object
+        /** City */
         city: formData.address.city,
+        /** State */
         state: formData.address.state,
+        /** Postal Code */
         postalCode: formData.address.pincode,
       };
 
@@ -233,10 +401,27 @@ export default function AdminEditShopPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleVerify = async () => {
     if (!shop) return;
     try {
       await shopsService.verify(shop.slug, {
+        /** Is Verified */
         isVerified: !shop.isVerified,
       });
       await loadShopData();
@@ -246,11 +431,29 @@ export default function AdminEditShopPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBan = async () => {
     if (!shop) return;
     try {
       await shopsService.ban(shop.slug, {
+        /** Is Banned */
         isBanned: !shop.isBanned,
+        /** Ban Reason */
         banReason: !shop.isBanned ? banReason : undefined,
       });
       await loadShopData();
@@ -261,6 +464,22 @@ export default function AdminEditShopPage() {
       toast.error("Failed to update ban status");
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDelete = async () => {
     try {
@@ -537,6 +756,7 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Description */
                         description: e.target.value,
                       })
                     }
@@ -593,8 +813,10 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Address */
                         address: {
                           ...formData.address,
+                          /** Line1 */
                           line1: e.target.value,
                         },
                       })
@@ -606,8 +828,10 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Address */
                         address: {
                           ...formData.address,
+                          /** Line2 */
                           line2: e.target.value,
                         },
                       })
@@ -620,8 +844,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Address */
                           address: {
                             ...formData.address,
+                            /** City */
                             city: e.target.value,
                           },
                         })
@@ -633,8 +859,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Address */
                           address: {
                             ...formData.address,
+                            /** State */
                             state: e.target.value,
                           },
                         })
@@ -646,8 +874,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Address */
                           address: {
                             ...formData.address,
+                            /** Pincode */
                             pincode: e.target.value,
                           },
                         })
@@ -737,8 +967,10 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Bank Details */
                         bankDetails: {
                           ...formData.bankDetails,
+                          /** Account Holder Name */
                           accountHolderName: e.target.value,
                         },
                       })
@@ -751,8 +983,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Bank Details */
                           bankDetails: {
                             ...formData.bankDetails,
+                            /** Account Number */
                             accountNumber: e.target.value,
                           },
                         })
@@ -764,8 +998,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Bank Details */
                           bankDetails: {
                             ...formData.bankDetails,
+                            /** Ifsc Code */
                             ifscCode: e.target.value,
                           },
                         })
@@ -779,8 +1015,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Bank Details */
                           bankDetails: {
                             ...formData.bankDetails,
+                            /** Bank Name */
                             bankName: e.target.value,
                           },
                         })
@@ -792,8 +1030,10 @@ export default function AdminEditShopPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
+                          /** Bank Details */
                           bankDetails: {
                             ...formData.bankDetails,
+                            /** Branch Name */
                             branchName: e.target.value,
                           },
                         })
@@ -823,6 +1063,7 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Return Policy */
                         returnPolicy: e.target.value,
                       })
                     }
@@ -835,6 +1076,7 @@ export default function AdminEditShopPage() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
+                        /** Shipping Policy */
                         shippingPolicy: e.target.value,
                       })
                     }
@@ -909,6 +1151,7 @@ export default function AdminEditShopPage() {
                   </div>
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">
+                      /** Created */
                       Created:
                     </span>
                     <p className="font-medium dark:text-white">

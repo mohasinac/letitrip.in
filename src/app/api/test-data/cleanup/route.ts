@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/cleanup/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,32 +14,94 @@ import { NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST();
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST();
+ */
+
 export async function POST() {
   try {
     const db = getFirestoreAdmin();
     const stats = {
+      /** Users */
       users: 0,
+      /** Shops */
       shops: 0,
+      /** Categories */
       categories: 0,
+      /** Products */
       products: 0,
+      /** Auctions */
       auctions: 0,
+      /** Reviews */
       reviews: 0,
+      /** Orders */
       orders: 0,
+      /** Tickets */
       tickets: 0,
+      /** Coupons */
       coupons: 0,
+      /** Hero Slides */
       heroSlides: 0,
+      /** Bids */
       bids: 0,
+      /** Addresses */
       addresses: 0,
+      /** Blog Posts */
       blogPosts: 0,
+      /** Notifications */
       notifications: 0,
     };
 
     console.log("Starting test data cleanup...");
 
     // Helper function to delete documents in batches
+    /**
+     * Performs async operation
+     *
+     * @param {string} collectionName - Name of collection
+     * @param {string} whereField - The where field
+     * @param {keyof typeof stats} statKey - The stat key
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const deleteCollection = async (
+      /** Collection Name */
       collectionName: string,
+      /** Where Field */
       whereField: string,
+      /** Stat Key */
       statKey: keyof typeof stats,
     ) => {
       let totalDeleted = 0;
@@ -192,9 +263,12 @@ export async function POST() {
     console.log(`Cleanup complete. Total items deleted: ${totalDeleted}`);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Deleted */
       deleted: stats,
       totalDeleted,
+      /** Message */
       message: `Successfully deleted ${totalDeleted} test items`,
     });
   } catch (error: any) {

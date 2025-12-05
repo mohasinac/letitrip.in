@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/user/UserSidebar
+ * @description This file contains the UserSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -22,95 +31,187 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Badge */
   badge?: string;
 }
 
 const navigation: NavItem[] = [
   {
+    /** Title */
     title: "Dashboard",
+    /** Href */
     href: "/user",
+    /** Icon */
     icon: LayoutDashboard,
   },
   {
+    /** Title */
     title: "My Orders",
+    /** Href */
     href: "/user/orders",
+    /** Icon */
     icon: ShoppingBag,
   },
   {
+    /** Title */
     title: "Favorites",
+    /** Href */
     href: "/user/favorites",
+    /** Icon */
     icon: Heart,
   },
   {
+    /** Title */
     title: "Watchlist",
+    /** Href */
     href: "/user/watchlist",
+    /** Icon */
     icon: Eye,
   },
   {
+    /** Title */
     title: "My Bids",
+    /** Href */
     href: "/user/bids",
+    /** Icon */
     icon: Gavel,
   },
   {
+    /** Title */
     title: "Won Auctions",
+    /** Href */
     href: "/user/won-auctions",
+    /** Icon */
     icon: Gavel,
   },
   {
+    /** Title */
     title: "Addresses",
+    /** Href */
     href: "/user/addresses",
+    /** Icon */
     icon: MapPin,
   },
   {
+    /** Title */
     title: "Returns",
+    /** Href */
     href: "/user/returns",
+    /** Icon */
     icon: RotateCcw,
   },
   {
+    /** Title */
     title: "My Reviews",
+    /** Href */
     href: "/user/reviews",
+    /** Icon */
     icon: Star,
   },
   {
+    /** Title */
     title: "Following",
+    /** Href */
     href: "/user/following",
+    /** Icon */
     icon: Users,
   },
   {
+    /** Title */
     title: "History",
+    /** Href */
     href: "/user/history",
+    /** Icon */
     icon: Clock,
   },
   {
+    /** Title */
     title: "Messages",
+    /** Href */
     href: "/user/messages",
+    /** Icon */
     icon: MessageSquare,
   },
   {
+    /** Title */
     title: "Notifications",
+    /** Href */
     href: "/user/notifications",
+    /** Icon */
     icon: Bell,
   },
   {
+    /** Title */
     title: "Support Tickets",
+    /** Href */
     href: "/user/tickets",
+    /** Icon */
     icon: Ticket,
   },
   {
+    /** Title */
     title: "Settings",
+    /** Href */
     href: "/user/settings",
+    /** Icon */
     icon: Settings,
   },
 ];
+
+/**
+ * Function: User Sidebar
+ */
+/**
+ * Performs user sidebar operation
+ *
+ * @returns {any} The usersidebar result
+ *
+ * @example
+ * UserSidebar();
+ */
+
+/**
+ * Performs user sidebar operation
+ *
+ * @returns {any} The usersidebar result
+ *
+ * @example
+ * UserSidebar();
+ */
 
 export function UserSidebar() {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = React.useState("");
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     if (href === "/user") {
@@ -133,6 +234,22 @@ export function UserSidebar() {
   }, [searchQuery]);
 
   // Highlight matching text
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
   const highlightText = (text: string) => {
     if (!searchQuery.trim()) return text;
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/reviews/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { reviewsSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
@@ -13,14 +22,23 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for reviews
 const reviewsConfig = {
   ...reviewsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Product Id */
     productId: "product_id",
+    /** Shop Id */
     shopId: "shop_id",
+    /** User Id */
     userId: "user_id",
+    /** Order Id */
     orderId: "order_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Helpful Count */
     helpfulCount: "helpful_count",
+    /** Verified Purchase */
     verifiedPurchase: "verified_purchase",
   } as Record<string, string>,
 };
@@ -28,18 +46,44 @@ const reviewsConfig = {
 /**
  * Transform review document to API response format
  */
+/**
+ * Transforms review
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformreview result
+ */
+
+/**
+ * Transforms review
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformreview result
+ */
+
 function transformReview(id: string, data: any) {
   return {
     id,
     ...data,
     // Add camelCase aliases
+    /** Product Id */
     productId: data.product_id,
+    /** Shop Id */
     shopId: data.shop_id,
+    /** User Id */
     userId: data.user_id,
+    /** Order Id */
     orderId: data.order_id,
+    /** Helpful Count */
     helpfulCount: data.helpful_count,
+    /** Verified Purchase */
     verifiedPurchase: data.verified_purchase,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -53,6 +97,32 @@ function transformReview(id: string, data: any) {
  * - Public: Published reviews only
  * - Admin: All reviews
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const db = getFirestoreAdmin();
@@ -61,6 +131,7 @@ export async function GET(req: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -69,8 +140,11 @@ export async function GET(req: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -152,6 +226,26 @@ export async function GET(req: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -197,6 +291,7 @@ export async function GET(req: NextRequest) {
 
         stats = {
           totalReviews,
+          /** Average Rating */
           averageRating: Math.round(averageRating * 10) / 10,
           ratingDistribution,
         };
@@ -207,13 +302,19 @@ export async function GET(req: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: reviews,
       pagination,
       stats,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -227,6 +328,35 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/reviews - Create review
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
 export async function POST(req: NextRequest) {
   let product_id: string | undefined;
   let user: any;
@@ -290,8 +420,10 @@ export async function POST(req: NextRequest) {
       shop_id: product?.shop_id,
       order_id: order_id || null,
       rating,
+      /** Title */
       title: title || "",
       comment,
+      /** Images */
       images: images || [],
       verified_purchase: !!order_id,
       helpful_count: 0,
@@ -304,18 +436,24 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Review */
         review: {
+          /** Id */
           id: docRef.id,
           ...reviewData,
         },
+        /** Message */
         message: "Review created successfully",
       },
       { status: 201 }
     );
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.POST",
+      /** Metadata */
       metadata: { product_id, userId: user?.uid },
     });
     return NextResponse.json(

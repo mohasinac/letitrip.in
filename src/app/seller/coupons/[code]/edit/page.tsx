@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/coupons/[code]/edit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -22,10 +31,12 @@ export default function EditCouponPage() {
   const code = params.code as string;
 
   const {
+    /** Data */
     data: coupon,
     isLoading,
     execute,
   } = useLoadingState<CouponFE | null>({
+    /** Initial Data */
     initialData: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +49,9 @@ export default function EditCouponPage() {
       return couponData;
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerCouponEdit.loadCoupon",
+        /** Metadata */
         metadata: { code },
       });
       toast.error("Coupon not found");
@@ -53,6 +66,26 @@ export default function EditCouponPage() {
     }
   }, [code, execute, loadCoupon]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFormFE} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFormFE} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (data: CouponFormFE) => {
     try {
       setIsSubmitting(true);
@@ -61,7 +94,9 @@ export default function EditCouponPage() {
       execute(loadCoupon); // Reload to show updated data
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerCouponEdit.handleSubmit",
+        /** Metadata */
         metadata: { code },
       });
       toast.error(
@@ -72,6 +107,22 @@ export default function EditCouponPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
@@ -80,7 +131,9 @@ export default function EditCouponPage() {
       router.push("/seller/coupons");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerCouponEdit.handleDelete",
+        /** Metadata */
         metadata: { code },
       });
       toast.error("Failed to delete coupon. Please try again.");
@@ -195,6 +248,7 @@ export default function EditCouponPage() {
                   <div
                     className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                     style={{
+                      /** Width */
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
                         100,

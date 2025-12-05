@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/address/autocomplete/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Address Autocomplete API Route
  * GET /api/address/autocomplete?query=search&country=countrycode
  *
@@ -12,14 +21,54 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * AddressSuggestion interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressSuggestion
+ */
 interface AddressSuggestion {
+  /** Description */
   description: string;
+  /** Place Id */
   placeId?: string;
+  /** Structured Formatting */
   structuredFormatting?: {
+    /** Main Text */
     mainText: string;
+    /** Secondary Text */
     secondaryText: string;
   };
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +81,9 @@ export async function GET(request: NextRequest) {
     if (!query || query.trim().length < 3) {
       return NextResponse.json(
         {
+          /** Error */
           error: "Query must be at least 3 characters",
+          /** Suggestions */
           suggestions: [],
         },
         { status: 400 }
@@ -73,10 +124,15 @@ export async function GET(request: NextRequest) {
 
           if (data.status === "OK" && data.predictions) {
             suggestions = data.predictions.map((prediction: any) => ({
+              /** Description */
               description: prediction.description,
+              /** Place Id */
               placeId: prediction.place_id,
+              /** Structured Formatting */
               structuredFormatting: {
+                /** Main Text */
                 mainText: prediction.structured_formatting.main_text,
+                /** Secondary Text */
                 secondaryText: prediction.structured_formatting.secondary_text,
               },
             }));
@@ -96,21 +152,28 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         suggestions,
+        /** Count */
         count: suggestions.length,
+        /** Source */
         source: googleApiKey ? "google_places" : "fallback",
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "AddressAutocompleteAPI",
+      /** Method */
       method: "GET",
+      /** Context */
       context: "Failed to get address suggestions",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to get address suggestions",
+        /** Suggestions */
         suggestions: [],
       },
       { status: 500 }
@@ -122,8 +185,28 @@ export async function GET(request: NextRequest) {
 // FALLBACK SUGGESTIONS
 // ============================================================================
 
+/**
+ * Retrieves fallback suggestions
+ */
+/**
+ * Retrieves fallback suggestions
+ *
+ * @param {string} query - The query
+ * @param {string} country - The country
+ *
+ * @returns {string} The fallbacksuggestions result
+ */
+
+/**
+ * Retrieves fallback suggestions
+ *
+ * @returns {string} The fallbacksuggestions result
+ */
+
 function getFallbackSuggestions(
+  /** Query */
   query: string,
+  /** Country */
   country: string
 ): AddressSuggestion[] {
   const queryLower = query.toLowerCase();
@@ -182,9 +265,13 @@ function getFallbackSuggestions(
       ...matched.map((city) => {
         const [cityName, stateName] = city.split(", ");
         return {
+          /** Description */
           description: city + ", India",
+          /** Structured Formatting */
           structuredFormatting: {
+            /** Main Text */
             mainText: cityName,
+            /** Secondary Text */
             secondaryText: stateName + ", India",
           },
         };
@@ -213,9 +300,13 @@ function getFallbackSuggestions(
       ...matched.map((city) => {
         const [cityName, stateCode] = city.split(", ");
         return {
+          /** Description */
           description: city + ", USA",
+          /** Structured Formatting */
           structuredFormatting: {
+            /** Main Text */
             mainText: cityName,
+            /** Secondary Text */
             secondaryText: stateCode + ", USA",
           },
         };

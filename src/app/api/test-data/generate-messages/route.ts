@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/test-data/generate-messages/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,6 +14,35 @@ import { faker } from "@faker-js/faker";
 import { NextRequest, NextResponse } from "next/server";
 
 const PREFIX = "TEST_";
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,7 +58,9 @@ export async function POST(req: NextRequest) {
 
     if (usersSnapshot.empty) {
       return NextResponse.json({
+        /** Success */
         success: false,
+        /** Error */
         error: "No test users found. Please generate users first.",
       });
     }
@@ -34,7 +74,9 @@ export async function POST(req: NextRequest) {
 
     if (shopsSnapshot.empty) {
       return NextResponse.json({
+        /** Success */
         success: false,
+        /** Error */
         error: "No test shops found. Please generate shops first.",
       });
     }
@@ -45,7 +87,9 @@ export async function POST(req: NextRequest) {
     const messageTemplates = [
       // Product inquiries
       {
+        /** Category */
         category: "product_inquiry",
+        /** Customer Messages */
         customerMessages: [
           "Hi, is this product still available?",
           "What are the dimensions of this item?",
@@ -53,6 +97,7 @@ export async function POST(req: NextRequest) {
           "Is this item brand new or refurbished?",
           "What's the warranty period?",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "Yes, the product is in stock and ready to ship!",
           "The dimensions are listed in the description. Let me know if you need anything specific.",
@@ -63,7 +108,9 @@ export async function POST(req: NextRequest) {
       },
       // Shipping inquiries
       {
+        /** Category */
         category: "shipping",
+        /** Customer Messages */
         customerMessages: [
           "How long will shipping take to Mumbai?",
           "Do you offer express delivery?",
@@ -71,6 +118,7 @@ export async function POST(req: NextRequest) {
           "What courier service do you use?",
           "Is there a delivery charge?",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "Shipping to Mumbai typically takes 3-5 business days.",
           "Yes, we offer express delivery for an additional charge.",
@@ -81,7 +129,9 @@ export async function POST(req: NextRequest) {
       },
       // Price negotiation
       {
+        /** Category */
         category: "price_negotiation",
+        /** Customer Messages */
         customerMessages: [
           "Can you offer any discount on this?",
           "Is this your best price?",
@@ -89,6 +139,7 @@ export async function POST(req: NextRequest) {
           "Do you have any ongoing offers?",
           "Can you match the competitor's price?",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "I can offer you 10% off if you order today.",
           "This is already our best price, but I can throw in free shipping.",
@@ -99,7 +150,9 @@ export async function POST(req: NextRequest) {
       },
       // Order support
       {
+        /** Category */
         category: "order_support",
+        /** Customer Messages */
         customerMessages: [
           "I haven't received my order yet. Can you check the status?",
           "The product I received is damaged.",
@@ -107,6 +160,7 @@ export async function POST(req: NextRequest) {
           "Can I cancel my order?",
           "The tracking shows delivered but I didn't receive it.",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "Let me check the tracking details for you right away.",
           "I'm sorry to hear that. Please share photos and we'll process a replacement.",
@@ -117,7 +171,9 @@ export async function POST(req: NextRequest) {
       },
       // Auction inquiries
       {
+        /** Category */
         category: "auction",
+        /** Customer Messages */
         customerMessages: [
           "What's the minimum bid increment?",
           "When does this auction end?",
@@ -125,6 +181,7 @@ export async function POST(req: NextRequest) {
           "What happens if I win the auction?",
           "Is there a reserve price?",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "Minimum bid increment is ₹100.",
           "This auction ends on [date] at 6 PM IST.",
@@ -135,7 +192,9 @@ export async function POST(req: NextRequest) {
       },
       // Payment issues
       {
+        /** Category */
         category: "payment",
+        /** Customer Messages */
         customerMessages: [
           "My payment failed but amount was deducted.",
           "What payment methods do you accept?",
@@ -143,6 +202,7 @@ export async function POST(req: NextRequest) {
           "Is it safe to pay online on your site?",
           "Can I pay in installments?",
         ],
+        /** Seller Messages */
         sellerMessages: [
           "Don't worry, the amount will be refunded in 3-5 business days.",
           "We accept UPI, cards, net banking, and wallets.",
@@ -171,14 +231,23 @@ export async function POST(req: NextRequest) {
 
       // Create conversation document
       const conversationData = {
+        /** Id */
         id: conversationId,
+        /** Customer Id */
         customerId: customer.id,
+        /** Shop Id */
         shopId: shop.id,
+        /** Seller Id */
         sellerId: shop.data().owner_id,
+        /** Category */
         category: template.category,
+        /** Status */
         status: faker.helpers.arrayElement(["active", "closed", "resolved"]),
+        /** Last Message At */
         lastMessageAt: new Date().toISOString(),
+        /** Created At */
         createdAt: faker.date.recent({ days: 30 }).toISOString(),
+        /** Updated At */
         updatedAt: new Date().toISOString(),
       };
 
@@ -189,7 +258,9 @@ export async function POST(req: NextRequest) {
 
       // Generate messages in the conversation
       const numMessages = faker.number.int({
+        /** Min */
         min: messagesPerConversation,
+        /** Max */
         max: messagesPerConversation + 3,
       });
 
@@ -209,24 +280,36 @@ export async function POST(req: NextRequest) {
         messageDate.setHours(messageDate.getHours() - hoursAgo);
 
         const messageData = {
+          /** Id */
           id: `${PREFIX}message_${Date.now()}_${messageCount + 1}`,
+          /** Conversation Id */
           conversationId: conversationId,
+          /** Sender Id */
           senderId: isCustomerMessage ? customer.id : shop.data().owner_id,
+          /** Sender Type */
           senderType: isCustomerMessage ? "customer" : "seller",
+          /** Recipient Id */
           recipientId: isCustomerMessage ? shop.data().owner_id : customer.id,
+          /** Recipient Type */
           recipientType: isCustomerMessage ? "seller" : "customer",
+          /** Message */
           message: messageText,
           isRead: j < numMessages - 2 || Math.random() < 0.7, // Most messages read except last couple
+          /** Read At */
           readAt: j < numMessages - 2 ? new Date().toISOString() : null,
           attachments: [], // No attachments for now
+          /** Created At */
           createdAt: messageDate.toISOString(),
         };
 
         await db.collection(COLLECTIONS.TICKET_MESSAGES).add(messageData);
 
         messages.push({
+          /** Id */
           id: messageData.id,
+          /** Sender */
           sender: isCustomerMessage ? "customer" : "seller",
+          /** Preview */
           preview: messageText.substring(0, 50) + "...",
         });
 
@@ -234,9 +317,13 @@ export async function POST(req: NextRequest) {
       }
 
       conversations.push({
+        /** Id */
         id: conversationId,
+        /** Category */
         category: template.category,
+        /** Messages Count */
         messagesCount: numMessages,
+        /** Status */
         status: conversationData.status,
       });
 
@@ -244,18 +331,24 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Conversations Created */
       conversationsCreated: conversationCount,
+      /** Messages Created */
       messagesCreated: messageCount,
       conversations: conversations.slice(0, 10), // Return first 10 for preview
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.testData.generateMessages",
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to generate messages",
       },
       { status: 500 }

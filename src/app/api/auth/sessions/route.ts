@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/sessions/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -6,6 +15,29 @@ import {
   getUserSessions,
 } from "../../lib/session";
 import { AuthenticatedRequest, requireAuth } from "../../middleware/auth";
+
+/**
+ * Retrieves sessions handler
+ */
+/**
+ * Retrieves sessions handler
+ *
+ * @param {AuthenticatedRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to sessionshandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Retrieves sessions handler
+ *
+ * @param {AuthenticatedRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to sessionshandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function getSessionsHandler(req: AuthenticatedRequest) {
   try {
@@ -18,13 +50,21 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
 
     return NextResponse.json(
       {
+        /** Sessions */
         sessions: sessions.map((session) => ({
+          /** Session Id */
           sessionId: session.sessionId,
+          /** Created At */
           createdAt: session.createdAt,
+          /** Expires At */
           expiresAt: session.expiresAt,
+          /** Last Activity */
           lastActivity: session.lastActivity,
+          /** User Agent */
           userAgent: session.userAgent,
+          /** Ip Address */
           ipAddress: session.ipAddress,
+          /** Is Current */
           isCurrent: session.sessionId === req.session!.sessionId,
         })),
       },
@@ -35,7 +75,9 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
 
     return NextResponse.json(
       {
+        /** Error */
         error: "Failed to get sessions",
+        /** Message */
         message:
           process.env.NODE_ENV === "production"
             ? "An unexpected error occurred"
@@ -45,6 +87,29 @@ async function getSessionsHandler(req: AuthenticatedRequest) {
     );
   }
 }
+
+/**
+ * Deletes session handler
+ */
+/**
+ * Deletes session handler
+ *
+ * @param {AuthenticatedRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to deletesessionhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Deletes session handler
+ *
+ * @param {AuthenticatedRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to deletesessionhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function deleteSessionHandler(req: AuthenticatedRequest) {
   try {
@@ -94,7 +159,9 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
 
     return NextResponse.json(
       {
+        /** Error */
         error: "Failed to delete session",
+        /** Message */
         message:
           process.env.NODE_ENV === "production"
             ? "An unexpected error occurred"
@@ -104,6 +171,35 @@ async function deleteSessionHandler(req: AuthenticatedRequest) {
     );
   }
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
 
 export async function GET(req: NextRequest) {
   // Rate limiting
@@ -120,6 +216,35 @@ export async function GET(req: NextRequest) {
 
   return requireAuth(req, getSessionsHandler);
 }
+
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(req);
+ */
 
 export async function DELETE(req: NextRequest) {
   // Rate limiting

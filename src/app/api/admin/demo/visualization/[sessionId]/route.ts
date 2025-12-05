@@ -1,7 +1,47 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/visualization/[sessionId]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
 
 export async function GET(
   _request: Request,
@@ -18,6 +58,7 @@ export async function GET(
       .get();
 
     const orders = ordersSnap.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -35,6 +76,7 @@ export async function GET(
     const revenueTimeSeries = Object.entries(revenueByDate).map(
       ([date, revenue]) => ({
         date,
+        /** Revenue */
         revenue: Math.round(revenue as number),
       }),
     );
@@ -46,6 +88,7 @@ export async function GET(
       .get();
 
     const products = productsSnap.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -102,8 +145,11 @@ export async function GET(
 
     return NextResponse.json({
       revenueTimeSeries,
+      /** Category Distribution */
       categoryDistribution: categoryData,
+      /** Order Status Distribution */
       orderStatusDistribution: statusData,
+      /** Payment Method Distribution */
       paymentMethodDistribution: paymentData,
     });
   } catch (error: any) {

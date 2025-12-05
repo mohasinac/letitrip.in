@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/riplimit/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -37,42 +46,92 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 // Types for admin views
+/**
+ * RipLimitStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitStats
+ */
 interface RipLimitStats {
+  /** Total Circulation */
   totalCirculation: number;
+  /** Total Available */
   totalAvailable: number;
+  /** Total Blocked */
   totalBlocked: number;
+  /** Total Revenue */
   totalRevenue: number;
+  /** Total Refunded */
   totalRefunded: number;
+  /** Net Revenue */
   netRevenue: number;
+  /** User Count */
   userCount: number;
+  /** Unpaid User Count */
   unpaidUserCount: number;
 }
 
+/**
+ * RipLimitUser interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RipLimitUser
+ */
 interface RipLimitUser {
+  /** User Id */
   userId: string;
+  /** Available Balance */
   availableBalance: number;
+  /** Blocked Balance */
   blockedBalance: number;
+  /** Has Unpaid Auctions */
   hasUnpaidAuctions: boolean;
+  /** Is Blocked */
   isBlocked: boolean;
+  /** Unpaid Auction Ids */
   unpaidAuctionIds: string[];
+  /** Created At */
   createdAt: { _seconds: number };
+  /** Updated At */
   updatedAt: { _seconds: number };
+  /** User */
   user: {
+    /** Email */
     email: string;
+    /** Display Name */
     displayName?: string;
+    /** Photo U R L */
     photoURL?: string;
   } | null;
 }
 
+/**
+ * Pagination interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Pagination
+ */
 interface Pagination {
+  /** Page */
   page: number;
+  /** Page Size */
   pageSize: number;
+  /** Total Count */
   totalCount: number;
+  /** Total Pages */
   totalPages: number;
+  /** Has Next Page */
   hasNextPage: boolean;
+  /** Has Previous Page */
   hasPreviousPage: boolean;
 }
 
+/**
+ * UserFilter type
+ * 
+ * @typedef {Object} UserFilter
+ * @description Type definition for UserFilter
+ */
 type UserFilter = "all" | "unpaid" | "blocked";
 
 export default function AdminRipLimitPage() {
@@ -81,12 +140,18 @@ export default function AdminRipLimitPage() {
 
   // State - Stats loading
   const {
+    /** Data */
     data: stats,
+    /** Set Data */
     setData: setStats,
+    /** Is Loading */
     isLoading: loadingStats,
+    /** Execute */
     execute: executeLoadStats,
   } = useLoadingState<RipLimitStats | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "AdminRipLimit.loadStats" });
       setError("Failed to load RipLimit statistics");
@@ -95,12 +160,18 @@ export default function AdminRipLimitPage() {
 
   // State - Users loading
   const {
+    /** Data */
     data: users,
+    /** Set Data */
     setData: setUsers,
+    /** Is Loading */
     isLoading: loadingUsers,
+    /** Execute */
     execute: executeLoadUsers,
   } = useLoadingState<RipLimitUser[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "AdminRipLimit.loadUsers" });
     },
@@ -112,6 +183,7 @@ export default function AdminRipLimitPage() {
 
   // Filters with URL sync
   const {
+    /** Filters */
     filters: { userFilter = "all", currentPage = 1 },
     updateFilters,
     applyFilters,
@@ -120,10 +192,42 @@ export default function AdminRipLimitPage() {
     { syncWithUrl: true }
   );
 
+  /**
+   * Sets user filter
+   *
+   * @param {UserFilter} filter - The filter
+   *
+   * @returns {any} The setuserfilter result
+   */
+
+  /**
+   * Sets user filter
+   *
+   * @param {UserFilter} filter - The filter
+   *
+   * @returns {any} The setuserfilter result
+   */
+
   const setUserFilter = (filter: UserFilter) => {
     updateFilters({ userFilter: filter, currentPage: 1 });
     applyFilters();
   };
+
+  /**
+   * Sets current page
+   *
+   * @param {number} page - The page
+   *
+   * @returns {number} The setcurrentpage result
+   */
+
+  /**
+   * Sets current page
+   *
+   * @param {number} page - The page
+   *
+   * @returns {number} The setcurrentpage result
+   */
 
   const setCurrentPage = (page: number) => {
     updateFilters({ userFilter, currentPage: page });
@@ -147,7 +251,9 @@ export default function AdminRipLimitPage() {
     () =>
       executeLoadStats(async () => {
         const response = await apiService.get<{
+          /** Success */
           success: boolean;
+          /** Data */
           data: RipLimitStats;
         }>("/admin/riplimit/stats");
 
@@ -173,8 +279,11 @@ export default function AdminRipLimitPage() {
         }
 
         const response = await apiService.get<{
+          /** Success */
           success: boolean;
+          /** Data */
           data: RipLimitUser[];
+          /** Pagination */
           pagination: Pagination;
         }>(`/admin/riplimit/users?${params.toString()}`);
 
@@ -209,6 +318,28 @@ export default function AdminRipLimitPage() {
   }, [currentPage, user, isAdmin, loadUsers]);
 
   // Handle balance adjustment
+  /**
+   * Performs async operation
+   *
+   * @param {number} amount - The amount
+   * @param {string} reason - The reason
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {number} amount - The amount
+   * @param {string} reason - The reason
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleAdjust = async (amount: number, reason: string) => {
     if (!selectedUser) return;
 
@@ -379,6 +510,7 @@ export default function AdminRipLimitPage() {
                     <div
                       className="h-full bg-green-500"
                       style={{
+                        /** Width */
                         width: `${
                           (stats.totalAvailable /
                             (stats.totalCirculation || 1)) *
@@ -389,6 +521,7 @@ export default function AdminRipLimitPage() {
                     <div
                       className="h-full bg-orange-500"
                       style={{
+                        /** Width */
                         width: `${
                           (stats.totalBlocked / (stats.totalCirculation || 1)) *
                           100

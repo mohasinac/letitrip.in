@@ -1,22 +1,51 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/wizards/ContactInfoStep
+ * @description This file contains the ContactInfoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
 import MobileInput from "@/components/common/MobileInput";
 
+/**
+ * ContactInfoStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContactInfoStepProps
+ */
 export interface ContactInfoStepProps {
+  /** Phone */
   phone: string;
+  /** Email */
   email: string;
+  /** Country Code */
   countryCode?: string;
+  /** On Phone Change */
   onPhoneChange: (phone: string) => void;
+  /** On Email Change */
   onEmailChange: (email: string) => void;
+  /** On Country Code Change */
   onCountryCodeChange?: (code: string) => void;
+  /** Phone Required */
   phoneRequired?: boolean;
+  /** Email Required */
   emailRequired?: boolean;
+  /** Phone Label */
   phoneLabel?: string;
+  /** Email Label */
   emailLabel?: string;
+  /** Phone Helper Text */
   phoneHelperText?: string;
+  /** Email Helper Text */
   emailHelperText?: string;
+  /** Phone Error */
   phoneError?: string;
+  /** Email Error */
   emailError?: string;
 }
 
@@ -47,6 +76,24 @@ export interface ContactInfoStepProps {
  * />
  * ```
  */
+/**
+ * Performs contact info step operation
+ *
+ * @returns {any} The contactinfostep result
+ *
+ * @example
+ * ContactInfoStep();
+ */
+
+/**
+ * Performs contact info step operation
+ *
+ * @returns {any} The contactinfostep result
+ *
+ * @example
+ * ContactInfoStep();
+ */
+
 export function ContactInfoStep({
   phone,
   email,

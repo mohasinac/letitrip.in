@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/general/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -37,15 +46,21 @@ export default function AdminGeneralSettingsPage() {
   >("basic");
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: settings,
+    /** Set Data */
     setData: setSettings,
     execute,
   } = useLoadingState<GeneralSettings | null>({
+    /** Initial Data */
     initialData: null,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AdminGeneralSettings.loadSettings",
       });
     },
@@ -55,12 +70,48 @@ export default function AdminGeneralSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     await execute(async () => {
       const data = await settingsService.getGeneral();
       return data;
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,20 +135,40 @@ export default function AdminGeneralSettingsPage() {
   };
 
   const updateField = <K extends keyof GeneralSettings>(
+    /** Field */
     field: K,
+    /** Value */
     value: GeneralSettings[K]
   ) => {
     if (!settings) return;
     setSettings({ ...settings, [field]: value });
   };
 
+  /**
+   * Updates existing social link
+   *
+   * @param {keyof GeneralSettings["socialLinks"]} platform - The platform
+   * @param {string} value - The value
+   *
+   * @returns {string} The updatesociallink result
+   */
+
+  /**
+   * Updates existing social link
+   *
+   * @returns {string} The updatesociallink result
+   */
+
   const updateSocialLink = (
+    /** Platform */
     platform: keyof GeneralSettings["socialLinks"],
+    /** Value */
     value: string
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Social Links */
       socialLinks: {
         ...settings.socialLinks,
         [platform]: value,

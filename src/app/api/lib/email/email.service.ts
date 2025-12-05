@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/app/api/lib/email/email.service
+ * @description This file contains service functions for email operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Email Service (Backend)
  *
  * Handles sending emails using Resend API (or fallback to console logging in development)
@@ -23,21 +32,48 @@ import {
   getWelcomeEmailText,
 } from "./templates/welcome.template";
 
+/**
+ * EmailOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailOptions
+ */
 export interface EmailOptions {
+  /** To */
   to: string | string[];
+  /** Subject */
   subject: string;
+  /** Html */
   html: string;
+  /** Text */
   text?: string;
+  /** From */
   from?: string;
+  /** Reply To */
   replyTo?: string;
 }
 
+/**
+ * EmailResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmailResult
+ */
 export interface EmailResult {
+  /** Success */
   success: boolean;
+  /** Message Id */
   messageId?: string;
+  /** Error */
   error?: string;
 }
 
+/**
+ * EmailService class
+ * 
+ * @class
+ * @description Description of EmailService class functionality
+ */
 class EmailService {
   private apiKey: string;
   private fromEmail: string;
@@ -76,7 +112,9 @@ class EmailService {
       console.log("---");
 
       return {
+        /** Success */
         success: true,
+        /** Message Id */
         messageId: `dev-${Date.now()}`,
       };
     }
@@ -84,7 +122,9 @@ class EmailService {
     // Production mode: Send via Resend
     if (!this.isConfigured) {
       return {
+        /** Success */
         success: false,
+        /** Error */
         error:
           "Email service not configured. Please add RESEND_API_KEY to environment variables.",
       };
@@ -92,16 +132,24 @@ class EmailService {
 
     try {
       const response = await fetch("https://api.resend.com/emails", {
+        /** Method */
         method: "POST",
+        /** Headers */
         headers: {
           "Content-Type": "application/json",
+          /** Authorization */
           Authorization: `Bearer ${this.apiKey}`,
         },
+        /** Body */
         body: JSON.stringify({
           from,
+          /** To */
           to: Array.isArray(options.to) ? options.to : [options.to],
+          /** Subject */
           subject: options.subject,
+          /** Html */
           html: options.html,
+          /** Text */
           text: options.text,
           reply_to: options.replyTo,
         }),
@@ -111,7 +159,9 @@ class EmailService {
         const error = await response.json();
         console.error("❌ Email sending failed:", error);
         return {
+          /** Success */
           success: false,
+          /** Error */
           error: error.message || "Failed to send email",
         };
       }
@@ -120,7 +170,9 @@ class EmailService {
       console.log("✅ Email sent successfully:", data.id);
 
       return {
+        /** Success */
         success: true,
+        /** Message Id */
         messageId: data.id,
       };
     } catch (error: unknown) {
@@ -128,7 +180,9 @@ class EmailService {
         error instanceof Error ? error.message : "Email service error";
       console.error("❌ Email service error:", error);
       return {
+        /** Success */
         success: false,
+        /** Error */
         error: errorMessage,
       };
     }
@@ -138,15 +192,20 @@ class EmailService {
    * Send email verification link
    */
   async sendVerificationEmail(
+    /** Email */
     email: string,
+    /** Name */
     name: string,
+    /** Verification Link */
     verificationLink: string
   ): Promise<EmailResult> {
     const html = getVerificationEmailTemplate(name, verificationLink);
     const text = getVerificationEmailText(name, verificationLink);
 
     return this.send({
+      /** To */
       to: email,
+      /** Subject */
       subject: "Verify your email address - Letitrip",
       html,
       text,
@@ -157,15 +216,20 @@ class EmailService {
    * Send password reset email
    */
   async sendPasswordResetEmail(
+    /** Email */
     email: string,
+    /** Name */
     name: string,
+    /** Reset Link */
     resetLink: string
   ): Promise<EmailResult> {
     const html = getPasswordResetEmailTemplate(name, resetLink);
     const text = getPasswordResetEmailText(name, resetLink);
 
     return this.send({
+      /** To */
       to: email,
+      /** Subject */
       subject: "Reset your password - Letitrip",
       html,
       text,
@@ -180,7 +244,9 @@ class EmailService {
     const text = getWelcomeEmailText(name);
 
     return this.send({
+      /** To */
       to: email,
+      /** Subject */
       subject: "Welcome to Letitrip! 🎉",
       html,
       text,

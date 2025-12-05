@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import FAQSection from "@/components/faq/FAQSection";
@@ -13,6 +22,14 @@ import { WelcomeHero } from "@/components/homepage/WelcomeHero";
 import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 import { useIsMobile } from "@/hooks/useMobile";
 
+/**
+ * Performs home operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = Home();
+ */
 export default function Home() {
   const isMobile = useIsMobile();
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/shops.service
+ * @description This file contains service functions for shops operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { SHOP_ROUTES } from "@/constants/api-routes";
 import { logError } from "@/lib/firebase-error-logger";
@@ -19,29 +28,68 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
+/**
+ * ShopVerificationData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopVerificationData
+ */
 interface ShopVerificationData {
+  /** Is Verified */
   isVerified: boolean;
+  /** Verification Notes */
   verificationNotes?: string;
 }
 
+/**
+ * ShopFeatureData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopFeatureData
+ */
 interface ShopFeatureData {
+  /** Featured */
   featured: boolean;
 }
 
+/**
+ * ShopBanData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopBanData
+ */
 interface ShopBanData {
+  /** Is Banned */
   isBanned: boolean;
+  /** Ban Reason */
   banReason?: string;
 }
 
+/**
+ * ShopPaymentData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopPaymentData
+ */
 interface ShopPaymentData {
+  /** Amount */
   amount: number;
+  /** Description */
   description: string;
+  /** Due Date */
   dueDate?: Date;
 }
 
+/**
+ * ShopsService class
+ * 
+ * @class
+ * @description Description of ShopsService class functionality
+ */
 class ShopsService {
   // List shops (filtered by role) with cursor-based pagination
   async list(
+    /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
     const params = new URLSearchParams();
@@ -66,8 +114,11 @@ class ShopsService {
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
+      /** Data */
       data: (response.data || []).map(toFEShopCard),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -144,7 +195,9 @@ class ShopsService {
 
   // Get products for a shop (supports pagination & basic filters)
   async getShopProducts(
+    /** Slug */
     slug: string,
+    /** Options */
     options?: { page?: number; limit?: number; filters?: Record<string, any> },
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
@@ -164,16 +217,22 @@ class ShopsService {
       await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
 
     return {
+      /** Data */
       data: response.data.map(toFEProductCard),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
 
   // Get shop reviews (paginated)
   async getShopReviews(
+    /** Slug */
     slug: string,
+    /** Page */
     page?: number,
+    /** Limit */
     limit?: number,
   ): Promise<any> {
     const params = new URLSearchParams();
@@ -207,7 +266,9 @@ class ShopsService {
       "/shops/following",
     );
     return {
+      /** Shops */
       shops: response.shops.map(toFEShopCard),
+      /** Count */
       count: response.count,
     };
   }
@@ -230,15 +291,23 @@ class ShopsService {
 
   // Bulk operations (admin only)
   private async bulkAction(
+    /** Action */
     action: string,
+    /** Ids */
     ids: string[],
+    /** Data */
     data?: Record<string, any>,
   ): Promise<{
+    /** Success */
     success: boolean;
+    /** Results */
     results: {
+      /** Success */
       success: string[];
+      /** Failed */
       failed: { id: string; error: string }[];
     };
+    /** Summary */
     summary: { total: number; succeeded: number; failed: number };
   }> {
     return apiService.post(SHOP_ROUTES.BULK, { action, ids, data });
@@ -295,7 +364,9 @@ class ShopsService {
       return (response.data || []).map(toFEShopCard);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ShopsService.getByIds",
+        /** Metadata */
         metadata: { ids },
       });
       return [];

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/whatsapp/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -29,19 +38,38 @@ import { useEffect, useState } from "react";
 // TYPES
 // ============================================================================
 
+/**
+ * WhatsAppSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WhatsAppSettings
+ */
 interface WhatsAppSettings {
+  /** Twilio Enabled */
   twilioEnabled: boolean;
+  /** Twilio Account Sid */
   twilioAccountSid?: string;
+  /** Twilio Auth Token */
   twilioAuthToken?: string;
+  /** Twilio Phone Number */
   twilioPhoneNumber?: string;
+  /** Gupshup Enabled */
   gupshupEnabled: boolean;
+  /** Gupshup Api Key */
   gupshupApiKey?: string;
+  /** Gupshup App Name */
   gupshupAppName?: string;
+  /** Gupshup Phone Number */
   gupshupPhoneNumber?: string;
+  /** Default Provider */
   defaultProvider: "twilio" | "gupshup";
+  /** Enable Marketing Messages */
   enableMarketingMessages: boolean;
+  /** Enable Utility Messages */
   enableUtilityMessages: boolean;
+  /** Enable Auth Messages */
   enableAuthMessages: boolean;
+  /** Enable Service Messages */
   enableServiceMessages: boolean;
 }
 
@@ -51,20 +79,31 @@ interface WhatsAppSettings {
 
 export default function WhatsAppSettingsPage() {
   const [settings, setSettings] = useState<WhatsAppSettings>({
+    /** Twilio Enabled */
     twilioEnabled: false,
+    /** Gupshup Enabled */
     gupshupEnabled: false,
+    /** Default Provider */
     defaultProvider: "twilio",
+    /** Enable Marketing Messages */
     enableMarketingMessages: true,
+    /** Enable Utility Messages */
     enableUtilityMessages: true,
+    /** Enable Auth Messages */
     enableAuthMessages: true,
+    /** Enable Service Messages */
     enableServiceMessages: true,
   });
 
   const [connectionStatus, setConnectionStatus] = useState<{
+    /** Twilio */
     twilio: "unknown" | "online" | "offline" | "testing";
+    /** Gupshup */
     gupshup: "unknown" | "online" | "offline" | "testing";
   }>({
+    /** Twilio */
     twilio: "unknown",
+    /** Gupshup */
     gupshup: "unknown",
   });
 
@@ -76,6 +115,22 @@ export default function WhatsAppSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = async () => {
     try {
       const response = await apiService.get<WhatsAppSettings>(
@@ -86,10 +141,27 @@ export default function WhatsAppSettingsPage() {
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "WhatsAppSettingsPage.loadSettings",
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSave = async () => {
     await saveSettings(async () => {
@@ -98,6 +170,26 @@ export default function WhatsAppSettingsPage() {
       setTimeout(() => setSaveSuccess(false), 3000);
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {"twilio" | "gupshup"} provider - The provider
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {"twilio" | "gupshup"} provider - The provider
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleTestConnection = async (provider: "twilio" | "gupshup") => {
     setConnectionStatus((prev) => ({ ...prev, [provider]: "testing" }));
@@ -119,6 +211,22 @@ export default function WhatsAppSettingsPage() {
     });
   };
 
+  /**
+   * Retrieves status icon
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusicon result
+   */
+
+  /**
+   * Retrieves status icon
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusicon result
+   */
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "online":
@@ -127,6 +235,7 @@ export default function WhatsAppSettingsPage() {
         return <XCircle className="h-5 w-5 text-red-500" />;
       case "testing":
         return <RefreshCcw className="h-5 w-5 text-blue-500 animate-spin" />;
+      /** Default */
       default:
         return <MessageSquare className="h-5 w-5 text-gray-400" />;
     }
@@ -169,6 +278,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Twilio Enabled */
                       twilioEnabled: e.target.checked,
                     })
                   }
@@ -188,6 +298,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Twilio Account Sid */
                       twilioAccountSid: e.target.value,
                     })
                   }
@@ -202,6 +313,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Twilio Auth Token */
                       twilioAuthToken: e.target.value,
                     })
                   }
@@ -217,12 +329,14 @@ export default function WhatsAppSettingsPage() {
                     onChange={(e) =>
                       setSettings({
                         ...settings,
+                        /** Twilio Phone Number */
                         twilioPhoneNumber: e.target.value,
                       })
                     }
                     placeholder="+14155238886"
                   />
                   <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    /** Format */
                     Format: +[country_code][phone_number]
                   </p>
                 </div>
@@ -268,6 +382,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Gupshup Enabled */
                       gupshupEnabled: e.target.checked,
                     })
                   }
@@ -308,6 +423,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Gupshup Phone Number */
                       gupshupPhoneNumber: e.target.value,
                     })
                   }
@@ -352,6 +468,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Enable Marketing Messages */
                       enableMarketingMessages: e.target.checked,
                     })
                   }
@@ -375,6 +492,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Enable Utility Messages */
                       enableUtilityMessages: e.target.checked,
                     })
                   }
@@ -398,6 +516,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Enable Auth Messages */
                       enableAuthMessages: e.target.checked,
                     })
                   }
@@ -421,6 +540,7 @@ export default function WhatsAppSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Enable Service Messages */
                       enableServiceMessages: e.target.checked,
                     })
                   }

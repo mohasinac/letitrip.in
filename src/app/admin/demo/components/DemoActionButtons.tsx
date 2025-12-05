@@ -1,17 +1,61 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoActionButtons
+ * @description This file contains the DemoActionButtons component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Play, Pause, XCircle, Trash2 } from "lucide-react";
 
+/**
+ * DemoActionButtonsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoActionButtonsProps
+ */
 interface DemoActionButtonsProps {
+  /** Generating */
   generating: boolean;
+  /** Cleaning */
   cleaning: boolean;
+  /** Paused */
   paused: boolean;
+  /** Cleanup Paused */
   cleanupPaused: boolean;
+  /** On Generate All */
   onGenerateAll: () => void;
+  /** On Pause Toggle */
   onPauseToggle: () => void;
+  /** On Cancel */
   onCancel: () => void;
+  /** On Cleanup */
   onCleanup: () => void;
 }
+
+/**
+ * Function: Demo Action Buttons
+ */
+/**
+ * Performs demo action buttons operation
+ *
+ * @returns {any} The demoactionbuttons result
+ *
+ * @example
+ * DemoActionButtons();
+ */
+
+/**
+ * Performs demo action buttons operation
+ *
+ * @returns {any} The demoactionbuttons result
+ *
+ * @example
+ * DemoActionButtons();
+ */
 
 export function DemoActionButtons({
   generating,

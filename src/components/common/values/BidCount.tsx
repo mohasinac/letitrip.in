@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/BidCount
+ * @description This file contains the BidCount component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Bid Count Display Component
  *
  * Displays auction bid count with proper pluralization.
@@ -16,25 +25,63 @@ import React from "react";
 import { Gavel } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * BidCountProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BidCountProps
+ */
 interface BidCountProps {
+  /** Count */
   count: number;
+  /** Show Icon */
   showIcon?: boolean;
+  /** Compact */
   compact?: boolean;
+  /** Class Name */
   className?: string;
+  /** Size */
   size?: "sm" | "md" | "lg";
 }
 
 const sizeClasses = {
+  /** Sm */
   sm: "text-xs",
+  /** Md */
   md: "text-sm",
+  /** Lg */
   lg: "text-base",
 };
 
 const iconSizes = {
+  /** Sm */
   sm: 12,
+  /** Md */
   md: 14,
+  /** Lg */
   lg: 16,
 };
+
+/**
+ * Function: Bid Count
+ */
+/**
+ * Performs bid count operation
+ *
+ * @returns {any} The bidcount result
+ *
+ * @example
+ * BidCount();
+ */
+
+/**
+ * Performs bid count operation
+ *
+ * @returns {any} The bidcount result
+ *
+ * @example
+ * BidCount();
+ */
 
 export function BidCount({
   count,

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/constants/i18n
+ * @description This file contains functionality related to i18n
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Internationalization Constants - English (India)
  *
  * Central location for all user-facing text in the application.
@@ -28,32 +37,58 @@
 // COMMON UI ELEMENTS
 // =============================================================================
 
+/**
+ * Common
+ * @constant
+ */
 export const COMMON = {
   // General actions
+  /** A C T I O N S */
   ACTIONS: {
+    /** L O A D I N G */
     LOADING: "Loading...",
+    /** U P L O A D I N G */
     UPLOADING: "Uploading...",
     PLEASE_WAIT: "Please wait...",
+    /** P R O C E S S I N G */
     PROCESSING: "Processing...",
+    /** S E A R C H */
     SEARCH: "Search...",
+    /** F I L T E R */
     FILTER: "Filter",
     SORT_BY: "Sort by",
+    /** A P P L Y */
     APPLY: "Apply",
+    /** R E S E T */
     RESET: "Reset",
+    /** C L E A R */
     CLEAR: "Clear",
+    /** C A N C E L */
     CANCEL: "Cancel",
+    /** C O N F I R M */
     CONFIRM: "Confirm",
+    /** S A V E */
     SAVE: "Save",
     SAVE_CHANGES: "Save Changes",
+    /** D E L E T E */
     DELETE: "Delete",
+    /** E D I T */
     EDIT: "Edit",
+    /** V I E W */
     VIEW: "View",
+    /** B A C K */
     BACK: "Back",
+    /** N E X T */
     NEXT: "Next",
+    /** P R E V I O U S */
     PREVIOUS: "Previous",
+    /** C O N T I N U E */
     CONTINUE: "Continue",
+    /** S U B M I T */
     SUBMIT: "Submit",
+    /** C L O S E */
     CLOSE: "Close",
+    /** D I S M I S S */
     DISMISS: "Dismiss",
     LEARN_MORE: "Learn More",
     READ_MORE: "Read More",
@@ -61,28 +96,40 @@ export const COMMON = {
     SHOW_LESS: "Show Less",
     VIEW_ALL: "View All",
     SEE_ALL: "See All",
+    /** R E F R E S H */
     REFRESH: "Refresh",
+    /** R E L O A D */
     RELOAD: "Reload",
+    /** R E T R Y */
     RETRY: "Retry",
   },
 
   // Pagination
+  /** P A G I N A T I O N */
   PAGINATION: {
+    /** P A G E */
     PAGE: "Page {number}",
+    /** P R E V I O U S */
     PREVIOUS: "Previous",
+    /** N E X T */
     NEXT: "Next",
+    /** S H O W I N G */
     SHOWING: "Showing {start}-{end} of {total} results",
     ITEMS_PER_PAGE: "Items per page",
     GO_TO_PAGE: "Go to page",
+    /** F I R S T */
     FIRST: "First",
+    /** L A S T */
     LAST: "Last",
   },
 
   // Time relative
+  /** T I M E */
   TIME: {
     JUST_NOW: "Just now",
     MINUTES_AGO: "{n} minutes ago",
     HOURS_AGO: "{n} hours ago",
+    /** Y E S T E R D A Y */
     YESTERDAY: "Yesterday",
     DAYS_AGO: "{n} days ago",
     WEEKS_AGO: "{n} weeks ago",
@@ -93,25 +140,35 @@ export const COMMON = {
   },
 
   // Numbers & currency
+  /** C U R R E N C Y */
   CURRENCY: {
+    /** P R I C E */
     PRICE: "₹{amount}",
+    /** F R E E */
     FREE: "Free",
+    /** D I S C O U N T */
     DISCOUNT: "{percentage}% off",
   },
 
   // Stock status
+  /** S T O C K */
   STOCK: {
     OUT_OF_STOCK: "Out of Stock",
     IN_STOCK: "In Stock",
     LOW_STOCK: "Low Stock",
+    /** A V A I L A B L E */
     AVAILABLE: "{number} available",
     ONLY_LEFT: "Only {number} left",
   },
 
   // Counts
+  /** C O U N T */
   COUNT: {
+    /** I T E M S */
     ITEMS: "{number} items",
+    /** R E S U L T S */
     RESULTS: "{number} results",
+    /** R E V I E W S */
     REVIEWS: "{count} reviews",
   },
 } as const;
@@ -120,10 +177,17 @@ export const COMMON = {
 // AUTHENTICATION & USER MANAGEMENT
 // =============================================================================
 
+/**
+ * Auth
+ * @constant
+ */
 export const AUTH = {
   // Login page
+  /** L O G I N */
   LOGIN: {
+    /** T I T L E */
     TITLE: "Welcome Back",
+    /** S U B T I T L E */
     SUBTITLE: "Sign in to your account to continue",
     EMAIL_LABEL: "Email Address",
     PASSWORD_LABEL: "Password",
@@ -142,11 +206,16 @@ export const AUTH = {
   },
 
   // Register page
+  /** R E G I S T E R */
   REGISTER: {
+    /** T I T L E */
     TITLE: "Create Your Account",
+    /** S U B T I T L E */
     SUBTITLE: "Join us and start shopping today",
     FULL_NAME: "Full Name",
+    /** E M A I L */
     EMAIL: "Email Address",
+    /** P A S S W O R D */
     PASSWORD: "Password",
     CONFIRM_PASSWORD: "Confirm Password",
     PASSWORD_HINT: "Must be at least 8 characters",
@@ -166,7 +235,9 @@ export const AUTH = {
 
   // Password reset
   PASSWORD_RESET: {
+    /** T I T L E */
     TITLE: "Reset your password",
+    /** S U B T I T L E */
     SUBTITLE: "Enter your new password below",
     BACK_TO_LOGIN: "Back to login",
     NEW_PASSWORD: "New Password",
@@ -183,11 +254,14 @@ export const AUTH = {
     ERROR_LOWERCASE: "Password must contain at least one lowercase letter",
     ERROR_NUMBER: "Password must contain at least one number",
     ERROR_SPECIAL: "Password must contain at least one special character",
+    /** F A I L E D */
     FAILED: "Failed to reset password",
   },
 
   // Profile
+  /** P R O F I L E */
   PROFILE: {
+    /** T I T L E */
     TITLE: "My Profile",
     ACCOUNT_SETTINGS: "Account Settings",
     EDIT_PROFILE: "Edit Profile",
@@ -203,6 +277,7 @@ export const AUTH = {
   },
 
   // Verification
+  /** V E R I F I C A T I O N */
   VERIFICATION: {
     VERIFY_EMAIL_TITLE: "Verify Your Email",
     VERIFY_PHONE_TITLE: "Verify Your Phone",
@@ -217,9 +292,13 @@ export const AUTH = {
   },
 
   // Placeholders
+  /** P L A C E H O L D E R S */
   PLACEHOLDERS: {
+    /** E M A I L */
     EMAIL: "you@example.com",
+    /** N A M E */
     NAME: "John Doe",
+    /** P A S S W O R D */
     PASSWORD: "••••••••",
   },
 } as const;
@@ -228,21 +307,37 @@ export const AUTH = {
 // NAVIGATION & LAYOUT
 // =============================================================================
 
+/**
+ * Nav
+ * @constant
+ */
 export const NAV = {
   // Header/NavBar
+  /** H E A D E R */
   HEADER: {
+    /** W E L C O M E */
     WELCOME: "Welcome to {companyName}",
+    /** T A G L I N E */
     TAGLINE: "Your Gateway to Authentic Collectibles",
     SEARCH_PLACEHOLDER: "Search products, shops, auctions...",
     ALL_CATEGORIES: "All Categories",
+    /** P R O D U C T S */
     PRODUCTS: "Products",
+    /** A U C T I O N S */
     AUCTIONS: "Auctions",
+    /** S H O P S */
     SHOPS: "Shops",
+    /** C A T E G O R I E S */
     CATEGORIES: "Categories",
+    /** A B O U T */
     ABOUT: "About",
+    /** C O N T A C T */
     CONTACT: "Contact",
+    /** H E L P */
     HELP: "Help",
+    /** C A R T */
     CART: "Cart",
+    /** F A V O R I T E S */
     FAVORITES: "Favorites",
     MY_ACCOUNT: "My Account",
     SIGN_IN: "Sign In",
@@ -254,18 +349,27 @@ export const NAV = {
   },
 
   // Footer
+  /** F O O T E R */
   FOOTER: {
     ABOUT_SECTION: "About Let It Rip",
     ABOUT_LINK: "About Let It Rip",
+    /** T E R M S */
     TERMS: "Terms of Service",
+    /** P R I V A C Y */
     PRIVACY: "Privacy Policy",
+    /** R E F U N D */
     REFUND: "Refund Policy",
+    /** S H I P P I N G */
     SHIPPING: "Shipping Policy",
+    /** C O O K I E */
     COOKIE: "Cookie Policy",
     SHOPPING_SECTION: "Shopping Notes",
+    /** F A Q */
     FAQ: "FAQ",
     NEW_USER_GUIDE: "New Users' Guide",
+    /** R E T U R N S */
     RETURNS: "Returns & Refunds",
+    /** P R O H I B I T E D */
     PROHIBITED: "Prohibited Items",
     FEE_SECTION: "Fee Description",
     PAYMENT_METHODS: "Payment Methods",
@@ -278,15 +382,22 @@ export const NAV = {
     HELP_TEXT: "Need help? Please use the Customer Ticket",
     PAYMENT_ACCEPTED: "Payment Methods Accepted",
     FOLLOW_US: "Follow Us",
+    /** C O P Y R I G H T */
     COPYRIGHT: "Copyright © 2015-2025 letitrip.com. All Rights Reserved",
   },
 
   // Breadcrumbs
+  /** B R E A D C R U M B S */
   BREADCRUMBS: {
+    /** H O M E */
     HOME: "Home",
+    /** P R O D U C T S */
     PRODUCTS: "Products",
+    /** A U C T I O N S */
     AUCTIONS: "Auctions",
+    /** C A T E G O R I E S */
     CATEGORIES: "Categories",
+    /** S H O P S */
     SHOPS: "Shops",
   },
 } as const;
@@ -295,48 +406,73 @@ export const NAV = {
 // PRODUCT & SHOPPING
 // =============================================================================
 
+/**
+ * Product
+ * @constant
+ */
 export const PRODUCT = {
   // Product cards
+  /** C A R D */
   CARD: {
     ADD_TO_CART: "Add to Cart",
     QUICK_VIEW: "Quick View",
     ADD_TO_FAVORITES: "Add to Favorites",
     REMOVE_FROM_FAVORITES: "Remove from Favorites",
+    /** C O M P A R E */
     COMPARE: "Compare",
     CONDITION_NEW: "New",
     CONDITION_USED: "Used",
     CONDITION_REFURBISHED: "Refurbished",
+    /** F E A T U R E D */
     FEATURED: "Featured",
     OUT_OF_STOCK: "Out of Stock",
     IN_STOCK: "In Stock",
+    /** R A T I N G */
     RATING: "{rating} stars",
+    /** R E V I E W S */
     REVIEWS: "({reviewCount} reviews)",
+    /** P R I C E */
     PRICE: "₹{price}",
     ORIGINAL_PRICE: "₹{originalPrice}",
+    /** D I S C O U N T */
     DISCOUNT: "{percentage}% off",
     FREE_SHIPPING: "Free Shipping",
   },
 
   // Product details
+  /** D E T A I L S */
   DETAILS: {
+    /** T I T L E */
     TITLE: "Product Details",
+    /** D E S C R I P T I O N */
     DESCRIPTION: "Description",
+    /** S P E C I F I C A T I O N S */
     SPECIFICATIONS: "Specifications",
+    /** R E V I E W S */
     REVIEWS: "Reviews",
+    /** R E L A T E D */
     RELATED: "Related Products",
     YOU_MAY_LIKE: "You may also like",
+    /** C O N D I T I O N */
     CONDITION: "Condition",
+    /** S K U */
     SKU: "SKU",
+    /** B R A N D */
     BRAND: "Brand",
+    /** C A T E G O R Y */
     CATEGORY: "Category",
+    /** T A G S */
     TAGS: "Tags",
+    /** S H A R E */
     SHARE: "Share",
+    /** R E P O R T */
     REPORT: "Report Product",
     ADD_TO_CART: "Add to Cart",
     BUY_NOW: "Buy Now",
     ADD_TO_WISHLIST: "Add to Wishlist",
     ADD_TO_COMPARE: "Add to Compare",
     SELECT_QUANTITY: "Select Quantity",
+    /** Q U A N T I T Y */
     QUANTITY: "Quantity",
     IN_STOCK_COUNT: "{number} in stock",
     ONLY_LEFT: "Only {number} left",
@@ -350,9 +486,12 @@ export const PRODUCT = {
   },
 
   // Product listing
+  /** L I S T I N G */
   LISTING: {
     ALL_PRODUCTS: "All Products",
+    /** F E A T U R E D */
     FEATURED: "Featured Products",
+    /** L A T E S T */
     LATEST: "Latest Products",
     BEST_SELLERS: "Best Sellers",
     NEW_ARRIVALS: "New Arrivals",
@@ -368,10 +507,15 @@ export const PRODUCT = {
     PRICE_RANGE: "Price Range",
     MIN_PRICE: "Min Price",
     MAX_PRICE: "Max Price",
+    /** C A T E G O R Y */
     CATEGORY: "Category",
+    /** B R A N D */
     BRAND: "Brand",
+    /** C O N D I T I O N */
     CONDITION: "Condition",
+    /** R A T I N G */
     RATING: "Rating",
+    /** A V A I L A B I L I T Y */
     AVAILABILITY: "Availability",
     CLEAR_FILTERS: "Clear Filters",
     APPLY_FILTERS: "Apply Filters",
@@ -381,24 +525,36 @@ export const PRODUCT = {
   },
 
   // Shopping cart
+  /** C A R T */
   CART: {
+    /** T I T L E */
     TITLE: "Shopping Cart",
     YOUR_CART: "Your Cart",
+    /** E M P T Y */
     EMPTY: "Cart is empty",
     CONTINUE_SHOPPING: "Continue Shopping",
     PROCEED_CHECKOUT: "Proceed to Checkout",
     UPDATE_CART: "Update Cart",
+    /** R E M O V E */
     REMOVE: "Remove",
+    /** Q U A N T I T Y */
     QUANTITY: "Quantity",
+    /** P R I C E */
     PRICE: "Price",
+    /** S U B T O T A L */
     SUBTOTAL: "Subtotal",
+    /** T O T A L */
     TOTAL: "Total",
     ESTIMATED_TOTAL: "Estimated Total",
+    /** S H I P P I N G */
     SHIPPING: "Shipping",
+    /** T A X */
     TAX: "Tax",
+    /** D I S C O U N T */
     DISCOUNT: "Discount",
     APPLY_COUPON: "Apply Coupon",
     COUPON_CODE: "Coupon Code",
+    /** A P P L Y */
     APPLY: "Apply",
     COUPON_APPLIED: "Coupon applied successfully",
     INVALID_COUPON: "Invalid coupon code",
@@ -408,7 +564,9 @@ export const PRODUCT = {
   },
 
   // Comparison
+  /** C O M P A R E */
   COMPARE: {
+    /** T I T L E */
     TITLE: "Compare Products",
     ADD_TO_COMPARE: "Add to Compare",
     REMOVE_FROM_COMPARE: "Remove from Compare",
@@ -418,16 +576,23 @@ export const PRODUCT = {
     MAX_PRODUCTS: "You can compare up to {number} products",
     COMPARISON_TITLE: "Product Comparison",
     ADD_MORE: "Add more products",
+    /** P R I C E */
     PRICE: "Price",
+    /** R A T I N G */
     RATING: "Rating",
+    /** R E V I E W S */
     REVIEWS: "Reviews",
+    /** C O N D I T I O N */
     CONDITION: "Condition",
+    /** S T O C K */
     STOCK: "Stock",
+    /** F E A T U R E S */
     FEATURES: "Features",
   },
 
   // Recently viewed
   RECENTLY_VIEWED: {
+    /** T I T L E */
     TITLE: "Recently Viewed Products",
     CONTINUE_BROWSING: "Continue Browsing",
     VIEW_HISTORY: "View History",
@@ -440,26 +605,36 @@ export const PRODUCT = {
 // AUCTIONS
 // =============================================================================
 
+/**
+ * Auction
+ * @constant
+ */
 export const AUCTION = {
   // Auction cards
+  /** C A R D */
   CARD: {
     CURRENT_BID: "Current Bid",
     STARTING_BID: "Starting Bid",
     RESERVE_PRICE: "Reserve Price",
     TIME_REMAINING: "Time Remaining",
     ENDS_IN: "Ends in {time}",
+    /** E N D E D */
     ENDED: "Ended",
     PLACE_BID: "Place Bid",
     WATCH_AUCTION: "Watch Auction",
     BID_COUNT: "{bidCount} bids",
     NO_BIDS: "No bids yet",
     FIRST_BID: "Be the first to bid",
+    /** H O T */
     HOT: "Hot Auction",
+    /** F E A T U R E D */
     FEATURED: "Featured Auction",
   },
 
   // Auction details
+  /** D E T A I L S */
   DETAILS: {
+    /** T I T L E */
     TITLE: "Auction Details",
     PLACE_YOUR_BID: "Place Your Bid",
     YOUR_MAX_BID: "Your Maximum Bid",
@@ -468,6 +643,7 @@ export const AUCTION = {
     RESERVE_PRICE: "Reserve Price",
     TIME_LEFT: "Time Left",
     ENDS_ON: "Ends on {date}",
+    /** E N D E D */
     ENDED: "Auction has ended",
     BID_HISTORY: "Bid History",
     HIGHEST_BIDDER: "Highest Bidder",
@@ -487,15 +663,23 @@ export const AUCTION = {
   },
 
   // Auction listing
+  /** L I S T I N G */
   LISTING: {
+    /** A L L */
     ALL: "All Auctions",
+    /** L I V E */
     LIVE: "Live Auctions",
+    /** H O T */
     HOT: "Hot Auctions",
+    /** F E A T U R E D */
     FEATURED: "Featured Auctions",
+    /** U P C O M I N G */
     UPCOMING: "Upcoming Auctions",
+    /** E N D E D */
     ENDED: "Ended Auctions",
     MY_BIDS: "My Bids",
     MY_WINS: "My Wins",
+    /** W A T C H I N G */
     WATCHING: "Watching",
     ENDING_SOON: "Ending Soon",
     RECENTLY_ADDED: "Recently Added",
@@ -515,25 +699,40 @@ export const AUCTION = {
 // ORDERS & CHECKOUT
 // =============================================================================
 
+/**
+ * Order
+ * @constant
+ */
 export const ORDER = {
   // Checkout
+  /** C H E C K O U T */
   CHECKOUT: {
+    /** T I T L E */
     TITLE: "Checkout",
     SHIPPING_ADDRESS: "Shipping Address",
     BILLING_ADDRESS: "Billing Address",
     SAME_AS_SHIPPING: "Same as shipping address",
     PAYMENT_METHOD: "Payment Method",
     SELECT_PAYMENT: "Select Payment Method",
+    /** C A R D */
     CARD: "Credit/Debit Card",
+    /** U P I */
     UPI: "UPI",
     NET_BANKING: "Net Banking",
+    /** C O D */
     COD: "Cash on Delivery",
     ORDER_SUMMARY: "Order Summary",
+    /** I T E M S */
     ITEMS: "Items",
+    /** S U B T O T A L */
     SUBTOTAL: "Subtotal",
+    /** S H I P P I N G */
     SHIPPING: "Shipping",
+    /** T A X */
     TAX: "Tax",
+    /** D I S C O U N T */
     DISCOUNT: "Discount",
+    /** T O T A L */
     TOTAL: "Total",
     PLACE_ORDER: "Place Order",
     REVIEW_ORDER: "Review Order",
@@ -544,18 +743,26 @@ export const ORDER = {
   },
 
   // Address form
+  /** A D D R E S S */
   ADDRESS: {
     FULL_NAME: "Full Name",
     PHONE_NUMBER: "Phone Number",
     ADDRESS_LINE1: "Address Line 1",
     ADDRESS_LINE2: "Address Line 2",
+    /** C I T Y */
     CITY: "City",
+    /** S T A T E */
     STATE: "State",
+    /** P I N C O D E */
     PINCODE: "PIN Code",
+    /** L A N D M A R K */
     LANDMARK: "Landmark",
     ADDRESS_TYPE: "Address Type",
+    /** H O M E */
     HOME: "Home",
+    /** W O R K */
     WORK: "Work",
+    /** O T H E R */
     OTHER: "Other",
     SAVE_ADDRESS: "Save Address",
     SET_DEFAULT: "Set as default",
@@ -565,23 +772,29 @@ export const ORDER = {
   },
 
   // Payment
+  /** P A Y M E N T */
   PAYMENT: {
     CARD_NUMBER: "Card Number",
     CARDHOLDER_NAME: "Cardholder Name",
     EXPIRY_DATE: "Expiry Date",
+    /** C V V */
     CVV: "CVV",
     UPI_ID: "UPI ID",
     SELECT_BANK: "Select Bank",
     ENTER_UPI: "Enter UPI ID",
     UPI_PLACEHOLDER: "yourname@upi",
     CVV_PLACEHOLDER: "123",
+    /** P R O C E S S I N G */
     PROCESSING: "Payment processing...",
+    /** S U C C E S S */
     SUCCESS: "Payment successful",
+    /** F A I L E D */
     FAILED: "Payment failed",
     TRANSACTION_ID: "Transaction ID",
   },
 
   // Orders list
+  /** O R D E R S */
   ORDERS: {
     MY_ORDERS: "My Orders",
     ORDER_HISTORY: "Order History",
@@ -595,15 +808,24 @@ export const ORDER = {
     RETURN_ORDER: "Return Order",
     DOWNLOAD_INVOICE: "Download Invoice",
     VIEW_INVOICE: "View Invoice",
+    /** R E O R D E R */
     REORDER: "Reorder",
+    /** P E N D I N G */
     PENDING: "Pending",
+    /** C O N F I R M E D */
     CONFIRMED: "Confirmed",
+    /** P R O C E S S I N G */
     PROCESSING: "Processing",
+    /** S H I P P E D */
     SHIPPED: "Shipped",
     OUT_FOR_DELIVERY: "Out for Delivery",
+    /** D E L I V E R E D */
     DELIVERED: "Delivered",
+    /** C A N C E L L E D */
     CANCELLED: "Cancelled",
+    /** R E T U R N E D */
     RETURNED: "Returned",
+    /** R E F U N D E D */
     REFUNDED: "Refunded",
     EXPECTED_DELIVERY: "Expected Delivery",
     DELIVERED_ON: "Delivered on {date}",
@@ -615,7 +837,9 @@ export const ORDER = {
   },
 
   // Returns & refunds
+  /** R E T U R N */
   RETURN: {
+    /** T I T L E */
     TITLE: "Return Order",
     REQUEST_RETURN: "Request Return",
     RETURN_REASON: "Return Reason",
@@ -624,8 +848,11 @@ export const ORDER = {
     RETURN_METHOD: "Return Method",
     REFUND_AMOUNT: "Refund Amount",
     RETURN_STATUS: "Return Status",
+    /** R E Q U E S T E D */
     REQUESTED: "Return requested",
+    /** A P P R O V E D */
     APPROVED: "Return approved",
+    /** R E J E C T E D */
     REJECTED: "Return rejected",
     REFUND_PROCESSED: "Refund processed",
     REASON_NOT_WORKING: "Product not working",
@@ -647,12 +874,20 @@ export const ORDER = {
 // SHOP MANAGEMENT
 // =============================================================================
 
+/**
+ * Shop
+ * @constant
+ */
 export const SHOP = {
   // Dashboard
+  /** D A S H B O A R D */
   DASHBOARD: {
+    /** T I T L E */
     TITLE: "Seller Dashboard",
     MY_SHOP: "My Shop",
+    /** O V E R V I E W */
     OVERVIEW: "Shop Overview",
+    /** S T A T I S T I C S */
     STATISTICS: "Shop Statistics",
     TOTAL_PRODUCTS: "Total Products",
     TOTAL_ORDERS: "Total Orders",
@@ -661,13 +896,18 @@ export const SHOP = {
     PENDING_ORDERS: "Pending Orders",
     RECENT_ORDERS: "Recent Orders",
     TOP_PRODUCTS: "Top Products",
+    /** P E R F O R M A N C E */
     PERFORMANCE: "Shop Performance",
+    /** R A T I N G */
     RATING: "Shop Rating",
+    /** S T A R S */
     STARS: "{rating} stars",
+    /** R E V I E W S */
     REVIEWS: "({reviewCount} reviews)",
   },
 
   // Profile
+  /** P R O F I L E */
   PROFILE: {
     SHOP_DETAILS: "Shop Details",
     SHOP_NAME: "Shop Name",
@@ -685,6 +925,7 @@ export const SHOP = {
   },
 
   // Product management
+  /** P R O D U C T S */
   PRODUCTS: {
     MY_PRODUCTS: "My Products",
     ADD_NEW: "Add New Product",
@@ -699,12 +940,16 @@ export const SHOP = {
     ORIGINAL_PRICE: "Original Price",
     SALE_PRICE: "Sale Price",
     STOCK_QUANTITY: "Stock Quantity",
+    /** S K U */
     SKU: "SKU",
     PRODUCT_CONDITION: "Product Condition",
     PRODUCT_TAGS: "Product Tags",
+    /** F E A T U R E D */
     FEATURED: "Featured Product",
+    /** P U B L I S H */
     PUBLISH: "Publish Product",
     SAVE_DRAFT: "Save as Draft",
+    /** S T A T U S */
     STATUS: "Product Status",
     STATUS_DRAFT: "Draft",
     STATUS_PENDING: "Pending",
@@ -717,18 +962,26 @@ export const SHOP = {
   },
 
   // Auction management
+  /** A U C T I O N S */
   AUCTIONS: {
     MY_AUCTIONS: "My Auctions",
+    /** C R E A T E */
     CREATE: "Create Auction",
+    /** E D I T */
     EDIT: "Edit Auction",
+    /** D E L E T E */
     DELETE: "Delete Auction",
+    /** T I T L E */
     TITLE: "Auction Title",
+    /** D E S C R I P T I O N */
     DESCRIPTION: "Auction Description",
     STARTING_BID: "Starting Bid",
     RESERVE_PRICE: "Reserve Price",
+    /** D U R A T I O N */
     DURATION: "Auction Duration",
     START_DATE: "Start Date",
     END_DATE: "End Date",
+    /** S T A T U S */
     STATUS: "Auction Status",
     STATUS_DRAFT: "Draft",
     STATUS_SCHEDULED: "Scheduled",
@@ -738,9 +991,11 @@ export const SHOP = {
     STATUS_SOLD: "Sold",
     STATUS_UNSOLD: "Unsold",
     CURRENT_BIDS: "Current Bids",
+    /** W I N N E R */
     WINNER: "Winner",
     CREATED_SUCCESS: "Auction created successfully",
     UPDATED_SUCCESS: "Auction updated successfully",
+    /** C A N C E L L E D */
     CANCELLED: "Auction cancelled",
   },
 
@@ -748,9 +1003,13 @@ export const SHOP = {
   ORDER_MANAGEMENT: {
     SHOP_ORDERS: "Shop Orders",
     NEW_ORDERS: "New Orders",
+    /** P R O C E S S I N G */
     PROCESSING: "Processing Orders",
+    /** S H I P P E D */
     SHIPPED: "Shipped Orders",
+    /** C O M P L E T E D */
     COMPLETED: "Completed Orders",
+    /** C A N C E L L E D */
     CANCELLED: "Cancelled Orders",
     ORDER_DETAILS: "Order Details",
     CUSTOMER_DETAILS: "Customer Details",
@@ -773,10 +1032,17 @@ export const SHOP = {
 // ADMIN INTERFACE
 // =============================================================================
 
+/**
+ * Admin
+ * @constant
+ */
 export const ADMIN = {
   // Dashboard
+  /** D A S H B O A R D */
   DASHBOARD: {
+    /** T I T L E */
     TITLE: "Admin Dashboard",
+    /** O V E R V I E W */
     OVERVIEW: "Dashboard Overview",
     TOTAL_USERS: "Total Users",
     TOTAL_SHOPS: "Total Shops",
@@ -790,6 +1056,7 @@ export const ADMIN = {
   },
 
   // User management
+  /** U S E R S */
   USERS: {
     ALL_USERS: "All Users",
     ACTIVE_USERS: "Active Users",
@@ -814,6 +1081,7 @@ export const ADMIN = {
   },
 
   // Shop management
+  /** S H O P S */
   SHOPS: {
     ALL_SHOPS: "All Shops",
     PENDING_SHOPS: "Pending Shops",
@@ -835,7 +1103,9 @@ export const ADMIN = {
   },
 
   // Content management
+  /** C O N T E N T */
   CONTENT: {
+    /** C A T E G O R I E S */
     CATEGORIES: "Categories",
     ADD_CATEGORY: "Add Category",
     EDIT_CATEGORY: "Edit Category",
@@ -844,6 +1114,7 @@ export const ADMIN = {
     CATEGORY_SLUG: "Category Slug",
     PARENT_CATEGORY: "Parent Category",
     CATEGORY_IMAGE: "Category Image",
+    /** F E A T U R E D */
     FEATURED: "Featured Category",
     CATEGORY_CREATED: "Category created successfully",
     CATEGORY_UPDATED: "Category updated successfully",
@@ -851,12 +1122,18 @@ export const ADMIN = {
   },
 
   // Settings
+  /** S E T T I N G S */
   SETTINGS: {
     SITE_SETTINGS: "Site Settings",
+    /** G E N E R A L */
     GENERAL: "General Settings",
+    /** E M A I L */
     EMAIL: "Email Settings",
+    /** P A Y M E N T */
     PAYMENT: "Payment Settings",
+    /** S H I P P I N G */
     SHIPPING: "Shipping Settings",
+    /** T A X */
     TAX: "Tax Settings",
     SITE_NAME: "Site Name",
     SITE_DESCRIPTION: "Site Description",
@@ -864,8 +1141,11 @@ export const ADMIN = {
     SITE_FAVICON: "Site Favicon",
     CONTACT_EMAIL: "Contact Email",
     CONTACT_PHONE: "Contact Phone",
+    /** C U R R E N C Y */
     CURRENCY: "Currency",
+    /** T I M E Z O N E */
     TIMEZONE: "Timezone",
+    /** L A N G U A G E */
     LANGUAGE: "Language",
     SETTINGS_SAVED: "Settings saved successfully",
   },
@@ -875,10 +1155,17 @@ export const ADMIN = {
 // FORMS & VALIDATION
 // =============================================================================
 
+/**
+ * Form
+ * @constant
+ */
 export const FORM = {
   // Common labels
+  /** L A B E L S */
   LABELS: {
+    /** R E Q U I R E D */
     REQUIRED: "Required field",
+    /** O P T I O N A L */
     OPTIONAL: "Optional",
     REQUIRED_ASTERISK: "* Required",
     REQUIRED_ERROR: "This field is required",
@@ -886,6 +1173,7 @@ export const FORM = {
   },
 
   // Validation messages
+  /** V A L I D A T I O N */
   VALIDATION: {
     EMAIL_INVALID: "Please enter a valid email address",
     EMAIL_REQUIRED: "Email is required",
@@ -932,21 +1220,35 @@ export const FORM = {
   },
 
   // Input placeholders
+  /** P L A C E H O L D E R S */
   PLACEHOLDERS: {
+    /** N A M E */
     NAME: "Enter your name",
+    /** E M A I L */
     EMAIL: "Enter your email",
+    /** P A S S W O R D */
     PASSWORD: "Enter your password",
+    /** P H O N E */
     PHONE: "Enter your phone number",
+    /** A D D R E S S */
     ADDRESS: "Enter your address",
+    /** C I T Y */
     CITY: "Enter city name",
+    /** P I N C O D E */
     PINCODE: "Enter PIN code",
+    /** L A N D M A R K */
     LANDMARK: "Enter landmark",
+    /** S E A R C H */
     SEARCH: "Search...",
     SEARCH_TYPE: "Type to search...",
+    /** S E L E C T */
     SELECT: "Select an option",
     CHOOSE_FILE: "Choose file",
+    /** C O M M E N T */
     COMMENT: "Add a comment",
+    /** R E V I E W */
     REVIEW: "Write your review",
+    /** D E S C R I B E */
     DESCRIBE: "Describe the issue",
   },
 } as const;
@@ -955,31 +1257,55 @@ export const FORM = {
 // STATUS & STATES
 // =============================================================================
 
+/**
+ * Status
+ * @constant
+ */
 export const STATUS = {
   // Loading states
+  /** L O A D I N G */
   LOADING: {
+    /** D E F A U L T */
     DEFAULT: "Loading...",
     PLEASE_WAIT: "Please wait...",
+    /** P R O C E S S I N G */
     PROCESSING: "Processing...",
+    /** U P L O A D I N G */
     UPLOADING: "Uploading...",
+    /** S U B M I T T I N G */
     SUBMITTING: "Submitting...",
+    /** S A V I N G */
     SAVING: "Saving...",
+    /** D E L E T I N G */
     DELETING: "Deleting...",
+    /** U P D A T I N G */
     UPDATING: "Updating...",
+    /** P R O D U C T S */
     PRODUCTS: "Loading products...",
+    /** C O L L E C T I O N S */
     COLLECTIONS: "Loading featured collections...",
+    /** F E T C H I N G */
     FETCHING: "Fetching data...",
   },
 
   // Success messages
+  /** S U C C E S S */
   SUCCESS: {
+    /** D E F A U L T */
     DEFAULT: "Success!",
+    /** D O N E */
     DONE: "Done!",
+    /** S A V E D */
     SAVED: "Saved successfully",
+    /** U P D A T E D */
     UPDATED: "Updated successfully",
+    /** D E L E T E D */
     DELETED: "Deleted successfully",
+    /** C R E A T E D */
     CREATED: "Created successfully",
+    /** S U B M I T T E D */
     SUBMITTED: "Submitted successfully",
+    /** U P L O A D E D */
     UPLOADED: "Uploaded successfully",
     CHANGES_SAVED: "Changes saved",
     OPERATION_COMPLETED: "Operation completed",
@@ -987,7 +1313,9 @@ export const STATUS = {
   },
 
   // Error messages
+  /** E R R O R */
   ERROR: {
+    /** D E F A U L T */
     DEFAULT: "Error",
     SOMETHING_WRONG: "Something went wrong",
     FAILED_LOAD: "Failed to load",
@@ -998,15 +1326,21 @@ export const STATUS = {
     FAILED_UPLOAD: "Failed to upload",
     OPERATION_FAILED: "Operation failed",
     TRY_AGAIN: "Please try again",
+    /** O C C U R R E D */
     OCCURRED: "An error occurred",
+    /** N E T W O R K */
     NETWORK: "Network error",
     CONNECTION_FAILED: "Connection failed",
+    /** T I M E O U T */
     TIMEOUT: "Timeout error",
+    /** S E R V E R */
     SERVER: "Server error",
     INVALID_REQUEST: "Invalid request",
     ACCESS_DENIED: "Access denied",
     PERMISSION_DENIED: "Permission denied",
+    /** U N A U T H O R I Z E D */
     UNAUTHORIZED: "Unauthorized",
+    /** F O R B I D D E N */
     FORBIDDEN: "Forbidden",
     NOT_FOUND: "Not found",
     SESSION_EXPIRED: "Session expired",
@@ -1014,7 +1348,9 @@ export const STATUS = {
   },
 
   // Warning messages
+  /** W A R N I N G */
   WARNING: {
+    /** D E F A U L T */
     DEFAULT: "Warning",
     ARE_YOU_SURE: "Are you sure?",
     CANNOT_UNDO: "This action cannot be undone",
@@ -1029,9 +1365,13 @@ export const STATUS = {
   },
 
   // Info messages
+  /** I N F O */
   INFO: {
+    /** D E F A U L T */
     DEFAULT: "Info",
+    /** N O T E */
     NOTE: "Note",
+    /** T I P */
     TIP: "Tip",
     PRO_TIP: "Pro tip",
     DID_YOU_KNOW: "Did you know?",
@@ -1045,8 +1385,13 @@ export const STATUS = {
 // EMPTY STATES & ERRORS
 // =============================================================================
 
+/**
+ * Empty
+ * @constant
+ */
 export const EMPTY = {
   // Empty states
+  /** S T A T E S */
   STATES: {
     NO_RESULTS: "No results found",
     NO_RESULTS_QUERY: 'No results found for "{query}"',
@@ -1072,6 +1417,7 @@ export const EMPTY = {
   },
 
   // Error pages
+  /** P A G E S */
   PAGES: {
     "404_TITLE": "404 - Page Not Found",
     "404_MESSAGE": "The page you're looking for doesn't exist",
@@ -1087,6 +1433,7 @@ export const EMPTY = {
     TRY_LATER: "Try again later",
     "503_TITLE": "503 - Service Unavailable",
     "503_MESSAGE": "We'll be back soon",
+    /** M A I N T E N A N C E */
     MAINTENANCE: "Under Maintenance",
     MAINTENANCE_MESSAGE: "Scheduled maintenance in progress",
   },
@@ -1096,39 +1443,62 @@ export const EMPTY = {
 // LEGAL & POLICIES
 // =============================================================================
 
+/**
+ * Legal
+ * @constant
+ */
 export const LEGAL = {
   // Policy pages
+  /** P A G E S */
   PAGES: {
+    /** T E R M S */
     TERMS: "Terms of Service",
+    /** P R I V A C Y */
     PRIVACY: "Privacy Policy",
+    /** R E F U N D */
     REFUND: "Refund Policy",
+    /** S H I P P I N G */
     SHIPPING: "Shipping Policy",
+    /** C O O K I E */
     COOKIE: "Cookie Policy",
+    /** R E T U R N */
     RETURN: "Return Policy",
+    /** C A N C E L L A T I O N */
     CANCELLATION: "Cancellation Policy",
     DATA_PROTECTION: "Data Protection",
     USER_AGREEMENT: "User Agreement",
     SELLER_AGREEMENT: "Seller Agreement",
+    /** G U I D E L I N E S */
     GUIDELINES: "Community Guidelines",
+    /** P R O H I B I T E D */
     PROHIBITED: "Prohibited Items",
+    /** I P */
     IP: "Intellectual Property",
+    /** D I S C L A I M E R */
     DISCLAIMER: "Disclaimer",
+    /** A B O U T */
     ABOUT: "About Us",
+    /** C O N T A C T */
     CONTACT: "Contact Us",
     LAST_UPDATED: "Last updated: {date}",
     EFFECTIVE_DATE: "Effective date: {date}",
   },
 
   // Cookie consent
+  /** C O O K I E S */
   COOKIES: {
+    /** T I T L E */
     TITLE: "We use cookies",
+    /** M E S S A G E */
     MESSAGE: "This website uses cookies to enhance your experience",
     MESSAGE_LONG:
       "We use cookies to improve your experience and analyze site traffic",
     ACCEPT_ALL: "Accept All",
     ACCEPT_NECESSARY: "Accept Necessary",
     REJECT_ALL: "Reject All",
+    /** P R E F E R E N C E S */
     PREFERENCES: "Cookie Preferences",
+    /** M A N A G E */
     MANAGE: "Manage Cookies",
     LEARN_MORE: "Learn more",
     PRIVACY_SETTINGS: "Privacy Settings",
@@ -1139,9 +1509,15 @@ export const LEGAL = {
 // SUPPORT & HELP
 // =============================================================================
 
+/**
+ * Support
+ * @constant
+ */
 export const SUPPORT = {
   // Help center
+  /** H E L P */
   HELP: {
+    /** T I T L E */
     TITLE: "Help Center",
     HOW_CAN_HELP: "How can we help you?",
     SEARCH_ARTICLES: "Search help articles",
@@ -1160,12 +1536,16 @@ export const SUPPORT = {
   },
 
   // Contact support
+  /** C O N T A C T */
   CONTACT: {
+    /** T I T L E */
     TITLE: "Contact Us",
     CUSTOMER_SUPPORT: "Customer Support",
     SEND_MESSAGE: "Send us a message",
     GET_BACK_SOON: "We'll get back to you soon",
+    /** S U B J E C T */
     SUBJECT: "Subject",
+    /** M E S S A G E */
     MESSAGE: "Message",
     YOUR_NAME: "Your Name",
     YOUR_EMAIL: "Your Email",
@@ -1176,8 +1556,11 @@ export const SUPPORT = {
   },
 
   // Support tickets
+  /** T I C K E T */
   TICKET: {
+    /** T I T L E */
     TITLE: "Customer Ticket",
+    /** C R E A T E */
     CREATE: "Create Ticket",
     MY_TICKETS: "My Tickets",
     TICKET_NUMBER: "Ticket #{number}",
@@ -1186,11 +1569,13 @@ export const SUPPORT = {
     STATUS_IN_PROGRESS: "In Progress",
     STATUS_RESOLVED: "Resolved",
     STATUS_CLOSED: "Closed",
+    /** P R I O R I T Y */
     PRIORITY: "Ticket Priority",
     PRIORITY_LOW: "Low",
     PRIORITY_MEDIUM: "Medium",
     PRIORITY_HIGH: "High",
     PRIORITY_URGENT: "Urgent",
+    /** C A T E G O R Y */
     CATEGORY: "Ticket Category",
     CATEGORY_ORDER: "Order Issue",
     CATEGORY_PAYMENT: "Payment Issue",
@@ -1203,18 +1588,28 @@ export const SUPPORT = {
   },
 
   // FAQ
+  /** F A Q */
   FAQ: {
+    /** T I T L E */
     TITLE: "Frequently Asked Questions",
     SHORT_TITLE: "FAQ",
     COMMON_QUESTIONS: "Common Questions",
+    /** G E N E R A L */
     GENERAL: "General Questions",
+    /** A C C O U N T */
     ACCOUNT: "Account Questions",
+    /** O R D E R */
     ORDER: "Order Questions",
+    /** P A Y M E N T */
     PAYMENT: "Payment Questions",
+    /** S H I P P I N G */
     SHIPPING: "Shipping Questions",
+    /** R E T U R N */
     RETURN: "Return Questions",
     WAS_HELPFUL: "Was this helpful?",
+    /** Y E S */
     YES: "Yes",
+    /** N O */
     NO: "No",
     NEED_MORE_HELP: "Need more help?",
   },
@@ -1224,8 +1619,13 @@ export const SUPPORT = {
 // NOTIFICATIONS & ALERTS
 // =============================================================================
 
+/**
+ * Notification
+ * @constant
+ */
 export const NOTIFICATION = {
   // Types
+  /** T Y P E S */
   TYPES: {
     NEW_ORDER: "New Order",
     ORDER_SHIPPED: "Order Shipped",
@@ -1235,6 +1635,7 @@ export const NOTIFICATION = {
     NEW_MESSAGE: "New Message",
     NEW_REVIEW: "New Review",
     BID_PLACED: "Bid Placed",
+    /** O U T B I D */
     OUTBID: "Outbid",
     AUCTION_WON: "Auction Won",
     AUCTION_ENDING: "Auction Ending Soon",
@@ -1246,6 +1647,7 @@ export const NOTIFICATION = {
   },
 
   // Toast messages
+  /** T O A S T */
   TOAST: {
     ADDED_CART: "Added to cart",
     REMOVED_CART: "Removed from cart",
@@ -1265,23 +1667,40 @@ export const NOTIFICATION = {
 // FILTERS & SORTING
 // =============================================================================
 
+/**
+ * Filter
+ * @constant
+ */
 export const FILTER = {
   // Filter labels
+  /** L A B E L S */
   LABELS: {
     FILTER_BY: "Filter by",
     ALL_FILTERS: "All Filters",
+    /** C A T E G O R Y */
     CATEGORY: "Category",
     PRICE_RANGE: "Price Range",
+    /** B R A N D */
     BRAND: "Brand",
+    /** C O N D I T I O N */
     CONDITION: "Condition",
+    /** R A T I N G */
     RATING: "Rating",
+    /** A V A I L A B I L I T Y */
     AVAILABILITY: "Availability",
+    /** S E L L E R */
     SELLER: "Seller",
+    /** L O C A T I O N */
     LOCATION: "Location",
+    /** S H I P P I N G */
     SHIPPING: "Shipping",
+    /** D I S C O U N T */
     DISCOUNT: "Discount",
+    /** C O L O R */
     COLOR: "Color",
+    /** S I Z E */
     SIZE: "Size",
+    /** M A T E R I A L */
     MATERIAL: "Material",
     FEATURED_ONLY: "Featured Only",
     ON_SALE_ONLY: "On Sale Only",
@@ -1290,15 +1709,20 @@ export const FILTER = {
   },
 
   // Sort options
+  /** S O R T */
   SORT: {
     SORT_BY: "Sort by",
+    /** R E L E V A N C E */
     RELEVANCE: "Relevance",
+    /** N E W E S T */
     NEWEST: "Newest First",
+    /** O L D E S T */
     OLDEST: "Oldest First",
     PRICE_LOW: "Price: Low to High",
     PRICE_HIGH: "Price: High to Low",
     NAME_AZ: "Name: A to Z",
     NAME_ZA: "Name: Z to A",
+    /** P O P U L A R */
     POPULAR: "Most Popular",
     BEST_SELLING: "Best Selling",
     HIGHEST_RATED: "Highest Rated",
@@ -1312,12 +1736,21 @@ export const FILTER = {
 // HOMEPAGE
 // =============================================================================
 
+/**
+ * Homepage
+ * @constant
+ */
 export const HOMEPAGE = {
   // Hero & welcome
+  /** H E R O */
   HERO: {
+    /** W E L C O M E */
     WELCOME: "Welcome to {companyName}",
+    /** T A G L I N E */
     TAGLINE: "Your Gateway to Authentic Collectibles",
+    /** D E S C R I P T I O N */
     DESCRIPTION: "India's Premier Platform for Beyblades, TCG & Collectibles",
+    /** D I S C O V E R */
     DISCOVER: "Discover amazing products and auctions",
     START_EXPLORING: "Start exploring",
     SHOP_NOW: "Shop Now",
@@ -1326,6 +1759,7 @@ export const HOMEPAGE = {
   },
 
   // Featured sections
+  /** S E C T I O N S */
   SECTIONS: {
     FEATURED_PRODUCTS: "Featured Products",
     LATEST_PRODUCTS: "Latest Products",
@@ -1344,7 +1778,9 @@ export const HOMEPAGE = {
 
   // Value proposition
   VALUE_PROP: {
+    /** T I T L E */
     TITLE: "Why Choose Us",
+    /** A U T H E N T I C */
     AUTHENTIC: "Authentic Products",
     SECURE_PAYMENTS: "Secure Payments",
     FAST_SHIPPING: "Fast Shipping",
@@ -1360,14 +1796,24 @@ export const HOMEPAGE = {
 // SEARCH & DISCOVERY
 // =============================================================================
 
+/**
+ * Search
+ * @constant
+ */
 export const SEARCH = {
   // Search
+  /** M A I N */
   MAIN: {
+    /** S E A R C H */
     SEARCH: "Search",
+    /** P L A C E H O L D E R */
     PLACEHOLDER: "Search products, shops, auctions...",
     LOOKING_FOR: "What are you looking for?",
+    /** P O P U L A R */
     POPULAR: "Popular Searches",
+    /** R E C E N T */
     RECENT: "Recent Searches",
+    /** R E S U L T S */
     RESULTS: "Search Results",
     RESULTS_FOR: 'Search Results for "{query}"',
     COUNT_FOUND: "{count} results found",
@@ -1377,10 +1823,15 @@ export const SEARCH = {
   },
 
   // Autocomplete
+  /** A U T O */
   AUTO: {
+    /** S U G G E S T I O N S */
     SUGGESTIONS: "Suggestions",
+    /** P R O D U C T S */
     PRODUCTS: "Products",
+    /** S H O P S */
     SHOPS: "Shops",
+    /** C A T E G O R I E S */
     CATEGORIES: "Categories",
     SEE_ALL: "See all results",
     VIEW_ALL: "View all {count} results",
@@ -1391,38 +1842,55 @@ export const SEARCH = {
 // REVIEWS & RATINGS
 // =============================================================================
 
+/**
+ * Review
+ * @constant
+ */
 export const REVIEW = {
   // Review form
+  /** F O R M */
   FORM: {
+    /** T I T L E */
     TITLE: "Write a Review",
     RATE_PRODUCT: "Rate this product",
     HOW_RATE: "How would you rate this product?",
     YOUR_RATING: "Your Rating",
     REVIEW_TITLE: "Review Title",
     YOUR_REVIEW: "Your Review",
+    /** R E C O M M E N D */
     RECOMMEND: "Would you recommend this product?",
+    /** Y E S */
     YES: "Yes",
+    /** N O */
     NO: "No",
     ADD_PHOTOS: "Add Photos (optional)",
+    /** S U B M I T */
     SUBMIT: "Submit Review",
     REVIEW_SUBMITTED: "Review submitted successfully",
     THANK_YOU: "Thank you for your review",
   },
 
   // Review display
+  /** D I S P L A Y */
   DISPLAY: {
+    /** T I T L E */
     TITLE: "Customer Reviews",
+    /** R E V I E W S */
     REVIEWS: "Reviews",
+    /** R A T I N G */
     RATING: "Rating",
     OUT_OF_5: "{rating} out of 5 stars",
     BASED_ON: "Based on {count} reviews",
+    /** C O U N T */
     COUNT: "{count} reviews",
     NO_REVIEWS: "No reviews yet",
     BE_FIRST: "Be the first to review",
     VERIFIED_PURCHASE: "Verified Purchase",
+    /** H E L P F U L */
     HELPFUL: "Helpful",
     NOT_HELPFUL: "Not Helpful",
     WAS_HELPFUL: "Was this review helpful?",
+    /** R E P O R T */
     REPORT: "Report Review",
     SORT_REVIEWS: "Sort reviews",
     MOST_RECENT: "Most Recent",
@@ -1436,34 +1904,56 @@ export const REVIEW = {
 // SHOP PAGES
 // =============================================================================
 
+/**
+ * Shop Page
+ * @constant
+ */
 export const SHOP_PAGE = {
   // Shop header
+  /** H E A D E R */
   HEADER: {
+    /** V I S I T */
     VISIT: "Visit Shop",
+    /** F O L L O W */
     FOLLOW: "Follow Shop",
+    /** F O L L O W I N G */
     FOLLOWING: "Following",
+    /** U N F O L L O W */
     UNFOLLOW: "Unfollow",
     PRODUCT_COUNT: "{count} products",
     FOLLOWER_COUNT: "{count} followers",
+    /** R A T I N G */
     RATING: "Shop Rating: {rating}/5",
     CONTACT_SELLER: "Contact Seller",
+    /** R E P O R T */
     REPORT: "Report Shop",
   },
 
   // Shop tabs
+  /** T A B S */
   TABS: {
+    /** P R O D U C T S */
     PRODUCTS: "Products",
+    /** A U C T I O N S */
     AUCTIONS: "Auctions",
+    /** R E V I E W S */
     REVIEWS: "Reviews",
+    /** A B O U T */
     ABOUT: "About",
+    /** P O L I C I E S */
     POLICIES: "Policies",
   },
 
   // Shop policies
+  /** P O L I C I E S */
   POLICIES: {
+    /** S H I P P I N G */
     SHIPPING: "Shipping Policy",
+    /** R E T U R N */
     RETURN: "Return Policy",
+    /** R E F U N D */
     REFUND: "Refund Policy",
+    /** E X C H A N G E */
     EXCHANGE: "Exchange Policy",
     PROCESSING_TIME: "Processing Time",
     SHIPPING_TIME: "Shipping Time",
@@ -1475,20 +1965,32 @@ export const SHOP_PAGE = {
 // MOBILE SPECIFIC
 // =============================================================================
 
+/**
+ * Mobile
+ * @constant
+ */
 export const MOBILE = {
   // Navigation
+  /** N A V */
   NAV: {
+    /** M E N U */
     MENU: "Menu",
     OPEN_MENU: "Open menu",
     CLOSE_MENU: "Close menu",
+    /** B A C K */
     BACK: "Back",
+    /** H O M E */
     HOME: "Home",
+    /** S E A R C H */
     SEARCH: "Search",
+    /** C A R T */
     CART: "Cart",
+    /** A C C O U N T */
     ACCOUNT: "Account",
   },
 
   // Actions
+  /** A C T I O N S */
   ACTIONS: {
     TAP_VIEW: "Tap to view",
     TAP_EDIT: "Tap to edit",
@@ -1502,40 +2004,57 @@ export const MOBILE = {
 // SPECIAL FEATURES
 // =============================================================================
 
+/**
+ * Features
+ * @constant
+ */
 export const FEATURES = {
   // Wishlist
+  /** W I S H L I S T */
   WISHLIST: {
     MY_WISHLIST: "My Wishlist",
+    /** W I S H L I S T */
     WISHLIST: "Wishlist",
     SAVE_LATER: "Save for Later",
     MOVE_TO_WISHLIST: "Move to Wishlist",
     MOVE_TO_CART: "Move to Cart",
     ITEMS_SAVED: "{count} items saved",
+    /** S H A R E */
     SHARE: "Share Wishlist",
     MAKE_PUBLIC: "Make Public",
     MAKE_PRIVATE: "Make Private",
   },
 
   // Favorites
+  /** F A V O R I T E S */
   FAVORITES: {
     MY_FAVORITES: "My Favorites",
+    /** F A V O R I T E S */
     FAVORITES: "Favorites",
     SAVED_ITEMS: "Saved Items",
+    /** A D D */
     ADD: "Add to Favorites",
+    /** R E M O V E */
     REMOVE: "Remove from Favorites",
+    /** C O U N T */
     COUNT: "{count} favorites",
   },
 
   // Notifications
+  /** N O T I F I C A T I O N S */
   NOTIFICATIONS: {
+    /** T I T L E */
     TITLE: "Notifications",
+    /** A L L */
     ALL: "All Notifications",
     MARK_READ: "Mark as Read",
     MARK_ALL_READ: "Mark All as Read",
+    /** D E L E T E */
     DELETE: "Delete Notification",
     CLEAR_ALL: "Clear All",
     NO_NEW: "No new notifications",
     UNREAD_COUNT: "{count} unread",
+    /** S E T T I N G S */
     SETTINGS: "Notification Settings",
     EMAIL_NOTIFICATIONS: "Email Notifications",
     PUSH_NOTIFICATIONS: "Push Notifications",
@@ -1547,6 +2066,10 @@ export const FEATURES = {
 // COMBINED EXPORT
 // =============================================================================
 
+/**
+ * Lang
+ * @constant
+ */
 export const LANG = {
   COMMON,
   AUTH,
@@ -1572,4 +2095,16 @@ export const LANG = {
 } as const;
 
 // Type export for TypeScript
+/**
+ * Language type
+ * 
+ * @typedef {Object} Language
+ * @description Type definition for Language
+ */
+/**
+ * Language type definition
+ *
+ * @typedef {typeof LANG} Language
+ * @description Type definition for Language
+ */
 export type Language = typeof LANG;

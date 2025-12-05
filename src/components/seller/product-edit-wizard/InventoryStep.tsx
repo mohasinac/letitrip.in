@@ -1,8 +1,42 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-edit-wizard/InventoryStep
+ * @description This file contains the InventoryStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
 import { FormSelect } from "@/components/forms/FormSelect";
 import type { StepProps } from "./types";
+
+/**
+ * Function: Inventory Step
+ */
+/**
+ * Performs inventory step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The inventorystep result
+ *
+ * @example
+ * InventoryStep({ formData, setFormData });
+ */
+
+/**
+ * Performs inventory step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The inventorystep result
+ *
+ * @example
+ * InventoryStep({ formData, setFormData });
+ */
 
 export function InventoryStep({ formData, setFormData }: StepProps) {
   return (
@@ -17,6 +51,7 @@ export function InventoryStep({ formData, setFormData }: StepProps) {
         onChange={(e) =>
           setFormData({
             ...formData,
+            /** Stock Count */
             stockCount: parseInt(e.target.value) || 0,
           })
         }
@@ -38,6 +73,7 @@ export function InventoryStep({ formData, setFormData }: StepProps) {
         onChange={(e) =>
           setFormData({
             ...formData,
+            /** Status */
             status: e.target.value as any,
           })
         }

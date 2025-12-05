@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/OrderId
+ * @description This file contains the OrderId component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Order ID Display Component
  *
  * Displays order IDs in a consistent format with optional copy functionality.
@@ -17,12 +26,43 @@ import { cn } from "@/lib/utils";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
+/**
+ * OrderIdProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderIdProps
+ */
 interface OrderIdProps {
+  /** Value */
   value: string;
+  /** Copyable */
   copyable?: boolean;
+  /** Format */
   format?: "short" | "full";
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Order Id
+ */
+/**
+ * Performs order id operation
+ *
+ * @returns {any} The orderid result
+ *
+ * @example
+ * OrderId();
+ */
+
+/**
+ * Performs order id operation
+ *
+ * @returns {any} The orderid result
+ *
+ * @example
+ * OrderId();
+ */
 
 export function OrderId({
   value,
@@ -34,6 +74,22 @@ export function OrderId({
 
   const displayValue = format === "full" ? value : formatOrderId(value);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(value);
@@ -41,7 +97,9 @@ export function OrderId({
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "OrderId.handleCopy",
+        /** Metadata */
         metadata: { orderId: value },
       });
     }

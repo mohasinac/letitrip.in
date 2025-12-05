@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/coupons.service
+ * @description This file contains service functions for coupons operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { COUPON_ROUTES, buildUrl } from "@/constants/api-routes";
 import type { CouponBE, CouponFiltersBE } from "@/types/backend/coupon.types";
@@ -22,26 +31,55 @@ import {
 
 // Remove old interfaces - now using types from type system
 
+/**
+ * ValidateCouponData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ValidateCouponData
+ */
 interface ValidateCouponData {
+  /** Code */
   code: string;
+  /** Cart Total */
   cartTotal: number;
+  /** Items */
   items: {
+    /** Product Id */
     productId: string;
+    /** Category Id */
     categoryId: string;
+    /** Quantity */
     quantity: number;
+    /** Price */
     price: number;
   }[];
 }
 
+/**
+ * ValidateCouponResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ValidateCouponResponse
+ */
 interface ValidateCouponResponse {
+  /** Valid */
   valid: boolean;
+  /** Discount */
   discount: number;
+  /** Message */
   message?: string;
 }
 
+/**
+ * CouponsService class
+ * 
+ * @class
+ * @description Description of CouponsService class functionality
+ */
 class CouponsService {
   // List coupons (public active/owner all)
   async list(
+    /** Filters */
     filters?: Partial<CouponFiltersBE>,
   ): Promise<PaginatedResponseFE<CouponFE>> {
     const endpoint = buildUrl(COUPON_ROUTES.LIST, filters);
@@ -49,8 +87,11 @@ class CouponsService {
       await apiService.get<PaginatedResponseBE<CouponBE>>(endpoint);
 
     return {
+      /** Data */
       data: toFECoupons(response.data),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
@@ -104,7 +145,9 @@ class CouponsService {
 
   // Check if coupon code is available (for form validation)
   async validateCode(
+    /** Code */
     code: string,
+    /** Shop Id */
     shopId?: string,
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
@@ -134,8 +177,11 @@ class CouponsService {
    * Bulk actions - supports: activate, deactivate, delete, update
    */
   async bulkAction(
+    /** Action */
     action: string,
+    /** Coupon Ids */
     couponIds: string[],
+    /** Data */
     data?: any,
   ): Promise<BulkActionResponse> {
     try {
@@ -179,7 +225,9 @@ class CouponsService {
    * Bulk update coupons
    */
   async bulkUpdate(
+    /** Coupon Ids */
     couponIds: string[],
+    /** Updates */
     updates: Partial<CouponFormFE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction(

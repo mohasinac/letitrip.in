@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/CategoryTree
+ * @description This file contains the CategoryTree component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -20,16 +29,33 @@ import { Download, Maximize2, Search, ZoomIn, ZoomOut } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import Tree from "react-d3-tree";
 
+/**
+ * TreeNode interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TreeNode
+ */
 interface TreeNode {
+  /** Name */
   name: string;
+  /** Attributes */
   attributes?: Record<string, string | number>;
+  /** Children */
   children?: TreeNode[];
   __rd3t?: {
+    /** Id */
     id: string;
+    /** Collapsed */
     collapsed?: boolean;
   };
 }
 
+/**
+ * CategoryTreeProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryTreeProps
+ */
 interface CategoryTreeProps {
   /** Root categories with nested children */
   categories: CategoryCardFE[];
@@ -40,6 +66,27 @@ interface CategoryTreeProps {
   /** Container height */
   height?: number | string;
 }
+
+/**
+ * Function: Category Tree
+ */
+/**
+ * Performs category tree operation
+ *
+ * @returns {any} The categorytree result
+ *
+ * @example
+ * CategoryTree();
+ */
+
+/**
+ * Performs category tree operation
+ *
+ * @returns {any} The categorytree result
+ *
+ * @example
+ * CategoryTree();
+ */
 
 export function CategoryTree({
   categories,
@@ -54,26 +101,52 @@ export function CategoryTree({
 
   // Convert categories to tree structure
   const treeData = useMemo<TreeNode>(() => {
+    /**
+     * Performs build tree operation
+     *
+     * @param {CategoryCardFE[]} cats - The cats
+     *
+     * @returns {any} The buildtree result
+     */
+
+    /**
+     * Performs build tree operation
+     *
+     * @param {CategoryCardFE[]} cats - The cats
+     *
+     * @returns {any} The buildtree result
+     */
+
     const buildTree = (cats: CategoryCardFE[]): TreeNode[] => {
       return cats.map((cat) => ({
+        /** Name */
         name: cat.name,
+        /** Attributes */
         attributes: {
+          /** Slug */
           slug: cat.slug,
+          /** Product Count */
           productCount: cat.productCount || 0,
+          /** Is Leaf */
           isLeaf: (cat as any).isLeaf ? "Yes" : "No",
         },
+        /** Children */
         children: (cat as any).children?.length
           ? buildTree((cat as any).children)
           : undefined,
         __rd3t: {
+          /** Id */
           id: cat.id,
+          /** Collapsed */
           collapsed: false,
         },
       }));
     };
 
     return {
+      /** Name */
       name: "Categories",
+      /** Children */
       children: buildTree(categories),
     };
   }, [categories]);
@@ -83,7 +156,9 @@ export function CategoryTree({
     if (containerRef.current) {
       const dimensions = containerRef.current.getBoundingClientRect();
       setTranslate({
+        /** X */
         x: dimensions.width / 2,
+        /** Y */
         y: 50,
       });
     }
@@ -95,8 +170,25 @@ export function CategoryTree({
       const categoryId = nodeData.__rd3t?.id;
       if (categoryId && onNodeClick) {
         // Find the category by ID (recursive search)
+        /**
+         * Performs find category operation
+         *
+         * @param {CategoryCardFE[]} cats - The cats
+         * @param {string} id - Unique identifier
+         *
+         * @returns {string} The findcategory result
+         */
+
+        /**
+         * Performs find category operation
+         *
+         * @returns {string} The findcategory result
+         */
+
         const findCategory = (
+          /** Cats */
           cats: CategoryCardFE[],
+          /** Id */
           id: string
         ): CategoryCardFE | null => {
           for (const cat of cats) {
@@ -119,8 +211,44 @@ export function CategoryTree({
   );
 
   // Zoom controls
+  /**
+   * Handles zoom in event
+   *
+   * @returns {any} The handlezoomin result
+   */
+
+  /**
+   * Handles zoom in event
+   *
+   * @returns {any} The handlezoomin result
+   */
+
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.2, 2));
+  /**
+   * Handles zoom out event
+   *
+   * @returns {any} The handlezoomout result
+   */
+
+  /**
+   * Handles zoom out event
+   *
+   * @returns {any} The handlezoomout result
+   */
+
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.2, 0.2));
+  /**
+   * Handles reset zoom event
+   *
+   * @returns {any} The handleresetzoom result
+   */
+
+  /**
+   * Handles reset zoom event
+   *
+   * @returns {any} The handleresetzoom result
+   */
+
   const handleResetZoom = () => {
     setZoom(initialZoom);
     centerTree();
@@ -144,6 +272,22 @@ export function CategoryTree({
   }, []);
 
   // Custom node rendering
+  /**
+   * Renders custom node
+   *
+   * @param {any} { nodeDatum } - The { node datum }
+   *
+   * @returns {any} The rendercustomnode result
+   */
+
+  /**
+   * Renders custom node
+   *
+   * @param {any} { nodeDatum } - The { node datum }
+   *
+   * @returns {any} The rendercustomnode result
+   */
+
   const renderCustomNode = ({ nodeDatum }: any) => {
     const isSearchMatch =
       searchQuery &&

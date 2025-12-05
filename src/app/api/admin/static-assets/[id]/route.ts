@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/static-assets/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import {
   listAssets,
@@ -6,6 +15,37 @@ import {
 } from "@/app/api/lib/static-assets-server.service";
 
 // GET /admin/static-assets/[id] - Get single asset
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_req, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_req, {});
+ */
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -25,6 +65,7 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       asset,
     });
@@ -38,7 +79,42 @@ export async function GET(
 }
 
 // PATCH /admin/static-assets/[id] - Update asset metadata
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(req, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Req */
+  req, {});
+ */
+
 export async function PATCH(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -55,6 +131,7 @@ export async function PATCH(
     const asset = await updateAssetMetadata(id, updates);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       asset,
     });
@@ -68,6 +145,37 @@ export async function PATCH(
 }
 
 // DELETE /admin/static-assets/[id] - Delete asset
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(_req, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} _req - The _req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(_req, {});
+ */
+
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -78,7 +186,9 @@ export async function DELETE(
     await deleteAsset(id);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Asset deleted successfully",
     });
   } catch (error) {

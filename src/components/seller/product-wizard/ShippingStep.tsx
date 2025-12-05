@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-wizard/ShippingStep
+ * @description This file contains the ShippingStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
@@ -6,6 +15,31 @@ import { FormTextarea } from "@/components/forms/FormTextarea";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import type { StepProps } from "./types";
 import type { AddressFE } from "@/types/frontend/address.types";
+
+/**
+ * Function: Shipping Step
+ */
+/**
+ * Performs shipping step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The shippingstep result
+ *
+ * @example
+ * ShippingStep({ formData, setFormData });
+ */
+
+/**
+ * Performs shipping step operation
+ *
+ * @param {StepProps} { formData, setFormData } - The { form data, set form data }
+ *
+ * @returns {any} The shippingstep result
+ *
+ * @example
+ * ShippingStep({ formData, setFormData });
+ */
 
 export function ShippingStep({ formData, setFormData }: StepProps) {
   return (
@@ -40,6 +74,7 @@ export function ShippingStep({ formData, setFormData }: StepProps) {
           onChange={(e) =>
             setFormData({
               ...formData,
+              /** Shipping Class */
               shippingClass: e.target.value as
                 | "standard"
                 | "express"

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/VerificationGate
+ * @description This file contains the VerificationGate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,10 +16,20 @@ import React, { useEffect, useState } from "react";
 import { EmailVerificationModal } from "./EmailVerificationModal";
 import { PhoneVerificationModal } from "./PhoneVerificationModal";
 
+/**
+ * VerificationGateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VerificationGateProps
+ */
 interface VerificationGateProps {
+  /** Children */
   children: React.ReactNode;
+  /** Require Email */
   requireEmail?: boolean;
+  /** Require Phone */
   requirePhone?: boolean;
+  /** Message */
   message?: string;
   actionName?: string; // e.g., "checkout", "place bid"
 }
@@ -34,6 +53,24 @@ interface VerificationGateProps {
  * </VerificationGate>
  * ```
  */
+/**
+ * Performs verification gate operation
+ *
+ * @returns {any} The verificationgate result
+ *
+ * @example
+ * VerificationGate();
+ */
+
+/**
+ * Performs verification gate operation
+ *
+ * @returns {any} The verificationgate result
+ *
+ * @example
+ * VerificationGate();
+ */
+
 export function VerificationGate({
   children,
   requireEmail = false,
@@ -51,6 +88,22 @@ export function VerificationGate({
   useEffect(() => {
     checkVerificationStatus();
   }, [user]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const checkVerificationStatus = async () => {
     if (!user) {
@@ -78,7 +131,9 @@ export function VerificationGate({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "VerificationGate.checkStatus",
+        /** Metadata */
         metadata: { message: "Failed to check verification status" },
       });
     } finally {
@@ -86,10 +141,34 @@ export function VerificationGate({
     }
   };
 
+  /**
+   * Handles email verified event
+   *
+   * @returns {any} The handleemailverified result
+   */
+
+  /**
+   * Handles email verified event
+   *
+   * @returns {any} The handleemailverified result
+   */
+
   const handleEmailVerified = () => {
     setEmailVerified(true);
     setShowEmailModal(false);
   };
+
+  /**
+   * Handles phone verified event
+   *
+   * @returns {any} The handlephoneverified result
+   */
+
+  /**
+   * Handles phone verified event
+   *
+   * @returns {any} The handlephoneverified result
+   */
 
   const handlePhoneVerified = () => {
     setPhoneVerified(true);

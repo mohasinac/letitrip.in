@@ -1,22 +1,94 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileQuickActions
+ * @description This file contains the MobileQuickActions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, ReactNode } from "react";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * QuickAction interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for QuickAction
+ */
 interface QuickAction {
+  /** Id */
   id: string;
+  /** Label */
   label: string;
+  /** Icon */
   icon: ReactNode;
+  /** On Click */
   onClick: () => void;
+  /** Color */
   color?: string;
 }
 
+/**
+ * MobileQuickActionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileQuickActionsProps
+ */
 interface MobileQuickActionsProps {
+  /** Actions */
   actions: QuickAction[];
+  /** Main Icon */
   mainIcon?: ReactNode;
+  /** Position */
   position?: "bottom-right" | "bottom-left";
 }
+
+/**
+ * Function: Mobile Quick Actions
+ */
+/**
+ * Performs mobile quick actions operation
+ *
+ * @param {MobileQuickActionsProps} [{
+  actions,
+  mainIcon,
+  position] - The {
+  actions,
+  main icon,
+  position
+ *
+ * @returns {any} The mobilequickactions result
+ *
+ * @example
+ * MobileQuickActions({
+  actions,
+  mainIcon,
+  position);
+ */
+
+/**
+ * Performs mobile quick actions operation
+ *
+ * @param {MobileQuickActionsProps} [{
+  actions,
+  mainIcon,
+  position] - The {
+  actions,
+  main icon,
+  position
+ *
+ * @returns {any} The mobilequickactions result
+ *
+ * @example
+ * MobileQuickActions({
+  actions,
+  mainIcon,
+  position);
+ */
 
 export function MobileQuickActions({
   actions,
@@ -24,6 +96,22 @@ export function MobileQuickActions({
   position = "bottom-right",
 }: MobileQuickActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  /**
+   * Handles action click event
+   *
+   * @param {QuickAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
+
+  /**
+   * Handles action click event
+   *
+   * @param {QuickAction} action - The action
+   *
+   * @returns {any} The handleactionclick result
+   */
 
   const handleActionClick = (action: QuickAction) => {
     action.onClick();
@@ -52,6 +140,7 @@ export function MobileQuickActions({
             key={action.id}
             className="flex items-center gap-2"
             style={{
+              /** Transition Delay */
               transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
             }}
           >

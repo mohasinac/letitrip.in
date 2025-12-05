@@ -1,22 +1,46 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/fees/optional/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { Star, TrendingUp, Megaphone, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Optional Services | Let It Rip",
+  /** Description */
   description: "Optional premium services to boost your sales on Let It Rip",
 };
 
+/**
+ * Performs optional services page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = OptionalServicesPage();
+ */
 export default function OptionalServicesPage() {
   const services = [
     {
+      /** Icon */
       icon: <Star className="w-8 h-8" />,
+      /** Title */
       title: "Featured Listing",
+      /** Description */
       description: "Get your product highlighted at the top of search results",
+      /** Pricing */
       pricing: [
         { duration: "1 Day", price: "₹199" },
         { duration: "7 Days", price: "₹999", save: "Save 30%" },
         { duration: "30 Days", price: "₹2,999", save: "Save 50%" },
       ],
+      /** Benefits */
       benefits: [
         "Appear at top of category pages",
         "Yellow highlight badge",
@@ -25,14 +49,19 @@ export default function OptionalServicesPage() {
       ],
     },
     {
+      /** Icon */
       icon: <TrendingUp className="w-8 h-8" />,
+      /** Title */
       title: "Promoted Product",
+      /** Description */
       description: "Show your product across the platform in various sections",
+      /** Pricing */
       pricing: [
         { duration: "7 Days", price: "₹1,499" },
         { duration: "14 Days", price: "₹2,499", save: "Save 17%" },
         { duration: "30 Days", price: "₹4,999", save: "Save 33%" },
       ],
+      /** Benefits */
       benefits: [
         "Featured in homepage carousel",
         "Related products section",
@@ -41,14 +70,19 @@ export default function OptionalServicesPage() {
       ],
     },
     {
+      /** Icon */
       icon: <Megaphone className="w-8 h-8" />,
+      /** Title */
       title: "Premium Shop Badge",
+      /** Description */
       description: "Verified badge and premium positioning for your shop",
+      /** Pricing */
       pricing: [
         { duration: "Monthly", price: "₹999/mo" },
         { duration: "Quarterly", price: "₹2,499/quarter", save: "Save 17%" },
         { duration: "Yearly", price: "₹8,999/year", save: "Save 25%" },
       ],
+      /** Benefits */
       benefits: [
         "Verified shop badge",
         "Priority customer support",
@@ -57,15 +91,20 @@ export default function OptionalServicesPage() {
       ],
     },
     {
+      /** Icon */
       icon: <Shield className="w-8 h-8" />,
+      /** Title */
       title: "Extended Coverage",
+      /** Description */
       description:
         "Additional buyer protection and insurance for high-value items",
+      /** Pricing */
       pricing: [
         { duration: "Per Item", price: "2% of value" },
         { duration: "Min Fee", price: "₹99" },
         { duration: "Max Fee", price: "₹4,999" },
       ],
+      /** Benefits */
       benefits: [
         "Damage protection",
         "Theft coverage during shipping",

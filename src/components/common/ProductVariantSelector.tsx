@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ProductVariantSelector
+ * @description This file contains the ProductVariantSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useEffect } from "react";
@@ -18,13 +27,45 @@ import type { ProductCardFE } from "@/types/frontend/product.types";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
 
+/**
+ * ProductVariantSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductVariantSelectorProps
+ */
 export interface ProductVariantSelectorProps {
+  /** Current Product Id */
   currentProductId: string;
+  /** Category Id */
   categoryId: string;
+  /** On Select */
   onSelect?: (productId: string) => void;
+  /** Class Name */
   className?: string;
+  /** Limit */
   limit?: number;
 }
+
+/**
+ * Function: Product Variant Selector
+ */
+/**
+ * Performs product variant selector operation
+ *
+ * @returns {any} The productvariantselector result
+ *
+ * @example
+ * ProductVariantSelector();
+ */
+
+/**
+ * Performs product variant selector operation
+ *
+ * @returns {any} The productvariantselector result
+ *
+ * @example
+ * ProductVariantSelector();
+ */
 
 export function ProductVariantSelector({
   currentProductId,
@@ -34,14 +75,19 @@ export function ProductVariantSelector({
   limit = 5,
 }: ProductVariantSelectorProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: products,
     setData,
     execute,
   } = useLoadingState<ProductCardFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "ProductVariantSelector.loadVariants",
       });
       toast.error("Failed to load similar products");
@@ -52,14 +98,51 @@ export function ProductVariantSelector({
     loadVariants();
   }, [categoryId, currentProductId]);
 
+  /**
+   * Fetches variants from server
+   *
+   * @returns {Promise<any>} Promise resolving to variants result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches variants from server
+   *
+   * @returns {Promise<any>} Promise resolving to variants result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadVariants = () =>
     execute(async () => {
       const response = await productsService.list({
         categoryId,
+        /** Limit */
         limit: limit + 1,
       });
 
       // Filter out current product and limit results
+      /**
+       * Filters filtered
+       *
+       * @param {any} response.data || [])
+        .filter((p - The response.data || [])
+        .filter((p
+       *
+       * @returns {any} The filtered result
+       */
+
+      /**
+       * Filters filtered
+       *
+       * @param {any} response.data || [])
+        .filter((p - The response.data || [])
+        .filter((p
+       *
+       * @returns {any} The filtered result
+       */
+
       const filtered = (response.data || [])
         .filter((p) => p.id !== currentProductId)
         .slice(0, limit);
@@ -126,6 +209,18 @@ export function ProductVariantSelector({
                   100,
               )
             : 0;
+
+          /**
+           * Renders content
+           *
+           * @returns {any} The rendercontent result
+           */
+
+          /**
+           * Renders content
+           *
+           * @returns {any} The rendercontent result
+           */
 
           const renderContent = () => (
             <>

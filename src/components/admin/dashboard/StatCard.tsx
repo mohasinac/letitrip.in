@@ -1,21 +1,65 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/dashboard/StatCard
+ * @description This file contains the StatCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import Link from "next/link";
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
+/**
+ * StatCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatCardProps
+ */
 interface StatCardProps {
+  /** Title */
   title: string;
+  /** Value */
   value: string | number;
+  /** Change */
   change?: number;
+  /** Trend */
   trend?: "up" | "down";
+  /** Icon */
   icon: LucideIcon;
+  /** Color */
   color: string;
+  /** Href */
   href: string;
 }
+
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ *
+ * @example
+ * StatCard();
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ *
+ * @example
+ * StatCard();
+ */
 
 export function StatCard({
   title,
   value,
   change,
   trend,
+  /** Icon */
   icon: Icon,
   color,
   href,

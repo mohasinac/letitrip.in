@@ -1,57 +1,112 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ResourceDetailWrapper
+ * @description This file contains the ResourceDetailWrapper component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
+/**
+ * BreadcrumbItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BreadcrumbItem
+ */
 interface BreadcrumbItem {
+  /** Label */
   label: string;
+  /** Href */
   href?: string;
 }
 
+/**
+ * Tab interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Tab
+ */
 interface Tab {
+  /** Id */
   id: string;
+  /** Label */
   label: string;
+  /** Content */
   content: ReactNode;
 }
 
+/**
+ * StatsCard interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatsCard
+ */
 interface StatsCard {
+  /** Label */
   label: string;
+  /** Value */
   value: string | number;
+  /** Icon */
   icon?: ReactNode;
+  /** Color */
   color?: string;
 }
 
+/**
+ * ResourceDetailWrapperProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceDetailWrapperProps
+ */
 interface ResourceDetailWrapperProps {
   // Context
+  /** Context */
   context: "admin" | "seller" | "public";
 
   // Breadcrumbs
+  /** Breadcrumbs */
   breadcrumbs: BreadcrumbItem[];
 
   // Header
+  /** Title */
   title: string;
+  /** Subtitle */
   subtitle?: string;
+  /** Badge */
   badge?: ReactNode;
 
   // Action Buttons (contextual)
+  /** Actions */
   actions?: ReactNode;
 
   // Tabs (optional)
+  /** Tabs */
   tabs?: Tab[];
+  /** Active Tab */
   activeTab?: string;
+  /** On Tab Change */
   onTabChange?: (tabId: string) => void;
 
   // Stats Cards (optional)
+  /** Stats */
   stats?: StatsCard[];
 
   // Main Content
+  /** Children */
   children: ReactNode;
 
   // Related Items (optional)
+  /** Related Items */
   relatedItems?: ReactNode;
 
   // Comments/Reviews Section (optional)
+  /** Comments Section */
   commentsSection?: ReactNode;
 }
 

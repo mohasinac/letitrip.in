@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/returns/[id]/.media/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
@@ -7,7 +16,42 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 // NOTE: This is a simplified stub. In production, validate file type/size and use signed URLs or direct upload tokens.
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Req */
+  req, {});
+ */
+
 export async function POST(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -75,8 +119,11 @@ export async function POST(
       const path = `returns/media/${id}/${randomUUID()}.${ext}`;
       const file = bucket.file(path);
       await file.save(buffer, {
+        /** Content Type */
         contentType: f.type,
+        /** Resumable */
         resumable: false,
+        /** Public */
         public: true,
       });
       // Make public (optional) and get public URL
@@ -89,13 +136,16 @@ export async function POST(
 
     // Append media URLs to return doc
     await retRef.update({
+      /** Media */
       media: [...(ret.media || []), ...uploaded],
       updated_at: new Date().toISOString(),
     });
     return NextResponse.json({ success: true, data: { urls: uploaded } });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.media.uploadDirect",
+      /** Metadata */
       metadata: { returnId: id },
     });
     return NextResponse.json(

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auth/PhoneVerificationModal
+ * @description This file contains the PhoneVerificationModal component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -6,11 +15,22 @@ import { otpService } from "@/services/otp.service";
 import { useEffect, useState } from "react";
 import { OTPInput } from "./OTPInput";
 
+/**
+ * PhoneVerificationModalProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PhoneVerificationModalProps
+ */
 interface PhoneVerificationModalProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** User Id */
   userId: string;
+  /** Phone Number */
   phoneNumber: string;
+  /** On Verified */
   onVerified: () => void;
 }
 
@@ -25,6 +45,24 @@ interface PhoneVerificationModalProps {
  * - Dark mode support
  * - Mobile responsive
  */
+/**
+ * Performs phone verification modal operation
+ *
+ * @returns {any} The phoneverificationmodal result
+ *
+ * @example
+ * PhoneVerificationModal();
+ */
+
+/**
+ * Performs phone verification modal operation
+ *
+ * @returns {any} The phoneverificationmodal result
+ *
+ * @example
+ * PhoneVerificationModal();
+ */
+
 export function PhoneVerificationModal({
   isOpen,
   onClose,
@@ -41,9 +79,12 @@ export function PhoneVerificationModal({
   const [resendCountdown, setResendCountdown] = useState(0);
 
   const { isLoading: sending, execute: executeSend } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "PhoneVerificationModal.sendOTP",
+        /** Metadata */
         metadata: { userId, phoneNumber },
       });
       setError("Failed to send OTP. Please try again.");
@@ -51,9 +92,12 @@ export function PhoneVerificationModal({
   });
 
   const { isLoading: verifying, execute: executeVerify } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "PhoneVerificationModal.verifyOTP",
+        /** Metadata */
         metadata: { userId, phoneNumber },
       });
       setError("Verification failed. Please try again.");
@@ -97,6 +141,22 @@ export function PhoneVerificationModal({
     return () => clearInterval(timer);
   }, [expiresAt]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const sendOTP = async () => {
     setError("");
     setSuccess("");
@@ -106,7 +166,9 @@ export function PhoneVerificationModal({
       // Generate OTP
       const result = await otpService.sendOTP({
         userId,
+        /** Type */
         type: "phone",
+        /** Destination */
         destination: phoneNumber,
       });
 
@@ -132,6 +194,22 @@ export function PhoneVerificationModal({
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const verifyOTP = async () => {
     if (otp.length !== 6) {
       setError("Please enter the complete 6-digit OTP");
@@ -144,7 +222,9 @@ export function PhoneVerificationModal({
     await executeVerify(async () => {
       const result = await otpService.verifyOTP({
         userId,
+        /** Type */
         type: "phone",
+        /** Destination */
         destination: phoneNumber,
         otp,
       });
@@ -162,10 +242,42 @@ export function PhoneVerificationModal({
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleResend = async () => {
     if (!canResend) return;
     await sendOTP();
   };
+
+  /**
+   * Formats phone number
+   *
+   * @param {string} phone - The phone
+   *
+   * @returns {string} The formatphonenumber result
+   */
+
+  /**
+   * Formats phone number
+   *
+   * @param {string} phone - The phone
+   *
+   * @returns {string} The formatphonenumber result
+   */
 
   const formatPhoneNumber = (phone: string) => {
     // Format +919876543210 as +91 98765 43210
@@ -283,6 +395,7 @@ export function PhoneVerificationModal({
           onClick={verifyOTP}
           disabled={verifying || otp.length !== 6}
           className="w-full px-4 py-3 text-white bg-primary-600 rounded-lg hover:bg-primary-700 
+            /** Disabled */
             disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed
             transition-colors duration-200"
         >
@@ -293,6 +406,7 @@ export function PhoneVerificationModal({
         <button
           onClick={onClose}
           className="w-full mt-3 px-4 py-2 text-gray-700 dark:text-gray-300 
+            /** Hover */
             hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
         >
           Cancel

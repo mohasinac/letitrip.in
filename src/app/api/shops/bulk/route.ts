@@ -1,11 +1,40 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireAdmin } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // Build update object for each action
+/**
+ * Function: Build Shop Update
+ */
+/**
+ * Performs build shop update operation
+ *
+ * @param {string} action - The action
+ * @param {any} [data] - Data object containing information
+ *
+ * @returns {string} The buildshopupdate result
+ */
+
+/**
+ * Performs build shop update operation
+ *
+ * @returns {string} The buildshopupdate result
+ */
+
 function buildShopUpdate(
+  /** Action */
   action: string,
+  /** Data */
   data?: any,
 ): Record<string, any> | null {
   const now = new Date();
@@ -45,12 +74,36 @@ function buildShopUpdate(
         if (field in data) updates[field] = data[field];
       }
       return updates;
+    /** Default */
     default:
       return null;
   }
 }
 
 // Check if shop can be deleted
+/**
+ * Function: Can Delete Shop
+ */
+/**
+ * Checks if delete shop
+ *
+ * @param {string} shopId - shop identifier
+ *
+ * @returns {Promise<any>} Promise resolving to candeleteshop result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Checks if delete shop
+ *
+ * @param {string} shopId - shop identifier
+ *
+ * @returns {Promise<any>} Promise resolving to candeleteshop result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function canDeleteShop(shopId: string): Promise<string | null> {
   const productsSnapshot = await Collections.products()
     .where("shop_id", "==", shopId)
@@ -75,6 +128,32 @@ async function canDeleteShop(shopId: string): Promise<string | null> {
  * Actions: verify, unverify, feature, unfeature, activate, deactivate, ban, unban, delete, update
  */
 
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     // Require admin role
@@ -87,7 +166,9 @@ export async function POST(request: NextRequest) {
     if (!action || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid request. Provide action and ids array.",
         },
         { status: 400 },
@@ -95,7 +176,9 @@ export async function POST(request: NextRequest) {
     }
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -126,6 +209,7 @@ export async function POST(request: NextRequest) {
         if (!updates) {
           results.failed.push({
             id,
+            /** Error */
             error:
               action === "update"
                 ? "No update data provided"
@@ -142,12 +226,17 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       action,
       results,
+      /** Summary */
       summary: {
+        /** Total */
         total: ids.length,
+        /** Succeeded */
         succeeded: results.success.length,
+        /** Failed */
         failed: results.failed.length,
       },
     });
@@ -155,7 +244,9 @@ export async function POST(request: NextRequest) {
     logError(error as Error, { component: "API.shops.bulk" });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Bulk operation failed",
       },
       { status: 500 },

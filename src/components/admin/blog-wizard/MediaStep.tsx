@@ -1,14 +1,55 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/blog-wizard/MediaStep
+ * @description This file contains the MediaStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { FormLabel } from "@/components/forms/FormLabel";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Upload, X } from "lucide-react";
 
+/**
+ * MediaStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaStepProps
+ */
 interface MediaStepProps {
+  /** Featured Image */
   featuredImage?: string;
+  /** Is Uploading */
   isUploading: boolean;
+  /** On Image Upload */
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** On Image Remove */
   onImageRemove: () => void;
+  /** Error */
   error?: string;
 }
+
+/**
+ * Function: Media Step
+ */
+/**
+ * Performs media step operation
+ *
+ * @returns {any} The mediastep result
+ *
+ * @example
+ * MediaStep();
+ */
+
+/**
+ * Performs media step operation
+ *
+ * @returns {any} The mediastep result
+ *
+ * @example
+ * MediaStep();
+ */
 
 export function MediaStep({
   featuredImage,

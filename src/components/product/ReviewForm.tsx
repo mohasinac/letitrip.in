@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ReviewForm
+ * @description This file contains the ReviewForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -12,10 +21,20 @@ import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 
+/**
+ * ReviewFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewFormProps
+ */
 interface ReviewFormProps {
+  /** Product Id */
   productId: string;
+  /** Order Id */
   orderId?: string;
+  /** On Success */
   onSuccess?: () => void;
+  /** On Cancel */
   onCancel?: () => void;
 }
 
@@ -41,12 +60,35 @@ export default function ReviewForm({
     getUploadedUrls,
     hasUploadedMedia,
   } = useMediaUploadWithCleanup({
+    /** Enable Navigation Guard */
     enableNavigationGuard: true,
+    /** Navigation Guard Message */
     navigationGuardMessage: "You have uploaded media. Leave and delete?",
+    /** On Upload Error */
     onUploadError: (error) => {
       setError(`Upload failed: ${error}`);
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {MediaFile[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleFilesAdded = async (files: MediaFile[]) => {
     setMediaFiles([...mediaFiles, ...files]);
@@ -61,16 +103,56 @@ export default function ReviewForm({
       toast.success("Images uploaded successfully");
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "ReviewForm.handleImageUpload",
+        /** Metadata */
         metadata: { productId },
       });
       toast.error("Failed to upload images");
     }
   };
 
+  /**
+   * Handles file removed event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to handlefileremoved result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles file removed event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handlefileremoved result
+   */
+
   const handleFileRemoved = (id: string) => {
     setMediaFiles(mediaFiles.filter((f) => f.id !== id));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,8 +174,11 @@ export default function ReviewForm({
       await reviewsService.create({
         productId,
         rating,
+        /** Title */
         title: title.trim(),
+        /** Comment */
         comment: comment.trim(),
+        /** Images */
         images: getUploadedUrls(),
       });
 
@@ -115,6 +200,22 @@ export default function ReviewForm({
       setSubmitting(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCancelClick = async () => {
     if (hasUploadedMedia) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/[slug]/products/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getCategoryIdsForQuery } from "@/lib/category-hierarchy";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
@@ -9,7 +18,39 @@ import { COLLECTIONS } from "@/constants/database";
  * GET /api/categories/[slug]/products
  * Fetch products in a category (includes all subcategories hierarchically)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
@@ -64,6 +105,7 @@ export async function GET(
         .get();
 
       const batchProducts = productsSnapshot.docs.map((doc) => ({
+        /** Id */
         id: doc.id,
         ...doc.data(),
       })) as ProductListItemBE[];
@@ -85,7 +127,47 @@ export async function GET(
 
     // Apply client-side sorting (since we fetched from multiple batches)
     allProducts.sort((a, b) => {
+      /**
+       * Performs a val operation
+       *
+       * @param {any} [a as any)[sortField] || 0;
+      const bVal] - The a as any)[sort field] || 0;
+      const b val
+       *
+       * @returns {any} The aval result
+       */
+
+      /**
+       * Performs a val operation
+       *
+       * @returns {any} The aval result
+       */
+
       const aVal = (a as any)[sortField] || 0;
+      /**
+       * Performs b val operation
+       *
+       * @param {any} [b as any)[sortField] || 0;
+
+      if (sortOrder] - The b as any)[sort field] || 0;
+
+      if (sort order
+       *
+       * @returns {any} The bval result
+       */
+
+      /**
+       * Performs b val operation
+       *
+       * @param {any} [b as any)[sortField] || 0;
+
+      if (sortOrder] - The b as any)[sort field] || 0;
+
+      if (sort order
+       *
+       * @returns {any} The bval result
+       */
+
       const bVal = (b as any)[sortField] || 0;
 
       if (sortOrder === "asc") {
@@ -98,6 +180,18 @@ export async function GET(
     // Apply client-side pagination
     const total = allProducts.length;
     const totalPages = Math.ceil(total / limit);
+    /**
+     * Performs offset operation
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (page - 1) * limit;
     const paginatedProducts = allProducts.slice(offset, offset + limit);
 
@@ -105,25 +199,35 @@ export async function GET(
     const productsForResponse = toFEProductCards(paginatedProducts);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: productsForResponse,
       total,
       page,
       limit,
       totalPages,
+      /** Has More */
       hasMore: page < totalPages,
+      /** Pagination */
       pagination: {
         page,
         limit,
         total,
         totalPages,
+        /** Has Next */
         hasNext: page < totalPages,
+        /** Has Prev */
         hasPrev: page > 1,
       },
+      /** Meta */
       meta: {
+        /** Category Id */
         categoryId: category.id,
+        /** Category Slug */
         categorySlug: slug,
         descendantCategoryCount: categoryIds.length - 1, // Exclude self
+        /** Total Categories Searched */
         totalCategoriesSearched: categoryIds.length,
       },
     });
@@ -131,7 +235,9 @@ export async function GET(
     console.error("Category products error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to fetch category products",
       },
       { status: 500 },

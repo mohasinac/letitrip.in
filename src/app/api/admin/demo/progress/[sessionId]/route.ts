@@ -1,6 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/progress/[sessionId]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _request - The _request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_request, {});
+ */
 
 export async function GET(
   _request: Request,
@@ -51,14 +91,22 @@ export async function GET(
       ]);
 
     const progress = {
+      /** Categories */
       categories: categories.data().count,
+      /** Users */
       users: users.data().count,
+      /** Shops */
       shops: shops.data().count,
+      /** Products */
       products: products.data().count,
+      /** Auctions */
       auctions: auctions.data().count,
+      /** Bids */
       bids: bids.data().count,
+      /** Orders */
       orders: orders.data().count,
       total: 261, // Expected total
+      /** Current */
       current:
         categories.data().count +
         users.data().count +
@@ -67,7 +115,9 @@ export async function GET(
         auctions.data().count +
         bids.data().count +
         orders.data().count,
+      /** Percentage */
       percentage: 0,
+      /** Status */
       status: "in_progress",
     };
 

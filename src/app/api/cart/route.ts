@@ -1,8 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/cart/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../lib/session";
 
 // GET /api/cart - Get user cart with summary
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -59,18 +97,31 @@ export async function GET(request: NextRequest) {
         const shop = shopDoc.data();
 
         return {
+          /** Id */
           id: doc.id,
+          /** User Id */
           userId: data.user_id,
+          /** Product Id */
           productId: data.product_id,
+          /** Product Name */
           productName: product.name,
+          /** Product Image */
           productImage: product.images?.[0] || "",
+          /** Price */
           price: product.price,
+          /** Original Price */
           originalPrice: product.original_price,
+          /** Quantity */
           quantity: data.quantity,
+          /** Variant */
           variant: data.variant,
+          /** Shop Id */
           shopId: product.shop_id,
+          /** Shop Name */
           shopName: shop?.name || "Unknown",
+          /** Stock Count */
           stockCount: product.stock_count || 0,
+          /** Added At */
           addedAt: data.added_at,
         };
       }),
@@ -95,12 +146,14 @@ export async function GET(request: NextRequest) {
         : null;
 
     const summary = {
+      /** Items */
       items: validItems,
       subtotal,
       shipping,
       tax,
       discount,
       total,
+      /** Item Count */
       itemCount: validItems.reduce(
         (sum: number, item: any) => sum + item.quantity,
         0,
@@ -108,9 +161,13 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: summary,
+      /** Count */
       count: validItems.length,
+      /** Pagination */
       pagination: {
         limit,
         hasNextPage,
@@ -127,6 +184,35 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/cart - Add item to cart
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -195,13 +281,17 @@ export async function POST(request: NextRequest) {
       }
 
       await existingDoc.ref.update({
+        /** Quantity */
         quantity: newQuantity,
         updated_at: now,
       });
 
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Data */
         data: { id: existingDoc.id, quantity: newQuantity },
+        /** Message */
         message: "Cart updated",
       });
     } else {
@@ -210,6 +300,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         product_id: productId,
         quantity,
+        /** Variant */
         variant: variant || null,
         added_at: now,
         updated_at: now,
@@ -217,8 +308,11 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
+          /** Success */
           success: true,
+          /** Data */
           data: { id: docRef.id, quantity },
+          /** Message */
           message: "Item added to cart",
         },
         { status: 201 },
@@ -234,6 +328,35 @@ export async function POST(request: NextRequest) {
 }
 
 // DELETE /api/cart - Clear entire cart
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request);
+ */
+
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);

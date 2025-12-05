@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/ProductsSection
+ * @description This file contains the ProductsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,11 +18,51 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * ProductsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductsSectionProps
+ */
 interface ProductsSectionProps {
+  /** Latest Limit */
   latestLimit?: number;
+  /** Featured Limit */
   featuredLimit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Products Section
+ */
+/**
+ * Performs products section operation
+ *
+ * @param {ProductsSectionProps} [{
+  latestLimit] - The {
+  latest limit
+ *
+ * @returns {any} The productssection result
+ *
+ * @example
+ * ProductsSection({
+  latestLimit);
+ */
+
+/**
+ * Performs products section operation
+ *
+ * @param {ProductsSectionProps} [{
+  latestLimit] - The {
+  latest limit
+ *
+ * @returns {any} The productssection result
+ *
+ * @example
+ * ProductsSection({
+  latestLimit);
+ */
 
 export function ProductsSection({
   latestLimit = 8,
@@ -28,6 +77,22 @@ export function ProductsSection({
     loadProducts();
   }, [latestLimit, featuredLimit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -41,7 +106,9 @@ export function ProductsSection({
 
       if (latest.length > 0 || featured.length > 0) {
         analyticsService.trackEvent("homepage_products_viewed", {
+          /** Latest Count */
           latestCount: latest.length,
+          /** Featured Count */
           featuredCount: featured.length,
         });
       }

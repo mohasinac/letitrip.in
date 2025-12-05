@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/StatCard
+ * @description This file contains the StatCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * StatCard Component
  *
  * A reusable statistics card for dashboards and analytics.
@@ -40,6 +49,12 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
+/**
+ * StatCardColor type
+ * 
+ * @typedef {Object} StatCardColor
+ * @description Type definition for StatCardColor
+ */
 export type StatCardColor =
   | "blue"
   | "green"
@@ -49,6 +64,12 @@ export type StatCardColor =
   | "yellow"
   | "indigo";
 
+/**
+ * StatCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StatCardProps
+ */
 interface StatCardProps {
   /** Title/label for the stat */
   title: string;
@@ -74,42 +95,89 @@ const colorClasses: Record<
   StatCardColor,
   { icon: string; bg: string; text: string }
 > = {
+  /** Blue */
   blue: {
+    /** Icon */
     icon: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
+    /** Bg */
     bg: "bg-blue-50 dark:bg-blue-900/20",
+    /** Text */
     text: "text-blue-600 dark:text-blue-400",
   },
+  /** Green */
   green: {
+    /** Icon */
     icon: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
+    /** Bg */
     bg: "bg-green-50 dark:bg-green-900/20",
+    /** Text */
     text: "text-green-600 dark:text-green-400",
   },
+  /** Purple */
   purple: {
+    /** Icon */
     icon: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
+    /** Bg */
     bg: "bg-purple-50 dark:bg-purple-900/20",
+    /** Text */
     text: "text-purple-600 dark:text-purple-400",
   },
+  /** Orange */
   orange: {
+    /** Icon */
     icon: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
+    /** Bg */
     bg: "bg-orange-50 dark:bg-orange-900/20",
+    /** Text */
     text: "text-orange-600 dark:text-orange-400",
   },
+  /** Red */
   red: {
+    /** Icon */
     icon: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
+    /** Bg */
     bg: "bg-red-50 dark:bg-red-900/20",
+    /** Text */
     text: "text-red-600 dark:text-red-400",
   },
+  /** Yellow */
   yellow: {
+    /** Icon */
     icon: "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400",
+    /** Bg */
     bg: "bg-yellow-50 dark:bg-yellow-900/20",
+    /** Text */
     text: "text-yellow-600 dark:text-yellow-400",
   },
+  /** Indigo */
   indigo: {
+    /** Icon */
     icon: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400",
+    /** Bg */
     bg: "bg-indigo-50 dark:bg-indigo-900/20",
+    /** Text */
     text: "text-indigo-600 dark:text-indigo-400",
   },
 };
+
+/**
+ * Function: Format Value
+ */
+/**
+ * Formats value
+ *
+ * @param {string | number} value - The value
+ *
+ * @returns {string} The formatvalue result
+ */
+
+/**
+ * Formats value
+ *
+ * @param {string | number} value - The value
+ *
+ * @returns {string} The formatvalue result
+ */
 
 function formatValue(value: string | number): string {
   if (typeof value === "number") {
@@ -118,10 +186,32 @@ function formatValue(value: string | number): string {
   return value;
 }
 
+/**
+ * Function: Stat Card
+ */
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ *
+ * @example
+ * StatCard();
+ */
+
+/**
+ * Performs stat card operation
+ *
+ * @returns {any} The statcard result
+ *
+ * @example
+ * StatCard();
+ */
+
 export function StatCard({
   title,
   value,
   change,
+  /** Icon */
   icon: Icon,
   color,
   prefix = "",
@@ -132,6 +222,18 @@ export function StatCard({
   const colors = colorClasses[color];
   const isPositive = change !== undefined && change >= 0;
   const isNegative = change !== undefined && change < 0;
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
 
   const content = (
     <div className="flex items-center justify-between">

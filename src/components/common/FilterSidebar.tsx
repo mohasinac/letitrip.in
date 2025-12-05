@@ -1,10 +1,28 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/FilterSidebar
+ * @description This file contains the FilterSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
 
+/**
+ * FilterField interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterField
+ */
 export interface FilterField {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Type */
   type:
     | "text"
     | "number"
@@ -15,33 +33,86 @@ export interface FilterField {
     | "date"
     | "daterange"
     | "range";
+  /** Options */
   options?: { label: string; value: string | number; count?: number }[];
+  /** Placeholder */
   placeholder?: string;
+  /** Min */
   min?: number;
+  /** Max */
   max?: number;
+  /** Step */
   step?: number;
+  /** Icon */
   icon?: ReactNode;
 }
 
+/**
+ * FilterSection interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterSection
+ */
 export interface FilterSection {
+  /** Title */
   title: string;
+  /** Fields */
   fields: FilterField[];
+  /** Collapsible */
   collapsible?: boolean;
+  /** Default Collapsed */
   defaultCollapsed?: boolean;
 }
 
+/**
+ * FilterSidebarProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterSidebarProps
+ */
 export interface FilterSidebarProps {
+  /** Sections */
   sections: FilterSection[];
+  /** Values */
   values: Record<string, any>;
+  /** On Change */
   onChange: (key: string, value: any) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose?: () => void;
+  /** Class Name */
   className?: string;
+  /** Result Count */
   resultCount?: number;
+  /** Is Loading */
   isLoading?: boolean;
 }
+
+/**
+ * Function: Filter Sidebar
+ */
+/**
+ * Performs filter sidebar operation
+ *
+ * @returns {any} The filtersidebar result
+ *
+ * @example
+ * FilterSidebar();
+ */
+
+/**
+ * Performs filter sidebar operation
+ *
+ * @returns {any} The filtersidebar result
+ *
+ * @example
+ * FilterSidebar();
+ */
 
 export function FilterSidebar({
   sections,
@@ -70,6 +141,22 @@ export function FilterSidebar({
     setCollapsedSections(initialCollapsed);
   }, [sections]);
 
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The togglesection result
+   */
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The togglesection result
+   */
+
   const toggleSection = (title: string) => {
     setCollapsedSections((prev) => {
       const newSet = new Set(prev);
@@ -89,9 +176,28 @@ export function FilterSidebar({
     return value !== null && value !== undefined && value !== "";
   });
 
+  /**
+   * Handles checkbox change event
+   *
+   * @param {string} key - The key
+   * @param {string | number} optionValue - The option value
+   * @param {boolean} checked - Whether checked
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Handles checkbox change event
+   *
+   * @returns {string} The handlecheckboxchange result
+   */
+
   const handleCheckboxChange = (
+    /** Key */
     key: string,
+    /** Option Value */
     optionValue: string | number,
+    /** Checked */
     checked: boolean,
   ) => {
     const currentValues = values[key] || [];
@@ -100,6 +206,22 @@ export function FilterSidebar({
       : currentValues.filter((v: any) => v !== optionValue);
     onChange(key, newValues);
   };
+
+  /**
+   * Renders field
+   *
+   * @param {FilterField} field - The field
+   *
+   * @returns {any} The renderfield result
+   */
+
+  /**
+   * Renders field
+   *
+   * @param {FilterField} field - The field
+   *
+   * @returns {any} The renderfield result
+   */
 
   const renderField = (field: FilterField) => {
     const value = values[field.key];
@@ -277,6 +399,7 @@ export function FilterSidebar({
           </div>
         );
 
+      /** Default */
       default:
         return null;
     }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/MobileNavRow
+ * @description This file contains the MobileNavRow component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
@@ -23,15 +32,33 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
 }
 
+/**
+ * MobileNavRowProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileNavRowProps
+ */
 interface MobileNavRowProps {
+  /** Items */
   items: NavItem[];
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "admin" | "seller" | "user";
 }
 
@@ -40,6 +67,50 @@ interface MobileNavRowProps {
  * Used above BottomNav on admin/seller/user routes to provide secondary navigation
  * Hidden on desktop (lg+) where sidebars are visible
  */
+/**
+ * Performs mobile nav row operation
+ *
+ * @param {MobileNavRowProps} [{
+  items,
+  className,
+  variant] - The {
+  items,
+  /**
+   * Name class
+   * @class name
+   */
+  class name,
+  variant
+ *
+ * @returns {any} The mobilenavrow result
+ *
+ * @example
+ * MobileNavRow({
+  items,
+  className,
+  variant);
+ */
+
+/**
+ * Performs mobile nav row operation
+ *
+ * @param {MobileNavRowProps} [{
+  items,
+  className,
+  variant] - The {
+  items,
+  class name,
+  variant
+ *
+ * @returns {any} The mobilenavrow result
+ *
+ * @example
+ * MobileNavRow({
+  items,
+  className,
+  variant);
+ */
+
 export function MobileNavRow({
   items,
   className,
@@ -71,6 +142,22 @@ export function MobileNavRow({
     }
   }, [checkScroll, items]);
 
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const scrollAmount = 150;
@@ -81,6 +168,22 @@ export function MobileNavRow({
     }
   };
 
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
   const isActive = (href: string) => {
     const basePaths = ["/user", "/admin", "/seller"];
     if (basePaths.includes(href)) {
@@ -90,28 +193,43 @@ export function MobileNavRow({
   };
 
   const variantColors = {
+    /** Admin */
     admin: {
+      /** Active */
       active:
         "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 border-purple-500",
+      /** Inactive */
       inactive:
         "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 border-transparent",
+      /** Active Icon */
       activeIcon: "text-purple-600 dark:text-purple-500",
+      /** Inactive Icon */
       inactiveIcon: "text-gray-400 dark:text-gray-500",
     },
+    /** Seller */
     seller: {
+      /** Active */
       active:
         "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border-blue-500",
+      /** Inactive */
       inactive:
         "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 border-transparent",
+      /** Active Icon */
       activeIcon: "text-blue-600 dark:text-blue-500",
+      /** Inactive Icon */
       inactiveIcon: "text-gray-400 dark:text-gray-500",
     },
+    /** User */
     user: {
+      /** Active */
       active:
         "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 border-yellow-500",
+      /** Inactive */
       inactive:
         "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 border-transparent",
+      /** Active Icon */
       activeIcon: "text-yellow-600 dark:text-yellow-500",
+      /** Inactive Icon */
       inactiveIcon: "text-gray-400 dark:text-gray-500",
     },
   };

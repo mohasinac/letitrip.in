@@ -1,15 +1,67 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/middleware/auth
+ * @description This file contains functionality related to auth
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionToken, verifySession, SessionData } from "../lib/session";
 
+/**
+ * AuthenticatedRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuthenticatedRequest
+ */
 export interface AuthenticatedRequest extends NextRequest {
+  /** Session */
   session?: SessionData;
 }
 
 /**
  * Middleware to verify session authentication
  */
+/**
+ * Performs require auth operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {(req} handler - The handler
+ *
+ * @returns {Promise<any>} Promise resolving to requireauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAuth(req, handler);
+ */
+
+/**
+ * Performs require auth operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {(req} /** Handler */
+  handler - The /**  handler */
+  handler
+ *
+ * @returns {Promise<any>} Promise resolving to requireauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireAuth(/** Req */
+  req, /** Handler */
+  handler);
+ */
+
 export async function requireAuth(
+  /** Req */
   req: NextRequest,
+  /** Handler */
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {
@@ -51,9 +103,46 @@ export async function requireAuth(
 /**
  * Middleware to verify session and check for specific role
  */
+/**
+ * Performs require role operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {(req} handler - The handler
+ *
+ * @returns {Promise<any>} Promise resolving to requirerole result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireRole(req, handler);
+ */
+
+/**
+ * Performs require role operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {(req} /** Handler */
+  handler - The /**  handler */
+  handler
+ *
+ * @returns {Promise<any>} Promise resolving to requirerole result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * requireRole(/** Req */
+  req, /** Handler */
+  handler);
+ */
+
 export async function requireRole(
+  /** Req */
   req: NextRequest,
+  /** Handler */
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
+  /** Allowed Roles */
   allowedRoles: string[],
 ): Promise<NextResponse> {
   try {
@@ -102,8 +191,44 @@ export async function requireRole(
 /**
  * Optional auth - doesn't require authentication but adds session if available
  */
+/**
+ * Performs optional auth operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {(req} handler - The handler
+ *
+ * @returns {Promise<any>} Promise resolving to optionalauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * optionalAuth(req, handler);
+ */
+
+/**
+ * Performs optional auth operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {(req} /** Handler */
+  handler - The /**  handler */
+  handler
+ *
+ * @returns {Promise<any>} Promise resolving to optionalauth result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * optionalAuth(/** Req */
+  req, /** Handler */
+  handler);
+ */
+
 export async function optionalAuth(
+  /** Req */
   req: NextRequest,
+  /** Handler */
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {

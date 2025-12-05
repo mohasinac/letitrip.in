@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/products/RecentlyViewedWidget
+ * @description This file contains the RecentlyViewedWidget component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -7,6 +16,12 @@ import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 
+/**
+ * RecentlyViewedWidgetProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RecentlyViewedWidgetProps
+ */
 interface RecentlyViewedWidgetProps {
   /** Maximum items to show */
   limit?: number;
@@ -19,6 +34,27 @@ interface RecentlyViewedWidgetProps {
   /** Custom class name */
   className?: string;
 }
+
+/**
+ * Function: Recently Viewed Widget
+ */
+/**
+ * Performs recently viewed widget operation
+ *
+ * @returns {any} The recentlyviewedwidget result
+ *
+ * @example
+ * RecentlyViewedWidget();
+ */
+
+/**
+ * Performs recently viewed widget operation
+ *
+ * @returns {any} The recentlyviewedwidget result
+ *
+ * @example
+ * RecentlyViewedWidget();
+ */
 
 export function RecentlyViewedWidget({
   limit = 8,
@@ -38,6 +74,22 @@ export function RecentlyViewedWidget({
   // Don't render if no items
   if (items.length === 0) return null;
 
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
   const scroll = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return;
 
@@ -45,7 +97,9 @@ export function RecentlyViewedWidget({
     const container = scrollContainerRef.current;
 
     container.scrollBy({
+      /** Left */
       left: direction === "left" ? -scrollAmount : scrollAmount,
+      /** Behavior */
       behavior: "smooth",
     });
   };
@@ -129,6 +183,7 @@ export function RecentlyViewedWidget({
 
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
+          /** Display */
           display: none;
         }
       `}</style>

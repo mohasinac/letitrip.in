@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/events/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { EventBanner } from "@/components/events/EventBanner";
@@ -25,6 +34,7 @@ export default function EventDetailPage() {
   const [registering, setRegistering] = useState(false);
 
   const { isLoading: loading, execute } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, { component: "EventDetail.loadEvent" });
     },
@@ -36,6 +46,22 @@ export default function EventDetailPage() {
       checkRegistration();
     }
   }, [eventId, user]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadEvent = async () => {
     await execute(async () => {
@@ -51,6 +77,22 @@ export default function EventDetailPage() {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const checkRegistration = async () => {
     await execute(async () => {
       const data = await eventsService.checkRegistration(eventId);
@@ -60,6 +102,22 @@ export default function EventDetailPage() {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadPollResults = async () => {
     await execute(async () => {
       const data = await eventsService.checkVote(eventId);
@@ -68,6 +126,22 @@ export default function EventDetailPage() {
       }
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleRegister = async () => {
     if (!user) {
@@ -88,6 +162,26 @@ export default function EventDetailPage() {
     setRegistering(false);
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} optionId - option identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} optionId - option identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleVote = async (optionId: string) => {
     if (!user) {
       toast.error("Please login to vote");
@@ -101,7 +195,9 @@ export default function EventDetailPage() {
       await loadPollResults();
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "EventDetail.handleVote",
+        /** Context */
         context: { eventId, optionId },
       });
       toast.error("Failed to vote");
@@ -209,6 +305,7 @@ export default function EventDetailPage() {
               <div className="space-y-3 text-sm">
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">
+                    /** Type */
                     Type:
                   </span>
                   <span className="ml-2 text-gray-900 dark:text-white font-medium">
@@ -217,6 +314,7 @@ export default function EventDetailPage() {
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">
+                    /** Participants */
                     Participants:
                   </span>
                   <span className="ml-2 text-gray-900 dark:text-white font-medium">
@@ -227,6 +325,7 @@ export default function EventDetailPage() {
                 {event.isPollEvent && (
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">
+                      /** Votes */
                       Votes:
                     </span>
                     <span className="ml-2 text-gray-900 dark:text-white font-medium">

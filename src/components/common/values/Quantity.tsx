@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Quantity
+ * @description This file contains the Quantity component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Quantity Display Component
  *
  * Displays quantities with proper formatting for stock, cart items, etc.
@@ -15,15 +24,46 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * QuantityProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for QuantityProps
+ */
 interface QuantityProps {
+  /** Value */
   value: number;
+  /** Suffix */
   suffix?: string;
+  /** Prefix */
   prefix?: string;
+  /** Compact */
   compact?: boolean;
+  /** Zero Text */
   zeroText?: string;
+  /** Class Name */
   className?: string;
   showSign?: boolean; // Show +/- for changes
 }
+
+/**
+ * Function: Format Compact Number
+ */
+/**
+ * Formats compact number
+ *
+ * @param {number} num - The num
+ *
+ * @returns {string} The formatcompactnumber result
+ */
+
+/**
+ * Formats compact number
+ *
+ * @param {number} num - The num
+ *
+ * @returns {string} The formatcompactnumber result
+ */
 
 function formatCompactNumber(num: number): string {
   if (num >= 10000000) {
@@ -37,6 +77,27 @@ function formatCompactNumber(num: number): string {
   }
   return num.toString();
 }
+
+/**
+ * Function: Quantity
+ */
+/**
+ * Performs quantity operation
+ *
+ * @returns {any} The quantity result
+ *
+ * @example
+ * Quantity();
+ */
+
+/**
+ * Performs quantity operation
+ *
+ * @returns {any} The quantity result
+ *
+ * @example
+ * Quantity();
+ */
 
 export function Quantity({
   value,

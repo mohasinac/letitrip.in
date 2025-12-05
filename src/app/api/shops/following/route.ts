@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shops/following/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
@@ -8,6 +17,29 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 // Helper to get current user
+/**
+ * Retrieves current user
+ */
+/**
+ * Retrieves current user
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to currentuser result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Retrieves current user
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to currentuser result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 async function getCurrentUser(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
   if (!userId) return null;
@@ -18,6 +50,35 @@ async function getCurrentUser(req: NextRequest) {
 
   return { id: userDoc.id, ...userDoc.data() };
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,8 +102,11 @@ export async function GET(request: NextRequest) {
 
     if (followingSnapshot.empty) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Shops */
         shops: [],
+        /** Count */
         count: 0,
       });
     }
@@ -67,6 +131,7 @@ export async function GET(request: NextRequest) {
           ?.data();
 
         shops.push({
+          /** Id */
           id: doc.id,
           ...doc.data(),
           followed_at: followData?.followed_at,
@@ -82,8 +147,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
       shops,
+      /** Count */
       count: shops.length,
     });
   } catch (error) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview JavaScript Module
+ * @module tailwind.config
+ * @description This file contains functionality related to tailwind.config
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [

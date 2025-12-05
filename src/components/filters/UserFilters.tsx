@@ -1,23 +1,79 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/UserFilters
+ * @description This file contains the UserFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * UserFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UserFilterValues
+ */
 export interface UserFilterValues {
+  /** Role */
   role?: string[];
+  /** Status */
   status?: string[];
+  /** Verified */
   verified?: boolean;
+  /** Registered From */
   registeredFrom?: string;
+  /** Registered To */
   registeredTo?: string;
 }
 
+/**
+ * UserFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UserFiltersProps
+ */
 interface UserFiltersProps {
+  /** Filters */
   filters: UserFilterValues;
+  /** On Change */
   onChange: (filters: UserFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs user filters operation
+ *
+ * @returns {any} The userfilters result
+ *
+ * @example
+ * UserFilters();
+ */
+
+/**
+ * U
+ * @constant
+ */
+/**
+ * Performs user filters operation
+ *
+ * @returns {any} The userfilters result
+ *
+ * @example
+ * UserFilters();
+ */
+
+/**
+ * U
+ * @constant
+ */
 export const UserFilters: React.FC<UserFiltersProps> = ({
   filters,
   onChange,
@@ -27,13 +83,53 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof UserFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: UserFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
 
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {"role" | "status"} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {"role" | "status"} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
   const toggleArrayFilter = (key: "role" | "status", value: string) => {
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
     const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
       ? current.filter((v) => v !== value)

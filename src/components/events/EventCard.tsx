@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/events/EventCard
+ * @description This file contains the EventCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -5,23 +14,45 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * EventCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EventCardProps
+ */
 export interface EventCardProps {
+  /** Event */
   event: {
+    /** Id */
     id: string;
+    /** Title */
     title: string;
+    /** Description */
     description: string;
+    /** Type */
     type: string;
+    /** Start Date */
     startDate: string;
+    /** End Date */
     endDate: string;
+    /** Location */
     location?: string;
+    /** Is Online */
     isOnline: boolean;
+    /** Participant Count */
     participantCount: number;
+    /** Max Participants */
     maxParticipants?: number;
+    /** Image Url */
     imageUrl?: string;
+    /** Is Poll Event */
     isPollEvent?: boolean;
+    /** Vote Count */
     voteCount?: number;
   };
+  /** Href */
   href?: string;
+  /** Show Status */
   showStatus?: boolean;
 }
 
@@ -44,6 +75,28 @@ export interface EventCardProps {
  * <EventCard event={event} href={`/events/${event.id}`} />
  * ```
  */
+/**
+ * Performs event card operation
+ *
+ * @param {EventCardProps} [{ event, href, showStatus] - The { event, href, show status
+ *
+ * @returns {any} The eventcard result
+ *
+ * @example
+ * EventCard({ event, href, showStatus);
+ */
+
+/**
+ * Performs event card operation
+ *
+ * @param {EventCardProps} [{ event, href, showStatus] - The { event, href, show status
+ *
+ * @returns {any} The eventcard result
+ *
+ * @example
+ * EventCard({ event, href, showStatus);
+ */
+
 export function EventCard({ event, href, showStatus = false }: EventCardProps) {
   const now = new Date();
   const startDate = new Date(event.startDate);
@@ -55,6 +108,18 @@ export function EventCard({ event, href, showStatus = false }: EventCardProps) {
   const participantPercentage = event.maxParticipants
     ? (event.participantCount / event.maxParticipants) * 100
     : 0;
+
+  /**
+   * Performs card content operation
+   *
+   * @returns {any} The cardcontent result
+   */
+
+  /**
+   * Performs card content operation
+   *
+   * @returns {any} The cardcontent result
+   */
 
   const CardContent = (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">

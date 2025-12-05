@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/events/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireRole } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,21 +14,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const updateEventSchema = z.object({
+  /** Title */
   title: z.string().min(3).max(200).optional(),
+  /** Description */
   description: z.string().min(10).optional(),
+  /** Type */
   type: z
     .enum(["workshop", "seminar", "competition", "poll", "announcement"])
     .optional(),
+  /** Status */
   status: z.enum(["draft", "published", "archived"]).optional(),
+  /** Start Date */
   startDate: z.string().datetime().optional(),
+  /** End Date */
   endDate: z.string().datetime().optional(),
+  /** Location */
   location: z.string().optional(),
+  /** Is Online */
   isOnline: z.boolean().optional(),
+  /** Max Participants */
   maxParticipants: z.number().positive().optional(),
+  /** Registration Deadline */
   registrationDeadline: z.string().datetime().optional(),
+  /** Is Poll Event */
   isPollEvent: z.boolean().optional(),
+  /** Allow Multiple Votes */
   allowMultipleVotes: z.boolean().optional(),
+  /** Image Url */
   imageUrl: z.string().url().optional(),
+  /** Metadata */
   metadata: z.record(z.string(), z.any()).optional(),
 });
 
@@ -27,7 +50,39 @@ const updateEventSchema = z.object({
  * GET /api/admin/events/[id]
  * Get single event (admin only)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -47,12 +102,16 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Event */
       event: { id: eventDoc.id, ...eventDoc.data() },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEventsAPI.GET",
+      /** Action */
       action: "get_event",
     });
     return NextResponse.json(
@@ -66,7 +125,39 @@ export async function GET(
  * PUT /api/admin/events/[id]
  * Update event (admin only)
  */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(request, {});
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(/** Request */
+  request, {});
+ */
+
 export async function PUT(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -91,8 +182,11 @@ export async function PUT(
     if (!validation.success) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Validation failed",
+          /** Details */
           details: validation.error.issues,
         },
         { status: 400 }
@@ -118,19 +212,25 @@ export async function PUT(
       .doc(id)
       .update({
         ...updateData,
+        /** Updated At */
         updatedAt: new Date().toISOString(),
+        /** Updated By */
         updatedBy: user.uid,
       });
 
     const updatedDoc = await Collections.events().doc(id).get();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Event */
       event: { id: updatedDoc.id, ...updatedDoc.data() },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEventsAPI.PUT",
+      /** Action */
       action: "update_event",
     });
     return NextResponse.json(
@@ -144,7 +244,39 @@ export async function PUT(
  * DELETE /api/admin/events/[id]
  * Delete event (admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -196,12 +328,16 @@ export async function DELETE(
     await batch.commit();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Event deleted successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "AdminEventsAPI.DELETE",
+      /** Action */
       action: "delete_event",
     });
     return NextResponse.json(

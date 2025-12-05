@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/FeaturedShopsSection
+ * @description This file contains the FeaturedShopsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,23 +20,52 @@ import { apiService } from "@/services/api.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * FeaturedItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FeaturedItem
+ */
 interface FeaturedItem {
+  /** Id */
   id: string;
+  /** Type */
   type: string;
+  /** Item Id */
   itemId: string;
+  /** Name */
   name: string;
+  /** Image */
   image?: string;
+  /** Position */
   position: number;
+  /** Active */
   active: boolean;
 }
 
+/**
+ * ShopWithProducts interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopWithProducts
+ */
 interface ShopWithProducts {
+  /** Shop */
   shop: ShopCardFE;
+  /** Products */
   products: ProductCardFE[];
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Max Shops */
   maxShops?: number;
+  /** Products Per Shop */
   productsPerShop?: number;
 }
 
@@ -43,6 +81,22 @@ export default function FeaturedShopsSection({
   useEffect(() => {
     fetchFeaturedShops();
   }, [maxShops, productsPerShop]);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const fetchFeaturedShops = async () => {
     try {
@@ -76,7 +130,9 @@ export default function FeaturedShopsSection({
         shops = curatedShops;
       } else {
         const shopsData = await shopsService.list({
+          /** Featured */
           featured: true,
+          /** Limit */
           limit: maxShops,
         });
         shops = shopsData.data;
@@ -87,20 +143,26 @@ export default function FeaturedShopsSection({
         shops.map(async (shop: ShopCardFE) => {
           try {
             const productsData = await productsService.list({
+              /** Shop Id */
               shopId: shop.id,
+              /** Limit */
               limit: productsPerShop,
             } as any);
             return {
               shop,
+              /** Products */
               products: productsData.data,
             };
           } catch (error) {
             logError(error as Error, {
+              /** Component */
               component: "FeaturedShopsSection.fetchFeaturedShops",
+              /** Metadata */
               metadata: { shopId: shop.id },
             });
             return {
               shop,
+              /** Products */
               products: [],
             };
           }
@@ -112,6 +174,7 @@ export default function FeaturedShopsSection({
       );
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "FeaturedShopsSection.fetchFeaturedShops",
       });
       setShopsWithProducts([]);

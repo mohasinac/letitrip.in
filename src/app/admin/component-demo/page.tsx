@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/component-demo/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -19,6 +28,22 @@ export default function ComponentDemoPage() {
   const [toggle3, setToggle3] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
+
+  /**
+   * Performs trigger toasts operation
+   *
+   * @returns {any} The triggertoasts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs trigger toasts operation
+   *
+   * @returns {any} The triggertoasts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const triggerToasts = () => {
     toast.success("Success! Operation completed successfully.");
@@ -89,6 +114,7 @@ export default function ComponentDemoPage() {
                   onToggle={() => setToggle1(!toggle1)}
                 />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
+                  /** Status */
                   Status: {toggle1 ? "Enabled" : "Disabled"}
                 </span>
               </div>
@@ -246,6 +272,7 @@ export default function ComponentDemoPage() {
           <div className="space-y-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Click the buttons below to test different toast notification
+              /** Types */
               types:
             </p>
 
@@ -311,6 +338,7 @@ export default function ComponentDemoPage() {
           <div className="space-y-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Professional confirmation dialogs to replace browser confirm()
+              /** Alerts */
               alerts:
             </p>
 
@@ -325,6 +353,7 @@ export default function ComponentDemoPage() {
 
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                /** Features */
                 Features:
               </h4>
               <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
@@ -352,6 +381,7 @@ export default function ComponentDemoPage() {
 
             <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                /** Features */
                 Features:
               </h4>
               <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">

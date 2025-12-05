@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Utility Functions
+ * @module src/lib/link-utils
+ * @description This file contains utility functions for link
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Link Utilities
  *
  * Utilities for handling links - detecting internal vs external,
@@ -9,6 +18,12 @@
  */
 
 // Link type classifications
+/**
+ * LinkType type
+ * 
+ * @typedef {Object} LinkType
+ * @description Type definition for LinkType
+ */
 export type LinkType =
   | "internal"
   | "external"
@@ -57,11 +72,17 @@ export interface LinkValidationResult {
 
 // Default options
 const defaultValidationOptions: LinkValidationOptions = {
+  /** Allow Relative */
   allowRelative: true,
+  /** Allow External */
   allowExternal: true,
+  /** Allow Email */
   allowEmail: true,
+  /** Allow Phone */
   allowPhone: true,
+  /** Allow Anchor */
   allowAnchor: true,
+  /** Require Https */
   requireHttps: false,
 };
 
@@ -69,6 +90,24 @@ const defaultValidationOptions: LinkValidationOptions = {
  * Get the base URL for the current environment
  * Works in both browser and server contexts
  */
+/**
+ * Retrieves base url
+ *
+ * @returns {string} The baseurl result
+ *
+ * @example
+ * getBaseUrl();
+ */
+
+/**
+ * Retrieves base url
+ *
+ * @returns {string} The baseurl result
+ *
+ * @example
+ * getBaseUrl();
+ */
+
 export function getBaseUrl(): string {
   // Browser context
   if (typeof globalThis !== "undefined" && globalThis.location) {
@@ -101,6 +140,28 @@ export function getBaseUrl(): string {
  * isInternalLink('https://letitrip.in/products') // true (same domain)
  * isInternalLink('https://google.com') // false
  */
+/**
+ * Checks if internal link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isInternalLink("example");
+ */
+
+/**
+ * Checks if internal link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isInternalLink("example");
+ */
+
 export function isInternalLink(href: string): boolean {
   if (!href || typeof href !== "string") {
     return false;
@@ -142,6 +203,28 @@ export function isInternalLink(href: string): boolean {
  * isExternalLink('/products') // false
  * isExternalLink('https://letitrip.in/products') // false (same domain)
  */
+/**
+ * Checks if external link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isExternalLink("example");
+ */
+
+/**
+ * Checks if external link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isExternalLink("example");
+ */
+
 export function isExternalLink(href: string): boolean {
   if (!href || typeof href !== "string") {
     return false;
@@ -188,6 +271,28 @@ export function isExternalLink(href: string): boolean {
  * getLinkType('tel:+911234567890') // 'phone'
  * getLinkType('#section') // 'anchor'
  */
+/**
+ * Retrieves link type
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The linktype result
+ *
+ * @example
+ * getLinkType("example");
+ */
+
+/**
+ * Retrieves link type
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The linktype result
+ *
+ * @example
+ * getLinkType("example");
+ */
+
 export function getLinkType(href: string): LinkType {
   if (!href || typeof href !== "string") {
     return "invalid";
@@ -243,6 +348,30 @@ export function getLinkType(href: string): LinkType {
  * resolveUrl('#section') // 'https://letitrip.in#section'
  * resolveUrl('https://google.com') // 'https://google.com' (unchanged)
  */
+/**
+ * Performs resolve url operation
+ *
+ * @param {string} href - The href
+ * @param {string} [baseUrl] - The base url
+ *
+ * @returns {string} The resolveurl result
+ *
+ * @example
+ * resolveUrl("example", "example");
+ */
+
+/**
+ * Performs resolve url operation
+ *
+ * @param {string} href - The href
+ * @param {string} [baseUrl] - The base url
+ *
+ * @returns {string} The resolveurl result
+ *
+ * @example
+ * resolveUrl("example", "example");
+ */
+
 export function resolveUrl(href: string, baseUrl?: string): string {
   if (!href || typeof href !== "string") {
     return href;
@@ -294,8 +423,31 @@ export function resolveUrl(href: string, baseUrl?: string): string {
  * validateLink('/products') // { isValid: true, type: 'internal', ... }
  * validateLink('not a url') // { isValid: false, error: '...', ... }
  */
+/**
+ * Validates link
+ *
+ * @param {string} value - The value
+ * @param {LinkValidationOptions} [options] - Configuration options
+ *
+ * @returns {string} The validatelink result
+ *
+ * @example
+ * validateLink("example", options);
+ */
+
+/**
+ * Validates link
+ *
+ * @returns {string} The validatelink result
+ *
+ * @example
+ * validateLink();
+ */
+
 export function validateLink(
+  /** Value */
   value: string,
+  /** Options */
   options: LinkValidationOptions = {},
 ): LinkValidationResult {
   const opts = { ...defaultValidationOptions, ...options };
@@ -303,9 +455,13 @@ export function validateLink(
   // Empty string is valid (optional field)
   if (!value || value.trim() === "") {
     return {
+      /** Is Valid */
       isValid: true,
+      /** Type */
       type: "internal",
+      /** Is Internal */
       isInternal: true,
+      /** Should Open In New Tab */
       shouldOpenInNewTab: false,
     };
   }
@@ -318,10 +474,15 @@ export function validateLink(
     case "internal":
       if (!opts.allowRelative && trimmed.startsWith("/")) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "Relative paths are not allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: true,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: false,
         };
       }
@@ -330,10 +491,15 @@ export function validateLink(
     case "external":
       if (!opts.allowExternal) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "External URLs are not allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: false,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: true,
         };
       }
@@ -341,10 +507,15 @@ export function validateLink(
       // Check for HTTPS requirement
       if (opts.requireHttps && trimmed.toLowerCase().startsWith("http://")) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "Only HTTPS URLs are allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: false,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: true,
         };
       }
@@ -353,10 +524,15 @@ export function validateLink(
     case "email":
       if (!opts.allowEmail) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "Email links are not allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: false,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: false,
         };
       }
@@ -365,10 +541,15 @@ export function validateLink(
     case "phone":
       if (!opts.allowPhone) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "Phone links are not allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: false,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: false,
         };
       }
@@ -377,10 +558,15 @@ export function validateLink(
     case "anchor":
       if (!opts.allowAnchor) {
         return {
+          /** Is Valid */
           isValid: false,
+          /** Error */
           error: "Anchor links are not allowed",
+          /** Type */
           type: linkType,
+          /** Is Internal */
           isInternal: true,
+          /** Should Open In New Tab */
           shouldOpenInNewTab: false,
         };
       }
@@ -388,20 +574,30 @@ export function validateLink(
 
     case "invalid":
       return {
+        /** Is Valid */
         isValid: false,
+        /** Error */
         error: "Invalid link format",
+        /** Type */
         type: linkType,
+        /** Is Internal */
         isInternal: false,
+        /** Should Open In New Tab */
         shouldOpenInNewTab: false,
       };
   }
 
   // All validations passed
   return {
+    /** Is Valid */
     isValid: true,
+    /** Type */
     type: linkType,
+    /** Resolved Url */
     resolvedUrl: resolveUrl(trimmed),
+    /** Is Internal */
     isInternal: linkType === "internal" || linkType === "anchor",
+    /** Should Open In New Tab */
     shouldOpenInNewTab: linkType === "external",
   };
 }
@@ -412,6 +608,28 @@ export function validateLink(
  * @param href - The link URL
  * @returns The rel attribute value
  */
+/**
+ * Retrieves link rel
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The linkrel result
+ *
+ * @example
+ * getLinkRel("example");
+ */
+
+/**
+ * Retrieves link rel
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The linkrel result
+ *
+ * @example
+ * getLinkRel("example");
+ */
+
 export function getLinkRel(href: string): string | undefined {
   if (isExternalLink(href)) {
     return "noopener noreferrer";
@@ -426,7 +644,34 @@ export function getLinkRel(href: string): string | undefined {
  * @param forceNewTab - Force opening in new tab
  * @returns The target attribute value
  */
+/**
+ * Retrieves link target
+ *
+ * @param {string} href - The href
+ * @param {boolean} [forceNewTab] - Whether force new tab
+ *
+ * @returns {string} The linktarget result
+ *
+ * @example
+ * getLinkTarget("example", true);
+ */
+
+/**
+ * Retrieves link target
+ *
+ * @param {string} /** Href */
+  href - The /**  href */
+  href
+ * @param {boolean} [forceNewTab] - Whether force new tab
+ *
+ * @returns {string} The linktarget result
+ *
+ * @example
+ * getLinkTarget("example", true);
+ */
+
 export function getLinkTarget(
+  /** Href */
   href: string,
   forceNewTab = false,
 ): string | undefined {
@@ -443,6 +688,30 @@ export function getLinkTarget(
  * @param maxLength - Maximum display length
  * @returns Formatted display string
  */
+/**
+ * Formats link for display
+ *
+ * @param {string} href - The href
+ * @param {number} [maxLength] - The max length
+ *
+ * @returns {string} The formatlinkfordisplay result
+ *
+ * @example
+ * formatLinkForDisplay("example", 123);
+ */
+
+/**
+ * Formats link for display
+ *
+ * @param {string} href - The href
+ * @param {number} [maxLength] - The max length
+ *
+ * @returns {string} The formatlinkfordisplay result
+ *
+ * @example
+ * formatLinkForDisplay("example", 123);
+ */
+
 export function formatLinkForDisplay(href: string, maxLength = 50): string {
   if (!href) return "";
 
@@ -466,6 +735,28 @@ export function formatLinkForDisplay(href: string, maxLength = 50): string {
  * @param href - The URL
  * @returns The domain name or null
  */
+/**
+ * Performs extract domain operation
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The extractdomain result
+ *
+ * @example
+ * extractDomain("example");
+ */
+
+/**
+ * Performs extract domain operation
+ *
+ * @param {string} href - The href
+ *
+ * @returns {string} The extractdomain result
+ *
+ * @example
+ * extractDomain("example");
+ */
+
 export function extractDomain(href: string): string | null {
   try {
     const url = new URL(href.startsWith("//") ? `https:${href}` : href);
@@ -481,6 +772,28 @@ export function extractDomain(href: string): string | null {
  * @param href - The URL
  * @returns true if the link points to a downloadable file
  */
+/**
+ * Checks if downloadable link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isDownloadableLink("example");
+ */
+
+/**
+ * Checks if downloadable link
+ *
+ * @param {string} href - The href
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * isDownloadableLink("example");
+ */
+
 export function isDownloadableLink(href: string): boolean {
   const downloadExtensions = [
     ".pdf",

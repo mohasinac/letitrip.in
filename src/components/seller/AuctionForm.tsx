@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/AuctionForm
+ * @description This file contains the AuctionForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import DateTimePicker from "@/components/common/DateTimePicker";
@@ -17,11 +26,22 @@ import { AuctionStatus } from "@/types/shared/common.types";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * AuctionFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionFormProps
+ */
 interface AuctionFormProps {
+  /** Mode */
   mode: "create" | "edit";
+  /** Initial Data */
   initialData?: Partial<ProductAuctionFormFE>;
+  /** Shop Id */
   shopId?: string;
+  /** On Submit */
   onSubmit: (data: ProductAuctionFormFE) => void;
+  /** Is Submitting */
   isSubmitting?: boolean;
 }
 
@@ -41,17 +61,28 @@ export default function AuctionForm({
   isSubmitting = false,
 }: AuctionFormProps) {
   const [formData, setFormData] = useState({
+    /** Shop Id */
     shopId: initialData?.shopId || shopId || "",
+    /** Name */
     name: initialData?.name || "",
+    /** Slug */
     slug: initialData?.slug || "",
+    /** Description */
     description: initialData?.description || "",
+    /** Starting Bid */
     startingBid: initialData?.startingBid || 0,
+    /** Reserve Price */
     reservePrice: initialData?.reservePrice || 0,
+    /** Start Time */
     startTime: initialData?.startTime || new Date(),
+    /** End Time */
     endTime:
       initialData?.endTime || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    /** Status */
     status: (initialData?.status as AuctionStatus) || AuctionStatus.DRAFT,
+    /** Images */
     images: initialData?.images || [],
+    /** Videos */
     videos: initialData?.videos || [],
   });
 
@@ -60,6 +91,26 @@ export default function AuctionForm({
   const [isManualSlug, setIsManualSlug] = useState(false);
 
   // Validate slug uniqueness
+  /**
+   * Performs async operation
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateSlug = async (slug: string) => {
     if (!slug || slug.length < 3) {
       setSlugError("");
@@ -83,13 +134,35 @@ export default function AuctionForm({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AuctionForm.validateSlug",
+        /** Metadata */
         metadata: { slug },
       });
     } finally {
       setIsValidatingSlug(false);
     }
   };
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles submit event
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {any} The handlesubmit result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,16 +200,56 @@ export default function AuctionForm({
     }
 
     // Clean images before submit
+    /**
+     * Performs cleaned images operation
+     *
+     * @param {any} formData.images || [])
+      .map((s - The form data.images || [])
+      .map((s
+     *
+     * @returns {any} The cleanedimages result
+     */
+
+    /**
+     * Performs cleaned images operation
+     *
+     * @param {any} formData.images || [])
+      .map((s - The form data.images || [])
+      .map((s
+     *
+     * @returns {any} The cleanedimages result
+     */
+
     const cleanedImages = (formData.images || [])
       .map((s) => s.trim())
       .filter(Boolean);
     // Always prefer shopId prop over initialData.shopId
     onSubmit({
       ...formData,
+      /** Shop Id */
       shopId: shopId || formData.shopId,
+      /** Images */
       images: cleanedImages,
     });
   };
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

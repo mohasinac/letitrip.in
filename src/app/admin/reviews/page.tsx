@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/reviews/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -20,8 +29,11 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 export default function AdminReviewsPage() {
   const router = useRouter();
   const {
+    /** Data */
     data: reviews,
+    /** Is Loading */
     isLoading: loading,
+    /** Execute */
     execute: loadReviews,
   } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -36,8 +48,11 @@ export default function AdminReviewsPage() {
   const fetchReviews = useCallback(async () => {
     const response = await reviewsService.list({
       ...filterValues,
+      /** Search */
       search: searchQuery || undefined,
+      /** Page */
       page: currentPage,
+      /** Limit */
       limit: 20,
     });
     setTotalPages(Math.ceil((response.count || 0) / 20));
@@ -48,6 +63,26 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     loadReviews(fetchReviews);
   }, [fetchReviews, loadReviews]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleBulkAction = async (actionId: string) => {
     if (selectedReviews.size === 0) {
@@ -71,7 +106,9 @@ export default function AdminReviewsPage() {
           await Promise.all(
             reviewIds.map((id) =>
               reviewsService.moderate(id, {
+                /** Is Approved */
                 isApproved: false,
+                /** Moderation Notes */
                 moderationNotes: "Rejected by admin",
               }),
             ),
@@ -82,7 +119,9 @@ export default function AdminReviewsPage() {
           await Promise.all(
             reviewIds.map((id) =>
               reviewsService.moderate(id, {
+                /** Is Approved */
                 isApproved: false,
+                /** Moderation Notes */
                 moderationNotes: "Flagged for review",
               }),
             ),
@@ -102,6 +141,28 @@ export default function AdminReviewsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {string} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {string} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleModerate = async (id: string, status: string) => {
     try {
       await reviewsService.moderate(id, { isApproved: status === "approved" });
@@ -111,6 +172,18 @@ export default function AdminReviewsPage() {
       toast.error(error.message || "Failed to moderate review");
     }
   };
+
+  /**
+   * Performs toggle select all operation
+   *
+   * @returns {any} The toggleselectall result
+   */
+
+  /**
+   * Performs toggle select all operation
+   *
+   * @returns {any} The toggleselectall result
+   */
 
   const toggleSelectAll = () => {
     if (selectedReviews.size === (reviews || []).length) {

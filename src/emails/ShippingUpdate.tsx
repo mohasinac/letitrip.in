@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/emails/ShippingUpdate
+ * @description This file contains the ShippingUpdate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Shipping Update Email Template
  *
  * @status IMPLEMENTED
@@ -7,19 +16,60 @@
 
 import * as React from "react";
 
+/**
+ * ShippingUpdateEmailProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShippingUpdateEmailProps
+ */
 export interface ShippingUpdateEmailProps {
+  /** Customer Name */
   customerName: string;
+  /** Order Id */
   orderId: string;
+  /** Tracking Number */
   trackingNumber: string;
+  /** Courier Name */
   courierName: string;
+  /** Estimated Delivery */
   estimatedDelivery: string;
+  /** Tracking Url */
   trackingUrl: string;
+  /** Order Items */
   orderItems: Array<{
+    /** Name */
     name: string;
+    /** Image */
     image?: string;
   }>;
 }
 
+/**
+ * Performs shipping update email operation
+ *
+ * @returns {any} The shippingupdateemail result
+ *
+ * @example
+ * ShippingUpdateEmail();
+ */
+
+/**
+ * S
+ * @constant
+ */
+/**
+ * Performs shipping update email operation
+ *
+ * @returns {any} The shippingupdateemail result
+ *
+ * @example
+ * ShippingUpdateEmail();
+ */
+
+/**
+ * S
+ * @constant
+ */
 export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
   customerName,
   orderId,
@@ -38,39 +88,59 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
       </head>
       <body
         style={{
+          /** Font Family */
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          /** Background Color */
           backgroundColor: "#f3f4f6",
+          /** Margin */
           margin: 0,
+          /** Padding */
           padding: 0,
         }}
       >
         <div
           style={{
+            /** Max Width */
             maxWidth: "600px",
+            /** Margin */
             margin: "0 auto",
+            /** Padding */
             padding: "20px",
           }}
         >
           {/* Header */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Border Radius */
               borderRadius: "8px 8px 0 0",
+              /** Padding */
               padding: "24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Bottom */
               borderBottom: "4px solid #10b981",
             }}
           >
             <div
               style={{
+                /** Width */
                 width: "64px",
+                /** Height */
                 height: "64px",
+                /** Background Color */
                 backgroundColor: "#d1fae5",
+                /** Border Radius */
                 borderRadius: "50%",
+                /** Margin */
                 margin: "0 auto 16px",
+                /** Display */
                 display: "flex",
+                /** Align Items */
                 alignItems: "center",
+                /** Justify Content */
                 justifyContent: "center",
               }}
             >
@@ -78,9 +148,13 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             </div>
             <h1
               style={{
+                /** Font Size */
                 fontSize: "24px",
+                /** Font Weight */
                 fontWeight: "bold",
+                /** Color */
                 color: "#1f2937",
+                /** Margin */
                 margin: 0,
               }}
             >
@@ -91,17 +165,24 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
           {/* Main Content */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Padding */
               padding: "32px 24px",
             }}
           >
             {/* Greeting */}
             <p
               style={{
+                /** Font Size */
                 fontSize: "16px",
+                /** Color */
                 color: "#1f2937",
+                /** Line Height */
                 lineHeight: "1.6",
+                /** Margin Top */
                 marginTop: 0,
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
@@ -110,9 +191,13 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
 
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.5",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
@@ -123,20 +208,30 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             {/* Tracking Info */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f0fdf4",
+                /** Border */
                 border: "1px solid #86efac",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "20px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <div style={{ marginBottom: "12px" }}>
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "12px",
+                    /** Color */
                     color: "#065f46",
+                    /** Font Weight */
                     fontWeight: "600",
+                    /** Text Transform */
                     textTransform: "uppercase",
+                    /** Letter Spacing */
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -144,10 +239,15 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
                 </span>
                 <div
                   style={{
+                    /** Font Size */
                     fontSize: "20px",
+                    /** Font Weight */
                     fontWeight: "bold",
+                    /** Color */
                     color: "#047857",
+                    /** Margin Top */
                     marginTop: "4px",
+                    /** Letter Spacing */
                     letterSpacing: "0.025em",
                   }}
                 >
@@ -157,11 +257,15 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
               <div style={{ marginBottom: "12px" }}>
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "12px",
+                    /** Color */
                     color: "#065f46",
+                    /** Font Weight */
                     fontWeight: "600",
                   }}
                 >
+                  /** Courier */
                   Courier:{" "}
                 </span>
                 <span style={{ fontSize: "14px", color: "#047857" }}>
@@ -171,8 +275,11 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
               <div>
                 <span
                   style={{
+                    /** Font Size */
                     fontSize: "12px",
+                    /** Color */
                     color: "#065f46",
+                    /** Font Weight */
                     fontWeight: "600",
                   }}
                 >
@@ -189,13 +296,21 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
               <a
                 href={trackingUrl}
                 style={{
+                  /** Display */
                   display: "inline-block",
+                  /** Background Color */
                   backgroundColor: "#10b981",
+                  /** Color */
                   color: "#ffffff",
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Padding */
                   padding: "14px 32px",
+                  /** Border Radius */
                   borderRadius: "6px",
+                  /** Text Decoration */
                   textDecoration: "none",
                 }}
               >
@@ -206,18 +321,27 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             {/* Order Details */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f9fafb",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "16px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <h3
                 style={{
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#1f2937",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "12px",
                 }}
               >
@@ -227,9 +351,13 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
                 <div
                   key={index}
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "center",
+                    /** Padding */
                     padding: "8px 0",
+                    /** Border Bottom */
                     borderBottom:
                       index < orderItems.length - 1
                         ? "1px solid #e5e7eb"
@@ -241,17 +369,24 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
                       src={item.image}
                       alt={item.name}
                       style={{
+                        /** Width */
                         width: "50px",
+                        /** Height */
                         height: "50px",
+                        /** Object Fit */
                         objectFit: "cover",
+                        /** Border Radius */
                         borderRadius: "4px",
+                        /** Margin Right */
                         marginRight: "12px",
                       }}
                     />
                   )}
                   <div
                     style={{
+                      /** Font Size */
                       fontSize: "14px",
+                      /** Color */
                       color: "#1f2937",
                     }}
                   >
@@ -264,19 +399,29 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             {/* Delivery Tips */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#fef3c7",
+                /** Border */
                 border: "1px solid #fcd34d",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "16px",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <h4
                 style={{
+                  /** Font Size */
                   fontSize: "14px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#78350f",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "8px",
                 }}
               >
@@ -284,10 +429,15 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
               </h4>
               <ul
                 style={{
+                  /** Font Size */
                   fontSize: "13px",
+                  /** Color */
                   color: "#92400e",
+                  /** Line Height */
                   lineHeight: "1.6",
+                  /** Margin */
                   margin: 0,
+                  /** Padding Left */
                   paddingLeft: "20px",
                 }}
               >
@@ -302,9 +452,13 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             {/* Help Text */}
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.5",
+                /** Text Align */
                 textAlign: "center",
               }}
             >
@@ -321,18 +475,27 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
           {/* Footer */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#f9fafb",
+              /** Border Radius */
               borderRadius: "0 0 8px 8px",
+              /** Padding */
               padding: "24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Top */
               borderTop: "1px solid #e5e7eb",
             }}
           >
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#6b7280",
+                /** Margin */
                 margin: 0,
+                /** Margin Bottom */
                 marginBottom: "8px",
               }}
             >
@@ -340,8 +503,11 @@ export const ShippingUpdateEmail: React.FC<ShippingUpdateEmailProps> = ({
             </p>
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#9ca3af",
+                /** Margin */
                 margin: 0,
               }}
             >

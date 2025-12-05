@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/shipping/shiprocket/calculate-rates/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Shiprocket API Routes
  *
  * @status IMPLEMENTED
@@ -22,6 +31,32 @@ const SHIPROCKET_API_URL = "https://apiv2.shiprocket.in/v1/external";
  * Calculate shipping rates
  * POST /api/shipping/shiprocket/calculate-rates
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -48,26 +83,41 @@ export async function POST(request: NextRequest) {
     // For now, return mock data
     const rates: CourierRate[] = [
       {
+        /** Courier Id */
         courierId: "bluedart",
+        /** Courier Name */
         courierName: "Blue Dart",
+        /** Rate */
         rate: 120,
+        /** Cod Charges */
         codCharges: params.codAmount
           ? Math.max(params.codAmount * 0.02, 30)
           : 0,
+        /** Estimated Delivery Days */
         estimatedDeliveryDays: "2-3",
+        /** Zone */
         zone: "Metro to Metro",
+        /** Available Cod */
         availableCod: true,
+        /** Recommended */
         recommended: true,
       },
       {
+        /** Courier Id */
         courierId: "delhivery",
+        /** Courier Name */
         courierName: "Delhivery",
+        /** Rate */
         rate: 100,
+        /** Cod Charges */
         codCharges: params.codAmount
           ? Math.max(params.codAmount * 0.02, 30)
           : 0,
+        /** Estimated Delivery Days */
         estimatedDeliveryDays: "3-4",
+        /** Zone */
         zone: "Metro to Metro",
+        /** Available Cod */
         availableCod: true,
       },
     ];
@@ -75,6 +125,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(rates);
   } catch (error) {
     logError(error as Error, {
+      /** Route */
       route: "POST /api/shipping/shiprocket/calculate-rates",
     });
     return NextResponse.json(

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/batch/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,6 +16,32 @@ import { NextRequest, NextResponse } from "next/server";
  * Fetch multiple products by IDs
  * Used by homepage featured sections to display admin-curated products
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let idsLength = 0;
   try {
@@ -68,25 +103,37 @@ export async function POST(request: NextRequest) {
       .map((id) => products.find((p) => p.id === id || p.slug === id))
       .filter(Boolean)
       .map((p: any) => ({
+        /** Id */
         id: p.id,
         ...p,
         // Add camelCase aliases
+        /** Shop Id */
         shopId: p.shop_id,
+        /** Category Id */
         categoryId: p.category_id,
+        /** Stock Count */
         stockCount: p.stock_count ?? p.stock_quantity ?? 0,
+        /** Featured */
         featured: p.is_featured,
+        /** Original Price */
         originalPrice: p.compare_at_price,
+        /** Created At */
         createdAt: p.created_at,
+        /** Updated At */
         updatedAt: p.updated_at,
       }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: orderedProducts,
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.batch.POST",
+      /** Metadata */
       metadata: { idsCount: idsLength },
     });
     return NextResponse.json(

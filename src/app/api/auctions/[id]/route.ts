@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auctions/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
@@ -13,7 +22,39 @@ import { updateCategoryAuctionCounts } from "@/lib/category-hierarchy";
  * - Public: Active auctions only
  * - Owner/Admin: All statuses
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -71,29 +112,51 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         ...data,
         // Add camelCase aliases for all snake_case fields
+        /** Shop Id */
         shopId: data.shop_id,
+        /** Seller Id */
         sellerId: data.seller_id,
+        /** Category Id */
         categoryId: data.category_id,
+        /** Starting Price */
         startingPrice: data.starting_price,
+        /** Reserve Price */
         reservePrice: data.reserve_price,
+        /** Current Price */
         currentPrice: data.current_price,
+        /** Buy Now Price */
         buyNowPrice: data.buy_now_price,
+        /** Start Time */
         startTime: data.start_time,
+        /** End Time */
         endTime: data.end_time,
+        /** Bid Increment */
         bidIncrement: data.bid_increment,
+        /** Total Bids */
         totalBids: data.total_bids,
+        /** View Count */
         viewCount: data.view_count,
+        /** Watch Count */
         watchCount: data.watch_count,
+        /** Featured */
         featured: data.is_featured,
+        /** Is Active */
         isActive: data.is_active,
+        /** Is Deleted */
         isDeleted: data.is_deleted,
+        /** Winner Id */
         winnerId: data.winner_id,
+        /** Winning Bid */
         winningBid: data.winning_bid,
+        /** Created At */
         createdAt: data.created_at,
+        /** Updated At */
         updatedAt: data.updated_at,
       },
     });
@@ -110,7 +173,39 @@ export async function GET(
  * PATCH /api/auctions/[id]
  * Update auction (owner/admin only)
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -172,30 +267,53 @@ export async function PATCH(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Id */
         id: updated.id,
         ...updatedData,
         // Add camelCase aliases for all snake_case fields
+        /** Shop Id */
         shopId: updatedData.shop_id,
+        /** Seller Id */
         sellerId: updatedData.seller_id,
+        /** Category Id */
         categoryId: updatedData.category_id,
+        /** Starting Price */
         startingPrice: updatedData.starting_price,
+        /** Reserve Price */
         reservePrice: updatedData.reserve_price,
+        /** Current Price */
         currentPrice: updatedData.current_price,
+        /** Buy Now Price */
         buyNowPrice: updatedData.buy_now_price,
+        /** Start Time */
         startTime: updatedData.start_time,
+        /** End Time */
         endTime: updatedData.end_time,
+        /** Bid Increment */
         bidIncrement: updatedData.bid_increment,
+        /** Total Bids */
         totalBids: updatedData.total_bids,
+        /** View Count */
         viewCount: updatedData.view_count,
+        /** Watch Count */
         watchCount: updatedData.watch_count,
+        /** Featured */
         featured: updatedData.is_featured,
+        /** Is Active */
         isActive: updatedData.is_active,
+        /** Is Deleted */
         isDeleted: updatedData.is_deleted,
+        /** Winner Id */
         winnerId: updatedData.winner_id,
+        /** Winning Bid */
         winningBid: updatedData.winning_bid,
+        /** Created At */
         createdAt: updatedData.created_at,
+        /** Updated At */
         updatedAt: updatedData.updated_at,
       },
     });
@@ -212,7 +330,39 @@ export async function PATCH(
  * DELETE /api/auctions/[id]
  * Delete auction (owner/admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {

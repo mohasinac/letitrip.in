@@ -1,18 +1,42 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/wizards/CategorySelectionStep
+ * @description This file contains the CategorySelectionStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 
+/**
+ * CategorySelectionStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategorySelectionStepProps
+ */
 export interface CategorySelectionStepProps {
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (categoryId: string) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Show Breadcrumb */
   showBreadcrumb?: boolean;
+  /** Leaf Only */
   leafOnly?: boolean;
+  /** Entity Type */
   entityType?: "product" | "shop" | "auction";
 }
 
@@ -42,6 +66,24 @@ export interface CategorySelectionStepProps {
  * />
  * ```
  */
+/**
+ * Performs category selection step operation
+ *
+ * @returns {any} The categoryselectionstep result
+ *
+ * @example
+ * CategorySelectionStep();
+ */
+
+/**
+ * Performs category selection step operation
+ *
+ * @returns {any} The categoryselectionstep result
+ *
+ * @example
+ * CategorySelectionStep();
+ */
+
 export function CategorySelectionStep({
   value,
   onChange,
@@ -54,6 +96,22 @@ export function CategorySelectionStep({
   entityType = "product",
 }: CategorySelectionStepProps) {
   const [selectedPath, setSelectedPath] = useState<string[]>([]);
+
+  /**
+   * Handles category change event
+   *
+   * @param {string | null} categoryId - category identifier
+   *
+   * @returns {string} The handlecategorychange result
+   */
+
+  /**
+   * Handles category change event
+   *
+   * @param {string | null} categoryId - category identifier
+   *
+   * @returns {string} The handlecategorychange result
+   */
 
   const handleCategoryChange = (categoryId: string | null) => {
     if (categoryId) {

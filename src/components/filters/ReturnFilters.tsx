@@ -1,23 +1,79 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/ReturnFilters
+ * @description This file contains the ReturnFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * ReturnFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReturnFilterValues
+ */
 export interface ReturnFilterValues {
+  /** Status */
   status?: string[];
+  /** Reason */
   reason?: string[];
+  /** Date From */
   dateFrom?: string;
+  /** Date To */
   dateTo?: string;
+  /** Requires Admin */
   requiresAdmin?: boolean;
 }
 
+/**
+ * ReturnFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReturnFiltersProps
+ */
 interface ReturnFiltersProps {
+  /** Filters */
   filters: ReturnFilterValues;
+  /** On Change */
   onChange: (filters: ReturnFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs return filters operation
+ *
+ * @returns {any} The returnfilters result
+ *
+ * @example
+ * ReturnFilters();
+ */
+
+/**
+ * R
+ * @constant
+ */
+/**
+ * Performs return filters operation
+ *
+ * @returns {any} The returnfilters result
+ *
+ * @example
+ * ReturnFilters();
+ */
+
+/**
+ * R
+ * @constant
+ */
 export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
   filters,
   onChange,
@@ -27,13 +83,53 @@ export const ReturnFilters: React.FC<ReturnFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof ReturnFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: ReturnFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
 
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {"status" | "reason"} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {"status" | "reason"} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
   const toggleArrayFilter = (key: "status" | "reason", value: string) => {
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
+    /**
+     * Performs current operation
+     *
+     * @param {any} [filters[key] as string[]) || [];
+    const updated] - The filters[key] as string[]) || [];
+    const updated
+     *
+     * @returns {any} The current result
+     */
+
     const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
       ? current.filter((v) => v !== value)

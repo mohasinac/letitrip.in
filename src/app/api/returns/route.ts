@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/returns/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getReturnsQuery, UserRole } from "@/app/api/lib/firebase/queries";
 import { getCurrentUser } from "@/app/api/lib/session";
@@ -11,13 +20,21 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for returns
 const returnsConfig = {
   ...returnsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Order Id */
     orderId: "order_id",
+    /** Order Item Id */
     orderItemId: "order_item_id",
+    /** User Id */
     userId: "user_id",
+    /** Shop Id */
     shopId: "shop_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Requires Admin Intervention */
     requiresAdminIntervention: "requires_admin_intervention",
   } as Record<string, string>,
 };
@@ -25,16 +42,41 @@ const returnsConfig = {
 /**
  * Transform return document to API response format
  */
+/**
+ * Transforms return
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformreturn result
+ */
+
+/**
+ * Transforms return
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformreturn result
+ */
+
 function transformReturn(id: string, data: any) {
   return {
     id,
     ...data,
+    /** Order Id */
     orderId: data.order_id,
+    /** Order Item Id */
     orderItemId: data.order_item_id,
+    /** User Id */
     userId: data.user_id,
+    /** Shop Id */
     shopId: data.shop_id,
+    /** Requires Admin Intervention */
     requiresAdminIntervention: data.requires_admin_intervention,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
   };
 }
@@ -44,6 +86,32 @@ function transformReturn(id: string, data: any) {
  * List returns with Sieve pagination
  * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=status==pending
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(req);
+ */
+
 export async function GET(req: NextRequest) {
   let role: UserRole = UserRole.USER;
   try {
@@ -54,6 +122,7 @@ export async function GET(req: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -62,8 +131,11 @@ export async function GET(req: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -121,6 +193,26 @@ export async function GET(req: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -141,18 +233,25 @@ export async function GET(req: NextRequest) {
     const pagination = createPaginationMeta(totalCount, sieveQuery);
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.list",
+      /** Metadata */
       metadata: { role: role },
     });
     return NextResponse.json(
@@ -161,6 +260,35 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req);
+ */
 
 export async function POST(req: NextRequest) {
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -189,8 +317,11 @@ export async function POST(req: NextRequest) {
       user_id: user.id,
       shop_id: shopId,
       reason,
+      /** Description */
       description: description || "",
+      /** Media */
       media: Array.isArray(media) ? media : [],
+      /** Status */
       status: "pending",
       requires_admin_intervention: false,
       created_at: now,
@@ -205,7 +336,9 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.create",
+      /** Metadata */
       metadata: { userId: user?.id },
     });
     return NextResponse.json(

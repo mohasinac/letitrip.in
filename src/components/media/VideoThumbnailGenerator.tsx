@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/VideoThumbnailGenerator
+ * @description This file contains the VideoThumbnailGenerator component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -8,10 +17,20 @@ import { MediaFile } from "@/types/media";
 import { extractMultipleThumbnails } from "@/lib/media/video-processor";
 import Image from "next/image";
 
+/**
+ * VideoThumbnailGeneratorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for VideoThumbnailGeneratorProps
+ */
 interface VideoThumbnailGeneratorProps {
+  /** Media */
   media: MediaFile;
+  /** On Select */
   onSelect: (thumbnailDataUrl: string, timestamp: number) => void;
+  /** On Cancel */
   onCancel: () => void;
+  /** Thumbnail Count */
   thumbnailCount?: number;
 }
 
@@ -33,6 +52,22 @@ export default function VideoThumbnailGenerator({
     generateThumbnails();
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const generateThumbnails = async () => {
     setIsGenerating(true);
     try {
@@ -50,12 +85,29 @@ export default function VideoThumbnailGenerator({
       };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "VideoThumbnailGenerator.generateThumbnails",
       });
     } finally {
       setIsGenerating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCustomTimestamp = async () => {
     const timestamp = parseFloat(customTimestamp);
@@ -80,6 +132,7 @@ export default function VideoThumbnailGenerator({
       ]);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "VideoThumbnailGenerator.handleCustomTimestamp",
       });
     } finally {
@@ -87,12 +140,40 @@ export default function VideoThumbnailGenerator({
     }
   };
 
+  /**
+   * Handles select event
+   *
+   * @returns {any} The handleselect result
+   */
+
+  /**
+   * Handles select event
+   *
+   * @returns {any} The handleselect result
+   */
+
   const handleSelect = () => {
     const selected = thumbnails[selectedIndex];
     if (selected) {
       onSelect(selected.dataUrl, selected.timestamp);
     }
   };
+
+  /**
+   * Formats time
+   *
+   * @param {number} seconds - The seconds
+   *
+   * @returns {number} The formattime result
+   */
+
+  /**
+   * Formats time
+   *
+   * @param {number} seconds - The seconds
+   *
+   * @returns {number} The formattime result
+   */
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

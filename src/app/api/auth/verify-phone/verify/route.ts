@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/verify-phone/verify/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { otpService } from "@/app/api/lib/services/otp.service";
 import { getUserFromRequest } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
@@ -7,6 +16,32 @@ import { NextRequest, NextResponse } from "next/server";
  * POST /api/auth/verify-phone/verify
  * Verify OTP entered by user for phone verification
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -19,6 +54,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Get phone from user claims or metadata
+    /**
+     * Performs phone operation
+     *
+     * @param {any} user as any).phoneNumber || (user as any).phone;
+
+    if (!phone - The user as any).phone number || (user as any).phone;
+
+    if (!phone
+     *
+     * @returns {any} The phone result
+     */
+
+    /**
+     * Performs phone operation
+     *
+     * @param {any} user as any).phoneNumber || (user as any).phone;
+
+    if (!phone - The user as any).phone number || (user as any).phone;
+
+    if (!phone
+     *
+     * @returns {any} The phone result
+     */
+
     const phone = (user as any).phoneNumber || (user as any).phone;
 
     if (!phone) {
@@ -40,21 +99,28 @@ export async function POST(request: NextRequest) {
 
     // Verify OTP
     const result = await otpService.verifyOTP({
+      /** User Id */
       userId: user.uid,
+      /** Type */
       type: "phone",
+      /** Destination */
       destination: phone,
       otp,
     });
 
     if (result.success) {
       return NextResponse.json({
+        /** Success */
         success: true,
+        /** Message */
         message: result.message,
       });
     } else {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: result.message,
         },
         { status: 400 }
@@ -62,12 +128,15 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "VerifyPhoneVerifyAPI.POST",
     });
 
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error instanceof Error ? error.message : "Failed to verify OTP",
       },
       { status: 500 }

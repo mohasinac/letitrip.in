@@ -1,6 +1,19 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/constants/footer
+ * @description This file contains functionality related to footer
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 // Footer Constants
 
 // About Links (Column 1)
+/**
+ * About Links
+ * @constant
+ */
 export const ABOUT_LINKS = [
   { id: "about", name: "About Let It Rip", link: "/about" },
   { id: "terms", name: "Terms of Service", link: "/terms-of-service" },
@@ -11,6 +24,10 @@ export const ABOUT_LINKS = [
 ];
 
 // Shopping Notes (Column 2)
+/**
+ * Shopping Notes
+ * @constant
+ */
 export const SHOPPING_NOTES = [
   { id: "faq", name: "FAQ", link: "/faq" },
   { id: "new-user", name: "New Users' Guide", link: "/guide/new-user" },
@@ -19,6 +36,10 @@ export const SHOPPING_NOTES = [
 ];
 
 // Fee Description (Column 3)
+/**
+ * Fee Description
+ * @constant
+ */
 export const FEE_DESCRIPTION = [
   { id: "payment", name: "Payment Methods", link: "/fees/payment" },
   { id: "structure", name: "Fee Structure", link: "/fees/structure" },
@@ -27,12 +48,20 @@ export const FEE_DESCRIPTION = [
 ];
 
 // Company Information (Column 4)
+/**
+ * Company Info
+ * @constant
+ */
 export const COMPANY_INFO = [
   { id: "overview", name: "Company Overview", link: "/company/overview" },
   { id: "ticket", name: "Customer Ticket", link: "/support/ticket" },
 ];
 
 // Payment Method Logos
+/**
+ * Payment Methods
+ * @constant
+ */
 export const PAYMENT_METHODS = [
   { id: "visa", name: "Visa", logo: "/payments/visa.svg" },
   { id: "mastercard", name: "Mastercard", logo: "/payments/mastercard.svg" },
@@ -48,6 +77,10 @@ export const PAYMENT_METHODS = [
 ];
 
 // Language Options
+/**
+ * Languages
+ * @constant
+ */
 export const LANGUAGES = [
   { code: "en", name: "EN", fullName: "English" },
   { code: "ja", name: "日本語", fullName: "Japanese" },
@@ -69,37 +102,63 @@ export const LANGUAGES = [
 ];
 
 // Social Media Links
+/**
+ * Social Links
+ * @constant
+ */
 export const SOCIAL_LINKS = [
   {
+    /** Id */
     id: "facebook",
+    /** Name */
     name: "Facebook",
     link: "https://facebook.com",
+    /** Icon */
     icon: "facebook",
   },
   {
+    /** Id */
     id: "youtube",
+    /** Name */
     name: "YouTube",
     link: "https://youtube.com",
+    /** Icon */
     icon: "youtube",
   },
   {
+    /** Id */
     id: "twitter",
+    /** Name */
     name: "Twitter",
     link: "https://twitter.com",
+    /** Icon */
     icon: "twitter",
   },
   {
+    /** Id */
     id: "instagram",
+    /** Name */
     name: "Instagram",
     link: "https://instagram.com",
+    /** Icon */
     icon: "instagram",
   },
 ];
 
+/**
+ * Copyright Text
+ * @constant
+ */
 export const COPYRIGHT_TEXT =
   "Copyright © 2015-2025 letitrip.com. All Rights Reserved";
 
+/**
+ * Support Info
+ * @constant
+ */
 export const SUPPORT_INFO = {
+  /** Title */
   title: "Need help? Please use the Customer Ticket",
+  /** Ticket Link */
   ticketLink: "/support/ticket",
 };

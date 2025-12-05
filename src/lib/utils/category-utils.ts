@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Utility Functions
+ * @module src/lib/utils/category-utils
+ * @description This file contains utility functions for category
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Category Utilities
  * Helper functions for working with multi-parent categories
  */
@@ -6,11 +15,39 @@
 import type { CategoryFE } from "@/types/frontend/category.types";
 
 // Alias for backwards compatibility
+/**
+ * Category type
+ * 
+ * @typedef {Object} Category
+ * @description Type definition for Category
+ */
 type Category = CategoryFE;
 
 /**
  * Get all parent IDs from a category (supports both old and new structure)
  */
+/**
+ * Retrieves parent ids
+ *
+ * @param {Category} category - The category
+ *
+ * @returns {string} The parentids result
+ *
+ * @example
+ * getParentIds(category);
+ */
+
+/**
+ * Retrieves parent ids
+ *
+ * @param {Category} category - The category
+ *
+ * @returns {string} The parentids result
+ *
+ * @example
+ * getParentIds(category);
+ */
+
 export function getParentIds(category: Category): string[] {
   if (category.parentIds && category.parentIds.length > 0) {
     return category.parentIds;
@@ -24,6 +61,28 @@ export function getParentIds(category: Category): string[] {
 /**
  * Get all children IDs from a category
  */
+/**
+ * Retrieves children ids
+ *
+ * @param {Category} category - The category
+ *
+ * @returns {string} The childrenids result
+ *
+ * @example
+ * getChildrenIds(category);
+ */
+
+/**
+ * Retrieves children ids
+ *
+ * @param {Category} category - The category
+ *
+ * @returns {string} The childrenids result
+ *
+ * @example
+ * getChildrenIds(category);
+ */
+
 export function getChildrenIds(category: Category): string[] {
   return (category as any).childrenIds || [];
 }
@@ -31,6 +90,30 @@ export function getChildrenIds(category: Category): string[] {
 /**
  * Check if category has a specific parent
  */
+/**
+ * Checks if parent
+ *
+ * @param {Category} category - The category
+ * @param {string} parentId - parent identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasParent(category, "example");
+ */
+
+/**
+ * Checks if parent
+ *
+ * @param {Category} category - The category
+ * @param {string} parentId - parent identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasParent(category, "example");
+ */
+
 export function hasParent(category: Category, parentId: string): boolean {
   const parentIds = getParentIds(category);
   return parentIds.includes(parentId);
@@ -39,6 +122,30 @@ export function hasParent(category: Category, parentId: string): boolean {
 /**
  * Check if category has a specific child
  */
+/**
+ * Checks if child
+ *
+ * @param {Category} category - The category
+ * @param {string} childId - child identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasChild(category, "example");
+ */
+
+/**
+ * Checks if child
+ *
+ * @param {Category} category - The category
+ * @param {string} childId - child identifier
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasChild(category, "example");
+ */
+
 export function hasChild(category: Category, childId: string): boolean {
   const childrenIds = getChildrenIds(category);
   return childrenIds.includes(childId);
@@ -47,12 +154,51 @@ export function hasChild(category: Category, childId: string): boolean {
 /**
  * Get all ancestor IDs (parents, grandparents, etc.)
  */
+/**
+ * Retrieves ancestor ids
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {string} The ancestorids result
+ *
+ * @example
+ * getAncestorIds(category, allCategories);
+ */
+
+/**
+ * Retrieves ancestor ids
+ *
+ * @returns {any} The ancestorids result
+ *
+ * @example
+ * getAncestorIds();
+ */
+
 export function getAncestorIds(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): string[] {
   const ancestors = new Set<string>();
   const visited = new Set<string>(); // Prevent infinite loops
+
+  /**
+   * Performs collect ancestors operation
+   *
+   * @param {Category} cat - The cat
+   *
+   * @returns {any} The collectancestors result
+   */
+
+  /**
+   * Performs collect ancestors operation
+   *
+   * @param {Category} cat - The cat
+   *
+   * @returns {any} The collectancestors result
+   */
 
   function collectAncestors(cat: Category) {
     if (visited.has(cat.id)) return;
@@ -77,12 +223,51 @@ export function getAncestorIds(
 /**
  * Get all descendant IDs (children, grandchildren, etc.)
  */
+/**
+ * Retrieves descendant ids
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {string} The descendantids result
+ *
+ * @example
+ * getDescendantIds(category, allCategories);
+ */
+
+/**
+ * Retrieves descendant ids
+ *
+ * @returns {any} The descendantids result
+ *
+ * @example
+ * getDescendantIds();
+ */
+
 export function getDescendantIds(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): string[] {
   const descendants = new Set<string>();
   const visited = new Set<string>(); // Prevent infinite loops
+
+  /**
+   * Performs collect descendants operation
+   *
+   * @param {Category} cat - The cat
+   *
+   * @returns {any} The collectdescendants result
+   */
+
+  /**
+   * Performs collect descendants operation
+   *
+   * @param {Category} cat - The cat
+   *
+   * @returns {any} The collectdescendants result
+   */
 
   function collectDescendants(cat: Category) {
     if (visited.has(cat.id)) return;
@@ -107,8 +292,31 @@ export function getDescendantIds(
 /**
  * Build category breadcrumb path (uses first parent)
  */
+/**
+ * Retrieves breadcrumb path
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {any} The breadcrumbpath result
+ *
+ * @example
+ * getBreadcrumbPath(category, allCategories);
+ */
+
+/**
+ * Retrieves breadcrumb path
+ *
+ * @returns {any} The breadcrumbpath result
+ *
+ * @example
+ * getBreadcrumbPath();
+ */
+
 export function getBreadcrumbPath(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): Category[] {
   const path: Category[] = [];
@@ -133,12 +341,53 @@ export function getBreadcrumbPath(
 /**
  * Build all possible breadcrumb paths (one for each parent chain)
  */
+/**
+ * Retrieves all breadcrumb paths
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {any} The allbreadcrumbpaths result
+ *
+ * @example
+ * getAllBreadcrumbPaths(category, allCategories);
+ */
+
+/**
+ * Retrieves all breadcrumb paths
+ *
+ * @returns {any} The allbreadcrumbpaths result
+ *
+ * @example
+ * getAllBreadcrumbPaths();
+ */
+
 export function getAllBreadcrumbPaths(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): Category[][] {
   const paths: Category[][] = [];
   const visited = new Set<string>();
+
+  /**
+   * Performs build paths operation
+   *
+   * @param {Category} cat - The cat
+   * @param {Category[]} currentPath - The current path
+   *
+   * @returns {any} The buildpaths result
+   */
+
+  /**
+   * Performs build paths operation
+   *
+   * @param {Category} cat - The cat
+   * @param {Category[]} currentPath - The current path
+   *
+   * @returns {any} The buildpaths result
+   */
 
   function buildPaths(cat: Category, currentPath: Category[]) {
     if (visited.has(cat.id)) return;
@@ -167,6 +416,28 @@ export function getAllBreadcrumbPaths(
 /**
  * Get root categories (categories with no parents)
  */
+/**
+ * Retrieves root categories
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The rootcategories result
+ *
+ * @example
+ * getRootCategories(categories);
+ */
+
+/**
+ * Retrieves root categories
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The rootcategories result
+ *
+ * @example
+ * getRootCategories(categories);
+ */
+
 export function getRootCategories(categories: Category[]): Category[] {
   return categories.filter((cat) => {
     const parentIds = getParentIds(cat);
@@ -177,6 +448,28 @@ export function getRootCategories(categories: Category[]): Category[] {
 /**
  * Get leaf categories (categories with no children)
  */
+/**
+ * Retrieves leaf categories
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The leafcategories result
+ *
+ * @example
+ * getLeafCategories(categories);
+ */
+
+/**
+ * Retrieves leaf categories
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The leafcategories result
+ *
+ * @example
+ * getLeafCategories(categories);
+ */
+
 export function getLeafCategories(categories: Category[]): Category[] {
   return categories.filter((cat) => {
     return !(cat as any).hasChildren || getChildrenIds(cat).length === 0;
@@ -187,8 +480,34 @@ export function getLeafCategories(categories: Category[]): Category[] {
  * Build category tree structure
  */
 export interface CategoryTree extends Category {
+  /** Children */
   children: CategoryTree[];
 }
+
+/**
+ * Function: Build Category Tree
+ */
+/**
+ * Performs build category tree operation
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The buildcategorytree result
+ *
+ * @example
+ * buildCategoryTree(categories);
+ */
+
+/**
+ * Performs build category tree operation
+ *
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {any} The buildcategorytree result
+ *
+ * @example
+ * buildCategoryTree(categories);
+ */
 
 export function buildCategoryTree(categories: Category[]): CategoryTree[] {
   const categoryMap = new Map<string, CategoryTree>();
@@ -198,6 +517,7 @@ export function buildCategoryTree(categories: Category[]): CategoryTree[] {
   categories.forEach((cat) => {
     categoryMap.set(cat.id, {
       ...cat,
+      /** Children */
       children: [],
     });
   });
@@ -228,9 +548,47 @@ export function buildCategoryTree(categories: Category[]): CategoryTree[] {
 /**
  * Flatten category tree to list
  */
+/**
+ * Performs flatten category tree operation
+ *
+ * @param {CategoryTree[]} trees - The trees
+ *
+ * @returns {any} The flattencategorytree result
+ *
+ * @example
+ * flattenCategoryTree(trees);
+ */
+
+/**
+ * Performs flatten category tree operation
+ *
+ * @param {CategoryTree[]} trees - The trees
+ *
+ * @returns {any} The flattencategorytree result
+ *
+ * @example
+ * flattenCategoryTree(trees);
+ */
+
 export function flattenCategoryTree(trees: CategoryTree[]): Category[] {
   const result: Category[] = [];
   const visited = new Set<string>();
+
+  /**
+   * Performs flatten operation
+   *
+   * @param {CategoryTree} tree - The tree
+   *
+   * @returns {any} The flatten result
+   */
+
+  /**
+   * Performs flatten operation
+   *
+   * @param {CategoryTree} tree - The tree
+   *
+   * @returns {any} The flatten result
+   */
 
   function flatten(tree: CategoryTree) {
     if (visited.has(tree.id)) return;
@@ -249,9 +607,34 @@ export function flattenCategoryTree(trees: CategoryTree[]): Category[] {
 /**
  * Check if category would create a circular reference
  */
+/**
+ * Performs would create circular reference operation
+ *
+ * @param {string} categoryId - category identifier
+ * @param {string} newParentId - newParent identifier
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * wouldCreateCircularReference("example", "example", allCategories);
+ */
+
+/**
+ * Performs would create circular reference operation
+ *
+ * @returns {string} The wouldcreatecircularreference result
+ *
+ * @example
+ * wouldCreateCircularReference();
+ */
+
 export function wouldCreateCircularReference(
+  /** Category Id */
   categoryId: string,
+  /** New Parent Id */
   newParentId: string,
+  /** All Categories */
   allCategories: Category[],
 ): boolean {
   // Check if newParent is a descendant of category
@@ -265,12 +648,53 @@ export function wouldCreateCircularReference(
 /**
  * Get category depth (minimum level in hierarchy)
  */
+/**
+ * Retrieves category depth
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {number} The categorydepth result
+ *
+ * @example
+ * getCategoryDepth(category, allCategories);
+ */
+
+/**
+ * Retrieves category depth
+ *
+ * @returns {any} The categorydepth result
+ *
+ * @example
+ * getCategoryDepth();
+ */
+
 export function getCategoryDepth(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): number {
   let minDepth = 0;
   const visited = new Set<string>();
+
+  /**
+   * Retrieves depth
+   *
+   * @param {Category} cat - The cat
+   * @param {number} currentDepth - The current depth
+   *
+   * @returns {number} The depth result
+   */
+
+  /**
+   * Retrieves depth
+   *
+   * @param {Category} cat - The cat
+   * @param {number} currentDepth - The current depth
+   *
+   * @returns {number} The depth result
+   */
 
   function getDepth(cat: Category, currentDepth: number): number {
     if (visited.has(cat.id)) return currentDepth;
@@ -300,9 +724,34 @@ export function getCategoryDepth(
 /**
  * Get category path string (for display)
  */
+/**
+ * Retrieves category path string
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ * @param {string} [separator] - The separator
+ *
+ * @returns {string} The categorypathstring result
+ *
+ * @example
+ * getCategoryPathString(category, allCategories, "example");
+ */
+
+/**
+ * Retrieves category path string
+ *
+ * @returns {any} The categorypathstring result
+ *
+ * @example
+ * getCategoryPathString();
+ */
+
 export function getCategoryPathString(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
+  /** Separator */
   separator: string = " > ",
 ): string {
   const path = getBreadcrumbPath(category, allCategories);
@@ -312,8 +761,31 @@ export function getCategoryPathString(
 /**
  * Search categories by name or slug
  */
+/**
+ * Performs search categories operation
+ *
+ * @param {Category[]} categories - The categories
+ * @param {string} query - The query
+ *
+ * @returns {string} The searchcategories result
+ *
+ * @example
+ * searchCategories(categories, "example");
+ */
+
+/**
+ * Performs search categories operation
+ *
+ * @returns {string} The searchcategories result
+ *
+ * @example
+ * searchCategories();
+ */
+
 export function searchCategories(
+  /** Categories */
   categories: Category[],
+  /** Query */
   query: string,
 ): Category[] {
   const lowerQuery = query.toLowerCase();
@@ -328,8 +800,31 @@ export function searchCategories(
 /**
  * Get categories by parent
  */
+/**
+ * Retrieves categories by parent
+ *
+ * @param {string} parentId - parent identifier
+ * @param {Category[]} categories - The categories
+ *
+ * @returns {string} The categoriesbyparent result
+ *
+ * @example
+ * getCategoriesByParent("example", categories);
+ */
+
+/**
+ * Retrieves categories by parent
+ *
+ * @returns {string} The categoriesbyparent result
+ *
+ * @example
+ * getCategoriesByParent();
+ */
+
 export function getCategoriesByParent(
+  /** Parent Id */
   parentId: string,
+  /** Categories */
   categories: Category[],
 ): Category[] {
   return categories.filter((cat) => hasParent(cat, parentId));
@@ -339,12 +834,40 @@ export function getCategoriesByParent(
  * Validate category structure
  */
 export interface CategoryValidationResult {
+  /** Is Valid */
   isValid: boolean;
+  /** Errors */
   errors: string[];
 }
 
+/**
+ * Function: Validate Category
+ */
+/**
+ * Validates category
+ *
+ * @param {Category} category - The category
+ * @param {Category[]} allCategories - The all categories
+ *
+ * @returns {string} The validatecategory result
+ *
+ * @example
+ * validateCategory(category, allCategories);
+ */
+
+/**
+ * Validates category
+ *
+ * @returns {any} The validatecategory result
+ *
+ * @example
+ * validateCategory();
+ */
+
 export function validateCategory(
+  /** Category */
   category: Category,
+  /** All Categories */
   allCategories: Category[],
 ): CategoryValidationResult {
   const errors: string[] = [];
@@ -380,6 +903,7 @@ export function validateCategory(
   });
 
   return {
+    /** Is Valid */
     isValid: errors.length === 0,
     errors,
   };

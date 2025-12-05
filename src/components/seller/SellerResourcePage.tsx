@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/SellerResourcePage
+ * @description This file contains the SellerResourcePage component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BulkActionBar } from "@/components/common/BulkActionBar";
@@ -18,75 +27,174 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 // Define inline types
+/**
+ * InlineField interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InlineField
+ */
 interface InlineField {
+  /** Name */
   name: string;
+  /** Label */
   label: string;
+  /** Type */
   type: string;
+  /** Required */
   required?: boolean;
+  /** Options */
   options?: Array<{ value: string; label: string }>;
 }
 
+/**
+ * SellerResourcePageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SellerResourcePageProps
+ */
 export interface SellerResourcePageProps<T> {
   // Resource Configuration
+  /** Resource Name */
   resourceName: string;
+  /** Resource Name Plural */
   resourceNamePlural: string;
 
   // Data Loading
+  /** Load Data */
   loadData: (options: LoadDataOptions) => Promise<LoadDataResult<T>>;
 
   // Column Configuration
+  /** Columns */
   columns: ResourceColumn<T>[];
+  /** Fields */
   fields: InlineField[];
 
   // Actions
+  /** Bulk Actions */
   bulkActions?: BulkAction[];
+  /** On Save */
   onSave?: (id: string, data: Partial<T>) => Promise<void>;
+  /** On Delete */
   onDelete?: (id: string) => Promise<void>;
 
   // Filters (optional)
+  /** Filters */
   filters?: FilterConfig[];
 
   // Stats (optional)
+  /** Stats */
   stats?: ResourceStat[];
 
   // Custom Rendering
+  /** Render Mobile Card */
   renderMobileCard?: (item: T) => ReactNode;
+  /** Render Grid Card */
   renderGridCard?: (item: T) => ReactNode;
 }
 
+/**
+ * LoadDataOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadDataOptions
+ */
 export interface LoadDataOptions {
+  /** Cursor */
   cursor: string | null;
+  /** Search */
   search?: string;
+  /** Filters */
   filters?: Record<string, string>;
 }
 
+/**
+ * LoadDataResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadDataResult
+ */
 export interface LoadDataResult<T> {
+  /** Items */
   items: T[];
+  /** Next Cursor */
   nextCursor: string | null;
+  /** Has Next Page */
   hasNextPage: boolean;
 }
 
+/**
+ * ResourceColumn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceColumn
+ */
 export interface ResourceColumn<T> {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Render */
   render: (item: T) => ReactNode;
+  /** Sortable */
   sortable?: boolean;
+  /** Width */
   width?: string;
 }
 
+/**
+ * FilterConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterConfig
+ */
 export interface FilterConfig {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Type */
   type: "select" | "text" | "date";
+  /** Options */
   options?: { value: string; label: string }[];
 }
 
+/**
+ * ResourceStat interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceStat
+ */
 export interface ResourceStat {
+  /** Label */
   label: string;
+  /** Value */
   value: string | number;
+  /** Icon */
   icon?: ReactNode;
+  /** Color */
   color?: string;
 }
+
+/**
+ * Function: Seller Resource Page
+ */
+/**
+ * Performs seller resource page operation
+ *
+ * @returns {string} The sellerresourcepage result
+ *
+ * @example
+ * SellerResourcePage();
+ */
+
+/**
+ * Performs seller resource page operation
+ *
+ * @returns {string} The sellerresourcepage result
+ *
+ * @example
+ * SellerResourcePage();
+ */
 
 export function SellerResourcePage<T extends { id: string }>({
   resourceName,
@@ -142,8 +250,11 @@ export function SellerResourcePage<T extends { id: string }>({
 
     try {
       const result = await loadData({
+        /** Cursor */
         cursor: cursors[currentPage - 1] || null,
+        /** Search */
         search: debouncedSearchQuery,
+        /** Filters */
         filters: activeFilters,
       });
 
@@ -162,7 +273,9 @@ export function SellerResourcePage<T extends { id: string }>({
       hasLoadedRef.current = true;
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "SellerResourcePage.loadItems",
+        /** Metadata */
         metadata: { page: currentPage },
       });
       setError(err instanceof Error ? err.message : "Failed to load items");
@@ -197,6 +310,24 @@ export function SellerResourcePage<T extends { id: string }>({
   }, [debouncedSearchQuery, activeFilters, loadItems]);
 
   // Handle filter change
+  /**
+   * Handles filter change event
+   *
+   * @param {string} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlefilterchange result
+   */
+
+  /**
+   * Handles filter change event
+   *
+   * @param {string} key - The key
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlefilterchange result
+   */
+
   const handleFilterChange = (key: string, value: string) => {
     setActiveFilters((prev) => ({
       ...prev,
@@ -205,11 +336,35 @@ export function SellerResourcePage<T extends { id: string }>({
   };
 
   // Handle pagination
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -218,6 +373,18 @@ export function SellerResourcePage<T extends { id: string }>({
   };
 
   // Handle selection
+  /**
+   * Performs toggle select all operation
+   *
+   * @returns {any} The toggleselectall result
+   */
+
+  /**
+   * Performs toggle select all operation
+   *
+   * @returns {any} The toggleselectall result
+   */
+
   const toggleSelectAll = () => {
     if (selectedIds.length === items.length) {
       setSelectedIds([]);
@@ -225,6 +392,22 @@ export function SellerResourcePage<T extends { id: string }>({
       setSelectedIds(items.map((item) => item.id));
     }
   };
+
+  /**
+   * Performs toggle select item operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleselectitem result
+   */
+
+  /**
+   * Performs toggle select item operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleselectitem result
+   */
 
   const toggleSelectItem = (id: string) => {
     setSelectedIds((prev) =>
@@ -235,6 +418,26 @@ export function SellerResourcePage<T extends { id: string }>({
   };
 
   // Handle bulk actions
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} actionId - action identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleBulkAction = async (actionId: string) => {
     if (selectedIds.length === 0) {
       toast.error("No items selected");

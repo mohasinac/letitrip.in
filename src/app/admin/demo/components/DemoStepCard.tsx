@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoStepCard
+ * @description This file contains the DemoStepCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -11,15 +20,49 @@ import {
 import { DemoStep } from "@/services/demo-data.service";
 import { StepStatus, DemoStepConfig } from "./types";
 
+/**
+ * DemoStepCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoStepCardProps
+ */
 interface DemoStepCardProps {
+  /** Step Config */
   stepConfig: DemoStepConfig;
+  /** Status */
   status: StepStatus;
+  /** Is Active */
   isActive: boolean;
+  /** Can Run */
   canRun: boolean;
+  /** Is Cleanup */
   isCleanup?: boolean;
+  /** Disabled */
   disabled: boolean;
+  /** On Run */
   onRun: (step: DemoStep) => void;
 }
+
+/**
+ * Function: Demo Step Card
+ */
+/**
+ * Performs demo step card operation
+ *
+ * @returns {any} The demostepcard result
+ *
+ * @example
+ * DemoStepCard();
+ */
+
+/**
+ * Performs demo step card operation
+ *
+ * @returns {any} The demostepcard result
+ *
+ * @example
+ * DemoStepCard();
+ */
 
 export function DemoStepCard({
   stepConfig,

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/skeletons/ProductCardSkeleton
+ * @description This file contains the ProductCardSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import {
   Skeleton,
   SkeletonImage,
@@ -6,7 +15,14 @@ import {
 } from "../Skeleton";
 import { cn } from "@/lib/utils";
 
+/**
+ * ProductCardSkeletonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductCardSkeletonProps
+ */
 interface ProductCardSkeletonProps {
+  /** Class Name */
   className?: string;
 }
 
@@ -14,6 +30,28 @@ interface ProductCardSkeletonProps {
  * Skeleton loader for ProductCard component
  * Matches the layout of the actual ProductCard
  */
+/**
+ * Performs product card skeleton operation
+ *
+ * @param {ProductCardSkeletonProps} { className } - The { class name }
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton({ className });
+ */
+
+/**
+ * Performs product card skeleton operation
+ *
+ * @param {ProductCardSkeletonProps} { className } - The { class name }
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton({ className });
+ */
+
 export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
   return (
     <div
@@ -58,11 +96,31 @@ export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
 /**
  * Grid of ProductCard skeletons
  */
+/**
+ * Performs product card skeleton grid operation
+ *
+ * @returns {number} The productcardskeletongrid result
+ *
+ * @example
+ * ProductCardSkeletonGrid();
+ */
+
+/**
+ * Performs product card skeleton grid operation
+ *
+ * @returns {any} The productcardskeletongrid result
+ *
+ * @example
+ * ProductCardSkeletonGrid();
+ */
+
 export function ProductCardSkeletonGrid({
   count = 12,
   className,
 }: {
+  /** Count */
   count?: number;
+  /** Class Name */
   className?: string;
 }) {
   return (

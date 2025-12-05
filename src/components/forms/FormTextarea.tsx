@@ -1,21 +1,47 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormTextarea
+ * @description This file contains the FormTextarea component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { forwardRef, TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormTextareaProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormTextareaProps
+ */
 export interface FormTextareaProps extends Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   "size"
 > {
+  /** Label */
   label?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Left Icon */
   leftIcon?: React.ReactNode;
+  /** Full Width */
   fullWidth?: boolean;
+  /** Show Char Count */
   showCharCount?: boolean;
+  /** Compact */
   compact?: boolean;
 }
 
+/**
+ * F
+ * @constant
+ */
 export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   (
     {

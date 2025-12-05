@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/analytics.service
+ * @description This file contains service functions for analytics operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import type {
   AnalyticsFiltersFE,
@@ -9,9 +18,16 @@ import type {
   TrafficAnalyticsFE,
 } from "@/types/frontend/analytics.types";
 
+/**
+ * AnalyticsService class
+ * 
+ * @class
+ * @description Description of AnalyticsService class functionality
+ */
 class AnalyticsService {
   // Get analytics overview (seller: own, admin: all)
   async getOverview(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<AnalyticsOverviewFE> {
     const params = new URLSearchParams();
@@ -32,6 +48,7 @@ class AnalyticsService {
 
   // Get sales data (time series)
   async getSalesData(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<SalesDataPointFE[]> {
     const params = new URLSearchParams();
@@ -54,6 +71,7 @@ class AnalyticsService {
 
   // Get top products
   async getTopProducts(
+    /** Filters */
     filters?: AnalyticsFiltersFE & { limit?: number },
   ): Promise<TopProductFE[]> {
     const params = new URLSearchParams();
@@ -76,6 +94,7 @@ class AnalyticsService {
 
   // Get category performance
   async getCategoryPerformance(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<CategoryPerformanceFE[]> {
     const params = new URLSearchParams();
@@ -98,6 +117,7 @@ class AnalyticsService {
 
   // Get customer analytics
   async getCustomerAnalytics(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<CustomerAnalyticsFE[]> {
     const params = new URLSearchParams();
@@ -120,6 +140,7 @@ class AnalyticsService {
 
   // Get traffic analytics
   async getTrafficAnalytics(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
   ): Promise<TrafficAnalyticsFE> {
     const params = new URLSearchParams();
@@ -142,7 +163,9 @@ class AnalyticsService {
 
   // Export analytics data
   async exportData(
+    /** Filters */
     filters?: AnalyticsFiltersFE,
+    /** Format */
     format: "csv" | "pdf" = "csv",
   ): Promise<Blob> {
     const params = new URLSearchParams();
@@ -161,6 +184,7 @@ class AnalyticsService {
     const endpoint = `/analytics/export?${queryString}`;
 
     const response = await fetch(`${endpoint}`, {
+      /** Method */
       method: "GET",
     });
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/validate-slug/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { resolveShopSlug } from "@/app/api/lib/utils/shop-slug-resolver";
 import { logError } from "@/lib/firebase-error-logger";
@@ -10,6 +19,32 @@ import { NextRequest, NextResponse } from "next/server";
  * Slugs are unique per shop (same slug allowed in different shops)
  * Accepts shop_slug parameter and resolves to shop_id internally
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   let slug: string | null = null;
   let shopSlug: string | null = null;
@@ -22,7 +57,9 @@ export async function GET(request: NextRequest) {
     if (!slug) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Slug parameter is required",
         },
         { status: 400 },
@@ -32,7 +69,9 @@ export async function GET(request: NextRequest) {
     if (!shopSlug) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Shop slug parameter is required",
         },
         { status: 400 },
@@ -45,7 +84,9 @@ export async function GET(request: NextRequest) {
     if (!shopId) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Shop not found",
         },
         { status: 404 },
@@ -63,7 +104,9 @@ export async function GET(request: NextRequest) {
     const exists = snapshot.docs.some((doc) => doc.id !== excludeId);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Available */
       available: !exists,
       slug,
       shop_slug: shopSlug,
@@ -71,12 +114,16 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.products.validateSlug.GET",
+      /** Metadata */
       metadata: { slug, shopSlug },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: "Failed to validate slug",
       },
       { status: 500 },

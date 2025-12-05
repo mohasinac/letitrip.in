@@ -1,24 +1,81 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/OrderFilters
+ * @description This file contains the OrderFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * OrderFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderFilterValues
+ */
 export interface OrderFilterValues {
+  /** Status */
   status?: string[];
+  /** Date From */
   dateFrom?: string;
+  /** Date To */
   dateTo?: string;
+  /** Amount Min */
   amountMin?: number;
+  /** Amount Max */
   amountMax?: number;
+  /** Shop Id */
   shopId?: string;
 }
 
+/**
+ * OrderFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderFiltersProps
+ */
 interface OrderFiltersProps {
+  /** Filters */
   filters: OrderFilterValues;
+  /** On Change */
   onChange: (filters: OrderFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs order filters operation
+ *
+ * @returns {any} The orderfilters result
+ *
+ * @example
+ * OrderFilters();
+ */
+
+/**
+ * O
+ * @constant
+ */
+/**
+ * Performs order filters operation
+ *
+ * @returns {any} The orderfilters result
+ *
+ * @example
+ * OrderFilters();
+ */
+
+/**
+ * O
+ * @constant
+ */
 export const OrderFilters: React.FC<OrderFiltersProps> = ({
   filters,
   onChange,
@@ -28,11 +85,29 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof OrderFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: OrderFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
 
   const toggleArrayFilter = (value: string) => {
     const current = filters.status || [];

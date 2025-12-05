@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/firebase/admin
+ * @description This file contains functionality related to admin
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Firebase Admin SDK Configuration
  * Server-side only - never import this in client components
  * Location: /src/app/api/lib/firebase/admin.ts
@@ -18,6 +27,33 @@ let storage: Storage;
  * Initialize Firebase Admin SDK
  * Uses service account credentials from environment variables
  */
+/**
+ * Performs initialize firebase admin operation
+ *
+ * @returns {void} Function return value
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = initializeFirebaseAdmin();
+ */
+/**
+ * Performs initialize firebase admin operation
+ *
+ * @returns {any} The initializefirebaseadmin result
+ *
+ * @example
+ * initializeFirebaseAdmin();
+ */
+
+/**
+ * Performs initialize firebase admin operation
+ *
+ * @returns {any} The initializefirebaseadmin result
+ *
+ * @example
+ * initializeFirebaseAdmin();
+ */
+
 export function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
     const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -38,6 +74,7 @@ export function initializeFirebaseAdmin() {
     console.log("🔧 Initializing Firebase Admin with bucket:", storageBucket);
 
     app = initializeApp({
+      /** Credential */
       credential: cert({ projectId, clientEmail, privateKey }),
       storageBucket,
     });
@@ -70,6 +107,33 @@ export function initializeFirebaseAdmin() {
  * Get Firestore instance
  * Initializes Firebase Admin if not already initialized
  */
+/**
+ * Retrieves firestore admin
+ *
+ * @returns {Firestore} The firestoreadmin result
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = getFirestoreAdmin();
+ */
+/**
+ * Retrieves firestore admin
+ *
+ * @returns {any} The firestoreadmin result
+ *
+ * @example
+ * getFirestoreAdmin();
+ */
+
+/**
+ * Retrieves firestore admin
+ *
+ * @returns {any} The firestoreadmin result
+ *
+ * @example
+ * getFirestoreAdmin();
+ */
+
 export function getFirestoreAdmin(): Firestore {
   if (!db) {
     const { db: firestore } = initializeFirebaseAdmin();
@@ -82,6 +146,33 @@ export function getFirestoreAdmin(): Firestore {
  * Get Auth instance
  * Initializes Firebase Admin if not already initialized
  */
+/**
+ * Retrieves auth admin
+ *
+ * @returns {Auth} The authadmin result
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = getAuthAdmin();
+ */
+/**
+ * Retrieves auth admin
+ *
+ * @returns {any} The authadmin result
+ *
+ * @example
+ * getAuthAdmin();
+ */
+
+/**
+ * Retrieves auth admin
+ *
+ * @returns {any} The authadmin result
+ *
+ * @example
+ * getAuthAdmin();
+ */
+
 export function getAuthAdmin(): Auth {
   if (!auth) {
     const { auth: adminAuth } = initializeFirebaseAdmin();
@@ -94,6 +185,33 @@ export function getAuthAdmin(): Auth {
  * Get Storage instance
  * Initializes Firebase Admin if not already initialized
  */
+/**
+ * Retrieves storage admin
+ *
+ * @returns {Storage} The storageadmin result
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = getStorageAdmin();
+ */
+/**
+ * Retrieves storage admin
+ *
+ * @returns {any} The storageadmin result
+ *
+ * @example
+ * getStorageAdmin();
+ */
+
+/**
+ * Retrieves storage admin
+ *
+ * @returns {any} The storageadmin result
+ *
+ * @example
+ * getStorageAdmin();
+ */
+
 export function getStorageAdmin(): Storage {
   if (!storage) {
     const { storage: adminStorage } = initializeFirebaseAdmin();
@@ -105,6 +223,33 @@ export function getStorageAdmin(): Storage {
 /**
  * Verify Firebase Admin is properly configured
  */
+/**
+ * Performs verify firebase admin operation
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * const result = verifyFirebaseAdmin();
+ */
+/**
+ * Performs verify firebase admin operation
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * verifyFirebaseAdmin();
+ */
+
+/**
+ * Performs verify firebase admin operation
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * verifyFirebaseAdmin();
+ */
+
 export function verifyFirebaseAdmin(): boolean {
   try {
     const requiredEnvVars = [

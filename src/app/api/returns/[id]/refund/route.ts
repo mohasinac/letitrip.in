@@ -1,10 +1,54 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/returns/[id]/refund/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Req */
+  req, {});
+ */
+
 export async function POST(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -62,18 +106,23 @@ export async function POST(
     };
 
     await ref.update({
+      /** Status */
       status: "refunded",
       refund,
       updated_at: new Date().toISOString(),
     });
     const updated = await ref.get();
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: updated.id, ...updated.data() },
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.returns.refund",
+      /** Metadata */
       metadata: { returnId: id },
     });
     return NextResponse.json(

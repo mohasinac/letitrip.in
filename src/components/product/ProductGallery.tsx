@@ -1,19 +1,70 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/product/ProductGallery
+ * @description This file contains the ProductGallery component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react";
 
+/**
+ * Media interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Media
+ */
 interface Media {
+  /** Url */
   url: string;
+  /** Type */
   type: "image" | "video";
+  /** Alt */
   alt?: string;
 }
 
+/**
+ * ProductGalleryProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductGalleryProps
+ */
 interface ProductGalleryProps {
+  /** Media */
   media: Media[];
+  /** Product Name */
   productName: string;
 }
+
+/**
+ * Function: Product Gallery
+ */
+/**
+ * Performs product gallery operation
+ *
+ * @param {ProductGalleryProps} { media, productName } - The { media, product name }
+ *
+ * @returns {any} The productgallery result
+ *
+ * @example
+ * ProductGallery({ media, productName });
+ */
+
+/**
+ * Performs product gallery operation
+ *
+ * @param {ProductGalleryProps} { media, productName } - The { media, product name }
+ *
+ * @returns {any} The productgallery result
+ *
+ * @example
+ * ProductGallery({ media, productName });
+ */
 
 export function ProductGallery({ media, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -21,6 +72,22 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
 
   // Handle ESC key and body scroll lock
   useEffect(() => {
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
+    /**
+     * Handles escape event
+     *
+     * @param {KeyboardEvent} e - The e
+     *
+     * @returns {any} The handleescape result
+     */
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isLightboxOpen) {
         setIsLightboxOpen(false);
@@ -48,9 +115,33 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
 
   const activeMedia = media[activeIndex];
 
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
   const handlePrevious = () => {
     setActiveIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
   };
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));

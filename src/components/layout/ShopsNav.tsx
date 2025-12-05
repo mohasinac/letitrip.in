@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/layout/ShopsNav
+ * @description This file contains the ShopsNav component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -21,13 +30,19 @@ import {
 } from "lucide-react";
 
 const shopIconMap: Record<string, any> = {
+  /** Store */
   store: Store,
   "shopping-bag": ShoppingBag,
+  /** Package */
   package: Package,
   "shopping-cart": ShoppingCart,
+  /** Book */
   book: Book,
+  /** Heart */
   heart: Heart,
+  /** Star */
   star: Star,
+  /** Gem */
   gem: Gem,
 };
 
@@ -39,16 +54,36 @@ export default function ShopsNav() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const fetchShops = async () => {
       try {
         const response = await shopsService.list({
+          /** Featured */
           featured: true,
+          /** Verified */
           verified: true,
+          /** Limit */
           limit: 9,
         });
         setShops(response.data.slice(0, 9));
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "ShopsNav.fetchShops",
         });
       } finally {
@@ -58,6 +93,22 @@ export default function ShopsNav() {
 
     fetchShops();
   }, []);
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/support-tickets/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -21,20 +30,45 @@ export default function SupportTicketsPage() {
   );
 }
 
+/**
+ * Function: Support Tickets Content
+ */
+/**
+ * Performs support tickets content operation
+ *
+ * @returns {any} The supportticketscontent result
+ */
+
+/**
+ * Performs support tickets content operation
+ *
+ * @returns {any} The supportticketscontent result
+ */
+
 function SupportTicketsContent() {
   const {
+    /** Data */
     data: ticketsData,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState<{
+    /** Tickets */
     tickets: SupportTicketFE[];
+    /** Total Pages */
     totalPages: number;
+    /** Stats */
     stats: {
+      /** Total */
       total: number;
+      /** Open */
       open: number;
+      /** In Progress */
       inProgress: number;
+      /** Resolved */
       resolved: number;
+      /** Urgent */
       urgent: number;
     };
   }>();
@@ -42,10 +76,15 @@ function SupportTicketsContent() {
   const tickets = ticketsData?.tickets || [];
   const totalPages = ticketsData?.totalPages || 1;
   const stats = ticketsData?.stats || {
+    /** Total */
     total: 0,
+    /** Open */
     open: 0,
+    /** In Progress */
     inProgress: 0,
+    /** Resolved */
     resolved: 0,
+    /** Urgent */
     urgent: 0,
   };
 
@@ -59,24 +98,35 @@ function SupportTicketsContent() {
     const [ticketsRes, statsData] = await Promise.all([
       supportService.listTickets({
         ...filterValues,
+        /** Search */
         search: searchQuery || undefined,
+        /** Page */
         page: currentPage,
+        /** Limit */
         limit: 20,
       }),
       supportService.getStats(filterValues),
     ]);
 
     return {
+      /** Tickets */
       tickets: ticketsRes.data,
+      /** Total Pages */
       totalPages: Math.ceil((ticketsRes.count || 0) / 20),
+      /** Stats */
       stats: {
+        /** Total */
         total: statsData.totalTickets || 0,
+        /** Open */
         open: statsData.openTickets || 0,
+        /** In Progress */
         inProgress:
           statsData.totalTickets -
             statsData.openTickets -
             statsData.resolvedTickets || 0,
+        /** Resolved */
         resolved: statsData.resolvedTickets || 0,
+        /** Urgent */
         urgent: statsData.ticketsByPriority?.urgent || 0,
       },
     };
@@ -85,6 +135,26 @@ function SupportTicketsContent() {
   useEffect(() => {
     execute(loadData);
   }, [execute, loadData]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} ticketId - ticket identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} ticketId - ticket identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCloseTicket = async (ticketId: string) => {
     if (!confirm("Are you sure you want to close this ticket?")) return;
@@ -100,6 +170,22 @@ function SupportTicketsContent() {
     }
   };
 
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
+
+  /**
+   * Retrieves priority color
+   *
+   * @param {string} priority - The priority
+   *
+   * @returns {string} The prioritycolor result
+   */
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "urgent":
@@ -110,10 +196,27 @@ function SupportTicketsContent() {
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "low":
         return "bg-green-100 text-green-800 border-green-200";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -125,10 +228,27 @@ function SupportTicketsContent() {
         return "bg-green-100 text-green-800 border-green-200";
       case "closed":
         return "bg-gray-100 text-gray-800 border-gray-200";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+  /**
+   * Formats status
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The formatstatus result
+   */
+
+  /**
+   * Formats status
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The formatstatus result
+   */
 
   const formatStatus = (status: string) => {
     return status.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -281,6 +401,7 @@ function SupportTicketsContent() {
                               </div>
                               {ticket.orderId && (
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  /** Order */
                                   Order: {ticket.orderId.slice(0, 8)}
                                 </div>
                               )}

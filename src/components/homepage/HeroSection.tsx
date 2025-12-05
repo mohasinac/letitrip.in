@@ -1,16 +1,59 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/HeroSection
+ * @description This file contains the HeroSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import dynamic from "next/dynamic";
 import { COMPANY_NAME } from "@/constants/navigation";
 
 const HeroCarousel = dynamic(() => import("@/components/layout/HeroCarousel"), {
+  /** Ssr */
   ssr: true,
+  /** Loading */
   loading: () => <HeroSkeleton />,
 });
 
+/**
+ * HeroSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeroSectionProps
+ */
 interface HeroSectionProps {
+  /** Enabled */
   enabled: boolean;
 }
+
+/**
+ * Function: Hero Section
+ */
+/**
+ * Performs hero section operation
+ *
+ * @param {HeroSectionProps} { enabled } - The { enabled }
+ *
+ * @returns {any} The herosection result
+ *
+ * @example
+ * HeroSection({ enabled });
+ */
+
+/**
+ * Performs hero section operation
+ *
+ * @param {HeroSectionProps} { enabled } - The { enabled }
+ *
+ * @returns {any} The herosection result
+ *
+ * @example
+ * HeroSection({ enabled });
+ */
 
 export function HeroSection({ enabled }: HeroSectionProps) {
   if (!enabled) {
@@ -23,6 +66,21 @@ export function HeroSection({ enabled }: HeroSectionProps) {
     </section>
   );
 }
+
+/**
+ * Function: Hero Skeleton
+ */
+/**
+ * Performs hero skeleton operation
+ *
+ * @returns {any} The heroskeleton result
+ */
+
+/**
+ * Performs hero skeleton operation
+ *
+ * @returns {any} The heroskeleton result
+ */
 
 function HeroSkeleton() {
   return (

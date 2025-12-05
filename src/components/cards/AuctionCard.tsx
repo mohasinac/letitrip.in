@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/cards/AuctionCard
+ * @description This file contains the AuctionCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * AuctionCard Component
  *
  * Displays auction information in a card format for listings
@@ -31,21 +40,45 @@ import {
 import Link from "next/link";
 import React from "react";
 
+/**
+ * AuctionCardVariant type
+ * 
+ * @typedef {Object} AuctionCardVariant
+ * @description Type definition for AuctionCardVariant
+ */
 export type AuctionCardVariant = "public" | "admin" | "seller" | "compact";
 
+/**
+ * AuctionCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionCardProps
+ */
 export interface AuctionCardProps {
+  /** Auction */
   auction: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Images */
     images: string[];
     videos?: string[]; // Video URLs for carousel
+    /** Current Bid */
     currentBid: number;
+    /** Starting Bid */
     startingBid: number;
+    /** Bid Count */
     bidCount: number;
+    /** End Time */
     endTime: Date | string;
+    /** Condition */
     condition?: "new" | "used" | "refurbished";
+    /** Featured */
     featured?: boolean;
+    /** Status */
     status?:
       | "active"
       | "live"
@@ -53,27 +86,56 @@ export interface AuctionCardProps {
       | "ended"
       | "cancelled"
       | "moderation";
+    /** Shop */
     shop?: {
+      /** Id */
       id: string;
+      /** Name */
       name: string;
+      /** Logo */
       logo?: string;
+      /** Is Verified */
       isVerified?: boolean;
     };
+    /** View Count */
     viewCount?: number;
   };
+  /** Variant */
   variant?: AuctionCardVariant;
+  /** On Watch */
   onWatch?: (auctionId: string) => void;
+  /** Is Watched */
   isWatched?: boolean;
+  /** Show Shop Info */
   showShopInfo?: boolean;
+  /** Priority */
   priority?: boolean;
   // Admin/Seller specific props
+  /** On Edit */
   onEdit?: (slug: string) => void;
+  /** On Delete */
   onDelete?: (id: string) => void;
+  /** On Approve */
   onApprove?: (id: string) => void;
+  /** On Reject */
   onReject?: (id: string) => void;
+  /** Is Selected */
   isSelected?: boolean;
+  /** On Select */
   onSelect?: (id: string, selected: boolean) => void;
 }
+
+/**
+ * Performs auction card component operation
+ *
+ * @returns {any} The auctioncardcomponent result
+ */
+
+/**
+ * Performs auction card component operation
+ *
+ * @returns {any} The auctioncardcomponent result
+ */
 
 const AuctionCardComponent = ({
   auction,
@@ -158,6 +220,18 @@ const AuctionCardComponent = ({
       }
     }
 
+    /**
+     * Performs start image rotation operation
+     *
+     * @returns {any} The startimagerotation result
+     */
+
+    /**
+     * Performs start image rotation operation
+     *
+     * @returns {any} The startimagerotation result
+     */
+
     function startImageRotation() {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -205,6 +279,22 @@ const AuctionCardComponent = ({
   const statusBadge = isAdmin || isSeller ? auction.status : null;
 
   // Handle selection for bulk actions
+  /**
+   * Handles select click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselectclick result
+   */
+
+  /**
+   * Handles select click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselectclick result
+   */
+
   const handleSelectClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -212,6 +302,22 @@ const AuctionCardComponent = ({
   };
 
   // Handle edit click
+  /**
+   * Handles edit click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleeditclick result
+   */
+
+  /**
+   * Handles edit click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleeditclick result
+   */
+
   const handleEditClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -219,6 +325,22 @@ const AuctionCardComponent = ({
   };
 
   // Handle delete click
+  /**
+   * Handles delete click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledeleteclick result
+   */
+
+  /**
+   * Handles delete click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledeleteclick result
+   */
+
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -226,6 +348,22 @@ const AuctionCardComponent = ({
   };
 
   // Handle approve click
+  /**
+   * Handles approve click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleapproveclick result
+   */
+
+  /**
+   * Handles approve click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleapproveclick result
+   */
+
   const handleApproveClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -233,6 +371,22 @@ const AuctionCardComponent = ({
   };
 
   // Handle reject click
+  /**
+   * Handles reject click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlerejectclick result
+   */
+
+  /**
+   * Handles reject click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlerejectclick result
+   */
+
   const handleRejectClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();

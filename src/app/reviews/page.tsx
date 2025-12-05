@@ -1,13 +1,32 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/reviews/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { Suspense } from "react";
 import ReviewsListClient from "./ReviewsListClient";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Customer Reviews | Letitrip",
+  /** Description */
   description:
     "Read authentic customer reviews and ratings for products on Letitrip. Verified purchases and honest feedback.",
 };
 
+/**
+ * Performs reviews page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ReviewsPage();
+ */
 export default function ReviewsPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">

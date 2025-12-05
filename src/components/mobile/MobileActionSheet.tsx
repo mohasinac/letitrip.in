@@ -1,26 +1,80 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileActionSheet
+ * @description This file contains the MobileActionSheet component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { MobileBottomSheet } from "./MobileBottomSheet";
 
+/**
+ * ActionItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ActionItem
+ */
 interface ActionItem {
+  /** Id */
   id: string;
+  /** Label */
   label: string;
+  /** Icon */
   icon?: ReactNode;
+  /** On Click */
   onClick: () => void;
+  /** Variant */
   variant?: "default" | "destructive" | "primary";
+  /** Disabled */
   disabled?: boolean;
 }
 
+/**
+ * MobileActionSheetProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobileActionSheetProps
+ */
 interface MobileActionSheetProps {
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** Title */
   title?: string;
+  /** Actions */
   actions: ActionItem[];
+  /** Show Cancel */
   showCancel?: boolean;
+  /** Cancel Label */
   cancelLabel?: string;
 }
+
+/**
+ * Function: Mobile Action Sheet
+ */
+/**
+ * Performs mobile action sheet operation
+ *
+ * @returns {any} The mobileactionsheet result
+ *
+ * @example
+ * MobileActionSheet();
+ */
+
+/**
+ * Performs mobile action sheet operation
+ *
+ * @returns {any} The mobileactionsheet result
+ *
+ * @example
+ * MobileActionSheet();
+ */
 
 export function MobileActionSheet({
   isOpen,
@@ -30,6 +84,22 @@ export function MobileActionSheet({
   showCancel = true,
   cancelLabel = "Cancel",
 }: MobileActionSheetProps) {
+  /**
+   * Handles action event
+   *
+   * @param {ActionItem} action - The action
+   *
+   * @returns {any} The handleaction result
+   */
+
+  /**
+   * Handles action event
+   *
+   * @param {ActionItem} action - The action
+   *
+   * @returns {any} The handleaction result
+   */
+
   const handleAction = (action: ActionItem) => {
     if (!action.disabled) {
       action.onClick();

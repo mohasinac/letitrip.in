@@ -1,10 +1,27 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/BankingStep
+ * @description This file contains the BankingStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
 import type { ShopFormData, OnChange } from "./types";
 
+/**
+ * BankingStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BankingStepProps
+ */
 interface BankingStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnChange;
 }
 

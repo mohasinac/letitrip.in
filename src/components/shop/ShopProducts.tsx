@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopProducts
+ * @description This file contains the ShopProducts component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -16,16 +25,32 @@ import {
 } from "@/components/filters/ProductFilters";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * ShopProductsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopProductsProps
+ */
 export interface ShopProductsProps {
+  /** Products */
   products: ProductCardFE[];
+  /** Loading */
   loading?: boolean;
+  /** Shop Name */
   shopName: string;
+  /** Shop Id */
   shopId: string;
+  /** Shop Slug */
   shopSlug: string;
+  /** On Sort Change */
   onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
+  /** On Filters Change */
   onFiltersChange?: (filters: ProductFilterValues) => void;
+  /** On Add To Cart */
   onAddToCart?: (productId: string, productDetails?: any) => void;
+  /** Available Brands */
   availableBrands?: string[];
+  /** Class Name */
   className?: string;
 }
 
@@ -56,6 +81,24 @@ export interface ShopProductsProps {
  * />
  * ```
  */
+/**
+ * Performs shop products operation
+ *
+ * @returns {any} The shopproducts result
+ *
+ * @example
+ * ShopProducts();
+ */
+
+/**
+ * Performs shop products operation
+ *
+ * @returns {any} The shopproducts result
+ *
+ * @example
+ * ShopProducts();
+ */
+
 export function ShopProducts({
   products,
   loading = false,
@@ -75,31 +118,123 @@ export function ShopProducts({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [filters, setFilters] = useState<ProductFilterValues>({});
 
+  /**
+   * Handles sort by change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlesortbychange result
+   */
+
+  /**
+   * Handles sort by change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlesortbychange result
+   */
+
   const handleSortByChange = (value: string) => {
     setSortBy(value);
     onSortChange?.(value, sortOrder);
   };
+
+  /**
+   * Handles sort order change event
+   *
+   * @param {"asc" | "desc"} value - The value
+   *
+   * @returns {any} The handlesortorderchange result
+   */
+
+  /**
+   * Handles sort order change event
+   *
+   * @param {"asc" | "desc"} value - The value
+   *
+   * @returns {any} The handlesortorderchange result
+   */
 
   const handleSortOrderChange = (value: "asc" | "desc") => {
     setSortOrder(value);
     onSortChange?.(sortBy, value);
   };
 
+  /**
+   * Handles filters change event
+   *
+   * @param {ProductFilterValues} newFilters - The new filters
+   *
+   * @returns {any} The handlefilterschange result
+   */
+
+  /**
+   * Handles filters change event
+   *
+   * @param {ProductFilterValues} newFilters - The new filters
+   *
+   * @returns {any} The handlefilterschange result
+   */
+
   const handleFiltersChange = (newFilters: ProductFilterValues) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
   };
+
+  /**
+   * Handles apply filters event
+   *
+   * @returns {any} The handleapplyfilters result
+   */
+
+  /**
+   * Handles apply filters event
+   *
+   * @returns {any} The handleapplyfilters result
+   */
 
   const handleApplyFilters = () => {
     onFiltersChange?.(filters);
     setShowFilters(false);
   };
 
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
   const handleResetFilters = () => {
     const resetFilters = {};
     setFilters(resetFilters);
     onFiltersChange?.(resetFilters);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} productId - product identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} productId - product identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleAddToCart = async (productId: string) => {
     try {
@@ -115,8 +250,11 @@ export function ShopProducts({
       }
 
       await onAddToCart(productId, {
+        /** Name */
         name: product.name,
+        /** Price */
         price: product.price,
+        /** Image */
         image: product.images?.[0] || "",
         shopId,
         shopName,

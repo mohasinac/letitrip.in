@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/riplimit/refund/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Refund API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -26,6 +35,32 @@ import { NextRequest, NextResponse } from "next/server";
  * - method: "original" or "bank"
  * - bankDetails: Required if method is "bank"
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
@@ -44,7 +79,9 @@ export async function POST(request: NextRequest) {
     if (!amount || typeof amount !== "number" || amount < RIPLIMIT_MIN_REFUND) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: `Minimum refund is ${RIPLIMIT_MIN_REFUND} RipLimit (₹${ripLimitToInr(
             RIPLIMIT_MIN_REFUND,
           )})`,
@@ -70,7 +107,9 @@ export async function POST(request: NextRequest) {
       ) {
         return NextResponse.json(
           {
+            /** Success */
             success: false,
+            /** Error */
             error: "Bank details are required for bank transfer refund",
           },
           { status: 400 },
@@ -85,7 +124,9 @@ export async function POST(request: NextRequest) {
     if (balance.hasUnpaidAuctions) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Cannot request refund while you have unpaid won auctions",
         },
         { status: 400 },
@@ -96,7 +137,9 @@ export async function POST(request: NextRequest) {
     if (balance.availableBalance < amount) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: `Insufficient available balance. You have ${balance.availableBalance} RipLimit available.`,
         },
         { status: 400 },
@@ -129,14 +172,20 @@ export async function POST(request: NextRequest) {
     // Create refund request
     const refundRef = db.collection(COLLECTIONS.RIPLIMIT_REFUNDS).doc();
     await refundRef.set({
+      /** User Id */
       userId: auth.user.uid,
+      /** Rip Limit Amount */
       ripLimitAmount: amount,
       inrAmount,
       feeAmount,
       netAmount,
+      /** Status */
       status: RipLimitRefundStatus.REQUESTED,
+      /** Refund Method */
       refundMethod: method,
+      /** Bank Details */
       bankDetails: method === "bank" ? bankDetails : null,
+      /** Created At */
       createdAt: Timestamp.now(),
     });
 
@@ -155,7 +204,9 @@ export async function POST(request: NextRequest) {
       }
 
       t.update(accountRef, {
+        /** Available Balance */
         availableBalance: currentBalance - amount,
+        /** Updated At */
         updatedAt: Timestamp.now(),
       });
 
@@ -165,26 +216,39 @@ export async function POST(request: NextRequest) {
         .doc();
       t.set(transactionRef, {
         userId,
+        /** Type */
         type: "refund",
+        /** Amount */
         amount: -amount,
         inrAmount,
+        /** Balance After */
         balanceAfter: currentBalance - amount,
+        /** Status */
         status: "pending",
+        /** Description */
         description: `Refund requested: ${amount} RipLimit`,
+        /** Metadata */
         metadata: { refundId: refundRef.id },
+        /** Created At */
         createdAt: Timestamp.now(),
       });
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Refund Id */
         refundId: refundRef.id,
+        /** Rip Limit Amount */
         ripLimitAmount: amount,
         inrAmount,
         feeAmount,
         netAmount,
+        /** Status */
         status: RipLimitRefundStatus.REQUESTED,
+        /** Message */
         message: `Refund request submitted. You will receive ₹${netAmount} within 5-7 business days.`,
       },
     });
@@ -201,6 +265,32 @@ export async function POST(request: NextRequest) {
  * GET /api/riplimit/refund
  * Get refund history for the authenticated user
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     // Authenticate user
@@ -221,12 +311,15 @@ export async function GET(request: NextRequest) {
       .get();
 
     const refunds = refundsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: refunds,
     });
   } catch (error) {

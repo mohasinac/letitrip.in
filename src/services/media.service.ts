@@ -1,7 +1,24 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/media.service
+ * @description This file contains service functions for media operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 
+/**
+ * UploadMediaData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UploadMediaData
+ */
 interface UploadMediaData {
+  /** File */
   file: File;
+  /** Context */
   context:
     | "product"
     | "shop"
@@ -10,37 +27,81 @@ interface UploadMediaData {
     | "return"
     | "avatar"
     | "category";
+  /** Context Id */
   contextId?: string;
+  /** Slug */
   slug?: string;
+  /** Description */
   description?: string;
 }
 
+/**
+ * MediaItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaItem
+ */
 interface MediaItem {
+  /** Id */
   id: string;
+  /** Url */
   url: string;
+  /** Thumbnail Url */
   thumbnailUrl?: string;
+  /** Type */
   type: "image" | "video";
+  /** Size */
   size: number;
+  /** Mime Type */
   mimeType: string;
+  /** Slug */
   slug?: string;
+  /** Description */
   description?: string;
+  /** Context */
   context: string;
+  /** Context Id */
   contextId?: string;
+  /** Uploaded By */
   uploadedBy: string;
+  /** Created At */
   createdAt: Date;
 }
 
+/**
+ * UpdateMediaData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UpdateMediaData
+ */
 interface UpdateMediaData {
+  /** Slug */
   slug?: string;
+  /** Description */
   description?: string;
 }
 
+/**
+ * MediaUploadResponse interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaUploadResponse
+ */
 interface MediaUploadResponse {
+  /** Url */
   url: string;
+  /** Thumbnail Url */
   thumbnailUrl?: string;
+  /** Id */
   id: string;
 }
 
+/**
+ * MediaService class
+ * 
+ * @class
+ * @description Description of MediaService class functionality
+ */
 class MediaService {
   // Upload single media file
   async upload(data: UploadMediaData): Promise<MediaUploadResponse> {
@@ -52,7 +113,9 @@ class MediaService {
     if (data.description) formData.append("description", data.description);
 
     const response = await fetch("/api/media/upload", {
+      /** Method */
       method: "POST",
+      /** Body */
       body: formData,
     });
 
@@ -71,16 +134,22 @@ class MediaService {
     }
 
     return {
+      /** Url */
       url: result.url,
+      /** Id */
       id: result.id,
+      /** Thumbnail Url */
       thumbnailUrl: result.thumbnailUrl,
     };
   }
 
   // Upload multiple media files
   async uploadMultiple(
+    /** Files */
     files: File[],
+    /** Context */
     context: string,
+    /** Context Id */
     contextId?: string,
   ): Promise<MediaUploadResponse[]> {
     const formData = new FormData();
@@ -89,7 +158,9 @@ class MediaService {
     if (contextId) formData.append("contextId", contextId);
 
     const response = await fetch("/api/media/upload-multiple", {
+      /** Method */
       method: "POST",
+      /** Body */
       body: formData,
     });
 
@@ -127,13 +198,17 @@ class MediaService {
 
   // Delete media by URL or path from Firebase Storage
   async deleteByUrl(
+    /** Url */
     url: string,
   ): Promise<{ success: boolean; message: string }> {
     const response = await fetch("/api/media/delete", {
+      /** Method */
       method: "DELETE",
+      /** Headers */
       headers: {
         "Content-Type": "application/json",
       },
+      /** Body */
       body: JSON.stringify({ url }),
     });
 
@@ -147,13 +222,17 @@ class MediaService {
 
   // Delete media by path from Firebase Storage
   async deleteByPath(
+    /** Path */
     path: string,
   ): Promise<{ success: boolean; message: string }> {
     const response = await fetch("/api/media/delete", {
+      /** Method */
       method: "DELETE",
+      /** Headers */
       headers: {
         "Content-Type": "application/json",
       },
+      /** Body */
       body: JSON.stringify({ path }),
     });
 
@@ -174,8 +253,11 @@ class MediaService {
 
   // Generate signed URL for upload (for large files)
   async getUploadUrl(
+    /** File Name */
     fileName: string,
+    /** File Type */
     fileType: string,
+    /** Context */
     context: string,
   ): Promise<{ uploadUrl: string; fileUrl: string }> {
     return apiService.post<{ uploadUrl: string; fileUrl: string }>(
@@ -190,11 +272,17 @@ class MediaService {
 
   // Confirm upload (after using signed URL)
   async confirmUpload(
+    /** File Url */
     fileUrl: string,
+    /** Metadata */
     metadata: {
+      /** Context */
       context: string;
+      /** Context Id */
       contextId?: string;
+      /** Slug */
       slug?: string;
+      /** Description */
       description?: string;
     },
   ): Promise<MediaItem> {
@@ -206,15 +294,20 @@ class MediaService {
 
   // Validate file before upload
   validateFile(
+    /** File */
     file: File,
+    /** Max Size M B */
     maxSizeMB: number,
+    /** Allowed Types */
     allowedTypes: string[],
   ): { valid: boolean; error?: string } {
     // Check file size
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxSizeBytes) {
       return {
+        /** Valid */
         valid: false,
+        /** Error */
         error: `File size exceeds ${maxSizeMB}MB limit`,
       };
     }
@@ -222,7 +315,9 @@ class MediaService {
     // Check file type
     if (!allowedTypes.includes(file.type)) {
       return {
+        /** Valid */
         valid: false,
+        /** Error */
         error: `File type ${file.type} is not allowed`,
       };
     }
@@ -232,47 +327,78 @@ class MediaService {
 
   // Get media constraints
   getConstraints(context: string): {
+    /** Max Size M B */
     maxSizeMB: number;
+    /** Allowed Types */
     allowedTypes: string[];
+    /** Max Files */
     maxFiles: number;
   } {
     const constraints: Record<
       string,
       { maxSizeMB: number; allowedTypes: string[]; maxFiles: number }
     > = {
+      /** Product */
       product: {
+        /** Max Size M B */
         maxSizeMB: 5,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "image/webp", "video/mp4"],
+        /** Max Files */
         maxFiles: 10,
       },
+      /** Shop */
       shop: {
+        /** Max Size M B */
         maxSizeMB: 2,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "image/webp"],
+        /** Max Files */
         maxFiles: 2,
       },
+      /** Auction */
       auction: {
+        /** Max Size M B */
         maxSizeMB: 5,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "image/webp", "video/mp4"],
+        /** Max Files */
         maxFiles: 10,
       },
+      /** Review */
       review: {
+        /** Max Size M B */
         maxSizeMB: 3,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "video/mp4"],
+        /** Max Files */
         maxFiles: 5,
       },
+      /** Return */
       return: {
+        /** Max Size M B */
         maxSizeMB: 3,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "video/mp4"],
+        /** Max Files */
         maxFiles: 5,
       },
+      /** Avatar */
       avatar: {
+        /** Max Size M B */
         maxSizeMB: 1,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "image/webp"],
+        /** Max Files */
         maxFiles: 1,
       },
+      /** Category */
       category: {
+        /** Max Size M B */
         maxSizeMB: 2,
+        /** Allowed Types */
         allowedTypes: ["image/jpeg", "image/png", "image/webp"],
+        /** Max Files */
         maxFiles: 1,
       },
     };

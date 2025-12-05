@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Service Module
+ * @module src/services/demo-data.service
+ * @description This file contains service functions for demo-data operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Demo Data Service
  * Generates comprehensive, meaningful demo data for TCG, Beyblades, and Figurines
  * with multi-parent category logic, variants, and complete e-commerce flows.
@@ -10,6 +19,12 @@
 import { apiService } from "./api.service";
 import { ADMIN_ROUTES } from "@/constants/api-routes";
 
+/**
+ * DemoStep type
+ * 
+ * @typedef {Object} DemoStep
+ * @description Type definition for DemoStep
+ */
 export type DemoStep =
   | "categories"
   | "users"
@@ -23,6 +38,10 @@ export type DemoStep =
   | "settings";
 
 // Cleanup steps are in reverse order (to handle dependencies)
+/**
+ * Cleanup Steps
+ * @constant
+ */
 export const CLEANUP_STEPS: DemoStep[] = [
   "settings",
   "extras",
@@ -36,6 +55,10 @@ export const CLEANUP_STEPS: DemoStep[] = [
   "categories",
 ];
 
+/**
+ * Generation Steps
+ * @constant
+ */
 export const GENERATION_STEPS: DemoStep[] = [
   "categories",
   "users",
@@ -49,45 +72,99 @@ export const GENERATION_STEPS: DemoStep[] = [
   "settings",
 ];
 
+/**
+ * DemoDataSummary interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoDataSummary
+ */
 export interface DemoDataSummary {
+  /** Categories */
   categories: number;
+  /** Users */
   users: number;
+  /** Shops */
   shops: number;
+  /** Products */
   products: number;
+  /** Auctions */
   auctions: number;
+  /** Bids */
   bids: number;
+  /** Orders */
   orders: number;
+  /** Payments */
   payments: number;
+  /** Shipments */
   shipments: number;
+  /** Reviews */
   reviews?: number;
+  /** Hero Slides */
   heroSlides?: number;
+  /** Favorites */
   favorites?: number;
+  /** Carts */
   carts?: number;
+  /** Notifications */
   notifications?: number;
+  /** Settings */
   settings?: number;
+  /** Prefix */
   prefix: string;
+  /** Created At */
   createdAt: string;
 }
 
+/**
+ * StepResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for StepResult
+ */
 export interface StepResult {
+  /** Success */
   success: boolean;
+  /** Step */
   step: DemoStep;
+  /** Data */
   data?: any;
+  /** Error */
   error?: string;
 }
 
+/**
+ * GenerationState interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GenerationState
+ */
 export interface GenerationState {
+  /** Category Map */
   categoryMap?: Record<string, string>;
+  /** Sellers */
   sellers?: Array<{ id: string; name: string }>;
+  /** Buyers */
   buyers?: Array<{ id: string; name: string }>;
+  /** Users */
   users?: Array<{ id: string; name: string; role: string }>;
+  /** Shops */
   shops?: Array<{ id: string; ownerId: string; name: string; slug: string }>;
+  /** Products */
   products?: string[];
+  /** Products By Shop */
   productsByShop?: Record<string, string[]>;
+  /** Auctions */
   auctions?: string[];
+  /** Credentials */
   credentials?: any;
 }
 
+/**
+ * DemoDataService class
+ * 
+ * @class
+ * @description Description of DemoDataService class functionality
+ */
 class DemoDataService {
   private readonly ROUTES = ADMIN_ROUTES.DEMO;
 
@@ -109,7 +186,9 @@ class DemoDataService {
   }
 
   async generateShops(
+    /** Sellers */
     sellers: Array<{ id: string; name: string }>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("shops"), {
@@ -119,8 +198,11 @@ class DemoDataService {
   }
 
   async generateProducts(
+    /** Shops */
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
+    /** Category Map */
     categoryMap: Record<string, string>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("products"), {
@@ -131,8 +213,11 @@ class DemoDataService {
   }
 
   async generateAuctions(
+    /** Shops */
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
+    /** Products By Shop */
     productsByShop: Record<string, string[]>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("auctions"), {
@@ -143,8 +228,11 @@ class DemoDataService {
   }
 
   async generateBids(
+    /** Auctions */
     auctions: string[],
+    /** Buyers */
     buyers: Array<{ id: string; name: string }>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("bids"), {
@@ -155,8 +243,11 @@ class DemoDataService {
   }
 
   async generateReviews(
+    /** Products */
     products: string[],
+    /** Buyers */
     buyers: Array<{ id: string; name: string }>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("reviews"), {
@@ -167,9 +258,13 @@ class DemoDataService {
   }
 
   async generateOrders(
+    /** Shops */
     shops: Array<{ id: string; ownerId: string; name: string; slug: string }>,
+    /** Buyers */
     buyers: Array<{ id: string; name: string }>,
+    /** Products By Shop */
     productsByShop: Record<string, string[]>,
+    /** Scale */
     scale: number = 10,
   ): Promise<StepResult> {
     return apiService.post<StepResult>(this.ROUTES.GENERATE_STEP("orders"), {
@@ -181,10 +276,15 @@ class DemoDataService {
   }
 
   async generateExtras(params: {
+    /** Shops */
     shops?: Array<{ id: string; ownerId: string; name: string; slug: string }>;
+    /** Buyers */
     buyers?: Array<{ id: string; name: string }>;
+    /** Users */
     users?: Array<{ id: string; name: string; role: string }>;
+    /** Products */
     products?: string[];
+    /** Scale */
     scale?: number;
   }): Promise<StepResult> {
     return apiService.post<StepResult>(
@@ -203,11 +303,15 @@ class DemoDataService {
    * Get statistics for existing demo data (counts all DEMO_ prefixed data)
    */
   async getStats(): Promise<{
+    /** Exists */
     exists: boolean;
+    /** Summary */
     summary: DemoDataSummary | null;
   }> {
     return apiService.get<{
+      /** Exists */
       exists: boolean;
+      /** Summary */
       summary: DemoDataSummary | null;
     }>(this.ROUTES.STATS);
   }
@@ -216,13 +320,19 @@ class DemoDataService {
    * Cleanup all demo data with DEMO_ prefix
    */
   async cleanupAll(): Promise<{
+    /** Deleted */
     deleted: number;
+    /** Prefix */
     prefix: string;
+    /** Breakdown */
     breakdown?: Array<{ collection: string; count: number }>;
   }> {
     return apiService.delete<{
+      /** Deleted */
       deleted: number;
+      /** Prefix */
       prefix: string;
+      /** Breakdown */
       breakdown?: Array<{ collection: string; count: number }>;
     }>(this.ROUTES.CLEANUP_ALL);
   }

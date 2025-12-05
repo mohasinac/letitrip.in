@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/orders/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -32,17 +41,22 @@ export default function SellerOrderDetailPage() {
   const orderId = params.id as string;
 
   const {
+    /** Data */
     data: order,
     isLoading,
     execute,
   } = useLoadingState<any>({
+    /** Initial Data */
     initialData: null,
   });
   const [updating, setUpdating] = useState(false);
   const [showShippingForm, setShowShippingForm] = useState(false);
   const [shippingData, setShippingData] = useState({
+    /** Tracking Number */
     trackingNumber: "",
+    /** Shipping Provider */
     shippingProvider: "",
+    /** Estimated Delivery */
     estimatedDelivery: "",
   });
 
@@ -52,7 +66,9 @@ export default function SellerOrderDetailPage() {
       return data;
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerOrderDetail.loadOrder",
+        /** Metadata */
         metadata: { orderId },
       });
       router.push(notFound.order(orderId, error));
@@ -64,6 +80,26 @@ export default function SellerOrderDetailPage() {
     execute(loadOrder);
   }, [execute, loadOrder]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} status - The status
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleUpdateStatus = async (status: string) => {
     try {
       setUpdating(true);
@@ -71,13 +107,35 @@ export default function SellerOrderDetailPage() {
       await execute(loadOrder);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerOrderDetail.handleUpdateStatus",
+        /** Metadata */
         metadata: { orderId, status },
       });
     } finally {
       setUpdating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleAddShipping = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,20 +151,41 @@ export default function SellerOrderDetailPage() {
       );
       setShowShippingForm(false);
       setShippingData({
+        /** Tracking Number */
         trackingNumber: "",
+        /** Shipping Provider */
         shippingProvider: "",
+        /** Estimated Delivery */
         estimatedDelivery: "",
       });
       await execute(loadOrder);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerOrderDetail.handleAddShipping",
+        /** Metadata */
         metadata: { orderId, shippingData },
       });
     } finally {
       setUpdating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleDownloadInvoice = async () => {
     try {
@@ -121,11 +200,29 @@ export default function SellerOrderDetailPage() {
       globalThis.URL?.revokeObjectURL(url);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerOrderDetail.handleDownloadInvoice",
+        /** Metadata */
         metadata: { orderId },
       });
     }
   };
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -137,6 +234,7 @@ export default function SellerOrderDetailPage() {
         return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
       case "cancelled":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      /** Default */
       default:
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
     }
@@ -238,11 +336,13 @@ export default function SellerOrderDetailPage() {
                         </h3>
                         {item.variant && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
+                            /** Variant */
                             Variant: {item.variant}
                           </p>
                         )}
                         {item.sku && (
                           <p className="text-sm text-gray-500 dark:text-gray-500">
+                            /** S K U */
                             SKU: {item.sku}
                           </p>
                         )}
@@ -252,6 +352,7 @@ export default function SellerOrderDetailPage() {
                           <Price amount={item.price} /> × {item.quantity}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
+                          /** Total */
                           Total: <Price amount={item.total} />
                         </p>
                       </div>
@@ -431,6 +532,7 @@ export default function SellerOrderDetailPage() {
                   <p className="text-sm">{order.shippingAddress.country}</p>
                   {order.shippingAddress.phone && (
                     <p className="text-sm mt-2">
+                      /** Phone */
                       Phone: {order.shippingAddress.phone}
                     </p>
                   )}
@@ -555,6 +657,7 @@ export default function SellerOrderDetailPage() {
                       onChange={(e) =>
                         setShippingData((prev) => ({
                           ...prev,
+                          /** Tracking Number */
                           trackingNumber: e.target.value,
                         }))
                       }
@@ -569,6 +672,7 @@ export default function SellerOrderDetailPage() {
                       onChange={(e) =>
                         setShippingData((prev) => ({
                           ...prev,
+                          /** Shipping Provider */
                           shippingProvider: e.target.value,
                         }))
                       }
@@ -580,7 +684,9 @@ export default function SellerOrderDetailPage() {
                         { value: "FedEx", label: "FedEx" },
                         { value: "India Post", label: "India Post" },
                         {
+                          /** Value */
                           value: "Professional Courier",
+                          /** Label */
                           label: "Professional Courier",
                         },
                         { value: "Trackon", label: "Trackon" },
@@ -596,6 +702,7 @@ export default function SellerOrderDetailPage() {
                       onChange={(e) =>
                         setShippingData((prev) => ({
                           ...prev,
+                          /** Estimated Delivery */
                           estimatedDelivery: e.target.value,
                         }))
                       }

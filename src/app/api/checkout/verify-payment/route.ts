@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/checkout/verify-payment/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
@@ -12,6 +21,35 @@ const VerifyPaymentSchema = z.object({
   razorpay_payment_id: z.string().min(1),
   razorpay_signature: z.string().min(1),
 });
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -183,6 +221,7 @@ export async function POST(request: NextRequest) {
     await batch.commit();
 
     return NextResponse.json({
+      /** Success */
       success: true,
       order_ids: orderIdsToProcess,
       payment_status: "paid",

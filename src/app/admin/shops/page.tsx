@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/shops/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -14,8 +23,11 @@ export default function AdminShopsPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "shop",
+      /** Label */
       label: "Shop",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <div className="flex items-center gap-3">
           {shop.logo ? (
@@ -43,8 +55,11 @@ export default function AdminShopsPage() {
       ),
     },
     {
+      /** Key */
       key: "owner",
+      /** Label */
       label: "Owner",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {shop.ownerId || "Unknown"}
@@ -52,8 +67,11 @@ export default function AdminShopsPage() {
       ),
     },
     {
+      /** Key */
       key: "verification",
+      /** Label */
       label: "Verified",
+      /** Render */
       render: (shop: ShopCardFE) =>
         shop.isVerified ? (
           <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
@@ -68,15 +86,21 @@ export default function AdminShopsPage() {
         ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <StatusBadge status={shop.featured ? "active" : "inactive"} />
       ),
     },
     {
+      /** Key */
       key: "products",
+      /** Label */
       label: "Products",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {shop.productCount || 0}
@@ -84,8 +108,11 @@ export default function AdminShopsPage() {
       ),
     },
     {
+      /** Key */
       key: "rating",
+      /** Label */
       label: "Rating",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {shop.rating ? `⭐ ${shop.rating.toFixed(1)}` : "No rating"}
@@ -93,8 +120,11 @@ export default function AdminShopsPage() {
       ),
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (shop: ShopCardFE) => (
         <DateDisplay date={shop.createdAt} format="medium" />
       ),
@@ -104,9 +134,13 @@ export default function AdminShopsPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "isVerified",
+      /** Label */
       label: "Verification",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All" },
         { value: "true", label: "Verified" },
@@ -114,9 +148,13 @@ export default function AdminShopsPage() {
       ],
     },
     {
+      /** Key */
       key: "isActive",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: "true", label: "Active" },
@@ -126,13 +164,37 @@ export default function AdminShopsPage() {
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -151,18 +213,63 @@ export default function AdminShopsPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as ShopCardFE[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<ShopCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<ShopCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<ShopCardFE>) => {
     await shopsService.update(id, data as any);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await shopsService.delete(id);
   };

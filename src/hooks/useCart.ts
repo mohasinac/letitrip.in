@@ -1,10 +1,114 @@
+/**
+ * @fileoverview Cart Management Hook
+ * @module src/hooks/useCart
+ * @description Custom React hook for managing shopping cart state and operations.
+ * Handles both authenticated and guest user carts with automatic synchronization.
+ *
+ * @created 2025-12-06
+ * @author Development Team
+ */
+
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { cartService } from "@/services/cart.service";
-import { useAuth } from "@/contexts/AuthContext";
-import type { CartItemFE, CartFE } from "@/types/frontend/cart.types";
+import type { CartFE, CartItemFE } from "@/types/frontend/cart.types";
+import { useCallback, useEffect, useState } from "react";
+
+/**
+ * Cart state and operations object returned by useCart hook
+ * @typedef {Object} UseCartReturn
+ * @property {CartFE | null} cart - Current cart state with all items and calculations
+ * @property {boolean} loading - Loading state indicator
+ * @property {string | null} error - Error message if operation failed
+ * @property {boolean} isMerging - Whether cart merge is in progress
+ * @property {boolean} mergeSuccess - Whether cart merge completed successfully
+ * @property {Function} addItem - Adds item to cart
+ * @property {Function} updateItem - Updates item quantity
+ * @property {Function} removeItem - Removes item from cart
+ * @property {Function} clearCart - Clears all cart items
+ * @property {Function} refresh - Manually refreshes cart data
+ */
+
+/**
+ * Custom React hook for comprehensive shopping cart management.
+ *
+ * Features:
+ * - Automatic cart loading on mount and auth changes
+ * - Guest cart support with localStorage
+ * - Authenticated cart with API sync
+ * - Cart merging when guest logs in
+ * - Optimistic updates with rollback
+ * - Error handling and logging
+ * - Real-time cart calculations
+ *
+ * @hook
+ * @returns {UseCartReturn} Cart state and operation functions
+ *
+ * @throws {Error} When cart operations fail (caught and set in error state)
+ *
+ * @example
+ * // Basic usage in a component
+ * function CheckoutPage() {
+ *   const { cart, loading, addItem, removeItem, error } = useCart();
+ *
+ *   if (loading) return <Loading />;
+ *   if (error) return <Error message={error} />;
+ *
+ *   return (
+ *     <div>
+ *       <h2>Cart ({cart?.itemCount} items)</h2>
+ *       {cart?.items.map(item => (
+ *         <CartItem
+ *           key={item.id}
+ *           item={item}
+ *           onRemove={() => removeItem(item.id)}
+ *         />
+ *       ))}
+ *       <Total amount={cart?.formattedTotal} />
+ *     </div>
+ *   );
+ * }
+ *
+ * @example
+ * // Adding item with product details (guest mode)
+ * const { addItem } = useCart();
+ *
+ * await addItem(
+ *   "product-123",
+ *   2, // quantity
+ *   "variant-456", // optional variant
+ *   {
+ *     name: "Product Name",
+ *     price: 1999,
+ *     image: "/images/product.jpg",
+ *     shopId: "shop-789",
+ *     shopName: "Shop Name"
+ *   }
+ * );
+ */
+/**
+ * Custom React hook for cart
+ *
+ * @returns {any} The usecart result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useCart();
+ */
+
+/**
+ * Custom React hook for cart
+ *
+ * @returns {any} The usecart result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useCart();
+ */
 
 export function useCart() {
   const { user } = useAuth();
@@ -26,33 +130,50 @@ export function useCart() {
         return {
           ...item,
           // Ensure all required fields are present
+          /** Id */
           id: item.id || `guest_${Date.now()}_${Math.random()}`,
+          /** Product Slug */
           productSlug:
             item.productSlug ||
             item.productName.toLowerCase().replace(/\s+/g, "-"),
+          /** Variant Id */
           variantId: item.variantId || null,
+          /** Variant Name */
           variantName: item.variantName || null,
+          /** Sku */
           sku: item.sku || "",
+          /** Max Quantity */
           maxQuantity: item.maxQuantity || 100,
           subtotal,
           discount,
           total,
+          /** Is Available */
           isAvailable: item.isAvailable !== false,
+          /** Added At */
           addedAt: item.addedAt || now,
           // Computed fields
+          /** Formatted Price */
           formattedPrice: `₹${item.price.toLocaleString("en-IN")}`,
+          /** Formatted Subtotal */
           formattedSubtotal: `₹${subtotal.toLocaleString("en-IN")}`,
+          /** Formatted Total */
           formattedTotal: `₹${total.toLocaleString("en-IN")}`,
+          /** Is Out Of Stock */
           isOutOfStock: item.isAvailable === false,
+          /** Is Low Stock */
           isLowStock: (item.maxQuantity || 100) <= 5,
+          /** Can Increment */
           canIncrement: item.quantity < (item.maxQuantity || 100),
+          /** Can Decrement */
           canDecrement: item.quantity > 1,
+          /** Has Discount */
           hasDiscount: discount > 0,
+          /** Added Time Ago */
           addedTimeAgo: item.addedTimeAgo || "Recently added",
         };
       });
     },
-    [],
+    []
   );
 
   // Load cart data
@@ -73,45 +194,68 @@ export function useCart() {
         // For guest cart, create a minimal CartFE-like structure
         const subtotal = transformedItems.reduce(
           (sum, item) => sum + item.total,
-          0,
+          0
         );
         const tax = subtotal * 0.18;
         const total = subtotal + tax;
 
         // Create a minimal CartFE object for guest users
         setCart({
+          /** Id */
           id: "guest",
+          /** User Id */
           userId: "guest",
+          /** Items */
           items: transformedItems,
+          /** Item Count */
           itemCount: transformedItems.reduce(
             (sum, item) => sum + item.quantity,
-            0,
+            0
           ),
           subtotal,
+          /** Discount */
           discount: 0,
           tax,
           total,
+          /** Created At */
           createdAt: new Date(),
+          /** Updated At */
           updatedAt: new Date(),
+          /** Expires At */
           expiresAt: null,
+          /** Formatted Subtotal */
           formattedSubtotal: `₹${subtotal.toLocaleString("en-IN")}`,
+          /** Formatted Discount */
           formattedDiscount: "₹0",
+          /** Formatted Tax */
           formattedTax: `₹${tax.toLocaleString("en-IN")}`,
+          /** Formatted Total */
           formattedTotal: `₹${total.toLocaleString("en-IN")}`,
+          /** Is Empty */
           isEmpty: transformedItems.length === 0,
+          /** Has Items */
           hasItems: transformedItems.length > 0,
+          /** Has Unavailable Items */
           hasUnavailableItems: false,
+          /** Has Discount */
           hasDiscount: false,
+          /** Items By Shop */
           itemsByShop: new Map(),
+          /** Shop Ids */
           shopIds: [],
+          /** Can Checkout */
           canCheckout: transformedItems.length > 0,
+          /** Validation Errors */
           validationErrors: [],
+          /** Validation Warnings */
           validationWarnings: [],
+          /** Expires In */
           expiresIn: null,
         } as CartFE);
       }
     } catch (err: any) {
       logError(err as Error, {
+        /** Component */
         component: "useCart.loadCart",
       });
       setError(err.message || "Failed to load cart");
@@ -123,16 +267,25 @@ export function useCart() {
   // Add item to cart (with optional product details for guest users)
   const addItem = useCallback(
     async (
+      /** Product Id */
       productId: string,
+      /** Quantity */
       quantity: number = 1,
+      /** Variant */
       variant?: string,
+      /** Product Details */
       productDetails?: {
+        /** Name */
         name: string;
+        /** Price */
         price: number;
+        /** Image */
         image: string;
+        /** Shop Id */
         shopId: string;
+        /** Shop Name */
         shopName: string;
-      },
+      }
     ) => {
       try {
         if (user) {
@@ -140,6 +293,7 @@ export function useCart() {
           await cartService.addItem({
             productId,
             quantity,
+            /** Variant Id */
             variantId: variant,
           });
           await loadCart();
@@ -152,6 +306,7 @@ export function useCart() {
           cartService.addToGuestCartWithDetails({
             productId,
             quantity,
+            /** Variant Id */
             variantId: variant,
             ...productDetails,
           });
@@ -160,13 +315,15 @@ export function useCart() {
         }
       } catch (err: any) {
         logError(err, {
+          /** Component */
           component: "useCart.addItem",
+          /** Metadata */
           metadata: { productId, quantity, variant },
         });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Update item quantity
@@ -184,13 +341,15 @@ export function useCart() {
         }
       } catch (err: any) {
         logError(err, {
+          /** Component */
           component: "useCart.updateItem",
+          /** Metadata */
           metadata: { itemId, quantity },
         });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Remove item
@@ -208,13 +367,15 @@ export function useCart() {
         }
       } catch (err: any) {
         logError(err, {
+          /** Component */
           component: "useCart.removeItem",
+          /** Metadata */
           metadata: { itemId },
         });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Clear cart
@@ -249,8 +410,11 @@ export function useCart() {
         if (cart) {
           setCart({
             ...cart,
+            /** Discount */
             discount: result.discount,
+            /** Tax */
             tax: result.tax,
+            /** Total */
             total: result.total,
             // Note: shipping and couponCode not in CartSummaryFE yet
           });
@@ -259,13 +423,15 @@ export function useCart() {
         return result;
       } catch (err: any) {
         logError(err, {
+          /** Component */
           component: "useCart.applyCoupon",
+          /** Metadata */
           metadata: { code },
         });
         throw err;
       }
     },
-    [user, cart],
+    [user, cart]
   );
 
   // Remove coupon
@@ -281,8 +447,11 @@ export function useCart() {
       if (cart) {
         setCart({
           ...cart,
+          /** Discount */
           discount: 0,
+          /** Tax */
           tax: result.tax,
+          /** Total */
           total: result.total,
           // Note: shipping and couponCode not in CartSummaryFE yet
         });
@@ -308,10 +477,13 @@ export function useCart() {
       // API accepts minimal item data, type signature is misleading
       await cartService.mergeGuestCart(
         guestItems.map((item) => ({
+          /** Product Id */
           productId: item.productId,
+          /** Quantity */
           quantity: item.quantity,
+          /** Variant Id */
           variantId: item.variantId,
-        })) as any as CartItemFE[],
+        })) as any as CartItemFE[]
       );
 
       // Clear guest cart after merge
@@ -325,6 +497,7 @@ export function useCart() {
       await loadCart();
     } catch (err: any) {
       logError(err as Error, {
+        /** Component */
         component: "useCart.mergeGuestCart",
       });
       setError(err.message || "Failed to merge cart items");
@@ -357,6 +530,7 @@ export function useCart() {
     clearCart,
     applyCoupon,
     removeCoupon,
+    /** Refresh */
     refresh: loadCart,
   };
 }

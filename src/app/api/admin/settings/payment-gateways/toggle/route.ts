@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/settings/payment-gateways/toggle/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Payment Gateway Toggle API Route
  * POST /api/admin/settings/payment-gateways/toggle
  *
@@ -12,10 +21,47 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * ToggleGatewayRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ToggleGatewayRequest
+ */
 interface ToggleGatewayRequest {
+  /** Gateway */
   gateway: string;
+  /** Enabled */
   enabled: boolean;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,7 +127,9 @@ export async function POST(request: NextRequest) {
           [gateway]: {
             enabled,
           },
+          /** Updated At */
           updatedAt: new Date(),
+          /** Updated By */
           updatedBy: authResult.user.uid,
         },
         { merge: true }
@@ -89,7 +137,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Message */
         message: `${gateway} has been ${enabled ? "enabled" : "disabled"}`,
         gateway,
         enabled,
@@ -98,13 +148,17 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "PaymentGatewayToggleAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Failed to toggle gateway",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to toggle gateway",
       },
       { status: 500 }

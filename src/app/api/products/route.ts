@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop, UserRole } from "@/app/api/lib/firebase/queries";
 import { productsSieveConfig } from "@/app/api/lib/sieve/config";
@@ -20,12 +29,19 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for products
 const productsConfig = {
   ...productsSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Category Id */
     categoryId: "category_id",
+    /** Shop Id */
     shopId: "shop_id",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Stock Count */
     stockCount: "stock_count",
+    /** Featured */
     featured: "is_featured",
   } as Record<string, string>,
 };
@@ -33,17 +49,42 @@ const productsConfig = {
 /**
  * Transform product document to API response format
  */
+/**
+ * Transforms product
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformproduct result
+ */
+
+/**
+ * Transforms product
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformproduct result
+ */
+
 function transformProduct(id: string, data: any) {
   return {
     id,
     ...data,
     // Add camelCase aliases for snake_case fields
+    /** Shop Id */
     shopId: data.shop_id,
+    /** Category Id */
     categoryId: data.category_id,
+    /** Stock Count */
     stockCount: data.stock_count,
+    /** Featured */
     featured: data.is_featured,
+    /** Is Deleted */
     isDeleted: data.is_deleted,
+    /** Original Price */
     originalPrice: data.original_price,
+    /** Review Count */
     reviewCount: data.review_count,
   };
 }
@@ -58,6 +99,32 @@ function transformProduct(id: string, data: any) {
  * - Seller: Own products (all statuses)
  * - Admin: All products
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   return withCache(
     request,
@@ -68,6 +135,7 @@ export async function GET(request: NextRequest) {
 
         // Parse Sieve query
         const {
+          /** Query */
           query: sieveQuery,
           errors,
           warnings,
@@ -76,8 +144,11 @@ export async function GET(request: NextRequest) {
         if (errors.length > 0) {
           return NextResponse.json(
             {
+              /** Success */
               success: false,
+              /** Error */
               error: "Invalid query parameters",
+              /** Details */
               details: errors,
             },
             { status: 400 }
@@ -176,6 +247,26 @@ export async function GET(request: NextRequest) {
         const totalCount = countSnapshot.data().count;
 
         // Apply pagination
+        /**
+         * Performs offset operation
+         *
+         * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+        if (offset > 0
+         *
+         * @returns {any} The offset result
+         */
+
+        /**
+         * Performs offset operation
+         *
+         * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+        if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+        if (offset > 0
+         *
+         * @returns {any} The offset result
+         */
+
         const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
         if (offset > 0) {
           // Skip to the correct page
@@ -214,12 +305,17 @@ export async function GET(request: NextRequest) {
         );
 
         return NextResponse.json({
+          /** Success */
           success: true,
           data,
           pagination,
+          /** Meta */
           meta: {
+            /** Applied Filters */
             appliedFilters: sieveQuery.filters,
+            /** Applied Sorts */
             appliedSorts: sieveQuery.sorts,
+            /** Warnings */
             warnings: warnings.length > 0 ? warnings : undefined,
           },
         });
@@ -239,6 +335,32 @@ export async function GET(request: NextRequest) {
  * POST /api/products
  * Create new product (seller/admin only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let name: string | undefined;
   let slug: string | undefined;
@@ -254,7 +376,9 @@ export async function POST(request: NextRequest) {
     if (user.role !== "seller" && user.role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Only sellers and admins can create products",
         },
         { status: 403 }
@@ -300,7 +424,9 @@ export async function POST(request: NextRequest) {
     if (!ownsShop && user.role !== "admin") {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "You do not have permission to add products to this shop",
         },
         { status: 403 }
@@ -320,8 +446,10 @@ export async function POST(request: NextRequest) {
     const productData = {
       shop_id,
       name,
+      /** Slug */
       slug: validSlug,
       description,
+      /** Price */
       price: Number(price),
       category_id: validCategoryId,
       images,
@@ -341,7 +469,9 @@ export async function POST(request: NextRequest) {
         await updateCategoryProductCounts(validCategoryId);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "API.products.POST.updateCategoryCounts",
+          /** Metadata */
           metadata: { categoryId: validCategoryId },
         });
         // Don't fail the request if count update fails
@@ -360,7 +490,9 @@ export async function POST(request: NextRequest) {
       );
     }
     logError(error as Error, {
+      /** Component */
       component: "API.products.POST",
+      /** Metadata */
       metadata: { productData: { name, slug, category_id } },
     });
     return NextResponse.json(

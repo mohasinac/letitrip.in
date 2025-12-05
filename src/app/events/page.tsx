@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/events/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { EventCard } from "@/components/events/EventCard";
@@ -12,7 +21,9 @@ export default function EventsPage() {
   const [filter, setFilter] = useState<string>("all");
 
   const { isLoading: loading, execute } = useLoadingState({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, { component: "EventsPage.loadEvents" });
     },
@@ -22,10 +33,28 @@ export default function EventsPage() {
     loadEvents();
   }, [filter]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadEvents = async () => {
     await execute(async () => {
       const data = await eventsService.list({
+        /** Type */
         type: filter !== "all" ? filter : undefined,
+        /** Upcoming */
         upcoming: true,
       });
 

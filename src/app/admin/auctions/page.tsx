@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/auctions/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
@@ -16,8 +25,11 @@ export default function AdminAuctionsPage() {
   // Define columns
   const columns = [
     {
+      /** Key */
       key: "auction",
+      /** Label */
       label: "Auction",
+      /** Render */
       render: (auction: AuctionCardFE) => (
         <div className="flex items-center gap-3">
           {auction.images && auction.images[0] ? (
@@ -45,8 +57,11 @@ export default function AdminAuctionsPage() {
       ),
     },
     {
+      /** Key */
       key: "currentBid",
+      /** Label */
       label: "Current Bid",
+      /** Render */
       render: (auction: AuctionCardFE) => (
         <div>
           <Price amount={auction.currentPrice || 0} />
@@ -57,8 +72,11 @@ export default function AdminAuctionsPage() {
       ),
     },
     {
+      /** Key */
       key: "timing",
+      /** Label */
       label: "Timing",
+      /** Render */
       render: (auction: AuctionCardFE) => (
         <div className="space-y-1">
           <div className="flex items-center gap-1 text-sm">
@@ -68,14 +86,18 @@ export default function AdminAuctionsPage() {
             </span>
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
+            /** Ends */
             Ends: <DateDisplay date={auction.endTime} format="short" />
           </div>
         </div>
       ),
     },
     {
+      /** Key */
       key: "product",
+      /** Label */
       label: "Product Slug",
+      /** Render */
       render: (auction: AuctionCardFE) => (
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {auction.productSlug}
@@ -83,8 +105,11 @@ export default function AdminAuctionsPage() {
       ),
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Render */
       render: (auction: AuctionCardFE) => {
         const statusMap: Record<string, string> = {
           [AuctionStatus.SCHEDULED]: "scheduled",
@@ -97,8 +122,11 @@ export default function AdminAuctionsPage() {
       },
     },
     {
+      /** Key */
       key: "created",
+      /** Label */
       label: "Created",
+      /** Render */
       render: (auction: AuctionCardFE) => (
         <DateDisplay date={auction.startTime} format="medium" />
       ),
@@ -108,9 +136,13 @@ export default function AdminAuctionsPage() {
   // Define filters
   const filters = [
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Type */
       type: "select" as const,
+      /** Options */
       options: [
         { value: "all", label: "All Status" },
         { value: AuctionStatus.SCHEDULED, label: "Scheduled" },
@@ -120,25 +152,55 @@ export default function AdminAuctionsPage() {
       ],
     },
     {
+      /** Key */
       key: "minBid",
+      /** Label */
       label: "Min Current Bid",
+      /** Type */
       type: "text" as const,
     },
     {
+      /** Key */
       key: "maxBid",
+      /** Label */
       label: "Max Current Bid",
+      /** Type */
       type: "text" as const,
     },
   ];
 
   // Load data function
+  /**
+   * Performs async operation
+   *
+   * @param {{
+    cursor} [options] - Configuration options
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadData = async (options: {
+    /** Cursor */
     cursor: string | null;
+    /** Search */
     search?: string;
+    /** Filters */
     filters?: Record<string, string>;
   }) => {
     const apiFilters: any = {
+      /** Page */
       page: options.cursor ? parseInt(options.cursor) : 1,
+      /** Limit */
       limit: 20,
     };
 
@@ -160,18 +222,63 @@ export default function AdminAuctionsPage() {
     const totalPages = Math.ceil((response.count || 0) / 20);
 
     return {
+      /** Items */
       items: (response.data || []) as AuctionCardFE[],
+      /** Next Cursor */
       nextCursor: currentPage < totalPages ? String(currentPage + 1) : null,
+      /** Has Next Page */
       hasNextPage: currentPage < totalPages,
     };
   };
 
   // Handle save
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<AuctionCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<AuctionCardFE>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<AuctionCardFE>) => {
     await auctionsService.update(id, data as any);
   };
 
   // Handle delete
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     await auctionsService.delete(id);
   };

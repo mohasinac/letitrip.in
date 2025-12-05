@@ -1,26 +1,81 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/filters/CategoryFilter
+ * @description This file contains the CategoryFilter component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { ChevronRight, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+/**
+ * CategoryOption interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryOption
+ */
 export interface CategoryOption {
+  /** Value */
   value: string | number;
+  /** Label */
   label: string;
+  /** Count */
   count?: number;
+  /** Children */
   children?: CategoryOption[];
+  /** Parent Id */
   parentId?: string | number | null;
 }
 
+/**
+ * CategoryFilterProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryFilterProps
+ */
 export interface CategoryFilterProps {
+  /** Options */
   options: CategoryOption[];
+  /** Value */
   value: (string | number)[];
+  /** On Change */
   onChange: (value: (string | number)[]) => void;
+  /** Placeholder */
   placeholder?: string;
+  /** Searchable */
   searchable?: boolean;
+  /** Multi Select */
   multiSelect?: boolean;
+  /** Show Counts */
   showCounts?: boolean;
+  /** Highlight Text */
   highlightText?: (text: string) => React.ReactNode;
 }
+
+/**
+ * Function: Category Filter
+ */
+/**
+ * Performs category filter operation
+ *
+ * @returns {any} The categoryfilter result
+ *
+ * @example
+ * CategoryFilter();
+ */
+
+/**
+ * Performs category filter operation
+ *
+ * @returns {any} The categoryfilter result
+ *
+ * @example
+ * CategoryFilter();
+ */
 
 export function CategoryFilter({
   options,
@@ -44,6 +99,22 @@ export function CategoryFilter({
     const query = searchQuery.toLowerCase();
     const matchingCategories = new Set<string | number>();
 
+    /**
+     * Performs find matches operation
+     *
+     * @param {CategoryOption[]} categories - The categories
+     *
+     * @returns {any} The findmatches result
+     */
+
+    /**
+     * Performs find matches operation
+     *
+     * @param {CategoryOption[]} categories - The categories
+     *
+     * @returns {any} The findmatches result
+     */
+
     const findMatches = (categories: CategoryOption[]) => {
       categories.forEach((category) => {
         const matches = category.label.toLowerCase().includes(query);
@@ -63,8 +134,25 @@ export function CategoryFilter({
       });
     };
 
+    /**
+     * Performs find category by id operation
+     *
+     * @param {string | number} id - Unique identifier
+     * @param {CategoryOption[]} categories - The categories
+     *
+     * @returns {string} The findcategorybyid result
+     */
+
+    /**
+     * Performs find category by id operation
+     *
+     * @returns {string} The findcategorybyid result
+     */
+
     const findCategoryById = (
+      /** Id */
       id: string | number,
+      /** Categories */
       categories: CategoryOption[],
     ): CategoryOption | null => {
       for (const category of categories) {
@@ -79,13 +167,33 @@ export function CategoryFilter({
 
     findMatches(options);
 
+    /**
+     * Filters categories
+     *
+     * @param {CategoryOption[]} categories - The categories
+     *
+     * @returns {any} The filtercategories result
+     */
+
+    /**
+     * Filters categories
+     *
+     * @param {CategoryOption[]} /** Categories */
+      categories - The /**  categories */
+      categories
+     *
+     * @returns {any} The filtercategories result
+     */
+
     const filterCategories = (
+      /** Categories */
       categories: CategoryOption[],
     ): CategoryOption[] => {
       return categories
         .filter((category) => matchingCategories.has(category.value))
         .map((category) => ({
           ...category,
+          /** Children */
           children: category.children
             ? filterCategories(category.children)
             : undefined,
@@ -99,6 +207,22 @@ export function CategoryFilter({
   useEffect(() => {
     if (searchQuery) {
       const expanded = new Set<string | number>();
+      /**
+       * Performs add expanded operation
+       *
+       * @param {CategoryOption[]} categories - The categories
+       *
+       * @returns {any} The addexpanded result
+       */
+
+      /**
+       * Performs add expanded operation
+       *
+       * @param {CategoryOption[]} categories - The categories
+       *
+       * @returns {any} The addexpanded result
+       */
+
       const addExpanded = (categories: CategoryOption[]) => {
         categories.forEach((category) => {
           if (category.children && category.children.length > 0) {
@@ -112,6 +236,22 @@ export function CategoryFilter({
     }
   }, [searchQuery, filteredOptions]);
 
+  /**
+   * Performs toggle expand operation
+   *
+   * @param {string | number} categoryValue - The category value
+   *
+   * @returns {string} The toggleexpand result
+   */
+
+  /**
+   * Performs toggle expand operation
+   *
+   * @param {string | number} categoryValue - The category value
+   *
+   * @returns {string} The toggleexpand result
+   */
+
   const toggleExpand = (categoryValue: string | number) => {
     setExpandedCategories((prev) => {
       const newSet = new Set(prev);
@@ -124,6 +264,22 @@ export function CategoryFilter({
     });
   };
 
+  /**
+   * Handles toggle event
+   *
+   * @param {string | number} categoryValue - The category value
+   *
+   * @returns {string} The handletoggle result
+   */
+
+  /**
+   * Handles toggle event
+   *
+   * @param {string | number} categoryValue - The category value
+   *
+   * @returns {string} The handletoggle result
+   */
+
   const handleToggle = (categoryValue: string | number) => {
     if (multiSelect) {
       const newValue = value.includes(categoryValue)
@@ -134,6 +290,24 @@ export function CategoryFilter({
       onChange([categoryValue]);
     }
   };
+
+  /**
+   * Renders category
+   *
+   * @param {CategoryOption} category - The category
+   * @param {number} [level] - The level
+   *
+   * @returns {number} The rendercategory result
+   */
+
+  /**
+   * Renders category
+   *
+   * @param {CategoryOption} category - The category
+   * @param {number} [level] - The level
+   *
+   * @returns {number} The rendercategory result
+   */
 
   const renderCategory = (category: CategoryOption, level: number = 0) => {
     const isExpanded = expandedCategories.has(category.value);

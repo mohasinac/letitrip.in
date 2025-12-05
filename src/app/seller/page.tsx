@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PageState } from "@/components/common/PageState";
@@ -21,37 +30,70 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect } from "react";
 
+/**
+ * DashboardData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DashboardData
+ */
 interface DashboardData {
+  /** Stats */
   stats: {
+    /** Shops */
     shops: { total: number; active: number };
+    /** Products */
     products: { total: number; active: number };
+    /** Orders */
     orders: { pending: number; total: number };
+    /** Revenue */
     revenue: { thisMonth: number; lastMonth: number };
   };
+  /** Recent Orders */
   recentOrders: Array<{
+    /** Id */
     id: string;
+    /** Order Number */
     orderNumber: string;
+    /** Customer */
     customer: string;
+    /** Amount */
     amount: number;
+    /** Status */
     status: string;
+    /** Date */
     date: string;
   }>;
+  /** Top Products */
   topProducts: Array<{
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Sales */
     sales: number;
+    /** Revenue */
     revenue: number;
+    /** Views */
     views: number;
   }>;
+  /** Shop Performance */
   shopPerformance: {
+    /** Average Rating */
     averageRating: number;
+    /** Total Ratings */
     totalRatings: number;
+    /** Order Fulfillment */
     orderFulfillment: number;
+    /** Response Time */
     responseTime: string;
   };
+  /** Alerts */
   alerts: {
+    /** Low Stock */
     lowStock: number;
+    /** Pending Shipment */
     pendingShipment: number;
+    /** New Reviews */
     newReviews: number;
   };
 }
@@ -61,6 +103,7 @@ export default function SellerDashboardPage() {
 
   const {
     data,
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
@@ -72,35 +115,59 @@ export default function SellerDashboardPage() {
 
     // Map analytics data to seller dashboard format
     return {
+      /** Stats */
       stats: {
+        /** Shops */
         shops: {
+          /** Total */
           total: (analyticsData as any).totalShops || 1,
+          /** Active */
           active: (analyticsData as any).activeShops || 1,
         },
+        /** Products */
         products: {
+          /** Total */
           total: analyticsData.totalProducts || 0,
+          /** Active */
           active: (analyticsData as any).activeProducts || 0,
         },
+        /** Orders */
         orders: {
+          /** Pending */
           pending: (analyticsData as any).pendingOrders || 0,
+          /** Total */
           total: analyticsData.totalOrders || 0,
         },
+        /** Revenue */
         revenue: {
+          /** This Month */
           thisMonth: analyticsData.totalRevenue || 0,
+          /** Last Month */
           lastMonth: (analyticsData as any).lastMonthRevenue || 0,
         },
       },
+      /** Recent Orders */
       recentOrders: (analyticsData as any).recentOrders || [],
+      /** Top Products */
       topProducts: (analyticsData as any).topProducts || [],
+      /** Shop Performance */
       shopPerformance: (analyticsData as any).shopPerformance || {
+        /** Average Rating */
         averageRating: 0,
+        /** Total Ratings */
         totalRatings: 0,
+        /** Order Fulfillment */
         orderFulfillment: 0,
+        /** Response Time */
         responseTime: "N/A",
       },
+      /** Alerts */
       alerts: (analyticsData as any).alerts || {
+        /** Low Stock */
         lowStock: 0,
+        /** Pending Shipment */
         pendingShipment: 0,
+        /** New Reviews */
         newReviews: 0,
       },
     };
@@ -171,6 +238,7 @@ export default function SellerDashboardPage() {
           description={`\u20b9${stats.revenue.lastMonth.toFixed(2)} last month`}
           icon={<DollarSign className="h-6 w-6 text-blue-600" />}
           trend={{
+            /** Value */
             value:
               stats.revenue.lastMonth > 0
                 ? ((stats.revenue.thisMonth - stats.revenue.lastMonth) /
@@ -179,6 +247,7 @@ export default function SellerDashboardPage() {
                 : stats.revenue.thisMonth > 0
                 ? 100
                 : 0,
+            /** Is Positive */
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
@@ -454,6 +523,7 @@ export default function SellerDashboardPage() {
                 <div
                   className="bg-yellow-500 h-2 rounded-full"
                   style={{
+                    /** Width */
                     width: `${(shopPerformance.averageRating / 5) * 100}%`,
                   }}
                 ></div>

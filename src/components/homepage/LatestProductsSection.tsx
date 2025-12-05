@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/LatestProductsSection
+ * @description This file contains the LatestProductsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,10 +18,49 @@ import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * LatestProductsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LatestProductsSectionProps
+ */
 interface LatestProductsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Latest Products Section
+ */
+/**
+ * Performs latest products section operation
+ *
+ * @param {LatestProductsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The latestproductssection result
+ *
+ * @example
+ * LatestProductsSection({
+  limit);
+ */
+
+/**
+ * Performs latest products section operation
+ *
+ * @param {LatestProductsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The latestproductssection result
+ *
+ * @example
+ * LatestProductsSection({
+  limit);
+ */
 
 export function LatestProductsSection({
   limit = 10,
@@ -25,6 +73,22 @@ export function LatestProductsSection({
     loadProducts();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -33,11 +97,13 @@ export function LatestProductsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_latest_products_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "LatestProductsSection.loadProducts",
       });
     } finally {

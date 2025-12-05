@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/riplimit/stats/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin RipLimit Stats API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -13,6 +22,32 @@ import { getAdminStats } from "@/app/api/lib/riplimit/admin";
  * GET /api/admin/riplimit/stats
  * Returns RipLimit system statistics (admin only)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     // Authenticate and check admin role
@@ -36,7 +71,9 @@ export async function GET(request: NextRequest) {
     const stats = await getAdminStats();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: stats,
     });
   } catch (error) {

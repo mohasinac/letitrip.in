@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/cleanup/[step]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -9,6 +18,12 @@ import { COLLECTIONS } from "@/constants/database";
 
 const PREFIXES = ["DEMO_", "test_"];
 
+/**
+ * CleanupStep type
+ * 
+ * @typedef {Object} CleanupStep
+ * @description Type definition for CleanupStep
+ */
 type CleanupStep =
   | "categories"
   | "users"
@@ -21,7 +36,42 @@ type CleanupStep =
   | "extras"
   | "settings";
 
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ step: string }> },
 ) {
@@ -32,6 +82,28 @@ export async function DELETE(
     const breakdown: Array<{ collection: string; count: number }> = [];
 
     // Helper to delete by prefix
+    /**
+     * Performs async operation
+     *
+     * @param {string} collection - The collection
+     * @param {string} field - The field
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @param {string} collection - The collection
+     * @param {string} field - The field
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const deleteByPrefix = async (collection: string, field: string) => {
       let count = 0;
       for (const prefix of PREFIXES) {
@@ -59,9 +131,32 @@ export async function DELETE(
     };
 
     // Helper to delete by related IDs
+    /**
+     * Performs async operation
+     *
+     * @param {string} collection - The collection
+     * @param {string} field - The field
+     * @param {string[]} relatedIds - The related ids
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const deleteByRelatedIds = async (
+      /** Collection */
       collection: string,
+      /** Field */
       field: string,
+      /** Related Ids */
       relatedIds: string[],
     ) => {
       let count = 0;
@@ -89,8 +184,29 @@ export async function DELETE(
     };
 
     // Get IDs for related cleanup
+    /**
+     * Performs async operation
+     *
+     * @param {string} collection - The collection
+     * @param {string} field - The field
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const getDemoIds = async (
+      /** Collection */
       collection: string,
+      /** Field */
       field: string,
     ): Promise<string[]> => {
       const ids: string[] = [];
@@ -319,6 +435,7 @@ export async function DELETE(
         break;
       }
 
+      /** Default */
       default:
         return NextResponse.json(
           { success: false, error: `Unknown step: ${step}` },
@@ -327,9 +444,12 @@ export async function DELETE(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
       step,
+      /** Data */
       data: {
+        /** Count */
         count: deletedCount,
         breakdown,
       },

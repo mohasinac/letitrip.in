@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/products/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
@@ -16,13 +25,19 @@ import { toast } from "sonner";
 
 const STEPS = [
   {
+    /** Id */
     id: "required",
+    /** Name */
     name: "Required Info",
+    /** Description */
     description: "Essential product details",
   },
   {
+    /** Id */
     id: "optional",
+    /** Name */
     name: "Additional Details",
+    /** Description */
     description: "Optional information",
   },
 ];
@@ -32,6 +47,7 @@ export default function CreateProductPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const { isLoading: loading, execute } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "CreateProductPage.handleSubmit" });
       toast.error("Failed to create product");
@@ -41,41 +57,65 @@ export default function CreateProductPage() {
   const [errorSteps, setErrorSteps] = useState<number[]>([]);
   const [formData, setFormData] = useState<ProductFormData>({
     // Basic Info
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Category Id */
     categoryId: "",
+    /** Brand */
     brand: "",
+    /** Sku */
     sku: "",
 
     // Pricing & Stock
+    /** Price */
     price: 0,
+    /** Compare At Price */
     compareAtPrice: 0,
+    /** Stock Count */
     stockCount: 0,
+    /** Low Stock Threshold */
     lowStockThreshold: 10,
+    /** Weight */
     weight: 0,
 
     // Product Details
+    /** Description */
     description: "",
+    /** Condition */
     condition: "new",
+    /** Features */
     features: [],
+    /** Specifications */
     specifications: {},
 
     // Media
+    /** Images */
     images: [],
+    /** Videos */
     videos: [],
 
     // Shipping & Policies
+    /** Shipping Class */
     shippingClass: "standard",
+    /** Return Policy */
     returnPolicy: "",
+    /** Warranty Info */
     warrantyInfo: "",
 
     // SEO & Publishing
+    /** Meta Title */
     metaTitle: "",
+    /** Meta Description */
     metaDescription: "",
+    /** Featured */
     featured: false,
+    /** Status */
     status: "draft",
 
     // System fields
+    /** Shop Id */
     shopId: "default-shop-id",
   });
 
@@ -89,14 +129,45 @@ export default function CreateProductPage() {
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
+    /** Details */
     details: false,
+    /** Shipping */
     shipping: false,
+    /** Seo */
     seo: false,
   });
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} section - The section
+   *
+   * @returns {string} The togglesection result
+   */
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} section - The section
+   *
+   * @returns {string} The togglesection result
+   */
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
+
+  /**
+   * Handles next event
+   *
+   * @returns {any} The handlenext result
+   */
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
@@ -108,11 +179,39 @@ export default function CreateProductPage() {
     }
   };
 
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
+  /**
+   * Handles previous event
+   *
+   * @returns {any} The handleprevious result
+   */
+
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  /**
+   * Handles step click event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handlestepclick result
+   */
+
+  /**
+   * Handles step click event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handlestepclick result
+   */
 
   const handleStepClick = (index: number) => {
     setCurrentStep(index);
@@ -174,16 +273,37 @@ export default function CreateProductPage() {
   }, [validateStep]);
 
   // Save as draft
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSaveDraft = async () => {
     try {
       setIsSaving(true);
 
       const result = await productsService.create({
         ...formData,
+        /** Status */
         status: "draft",
+        /** Country Of Origin */
         countryOfOrigin: "India",
+        /** Low Stock Threshold */
         lowStockThreshold: 5,
+        /** Is Returnable */
         isReturnable: true,
+        /** Return Window Days */
         returnWindowDays: 7,
       } as any);
 
@@ -200,6 +320,22 @@ export default function CreateProductPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async () => {
     // Validate all steps before submitting
     if (!handleValidate()) {
@@ -209,9 +345,13 @@ export default function CreateProductPage() {
     await execute(async () => {
       const result = await productsService.create({
         ...formData,
+        /** Country Of Origin */
         countryOfOrigin: "India",
+        /** Low Stock Threshold */
         lowStockThreshold: 5,
+        /** Is Returnable */
         isReturnable: true,
+        /** Return Window Days */
         returnWindowDays: 7,
       } as any);
 

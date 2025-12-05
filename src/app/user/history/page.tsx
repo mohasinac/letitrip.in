@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/history/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -8,6 +17,14 @@ import { Clock, ShoppingBag, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+/**
+ * Performs history page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = HistoryPage();
+ */
 export default function HistoryPage() {
   const { history, removeFromHistory, clearHistory } = useViewingHistory();
   const [showClearConfirm, setShowClearConfirm] = useState(false);

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/products/CompareButton
+ * @description This file contains the CompareButton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -5,12 +14,43 @@ import { GitCompare, Check } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 import type { ComparisonProduct } from "@/services/comparison.service";
 
+/**
+ * CompareButtonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CompareButtonProps
+ */
 interface CompareButtonProps {
+  /** Product */
   product: ComparisonProduct;
+  /** Size */
   size?: "sm" | "md" | "lg";
+  /** Variant */
   variant?: "icon" | "button" | "text";
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Compare Button
+ */
+/**
+ * Performs compare button operation
+ *
+ * @returns {any} The comparebutton result
+ *
+ * @example
+ * CompareButton();
+ */
+
+/**
+ * Performs compare button operation
+ *
+ * @returns {any} The comparebutton result
+ *
+ * @example
+ * CompareButton();
+ */
 
 export function CompareButton({
   product,
@@ -24,6 +64,22 @@ export function CompareButton({
   const inComparison = isInComparison(product.id);
   const disabled = !inComparison && !canAddMore;
 
+  /**
+   * Handles click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleclick result
+   */
+
+  /**
+   * Handles click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleclick result
+   */
+
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -36,14 +92,20 @@ export function CompareButton({
   };
 
   const sizeClasses = {
+    /** Sm */
     sm: "p-1.5",
+    /** Md */
     md: "p-2",
+    /** Lg */
     lg: "p-3",
   };
 
   const iconSizes = {
+    /** Sm */
     sm: "w-4 h-4",
+    /** Md */
     md: "w-5 h-5",
+    /** Lg */
     lg: "w-6 h-6",
   };
 

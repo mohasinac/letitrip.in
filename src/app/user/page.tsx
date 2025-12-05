@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useCallback } from "react";
@@ -20,12 +29,24 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 
+/**
+ * DashboardData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DashboardData
+ */
 interface DashboardData {
+  /** Recent Orders */
   recentOrders: OrderCardFE[];
+  /** Stats */
   stats: {
+    /** Total Orders */
     totalOrders: number;
+    /** Pending Orders */
     pendingOrders: number;
+    /** Completed Orders */
     completedOrders: number;
+    /** Cancelled Orders */
     cancelledOrders: number;
   };
 }
@@ -36,15 +57,23 @@ export default function UserDashboardPage() {
 
   const {
     data,
+    /** Is Loading */
     isLoading: loading,
     execute,
   } = useLoadingState<DashboardData>({
+    /** Initial Data */
     initialData: {
+      /** Recent Orders */
       recentOrders: [],
+      /** Stats */
       stats: {
+        /** Total Orders */
         totalOrders: 0,
+        /** Pending Orders */
         pendingOrders: 0,
+        /** Completed Orders */
         completedOrders: 0,
+        /** Cancelled Orders */
         cancelledOrders: 0,
       },
     },
@@ -68,7 +97,9 @@ export default function UserDashboardPage() {
     ).length;
 
     return {
+      /** Recent Orders */
       recentOrders: orders,
+      /** Stats */
       stats: {
         totalOrders,
         pendingOrders,
@@ -89,9 +120,13 @@ export default function UserDashboardPage() {
   // Safe access to data
   const recentOrders = data?.recentOrders || [];
   const stats = data?.stats || {
+    /** Total Orders */
     totalOrders: 0,
+    /** Pending Orders */
     pendingOrders: 0,
+    /** Completed Orders */
     completedOrders: 0,
+    /** Cancelled Orders */
     cancelledOrders: 0,
   };
 
@@ -220,7 +255,9 @@ export default function UserDashboardPage() {
                 title="No orders yet"
                 description="Start shopping to see your orders here!"
                 action={{
+                  /** Label */
                   label: "Start Shopping",
+                  /** On Click */
                   onClick: () => router.push("/"),
                 }}
               />

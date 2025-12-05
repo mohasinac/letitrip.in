@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/users/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import {
   getUserFromRequest,
@@ -12,8 +21,35 @@ import { NextRequest, NextResponse } from "next/server";
  * - Admin: Can view any user
  * - User: Can only view their own profile
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} context - The context
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET();
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
+  /** Context */
   context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
@@ -40,12 +76,16 @@ export async function GET(
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: { id: userDoc.id, ...userDoc.data() },
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.users.get",
+      /** Metadata */
       metadata: { userId: id },
     });
     return NextResponse.json(
@@ -61,8 +101,35 @@ export async function GET(
  * - Admin: Can update any user
  * - User: Can update their own profile (limited fields)
  */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} context - The context
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH();
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
+  /** Context */
   context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
@@ -153,13 +220,18 @@ export async function PATCH(
     const userData = { id: userDoc.id, ...userDoc.data() };
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "User updated successfully",
+      /** Data */
       data: userData,
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.users.update",
+      /** Metadata */
       metadata: { userId: id },
     });
     return NextResponse.json(
@@ -173,8 +245,35 @@ export async function PATCH(
  * DELETE /api/users/[id]
  * Delete user (admin only)
  */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} context - The context
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE();
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
+  /** Context */
   context: { params: Promise<{ id: string }> },
 ) {
   let id: string | undefined;
@@ -196,12 +295,16 @@ export async function DELETE(
     await Collections.users().doc(id).delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "User deleted successfully",
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.users.delete",
+      /** Metadata */
       metadata: { userId: id },
     });
     return NextResponse.json(

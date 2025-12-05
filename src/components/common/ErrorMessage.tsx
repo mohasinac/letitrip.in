@@ -1,16 +1,41 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ErrorMessage
+ * @description This file contains the ErrorMessage component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { AlertCircle, RefreshCw, Home, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * ErrorMessageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorMessageProps
+ */
 interface ErrorMessageProps {
+  /** Title */
   title?: string;
+  /** Message */
   message: string;
+  /** Error */
   error?: Error | null;
+  /** Show Retry */
   showRetry?: boolean;
+  /** Show Go Home */
   showGoHome?: boolean;
+  /** Show Go Back */
   showGoBack?: boolean;
+  /** On Retry */
   onRetry?: () => void;
+  /** On Go Home */
   onGoHome?: () => void;
+  /** On Go Back */
   onGoBack?: () => void;
+  /** Class Name */
   className?: string;
 }
 
@@ -36,6 +61,28 @@ interface ErrorMessageProps {
  *   showGoBack
  * />
  */
+/**
+ * Performs error message operation
+ *
+ * @returns {any} The errormessage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * ErrorMessage();
+ */
+
+/**
+ * Performs error message operation
+ *
+ * @returns {any} The errormessage result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * ErrorMessage();
+ */
+
 export function ErrorMessage({
   title = "Oops! Something went wrong",
   message,
@@ -136,6 +183,32 @@ export function ErrorMessage({
 /**
  * Convert technical errors to user-friendly messages
  */
+/**
+ * Retrieves user friendly error
+ *
+ * @param {any} error - Error object
+ *
+ * @returns {string} The userfriendlyerror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getUserFriendlyError(error);
+ */
+
+/**
+ * Retrieves user friendly error
+ *
+ * @param {any} error - Error object
+ *
+ * @returns {string} The userfriendlyerror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getUserFriendlyError(error);
+ */
+
 export function getUserFriendlyError(error: any): string {
   if (!error) return "Something went wrong. Please try again.";
 
@@ -183,11 +256,35 @@ export function getUserFriendlyError(error: any): string {
 /**
  * Compact inline error message
  */
+/**
+ * Performs inline error operation
+ *
+ * @returns {string} The inlineerror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * InlineError();
+ */
+
+/**
+ * Performs inline error operation
+ *
+ * @returns {any} The inlineerror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * InlineError();
+ */
+
 export function InlineError({
   message,
   className,
 }: {
+  /** Message */
   message: string;
+  /** Class Name */
   className?: string;
 }) {
   return (

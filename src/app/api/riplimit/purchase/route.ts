@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/riplimit/purchase/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Purchase API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -30,6 +39,32 @@ const razorpay = new Razorpay({
  * Request body:
  * - amount: INR amount to purchase (min ₹10)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
@@ -57,7 +92,9 @@ export async function POST(request: NextRequest) {
     if (ripLimitAmount < RIPLIMIT_MIN_PURCHASE) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: `Minimum purchase is ${RIPLIMIT_MIN_PURCHASE} RipLimit (₹10)`,
         },
         { status: 400 },
@@ -67,11 +104,17 @@ export async function POST(request: NextRequest) {
     // Create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
       amount: amount * 100, // Razorpay expects amount in paise
+      /** Currency */
       currency: "INR",
+      /** Receipt */
       receipt: `riplimit_${Date.now()}`,
+      /** Notes */
       notes: {
+        /** User Id */
         userId: auth.user.uid,
+        /** Rip Limit Amount */
         ripLimitAmount: ripLimitAmount.toString(),
+        /** Type */
         type: "riplimit_purchase",
       },
     });
@@ -81,21 +124,32 @@ export async function POST(request: NextRequest) {
     const purchaseRef = db.collection(COLLECTIONS.RIPLIMIT_PURCHASES).doc();
 
     await purchaseRef.set({
+      /** User Id */
       userId: auth.user.uid,
       ripLimitAmount,
+      /** Inr Amount */
       inrAmount: amount,
+      /** Razorpay Order Id */
       razorpayOrderId: razorpayOrder.id,
+      /** Status */
       status: RipLimitPurchaseStatus.PENDING,
+      /** Created At */
       createdAt: Timestamp.now(),
     });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
+        /** Purchase Id */
         purchaseId: purchaseRef.id,
+        /** Razorpay Order Id */
         razorpayOrderId: razorpayOrder.id,
         ripLimitAmount,
+        /** Inr Amount */
         inrAmount: amount,
+        /** Razorpay Key */
         razorpayKey: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       },
     });

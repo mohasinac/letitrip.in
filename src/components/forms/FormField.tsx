@@ -1,19 +1,44 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormField
+ * @description This file contains the FormField component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useId } from "react";
 import { cn } from "@/lib/utils";
 import { FormLabel } from "./FormLabel";
 
+/**
+ * FormFieldProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormFieldProps
+ */
 export interface FormFieldProps {
+  /** Id */
   id?: string;
+  /** Label */
   label: string;
+  /** Required */
   required?: boolean;
+  /** Optional */
   optional?: boolean;
+  /** Hint */
   hint?: string;
+  /** Error */
   error?: string;
+  /** Helper Text */
   helperText?: string;
+  /** Children */
   children: React.ReactElement;
+  /** Class Name */
   className?: string;
+  /** Label Class Name */
   labelClassName?: string;
 }
 
@@ -26,6 +51,32 @@ export interface FormFieldProps {
  * - Error and helper text display
  * - ARIA attributes for accessibility
  * - Dark mode support
+ */
+/**
+ * Performs form field operation
+ *
+ * @returns {any} The formfield result
+ *
+ * @example
+ * FormField();
+ */
+
+/**
+ * F
+ * @constant
+ */
+/**
+ * Performs form field operation
+ *
+ * @returns {any} The formfield result
+ *
+ * @example
+ * FormField();
+ */
+
+/**
+ * F
+ * @constant
  */
 export const FormField: React.FC<FormFieldProps> = ({
   id,
@@ -46,6 +97,7 @@ export const FormField: React.FC<FormFieldProps> = ({
 
   // Clone child to inject id and aria attributes
   const childWithProps = React.cloneElement(children, {
+    /** Id */
     id: fieldId,
     "aria-invalid": error ? true : undefined,
     "aria-describedby": error ? errorId : helperText ? helperId : undefined,

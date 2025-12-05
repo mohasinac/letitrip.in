@@ -1,19 +1,44 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/utils/rate-limiter
+ * @description This file contains functionality related to rate-limiter
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * In-Memory Rate Limiter
  * Simple rate limiting for small-scale deployments
  * NO external dependencies - 100% FREE
  */
 
 interface RateLimitEntry {
+  /** Count */
   count: number;
+  /** Reset Time */
   resetTime: number;
 }
 
+/**
+ * RateLimitConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RateLimitConfig
+ */
 export interface RateLimitConfig {
+  /** Max Requests */
   maxRequests: number;
+  /** Window Ms */
   windowMs: number;
 }
 
+/**
+ * InMemoryRateLimiter class
+ * 
+ * @class
+ * @description Description of InMemoryRateLimiter class functionality
+ */
 class InMemoryRateLimiter {
   private limits = new Map<string, RateLimitEntry>();
   private config: RateLimitConfig;
@@ -34,7 +59,9 @@ class InMemoryRateLimiter {
     // No entry or expired window - allow and create new entry
     if (!entry || now > entry.resetTime) {
       this.limits.set(identifier, {
+        /** Count */
         count: 1,
+        /** Reset Time */
         resetTime: now + this.config.windowMs,
       });
       return true;
@@ -108,7 +135,9 @@ class InMemoryRateLimiter {
    */
   stats() {
     return {
+      /** Active Entries */
       activeEntries: this.limits.size,
+      /** Config */
       config: this.config,
     };
   }
@@ -116,16 +145,19 @@ class InMemoryRateLimiter {
 
 // Singleton instances for different use cases
 export const apiRateLimiter = new InMemoryRateLimiter({
+  /** Max Requests */
   maxRequests: 100,
   windowMs: 60000, // 100 requests per minute
 });
 
 export const authRateLimiter = new InMemoryRateLimiter({
+  /** Max Requests */
   maxRequests: 5,
   windowMs: 60000, // 5 login attempts per minute
 });
 
 export const strictRateLimiter = new InMemoryRateLimiter({
+  /** Max Requests */
   maxRequests: 10,
   windowMs: 60000, // 10 requests per minute (for sensitive endpoints)
 });

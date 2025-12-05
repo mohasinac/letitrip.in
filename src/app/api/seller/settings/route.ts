@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/seller/settings/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Seller Settings API
  *
  * @status IMPLEMENTED
@@ -17,40 +26,98 @@ import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 const DEFAULT_SETTINGS = {
+  /** Profile */
   profile: {
+    /** Display Name */
     displayName: "",
+    /** Email */
     email: "",
+    /** Phone */
     phone: "",
+    /** Business Name */
     businessName: "",
+    /** Business Type */
     businessType: "individual",
+    /** Gst Number */
     gstNumber: "",
+    /** Pan Number */
     panNumber: "",
+    /** Address */
     address: {
+      /** Street */
       street: "",
+      /** City */
       city: "",
+      /** State */
       state: "",
+      /** Pincode */
       pincode: "",
     },
   },
+  /** Notifications */
   notifications: {
+    /** Email Notifications */
     emailNotifications: true,
+    /** Order Alerts */
     orderAlerts: true,
+    /** Review Alerts */
     reviewAlerts: true,
+    /** Payout Alerts */
     payoutAlerts: true,
+    /** Promotional Emails */
     promotionalEmails: false,
+    /** Low Stock Alerts */
     lowStockAlerts: true,
+    /** Daily Digest */
     dailyDigest: true,
   },
+  /** Payout */
   payout: {
+    /** Account Holder Name */
     accountHolderName: "",
+    /** Bank Name */
     bankName: "",
+    /** Account Number */
     accountNumber: "",
+    /** Ifsc Code */
     ifscCode: "",
+    /** Upi Id */
     upiId: "",
+    /** Preferred Method */
     preferredMethod: "bank",
+    /** Min Payout Amount */
     minPayoutAmount: 500,
   },
 };
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -87,10 +154,14 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         ...DEFAULT_SETTINGS,
+        /** Profile */
         profile: {
           ...DEFAULT_SETTINGS.profile,
+          /** Display Name */
           displayName: userData?.name || user.name || "",
+          /** Email */
           email: user.email || "",
+          /** Phone */
           phone: userData?.phone || "",
         },
       });
@@ -100,11 +171,14 @@ export async function GET(request: NextRequest) {
 
     // Merge with defaults to ensure all fields exist
     const settings = {
+      /** Profile */
       profile: { ...DEFAULT_SETTINGS.profile, ...settingsData?.profile },
+      /** Notifications */
       notifications: {
         ...DEFAULT_SETTINGS.notifications,
         ...settingsData?.notifications,
       },
+      /** Payout */
       payout: { ...DEFAULT_SETTINGS.payout, ...settingsData?.payout },
     };
 
@@ -118,7 +192,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(settings);
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.seller.settings.get",
+      /** Metadata */
       metadata: { userId: user?.id },
     });
     return NextResponse.json(
@@ -127,6 +203,35 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+/**
+ * Function: P U T
+ */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(request);
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(request);
+ */
 
 export async function PUT(request: NextRequest) {
   let user: Awaited<ReturnType<typeof getCurrentUser>> | undefined;
@@ -161,6 +266,7 @@ export async function PUT(request: NextRequest) {
     const currentData = currentDoc.exists ? currentDoc.data() : {};
 
     const updateData: Record<string, unknown> = {
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     };
 
@@ -186,12 +292,16 @@ export async function PUT(request: NextRequest) {
     await settingsRef.set(updateData, { merge: true });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Settings updated successfully",
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.seller.settings.update",
+      /** Metadata */
       metadata: { userId: user?.id },
     });
     return NextResponse.json(

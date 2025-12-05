@@ -1,14 +1,55 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobileSkeleton
+ * @description This file contains the MobileSkeleton component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * SkeletonProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SkeletonProps
+ */
 interface SkeletonProps {
+  /** Class Name */
   className?: string;
+  /** Variant */
   variant?: "text" | "circular" | "rectangular" | "rounded";
+  /** Width */
   width?: string | number;
+  /** Height */
   height?: string | number;
+  /** Animation */
   animation?: "pulse" | "wave" | "none";
 }
+
+/**
+ * Function: Mobile Skeleton
+ */
+/**
+ * Performs mobile skeleton operation
+ *
+ * @returns {any} The mobileskeleton result
+ *
+ * @example
+ * MobileSkeleton();
+ */
+
+/**
+ * Performs mobile skeleton operation
+ *
+ * @returns {any} The mobileskeleton result
+ *
+ * @example
+ * MobileSkeleton();
+ */
 
 export function MobileSkeleton({
   className,
@@ -31,7 +72,9 @@ export function MobileSkeleton({
     <div
       className={baseClasses}
       style={{
+        /** Width */
         width: typeof width === "number" ? `${width}px` : width,
+        /** Height */
         height: typeof height === "number" ? `${height}px` : height,
       }}
       role="progressbar"
@@ -42,6 +85,27 @@ export function MobileSkeleton({
 }
 
 // Pre-built skeleton components
+/**
+ * Function: Product Card Skeleton
+ */
+/**
+ * Performs product card skeleton operation
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton();
+ */
+
+/**
+ * Performs product card skeleton operation
+ *
+ * @returns {any} The productcardskeleton result
+ *
+ * @example
+ * ProductCardSkeleton();
+ */
+
 export function ProductCardSkeleton() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -57,6 +121,27 @@ export function ProductCardSkeleton() {
     </div>
   );
 }
+
+/**
+ * Function: Order Card Skeleton
+ */
+/**
+ * Performs order card skeleton operation
+ *
+ * @returns {any} The ordercardskeleton result
+ *
+ * @example
+ * OrderCardSkeleton();
+ */
+
+/**
+ * Performs order card skeleton operation
+ *
+ * @returns {any} The ordercardskeleton result
+ *
+ * @example
+ * OrderCardSkeleton();
+ */
 
 export function OrderCardSkeleton() {
   return (
@@ -83,6 +168,27 @@ export function OrderCardSkeleton() {
   );
 }
 
+/**
+ * Function: User Card Skeleton
+ */
+/**
+ * Performs user card skeleton operation
+ *
+ * @returns {any} The usercardskeleton result
+ *
+ * @example
+ * UserCardSkeleton();
+ */
+
+/**
+ * Performs user card skeleton operation
+ *
+ * @returns {any} The usercardskeleton result
+ *
+ * @example
+ * UserCardSkeleton();
+ */
+
 export function UserCardSkeleton() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -98,6 +204,27 @@ export function UserCardSkeleton() {
   );
 }
 
+/**
+ * Function: Address Card Skeleton
+ */
+/**
+ * Performs address card skeleton operation
+ *
+ * @returns {any} The addresscardskeleton result
+ *
+ * @example
+ * AddressCardSkeleton();
+ */
+
+/**
+ * Performs address card skeleton operation
+ *
+ * @returns {any} The addresscardskeleton result
+ *
+ * @example
+ * AddressCardSkeleton();
+ */
+
 export function AddressCardSkeleton() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-2">
@@ -112,6 +239,27 @@ export function AddressCardSkeleton() {
   );
 }
 
+/**
+ * Function: Dashboard Stat Skeleton
+ */
+/**
+ * Performs dashboard stat skeleton operation
+ *
+ * @returns {any} The dashboardstatskeleton result
+ *
+ * @example
+ * DashboardStatSkeleton();
+ */
+
+/**
+ * Performs dashboard stat skeleton operation
+ *
+ * @returns {any} The dashboardstatskeleton result
+ *
+ * @example
+ * DashboardStatSkeleton();
+ */
+
 export function DashboardStatSkeleton() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -125,6 +273,31 @@ export function DashboardStatSkeleton() {
     </div>
   );
 }
+
+/**
+ * Function: Table Row Skeleton
+ */
+/**
+ * Performs table row skeleton operation
+ *
+ * @param {{ columns?} [{ columns] - The { columns
+ *
+ * @returns {number} The tablerowskeleton result
+ *
+ * @example
+ * TableRowSkeleton({});
+ */
+
+/**
+ * Performs table row skeleton operation
+ *
+ * @param {{ columns?} [{ columns] - The { columns
+ *
+ * @returns {number} The tablerowskeleton result
+ *
+ * @example
+ * TableRowSkeleton({});
+ */
 
 export function TableRowSkeleton({ columns = 4 }: { columns?: number }) {
   return (
@@ -147,11 +320,34 @@ export function TableRowSkeleton({ columns = 4 }: { columns?: number }) {
 }
 
 // List skeleton wrapper
+/**
+ * Function: List Skeleton
+ */
+/**
+ * Performs list skeleton operation
+ *
+ * @returns {number} The listskeleton result
+ *
+ * @example
+ * ListSkeleton();
+ */
+
+/**
+ * Performs list skeleton operation
+ *
+ * @returns {any} The listskeleton result
+ *
+ * @example
+ * ListSkeleton();
+ */
+
 export function ListSkeleton({
   count = 5,
   renderItem,
 }: {
+  /** Count */
   count?: number;
+  /** Render Item */
   renderItem: () => React.ReactNode;
 }) {
   return (

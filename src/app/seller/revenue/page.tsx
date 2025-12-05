@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/revenue/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -23,36 +32,53 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * RevenueData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RevenueData
+ */
 interface RevenueData {
+  /** Overview */
   overview: any;
+  /** Sales Data */
   salesData: any[];
+  /** Top Products */
   topProducts: any[];
 }
 
 export default function SellerRevenuePage() {
   const router = useRouter();
   const [dateRange, setDateRange] = useState<{
+    /** Start Date */
     startDate: string;
+    /** End Date */
     endDate: string;
   }>({
+    /** Start Date */
     startDate: toDateInputValue(
       new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     ),
+    /** End Date */
     endDate: getTodayDateInputValue(),
   });
   const [period, setPeriod] = useState<"day" | "week" | "month">("day");
 
   const {
     data,
+    /** Is Loading */
     isLoading: loading,
     execute,
   } = useLoadingState<RevenueData>({
+    /** Initial Data */
     initialData: { overview: null, salesData: [], topProducts: [] },
   });
 
   const loadData = useCallback(async () => {
     const filters = {
+      /** Start Date */
       startDate: dateRange.startDate,
+      /** End Date */
       endDate: dateRange.endDate,
       period,
     };
@@ -64,8 +90,11 @@ export default function SellerRevenuePage() {
     ]);
 
     return {
+      /** Overview */
       overview: overviewData,
+      /** Sales Data */
       salesData: salesChartData,
+      /** Top Products */
       topProducts: topProductsData,
     };
   }, [dateRange, period]);
@@ -79,11 +108,39 @@ export default function SellerRevenuePage() {
   const salesData = data?.salesData || [];
   const topProducts = data?.topProducts || [];
 
+  /**
+   * Performs async operation
+   *
+   * @param {"csv" | "pdf"} format - The format
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   *
+   * @example
+   * async (format);
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {"csv" | "pdf"} format - The format
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   *
+   * @example
+   * async (format);
+   */
+
   const handleExport = async (format: "csv" | "pdf") => {
     try {
       const blob = await analyticsService.exportData(
         {
+          /** Start Date */
           startDate: dateRange.startDate,
+          /** End Date */
           endDate: dateRange.endDate,
           period,
         },
@@ -99,15 +156,49 @@ export default function SellerRevenuePage() {
       globalThis.URL?.revokeObjectURL(url);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "SellerRevenue.handleExportData",
+        /** Metadata */
         metadata: { dateRange, format },
       });
     }
   };
 
+  /**
+   * Formats number
+   *
+   * @param {number} num - The num
+   *
+   * @returns {number} The formatnumber result
+   */
+
+  /**
+   * Formats number
+   *
+   * @param {number} num - The num
+   *
+   * @returns {number} The formatnumber result
+   */
+
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en-IN").format(num);
   };
+
+  /**
+   * Formats growth
+   *
+   * @param {number} growth - The growth
+   *
+   * @returns {number} The formatgrowth result
+   */
+
+  /**
+   * Formats growth
+   *
+   * @param {number} growth - The growth
+   *
+   * @returns {number} The formatgrowth result
+   */
 
   const formatGrowth = (growth: number) => {
     const isPositive = growth >= 0;
@@ -187,6 +278,7 @@ export default function SellerRevenuePage() {
                 onChange={(e) =>
                   setDateRange((prev) => ({
                     ...prev,
+                    /** Start Date */
                     startDate: e.target.value,
                   }))
                 }
@@ -201,6 +293,7 @@ export default function SellerRevenuePage() {
                 onChange={(e) =>
                   setDateRange((prev) => ({
                     ...prev,
+                    /** End Date */
                     endDate: e.target.value,
                   }))
                 }
@@ -210,6 +303,7 @@ export default function SellerRevenuePage() {
               />
               <div className="ml-4 flex items-center gap-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  /** Period */
                   Period:
                 </span>
                 <FormSelect
@@ -307,6 +401,18 @@ export default function SellerRevenuePage() {
                       const maxRevenue = Math.max(
                         ...salesData.map((d) => d.revenue)
                       );
+                      /**
+                       * Performs height operation
+                       *
+                       * @returns {any} The height result
+                       */
+
+                      /**
+                       * Performs height operation
+                       *
+                       * @returns {any} The height result
+                       */
+
                       const height = (data.revenue / maxRevenue) * 100;
                       return (
                         <div

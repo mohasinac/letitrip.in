@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-wizard/RequiredInfoStep
+ * @description This file contains the RequiredInfoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Image from "next/image";
@@ -11,6 +20,27 @@ import ShopSelector from "@/components/seller/ShopSelector";
 import { mediaService } from "@/services/media.service";
 import type { RequiredStepProps } from "./types";
 
+/**
+ * Function: Required Info Step
+ */
+/**
+ * Performs required info step operation
+ *
+ * @returns {any} The requiredinfostep result
+ *
+ * @example
+ * RequiredInfoStep();
+ */
+
+/**
+ * Performs required info step operation
+ *
+ * @returns {any} The requiredinfostep result
+ *
+ * @example
+ * RequiredInfoStep();
+ */
+
 export function RequiredInfoStep({
   formData,
   setFormData,
@@ -19,6 +49,26 @@ export function RequiredInfoStep({
   uploadProgress,
   setUploadProgress,
 }: RequiredStepProps) {
+  /**
+   * Performs async operation
+   *
+   * @param {File[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {File[]} files - The files
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleImageUpload = async (files: File[]) => {
     setUploadingImages(true);
     try {
@@ -32,10 +82,12 @@ export function RequiredInfoStep({
       const uploadedUrls = await Promise.all(uploadPromises);
       setFormData((prev) => ({
         ...prev,
+        /** Images */
         images: [...prev.images, ...uploadedUrls],
       }));
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "RequiredInfoStep.handleImageUpload",
       });
       toast.error("Failed to upload images. Please try again.");
@@ -45,9 +97,26 @@ export function RequiredInfoStep({
     }
   };
 
+  /**
+   * Deletes image
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The removeimage result
+   */
+
+  /**
+   * Deletes image
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The removeimage result
+   */
+
   const removeImage = (index: number) => {
     setFormData((prev) => ({
       ...prev,
+      /** Images */
       images: prev.images.filter((_, i) => i !== index),
     }));
   };
@@ -123,6 +192,7 @@ export function RequiredInfoStep({
           onChange={(e) =>
             setFormData({
               ...formData,
+              /** Price */
               price: parseFloat(e.target.value) || 0,
             })
           }
@@ -138,6 +208,7 @@ export function RequiredInfoStep({
           onChange={(e) =>
             setFormData({
               ...formData,
+              /** Stock Count */
               stockCount: parseInt(e.target.value) || 0,
             })
           }

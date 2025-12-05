@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/ContactSelectorWithCreate
+ * @description This file contains the ContactSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -17,42 +26,102 @@ import {
 import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
+/**
+ * Contact interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Contact
+ */
 export interface Contact {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Phone */
   phone: string;
+  /** Country Code */
   countryCode: string;
+  /** Email */
   email?: string;
+  /** Relationship */
   relationship?: string;
+  /** Is Primary */
   isPrimary: boolean;
+  /** Created At */
   createdAt: Date;
 }
 
 const ContactSchema = z.object({
+  /** Name */
   name: z
     .string()
     .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT),
+  /** Phone */
   phone: z
     .string()
     .length(10, "Phone must be 10 digits")
     .refine((val) => isValidPhone(`+91${val}`), "Invalid phone number"),
+  /** Country Code */
   countryCode: z.string(),
+  /** Email */
   email: z.string().email("Invalid email").optional().or(z.literal("")),
+  /** Relationship */
   relationship: z.string().optional(),
+  /** Is Primary */
   isPrimary: z.boolean(),
 });
 
+/**
+ * ContactFormData type
+ * 
+ * @typedef {Object} ContactFormData
+ * @description Type definition for ContactFormData
+ */
 type ContactFormData = z.infer<typeof ContactSchema>;
 
+/**
+ * ContactSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ContactSelectorWithCreateProps
+ */
 export interface ContactSelectorWithCreateProps {
+  /** Value */
   value?: string | null;
+  /** On Change */
   onChange: (contactId: string, contact: Contact) => void;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Auto Select Primary */
   autoSelectPrimary?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Contact Selector With Create
+ */
+/**
+ * Performs contact selector with create operation
+ *
+ * @returns {any} The contactselectorwithcreate result
+ *
+ * @example
+ * ContactSelectorWithCreate();
+ */
+
+/**
+ * Performs contact selector with create operation
+ *
+ * @returns {any} The contactselectorwithcreate result
+ *
+ * @example
+ * ContactSelectorWithCreate();
+ */
 
 export function ContactSelectorWithCreate({
   value,
@@ -64,14 +133,20 @@ export function ContactSelectorWithCreate({
   className = "",
 }: ContactSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: contacts,
+    /** Set Data */
     setData: setContacts,
     execute,
   } = useLoadingState<Contact[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, {
+        /** Component */
         component: "ContactSelectorWithCreate.loadContacts",
       });
       toast.error("Failed to load contacts");
@@ -87,11 +162,16 @@ export function ContactSelectorWithCreate({
     control,
     watch,
     setValue,
+    /** Form State */
     formState: { errors },
   } = useForm<ContactFormData>({
+    /** Resolver */
     resolver: zodResolver(ContactSchema),
+    /** Default Values */
     defaultValues: {
+      /** Country Code */
       countryCode: "+91",
+      /** Is Primary */
       isPrimary: false,
     },
   });
@@ -102,6 +182,22 @@ export function ContactSelectorWithCreate({
 
   useEffect(() => {
     if (autoSelectPrimary && (contacts || []).length > 0 && !selectedId) {
+      /**
+       * Performs primary operation
+       *
+       * @param {any} contacts || []).find((c - The contacts || []).find((c
+       *
+       * @returns {any} The primary result
+       */
+
+      /**
+       * Performs primary operation
+       *
+       * @param {any} contacts || []).find((c - The contacts || []).find((c
+       *
+       * @returns {any} The primary result
+       */
+
       const primary = (contacts || []).find((c) => c.isPrimary);
       if (primary) {
         setSelectedId(primary.id);
@@ -110,28 +206,88 @@ export function ContactSelectorWithCreate({
     }
   }, [contacts, autoSelectPrimary, selectedId, onChange]);
 
+  /**
+   * Fetches contacts from server
+   *
+   * @returns {Promise<any>} Promise resolving to contacts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches contacts from server
+   *
+   * @returns {Promise<any>} Promise resolving to contacts result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadContacts = () =>
     execute(async () => {
       // TODO: Implement actual API
       return [];
     });
 
+  /**
+   * Handles contact select event
+   *
+   * @param {Contact} contact - The contact
+   *
+   * @returns {any} The handlecontactselect result
+   */
+
+  /**
+   * Handles contact select event
+   *
+   * @param {Contact} contact - The contact
+   *
+   * @returns {any} The handlecontactselect result
+   */
+
   const handleContactSelect = (contact: Contact) => {
     setSelectedId(contact.id);
     onChange(contact.id, contact);
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {ContactFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {ContactFormData} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const onSubmit = async (data: ContactFormData) => {
     try {
       setSubmitting(true);
       const newContact: Contact = {
+        /** Id */
         id: `contact_${Date.now()}`,
+        /** Name */
         name: data.name,
+        /** Phone */
         phone: data.phone,
+        /** Country Code */
         countryCode: data.countryCode,
+        /** Email */
         email: data.email,
+        /** Relationship */
         relationship: data.relationship,
+        /** Is Primary */
         isPrimary: data.isPrimary,
+        /** Created At */
         createdAt: new Date(),
       };
 
@@ -142,6 +298,7 @@ export function ContactSelectorWithCreate({
       toast.success("Contact added successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ContactSelectorWithCreate.addContact",
       });
       toast.error("Failed to add contact");

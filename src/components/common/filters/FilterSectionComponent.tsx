@@ -1,21 +1,67 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/filters/FilterSectionComponent
+ * @description This file contains the FilterSectionComponent component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { FilterField } from "../FilterSidebar";
 
+/**
+ * FilterSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterSectionProps
+ */
 export interface FilterSectionProps {
+  /** Title */
   title: string;
+  /** Fields */
   fields: FilterField[];
+  /** Collapsible */
   collapsible?: boolean;
+  /** Default Collapsed */
   defaultCollapsed?: boolean;
+  /** Highlighted */
   highlighted?: boolean;
+  /** Pending Values */
   pendingValues: Record<string, any>;
+  /** On Field Change */
   onFieldChange: (key: string, value: any) => void;
+  /** Render Field */
   renderField: (
+    /** Field */
     field: FilterField & { _highlighted?: boolean },
   ) => React.ReactNode;
+  /** Highlight Text */
   highlightText: (text: string) => React.ReactNode;
 }
+
+/**
+ * Function: Filter Section Component
+ */
+/**
+ * Performs filter section component operation
+ *
+ * @returns {any} The filtersectioncomponent result
+ *
+ * @example
+ * FilterSectionComponent();
+ */
+
+/**
+ * Performs filter section component operation
+ *
+ * @returns {any} The filtersectioncomponent result
+ *
+ * @example
+ * FilterSectionComponent();
+ */
 
 export function FilterSectionComponent({
   title,
@@ -29,6 +75,18 @@ export function FilterSectionComponent({
   highlightText,
 }: FilterSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+
+  /**
+   * Performs toggle collapse operation
+   *
+   * @returns {any} The togglecollapse result
+   */
+
+  /**
+   * Performs toggle collapse operation
+   *
+   * @returns {any} The togglecollapse result
+   */
 
   const toggleCollapse = () => {
     if (collapsible) {

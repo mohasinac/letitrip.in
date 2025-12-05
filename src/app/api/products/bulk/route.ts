@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/products/bulk/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
@@ -15,9 +24,31 @@ const STATUS_CHANGING_ACTIONS = new Set([
 ]);
 
 // Build update object for each action
+/**
+ * Function: Build Product Update
+ */
+/**
+ * Performs build product update operation
+ *
+ * @param {string} action - The action
+ * @param {string} now - The now
+ * @param {any} [updates] - The updates
+ *
+ * @returns {string} The buildproductupdate result
+ */
+
+/**
+ * Performs build product update operation
+ *
+ * @returns {string} The buildproductupdate result
+ */
+
 function buildProductUpdate(
+  /** Action */
   action: string,
+  /** Now */
   now: string,
+  /** Updates */
   updates?: any,
 ): { update: Record<string, any> | null; error?: string } {
   switch (action) {
@@ -36,6 +67,7 @@ function buildProductUpdate(
         return { update: null, error: "Stock count required" };
       }
       return {
+        /** Update */
         update: {
           stock_count: parseInt(String(updates.stockCount)),
           updated_at: now,
@@ -46,6 +78,7 @@ function buildProductUpdate(
         return { update: null, error: "Updates object required" };
       }
       return { update: { ...updates, updated_at: now } };
+    /** Default */
     default:
       return { update: null, error: "Unknown action" };
   }
@@ -57,6 +90,32 @@ function buildProductUpdate(
  * Actions: publish, unpublish, archive, feature, unfeature, update-stock, delete, update
  * Sellers can only perform operations on their own products
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let action: string | undefined;
   let idsLength = 0;
@@ -83,12 +142,14 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!action) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: "Action is required",
       });
     }
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       throw new ValidationError("Validation failed", {
+        /** Ids */
         ids: "At least one product ID is required",
       });
     }
@@ -105,12 +166,15 @@ export async function POST(request: NextRequest) {
     ];
     if (!validActions.includes(action)) {
       throw new ValidationError("Validation failed", {
+        /** Action */
         action: `Invalid action. Must be one of: ${validActions.join(", ")}`,
       });
     }
 
     const results = {
+      /** Success */
       success: [] as string[],
+      /** Failed */
       failed: [] as { id: string; error: string }[],
     };
 
@@ -134,7 +198,9 @@ export async function POST(request: NextRequest) {
           const ownsShop = await userOwnsShop(productData?.shop_id, user.uid);
           if (!ownsShop) {
             results.failed.push({
+              /** Id */
               id: productId,
+              /** Error */
               error: "Not authorized to edit this product",
             });
             continue;
@@ -155,7 +221,9 @@ export async function POST(request: NextRequest) {
         const { update, error } = buildProductUpdate(action, now, updates);
         if (!update) {
           results.failed.push({
+            /** Id */
             id: productId,
+            /** Error */
             error: error || "Unknown action",
           });
           continue;
@@ -197,7 +265,9 @@ export async function POST(request: NextRequest) {
           await updateCategoryProductCounts(categoryId);
         } catch (error) {
           logError(error as Error, {
+            /** Component */
             component: "API.products.bulk.POST.updateCategoryCounts",
+            /** Metadata */
             metadata: { categoryId },
           });
           // Don't fail the bulk operation if count update fails
@@ -206,8 +276,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: results,
+      /** Message */
       message: `Bulk ${action} completed. Success: ${results.success.length}, Failed: ${results.failed.length}`,
     });
   } catch (error: any) {
@@ -218,7 +291,9 @@ export async function POST(request: NextRequest) {
       );
     }
     logError(error as Error, {
+      /** Component */
       component: "API.products.bulk.POST",
+      /** Metadata */
       metadata: { action, idsCount: idsLength },
     });
     return NextResponse.json(

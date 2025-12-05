@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/static-assets/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -34,15 +43,22 @@ export default function StaticAssetsPage() {
   const [editingAsset, setEditingAsset] = useState<StaticAsset | null>(null);
 
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: assets,
+    /** Set Data */
     setData: setAssets,
     execute,
   } = useLoadingState<StaticAsset[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "StaticAssetsPage.loadAssets",
+        /** Metadata */
         metadata: { selectedType },
       });
     },
@@ -56,12 +72,48 @@ export default function StaticAssetsPage() {
     loadAssets();
   }, [user, selectedType]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadAssets = async () => {
     await execute(async () => {
       const data = await getAssetsByType(selectedType);
       return data;
     });
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -88,6 +140,26 @@ export default function StaticAssetsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this asset? This action cannot be undone.")) return;
 
@@ -100,6 +172,28 @@ export default function StaticAssetsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<StaticAsset>} updates - The updates
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<StaticAsset>} updates - The updates
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleUpdate = async (id: string, updates: Partial<StaticAsset>) => {
     try {
       await updateAsset(id, updates);
@@ -110,6 +204,22 @@ export default function StaticAssetsPage() {
       toast.error("Update failed");
     }
   };
+
+  /**
+   * Performs copy url operation
+   *
+   * @param {string} url - The url
+   *
+   * @returns {string} The copyurl result
+   */
+
+  /**
+   * Performs copy url operation
+   *
+   * @param {string} url - The url
+   *
+   * @returns {string} The copyurl result
+   */
 
   const copyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -244,6 +354,7 @@ export default function StaticAssetsPage() {
                         onChange={(e) =>
                           setEditingAsset({
                             ...editingAsset,
+                            /** Name */
                             name: e.target.value,
                           })
                         }
@@ -356,6 +467,25 @@ export default function StaticAssetsPage() {
     </div>
   );
 }
+
+/**
+ * Function: Document Icon
+ */
+/**
+ * Performs document icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The documenticon result
+ */
+
+/**
+ * Performs document icon operation
+ *
+ * @param {{ className?} [{ className }] - The { class name }
+ *
+ * @returns {string} The documenticon result
+ */
 
 function DocumentIcon({ className }: { className?: string }) {
   return (

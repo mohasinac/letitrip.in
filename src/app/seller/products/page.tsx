@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/products/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
@@ -9,6 +18,14 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import Link from "next/link";
 import { Eye, ExternalLink } from "lucide-react";
 
+/**
+ * Performs products page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = ProductsPage();
+ */
 export default function ProductsPage() {
   return (
     <SellerResourcePage<ProductCardFE>
@@ -16,22 +33,32 @@ export default function ProductsPage() {
       resourceNamePlural="Products"
       loadData={async (options) => {
         const response = await productsService.list({
+          /** Search */
           search: options.search,
           ...options.filters,
+          /** Page */
           page: 1,
+          /** Limit */
           limit: 50,
         });
         return {
+          /** Items */
           items: response.data || [],
+          /** Next Cursor */
           nextCursor: null,
+          /** Has Next Page */
           hasNextPage: false,
         };
       }}
       columns={[
         {
+          /** Key */
           key: "images",
+          /** Label */
           label: "Image",
+          /** Width */
           width: "80px",
+          /** Render */
           render: (product) => (
             <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
               {product.images?.[0] ? (
@@ -51,9 +78,13 @@ export default function ProductsPage() {
           ),
         },
         {
+          /** Key */
           key: "name",
+          /** Label */
           label: "Product",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (product) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
@@ -66,9 +97,13 @@ export default function ProductsPage() {
           ),
         },
         {
+          /** Key */
           key: "price",
+          /** Label */
           label: "Price",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (product) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
@@ -84,9 +119,13 @@ export default function ProductsPage() {
           ),
         },
         {
+          /** Key */
           key: "stockCount",
+          /** Label */
           label: "Stock",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (product) => {
             const isLowStock =
               product.stockCount <= (product.lowStockThreshold || 5) &&
@@ -116,8 +155,11 @@ export default function ProductsPage() {
           },
         },
         {
+          /** Key */
           key: "categoryId",
+          /** Label */
           label: "Category",
+          /** Render */
           render: (product) => (
             <span className="text-sm text-gray-900 dark:text-white">
               {product.categoryId || "Uncategorized"}
@@ -125,13 +167,19 @@ export default function ProductsPage() {
           ),
         },
         {
+          /** Key */
           key: "status",
+          /** Label */
           label: "Status",
+          /** Render */
           render: (product) => <StatusBadge status={product.status} />,
         },
         {
+          /** Key */
           key: "actions",
+          /** Label */
           label: "Actions",
+          /** Render */
           render: (product) => (
             <div className="flex items-center justify-end gap-2">
               <Link
@@ -156,33 +204,53 @@ export default function ProductsPage() {
       ]}
       fields={[
         {
+          /** Name */
           name: "name",
+          /** Label */
           label: "Product Name",
+          /** Type */
           type: "text",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "price",
+          /** Label */
           label: "Price",
+          /** Type */
           type: "number",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "stockCount",
+          /** Label */
           label: "Stock",
+          /** Type */
           type: "number",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "categoryId",
+          /** Label */
           label: "Category",
+          /** Type */
           type: "select",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "status",
+          /** Label */
           label: "Status",
+          /** Type */
           type: "select",
+          /** Required */
           required: true,
         },
       ]}
@@ -231,6 +299,7 @@ export default function ProductsPage() {
                   <Price amount={product.price} />
                 </span>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
+                  /** Stock */
                   Stock: {product.stockCount}
                 </span>
               </div>

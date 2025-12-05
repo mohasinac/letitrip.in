@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/DateDisplay
+ * @description This file contains the DateDisplay component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Date Display Components
  *
  * Provides consistent date formatting across the application.
@@ -20,13 +29,45 @@ import {
 } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
+/**
+ * DateDisplayProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DateDisplayProps
+ */
 interface DateDisplayProps {
+  /** Date */
   date: Date | string | number | null | undefined;
+  /** Format */
   format?: "short" | "medium" | "long" | "full";
+  /** Include Time */
   includeTime?: boolean;
+  /** Fallback */
   fallback?: string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Date Display
+ */
+/**
+ * Performs date display operation
+ *
+ * @returns {any} The datedisplay result
+ *
+ * @example
+ * DateDisplay();
+ */
+
+/**
+ * Performs date display operation
+ *
+ * @returns {any} The datedisplay result
+ *
+ * @example
+ * DateDisplay();
+ */
 
 export function DateDisplay({
   date,
@@ -38,6 +79,18 @@ export function DateDisplay({
   const formatted = formatDate(date, { format, includeTime, fallback });
 
   // Safely get ISO string, handling invalid dates
+  /**
+   * Retrieves date time attr
+   *
+   * @returns {string} The datetimeattr result
+   */
+
+  /**
+   * Retrieves date time attr
+   *
+   * @returns {string} The datetimeattr result
+   */
+
   const getDateTimeAttr = (): string | undefined => {
     if (!date) return undefined;
     try {
@@ -59,13 +112,43 @@ export function DateDisplay({
   );
 }
 
+/**
+ * RelativeDateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RelativeDateProps
+ */
 interface RelativeDateProps {
+  /** Date */
   date: Date | string | number;
+  /** Style */
   style?: "long" | "short" | "narrow";
+  /** Class Name */
   className?: string;
   /** Show full date on hover */
   showFullOnHover?: boolean;
 }
+
+/**
+ * Function: Relative Date
+ */
+/**
+ * Performs relative date operation
+ *
+ * @returns {any} The relativedate result
+ *
+ * @example
+ * RelativeDate();
+ */
+
+/**
+ * Performs relative date operation
+ *
+ * @returns {any} The relativedate result
+ *
+ * @example
+ * RelativeDate();
+ */
 
 export function RelativeDate({
   date,
@@ -77,6 +160,18 @@ export function RelativeDate({
   const full = formatDate(date, { format: "long", includeTime: true });
 
   // Safely get ISO string, handling invalid dates
+  /**
+   * Retrieves date time attr
+   *
+   * @returns {string} The datetimeattr result
+   */
+
+  /**
+   * Retrieves date time attr
+   *
+   * @returns {string} The datetimeattr result
+   */
+
   const getDateTimeAttr = (): string | undefined => {
     if (!date) return undefined;
     try {
@@ -102,11 +197,45 @@ export function RelativeDate({
   );
 }
 
+/**
+ * DateRangeProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DateRangeProps
+ */
 interface DateRangeProps {
+  /** Start */
   start: Date | string;
+  /** End */
   end: Date | string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Date Range
+ */
+/**
+ * Performs date range operation
+ *
+ * @param {DateRangeProps} { start, end, className } - The { start, end, class name }
+ *
+ * @returns {any} The daterange result
+ *
+ * @example
+ * DateRange({ start, end, className });
+ */
+
+/**
+ * Performs date range operation
+ *
+ * @param {DateRangeProps} { start, end, className } - The { start, end, class name }
+ *
+ * @returns {any} The daterange result
+ *
+ * @example
+ * DateRange({ start, end, className });
+ */
 
 export function DateRange({ start, end, className }: DateRangeProps) {
   const formatted = formatDateRange(start, end);

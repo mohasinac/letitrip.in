@@ -1,8 +1,46 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/bids/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 
 const DEMO_PREFIX = "DEMO_";
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,11 +92,17 @@ export async function POST(request: NextRequest) {
         const bidRef = db.collection(COLLECTIONS.BIDS).doc();
         await bidRef.set({
           auctionId,
+          /** Bidder Id */
           bidderId: bidder.id,
+          /** Bidder Name */
           bidderName: `${DEMO_PREFIX}${bidder.name}`,
+          /** Amount */
           amount: currentBid,
+          /** Timestamp */
           timestamp: new Date(timestamp.getTime() + totalBids * 60000),
+          /** Status */
           status: "active",
+          /** Created At */
           createdAt: timestamp,
         });
         totalBids++;
@@ -72,9 +116,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "bids",
+      /** Data */
       data: {
+        /** Count */
         count: totalBids,
       },
     });

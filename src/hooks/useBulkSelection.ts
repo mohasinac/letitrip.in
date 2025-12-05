@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/hooks/useBulkSelection
+ * @description This file contains functionality related to useBulkSelection
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * useBulkSelection Hook
  *
  * Manages bulk selection state for lists with checkboxes.
@@ -25,6 +34,12 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+/**
+ * UseBulkSelectionOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseBulkSelectionOptions
+ */
 export interface UseBulkSelectionOptions<T> {
   /** Items array to select from */
   items: T[];
@@ -36,6 +51,12 @@ export interface UseBulkSelectionOptions<T> {
   onSelectionChange?: (selectedIds: string[]) => void;
 }
 
+/**
+ * UseBulkSelectionReturn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for UseBulkSelectionReturn
+ */
 export interface UseBulkSelectionReturn {
   /** Array of selected item IDs */
   selectedIds: string[];
@@ -62,6 +83,27 @@ export interface UseBulkSelectionReturn {
   /** Get selected items */
   getSelectedItems: <T>(items: T[], keyProperty?: keyof T) => T[];
 }
+
+/**
+ * Function: Use Bulk Selection
+ */
+/**
+ * Custom React hook for bulk selection
+ *
+ * @returns {any} The usebulkselection result
+ *
+ * @example
+ * useBulkSelection();
+ */
+
+/**
+ * Custom React hook for bulk selection
+ *
+ * @returns {any} The usebulkselection result
+ *
+ * @example
+ * useBulkSelection();
+ */
 
 export function useBulkSelection<T>({
   items,
@@ -156,7 +198,9 @@ export function useBulkSelection<T>({
   // Get selected items
   const getSelectedItems = useCallback(
     <T>(
+      /** Items */
       items: T[],
+      /** Key Prop */
       keyProp: keyof T = keyProperty as unknown as keyof T
     ): T[] => {
       const selectedSet = new Set(selectedIds);

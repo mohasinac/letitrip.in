@@ -1,13 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/terms-of-service/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Terms of Service - Let It Rip",
+  /** Description */
   description:
     "Read the Terms of Service for using Let It Rip platform. User agreement, rules, and conditions for buyers and sellers.",
+  /** Robots */
   robots: "index, follow",
 };
 
+/**
+ * Performs terms of service page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = TermsOfServicePage();
+ */
 export default function TermsOfServicePage() {
   return (
     <LegalPageLayout
@@ -197,6 +217,7 @@ export default function TermsOfServicePage() {
       <h3>7.1 Shop Creation</h3>
       <p>
         Regular Users can create <strong>1 shop</strong>. To create a shop, you
+        /** Must */
         must:
       </p>
       <ul>

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/reviews/[id]/helpful/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { COLLECTIONS, SUBCOLLECTIONS } from "@/constants/database";
@@ -5,7 +14,42 @@ import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/reviews/[id]/helpful - Mark review as helpful
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} req - The req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(req, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Req */
+  req - The /**  req */
+  req
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Req */
+  req, {});
+ */
+
 export async function POST(
+  /** Req */
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -66,12 +110,15 @@ export async function POST(
       });
 
     return NextResponse.json({
+      /** Message */
       message: "Review marked as helpful",
       helpful_count: (doc.data()?.helpful_count || 0) + 1,
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "API.reviews.id.helpful.POST",
+      /** Metadata */
       metadata: { reviewId: id },
     });
     return NextResponse.json(

@@ -1,14 +1,34 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/CategoryFeaturedSellers
+ * @description This file contains the CategoryFeaturedSellers component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import Link from "next/link";
 import { ShopCardFE } from "@/types/frontend/shop.types";
 import { CardGrid } from "@/components/cards/CardGrid";
 
+/**
+ * CategoryFeaturedSellersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryFeaturedSellersProps
+ */
 export interface CategoryFeaturedSellersProps {
+  /** Category Id */
   categoryId: string;
+  /** Category Slug */
   categorySlug: string;
+  /** Sellers */
   sellers: ShopCardFE[];
+  /** Loading */
   loading?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -34,6 +54,24 @@ export interface CategoryFeaturedSellersProps {
  * />
  * ```
  */
+/**
+ * Performs category featured sellers operation
+ *
+ * @returns {any} The categoryfeaturedsellers result
+ *
+ * @example
+ * CategoryFeaturedSellers();
+ */
+
+/**
+ * Performs category featured sellers operation
+ *
+ * @returns {any} The categoryfeaturedsellers result
+ *
+ * @example
+ * CategoryFeaturedSellers();
+ */
+
 export function CategoryFeaturedSellers({
   categoryId,
   categorySlug,

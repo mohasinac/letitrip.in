@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/auctions/moderation/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -19,11 +28,15 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 export default function AuctionModerationPage() {
   const router = useRouter();
   const {
+    /** Data */
     data: auctions,
+    /** Is Loading */
     isLoading: loading,
+    /** Execute */
     execute: loadAuctions,
   } = useLoadingState<any[]>({ initialData: [] });
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
+    /** Status */
     status: ["pending"],
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +47,9 @@ export default function AuctionModerationPage() {
   const fetchAuctions = useCallback(async () => {
     const response = await auctionsService.list({
       ...filterValues,
+      /** Page */
       page: currentPage,
+      /** Limit */
       limit: 20,
     });
     setTotalPages(Math.ceil((response.count || 0) / 20));
@@ -45,6 +60,26 @@ export default function AuctionModerationPage() {
   useEffect(() => {
     loadAuctions(fetchAuctions);
   }, [fetchAuctions, loadAuctions]);
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleApprove = async (id: string) => {
     try {
@@ -57,6 +92,26 @@ export default function AuctionModerationPage() {
       setProcessingId(null);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleReject = async (id: string) => {
     const reason = prompt("Reason for rejection:");
@@ -72,6 +127,26 @@ export default function AuctionModerationPage() {
       setProcessingId(null);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleFlag = async (id: string) => {
     const reason = prompt("Flag reason:");
@@ -89,13 +164,61 @@ export default function AuctionModerationPage() {
     }
   };
 
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} amount - The amount
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (amount: number) => {
     return amount;
   };
 
+  /**
+   * Formats date time
+   *
+   * @param {Date | string} date - The date
+   *
+   * @returns {string} The formatdatetime result
+   */
+
+  /**
+   * Formats date time
+   *
+   * @param {Date | string} date - The date
+   *
+   * @returns {any} The formatdatetime result
+   */
+
   const formatDateTime = (date: Date | string) => {
     return date as any;
   };
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
+
+  /**
+   * Retrieves status color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statuscolor result
+   */
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -111,10 +234,27 @@ export default function AuctionModerationPage() {
         return "bg-gray-100 text-gray-800";
       case "cancelled":
         return "bg-orange-100 text-orange-800";
+      /** Default */
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  /**
+   * Retrieves time until start
+   *
+   * @param {Date | string} startTime - The start time
+   *
+   * @returns {any} The timeuntilstart result
+   */
+
+  /**
+   * Retrieves time until start
+   *
+   * @param {Date | string} startTime - The start time
+   *
+   * @returns {any} The timeuntilstart result
+   */
 
   const getTimeUntilStart = (startTime: Date | string) => {
     const now = new Date();
@@ -246,6 +386,7 @@ export default function AuctionModerationPage() {
                                 {auction.name}
                               </div>
                               <div className="text-sm text-gray-500">
+                                /** I D */
                                 ID: {auction.id.substring(0, 8)}
                               </div>
                             </div>
@@ -273,6 +414,7 @@ export default function AuctionModerationPage() {
                             )}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
+                            /** Ends */
                             Ends:{" "}
                             <DateDisplay
                               date={auction.endTime}

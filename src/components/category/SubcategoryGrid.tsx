@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/SubcategoryGrid
+ * @description This file contains the SubcategoryGrid component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -5,18 +14,39 @@ import Link from "next/link";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { ChevronLeft, ChevronRight, Search, Package } from "lucide-react";
 
+/**
+ * Subcategory interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Subcategory
+ */
 export interface Subcategory {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Image */
   image?: string | null;
+  /** Product Count */
   productCount: number;
 }
 
+/**
+ * SubcategoryGridProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SubcategoryGridProps
+ */
 export interface SubcategoryGridProps {
+  /** Subcategories */
   subcategories: Subcategory[];
+  /** Parent Slug */
   parentSlug: string;
+  /** Loading */
   loading?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -42,6 +72,24 @@ export interface SubcategoryGridProps {
  * />
  * ```
  */
+/**
+ * Performs subcategory grid operation
+ *
+ * @returns {any} The subcategorygrid result
+ *
+ * @example
+ * SubcategoryGrid();
+ */
+
+/**
+ * Performs subcategory grid operation
+ *
+ * @returns {any} The subcategorygrid result
+ *
+ * @example
+ * SubcategoryGrid();
+ */
+
 export function SubcategoryGrid({
   subcategories,
   parentSlug,
@@ -68,6 +116,18 @@ export function SubcategoryGrid({
     });
 
   // Check scroll arrows visibility
+  /**
+   * Updates existing scroll arrows
+   *
+   * @returns {any} The updatescrollarrows result
+   */
+
+  /**
+   * Updates existing scroll arrows
+   *
+   * @returns {any} The updatescrollarrows result
+   */
+
   const updateScrollArrows = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -88,11 +148,29 @@ export function SubcategoryGrid({
     }
   }, [filteredSubcategories]);
 
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
+  /**
+   * Performs scroll operation
+   *
+   * @param {"left" | "right"} direction - The direction
+   *
+   * @returns {any} The scroll result
+   */
+
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
     const scrollAmount = 300;
     scrollRef.current.scrollBy({
+      /** Left */
       left: direction === "left" ? -scrollAmount : scrollAmount,
+      /** Behavior */
       behavior: "smooth",
     });
   };

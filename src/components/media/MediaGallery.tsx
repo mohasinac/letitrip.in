@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/media/MediaGallery
+ * @description This file contains the MediaGallery component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState } from "react";
@@ -6,15 +15,30 @@ import Image from "next/image";
 import { MediaFile } from "@/types/media";
 import MediaPreviewCard from "./MediaPreviewCard";
 
+/**
+ * MediaGalleryProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MediaGalleryProps
+ */
 interface MediaGalleryProps {
+  /** Files */
   files: MediaFile[];
+  /** On Reorder */
   onReorder?: (files: MediaFile[]) => void;
+  /** On Remove */
   onRemove?: (id: string) => void;
+  /** On Edit */
   onEdit?: (id: string) => void;
+  /** On Select */
   onSelect?: (ids: string[]) => void;
+  /** Selected Ids */
   selectedIds?: string[];
+  /** Allow Reorder */
   allowReorder?: boolean;
+  /** Allow Bulk Actions */
   allowBulkActions?: boolean;
+  /** Class Name */
   className?: string;
 }
 
@@ -32,10 +56,44 @@ export default function MediaGallery({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  /**
+   * Handles drag start event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handledragstart result
+   */
+
+  /**
+   * Handles drag start event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handledragstart result
+   */
+
   const handleDragStart = (index: number) => {
     if (!allowReorder) return;
     setDraggedIndex(index);
   };
+
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {number} index - The index
+   *
+   * @returns {number} The handledragover result
+   */
+
+  /**
+   * Handles drag over event
+   *
+   * @param {React.DragEvent} e - The e
+   * @param {number} index - The index
+   *
+   * @returns {number} The handledragover result
+   */
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
@@ -51,9 +109,37 @@ export default function MediaGallery({
     onReorder?.(newFiles);
   };
 
+  /**
+   * Handles drag end event
+   *
+   * @returns {string} The handledragend result
+   */
+
+  /**
+   * Handles drag end event
+   *
+   * @returns {any} The handledragend result
+   */
+
   const handleDragEnd = () => {
     setDraggedIndex(null);
   };
+
+  /**
+   * Performs toggle select operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleselect result
+   */
+
+  /**
+   * Performs toggle select operation
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The toggleselect result
+   */
 
   const toggleSelect = (id: string) => {
     if (!allowBulkActions || !onSelect) return;
@@ -65,15 +151,51 @@ export default function MediaGallery({
     onSelect(newSelection);
   };
 
+  /**
+   * Performs select all operation
+   *
+   * @returns {any} The selectall result
+   */
+
+  /**
+   * Performs select all operation
+   *
+   * @returns {any} The selectall result
+   */
+
   const selectAll = () => {
     if (!onSelect) return;
     onSelect(files.map((f) => f.id));
   };
 
+  /**
+   * Performs deselect all operation
+   *
+   * @returns {any} The deselectall result
+   */
+
+  /**
+   * Performs deselect all operation
+   *
+   * @returns {any} The deselectall result
+   */
+
   const deselectAll = () => {
     if (!onSelect) return;
     onSelect([]);
   };
+
+  /**
+   * Deletes selected
+   *
+   * @returns {any} The removeselected result
+   */
+
+  /**
+   * Deletes selected
+   *
+   * @returns {any} The removeselected result
+   */
 
   const removeSelected = () => {
     if (!onRemove) return;
@@ -81,18 +203,70 @@ export default function MediaGallery({
     deselectAll();
   };
 
+  /**
+   * Performs open lightbox operation
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The openlightbox result
+   */
+
+  /**
+   * Performs open lightbox operation
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The openlightbox result
+   */
+
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
   };
+
+  /**
+   * Performs close lightbox operation
+   *
+   * @returns {any} The closelightbox result
+   */
+
+  /**
+   * Performs close lightbox operation
+   *
+   * @returns {any} The closelightbox result
+   */
 
   const closeLightbox = () => {
     setLightboxIndex(null);
   };
 
+  /**
+   * Performs next image operation
+   *
+   * @returns {any} The nextimage result
+   */
+
+  /**
+   * Performs next image operation
+   *
+   * @returns {any} The nextimage result
+   */
+
   const nextImage = () => {
     if (lightboxIndex === null) return;
     setLightboxIndex((lightboxIndex + 1) % files.length);
   };
+
+  /**
+   * Performs prev image operation
+   *
+   * @returns {any} The previmage result
+   */
+
+  /**
+   * Performs prev image operation
+   *
+   * @returns {any} The previmage result
+   */
 
   const prevImage = () => {
     if (lightboxIndex === null) return;

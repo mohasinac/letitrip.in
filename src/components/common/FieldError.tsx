@@ -1,8 +1,53 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/FieldError
+ * @description This file contains the FieldError component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { AlertCircle } from "lucide-react";
 
+/**
+ * FieldErrorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FieldErrorProps
+ */
 interface FieldErrorProps {
+  /** Error */
   error?: string;
 }
+
+/**
+ * Function: Field Error
+ */
+/**
+ * Performs field error operation
+ *
+ * @param {FieldErrorProps} { error } - The { error }
+ *
+ * @returns {any} The fielderror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * FieldError({ error });
+ */
+
+/**
+ * Performs field error operation
+ *
+ * @param {FieldErrorProps} { error } - The { error }
+ *
+ * @returns {any} The fielderror result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * FieldError({ error });
+ */
 
 export function FieldError({ error }: FieldErrorProps) {
   if (!error) return null;
@@ -15,13 +60,45 @@ export function FieldError({ error }: FieldErrorProps) {
   );
 }
 
+/**
+ * InputWrapperProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InputWrapperProps
+ */
 interface InputWrapperProps {
+  /** Label */
   label: string;
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Hint */
   hint?: string;
+  /** Children */
   children: React.ReactNode;
 }
+
+/**
+ * Function: Input Wrapper
+ */
+/**
+ * Performs input wrapper operation
+ *
+ * @returns {any} The inputwrapper result
+ *
+ * @example
+ * InputWrapper();
+ */
+
+/**
+ * Performs input wrapper operation
+ *
+ * @returns {any} The inputwrapper result
+ *
+ * @example
+ * InputWrapper();
+ */
 
 export function InputWrapper({
   label,

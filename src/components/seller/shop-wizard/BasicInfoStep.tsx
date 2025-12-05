@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/BasicInfoStep
+ * @description This file contains the BasicInfoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormInput } from "@/components/forms/FormInput";
@@ -8,8 +17,16 @@ import MobileInput from "@/components/common/MobileInput";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { ShopFormData, OnChange } from "./types";
 
+/**
+ * BasicInfoStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BasicInfoStepProps
+ */
 interface BasicInfoStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnChange;
 }
 

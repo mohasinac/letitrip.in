@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/emails/Welcome
+ * @description This file contains the Welcome component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Welcome Email Template
  *
  * @status IMPLEMENTED
@@ -7,12 +16,75 @@
 
 import * as React from "react";
 
+/**
+ * WelcomeEmailProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WelcomeEmailProps
+ */
 export interface WelcomeEmailProps {
+  /** User Name */
   userName: string;
+  /** User Email */
   userEmail: string;
+  /** Verification Link */
   verificationLink?: string;
 }
 
+/**
+ * Performs welcome email operation
+ *
+ * @param {any} {
+  userName,
+  userEmail,
+  verificationLink,
+} - The {
+  user name,
+  user email,
+  verification link,
+}
+ *
+ * @returns {any} The welcomeemail result
+ *
+ * @example
+ * WelcomeEmail({
+  userName,
+  userEmail,
+  verificationLink,
+});
+ */
+
+/**
+ * W
+ * @constant
+ */
+/**
+ * Performs welcome email operation
+ *
+ * @param {any} {
+  userName,
+  userEmail,
+  verificationLink,
+} - The {
+  user name,
+  user email,
+  verification link,
+}
+ *
+ * @returns {any} The welcomeemail result
+ *
+ * @example
+ * WelcomeEmail({
+  userName,
+  userEmail,
+  verificationLink,
+});
+ */
+
+/**
+ * W
+ * @constant
+ */
 export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
   userName,
   userEmail,
@@ -27,39 +99,59 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
       </head>
       <body
         style={{
+          /** Font Family */
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          /** Background Color */
           backgroundColor: "#f3f4f6",
+          /** Margin */
           margin: 0,
+          /** Padding */
           padding: 0,
         }}
       >
         <div
           style={{
+            /** Max Width */
             maxWidth: "600px",
+            /** Margin */
             margin: "0 auto",
+            /** Padding */
             padding: "20px",
           }}
         >
           {/* Header */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Border Radius */
               borderRadius: "8px 8px 0 0",
+              /** Padding */
               padding: "32px 24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Bottom */
               borderBottom: "4px solid #8b5cf6",
             }}
           >
             <div
               style={{
+                /** Width */
                 width: "80px",
+                /** Height */
                 height: "80px",
+                /** Background Color */
                 backgroundColor: "#ede9fe",
+                /** Border Radius */
                 borderRadius: "50%",
+                /** Margin */
                 margin: "0 auto 20px",
+                /** Display */
                 display: "flex",
+                /** Align Items */
                 alignItems: "center",
+                /** Justify Content */
                 justifyContent: "center",
               }}
             >
@@ -67,10 +159,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             </div>
             <h1
               style={{
+                /** Font Size */
                 fontSize: "28px",
+                /** Font Weight */
                 fontWeight: "bold",
+                /** Color */
                 color: "#1f2937",
+                /** Margin */
                 margin: 0,
+                /** Margin Bottom */
                 marginBottom: "8px",
               }}
             >
@@ -78,8 +175,11 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             </h1>
             <p
               style={{
+                /** Font Size */
                 fontSize: "16px",
+                /** Color */
                 color: "#6b7280",
+                /** Margin */
                 margin: 0,
               }}
             >
@@ -90,17 +190,24 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
           {/* Main Content */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#ffffff",
+              /** Padding */
               padding: "32px 24px",
             }}
           >
             {/* Welcome Message */}
             <p
               style={{
+                /** Font Size */
                 fontSize: "16px",
+                /** Color */
                 color: "#1f2937",
+                /** Line Height */
                 lineHeight: "1.6",
+                /** Margin Top */
                 marginTop: 0,
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
@@ -109,9 +216,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
 
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.6",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
@@ -124,19 +235,29 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             {verificationLink && (
               <div
                 style={{
+                  /** Background Color */
                   backgroundColor: "#fef3c7",
+                  /** Border */
                   border: "1px solid #fcd34d",
+                  /** Border Radius */
                   borderRadius: "8px",
+                  /** Padding */
                   padding: "20px",
+                  /** Margin Bottom */
                   marginBottom: "24px",
                 }}
               >
                 <h3
                   style={{
+                    /** Font Size */
                     fontSize: "16px",
+                    /** Font Weight */
                     fontWeight: "600",
+                    /** Color */
                     color: "#78350f",
+                    /** Margin Top */
                     marginTop: 0,
+                    /** Margin Bottom */
                     marginBottom: "12px",
                   }}
                 >
@@ -144,9 +265,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                 </h3>
                 <p
                   style={{
+                    /** Font Size */
                     fontSize: "14px",
+                    /** Color */
                     color: "#92400e",
+                    /** Line Height */
                     lineHeight: "1.5",
+                    /** Margin Bottom */
                     marginBottom: "16px",
                   }}
                 >
@@ -157,13 +282,21 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                   <a
                     href={verificationLink}
                     style={{
+                      /** Display */
                       display: "inline-block",
+                      /** Background Color */
                       backgroundColor: "#eab308",
+                      /** Color */
                       color: "#1f2937",
+                      /** Font Size */
                       fontSize: "14px",
+                      /** Font Weight */
                       fontWeight: "600",
+                      /** Padding */
                       padding: "12px 24px",
+                      /** Border Radius */
                       borderRadius: "6px",
+                      /** Text Decoration */
                       textDecoration: "none",
                     }}
                   >
@@ -177,10 +310,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             <div style={{ marginBottom: "24px" }}>
               <h3
                 style={{
+                  /** Font Size */
                   fontSize: "18px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Color */
                   color: "#1f2937",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "16px",
                 }}
               >
@@ -190,15 +328,21 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
               <div style={{ marginBottom: "16px" }}>
                 <div
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "flex-start",
+                    /** Margin Bottom */
                     marginBottom: "12px",
                   }}
                 >
                   <span
                     style={{
+                      /** Font Size */
                       fontSize: "24px",
+                      /** Margin Right */
                       marginRight: "12px",
+                      /** Line Height */
                       lineHeight: "1",
                     }}
                   >
@@ -207,10 +351,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                   <div>
                     <h4
                       style={{
+                        /** Font Size */
                         fontSize: "15px",
+                        /** Font Weight */
                         fontWeight: "600",
+                        /** Color */
                         color: "#1f2937",
+                        /** Margin */
                         margin: 0,
+                        /** Margin Bottom */
                         marginBottom: "4px",
                       }}
                     >
@@ -218,9 +367,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                     </h4>
                     <p
                       style={{
+                        /** Font Size */
                         fontSize: "13px",
+                        /** Color */
                         color: "#6b7280",
+                        /** Margin */
                         margin: 0,
+                        /** Line Height */
                         lineHeight: "1.5",
                       }}
                     >
@@ -231,15 +384,21 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
 
                 <div
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "flex-start",
+                    /** Margin Bottom */
                     marginBottom: "12px",
                   }}
                 >
                   <span
                     style={{
+                      /** Font Size */
                       fontSize: "24px",
+                      /** Margin Right */
                       marginRight: "12px",
+                      /** Line Height */
                       lineHeight: "1",
                     }}
                   >
@@ -248,10 +407,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                   <div>
                     <h4
                       style={{
+                        /** Font Size */
                         fontSize: "15px",
+                        /** Font Weight */
                         fontWeight: "600",
+                        /** Color */
                         color: "#1f2937",
+                        /** Margin */
                         margin: 0,
+                        /** Margin Bottom */
                         marginBottom: "4px",
                       }}
                     >
@@ -259,9 +423,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                     </h4>
                     <p
                       style={{
+                        /** Font Size */
                         fontSize: "13px",
+                        /** Color */
                         color: "#6b7280",
+                        /** Margin */
                         margin: 0,
+                        /** Line Height */
                         lineHeight: "1.5",
                       }}
                     >
@@ -272,15 +440,21 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
 
                 <div
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "flex-start",
+                    /** Margin Bottom */
                     marginBottom: "12px",
                   }}
                 >
                   <span
                     style={{
+                      /** Font Size */
                       fontSize: "24px",
+                      /** Margin Right */
                       marginRight: "12px",
+                      /** Line Height */
                       lineHeight: "1",
                     }}
                   >
@@ -289,10 +463,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                   <div>
                     <h4
                       style={{
+                        /** Font Size */
                         fontSize: "15px",
+                        /** Font Weight */
                         fontWeight: "600",
+                        /** Color */
                         color: "#1f2937",
+                        /** Margin */
                         margin: 0,
+                        /** Margin Bottom */
                         marginBottom: "4px",
                       }}
                     >
@@ -300,9 +479,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                     </h4>
                     <p
                       style={{
+                        /** Font Size */
                         fontSize: "13px",
+                        /** Color */
                         color: "#6b7280",
+                        /** Margin */
                         margin: 0,
+                        /** Line Height */
                         lineHeight: "1.5",
                       }}
                     >
@@ -313,14 +496,19 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
 
                 <div
                   style={{
+                    /** Display */
                     display: "flex",
+                    /** Align Items */
                     alignItems: "flex-start",
                   }}
                 >
                   <span
                     style={{
+                      /** Font Size */
                       fontSize: "24px",
+                      /** Margin Right */
                       marginRight: "12px",
+                      /** Line Height */
                       lineHeight: "1",
                     }}
                   >
@@ -329,10 +517,15 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                   <div>
                     <h4
                       style={{
+                        /** Font Size */
                         fontSize: "15px",
+                        /** Font Weight */
                         fontWeight: "600",
+                        /** Color */
                         color: "#1f2937",
+                        /** Margin */
                         margin: 0,
+                        /** Margin Bottom */
                         marginBottom: "4px",
                       }}
                     >
@@ -340,9 +533,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
                     </h4>
                     <p
                       style={{
+                        /** Font Size */
                         fontSize: "13px",
+                        /** Color */
                         color: "#6b7280",
+                        /** Margin */
                         margin: 0,
+                        /** Line Height */
                         lineHeight: "1.5",
                       }}
                     >
@@ -356,18 +553,27 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             {/* CTA */}
             <div
               style={{
+                /** Background Color */
                 backgroundColor: "#f9fafb",
+                /** Border Radius */
                 borderRadius: "8px",
+                /** Padding */
                 padding: "20px",
+                /** Text Align */
                 textAlign: "center",
+                /** Margin Bottom */
                 marginBottom: "24px",
               }}
             >
               <p
                 style={{
+                  /** Font Size */
                   fontSize: "14px",
+                  /** Color */
                   color: "#6b7280",
+                  /** Margin Top */
                   marginTop: 0,
+                  /** Margin Bottom */
                   marginBottom: "16px",
                 }}
               >
@@ -376,13 +582,21 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
               <a
                 href="https://justforview.in"
                 style={{
+                  /** Display */
                   display: "inline-block",
+                  /** Background Color */
                   backgroundColor: "#8b5cf6",
+                  /** Color */
                   color: "#ffffff",
+                  /** Font Size */
                   fontSize: "16px",
+                  /** Font Weight */
                   fontWeight: "600",
+                  /** Padding */
                   padding: "12px 32px",
+                  /** Border Radius */
                   borderRadius: "6px",
+                  /** Text Decoration */
                   textDecoration: "none",
                 }}
               >
@@ -393,9 +607,13 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             {/* Help Text */}
             <p
               style={{
+                /** Font Size */
                 fontSize: "14px",
+                /** Color */
                 color: "#6b7280",
+                /** Line Height */
                 lineHeight: "1.5",
+                /** Text Align */
                 textAlign: "center",
               }}
             >
@@ -419,18 +637,27 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
           {/* Footer */}
           <div
             style={{
+              /** Background Color */
               backgroundColor: "#f9fafb",
+              /** Border Radius */
               borderRadius: "0 0 8px 8px",
+              /** Padding */
               padding: "24px",
+              /** Text Align */
               textAlign: "center",
+              /** Border Top */
               borderTop: "1px solid #e5e7eb",
             }}
           >
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#6b7280",
+                /** Margin */
                 margin: 0,
+                /** Margin Bottom */
                 marginBottom: "8px",
               }}
             >
@@ -438,8 +665,11 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
             </p>
             <p
               style={{
+                /** Font Size */
                 fontSize: "12px",
+                /** Color */
                 color: "#9ca3af",
+                /** Margin */
                 margin: 0,
               }}
             >

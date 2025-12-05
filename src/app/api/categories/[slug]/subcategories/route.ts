@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/categories/[slug]/subcategories/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
 
@@ -5,6 +14,34 @@ import { Collections } from "@/app/api/lib/firebase/collections";
  * GET /api/categories/[slug]/subcategories
  * Fetch immediate children of a category
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {Request} _ - The _
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(_, {});
+ */
+
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -36,6 +73,7 @@ export async function GET(
       .get();
 
     const subcategories = subcategoriesSnapshot.docs.map((doc: any) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -51,20 +89,25 @@ export async function GET(
 
         return {
           ...cat,
+          /** Product Count */
           productCount: countSnapshot.data().count,
         };
       }),
     );
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: subcategoriesWithCounts,
     });
   } catch (error: any) {
     console.error("Subcategories error:", error);
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to fetch subcategories",
       },
       { status: 500 },

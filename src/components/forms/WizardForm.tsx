@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/WizardForm
+ * @description This file contains the WizardForm component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useCallback, ReactNode } from "react";
@@ -5,35 +14,76 @@ import { WizardSteps, WizardStep, StepState } from "./WizardSteps";
 import { WizardActionBar } from "./WizardActionBar";
 import { cn } from "@/lib/utils";
 
+/**
+ * WizardFormStep interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardFormStep
+ */
 export interface WizardFormStep extends WizardStep {
+  /** Validate */
   validate?: () => boolean | Promise<boolean>;
+  /** Content */
   content: ReactNode;
 }
 
+/**
+ * WizardFormProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardFormProps
+ */
 export interface WizardFormProps<T = Record<string, unknown>> {
+  /** Steps */
   steps: WizardFormStep[];
+  /** Initial Data */
   initialData?: Partial<T>;
+  /** On Submit */
   onSubmit: (data: T) => void | Promise<void>;
+  /** On Save Draft */
   onSaveDraft?: (data: T, currentStep: number) => void | Promise<void>;
+  /** On Validate */
   onValidate?: (stepIndex: number) => Promise<boolean>;
+  /** On Step Change */
   onStepChange?: (stepIndex: number) => void;
+  /** Submit Label */
   submitLabel?: string;
+  /** Class Name */
   className?: string;
+  /** Show Validate Button */
   showValidateButton?: boolean;
+  /** Show Save Draft Button */
   showSaveDraftButton?: boolean;
+  /** Steps Variant */
   stepsVariant?: "numbered" | "pills";
+  /** Children */
   children?: (props: WizardFormChildProps<T>) => ReactNode;
 }
 
+/**
+ * WizardFormChildProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for WizardFormChildProps
+ */
 export interface WizardFormChildProps<T = Record<string, unknown>> {
+  /** Current Step */
   currentStep: number;
+  /** Set Current Step */
   setCurrentStep: (step: number) => void;
+  /** Step States */
   stepStates: StepState[];
+  /** Update Step State */
   updateStepState: (stepIndex: number, state: Partial<StepState>) => void;
+  /** Form Data */
   formData: Partial<T>;
+  /** Set Form Data */
   setFormData: React.Dispatch<React.SetStateAction<Partial<T>>>;
+  /** Is Valid */
   isValid: boolean;
+  /** Go To Next Step */
   goToNextStep: () => void;
+  /** Go To Previous Step */
   goToPreviousStep: () => void;
 }
 
@@ -48,6 +98,24 @@ export interface WizardFormChildProps<T = Record<string, unknown>> {
  * - Mobile-friendly action bar
  * - Dark mode support
  */
+/**
+ * Performs wizard form operation
+ *
+ * @returns {any} The wizardform result
+ *
+ * @example
+ * WizardForm();
+ */
+
+/**
+ * Performs wizard form operation
+ *
+ * @returns {any} The wizardform result
+ *
+ * @example
+ * WizardForm();
+ */
+
 export function WizardForm<T = Record<string, unknown>>({
   steps,
   initialData,
@@ -66,9 +134,13 @@ export function WizardForm<T = Record<string, unknown>>({
   const [formData, setFormData] = useState<Partial<T>>(initialData || {});
   const [stepStates, setStepStates] = useState<StepState[]>(
     steps.map(() => ({
+      /** Is Complete */
       isComplete: false,
+      /** Is Valid */
       isValid: true,
+      /** Has Errors */
       hasErrors: false,
+      /** Error Count */
       errorCount: 0,
     })),
   );
@@ -130,7 +202,9 @@ export function WizardForm<T = Record<string, unknown>>({
         newStates[i] = {
           ...newStates[i],
           isValid,
+          /** Has Errors */
           hasErrors: !isValid,
+          /** Is Complete */
           isComplete: isValid,
         };
       } else if (onValidate) {
@@ -138,7 +212,9 @@ export function WizardForm<T = Record<string, unknown>>({
         newStates[i] = {
           ...newStates[i],
           isValid,
+          /** Has Errors */
           hasErrors: !isValid,
+          /** Is Complete */
           isComplete: isValid,
         };
       }
@@ -191,11 +267,13 @@ export function WizardForm<T = Record<string, unknown>>({
   // Child render props
   const childProps: WizardFormChildProps<T> = {
     currentStep,
+    /** Set Current Step */
     setCurrentStep: handleStepClick,
     stepStates,
     updateStepState,
     formData,
     setFormData,
+    /** Is Valid */
     isValid: isAllValid,
     goToNextStep,
     goToPreviousStep,
@@ -203,7 +281,9 @@ export function WizardForm<T = Record<string, unknown>>({
 
   // Map steps for WizardSteps component
   const wizardSteps: WizardStep[] = steps.map((step) => ({
+    /** Label */
     label: step.label,
+    /** Icon */
     icon: step.icon,
   }));
 

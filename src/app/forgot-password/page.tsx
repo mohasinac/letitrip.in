@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/forgot-password/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -8,15 +17,51 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
+/**
+ * Function: Forgot Password Form
+ */
+/**
+ * Performs forgot password form operation
+ *
+ * @returns {any} The forgotpasswordform result
+ */
+
+/**
+ * Performs forgot password form operation
+ *
+ * @returns {any} The forgotpasswordform result
+ */
+
 function ForgotPasswordForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [isSuccess, setIsSuccess] = useState(false);
   const { isLoading, error, execute } = useLoadingState<void>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "ForgotPasswordForm.handleSubmit" });
     },
   });
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

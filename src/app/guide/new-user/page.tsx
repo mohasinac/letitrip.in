@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/guide/new-user/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -10,7 +19,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "New Users' Guide | Let It Rip",
+  /** Description */
   description:
     "Complete guide for new users to get started with Let It Rip auction platform",
 };
@@ -151,15 +162,34 @@ export default function NewUserGuidePage() {
   );
 }
 
+/**
+ * Function: Guide Section
+ */
+/**
+ * Performs guide section operation
+ *
+ * @returns {any} The guidesection result
+ */
+
+/**
+ * Performs guide section operation
+ *
+ * @returns {any} The guidesection result
+ */
+
 function GuideSection({
   icon,
   title,
   description,
   links,
 }: {
+  /** Icon */
   icon: React.ReactNode;
+  /** Title */
   title: string;
+  /** Description */
   description: string;
+  /** Links */
   links?: Array<{ label: string; href: string }>;
 }) {
   return (

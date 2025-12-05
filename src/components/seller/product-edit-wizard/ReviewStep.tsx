@@ -1,7 +1,41 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/product-edit-wizard/ReviewStep
+ * @description This file contains the ReviewStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Price } from "@/components/common/values/Price";
 import type { StepProps } from "./types";
+
+/**
+ * Function: Review Step
+ */
+/**
+ * Performs review step operation
+ *
+ * @param {StepProps} { formData } - The { form data }
+ *
+ * @returns {any} The reviewstep result
+ *
+ * @example
+ * ReviewStep({ formData });
+ */
+
+/**
+ * Performs review step operation
+ *
+ * @param {StepProps} { formData } - The { form data }
+ *
+ * @returns {any} The reviewstep result
+ *
+ * @example
+ * ReviewStep({ formData });
+ */
 
 export function ReviewStep({ formData }: StepProps) {
   return (

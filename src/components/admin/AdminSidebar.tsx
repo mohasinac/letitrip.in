@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/AdminSidebar
+ * @description This file contains the AdminSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -33,180 +42,318 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * NavItem interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NavItem
+ */
 interface NavItem {
+  /** Title */
   title: string;
+  /** Href */
   href?: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Badge */
   badge?: string;
+  /** Children */
   children?: NavItem[];
 }
 
 const navigation: NavItem[] = [
   {
+    /** Title */
     title: "Dashboard",
+    /** Href */
     href: "/admin/dashboard",
+    /** Icon */
     icon: LayoutDashboard,
   },
   {
+    /** Title */
     title: "Overview",
+    /** Href */
     href: "/admin",
+    /** Icon */
     icon: Home,
   },
   {
+    /** Title */
     title: "Content Management",
+    /** Icon */
     icon: LayoutIcon,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "Homepage Settings",
+        /** Href */
         href: "/admin/homepage",
+        /** Icon */
         icon: Home,
       },
       {
+        /** Title */
         title: "Hero Slides",
+        /** Href */
         href: "/admin/hero-slides",
+        /** Icon */
         icon: Image,
       },
       {
+        /** Title */
         title: "Featured Sections",
+        /** Href */
         href: "/admin/featured-sections",
+        /** Icon */
         icon: Flag,
       },
       {
+        /** Title */
         title: "Categories",
+        /** Href */
         href: "/admin/categories",
+        /** Icon */
         icon: FolderTree,
       },
     ],
   },
   {
+    /** Title */
     title: "Marketplace",
+    /** Icon */
     icon: Store,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Shops",
+        /** Href */
         href: "/admin/shops",
+        /** Icon */
         icon: Store,
       },
       {
+        /** Title */
         title: "Products",
+        /** Href */
         href: "/admin/products",
+        /** Icon */
         icon: Package,
       },
       {
+        /** Title */
         title: "All Auctions",
+        /** Href */
         href: "/admin/auctions",
+        /** Icon */
         icon: Gavel,
       },
       {
+        /** Title */
         title: "Live Auctions",
+        /** Href */
         href: "/admin/auctions/live",
+        /** Icon */
         icon: Gavel,
       },
     ],
   },
   {
+    /** Title */
     title: "User Management",
+    /** Icon */
     icon: Users,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Users",
+        /** Href */
         href: "/admin/users",
+        /** Icon */
         icon: Users,
       },
       {
+        /** Title */
         title: "Reviews",
+        /** Href */
         href: "/admin/reviews",
+        /** Icon */
         icon: Star,
       },
     ],
   },
   {
+    /** Title */
     title: "Transactions",
+    /** Icon */
     icon: CreditCard,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "Orders",
+        /** Href */
         href: "/admin/orders",
+        /** Icon */
         icon: ShoppingCart,
       },
       {
+        /** Title */
         title: "Payments",
+        /** Href */
         href: "/admin/payments",
+        /** Icon */
         icon: CreditCard,
       },
       {
+        /** Title */
         title: "Seller Payouts",
+        /** Href */
         href: "/admin/payouts",
+        /** Icon */
         icon: Banknote,
       },
       {
+        /** Title */
         title: "Coupons",
+        /** Href */
         href: "/admin/coupons",
+        /** Icon */
         icon: Ticket,
       },
       {
+        /** Title */
         title: "Returns & Refunds",
+        /** Href */
         href: "/admin/returns",
+        /** Icon */
         icon: RotateCcw,
       },
     ],
   },
   {
+    /** Title */
     title: "Support",
+    /** Icon */
     icon: LifeBuoy,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Tickets",
+        /** Href */
         href: "/admin/support-tickets",
+        /** Icon */
         icon: LifeBuoy,
       },
     ],
   },
   {
+    /** Title */
     title: "Analytics",
+    /** Icon */
     icon: BarChart3,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "Overview",
+        /** Href */
         href: "/admin/analytics",
+        /** Icon */
         icon: TrendingUp,
       },
       {
+        /** Title */
         title: "Sales",
+        /** Href */
         href: "/admin/analytics/sales",
+        /** Icon */
         icon: DollarSign,
       },
     ],
   },
   {
+    /** Title */
     title: "Blog",
+    /** Icon */
     icon: Newspaper,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "All Posts",
+        /** Href */
         href: "/admin/blog",
+        /** Icon */
         icon: Newspaper,
       },
     ],
   },
   {
+    /** Title */
     title: "Settings",
+    /** Icon */
     icon: Settings,
+    /** Children */
     children: [
       {
+        /** Title */
         title: "General",
+        /** Href */
         href: "/admin/settings/general",
+        /** Icon */
         icon: Settings,
       },
     ],
   },
 ];
 
+/**
+ * Function: Admin Sidebar
+ */
+/**
+ * Performs admin sidebar operation
+ *
+ * @returns {any} The adminsidebar result
+ *
+ * @example
+ * AdminSidebar();
+ */
+
+/**
+ * Performs admin sidebar operation
+ *
+ * @returns {any} The adminsidebar result
+ *
+ * @example
+ * AdminSidebar();
+ */
+
 export function AdminSidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
+
+  /**
+   * Performs toggle item operation
+   *
+   * @param {string} title - The title
+   *
+   * @returns {string} The toggleitem result
+   */
 
   const toggleItem = (title: string) => {
     setExpandedItems((prev) =>
@@ -215,6 +362,22 @@ export function AdminSidebar() {
         : [...prev, title],
     );
   };
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
+
+  /**
+   * Checks if active
+   *
+   * @param {string} href - The href
+   *
+   * @returns {string} The isactive result
+   */
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
@@ -246,6 +409,7 @@ export function AdminSidebar() {
         if (parentMatches || matchingChildren.length > 0) {
           return {
             ...item,
+            /** Children */
             children:
               matchingChildren.length > 0 ? matchingChildren : item.children,
           };
@@ -267,6 +431,22 @@ export function AdminSidebar() {
   }, [searchQuery, filterNavigation]);
 
   // Highlight matching text
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
+  /**
+   * Performs highlight text operation
+   *
+   * @param {string} text - The text
+   *
+   * @returns {string} The highlighttext result
+   */
+
   const highlightText = (text: string) => {
     if (!searchQuery.trim()) return text;
 

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/settings/payment-gateways/config/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Payment Gateway Configuration API Route
  * POST /api/admin/settings/payment-gateways/config
  *
@@ -12,10 +21,47 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * GatewayConfigRequest interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for GatewayConfigRequest
+ */
 interface GatewayConfigRequest {
+  /** Gateway */
   gateway: string;
+  /** Config */
   config: Record<string, any>;
 }
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -80,6 +126,7 @@ export async function POST(request: NextRequest) {
         if (!config[field]) {
           return NextResponse.json(
             {
+              /** Error */
               error: `Missing required Razorpay field: ${field}`,
             },
             { status: 400 }
@@ -94,6 +141,7 @@ export async function POST(request: NextRequest) {
         if (!config[field]) {
           return NextResponse.json(
             {
+              /** Error */
               error: `Missing required PayPal field: ${field}`,
             },
             { status: 400 }
@@ -108,6 +156,7 @@ export async function POST(request: NextRequest) {
         if (!config[field]) {
           return NextResponse.json(
             {
+              /** Error */
               error: `Missing required Stripe field: ${field}`,
             },
             { status: 400 }
@@ -125,10 +174,14 @@ export async function POST(request: NextRequest) {
         {
           [gateway]: {
             ...config,
+            /** Updated At */
             updatedAt: new Date(),
+            /** Updated By */
             updatedBy: authResult.user.uid,
           },
+          /** Updated At */
           updatedAt: new Date(),
+          /** Updated By */
           updatedBy: authResult.user.uid,
         },
         { merge: true }
@@ -136,7 +189,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Message */
         message: `${gateway} configuration updated successfully`,
         gateway,
       },
@@ -144,13 +199,17 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "PaymentGatewayConfigAPI",
+      /** Method */
       method: "POST",
+      /** Context */
       context: "Failed to update gateway configuration",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to update gateway configuration",
       },
       { status: 500 }

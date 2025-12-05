@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/category/CategoryProducts
+ * @description This file contains the CategoryProducts component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -13,13 +22,26 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * CategoryProductsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CategoryProductsProps
+ */
 export interface CategoryProductsProps {
+  /** Products */
   products: ProductCardFE[];
+  /** Loading */
   loading?: boolean;
+  /** Total Products */
   totalProducts: number;
+  /** On Sort Change */
   onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
+  /** On Filters Change */
   onFiltersChange?: (filters: Record<string, any>) => void;
+  /** On Add To Cart */
   onAddToCart?: (productId: string, productDetails?: any) => void;
+  /** Class Name */
   className?: string;
 }
 
@@ -48,6 +70,24 @@ export interface CategoryProductsProps {
  * />
  * ```
  */
+/**
+ * Performs category products operation
+ *
+ * @returns {any} The categoryproducts result
+ *
+ * @example
+ * CategoryProducts();
+ */
+
+/**
+ * Performs category products operation
+ *
+ * @returns {any} The categoryproducts result
+ *
+ * @example
+ * CategoryProducts();
+ */
+
 export function CategoryProducts({
   products,
   loading = false,
@@ -64,20 +104,86 @@ export function CategoryProducts({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [filters, setFilters] = useState<Record<string, any>>({});
 
+  /**
+   * Handles sort by change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlesortbychange result
+   */
+
+  /**
+   * Handles sort by change event
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The handlesortbychange result
+   */
+
   const handleSortByChange = (value: string) => {
     setSortBy(value);
     onSortChange?.(value, sortOrder);
   };
+
+  /**
+   * Handles sort order change event
+   *
+   * @param {"asc" | "desc"} value - The value
+   *
+   * @returns {any} The handlesortorderchange result
+   */
+
+  /**
+   * Handles sort order change event
+   *
+   * @param {"asc" | "desc"} value - The value
+   *
+   * @returns {any} The handlesortorderchange result
+   */
 
   const handleSortOrderChange = (value: "asc" | "desc") => {
     setSortOrder(value);
     onSortChange?.(sortBy, value);
   };
 
+  /**
+   * Handles filters change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlefilterschange result
+   */
+
+  /**
+   * Handles filters change event
+   *
+   * @param {string} key - The key
+   * @param {any} value - The value
+   *
+   * @returns {string} The handlefilterschange result
+   */
+
   const handleFiltersChange = (key: string, value: any) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
   };
+
+  /**
+   * Handles apply filters event
+   *
+   * @param {Record<string, any>} [pendingFilters] - The pending filters
+   *
+   * @returns {any} The handleapplyfilters result
+   */
+
+  /**
+   * Handles apply filters event
+   *
+   * @param {Record<string, any>} [pendingFilters] - The pending filters
+   *
+   * @returns {any} The handleapplyfilters result
+   */
 
   const handleApplyFilters = (pendingFilters?: Record<string, any>) => {
     const filtersToApply = pendingFilters || filters;
@@ -85,11 +191,43 @@ export function CategoryProducts({
     setShowFilters(false);
   };
 
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
+  /**
+   * Handles reset filters event
+   *
+   * @returns {any} The handleresetfilters result
+   */
+
   const handleResetFilters = () => {
     const resetFilters = {};
     setFilters(resetFilters);
     onFiltersChange?.(resetFilters);
   };
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} productId - product identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} productId - product identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleAddToCart = async (productId: string) => {
     try {
@@ -105,9 +243,13 @@ export function CategoryProducts({
       }
 
       await onAddToCart(productId, {
+        /** Name */
         name: product.name,
+        /** Price */
         price: product.price,
+        /** Image */
         image: product.images?.[0] || "",
+        /** Shop Id */
         shopId: product.shopId,
       });
       toast.success("Added to cart!");

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/checkout/CouponSelector
+ * @description This file contains the CouponSelector component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -18,19 +27,56 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 
+/**
+ * CouponSelectorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for CouponSelectorProps
+ */
 export interface CouponSelectorProps {
+  /** Cart Total */
   cartTotal: number;
+  /** Items */
   items: {
+    /** Product Id */
     productId: string;
+    /** Category Id */
     categoryId: string;
+    /** Quantity */
     quantity: number;
+    /** Price */
     price: number;
   }[];
+  /** On Apply */
   onApply: (coupon: CouponFE, discount: number) => void;
+  /** On Remove */
   onRemove: () => void;
+  /** Applied Coupon Code */
   appliedCouponCode?: string;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Coupon Selector
+ */
+/**
+ * Performs coupon selector operation
+ *
+ * @returns {any} The couponselector result
+ *
+ * @example
+ * CouponSelector();
+ */
+
+/**
+ * Performs coupon selector operation
+ *
+ * @returns {any} The couponselector result
+ *
+ * @example
+ * CouponSelector();
+ */
 
 export function CouponSelector({
   cartTotal,
@@ -41,12 +87,17 @@ export function CouponSelector({
   className = "",
 }: CouponSelectorProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: availableCoupons,
+    /** Set Data */
     setData: setAvailableCoupons,
     execute,
   } = useLoadingState<CouponFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, { component: "CouponSelector.loadCoupons" });
       toast.error("Failed to load coupons");
@@ -62,11 +113,48 @@ export function CouponSelector({
     loadCoupons();
   }, [cartTotal]);
 
+  /**
+   * Fetches coupons from server
+   *
+   * @returns {Promise<any>} Promise resolving to coupons result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches coupons from server
+   *
+   * @returns {Promise<any>} Promise resolving to coupons result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCoupons = () =>
     execute(async () => {
       const response = await couponsService.list({
+        /** Limit */
         limit: 20,
       });
+
+      /**
+       * Performs coupons operation
+       *
+       * @param {any} response.data || []).filter(
+        (c - The response.data || []).filter(
+        (c
+       *
+       * @returns {any} The coupons result
+       */
+
+      /**
+       * Performs coupons operation
+       *
+       * @param {any} response.data || []).filter(
+        (c - The response.data || []).filter(
+        (c
+       *
+       * @returns {any} The coupons result
+       */
 
       const coupons = (response.data || []).filter(
         (c) => c.status === "active",
@@ -94,6 +182,22 @@ export function CouponSelector({
       return coupons;
     });
 
+  /**
+   * Calculates discount
+   *
+   * @param {CouponFE} coupon - The coupon
+   *
+   * @returns {number} The calculatediscount result
+   */
+
+  /**
+   * Calculates discount
+   *
+   * @param {CouponFE} coupon - The coupon
+   *
+   * @returns {number} The calculatediscount result
+   */
+
   const calculateDiscount = (coupon: CouponFE): number => {
     if (coupon.type === "percentage") {
       const value = coupon.discountValue || 0;
@@ -107,11 +211,32 @@ export function CouponSelector({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFE} coupon - The coupon
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {CouponFE} coupon - The coupon
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleApplyCoupon = async (coupon: CouponFE) => {
     setValidating(true);
     try {
       // Validate coupon
       const validation = await couponsService.validate({
+        /** Code */
         code: coupon.code,
         cartTotal,
         items,
@@ -125,6 +250,7 @@ export function CouponSelector({
       }
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CouponSelector.handleApplyCoupon",
       });
       toast.error(error.message || "Failed to apply coupon");
@@ -132,6 +258,22 @@ export function CouponSelector({
       setValidating(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleManualApply = async () => {
     if (!manualCode.trim()) {
@@ -142,6 +284,7 @@ export function CouponSelector({
     setValidating(true);
     try {
       const validation = await couponsService.validate({
+        /** Code */
         code: manualCode.trim().toUpperCase(),
         cartTotal,
         items,
@@ -149,6 +292,26 @@ export function CouponSelector({
 
       if (validation.valid) {
         // Find the coupon details
+        /**
+         * Performs coupon operation
+         *
+         * @param {any} availableCoupons || []).find(
+          (c - The available coupons || []).find(
+          (c
+         *
+         * @returns {any} The coupon result
+         */
+
+        /**
+         * Performs coupon operation
+         *
+         * @param {any} availableCoupons || []).find(
+          (c - The available coupons || []).find(
+          (c
+         *
+         * @returns {any} The coupon result
+         */
+
         const coupon = (availableCoupons || []).find(
           (c) => c.code === manualCode.trim().toUpperCase(),
         );
@@ -164,6 +327,7 @@ export function CouponSelector({
       }
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "CouponSelector.handleManualApply",
       });
       toast.error(error.message || "Failed to apply coupon");
@@ -171,6 +335,22 @@ export function CouponSelector({
       setValidating(false);
     }
   };
+
+  /**
+   * Checks if expiring soon
+   *
+   * @param {Date} expiryDate - The expiry date
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
+
+  /**
+   * Checks if expiring soon
+   *
+   * @param {Date} expiryDate - The expiry date
+   *
+   * @returns {boolean} True if condition is met, false otherwise
+   */
 
   const isExpiringSoon = (expiryDate: Date): boolean => {
     const daysUntilExpiry = Math.ceil(
@@ -314,12 +494,14 @@ export function CouponSelector({
                     <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
                       {coupon.minPurchaseAmount && (
                         <span>
+                          /** Min */
                           Min: <Price amount={coupon.minPurchaseAmount} />
                         </span>
                       )}
                       {coupon.maxDiscountAmount &&
                         coupon.type === "percentage" && (
                           <span>
+                            /** Max */
                             Max: <Price amount={coupon.maxDiscountAmount} />
                           </span>
                         )}

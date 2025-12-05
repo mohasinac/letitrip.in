@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/orders.service
+ * @description This file contains service functions for orders operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
 import {
@@ -25,23 +34,34 @@ import type {
 } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
 
+/**
+ * OrdersService class
+ * 
+ * @class
+ * @description Description of OrdersService class functionality
+ */
 class OrdersService {
   // List orders (role-filtered)
   async list(
+    /** Filters */
     filters?: Partial<OrderFiltersBE>,
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const endpoint = buildUrl(ORDER_ROUTES.LIST, filters);
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
+      /** Data */
       data: (response.data || []).map(toFEOrderCard),
+      /** Count */
       count: response.count,
+      /** Pagination */
       pagination: response.pagination,
     };
   }
 
   // Get seller's orders specifically (uses unified route with automatic filtering)
   async getSellerOrders(
+    /** Filters */
     filters?: Partial<OrderFiltersBE>,
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     // The unified route automatically filters by seller's shop
@@ -66,8 +86,11 @@ class OrdersService {
 
   // Update order status (seller/admin)
   async updateStatus(
+    /** Id */
     id: string,
+    /** Status */
     status: string,
+    /** Internal Notes */
     internalNotes?: string,
   ): Promise<OrderFE> {
     const request = toBEUpdateOrderStatusRequest(status, internalNotes);
@@ -80,9 +103,13 @@ class OrdersService {
 
   // Create shipment (seller/admin)
   async createShipment(
+    /** Id */
     id: string,
+    /** Tracking Number */
     trackingNumber: string,
+    /** Shipping Provider */
     shippingProvider: string,
+    /** Estimated Delivery */
     estimatedDelivery?: Date,
   ): Promise<OrderFE> {
     const request = toBECreateShipmentRequest(
@@ -107,15 +134,25 @@ class OrdersService {
 
   // Track shipment
   async track(id: string): Promise<{
+    /** Tracking Number */
     trackingNumber: string;
+    /** Shipping Provider */
     shippingProvider: string;
+    /** Current Status */
     currentStatus: string;
+    /** Estimated Delivery */
     estimatedDelivery: Date | null;
+    /** Tracking Url */
     trackingUrl: string;
+    /** Events */
     events: Array<{
+      /** Status */
       status: string;
+      /** Location */
       location: string;
+      /** Timestamp */
       timestamp: Date;
+      /** Description */
       description: string;
     }>;
   }> {
@@ -125,8 +162,11 @@ class OrdersService {
   // Download invoice
   async downloadInvoice(id: string): Promise<Blob> {
     const response = await fetch(`/api${ORDER_ROUTES.INVOICE(id)}`, {
+      /** Method */
       method: "GET",
+      /** Headers */
       headers: {
+        /** Accept */
         Accept: "application/pdf",
       },
     });
@@ -140,8 +180,11 @@ class OrdersService {
 
   // Get order statistics
   async getStats(filters?: {
+    /** Shop Id */
     shopId?: string;
+    /** Start Date */
     startDate?: string;
+    /** End Date */
     endDate?: string;
   }): Promise<OrderStatsFE> {
     const params = new URLSearchParams();
@@ -166,8 +209,11 @@ class OrdersService {
    * Bulk actions - supports: confirm, process, ship, deliver, cancel, refund, delete, update
    */
   async bulkAction(
+    /** Action */
     action: string,
+    /** Order Ids */
     orderIds: string[],
+    /** Data */
     data?: any,
   ): Promise<BulkActionResponse> {
     try {
@@ -204,7 +250,9 @@ class OrdersService {
    * Bulk ship orders
    */
   async bulkShip(
+    /** Order Ids */
     orderIds: string[],
+    /** Tracking Number */
     trackingNumber?: string,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("ship", orderIds, { trackingNumber });
@@ -221,7 +269,9 @@ class OrdersService {
    * Bulk cancel orders
    */
   async bulkCancel(
+    /** Order Ids */
     orderIds: string[],
+    /** Reason */
     reason?: string,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("cancel", orderIds, { reason });
@@ -231,8 +281,11 @@ class OrdersService {
    * Bulk refund orders
    */
   async bulkRefund(
+    /** Order Ids */
     orderIds: string[],
+    /** Refund Amount */
     refundAmount?: number,
+    /** Reason */
     reason?: string,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("refund", orderIds, { refundAmount, reason });
@@ -249,7 +302,9 @@ class OrdersService {
    * Bulk update orders
    */
   async bulkUpdate(
+    /** Order Ids */
     orderIds: string[],
+    /** Updates */
     updates: Partial<UpdateOrderStatusRequestBE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", orderIds, updates);

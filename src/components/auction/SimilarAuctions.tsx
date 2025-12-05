@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/auction/SimilarAuctions
+ * @description This file contains the SimilarAuctions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { Loader2 } from "lucide-react";
@@ -5,10 +14,20 @@ import AuctionCard from "@/components/cards/AuctionCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
+/**
+ * SimilarAuctionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for SimilarAuctionsProps
+ */
 export interface SimilarAuctionsProps {
+  /** Auctions */
   auctions: AuctionCardFE[];
+  /** Loading */
   loading?: boolean;
+  /** Current Auction Id */
   currentAuctionId?: string;
+  /** Class Name */
   className?: string;
 }
 
@@ -33,6 +52,24 @@ export interface SimilarAuctionsProps {
  * />
  * ```
  */
+/**
+ * Performs similar auctions operation
+ *
+ * @returns {any} The similarauctions result
+ *
+ * @example
+ * SimilarAuctions();
+ */
+
+/**
+ * Performs similar auctions operation
+ *
+ * @returns {any} The similarauctions result
+ *
+ * @example
+ * SimilarAuctions();
+ */
+
 export function SimilarAuctions({
   auctions,
   loading = false,
@@ -72,20 +109,34 @@ export function SimilarAuctions({
           <AuctionCard
             key={auction.id}
             auction={{
+              /** Id */
               id: auction.id,
+              /** Name */
               name: auction.productName || "",
+              /** Slug */
               slug: auction.productSlug || "",
+              /** Images */
               images: auction.productImage ? [auction.productImage] : [],
+              /** Current Bid */
               currentBid: auction.currentPrice || auction.startingBid || 0,
+              /** Starting Bid */
               startingBid: auction.startingBid || 0,
+              /** Bid Count */
               bidCount: auction.totalBids || 0,
+              /** End Time */
               endTime: auction.endTime,
+              /** Status */
               status: auction.status as any,
+              /** Featured */
               featured: (auction as any).featured,
+              /** Shop */
               shop: auction.shopId
                 ? {
+                    /** Id */
                     id: auction.shopId,
+                    /** Name */
                     name: auction.shopId,
+                    /** Is Verified */
                     isVerified: false,
                   }
                 : undefined,

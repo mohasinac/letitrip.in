@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/events/[id]/vote/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "@/app/api/lib/session";
 import { logError } from "@/lib/firebase-error-logger";
@@ -5,6 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const voteSchema = z.object({
+  /** Option Id */
   optionId: z.string().min(1, "Option is required"),
 });
 
@@ -12,7 +22,39 @@ const voteSchema = z.object({
  * POST /api/events/[id]/vote
  * Vote in poll event (authenticated users)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request, {});
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(/** Request */
+  request, {});
+ */
+
 export async function POST(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -71,8 +113,11 @@ export async function POST(
     if (!validation.success) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Validation failed",
+          /** Details */
           details: validation.error.issues,
         },
         { status: 400 },
@@ -109,12 +154,18 @@ export async function POST(
     const timestamp = new Date().toISOString();
 
     await voteRef.set({
+      /** Id */
       id: voteRef.id,
+      /** Event Id */
       eventId: id,
       optionId,
+      /** User Id */
       userId: user.id,
+      /** User Name */
       userName: user.name,
+      /** Voted At */
       votedAt: timestamp,
+      /** Created At */
       createdAt: timestamp,
     });
 
@@ -123,12 +174,14 @@ export async function POST(
 
     // Increment event vote count
     batch.update(Collections.events().doc(id), {
+      /** Vote Count */
       voteCount: (eventData.voteCount || 0) + 1,
     });
 
     // Increment option vote count
     const optionData = optionDoc.data();
     batch.update(Collections.eventOptions().doc(optionId), {
+      /** Vote Count */
       voteCount: (optionData?.voteCount || 0) + 1,
     });
 
@@ -136,9 +189,13 @@ export async function POST(
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Vote */
         vote: {
+          /** Id */
           id: voteRef.id,
+          /** Event Id */
           eventId: id,
           optionId,
         },
@@ -147,7 +204,9 @@ export async function POST(
     );
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EventsAPI.vote",
+      /** Action */
       action: "vote_in_poll",
     });
     return NextResponse.json(
@@ -161,7 +220,39 @@ export async function POST(
  * GET /api/events/[id]/vote
  * Get voting results (public)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -192,6 +283,7 @@ export async function GET(
       .get();
 
     const options = optionsSnapshot.docs.map((doc) => ({
+      /** Id */
       id: doc.id,
       ...doc.data(),
     }));
@@ -199,15 +291,24 @@ export async function GET(
     const totalVotes = eventData.voteCount || 0;
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Results */
       results: {
+        /** Event Id */
         eventId: id,
         totalVotes,
+        /** Options */
         options: options.map((option) => ({
+          /** Id */
           id: option.id,
+          /** Title */
           title: option.title,
+          /** Description */
           description: option.description,
+          /** Vote Count */
           voteCount: option.voteCount || 0,
+          /** Percentage */
           percentage:
             totalVotes > 0 ? ((option.voteCount || 0) / totalVotes) * 100 : 0,
         })),
@@ -215,7 +316,9 @@ export async function GET(
     });
   } catch (error) {
     logError(error as Error, {
+      /** Component */
       component: "EventsAPI.getResults",
+      /** Action */
       action: "get_voting_results",
     });
     return NextResponse.json(

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/demo/components/DemoStats
+ * @description This file contains the DemoStats component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -20,15 +29,42 @@ import {
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { ExtendedSummary } from "./types";
 
+/**
+ * MiniStatCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MiniStatCardProps
+ */
 interface MiniStatCardProps {
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Color */
   color: string;
+  /** Bg Color */
   bgColor: string;
+  /** Label */
   label: string;
+  /** Value */
   value: number;
 }
 
+/**
+ * Function: Mini Stat Card
+ */
+/**
+ * Performs mini stat card operation
+ *
+ * @returns {any} The ministatcard result
+ */
+
+/**
+ * Performs mini stat card operation
+ *
+ * @returns {any} The ministatcard result
+ */
+
 function MiniStatCard({
+  /** Icon */
   icon: Icon,
   color,
   bgColor,
@@ -50,12 +86,43 @@ function MiniStatCard({
   );
 }
 
+/**
+ * DemoStatsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DemoStatsProps
+ */
 interface DemoStatsProps {
+  /** Summary */
   summary: ExtendedSummary | null;
+  /** Generating */
   generating: boolean;
+  /** Refreshing */
   refreshing: boolean;
+  /** On Refresh */
   onRefresh: () => void;
 }
+
+/**
+ * Function: Demo Stats
+ */
+/**
+ * Performs demo stats operation
+ *
+ * @returns {any} The demostats result
+ *
+ * @example
+ * DemoStats();
+ */
+
+/**
+ * Performs demo stats operation
+ *
+ * @returns {any} The demostats result
+ *
+ * @example
+ * DemoStats();
+ */
 
 export function DemoStats({
   summary,
@@ -215,6 +282,7 @@ export function DemoStats({
         {summary && summary.categories > 0 && (
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <p className="text-xs text-gray-500 dark:text-gray-400">
+              /** Generated */
               Generated: <DateDisplay date={summary.createdAt} includeTime />
             </p>
           </div>

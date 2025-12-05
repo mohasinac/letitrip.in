@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/PageState
+ * @description This file contains the PageState component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * PageState Component
  *
  * A unified component for handling page loading, error, and empty states.
@@ -22,6 +31,12 @@
 
 import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
 
+/**
+ * LoadingProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadingProps
+ */
 interface LoadingProps {
   /** Show as full page centered state */
   fullPage?: boolean;
@@ -31,6 +46,12 @@ interface LoadingProps {
   className?: string;
 }
 
+/**
+ * ErrorProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ErrorProps
+ */
 interface ErrorProps {
   /** Error message to display */
   message?: string;
@@ -42,6 +63,12 @@ interface ErrorProps {
   className?: string;
 }
 
+/**
+ * EmptyProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EmptyProps
+ */
 interface EmptyProps {
   /** Title for empty state */
   title?: string;
@@ -49,7 +76,9 @@ interface EmptyProps {
   description?: string;
   /** Action button configuration */
   action?: {
+    /** Label */
     label: string;
+    /** On Click */
     onClick: () => void;
   };
   /** Icon to display */
@@ -59,11 +88,28 @@ interface EmptyProps {
 }
 
 // Full page container wrapper
+/**
+ * Function: Full Page Wrapper
+ */
+/**
+ * Performs full page wrapper operation
+ *
+ * @returns {any} The fullpagewrapper result
+ */
+
+/**
+ * Performs full page wrapper operation
+ *
+ * @returns {any} The fullpagewrapper result
+ */
+
 function FullPageWrapper({
   children,
   className = "",
 }: {
+  /** Children */
   children: React.ReactNode;
+  /** Class Name */
   className?: string;
 }) {
   return (
@@ -76,11 +122,46 @@ function FullPageWrapper({
 }
 
 // Loading state component
+/**
+ * Function: Loading
+ */
+/**
+ * Performs loading operation
+ *
+ * @param {LoadingProps} [{
+  fullPage] - The {
+  full page
+ *
+ * @returns {any} The loading result
+ */
+
+/**
+ * Performs loading operation
+ *
+ * @param {LoadingProps} [{
+  fullPage] - The {
+  full page
+ *
+ * @returns {any} The loading result
+ */
+
 function Loading({
   fullPage = true,
   message = "Loading...",
   className = "",
 }: LoadingProps) {
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
   const content = (
     <div className={`text-center ${className}`}>
       <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400 mx-auto" />
@@ -98,12 +179,43 @@ function Loading({
 }
 
 // Error state component
+/**
+ * Function: Error
+ */
+/**
+ * Performs error operation
+ *
+ * @returns {any} The error result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs error operation
+ *
+ * @returns {any} The error result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
 function Error({
   message = "Something went wrong",
   onRetry,
   fullPage = true,
   className = "",
 }: ErrorProps) {
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
+  /**
+   * Performs content operation
+   *
+   * @returns {any} The content result
+   */
+
   const content = (
     <div className={`text-center ${className}`}>
       <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -130,6 +242,21 @@ function Error({
 }
 
 // Empty state component (basic, use EmptyState component for more features)
+/**
+ * Function: Empty
+ */
+/**
+ * Performs empty operation
+ *
+ * @returns {any} The empty result
+ */
+
+/**
+ * Performs empty operation
+ *
+ * @returns {any} The empty result
+ */
+
 function Empty({
   title = "No data found",
   description,
@@ -159,6 +286,10 @@ function Empty({
 }
 
 // Compound component export
+/**
+ * P
+ * @constant
+ */
 export const PageState = {
   Loading,
   Error,

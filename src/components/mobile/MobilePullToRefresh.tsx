@@ -1,17 +1,59 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/mobile/MobilePullToRefresh
+ * @description This file contains the MobilePullToRefresh component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useRef, ReactNode, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * MobilePullToRefreshProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for MobilePullToRefreshProps
+ */
 interface MobilePullToRefreshProps {
+  /** Children */
   children: ReactNode;
+  /** On Refresh */
   onRefresh: () => Promise<void>;
+  /** Class Name */
   className?: string;
+  /** Threshold */
   threshold?: number;
+  /** Max Pull */
   maxPull?: number;
+  /** Disabled */
   disabled?: boolean;
 }
+
+/**
+ * Function: Mobile Pull To Refresh
+ */
+/**
+ * Performs mobile pull to refresh operation
+ *
+ * @returns {any} The mobilepulltorefresh result
+ *
+ * @example
+ * MobilePullToRefresh();
+ */
+
+/**
+ * Performs mobile pull to refresh operation
+ *
+ * @returns {any} The mobilepulltorefresh result
+ *
+ * @example
+ * MobilePullToRefresh();
+ */
 
 export function MobilePullToRefresh({
   children,
@@ -98,8 +140,11 @@ export function MobilePullToRefresh({
       <div
         className="absolute left-0 right-0 flex justify-center items-center pointer-events-none z-10 transition-opacity"
         style={{
+          /** Top */
           top: -40,
+          /** Transform */
           transform: `translateY(${pullDistance}px)`,
+          /** Opacity */
           opacity: progress,
         }}
       >
@@ -118,6 +163,7 @@ export function MobilePullToRefresh({
                 shouldTrigger && "text-yellow-600",
               )}
               style={{
+                /** Transform */
                 transform: `rotate(${progress * 180}deg)`,
               }}
               fill="none"
@@ -138,9 +184,11 @@ export function MobilePullToRefresh({
       {/* Content */}
       <div
         style={{
+          /** Transform */
           transform: `translateY(${
             isRefreshing ? threshold / 2 : pullDistance
           }px)`,
+          /** Transition */
           transition: isPulling.current ? "none" : "transform 0.2s ease-out",
         }}
       >

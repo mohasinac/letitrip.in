@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ReviewCard
+ * @description This file contains the ReviewCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
@@ -7,29 +16,81 @@ import { Star, ThumbsUp, ShieldCheck, Calendar, Package } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
 import { safeToISOString } from "@/lib/date-utils";
 
+/**
+ * ReviewCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewCardProps
+ */
 export interface ReviewCardProps {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
+  /** User Name */
   userName: string;
+  /** User Avatar */
   userAvatar?: string;
+  /** Product Id */
   productId?: string;
+  /** Product Name */
   productName?: string;
+  /** Product Image */
   productImage?: string;
+  /** Shop Id */
   shopId?: string;
+  /** Shop Name */
   shopName?: string;
+  /** Rating */
   rating: number;
+  /** Title */
   title?: string;
+  /** Comment */
   comment: string;
+  /** Media */
   media?: string[];
+  /** Verified Purchase */
   verifiedPurchase: boolean;
+  /** Helpful Count */
   helpfulCount: number;
+  /** Is Helpful */
   isHelpful?: boolean;
+  /** Created At */
   createdAt: Date | string;
+  /** On Mark Helpful */
   onMarkHelpful?: (id: string) => void;
+  /** Compact */
   compact?: boolean;
+  /** Show Product */
   showProduct?: boolean;
 }
 
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ *
+ * @example
+ * ReviewCard();
+ */
+
+/**
+ * R
+ * @constant
+ */
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ *
+ * @example
+ * ReviewCard();
+ */
+
+/**
+ * R
+ * @constant
+ */
 export const ReviewCard: React.FC<ReviewCardProps> = ({
   id,
   userId,
@@ -55,6 +116,22 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   const reviewDate =
     typeof createdAt === "string" ? new Date(createdAt) : createdAt;
 
+  /**
+   * Handles mark helpful event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlemarkhelpful result
+   */
+
+  /**
+   * Handles mark helpful event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlemarkhelpful result
+   */
+
   const handleMarkHelpful = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -64,6 +141,18 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   };
 
   // Render star rating
+  /**
+   * Renders stars
+   *
+   * @returns {any} The renderstars result
+   */
+
+  /**
+   * Renders stars
+   *
+   * @returns {any} The renderstars result
+   */
+
   const renderStars = () => {
     return (
       <div className="flex items-center gap-0.5">

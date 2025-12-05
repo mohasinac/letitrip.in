@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/TopProducts
+ * @description This file contains the TopProducts component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import {
@@ -10,22 +19,58 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+/**
+ * ProductData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductData
+ */
 interface ProductData {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Revenue */
   revenue: number;
+  /** Quantity */
   quantity: number;
 }
 
+/**
+ * Props interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Props
+ */
 interface Props {
+  /** Data */
   data: ProductData[];
 }
 
 export default function TopProducts({ data }: Props) {
+  /**
+   * Formats currency
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The formatcurrency result
+   */
+
+  /**
+   * Formats currency
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The formatcurrency result
+   */
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-IN", {
+      /** Style */
       style: "currency",
+      /** Currency */
       currency: "INR",
+      /** Maximum Fraction Digits */
       maximumFractionDigits: 0,
     }).format(value);
   };
@@ -59,9 +104,13 @@ export default function TopProducts({ data }: Props) {
               <Tooltip
                 formatter={(value: number) => formatCurrency(value)}
                 contentStyle={{
+                  /** Background Color */
                   backgroundColor: "#1f2937",
+                  /** Border */
                   border: "1px solid #374151",
+                  /** Border Radius */
                   borderRadius: "6px",
+                  /** Color */
                   color: "#f9fafb",
                 }}
               />

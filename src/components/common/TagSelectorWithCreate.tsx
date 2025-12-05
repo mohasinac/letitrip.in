@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/TagSelectorWithCreate
+ * @description This file contains the TagSelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -8,85 +17,172 @@ import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 
 // Tag Interface
+/**
+ * Tag interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Tag
+ */
 export interface Tag {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Color */
   color: string;
+  /** Entity Type */
   entityType?: "product" | "blog" | "shop";
+  /** Usage Count */
   usageCount?: number;
 }
 
 // Color Palette
 const TAG_COLORS = [
   {
+    /** Name */
     name: "Blue",
+    /** Value */
     value: "#3B82F6",
+    /** Bg */
     bg: "bg-blue-500",
+    /** Text */
     text: "text-blue-700",
+    /** Light Bg */
     lightBg: "bg-blue-50 dark:bg-blue-900/20",
   },
   {
+    /** Name */
     name: "Green",
+    /** Value */
     value: "#10B981",
+    /** Bg */
     bg: "bg-green-500",
+    /** Text */
     text: "text-green-700",
+    /** Light Bg */
     lightBg: "bg-green-50 dark:bg-green-900/20",
   },
   {
+    /** Name */
     name: "Red",
+    /** Value */
     value: "#EF4444",
+    /** Bg */
     bg: "bg-red-500",
+    /** Text */
     text: "text-red-700",
+    /** Light Bg */
     lightBg: "bg-red-50 dark:bg-red-900/20",
   },
   {
+    /** Name */
     name: "Yellow",
+    /** Value */
     value: "#F59E0B",
+    /** Bg */
     bg: "bg-yellow-500",
+    /** Text */
     text: "text-yellow-700",
+    /** Light Bg */
     lightBg: "bg-yellow-50 dark:bg-yellow-900/20",
   },
   {
+    /** Name */
     name: "Purple",
+    /** Value */
     value: "#8B5CF6",
+    /** Bg */
     bg: "bg-purple-500",
+    /** Text */
     text: "text-purple-700",
+    /** Light Bg */
     lightBg: "bg-purple-50 dark:bg-purple-900/20",
   },
   {
+    /** Name */
     name: "Pink",
+    /** Value */
     value: "#EC4899",
+    /** Bg */
     bg: "bg-pink-500",
+    /** Text */
     text: "text-pink-700",
+    /** Light Bg */
     lightBg: "bg-pink-50 dark:bg-pink-900/20",
   },
   {
+    /** Name */
     name: "Indigo",
+    /** Value */
     value: "#6366F1",
+    /** Bg */
     bg: "bg-indigo-500",
+    /** Text */
     text: "text-indigo-700",
+    /** Light Bg */
     lightBg: "bg-indigo-50 dark:bg-indigo-900/20",
   },
   {
+    /** Name */
     name: "Gray",
+    /** Value */
     value: "#6B7280",
+    /** Bg */
     bg: "bg-gray-500",
+    /** Text */
     text: "text-gray-700",
+    /** Light Bg */
     lightBg: "bg-gray-50 dark:bg-gray-900/20",
   },
 ];
 
+/**
+ * TagSelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for TagSelectorWithCreateProps
+ */
 export interface TagSelectorWithCreateProps {
+  /** Value */
   value: string[];
+  /** On Change */
   onChange: (tagIds: string[]) => void;
+  /** Entity Type */
   entityType?: "product" | "blog" | "shop";
+  /** Required */
   required?: boolean;
+  /** Error */
   error?: string;
+  /** Label */
   label?: string;
+  /** Max Tags */
   maxTags?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Tag Selector With Create
+ */
+/**
+ * Performs tag selector with create operation
+ *
+ * @returns {any} The tagselectorwithcreate result
+ *
+ * @example
+ * TagSelectorWithCreate();
+ */
+
+/**
+ * Performs tag selector with create operation
+ *
+ * @returns {any} The tagselectorwithcreate result
+ *
+ * @example
+ * TagSelectorWithCreate();
+ */
 
 export function TagSelectorWithCreate({
   value,
@@ -99,12 +195,17 @@ export function TagSelectorWithCreate({
   className = "",
 }: TagSelectorWithCreateProps) {
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: allTags,
+    /** Set Data */
     setData: setAllTags,
     execute,
   } = useLoadingState<Tag[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error as Error, { component: "TagSelectorWithCreate.loadTags" });
       toast.error("Failed to load tags");
@@ -130,6 +231,22 @@ export function TagSelectorWithCreate({
     }
   }, [value, allTags]);
 
+  /**
+   * Fetches tags from server
+   *
+   * @returns {Promise<any>} Promise resolving to tags result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches tags from server
+   *
+   * @returns {Promise<any>} Promise resolving to tags result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadTags = () =>
     execute(async () => {
       // TODO: Implement actual API call
@@ -139,48 +256,89 @@ export function TagSelectorWithCreate({
       // Mock data for now
       const mockTags: Tag[] = [
         {
+          /** Id */
           id: "1",
+          /** Name */
           name: "New Arrival",
+          /** Slug */
           slug: "new-arrival",
+          /** Color */
           color: "#3B82F6",
           entityType,
+          /** Usage Count */
           usageCount: 45,
         },
         {
+          /** Id */
           id: "2",
+          /** Name */
           name: "Best Seller",
+          /** Slug */
           slug: "best-seller",
+          /** Color */
           color: "#10B981",
           entityType,
+          /** Usage Count */
           usageCount: 32,
         },
         {
+          /** Id */
           id: "3",
+          /** Name */
           name: "Limited Edition",
+          /** Slug */
           slug: "limited-edition",
+          /** Color */
           color: "#EF4444",
           entityType,
+          /** Usage Count */
           usageCount: 18,
         },
         {
+          /** Id */
           id: "4",
+          /** Name */
           name: "Trending",
+          /** Slug */
           slug: "trending",
+          /** Color */
           color: "#F59E0B",
           entityType,
+          /** Usage Count */
           usageCount: 28,
         },
         {
+          /** Id */
           id: "5",
+          /** Name */
           name: "Premium",
+          /** Slug */
           slug: "premium",
+          /** Color */
           color: "#8B5CF6",
           entityType,
+          /** Usage Count */
           usageCount: 15,
         },
       ];
       return mockTags;
     });
+
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} name - The name
+   *
+   * @returns {string} The slug result
+   */
+
+  /**
+   * Performs generate slug operation
+   *
+   * @param {string} name - The name
+   *
+   * @returns {string} The slug result
+   */
 
   const generateSlug = (name: string): string => {
     return name
@@ -189,6 +347,22 @@ export function TagSelectorWithCreate({
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-");
   };
+
+  /**
+   * Handles add tag event
+   *
+   * @param {Tag} tag - The tag
+   *
+   * @returns {any} The handleaddtag result
+   */
+
+  /**
+   * Handles add tag event
+   *
+   * @param {Tag} tag - The tag
+   *
+   * @returns {any} The handleaddtag result
+   */
 
   const handleAddTag = (tag: Tag) => {
     if (selectedTags.length >= maxTags) {
@@ -206,11 +380,43 @@ export function TagSelectorWithCreate({
     onChange(newSelected.map((t) => t.id));
   };
 
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tagId - tag identifier
+   *
+   * @returns {string} The handleremovetag result
+   */
+
+  /**
+   * Handles remove tag event
+   *
+   * @param {string} tagId - tag identifier
+   *
+   * @returns {string} The handleremovetag result
+   */
+
   const handleRemoveTag = (tagId: string) => {
     const newSelected = selectedTags.filter((t) => t.id !== tagId);
     setSelectedTags(newSelected);
     onChange(newSelected.map((t) => t.id));
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCreateTag = async () => {
     if (!newTagName.trim()) {
@@ -231,11 +437,16 @@ export function TagSelectorWithCreate({
 
       // Mock data for now
       const newTag: Tag = {
+        /** Id */
         id: `tag_${Date.now()}`,
+        /** Name */
         name: newTagName.trim(),
+        /** Slug */
         slug: generateSlug(newTagName),
+        /** Color */
         color: newTagColor,
         entityType,
+        /** Usage Count */
         usageCount: 0,
       };
 
@@ -247,6 +458,7 @@ export function TagSelectorWithCreate({
       toast.success("Tag created successfully");
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "TagSelectorWithCreate.handleCreateTag",
       });
       toast.error("Failed to create tag");
@@ -254,6 +466,24 @@ export function TagSelectorWithCreate({
       setCreating(false);
     }
   };
+
+  /**
+   * Handles move tag event
+   *
+   * @param {number} index - The index
+   * @param {"up" | "down"} direction - The direction
+   *
+   * @returns {number} The handlemovetag result
+   */
+
+  /**
+   * Handles move tag event
+   *
+   * @param {number} index - The index
+   * @param {"up" | "down"} direction - The direction
+   *
+   * @returns {number} The handlemovetag result
+   */
 
   const handleMoveTag = (index: number, direction: "up" | "down") => {
     const newIndex = direction === "up" ? index - 1 : index + 1;
@@ -268,10 +498,42 @@ export function TagSelectorWithCreate({
     onChange(newSelected.map((t) => t.id));
   };
 
+  /**
+   * Retrieves tag color class
+   *
+   * @param {string} color - The color
+   *
+   * @returns {string} The tagcolorclass result
+   */
+
+  /**
+   * Retrieves tag color class
+   *
+   * @param {string} color - The color
+   *
+   * @returns {string} The tagcolorclass result
+   */
+
   const getTagColorClass = (color: string) => {
     const colorObj = TAG_COLORS.find((c) => c.value === color);
     return colorObj?.lightBg || "bg-gray-50 dark:bg-gray-900/20";
   };
+
+  /**
+   * Filters filtered tags
+   *
+   * @param {any} allTags || []).filter((tag - The all tags || []).filter((tag
+   *
+   * @returns {any} The filteredtags result
+   */
+
+  /**
+   * Filters filtered tags
+   *
+   * @param {any} allTags || []).filter((tag - The all tags || []).filter((tag
+   *
+   * @returns {any} The filteredtags result
+   */
 
   const filteredTags = (allTags || []).filter((tag) =>
     tag.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -406,6 +668,7 @@ export function TagSelectorWithCreate({
                 className={`
                   inline-flex items-center gap-2 px-3 py-1.5 rounded-full
                   ${getTagColorClass(tag.color)}
+                  /** Hover */
                   hover:ring-2 hover:ring-primary transition-all
                 `}
               >
@@ -503,6 +766,7 @@ export function TagSelectorWithCreate({
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
+                    /** Slug */
                     Slug: {generateSlug(newTagName)}
                   </p>
                 </div>

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/homepage/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -33,52 +42,83 @@ const DEFAULT_SECTION_ORDER = [
 
 // Section display names - matches HomepageSettings.sections keys
 const SECTION_NAMES: Record<string, { title: string; description: string }> = {
+  /** Value Proposition */
   valueProposition: {
+    /** Title */
     title: "Value Proposition",
+    /** Description */
     description: "Trust badges (Authentic, Quality, Support, etc.)",
   },
+  /** Latest Products */
   latestProducts: {
+    /** Title */
     title: "Latest Products",
+    /** Description */
     description: "Recently added products displayed in a grid",
   },
+  /** Featured Products */
   featuredProducts: {
+    /** Title */
     title: "Featured Products",
+    /** Description */
     description: "Admin-selected featured products",
   },
+  /** Hot Auctions */
   hotAuctions: {
+    /** Title */
     title: "Hot Auctions",
+    /** Description */
     description: "Active auctions with the most bids",
   },
+  /** Featured Auctions */
   featuredAuctions: {
+    /** Title */
     title: "Featured Auctions",
+    /** Description */
     description: "Admin-selected featured auctions",
   },
+  /** Featured Categories */
   featuredCategories: {
+    /** Title */
     title: "Featured Categories",
+    /** Description */
     description: "Admin-selected categories with items",
   },
+  /** Featured Shops */
   featuredShops: {
+    /** Title */
     title: "Featured Shops",
+    /** Description */
     description: "Admin-selected shops with their items",
   },
+  /** Recent Reviews */
   recentReviews: {
+    /** Title */
     title: "Recent Reviews",
+    /** Description */
     description: "Latest customer reviews (4+ stars)",
   },
+  /** Featured Blogs */
   featuredBlogs: {
+    /** Title */
     title: "Featured Blogs",
+    /** Description */
     description: "Featured blog posts",
   },
 };
 
 export default function HomepageSettingsPage() {
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: settings,
+    /** Set Data */
     setData: setSettings,
     execute,
   } = useLoadingState<HomepageSettings>({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "HomepageSettingsPage.loadSettings" });
       toast.error("Failed to load homepage settings");
@@ -96,22 +136,45 @@ export default function HomepageSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Fetches settings from server
+   *
+   * @returns {Promise<any>} Promise resolving to settings result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches settings from server
+   *
+   * @returns {Promise<any>} Promise resolving to settings result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadSettings = () =>
     execute(async () => {
       const response = await homepageSettingsService.getSettings();
 
       // Ensure specialEventBanner exists with default values
       const defaultBanner = {
+        /** Enabled */
         enabled: false,
+        /** Title */
         title: "",
+        /** Content */
         content: "",
+        /** Link */
         link: "",
+        /** Background Color */
         backgroundColor: "#2563eb",
+        /** Text Color */
         textColor: "#ffffff",
       };
 
       const loadedSettings = {
         ...response.settings,
+        /** Special Event Banner */
         specialEventBanner: {
           ...defaultBanner,
           ...response.settings.specialEventBanner,
@@ -158,6 +221,22 @@ export default function HomepageSettingsPage() {
     setHasChanges(true);
   }, []);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async () => {
     if (!settings) return;
 
@@ -178,6 +257,22 @@ export default function HomepageSettingsPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleReset = async () => {
     try {
       setSaving(true);
@@ -195,6 +290,22 @@ export default function HomepageSettingsPage() {
     }
   };
 
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} sectionKey - The section key
+   *
+   * @returns {string} The togglesection result
+   */
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} sectionKey - The section key
+   *
+   * @returns {string} The togglesection result
+   */
+
   const toggleSection = (sectionKey: string) => {
     if (!settings) return;
 
@@ -209,9 +320,28 @@ export default function HomepageSettingsPage() {
     }
   };
 
+  /**
+   * Updates existing section value
+   *
+   * @param {string} sectionKey - The section key
+   * @param {string} field - The field
+   * @param {number} value - The value
+   *
+   * @returns {string} The updatesectionvalue result
+   */
+
+  /**
+   * Updates existing section value
+   *
+   * @returns {string} The updatesectionvalue result
+   */
+
   const updateSectionValue = (
+    /** Section Key */
     sectionKey: string,
+    /** Field */
     field: string,
+    /** Value */
     value: number,
   ) => {
     if (!settings) return;
@@ -227,26 +357,58 @@ export default function HomepageSettingsPage() {
     }
   };
 
+  /**
+   * Performs toggle hero carousel operation
+   *
+   * @returns {any} The toggleherocarousel result
+   */
+
+  /**
+   * Performs toggle hero carousel operation
+   *
+   * @returns {any} The toggleherocarousel result
+   */
+
   const toggleHeroCarousel = () => {
     if (!settings) return;
 
     setSettings({
       ...settings,
+      /** Hero Carousel */
       heroCarousel: {
         ...settings.heroCarousel,
+        /** Enabled */
         enabled: !settings.heroCarousel.enabled,
       },
     });
     setHasChanges(true);
   };
 
+  /**
+   * Updates existing auto play interval
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The updateautoplayinterval result
+   */
+
+  /**
+   * Updates existing auto play interval
+   *
+   * @param {number} value - The value
+   *
+   * @returns {number} The updateautoplayinterval result
+   */
+
   const updateAutoPlayInterval = (value: number) => {
     if (!settings) return;
 
     setSettings({
       ...settings,
+      /** Hero Carousel */
       heroCarousel: {
         ...settings.heroCarousel,
+        /** Auto Play Interval */
         autoPlayInterval: value,
       },
     });
@@ -325,6 +487,7 @@ export default function HomepageSettingsPage() {
           onChange={(bannerSettings) => {
             setSettings({
               ...settings,
+              /** Special Event Banner */
               specialEventBanner: bannerSettings,
             });
             setHasChanges(true);
@@ -449,9 +612,33 @@ export default function HomepageSettingsPage() {
 }
 
 // Helper function to render section-specific configuration
+/**
+ * Function: Render Section Config
+ */
+/**
+ * Renders section config
+ *
+ * @param {string} sectionKey - The section key
+ * @param {HomepageSettings} settings - The settings
+ * @param {(section} updateSectionValue - The update section value
+ * @param {string} field - The field
+ * @param {number} value - The value
+ *
+ * @returns {string} The rendersectionconfig result
+ */
+
+/**
+ * Renders section config
+ *
+ * @returns {string} The rendersectionconfig result
+ */
+
 function renderSectionConfig(
+  /** Section Key */
   sectionKey: string,
+  /** Settings */
   settings: HomepageSettings,
+  /** Update Section Value */
   updateSectionValue: (section: string, field: string, value: number) => void,
 ): React.ReactNode {
   switch (sectionKey) {
@@ -586,6 +773,7 @@ function renderSectionConfig(
           }
         />
       );
+    /** Default */
     default:
       return null;
   }

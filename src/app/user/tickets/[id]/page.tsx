@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/tickets/[id]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -12,11 +21,15 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const statusColors = {
+  /** Open */
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   "in-progress":
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  /** Resolved */
   resolved: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  /** Closed */
   closed: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+  /** Escalated */
   escalated: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
 };
 
@@ -24,14 +37,29 @@ const categoryLabels = {
   "order-issue": "Order Issue",
   "return-refund": "Return/Refund",
   "product-question": "Product Question",
+  /** Account */
   account: "Account",
+  /** Payment */
   payment: "Payment",
+  /** Other */
   other: "Other",
 };
 
 export default function TicketDetailsPage() {
   const router = useRouter();
   const params = useParams();
+  /**
+   * Performs ticket id operation
+   *
+   * @returns {any} The ticketid result
+   */
+
+  /**
+   * Performs ticket id operation
+   *
+   * @returns {any} The ticketid result
+   */
+
   const ticketId = (params.id as string) || "";
   const { data: ticket, isLoading, error, execute } = useLoadingState<any>();
   const [replyMessage, setReplyMessage] = useState("");
@@ -47,6 +75,26 @@ export default function TicketDetailsPage() {
     }
   }, [ticketId, fetchTicket]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -58,6 +106,7 @@ export default function TicketDetailsPage() {
 
     try {
       await supportService.replyToTicket(ticketId, {
+        /** Message */
         message: replyMessage,
       });
 
@@ -65,7 +114,9 @@ export default function TicketDetailsPage() {
       await fetchTicket(); // Refresh ticket with new message
     } catch (err: any) {
       logError(err as Error, {
+        /** Component */
         component: "UserTicketDetail.handlePostReply",
+        /** Metadata */
         metadata: { ticketId },
       });
       toast.error(err.message || "Failed to post reply");

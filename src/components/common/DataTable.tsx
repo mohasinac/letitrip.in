@@ -1,28 +1,86 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/DataTable
+ * @description This file contains the DataTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useMemo } from "react";
 
+/**
+ * Column interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Column
+ */
 export interface Column<T> {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Sortable */
   sortable?: boolean;
+  /** Render */
   render?: (value: any, row: T) => React.ReactNode;
+  /** Width */
   width?: string;
 }
 
+/**
+ * DataTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DataTableProps
+ */
 export interface DataTableProps<T> {
+  /** Data */
   data: T[];
+  /** Columns */
   columns: Column<T>[];
+  /** Key Extractor */
   keyExtractor: (row: T) => string | number;
+  /** On Sort */
   onSort?: (key: string, direction: "asc" | "desc") => void;
+  /** Sort Key */
   sortKey?: string;
+  /** Sort Direction */
   sortDirection?: "asc" | "desc";
+  /** Is Loading */
   isLoading?: boolean;
+  /** Empty Message */
   emptyMessage?: string;
+  /** Class Name */
   className?: string;
+  /** Row Class Name */
   rowClassName?: (row: T) => string;
+  /** On Row Click */
   onRowClick?: (row: T) => void;
 }
+
+/**
+ * Function: Data Table
+ */
+/**
+ * Performs data table operation
+ *
+ * @returns {any} The datatable result
+ *
+ * @example
+ * DataTable();
+ */
+
+/**
+ * Performs data table operation
+ *
+ * @returns {any} The datatable result
+ *
+ * @example
+ * DataTable();
+ */
 
 export function DataTable<T>({
   data,
@@ -44,6 +102,22 @@ export function DataTable<T>({
 
   const activeSortKey = sortKey || localSortKey;
   const activeSortDirection = sortKey ? sortDirection : localSortDirection;
+
+  /**
+   * Handles sort event
+   *
+   * @param {string} key - The key
+   *
+   * @returns {string} The handlesort result
+   */
+
+  /**
+   * Handles sort event
+   *
+   * @param {string} key - The key
+   *
+   * @returns {string} The handlesort result
+   */
 
   const handleSort = (key: string) => {
     const newDirection =

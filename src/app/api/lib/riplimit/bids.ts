@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/riplimit/bids
+ * @description This file contains functionality related to bids
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Bid Operations
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -22,14 +31,43 @@ import { FieldValue } from "firebase-admin/firestore";
 /**
  * Block RipLimit for a bid
  */
+/**
+ * Performs block for bid operation
+ *
+ * @returns {Promise<any>} Promise resolving to blockforbid result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * blockForBid();
+ */
+
+/**
+ * Performs block for bid operation
+ *
+ * @returns {Promise<any>} Promise resolving to blockforbid result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * blockForBid();
+ */
+
 export async function blockForBid(
+  /** User Id */
   userId: string,
+  /** Auction Id */
   auctionId: string,
+  /** Bid Id */
   bidId: string,
+  /** Bid Amount I N R */
   bidAmountINR: number,
 ): Promise<{
+  /** Success */
   success: boolean;
+  /** Error */
   error?: string;
+  /** Transaction */
   transaction?: RipLimitTransactionBE;
 }> {
   const db = getFirestoreAdmin();
@@ -48,7 +86,9 @@ export async function blockForBid(
     // Check if user can bid
     if (account.isBlocked) {
       return {
+        /** Success */
         success: false,
+        /** Error */
         error: account.blockReason || "Account is blocked",
       };
     }
@@ -59,7 +99,9 @@ export async function blockForBid(
     // Check sufficient balance
     if (account.availableBalance < ripLimitAmount) {
       return {
+        /** Success */
         success: false,
+        /** Error */
         error: `Insufficient RipLimit. Required: ${ripLimitAmount}, Available: ${account.availableBalance}`,
       };
     }
@@ -83,8 +125,11 @@ export async function blockForBid(
 
     // Update account
     t.update(accountRef, {
+      /** Available Balance */
       availableBalance: newAvailable,
+      /** Blocked Balance */
       blockedBalance: newBlocked,
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -92,8 +137,10 @@ export async function blockForBid(
     const blockedBidData: RipLimitBlockedBidBE = {
       auctionId,
       bidId,
+      /** Amount */
       amount: ripLimitAmount,
       bidAmountINR,
+      /** Created At */
       createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(blockedBidRef, blockedBidData);
@@ -104,21 +151,30 @@ export async function blockForBid(
       .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
+      /** Type */
       type: RipLimitTransactionType.BID_BLOCK,
       amount: -netBlock, // Negative because it's a debit from available
+      /** Inr Amount */
       inrAmount: ripLimitToInr(netBlock),
+      /** Balance After */
       balanceAfter: newAvailable,
       auctionId,
       bidId,
+      /** Status */
       status: RipLimitTransactionStatus.COMPLETED,
+      /** Description */
       description: `Bid blocked for auction`,
+      /** Created At */
       createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 
     return {
+      /** Success */
       success: true,
+      /** Transaction */
       transaction: {
+        /** Id */
         id: transactionRef.id,
         ...transactionRecord,
       } as RipLimitTransactionBE,
@@ -131,13 +187,45 @@ export async function blockForBid(
 /**
  * Release blocked RipLimit when outbid or auction cancelled
  */
+/**
+ * Performs release blocked bid operation
+ *
+ * @param {string} userId - user identifier
+ * @param {string} auctionId - auction identifier
+ * @param {string} [reason] - The reason
+ *
+ * @returns {Promise<any>} Promise resolving to releaseblockedbid result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * releaseBlockedBid("example", "example", "example");
+ */
+
+/**
+ * Performs release blocked bid operation
+ *
+ * @returns {Promise<any>} Promise resolving to releaseblockedbid result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * releaseBlockedBid();
+ */
+
 export async function releaseBlockedBid(
+  /** User Id */
   userId: string,
+  /** Auction Id */
   auctionId: string,
+  /** Reason */
   reason: string = "Outbid",
 ): Promise<{
+  /** Success */
   success: boolean;
+  /** Released Amount */
   releasedAmount?: number;
+  /** Transaction */
   transaction?: RipLimitTransactionBE;
 }> {
   const db = getFirestoreAdmin();
@@ -166,8 +254,11 @@ export async function releaseBlockedBid(
     const newBlocked = account.blockedBalance - releaseAmount;
 
     t.update(accountRef, {
+      /** Available Balance */
       availableBalance: newAvailable,
+      /** Blocked Balance */
       blockedBalance: newBlocked,
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -180,22 +271,34 @@ export async function releaseBlockedBid(
       .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
+      /** Type */
       type: RipLimitTransactionType.BID_RELEASE,
+      /** Amount */
       amount: releaseAmount,
+      /** Inr Amount */
       inrAmount: ripLimitToInr(releaseAmount),
+      /** Balance After */
       balanceAfter: newAvailable,
       auctionId,
+      /** Bid Id */
       bidId: blockedBid.bidId,
+      /** Status */
       status: RipLimitTransactionStatus.COMPLETED,
+      /** Description */
       description: `RipLimit released: ${reason}`,
+      /** Created At */
       createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 
     return {
+      /** Success */
       success: true,
+      /** Released Amount */
       releasedAmount: releaseAmount,
+      /** Transaction */
       transaction: {
+        /** Id */
         id: transactionRef.id,
         ...transactionRecord,
       } as RipLimitTransactionBE,
@@ -208,14 +311,47 @@ export async function releaseBlockedBid(
 /**
  * Use blocked RipLimit for auction payment
  */
+/**
+ * Custom React hook for for auction payment
+ *
+ * @param {string} userId - user identifier
+ * @param {string} auctionId - auction identifier
+ * @param {string} orderId - order identifier
+ *
+ * @returns {Promise<any>} Promise resolving to useforauctionpayment result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useForAuctionPayment("example", "example", "example");
+ */
+
+/**
+ * Custom React hook for for auction payment
+ *
+ * @returns {Promise<any>} Promise resolving to useforauctionpayment result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * useForAuctionPayment();
+ */
+
 export async function useForAuctionPayment(
+  /** User Id */
   userId: string,
+  /** Auction Id */
   auctionId: string,
+  /** Order Id */
   orderId: string,
 ): Promise<{
+  /** Success */
   success: boolean;
+  /** Used Amount */
   usedAmount?: number;
+  /** Used Amount I N R */
   usedAmountINR?: number;
+  /** Transaction */
   transaction?: RipLimitTransactionBE;
 }> {
   const db = getFirestoreAdmin();
@@ -250,10 +386,14 @@ export async function useForAuctionPayment(
     const hasUnpaidAuctions = newUnpaidAuctionIds.length > 0;
 
     t.update(accountRef, {
+      /** Blocked Balance */
       blockedBalance: newBlocked,
+      /** Lifetime Spent */
       lifetimeSpent: newLifetimeSpent,
+      /** Unpaid Auction Ids */
       unpaidAuctionIds: newUnpaidAuctionIds,
       hasUnpaidAuctions,
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -266,24 +406,35 @@ export async function useForAuctionPayment(
       .doc();
     const transactionRecord: Omit<RipLimitTransactionBE, "id"> = {
       userId,
+      /** Type */
       type: RipLimitTransactionType.AUCTION_PAYMENT,
+      /** Amount */
       amount: -usedAmount,
+      /** Inr Amount */
       inrAmount: ripLimitToInr(usedAmount),
       balanceAfter: account.availableBalance, // Available unchanged
       auctionId,
+      /** Bid Id */
       bidId: blockedBid.bidId,
       orderId,
+      /** Status */
       status: RipLimitTransactionStatus.COMPLETED,
+      /** Description */
       description: `Auction payment completed`,
+      /** Created At */
       createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
 
     return {
+      /** Success */
       success: true,
       usedAmount,
+      /** Used Amount I N R */
       usedAmountINR: ripLimitToInr(usedAmount),
+      /** Transaction */
       transaction: {
+        /** Id */
         id: transactionRef.id,
         ...transactionRecord,
       } as RipLimitTransactionBE,

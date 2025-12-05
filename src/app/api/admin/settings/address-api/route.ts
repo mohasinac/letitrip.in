@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/settings/address-api/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Address API Settings API Route
  * GET /api/admin/settings/address-api - Get address API settings
  * PUT /api/admin/settings/address-api - Update address API settings
@@ -13,13 +22,53 @@ import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * AddressAPISettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressAPISettings
+ */
 interface AddressAPISettings {
+  /** Google Places Api Key */
   googlePlacesApiKey?: string;
+  /** Enabled */
   enabled: boolean;
+  /** Fallback To Local Data */
   fallbackToLocalData: boolean;
+  /** Cache Enabled */
   cacheEnabled: boolean;
+  /** Cache Duration Hours */
   cacheDurationHours: number;
 }
+
+/**
+ * Function: G E T
+ */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,9 +100,13 @@ export async function GET(request: NextRequest) {
       // Return default settings
       return NextResponse.json(
         {
+          /** Enabled */
           enabled: false,
+          /** Fallback To Local Data */
           fallbackToLocalData: true,
+          /** Cache Enabled */
           cacheEnabled: true,
+          /** Cache Duration Hours */
           cacheDurationHours: 24,
         },
         { status: 200 }
@@ -73,19 +126,52 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(settings, { status: 200 });
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "AddressAPISettingsAPI",
+      /** Method */
       method: "GET",
+      /** Context */
       context: "Failed to retrieve address API settings",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to retrieve address API settings",
       },
       { status: 500 }
     );
   }
 }
+
+/**
+ * Function: P U T
+ */
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(request);
+ */
+
+/**
+ * Performs p u t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to put result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PUT(request);
+ */
 
 export async function PUT(request: NextRequest) {
   try {
@@ -118,6 +204,7 @@ export async function PUT(request: NextRequest) {
       ) {
         return NextResponse.json(
           {
+            /** Error */
             error: "Cache duration must be between 1 and 168 hours (1 week)",
           },
           { status: 400 }
@@ -133,6 +220,7 @@ export async function PUT(request: NextRequest) {
       ) {
         return NextResponse.json(
           {
+            /** Error */
             error: "Invalid Google Places API key format",
           },
           { status: 400 }
@@ -149,7 +237,9 @@ export async function PUT(request: NextRequest) {
 
     const updateData: any = {
       ...body,
+      /** Updated At */
       updatedAt: new Date(),
+      /** Updated By */
       updatedBy: authResult.user.uid,
     };
 
@@ -168,20 +258,26 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Message */
         message: "Address API settings updated successfully",
       },
       { status: 200 }
     );
   } catch (error: any) {
     logError(error, {
+      /** Component */
       component: "AddressAPISettingsAPI",
+      /** Method */
       method: "PUT",
+      /** Context */
       context: "Failed to update address API settings",
     });
 
     return NextResponse.json(
       {
+        /** Error */
         error: error.message || "Failed to update address API settings",
       },
       { status: 500 }

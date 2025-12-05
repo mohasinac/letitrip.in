@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/users/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { usersSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
@@ -14,12 +23,19 @@ import { NextRequest, NextResponse } from "next/server";
 // Extended Sieve config with field mappings for users
 const usersConfig = {
   ...usersSieveConfig,
+  /** Field Mappings */
   fieldMappings: {
+    /** Display Name */
     displayName: "name",
+    /** Created At */
     createdAt: "created_at",
+    /** Updated At */
     updatedAt: "updated_at",
+    /** Last Login */
     lastLogin: "last_login",
+    /** Email Verified */
     emailVerified: "email_verified",
+    /** Is Banned */
     isBanned: "is_banned",
   } as Record<string, string>,
 };
@@ -27,15 +43,39 @@ const usersConfig = {
 /**
  * Transform user document to API response format
  */
+/**
+ * Transforms user
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformuser result
+ */
+
+/**
+ * Transforms user
+ *
+ * @param {string} id - Unique identifier
+ * @param {any} data - Data object containing information
+ *
+ * @returns {string} The transformuser result
+ */
+
 function transformUser(id: string, data: any) {
   return {
     id,
     ...data,
+    /** Display Name */
     displayName: data.name,
+    /** Created At */
     createdAt: data.created_at,
+    /** Updated At */
     updatedAt: data.updated_at,
+    /** Last Login */
     lastLogin: data.last_login,
+    /** Email Verified */
     emailVerified: data.email_verified,
+    /** Is Banned */
     isBanned: data.is_banned,
   };
 }
@@ -46,6 +86,32 @@ function transformUser(id: string, data: any) {
  * Query Format: ?page=1&pageSize=20&sorts=-createdAt&filters=role==admin
  * - Admin: Can view all users
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request);
+ */
+
 export async function GET(request: NextRequest) {
   try {
     // Require admin role for listing users
@@ -56,6 +122,7 @@ export async function GET(request: NextRequest) {
 
     // Parse Sieve query
     const {
+      /** Query */
       query: sieveQuery,
       errors,
       warnings,
@@ -64,8 +131,11 @@ export async function GET(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error: "Invalid query parameters",
+          /** Details */
           details: errors,
         },
         { status: 400 }
@@ -118,6 +188,26 @@ export async function GET(request: NextRequest) {
     const totalCount = countSnapshot.data().count;
 
     // Apply pagination
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
+    /**
+     * Performs offset operation
+     *
+     * @param {any} sieveQuery.page - 1) * sieveQuery.pageSize;
+    if (offset > 0 - The sieve query.page - 1) * sieve query.page size;
+    if (offset > 0
+     *
+     * @returns {any} The offset result
+     */
+
     const offset = (sieveQuery.page - 1) * sieveQuery.pageSize;
     if (offset > 0) {
       const skipSnapshot = await query.limit(offset).get();
@@ -150,12 +240,17 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json({
+      /** Success */
       success: true,
       data,
       pagination,
+      /** Meta */
       meta: {
+        /** Applied Filters */
         appliedFilters: sieveQuery.filters,
+        /** Applied Sorts */
         appliedSorts: sieveQuery.sorts,
+        /** Warnings */
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
@@ -172,6 +267,32 @@ export async function GET(request: NextRequest) {
  * POST /api/users
  * Create a new user (admin only)
  */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
 export async function POST(request: NextRequest) {
   let body: any;
   try {
@@ -223,6 +344,7 @@ export async function POST(request: NextRequest) {
       email,
       name,
       role,
+      /** Phone */
       phone: phone || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -236,15 +358,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
+        /** Success */
         success: true,
+        /** Message */
         message: "User created successfully",
+        /** Data */
         data: { id: docRef.id, ...userDoc.data() },
       },
       { status: 201 }
     );
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.users.create",
+      /** Metadata */
       metadata: { email: body?.email },
     });
 

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/auctions/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
@@ -24,21 +33,42 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * Function: Create Auction Content
+ */
+/**
+ * Performs create auction content operation
+ *
+ * @returns {any} The createauctioncontent result
+ */
+
+/**
+ * Performs create auction content operation
+ *
+ * @returns {any} The createauctioncontent result
+ */
+
 function CreateAuctionContent() {
   const router = useRouter();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: shops,
+    /** Set Data */
     setData: setShops,
     execute,
   } = useLoadingState<ShopCardFE[]>({
+    /** Initial Data */
     initialData: [],
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AuctionCreate.loadShops",
       });
     },
@@ -46,6 +76,22 @@ function CreateAuctionContent() {
 
   // Load user's shops
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadShops = async () => {
       if (!user) return;
 
@@ -60,6 +106,26 @@ function CreateAuctionContent() {
     loadShops();
   }, [user, execute]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {ProductAuctionFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {ProductAuctionFormFE} formData - The form data
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (formData: ProductAuctionFormFE) => {
     if (!user) {
       return;
@@ -70,29 +136,50 @@ function CreateAuctionContent() {
     try {
       // First, create the product
       const productData: ProductFormFE = {
+        /** Name */
         name: formData.name,
+        /** Slug */
         slug: formData.slug,
         sku: `${formData.slug}-${Date.now()}`, // Generate a unique SKU
         categoryId: "default", // TODO: Add category selection to form
+        /** Brand */
         brand: "",
+        /** Price */
         price: formData.startingBid,
+        /** Compare At Price */
         compareAtPrice: null,
         stockCount: 1, // Auctions typically have 1 item
+        /** Low Stock Threshold */
         lowStockThreshold: 0,
+        /** Weight */
         weight: null,
+        /** Description */
         description: formData.description,
+        /** Condition */
         condition: ProductCondition.NEW,
+        /** Features */
         features: [],
+        /** Specifications */
         specifications: {},
+        /** Images */
         images: formData.images,
+        /** Videos */
         videos: formData.videos,
+        /** Shipping Class */
         shippingClass: ShippingClass.STANDARD,
+        /** Return Policy */
         returnPolicy: "",
+        /** Warranty Info */
         warrantyInfo: "",
+        /** Meta Title */
         metaTitle: formData.name,
+        /** Meta Description */
         metaDescription: formData.description.substring(0, 160),
+        /** Featured */
         featured: false,
+        /** Status */
         status: ProductStatus.PUBLISHED,
+        /** Shop Id */
         shopId: formData.shopId || undefined,
       };
 
@@ -100,16 +187,23 @@ function CreateAuctionContent() {
 
       // Then, create the auction
       const auctionData = {
+        /** Product Id */
         productId: product.id,
         type: AuctionType.REGULAR, // Default to regular auction
+        /** Starting Price */
         startingPrice: formData.startingBid,
+        /** Reserve Price */
         reservePrice: formData.reservePrice || undefined,
         buyNowPrice: undefined, // No buy now for basic auctions
+        /** Start Time */
         startTime: formData.startTime,
+        /** End Time */
         endTime: formData.endTime,
         autoExtend: false, // Default to no auto-extend
+        /** Extension Minutes */
         extensionMinutes: 0,
         minBidIncrement: 100, // Default increment
+        /** Status */
         status: formData.status,
       };
 
@@ -117,7 +211,9 @@ function CreateAuctionContent() {
       router.push(`/auctions/${auction.productSlug}`);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "AuctionCreate.handleSubmit",
+        /** Metadata */
         metadata: { formData },
       });
     } finally {

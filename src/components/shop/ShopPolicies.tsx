@@ -1,18 +1,45 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopPolicies
+ * @description This file contains the ShopPolicies component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Package, Truck, Shield } from "lucide-react";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
+/**
+ * ShopPoliciesProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopPoliciesProps
+ */
 export interface ShopPoliciesProps {
+  /** Shop */
   shop: ShopFE;
+  /** Class Name */
   className?: string;
 }
 
+/**
+ * PolicySection interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PolicySection
+ */
 interface PolicySection {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Icon */
   icon: React.ComponentType<{ className?: string }>;
+  /** Content */
   content: string | null | undefined;
 }
 
@@ -35,23 +62,69 @@ interface PolicySection {
  * <ShopPolicies shop={shop} />
  * ```
  */
+/**
+ * Performs shop policies operation
+ *
+ * @param {ShopPoliciesProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shoppolicies result
+ *
+ * @example
+ * ShopPolicies({ shop, className);
+ */
+
+/**
+ * Performs shop policies operation
+ *
+ * @param {ShopPoliciesProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shoppolicies result
+ *
+ * @example
+ * ShopPolicies({ shop, className);
+ */
+
 export function ShopPolicies({ shop, className = "" }: ShopPoliciesProps) {
   const [activePolicy, setActivePolicy] = useState<string | null>("return");
 
   const policies: PolicySection[] = [
     {
+      /** Id */
       id: "return",
+      /** Title */
       title: "Return Policy",
+      /** Icon */
       icon: Package,
+      /** Content */
       content: shop.policies?.returnPolicy,
     },
     {
+      /** Id */
       id: "shipping",
+      /** Title */
       title: "Shipping Policy",
+      /** Icon */
       icon: Truck,
+      /** Content */
       content: shop.policies?.shippingPolicy,
     },
   ];
+
+  /**
+   * Performs toggle policy operation
+   *
+   * @param {string} policyId - policy identifier
+   *
+   * @returns {string} The togglepolicy result
+   */
+
+  /**
+   * Performs toggle policy operation
+   *
+   * @param {string} policyId - policy identifier
+   *
+   * @returns {string} The togglepolicy result
+   */
 
   const togglePolicy = (policyId: string) => {
     setActivePolicy(activePolicy === policyId ? null : policyId);

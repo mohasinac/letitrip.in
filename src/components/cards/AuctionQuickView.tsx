@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/cards/AuctionQuickView
+ * @description This file contains the AuctionQuickView component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * AuctionQuickView Component
  *
  * Quick view modal for auctions with bid placement
@@ -25,39 +34,75 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+/**
+ * AuctionQuickViewProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AuctionQuickViewProps
+ */
 export interface AuctionQuickViewProps {
+  /** Auction */
   auction: {
+    /** Id */
     id: string;
+    /** Name */
     name: string;
+    /** Slug */
     slug: string;
+    /** Description */
     description: string;
+    /** Images */
     images: string[];
+    /** Videos */
     videos?: string[];
+    /** Current Bid */
     currentBid: number;
+    /** Starting Bid */
     startingBid: number;
+    /** Bid Increment */
     bidIncrement: number;
+    /** Bid Count */
     bidCount: number;
+    /** End Time */
     endTime: Date | string;
+    /** Condition */
     condition?: "new" | "used" | "refurbished";
+    /** Shop */
     shop: {
+      /** Id */
       id: string;
+      /** Name */
       name: string;
+      /** Logo */
       logo?: string;
+      /** Is Verified */
       isVerified?: boolean;
     };
+    /** Specifications */
     specifications?: Array<{ name: string; value: string }>;
+    /** Allow Auto Bid */
     allowAutoBid?: boolean;
+    /** View Count */
     viewCount?: number;
   };
+  /** Is Open */
   isOpen: boolean;
+  /** On Close */
   onClose: () => void;
+  /** On Place Bid */
   onPlaceBid?: (
+    /** Auction Id */
     auctionId: string,
+    /** Bid Amount */
     bidAmount: number,
+    /** Is Auto Bid */
     isAutoBid: boolean,
+    /** Max Auto Bid */
     maxAutoBid?: number
   ) => Promise<void>;
+  /** On Watch */
   onWatch?: (auctionId: string) => void;
+  /** Is Watched */
   isWatched?: boolean;
 }
 
@@ -102,17 +147,57 @@ export default function AuctionQuickView({
   );
   const isEnded = timeRemaining.isEnded;
 
+  /**
+   * Handles prev image event
+   *
+   * @returns {any} The handleprevimage result
+   */
+
+  /**
+   * Handles prev image event
+   *
+   * @returns {any} The handleprevimage result
+   */
+
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? auction.images.length - 1 : prev - 1
     );
   };
 
+  /**
+   * Handles next image event
+   *
+   * @returns {any} The handlenextimage result
+   */
+
+  /**
+   * Handles next image event
+   *
+   * @returns {any} The handlenextimage result
+   */
+
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
       prev === auction.images.length - 1 ? 0 : prev + 1
     );
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handlePlaceBid = async () => {
     if (!onPlaceBid) return;
@@ -148,6 +233,22 @@ export default function AuctionQuickView({
       setIsPlacingBid(false);
     }
   };
+
+  /**
+   * Handles set minimum bid event
+   *
+   * @returns {any} The handlesetminimumbid result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles set minimum bid event
+   *
+   * @returns {any} The handlesetminimumbid result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleSetMinimumBid = () => {
     setBidAmount(minNextBid.toString());

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/auctions/[slug]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { AuctionDescription } from "@/components/auction/AuctionDescription";
@@ -55,15 +64,21 @@ export default function AuctionDetailPage() {
   const [isWatching, setIsWatching] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: auction,
+    /** Set Data */
     setData: setAuction,
     execute,
   } = useLoadingState<AuctionFE>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AuctionDetailPage.loadAuction",
+        /** Metadata */
         metadata: { slug },
       });
     },
@@ -74,6 +89,22 @@ export default function AuctionDetailPage() {
       loadAuction();
     }
   }, [slug]);
+
+  /**
+   * Fetches auction from server
+   *
+   * @returns {Promise<any>} Promise resolving to auction result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Fetches auction from server
+   *
+   * @returns {Promise<any>} Promise resolving to auction result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadAuction = () =>
     execute(async () => {
@@ -91,8 +122,11 @@ export default function AuctionDetailPage() {
 
           // Load other auctions from this shop
           const shopAuctionsData = await auctionsService.list({
+            /** Shop Id */
             shopId: data.shopId,
+            /** Status */
             status: AuctionStatus.ACTIVE,
+            /** Limit */
             limit: 6,
           });
           setShopAuctions(
@@ -100,7 +134,9 @@ export default function AuctionDetailPage() {
           );
         } catch (error) {
           logError(error as Error, {
+            /** Component */
             component: "AuctionDetailPage.loadShop",
+            /** Metadata */
             metadata: { slug, shopId: data.shopId },
           });
           // Non-critical error, continue showing auction
@@ -110,7 +146,9 @@ export default function AuctionDetailPage() {
       // Load similar auctions (same category or status)
       try {
         const similarData = await auctionsService.list({
+          /** Status */
           status: AuctionStatus.ACTIVE,
+          /** Limit */
           limit: 6,
         });
         setSimilarAuctions(
@@ -118,7 +156,9 @@ export default function AuctionDetailPage() {
         );
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "AuctionDetailPage.loadSimilarAuctions",
+          /** Metadata */
           metadata: { slug },
         });
         // Non-critical error, continue showing auction
@@ -130,6 +170,22 @@ export default function AuctionDetailPage() {
       setBidAmount(Math.ceil(currentBidValue + minIncrement).toString());
       return data;
     });
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handlePlaceBid = async () => {
     if (!user) {
@@ -159,7 +215,9 @@ export default function AuctionDetailPage() {
       toast.success("Bid placed successfully!");
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "AuctionDetailPage.handlePlaceBid",
+        /** Metadata */
         metadata: { slug, amount: parseFloat(bidAmount) },
       });
       const errorMessage =
@@ -172,6 +230,22 @@ export default function AuctionDetailPage() {
       setIsPlacingBid(false);
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleToggleWatch = async () => {
     if (!user) {
@@ -186,24 +260,47 @@ export default function AuctionDetailPage() {
       setIsWatching(result.watching);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AuctionDetailPage.handleToggleWatch",
+        /** Metadata */
         metadata: { slug },
       });
     }
   };
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleShare = async () => {
     const url = globalThis.location?.href || "";
     if (navigator.share) {
       try {
         await navigator.share({
+          /** Title */
           title: auction?.name,
+          /** Text */
           text: `Check out this auction: ${auction?.name}`,
+          /** Url */
           url: url,
         });
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "AuctionDetailPage.handleShare",
+          /** Metadata */
           metadata: { slug },
         });
       }
@@ -212,6 +309,18 @@ export default function AuctionDetailPage() {
       toast.success("Link copied to clipboard!");
     }
   };
+
+  /**
+   * Retrieves time remaining
+   *
+   * @returns {any} The timeremaining result
+   */
+
+  /**
+   * Retrieves time remaining
+   *
+   * @returns {any} The timeremaining result
+   */
 
   const getTimeRemaining = () => {
     if (!auction || !auction.endTime) return "";
@@ -317,6 +426,7 @@ export default function AuctionDetailPage() {
           <AuctionGallery
             media={(auction.images || []).map((url) => ({
               url,
+              /** Type */
               type: "image" as const,
             }))}
             productName={auction.name || "Auction"}
@@ -356,6 +466,7 @@ export default function AuctionDetailPage() {
                         </p>
                         <p className="text-xs text-gray-500">
                           {formatDistanceToNow(bid.bidTime || bid.createdAt, {
+                            /** Add Suffix */
                             addSuffix: true,
                           })}
                         </p>
@@ -568,6 +679,7 @@ export default function AuctionDetailPage() {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
+                  /** Ends */
                   Ends:
                 </span>
                 <span className="font-medium text-gray-900">

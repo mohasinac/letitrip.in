@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/wizards/BusinessAddressStep
+ * @description This file contains the BusinessAddressStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -8,24 +17,48 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { INDIAN_STATES } from "@/constants/location";
 
+/**
+ * BusinessAddressStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BusinessAddressStepProps
+ */
 export interface BusinessAddressStepProps {
+  /** Address Line1 */
   addressLine1: string;
+  /** Address Line2 */
   addressLine2?: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** Pincode */
   pincode: string;
+  /** Country */
   country?: string;
+  /** On Address Line1 Change */
   onAddressLine1Change: (value: string) => void;
+  /** On Address Line2 Change */
   onAddressLine2Change?: (value: string) => void;
+  /** On City Change */
   onCityChange: (value: string) => void;
+  /** On State Change */
   onStateChange: (value: string) => void;
+  /** On Pincode Change */
   onPincodeChange: (value: string) => void;
+  /** On Country Change */
   onCountryChange?: (value: string) => void;
+  /** Enable G P S */
   enableGPS?: boolean;
+  /** On G P S Location */
   onGPSLocation?: (lat: number, lng: number) => void;
+  /** Address Line1 Error */
   addressLine1Error?: string;
+  /** City Error */
   cityError?: string;
+  /** State Error */
   stateError?: string;
+  /** Pincode Error */
   pincodeError?: string;
 }
 
@@ -58,6 +91,24 @@ export interface BusinessAddressStepProps {
  * />
  * ```
  */
+/**
+ * Performs business address step operation
+ *
+ * @returns {any} The businessaddressstep result
+ *
+ * @example
+ * BusinessAddressStep();
+ */
+
+/**
+ * Performs business address step operation
+ *
+ * @returns {any} The businessaddressstep result
+ *
+ * @example
+ * BusinessAddressStep();
+ */
+
 export function BusinessAddressStep({
   addressLine1,
   addressLine2,
@@ -80,6 +131,18 @@ export function BusinessAddressStep({
 }: BusinessAddressStepProps) {
   const [loadingGPS, setLoadingGPS] = useState(false);
 
+  /**
+   * Handles get g p s location event
+   *
+   * @returns {any} The handlegetgpslocation result
+   */
+
+  /**
+   * Handles get g p s location event
+   *
+   * @returns {any} The handlegetgpslocation result
+   */
+
   const handleGetGPSLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation is not supported by your browser");
@@ -98,6 +161,7 @@ export function BusinessAddressStep({
       },
       (error) => {
         logError(error as any, {
+          /** Component */
           component: "BusinessAddressStep.getCurrentLocation",
         });
         toast.error("Failed to get GPS location");

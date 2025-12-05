@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/InlineCategorySelectorWithCreate
+ * @description This file contains the InlineCategorySelectorWithCreate component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import SlugInput from "@/components/common/SlugInput";
@@ -9,21 +18,42 @@ import { categoriesService } from "@/services/categories.service";
 import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * Category interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for Category
+ */
 interface Category {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
   parent_id: string | null;
+  /** Parent Ids */
   parentIds?: string[];
+  /** Level */
   level: number;
   has_children: boolean;
   is_active: boolean;
 }
 
+/**
+ * InlineCategorySelectorWithCreateProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InlineCategorySelectorWithCreateProps
+ */
 interface InlineCategorySelectorWithCreateProps {
+  /** Value */
   value: string;
+  /** On Change */
   onChange: (value: string) => void;
+  /** Disabled */
   disabled?: boolean;
+  /** Error */
   error?: string;
 }
 
@@ -40,8 +70,11 @@ export default function InlineCategorySelectorWithCreate({
 
   // Create category form state
   const [createForm, setCreateForm] = useState({
+    /** Name */
     name: "",
+    /** Slug */
     slug: "",
+    /** Description */
     description: "",
   });
   const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
@@ -49,6 +82,22 @@ export default function InlineCategorySelectorWithCreate({
   useEffect(() => {
     loadCategories();
   }, []);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadCategories = async () => {
     try {
@@ -61,11 +110,16 @@ export default function InlineCategorySelectorWithCreate({
             cat.isLeaf || (!cat.childrenIds?.length && !cat.hasChildren),
         )
         .map((cat: any) => ({
+          /** Id */
           id: cat.id,
+          /** Name */
           name: cat.name,
+          /** Slug */
           slug: cat.slug,
           parent_id: cat.parentId || null,
+          /** Parent Ids */
           parentIds: cat.parentIds || [],
+          /** Level */
           level: cat.level || 0,
           has_children: false,
           is_active: cat.isActive !== false,
@@ -73,12 +127,25 @@ export default function InlineCategorySelectorWithCreate({
       setCategories(leafCategories);
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "InlineCategorySelectorWithCreate.loadCategories",
       });
     } finally {
       setLoading(false);
     }
   };
+
+  /**
+   * Validates create form
+   *
+   * @returns {any} The validatecreateform result
+   */
+
+  /**
+   * Validates create form
+   *
+   * @returns {any} The validatecreateform result
+   */
 
   const validateCreateForm = () => {
     const errors: Record<string, string> = {};
@@ -102,6 +169,22 @@ export default function InlineCategorySelectorWithCreate({
     return Object.keys(errors).length === 0;
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleCreateCategory = async () => {
     if (!validateCreateForm()) {
       return;
@@ -111,14 +194,23 @@ export default function InlineCategorySelectorWithCreate({
       setCreating(true);
 
       const newCategory = await categoriesService.create({
+        /** Name */
         name: createForm.name.trim(),
+        /** Slug */
         slug: createForm.slug.trim(),
+        /** Description */
         description: createForm.description.trim() || "",
+        /** Image */
         image: null,
+        /** Icon */
         icon: null,
+        /** Parent Ids */
         parentIds: [],
+        /** Order */
         order: 0,
+        /** Featured */
         featured: false,
+        /** Is Active */
         isActive: true,
       });
 
@@ -134,10 +226,13 @@ export default function InlineCategorySelectorWithCreate({
       setShowCreateDialog(false);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "InlineCategorySelectorWithCreate.handleCreateCategory",
+        /** Metadata */
         metadata: { formData: createForm },
       });
       setCreateErrors({
+        /** Submit */
         submit:
           error?.message || "Failed to create category. Please try again.",
       });
@@ -146,14 +241,45 @@ export default function InlineCategorySelectorWithCreate({
     }
   };
 
+  /**
+   * Handles open create dialog event
+   *
+   * @returns {any} The handleopencreatedialog result
+   */
+
+  /**
+   * Handles open create dialog event
+   *
+   * @returns {any} The handleopencreatedialog result
+   */
+
   const handleOpenCreateDialog = () => {
     setCreateForm({
+      /** Name */
       name: "",
+      /** Slug */
       slug: "",
+      /** Description */
       description: "",
     });
     setShowCreateDialog(true);
   };
+
+  /**
+   * Handles close create dialog event
+   *
+   * @returns {any} The handleclosecreatedialog result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles close create dialog event
+   *
+   * @returns {any} The handleclosecreatedialog result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleCloseCreateDialog = () => {
     setShowCreateDialog(false);
@@ -231,6 +357,7 @@ export default function InlineCategorySelectorWithCreate({
                 onChange={(e) => {
                   setCreateForm((prev) => ({
                     ...prev,
+                    /** Name */
                     name: e.target.value,
                   }));
                   setCreateErrors((prev) => ({ ...prev, name: "" }));
@@ -269,6 +396,7 @@ export default function InlineCategorySelectorWithCreate({
                 onChange={(e) =>
                   setCreateForm((prev) => ({
                     ...prev,
+                    /** Description */
                     description: e.target.value,
                   }))
                 }

@@ -1,14 +1,31 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/utils/memory-cache
+ * @description This file contains functionality related to memory-cache
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * In-Memory Cache
  * Simple caching solution for small-scale deployments
  * NO external dependencies - 100% FREE
  */
 
 interface CacheItem {
+  /** Data */
   data: any;
+  /** Expiry */
   expiry: number;
 }
 
+/**
+ * MemoryCache class
+ * 
+ * @class
+ * @description Description of MemoryCache class functionality
+ */
 class MemoryCache {
   private cache = new Map<string, CacheItem>();
   private maxSize: number;
@@ -32,7 +49,9 @@ class MemoryCache {
     }
 
     this.cache.set(key, {
+      /** Data */
       data: value,
+      /** Expiry */
       expiry: Date.now() + ttlSeconds * 1000,
     });
   }
@@ -80,10 +99,15 @@ class MemoryCache {
    */
   stats() {
     return {
+      /** Size */
       size: this.cache.size,
+      /** Max Size */
       maxSize: this.maxSize,
+      /** Hits */
       hits: this.hits,
+      /** Misses */
       misses: this.misses,
+      /** Hit Rate */
       hitRate:
         this.hits + this.misses > 0 ? this.hits / (this.hits + this.misses) : 0,
     };

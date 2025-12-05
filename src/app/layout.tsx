@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/layout
+ * @description This file contains the layout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { ToastContainer } from "@/components/admin/Toast";
 import ErrorInitializer from "@/components/common/ErrorInitializer";
 import BottomNav from "@/components/layout/BottomNav";
@@ -29,6 +38,7 @@ export const metadata: Metadata = defaultMetadata;
 export default function RootLayout({
   children,
 }: {
+  /** Children */
   children: React.ReactNode;
 }) {
   // Generate Organization and WebSite schemas

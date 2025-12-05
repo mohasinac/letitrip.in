@@ -1,12 +1,30 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/shop-wizard/PoliciesStep
+ * @description This file contains the PoliciesStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FormField } from "@/components/forms/FormField";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { ShopFormData, OnShopChange } from "./types";
 
+/**
+ * PoliciesStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for PoliciesStepProps
+ */
 interface PoliciesStepProps {
+  /** Form Data */
   formData: ShopFormData;
+  /** On Change */
   onChange: OnShopChange;
+  /** Errors */
   errors: Record<string, string>;
 }
 

@@ -1,17 +1,39 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/FormCheckbox
+ * @description This file contains the FormCheckbox component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * FormCheckboxProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FormCheckboxProps
+ */
 export interface FormCheckboxProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type" | "size"
 > {
+  /** Label */
   label: string | ReactNode;
+  /** Description */
   description?: string;
+  /** Error */
   error?: string;
 }
 
+/**
+ * F
+ * @constant
+ */
 export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
   ({ label, description, error, className, id, ...props }, ref) => {
     const checkboxId =

@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/riplimit/transactions
+ * @description This file contains functionality related to transactions
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Transaction Database Operations
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -20,11 +29,38 @@ import { FieldValue } from "firebase-admin/firestore";
 /**
  * Credit RipLimit to user account (purchase, admin adjustment)
  */
+/**
+ * Performs credit balance operation
+ *
+ * @returns {Promise<any>} Promise resolving to creditbalance result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * creditBalance();
+ */
+
+/**
+ * Performs credit balance operation
+ *
+ * @returns {Promise<any>} Promise resolving to creditbalance result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * creditBalance();
+ */
+
 export async function creditBalance(
+  /** User Id */
   userId: string,
+  /** Amount */
   amount: number,
+  /** Type */
   type: RipLimitTransactionType,
+  /** Description */
   description: string,
+  /** Metadata */
   metadata?: Record<string, unknown>,
 ): Promise<RipLimitTransactionBE> {
   const db = getFirestoreAdmin();
@@ -39,15 +75,25 @@ export async function creditBalance(
       const now = nowAsFirebaseTimestamp();
       account = {
         userId,
+        /** Available Balance */
         availableBalance: 0,
+        /** Blocked Balance */
         blockedBalance: 0,
+        /** Lifetime Purchases */
         lifetimePurchases: 0,
+        /** Lifetime Spent */
         lifetimeSpent: 0,
+        /** Has Unpaid Auctions */
         hasUnpaidAuctions: false,
+        /** Unpaid Auction Ids */
         unpaidAuctionIds: [],
+        /** Strikes */
         strikes: 0,
+        /** Is Blocked */
         isBlocked: false,
+        /** Created At */
         createdAt: now,
+        /** Updated At */
         updatedAt: now,
       };
       t.set(accountRef, account);
@@ -63,8 +109,11 @@ export async function creditBalance(
 
     // Update account
     t.update(accountRef, {
+      /** Available Balance */
       availableBalance: newBalance,
+      /** Lifetime Purchases */
       lifetimePurchases: newLifetimePurchases,
+      /** Updated At */
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -76,11 +125,15 @@ export async function creditBalance(
       userId,
       type,
       amount,
+      /** Inr Amount */
       inrAmount: ripLimitToInr(amount),
+      /** Balance After */
       balanceAfter: newBalance,
+      /** Status */
       status: RipLimitTransactionStatus.COMPLETED,
       description,
       metadata,
+      /** Created At */
       createdAt: nowAsFirebaseTimestamp(),
     };
     t.set(transactionRef, transactionRecord);
@@ -94,11 +147,38 @@ export async function creditBalance(
 /**
  * Get transaction history for a user
  */
+/**
+ * Retrieves transaction history
+ *
+ * @returns {Promise<any>} Promise resolving to transactionhistory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getTransactionHistory();
+ */
+
+/**
+ * Retrieves transaction history
+ *
+ * @returns {Promise<any>} Promise resolving to transactionhistory result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * getTransactionHistory();
+ */
+
 export async function getTransactionHistory(
+  /** User Id */
   userId: string,
+  /** Options */
   options: {
+    /** Type */
     type?: RipLimitTransactionType;
+    /** Limit */
     limit?: number;
+    /** Offset */
     offset?: number;
   } = {},
 ): Promise<{ transactions: RipLimitTransactionBE[]; total: number }> {
@@ -126,6 +206,7 @@ export async function getTransactionHistory(
 
   const snapshot = await query.get();
   const transactions = snapshot.docs.map((doc) => ({
+    /** Id */
     id: doc.id,
     ...doc.data(),
   })) as RipLimitTransactionBE[];

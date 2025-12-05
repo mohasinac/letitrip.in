@@ -1,13 +1,33 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/refund-policy/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Refund & Return Policy - Let It Rip",
+  /** Description */
   description:
     "Understand our return and refund policy for imported products. Video unboxing requirement, return eligibility, and refund process for India deliveries.",
+  /** Robots */
   robots: "index, follow",
 };
 
+/**
+ * Performs refund policy page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = RefundPolicyPage();
+ */
 export default function RefundPolicyPage() {
   return (
     <LegalPageLayout

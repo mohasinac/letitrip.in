@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/user/reviews/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -48,11 +57,28 @@ const RATING_FILTERS = [
 ];
 
 // Stars component
+/**
+ * Function: Stars
+ */
+/**
+ * Performs stars operation
+ *
+ * @returns {number} The stars result
+ */
+
+/**
+ * Performs stars operation
+ *
+ * @returns {any} The stars result
+ */
+
 function Stars({
   rating,
   size = "sm",
 }: {
+  /** Rating */
   rating: number;
+  /** Size */
   size?: "sm" | "md";
 }) {
   const sizeClasses = size === "sm" ? "h-4 w-4" : "h-5 w-5";
@@ -74,15 +100,49 @@ function Stars({
 }
 
 // Review card component
+/**
+ * Function: Review Card
+ */
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ */
+
+/**
+ * Performs review card operation
+ *
+ * @returns {any} The reviewcard result
+ */
+
 function ReviewCard({
   review,
   onEdit,
   onDelete,
 }: {
+  /** Review */
   review: ReviewFE;
+  /** On Edit */
   onEdit: (id: string) => void;
+  /** On Delete */
   onDelete: (id: string) => void;
 }) {
+  /**
+   * Retrieves status badge
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusbadge result
+   */
+
+  /**
+   * Retrieves status badge
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The statusbadge result
+   */
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
@@ -103,10 +163,23 @@ function ReviewCard({
             <AlertCircle className="h-3 w-3" /> Rejected
           </span>
         );
+      /** Default */
       default:
         return null;
     }
   };
+
+  /**
+   * Retrieves item link
+   *
+   * @returns {any} The itemlink result
+   */
+
+  /**
+   * Retrieves item link
+   *
+   * @returns {any} The itemlink result
+   */
 
   const getItemLink = () => {
     if (review.productId) {
@@ -117,6 +190,18 @@ function ReviewCard({
     }
     return "#";
   };
+
+  /**
+   * Retrieves item icon
+   *
+   * @returns {any} The itemicon result
+   */
+
+  /**
+   * Retrieves item icon
+   *
+   * @returns {any} The itemicon result
+   */
 
   const getItemIcon = () => {
     if (review.shopId) {
@@ -273,16 +358,22 @@ export default function UserReviewsPage() {
 
   // Stats
   const [stats, setStats] = useState({
+    /** Total */
     total: 0,
+    /** Approved */
     approved: 0,
+    /** Pending */
     pending: 0,
+    /** Average Rating */
     averageRating: 0,
   });
 
   const loadReviews = useCallback(async () => {
     await execute(async () => {
       const filters: Record<string, any> = {
+        /** User Id */
         userId: user?.id,
+        /** Limit */
         limit: 50,
       };
 
@@ -315,9 +406,13 @@ export default function UserReviewsPage() {
           : 0;
 
       setStats({
+        /** Total */
         total: allReviews.length,
+        /** Approved */
         approved: approvedCount,
+        /** Pending */
         pending: pendingCount,
+        /** Average Rating */
         averageRating: Math.round(avgRating * 10) / 10,
       });
     });
@@ -329,6 +424,22 @@ export default function UserReviewsPage() {
     }
   }, [authLoading, isAuthenticated, loadReviews]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     if (!deleteId) return;
 
@@ -339,13 +450,31 @@ export default function UserReviewsPage() {
       setDeleteId(null);
     } catch (error: any) {
       logError(error as Error, {
+        /** Component */
         component: "ReviewsPage.handleDelete",
+        /** Metadata */
         metadata: { reviewId: deleteId },
       });
     } finally {
       setDeleting(false);
     }
   };
+
+  /**
+   * Handles edit event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleedit result
+   */
+
+  /**
+   * Handles edit event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleedit result
+   */
 
   const handleEdit = (id: string) => {
     // Navigate to edit page or open modal
@@ -470,7 +599,9 @@ export default function UserReviewsPage() {
               value={String(ratingFilter)}
               onChange={(e) => setRatingFilter(Number(e.target.value))}
               options={RATING_FILTERS.map((f) => ({
+                /** Value */
                 value: String(f.value),
+                /** Label */
                 label: f.label,
               }))}
               compact

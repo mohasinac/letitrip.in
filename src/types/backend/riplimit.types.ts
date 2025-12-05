@@ -1,4 +1,13 @@
 /**
+ * @fileoverview Type Definitions
+ * @module src/types/backend/riplimit.types
+ * @description This file contains TypeScript type definitions for riplimit
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * RipLimit Backend Types
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -106,7 +115,9 @@ export interface RipLimitAccountBE {
   isBlocked: boolean;
   /** Block reason if blocked */
   blockReason?: string;
+  /** Created At */
   createdAt: FirebaseTimestamp;
+  /** Updated At */
   updatedAt: FirebaseTimestamp;
 }
 
@@ -134,8 +145,11 @@ export interface RipLimitBlockedBidBE {
  * Collection: riplimit_transactions
  */
 export interface RipLimitTransactionBE {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
+  /** Type */
   type: RipLimitTransactionType;
   /** RipLimit amount (positive for credit, negative for debit) */
   amount: number;
@@ -151,12 +165,15 @@ export interface RipLimitTransactionBE {
   paymentId?: string;
   /** Related order ID (for auction wins) */
   orderId?: string;
+  /** Status */
   status: RipLimitTransactionStatus;
   /** Human readable description */
   description: string;
   /** Additional metadata */
   metadata?: Record<string, unknown>;
+  /** Created At */
   createdAt: FirebaseTimestamp;
+  /** Updated At */
   updatedAt?: FirebaseTimestamp;
 }
 
@@ -167,7 +184,9 @@ export interface RipLimitTransactionBE {
  * Collection: riplimit_purchases
  */
 export interface RipLimitPurchaseBE {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
   /** RipLimit amount purchased */
   ripLimitAmount: number;
@@ -181,10 +200,13 @@ export interface RipLimitPurchaseBE {
   razorpaySignature?: string;
   /** Payment method used */
   paymentMethod?: string;
+  /** Status */
   status: RipLimitPurchaseStatus;
   /** Transaction ID after completion */
   transactionId?: string;
+  /** Created At */
   createdAt: FirebaseTimestamp;
+  /** Completed At */
   completedAt?: FirebaseTimestamp;
 }
 
@@ -195,7 +217,9 @@ export interface RipLimitPurchaseBE {
  * Collection: riplimit_refunds
  */
 export interface RipLimitRefundBE {
+  /** Id */
   id: string;
+  /** User Id */
   userId: string;
   /** RipLimit amount to refund */
   ripLimitAmount: number;
@@ -205,13 +229,17 @@ export interface RipLimitRefundBE {
   feeAmount: number;
   /** Net INR to refund */
   netAmount: number;
+  /** Status */
   status: RipLimitRefundStatus;
   /** Refund to original payment method or bank */
   refundMethod: "original" | "bank";
   /** Bank details if method is bank */
   bankDetails?: {
+    /** Account Number */
     accountNumber: string;
+    /** Ifsc Code */
     ifscCode: string;
+    /** Account Holder Name */
     accountHolderName: string;
   };
   /** Admin notes */
@@ -220,8 +248,11 @@ export interface RipLimitRefundBE {
   rejectionReason?: string;
   /** Transaction ID */
   transactionId?: string;
+  /** Created At */
   createdAt: FirebaseTimestamp;
+  /** Processed At */
   processedAt?: FirebaseTimestamp;
+  /** Processed By */
   processedBy?: string;
 }
 
@@ -257,8 +288,11 @@ export interface RipLimitRefundRequestBE {
   method: "original" | "bank";
   /** Bank details if method is bank */
   bankDetails?: {
+    /** Account Number */
     accountNumber: string;
+    /** Ifsc Code */
     ifscCode: string;
+    /** Account Holder Name */
     accountHolderName: string;
   };
 }
@@ -279,22 +313,39 @@ export interface RipLimitAdjustmentRequestBE {
  * Balance response
  */
 export interface RipLimitBalanceResponseBE {
+  /** Success */
   success: boolean;
+  /** Data */
   data: {
+    /** Available Balance */
     availableBalance: number;
+    /** Blocked Balance */
     blockedBalance: number;
+    /** Total Balance */
     totalBalance: number;
+    /** Available Balance I N R */
     availableBalanceINR: number;
+    /** Blocked Balance I N R */
     blockedBalanceINR: number;
+    /** Total Balance I N R */
     totalBalanceINR: number;
+    /** Has Unpaid Auctions */
     hasUnpaidAuctions: boolean;
+    /** Unpaid Auction Ids */
     unpaidAuctionIds: string[];
+    /** Is Blocked */
     isBlocked: boolean;
+    /** Blocked Bids */
     blockedBids: {
+      /** Auction Id */
       auctionId: string;
+      /** Bid Id */
       bidId: string;
+      /** Amount */
       amount: number;
+      /** Bid Amount I N R */
       bidAmountINR: number;
+      /** Auction Title */
       auctionTitle?: string;
     }[];
   };
@@ -304,12 +355,19 @@ export interface RipLimitBalanceResponseBE {
  * Purchase initiation response
  */
 export interface RipLimitPurchaseResponseBE {
+  /** Success */
   success: boolean;
+  /** Data */
   data: {
+    /** Purchase Id */
     purchaseId: string;
+    /** Razorpay Order Id */
     razorpayOrderId: string;
+    /** Rip Limit Amount */
     ripLimitAmount: number;
+    /** Inr Amount */
     inrAmount: number;
+    /** Razorpay Key */
     razorpayKey: string;
   };
 }
@@ -318,7 +376,9 @@ export interface RipLimitPurchaseResponseBE {
  * Admin stats response
  */
 export interface RipLimitAdminStatsBE {
+  /** Success */
   success: boolean;
+  /** Data */
   data: {
     /** Total RipLimit in circulation (all user balances) */
     totalCirculation: number;
@@ -346,6 +406,28 @@ export interface RipLimitAdminStatsBE {
 /**
  * Convert INR to RipLimit
  */
+/**
+ * Performs inr to rip limit operation
+ *
+ * @param {number} inr - The inr
+ *
+ * @returns {number} The inrtoriplimit result
+ *
+ * @example
+ * inrToRipLimit(123);
+ */
+
+/**
+ * Performs inr to rip limit operation
+ *
+ * @param {number} inr - The inr
+ *
+ * @returns {number} The inrtoriplimit result
+ *
+ * @example
+ * inrToRipLimit(123);
+ */
+
 export function inrToRipLimit(inr: number): number {
   return Math.floor(inr * RIPLIMIT_EXCHANGE_RATE);
 }
@@ -353,6 +435,28 @@ export function inrToRipLimit(inr: number): number {
 /**
  * Convert RipLimit to INR
  */
+/**
+ * Performs rip limit to inr operation
+ *
+ * @param {number} ripLimit - The rip limit
+ *
+ * @returns {number} The riplimittoinr result
+ *
+ * @example
+ * ripLimitToInr(123);
+ */
+
+/**
+ * Performs rip limit to inr operation
+ *
+ * @param {number} ripLimit - The rip limit
+ *
+ * @returns {number} The riplimittoinr result
+ *
+ * @example
+ * ripLimitToInr(123);
+ */
+
 export function ripLimitToInr(ripLimit: number): number {
   return ripLimit / RIPLIMIT_EXCHANGE_RATE;
 }
@@ -360,13 +464,39 @@ export function ripLimitToInr(ripLimit: number): number {
 /**
  * Check if user can bid
  */
+/**
+ * Checks if user bid
+ *
+ * @param {RipLimitAccountBE} account - The account
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * canUserBid(account);
+ */
+
+/**
+ * Checks if user bid
+ *
+ * @param {RipLimitAccountBE} account - The account
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * canUserBid(account);
+ */
+
 export function canUserBid(account: RipLimitAccountBE): {
+  /** Can Bid */
   canBid: boolean;
+  /** Reason */
   reason?: string;
 } {
   if (account.isBlocked) {
     return {
+      /** Can Bid */
       canBid: false,
+      /** Reason */
       reason: account.blockReason || "Account is blocked",
     };
   }
@@ -379,19 +509,47 @@ export function canUserBid(account: RipLimitAccountBE): {
 /**
  * Check if user has sufficient balance for bid
  */
+/**
+ * Checks if sufficient balance
+ *
+ * @param {RipLimitAccountBE} account - The account
+ * @param {number} bidAmountINR - The bid amount i n r
+ *
+ * @returns {boolean} True if condition is met, false otherwise
+ *
+ * @example
+ * hasSufficientBalance(account, 123);
+ */
+
+/**
+ * Checks if sufficient balance
+ *
+ * @returns {number} The hassufficientbalance result
+ *
+ * @example
+ * hasSufficientBalance();
+ */
+
 export function hasSufficientBalance(
+  /** Account */
   account: RipLimitAccountBE,
+  /** Bid Amount I N R */
   bidAmountINR: number,
 ): {
+  /** Sufficient */
   sufficient: boolean;
+  /** Required */
   required: number;
+  /** Available */
   available: number;
+  /** Shortfall */
   shortfall: number;
 } {
   const required = inrToRipLimit(bidAmountINR);
   const available = account.availableBalance;
   const shortfall = Math.max(0, required - available);
   return {
+    /** Sufficient */
     sufficient: available >= required,
     required,
     available,

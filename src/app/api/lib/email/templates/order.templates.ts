@@ -1,34 +1,101 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/lib/email/templates/order.templates
+ * @description This file contains functionality related to order.templates
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Order-related Email Templates
  */
 
 interface OrderItem {
+  /** Name */
   name: string;
+  /** Quantity */
   quantity: number;
+  /** Price */
   price: number;
 }
 
+/**
+ * OrderConfirmationData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for OrderConfirmationData
+ */
 interface OrderConfirmationData {
+  /** Customer Name */
   customerName: string;
+  /** Order Number */
   orderNumber: string;
+  /** Order Date */
   orderDate: string;
+  /** Items */
   items: OrderItem[];
+  /** Subtotal */
   subtotal: number;
+  /** Shipping */
   shipping: number;
+  /** Total */
   total: number;
+  /** Shipping Address */
   shippingAddress: string;
 }
 
+/**
+ * ShippingUpdateData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShippingUpdateData
+ */
 interface ShippingUpdateData {
+  /** Customer Name */
   customerName: string;
+  /** Order Number */
   orderNumber: string;
+  /** Tracking Number */
   trackingNumber: string;
+  /** Carrier */
   carrier: string;
+  /** Estimated Delivery */
   estimatedDelivery: string;
+  /** Tracking Url */
   trackingUrl: string;
 }
 
+/**
+ * Retrieves order confirmation template
+ */
+/**
+ * Retrieves order confirmation template
+ *
+ * @param {OrderConfirmationData} data - Data object containing information
+ *
+ * @returns {string} The orderconfirmationtemplate result
+ *
+ * @example
+ * getOrderConfirmationTemplate(data);
+ */
+
+/**
+ * Retrieves order confirmation template
+ *
+ * @param {OrderConfirmationData} /** Data */
+  data - The /**  data */
+  data
+ *
+ * @returns {string} The orderconfirmationtemplate result
+ *
+ * @example
+ * getOrderConfirmationTemplate(/** Data */
+  data);
+ */
+
 export function getOrderConfirmationTemplate(
+  /** Data */
   data: OrderConfirmationData,
 ): string {
   const itemsHtml = data.items
@@ -102,11 +169,14 @@ export function getOrderConfirmationTemplate(
     <div style="text-align: center; margin: 30px 0;">
       <a href="https://Letitrip.in/user/orders/${data.orderNumber}" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Track Your Order
       </a>
@@ -123,6 +193,31 @@ export function getOrderConfirmationTemplate(
 </html>
   `;
 }
+
+/**
+ * Retrieves shipping update template
+ */
+/**
+ * Retrieves shipping update template
+ *
+ * @param {ShippingUpdateData} data - Data object containing information
+ *
+ * @returns {string} The shippingupdatetemplate result
+ *
+ * @example
+ * getShippingUpdateTemplate(data);
+ */
+
+/**
+ * Retrieves shipping update template
+ *
+ * @param {ShippingUpdateData} data - Data object containing information
+ *
+ * @returns {string} The shippingupdatetemplate result
+ *
+ * @example
+ * getShippingUpdateTemplate(data);
+ */
 
 export function getShippingUpdateTemplate(data: ShippingUpdateData): string {
   return `
@@ -153,11 +248,14 @@ export function getShippingUpdateTemplate(data: ShippingUpdateData): string {
     <div style="text-align: center; margin: 30px 0;">
       <a href="${data.trackingUrl}" 
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                /** Color */
                 color: white; 
+                /** Padding */
                 padding: 14px 30px; 
                 text-decoration: none; 
                 border-radius: 5px; 
                 font-weight: bold;
+                /** Display */
                 display: inline-block;">
         Track Your Package
       </a>

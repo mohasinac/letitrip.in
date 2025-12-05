@@ -1,13 +1,32 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/blog/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Metadata } from "next";
 import { Suspense } from "react";
 import BlogListClient from "./BlogListClient";
 
 export const metadata: Metadata = {
+  /** Title */
   title: "Blog | Letitrip",
+  /** Description */
   description:
     "Read the latest articles, guides, and updates about collectibles, auctions, and more from Letitrip",
 };
 
+/**
+ * Performs blog page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = BlogPage();
+ */
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">

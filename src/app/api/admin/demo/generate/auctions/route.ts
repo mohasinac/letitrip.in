@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/auctions/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -33,143 +42,218 @@ const AUCTION_VIDEOS = [
 const AUCTION_ITEMS = [
   // Rare vintage items
   {
+    /** Name */
     name: "Original Dragoon S - Mint Condition",
+    /** Category */
     category: "Vintage Beyblades",
+    /** Base Price */
     basePrice: 15000,
   },
   {
+    /** Name */
     name: "First Edition Dranzer S - Sealed",
+    /** Category */
     category: "Vintage Beyblades",
+    /** Base Price */
     basePrice: 18000,
   },
   {
+    /** Name */
     name: "Classic Driger S - Complete Set",
+    /** Category */
     category: "Vintage Beyblades",
+    /** Base Price */
     basePrice: 12000,
   },
   {
+    /** Name */
     name: "Rare Draciel S - Original Box",
+    /** Category */
     category: "Vintage Beyblades",
+    /** Base Price */
     basePrice: 14000,
   },
   {
+    /** Name */
     name: "HMS Dragoon MS - Near Mint",
+    /** Category */
     category: "HMS (Heavy Metal System)",
+    /** Base Price */
     basePrice: 22000,
   },
   {
+    /** Name */
     name: "HMS Dranzer MS - Collector Grade",
+    /** Category */
     category: "HMS (Heavy Metal System)",
+    /** Base Price */
     basePrice: 25000,
   },
 
   // Tournament exclusives
   {
+    /** Name */
     name: "World Championship Valkyrie 2023",
+    /** Category */
     category: "Tournament Exclusives",
+    /** Base Price */
     basePrice: 35000,
   },
   {
+    /** Name */
     name: "Japan Tournament Gold Spriggan",
+    /** Category */
     category: "Tournament Exclusives",
+    /** Base Price */
     basePrice: 28000,
   },
   {
+    /** Name */
     name: "Pro League Champion Fafnir",
+    /** Category */
     category: "Tournament Exclusives",
+    /** Base Price */
     basePrice: 32000,
   },
   {
+    /** Name */
     name: "Asia Championship Longinus",
+    /** Category */
     category: "Tournament Exclusives",
+    /** Base Price */
     basePrice: 30000,
   },
 
   // Gold series
   {
+    /** Name */
     name: "24K Gold Plated Valkyrie",
+    /** Category */
     category: "Gold Series",
+    /** Base Price */
     basePrice: 45000,
   },
   {
+    /** Name */
     name: "Gold Edition Spriggan Requiem",
+    /** Category */
     category: "Gold Series",
+    /** Base Price */
     basePrice: 40000,
   },
   {
+    /** Name */
     name: "Anniversary Gold Dragoon",
+    /** Category */
     category: "Gold Series",
+    /** Base Price */
     basePrice: 50000,
   },
   { name: "Limited Gold L-Drago", category: "Gold Series", basePrice: 38000 },
 
   // Store exclusives
   {
+    /** Name */
     name: "Japan Import Limited Achilles",
+    /** Category */
     category: "Store Exclusives",
+    /** Base Price */
     basePrice: 8000,
   },
   {
+    /** Name */
     name: "Korea Exclusive Belial",
+    /** Category */
     category: "Store Exclusives",
+    /** Base Price */
     basePrice: 9500,
   },
   {
+    /** Name */
     name: "US Convention Exclusive Set",
+    /** Category */
     category: "Store Exclusives",
+    /** Base Price */
     basePrice: 12000,
   },
 
   // Anniversary editions
   {
+    /** Name */
     name: "20th Anniversary Dragoon Set",
+    /** Category */
     category: "Anniversary Editions",
+    /** Base Price */
     basePrice: 55000,
   },
   {
+    /** Name */
     name: "15th Anniversary Dranzer",
+    /** Category */
     category: "Anniversary Editions",
+    /** Base Price */
     basePrice: 42000,
   },
   {
+    /** Name */
     name: "10th Anniversary Metal Series",
+    /** Category */
     category: "Anniversary Editions",
+    /** Base Price */
     basePrice: 38000,
   },
 
   // Rare finds
   {
+    /** Name */
     name: "Prototype Valkyrie - Test Version",
+    /** Category */
     category: "Rare Finds",
+    /** Base Price */
     basePrice: 75000,
   },
   { name: "Factory Sample Spriggan", category: "Rare Finds", basePrice: 60000 },
   { name: "Pre-Production Fafnir", category: "Rare Finds", basePrice: 65000 },
   {
+    /** Name */
     name: "Limited Color Variant Longinus",
+    /** Category */
     category: "Rare Finds",
+    /** Base Price */
     basePrice: 25000,
   },
 
   // Collector items
   {
+    /** Name */
     name: "Complete Metal Fusion Set - Sealed",
+    /** Category */
     category: "Collector Items",
+    /** Base Price */
     basePrice: 85000,
   },
   {
+    /** Name */
     name: "Full HMS Collection - 12 Beyblades",
+    /** Category */
     category: "Collector Items",
+    /** Base Price */
     basePrice: 120000,
   },
   {
+    /** Name */
     name: "Original Series Complete Box",
+    /** Category */
     category: "Collector Items",
+    /** Base Price */
     basePrice: 95000,
   },
   {
+    /** Name */
     name: "Burst Series Master Collection",
+    /** Category */
     category: "Collector Items",
+    /** Base Price */
     basePrice: 70000,
   },
 
@@ -180,21 +264,59 @@ const AUCTION_ITEMS = [
 
   // Metal series rare
   {
+    /** Name */
     name: "Lightning L-Drago - Mint",
+    /** Category */
     category: "Metal Fusion",
+    /** Base Price */
     basePrice: 8000,
   },
   {
+    /** Name */
     name: "Galaxy Pegasus - Sealed",
+    /** Category */
     category: "Metal Masters",
+    /** Base Price */
     basePrice: 9000,
   },
   {
+    /** Name */
     name: "Diablo Nemesis - Complete",
+    /** Category */
     category: "Metal Fury",
+    /** Base Price */
     basePrice: 12000,
   },
 ];
+
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @param {NextRequest} request - The request
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST(request);
+ */
 
 export async function POST(request: NextRequest) {
   try {
@@ -288,12 +410,16 @@ export async function POST(request: NextRequest) {
         seller_id: currentShop.ownerId,
         category_id: categoryId,
         title,
+        /** Slug */
         slug: title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .slice(0, 100),
+        /** Description */
         description: `Rare ${auctionItem.name} up for auction! ${condition} condition. Perfect for serious collectors. Certificate of authenticity included.`,
+        /** Images */
         images: auctionImages,
+        /** Videos */
         videos: auctionVideos,
         starting_bid: Math.round(startingBid),
         current_bid: Math.round(currentBid),
@@ -308,8 +434,10 @@ export async function POST(request: NextRequest) {
         bid_count: totalBids,
         total_bids: totalBids,
         unique_bidders: Math.floor(totalBids * 0.6) + 1,
+        /** Watchers */
         watchers: Math.floor(Math.random() * 50) + 5,
         view_count: Math.floor(Math.random() * 500) + 50,
+        /** Tags */
         tags: ["beyblade", "rare", "collectible", condition.toLowerCase()],
         created_at: timestamp,
         updated_at: timestamp,
@@ -335,10 +463,15 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "auctions",
+      /** Data */
       data: {
+        /** Count */
         count: createdAuctions.length,
+        /** Auctions */
         auctions: createdAuctions,
         auctionStats,
       },

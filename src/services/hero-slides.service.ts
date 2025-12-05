@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/hero-slides.service
+ * @description This file contains service functions for hero-slides operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import { HERO_SLIDE_ROUTES } from "@/constants/api-routes";
 
@@ -5,51 +14,115 @@ import { HERO_SLIDE_ROUTES } from "@/constants/api-routes";
  * Hero Slide interface
  */
 export interface HeroSlide {
+  /** Id */
   id: string;
+  /** Title */
   title: string;
+  /** Subtitle */
   subtitle?: string;
+  /** Description */
   description?: string;
+  /** Image */
   image: string;
+  /** Mobile Image */
   mobileImage?: string;
+  /** Cta Text */
   ctaText: string;
+  /** Cta Link */
   ctaLink: string;
+  /** Cta Target */
   ctaTarget?: "_blank" | "_self";
+  /** Order */
   order: number;
+  /** Is Active */
   isActive: boolean;
+  /** Start Date */
   startDate?: string;
+  /** End Date */
   endDate?: string;
+  /** Background Color */
   backgroundColor?: string;
+  /** Text Color */
   textColor?: string;
+  /** Created At */
   createdAt: string;
+  /** Updated At */
   updatedAt: string;
 }
 
+/**
+ * HeroSlideFilters interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeroSlideFilters
+ */
 export interface HeroSlideFilters {
+  /** Is Active */
   isActive?: boolean;
+  /** Search */
   search?: string;
 }
 
+/**
+ * HeroSlideFormData interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for HeroSlideFormData
+ */
 export interface HeroSlideFormData {
+  /** Title */
   title: string;
+  /** Subtitle */
   subtitle?: string;
+  /** Description */
   description?: string;
+  /** Image */
   image: string;
+  /** Mobile Image */
   mobileImage?: string;
+  /** Cta Text */
   ctaText: string;
+  /** Cta Link */
   ctaLink: string;
+  /** Cta Target */
   ctaTarget?: "_blank" | "_self";
+  /** Order */
   order: number;
+  /** Is Active */
   isActive: boolean;
+  /** Start Date */
   startDate?: string;
+  /** End Date */
   endDate?: string;
+  /** Background Color */
   backgroundColor?: string;
+  /** Text Color */
   textColor?: string;
 }
 
 /**
  * Transform camelCase form data to snake_case for API
  */
+/**
+ * Performs to api format operation
+ *
+ * @param {Partial<HeroSlideFormData>} data - Data object containing information
+ *
+ * @returns {any} The toapiformat result
+ */
+
+/**
+ * Performs to api format operation
+ *
+ * @param {Partial<HeroSlideFormData>} /** Data */
+  data - The /**  data */
+  data
+ *
+ * @returns {any} The toapiformat result
+ */
+
 function toApiFormat(
+  /** Data */
   data: Partial<HeroSlideFormData>,
 ): Record<string, unknown> {
   const apiData: Record<string, unknown> = {};
@@ -77,28 +150,61 @@ function toApiFormat(
 /**
  * Transform snake_case API response to camelCase
  */
+/**
+ * Performs from api format operation
+ *
+ * @param {Record<string, unknown>} data - Data object containing information
+ *
+ * @returns {any} The fromapiformat result
+ */
+
+/**
+ * Performs from api format operation
+ *
+ * @param {Record<string, unknown>} data - Data object containing information
+ *
+ * @returns {any} The fromapiformat result
+ */
+
 function fromApiFormat(data: Record<string, unknown>): HeroSlide {
   return {
+    /** Id */
     id: data.id as string,
+    /** Title */
     title: data.title as string,
+    /** Subtitle */
     subtitle: (data.subtitle as string) || undefined,
+    /** Description */
     description: (data.description as string) || undefined,
+    /** Image */
     image: (data.image_url as string) || (data.image as string) || "",
+    /** Mobile Image */
     mobileImage: (data.mobile_image_url as string) || undefined,
+    /** Cta Text */
     ctaText:
       (data.cta_text as string) || (data.ctaText as string) || "Shop Now",
+    /** Cta Link */
     ctaLink: (data.link_url as string) || (data.ctaLink as string) || "/",
+    /** Cta Target */
     ctaTarget: (data.cta_target as "_blank" | "_self") || undefined,
+    /** Order */
     order: (data.position as number) ?? (data.order as number) ?? 0,
+    /** Is Active */
     isActive:
       data.is_active !== undefined
         ? (data.is_active as boolean)
         : ((data.enabled as boolean) ?? true),
+    /** Start Date */
     startDate: (data.start_date as string) || undefined,
+    /** End Date */
     endDate: (data.end_date as string) || undefined,
+    /** Background Color */
     backgroundColor: (data.background_color as string) || undefined,
+    /** Text Color */
     textColor: (data.text_color as string) || undefined,
+    /** Created At */
     createdAt: (data.created_at as string) || (data.createdAt as string) || "",
+    /** Updated At */
     updatedAt: (data.updated_at as string) || (data.updatedAt as string) || "",
   };
 }
@@ -139,6 +245,7 @@ class HeroSlidesService {
       : HERO_SLIDE_ROUTES.LIST;
 
     const response = await apiService.get<{
+      /** Slides */
       slides: Record<string, unknown>[];
     }>(url);
     return (response.slides || []).map(fromApiFormat);
@@ -172,7 +279,9 @@ class HeroSlidesService {
    * Update an existing hero slide (Admin only)
    */
   async updateHeroSlide(
+    /** Id */
     id: string,
+    /** Data */
     data: Partial<HeroSlideFormData>,
   ): Promise<HeroSlide> {
     const response = await apiService.patch<{ slide: Record<string, unknown> }>(
@@ -196,6 +305,7 @@ class HeroSlidesService {
    */
   async bulkDelete(ids: string[]): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
+      /** Action */
       action: "delete",
       ids,
     });
@@ -206,12 +316,16 @@ class HeroSlidesService {
    * Bulk update hero slides (Admin only)
    */
   async bulkUpdate(
+    /** Ids */
     ids: string[],
+    /** Updates */
     updates: Partial<HeroSlideFormData>,
   ): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
+      /** Action */
       action: "update",
       ids,
+      /** Updates */
       updates: toApiFormat(updates),
     });
     this.invalidateCache();
@@ -221,10 +335,13 @@ class HeroSlidesService {
    * Reorder hero slides (Admin only)
    */
   async reorderSlides(
+    /** Slide Orders */
     slideOrders: { id: string; order: number }[],
   ): Promise<void> {
     await apiService.post(HERO_SLIDE_ROUTES.BULK, {
+      /** Action */
       action: "reorder",
+      /** Slides */
       slides: slideOrders.map((s) => ({ id: s.id, position: s.order })),
     });
     this.invalidateCache();

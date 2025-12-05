@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/auctions/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import AuctionCard from "@/components/cards/AuctionCard";
@@ -27,6 +36,26 @@ import {
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 
+/**
+ * Function: Auctions Content
+ */
+/**
+ * Performs auctions content operation
+ *
+ * @returns {void} Function return value
+ */
+/**
+ * Performs auctions content operation
+ *
+ * @returns {any} The auctionscontent result
+ */
+
+/**
+ * Performs auctions content operation
+ *
+ * @returns {any} The auctionscontent result
+ */
+
 function AuctionsContent() {
   const router = useRouter();
   const isMobile = useIsMobile();
@@ -36,6 +65,7 @@ function AuctionsContent() {
     filters,
     updateFilter,
     updateFilters,
+    /** Reset Filters */
     resetFilters: resetUrlFilters,
     sort,
     setSort,
@@ -44,16 +74,26 @@ function AuctionsContent() {
     limit,
     setLimit,
   } = useUrlFilters({
+    /** Initial Filters */
     initialFilters: {
+      /** Status */
       status: "active",
+      /** Category Id */
       categoryId: "",
+      /** Min Bid */
       minBid: "",
+      /** Max Bid */
       maxBid: "",
+      /** Featured */
       featured: "",
+      /** View */
       view: "grid",
     },
+    /** Initial Sort */
     initialSort: { field: "created_at", order: "desc" },
+    /** Initial Page */
     initialPage: 1,
+    /** Initial Limit */
     initialLimit: 12,
   });
 
@@ -66,6 +106,34 @@ function AuctionsContent() {
   const { isLoading, error, execute } = useLoadingState<void>();
 
   // Extract view from filters
+  /**
+   * Performs view operation
+   *
+   * @param {any} [filters.view as "grid" | "list") || "grid";
+
+  const loadAuctions] - The filters.view as "grid" | "list") || "grid";
+
+  const load auctions
+   *
+   * @returns {Promise<any>} Promise resolving to view result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs view operation
+   *
+   * @param {any} [filters.view as "grid" | "list") || "grid";
+
+  const loadAuctions] - The filters.view as "grid" | "list") || "grid";
+
+  const load auctions
+   *
+   * @returns {Promise<any>} Promise resolving to view result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const view = (filters.view as "grid" | "list") || "grid";
 
   const loadAuctions = useCallback(async () => {
@@ -74,9 +142,12 @@ function AuctionsContent() {
 
       // Build filter params
       const apiFilters: any = {
+        /** Start After */
         startAfter: startAfter || undefined,
         limit,
+        /** Sort By */
         sortBy: sort?.field || "created_at",
+        /** Sort Order */
         sortOrder: sort?.order || "desc",
       };
 
@@ -195,7 +266,9 @@ function AuctionsContent() {
                     value={sort?.field || "created_at"}
                     onChange={(e) =>
                       setSort({
+                        /** Field */
                         field: e.target.value,
+                        /** Order */
                         order: sort?.order || "desc",
                       })
                     }
@@ -211,7 +284,9 @@ function AuctionsContent() {
                     value={sort?.order || "desc"}
                     onChange={(e) =>
                       setSort({
+                        /** Field */
                         field: sort?.field || "created_at",
+                        /** Order */
                         order: e.target.value as "asc" | "desc",
                       })
                     }
@@ -335,7 +410,9 @@ function AuctionsContent() {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 <EmptyStates.NoAuctions
                   action={{
+                    /** Label */
                     label: "Browse All",
+                    /** On Click */
                     onClick: () => router.push("/auctions"),
                   }}
                 />
@@ -347,25 +424,38 @@ function AuctionsContent() {
                     <AuctionCard
                       key={auction.id}
                       auction={{
+                        /** Id */
                         id: auction.id,
+                        /** Name */
                         name: auction.name || auction.productName || "",
+                        /** Slug */
                         slug: auction.slug || auction.productSlug || "",
+                        /** Images */
                         images:
                           auction.images ||
                           (auction.productImage ? [auction.productImage] : []),
+                        /** Current Bid */
                         currentBid:
                           auction.currentBid ||
                           auction.currentPrice ||
                           auction.startingBid ||
                           0,
+                        /** Starting Bid */
                         startingBid: auction.startingBid || 0,
+                        /** Bid Count */
                         bidCount: auction.bidCount || auction.totalBids || 0,
+                        /** End Time */
                         endTime: auction.endTime,
+                        /** Status */
                         status: auction.status as any,
+                        /** Featured */
                         featured: auction.featured,
+                        /** Shop */
                         shop: auction.shopId
                           ? {
+                              /** Id */
                               id: auction.shopId,
+                              /** Name */
                               name: (auction as any).shopName || "Shop",
                             }
                           : undefined,
@@ -429,6 +519,14 @@ function AuctionsContent() {
   );
 }
 
+/**
+ * Performs auctions page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = AuctionsPage();
+ */
 export default function AuctionsPage() {
   return (
     <ErrorBoundary>

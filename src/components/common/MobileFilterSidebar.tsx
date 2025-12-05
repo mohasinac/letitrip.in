@@ -1,8 +1,38 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/common/MobileFilterSidebar
+ * @description This file contains the MobileFilterSidebar component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { MobileFilterSidebarProps } from "@/types/inline-edit";
+
+/**
+ * Function: Mobile Filter Sidebar
+ */
+/**
+ * Performs mobile filter sidebar operation
+ *
+ * @returns {any} The mobilefiltersidebar result
+ *
+ * @example
+ * MobileFilterSidebar();
+ */
+
+/**
+ * Performs mobile filter sidebar operation
+ *
+ * @returns {any} The mobilefiltersidebar result
+ *
+ * @example
+ * MobileFilterSidebar();
+ */
 
 export function MobileFilterSidebar({
   isOpen,
@@ -26,6 +56,22 @@ export function MobileFilterSidebar({
   }, [isOpen]);
 
   // Handle backdrop click
+  /**
+   * Handles backdrop click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlebackdropclick result
+   */
+
+  /**
+   * Handles backdrop click event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlebackdropclick result
+   */
+
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();

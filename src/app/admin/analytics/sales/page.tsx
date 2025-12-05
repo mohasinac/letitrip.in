@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/analytics/sales/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { PeriodSelector } from "@/components/common/PeriodSelector";
@@ -30,6 +39,25 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Revenue trend chart
+/**
+ * Function: Revenue Trend Chart
+ */
+/**
+ * Performs revenue trend chart operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The revenuetrendchart result
+ */
+
+/**
+ * Performs revenue trend chart operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The revenuetrendchart result
+ */
+
 function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
   if (data.length === 0) {
     return (
@@ -94,6 +122,25 @@ function RevenueTrendChart({ data }: { data: SalesDataPointFE[] }) {
 }
 
 // Category breakdown chart
+/**
+ * Function: Category Breakdown
+ */
+/**
+ * Performs category breakdown operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The categorybreakdown result
+ */
+
+/**
+ * Performs category breakdown operation
+ *
+ * @param {{ data} { data } - The { data }
+ *
+ * @returns {any} The categorybreakdown result
+ */
+
 function CategoryBreakdown({ data }: { data: CategoryPerformanceFE[] }) {
   if (data.length === 0) {
     return (
@@ -150,6 +197,25 @@ function CategoryBreakdown({ data }: { data: CategoryPerformanceFE[] }) {
 }
 
 // Top products table with more detail
+/**
+ * Function: Detailed Products Table
+ */
+/**
+ * Performs detailed products table operation
+ *
+ * @param {{ products} { products } - The { products }
+ *
+ * @returns {any} The detailedproductstable result
+ */
+
+/**
+ * Performs detailed products table operation
+ *
+ * @param {{ products} { products } - The { products }
+ *
+ * @returns {any} The detailedproductstable result
+ */
+
 function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
   if (products.length === 0) {
     return (
@@ -235,12 +301,15 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
 export default function AdminAnalyticsSalesPage() {
   const [period, setPeriod] = useState("month");
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
     execute,
   } = useLoadingState({
+    /** On Load Error */
     onLoadError: (error) => {
       logError(error, {
+        /** Component */
         component: "AdminAnalyticsSalesPage.fetchData",
         period,
       });

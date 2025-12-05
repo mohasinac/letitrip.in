@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/auth/register/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { withRegistrationTracking } from "@/app/api/middleware/ip-tracker";
 import { COLLECTIONS } from "@/constants/database";
 import {
@@ -14,13 +23,47 @@ import {
   setSessionCookie,
 } from "../../lib/session";
 
+/**
+ * RegisterRequestBody interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RegisterRequestBody
+ */
 interface RegisterRequestBody {
+  /** Email */
   email: string;
+  /** Password */
   password: string;
+  /** Name */
   name: string;
+  /** Phone Number */
   phoneNumber?: string;
+  /** Role */
   role?: string;
 }
+
+/**
+ * Function: Register Handler
+ */
+/**
+ * Performs register handler operation
+ *
+ * @param {Request} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to registerhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
+
+/**
+ * Performs register handler operation
+ *
+ * @param {Request} req - The req
+ *
+ * @returns {Promise<any>} Promise resolving to registerhandler result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ */
 
 async function registerHandler(req: Request) {
   try {
@@ -31,7 +74,9 @@ async function registerHandler(req: Request) {
     if (!email || !password || !name) {
       const response = NextResponse.json(
         {
+          /** Error */
           error: "Missing required fields",
+          /** Fields */
           fields: ["email", "password", "name"],
         },
         { status: 400 }
@@ -85,30 +130,49 @@ async function registerHandler(req: Request) {
 
     // Create user in Firebase Auth
     const userRecord = await adminAuth.createUser({
+      /** Email */
       email: email.toLowerCase(),
+      /** Password */
       password: password,
+      /** Display Name */
       displayName: name,
+      /** Phone Number */
       phoneNumber: phoneNumber,
     });
 
     // Create user document in Firestore
     const userData = {
+      /** Uid */
       uid: userRecord.uid,
+      /** Email */
       email: email.toLowerCase(),
+      /** Name */
       name: name,
+      /** Phone Number */
       phoneNumber: phoneNumber || null,
+      /** Hashed Password */
       hashedPassword: hashedPassword,
       role: userRole, // Use the validated role
+      /** Is Email Verified */
       isEmailVerified: false,
+      /** Created At */
       createdAt: new Date().toISOString(),
+      /** Updated At */
       updatedAt: new Date().toISOString(),
+      /** Profile */
       profile: {
+        /** Avatar */
         avatar: null,
+        /** Bio */
         bio: null,
+        /** Address */
         address: null,
       },
+      /** Preferences */
       preferences: {
+        /** Notifications */
         notifications: true,
+        /** Newsletter */
         newsletter: true,
       },
     };
@@ -160,12 +224,18 @@ async function registerHandler(req: Request) {
     // Create response with session cookie
     const response = NextResponse.json(
       {
+        /** Message */
         message: "User registered successfully",
+        /** User */
         user: {
+          /** Uid */
           uid: userRecord.uid,
+          /** Email */
           email: userRecord.email,
+          /** Name */
           name: userRecord.displayName,
           role: userRole, // Use the validated role
+          /** Is Email Verified */
           isEmailVerified: false,
         },
         sessionId,
@@ -210,7 +280,9 @@ async function registerHandler(req: Request) {
 
     const response = NextResponse.json(
       {
+        /** Error */
         error: "Registration failed",
+        /** Message */
         message:
           process.env.NODE_ENV === "production"
             ? "An unexpected error occurred"
@@ -224,4 +296,8 @@ async function registerHandler(req: Request) {
 }
 
 // Export with IP tracking and rate limiting (max 3 attempts per hour)
+/**
+ * Post
+ * @constant
+ */
 export const POST = withRegistrationTracking(registerHandler);

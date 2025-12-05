@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/payouts/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { requireAuth } from "@/app/api/middleware/rbac-auth";
 import { logError } from "@/lib/firebase-error-logger";
@@ -10,7 +19,39 @@ import { NextRequest, NextResponse } from "next/server";
  * DELETE: Delete payout (admin only)
  */
 
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, {});
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(/** Request */
+  request, {});
+ */
+
 export async function GET(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -46,17 +87,22 @@ export async function GET(
     // Admin can see all
 
     return NextResponse.json({
+      /** Success */
       success: true,
       payout,
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.payouts.id.GET",
+      /** Metadata */
       metadata: { payoutId: id },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to fetch payout",
       },
       { status: 500 },
@@ -64,7 +110,42 @@ export async function GET(
   }
 }
 
+/**
+ * Function: P A T C H
+ */
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(request, {});
+ */
+
+/**
+ * Performs p a t c h operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to patch result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * PATCH(/** Request */
+  request, {});
+ */
+
 export async function PATCH(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -127,7 +208,9 @@ export async function PATCH(
     } else {
       return NextResponse.json(
         {
+          /** Success */
           success: false,
+          /** Error */
           error:
             "Cannot update payout. Only pending payouts can be modified by seller.",
         },
@@ -142,18 +225,25 @@ export async function PATCH(
     const updatedDoc = await Collections.payouts().doc(id).get();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Payout */
       payout: { id: updatedDoc.id, ...updatedDoc.data() },
+      /** Message */
       message: "Payout updated successfully",
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.payouts.id.PATCH",
+      /** Metadata */
       metadata: { payoutId: id, updates: data },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to update payout",
       },
       { status: 500 },
@@ -161,7 +251,42 @@ export async function PATCH(
   }
 }
 
+/**
+ * Function: D E L E T E
+ */
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(request, {});
+ */
+
+/**
+ * Performs d e l e t e operation
+ *
+ * @param {NextRequest} /** Request */
+  request - The /**  request */
+  request
+ * @param {{ params} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to delete result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * DELETE(/** Request */
+  request, {});
+ */
+
 export async function DELETE(
+  /** Request */
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -195,17 +320,23 @@ export async function DELETE(
     await Collections.payouts().doc(id).delete();
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Message */
       message: "Payout deleted successfully",
     });
   } catch (error: any) {
     logError(error as Error, {
+      /** Component */
       component: "API.payouts.id.DELETE",
+      /** Metadata */
       metadata: { payoutId: id },
     });
     return NextResponse.json(
       {
+        /** Success */
         success: false,
+        /** Error */
         error: error.message || "Failed to delete payout",
       },
       { status: 500 },

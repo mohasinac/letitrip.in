@@ -1,9 +1,24 @@
+/**
+ * @fileoverview Service Module
+ * @module src/services/search.service
+ * @description This file contains service functions for search operations
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { apiService } from "./api.service";
 import type {
   SearchResultFE,
   SearchFiltersFE,
 } from "@/types/frontend/search.types";
 
+/**
+ * SearchService class
+ * 
+ * @class
+ * @description Description of SearchService class functionality
+ */
 class SearchService {
   // Global search across products, shops, and categories
   async search(filters: SearchFiltersFE): Promise<SearchResultFE> {

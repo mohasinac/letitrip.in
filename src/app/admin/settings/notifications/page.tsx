@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/settings/notifications/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -39,83 +48,152 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+/**
+ * NotificationCategory interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NotificationCategory
+ */
 interface NotificationCategory {
+  /** Enabled */
   enabled: boolean;
+  /** Channels */
   channels: {
+    /** Email */
     email: boolean;
+    /** Push */
     push: boolean;
+    /** In App */
     inApp: boolean;
   };
 }
 
+/**
+ * NotificationSettings interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for NotificationSettings
+ */
 interface NotificationSettings {
+  /** Global Enabled */
   globalEnabled: boolean;
+  /** Categories */
   categories: {
+    /** Orders */
     orders: NotificationCategory;
+    /** Shipping */
     shipping: NotificationCategory;
+    /** Payments */
     payments: NotificationCategory;
+    /** Reviews */
     reviews: NotificationCategory;
+    /** Returns */
     returns: NotificationCategory;
+    /** Promotions */
     promotions: NotificationCategory;
+    /** Security */
     security: NotificationCategory;
+    /** System */
     system: NotificationCategory;
   };
+  /** Digest */
   digest: {
+    /** Enabled */
     enabled: boolean;
+    /** Frequency */
     frequency: "daily" | "weekly" | "never";
+    /** Time */
     time: string;
   };
+  /** Quiet Hours */
   quietHours: {
+    /** Enabled */
     enabled: boolean;
+    /** Start */
     start: string;
+    /** End */
     end: string;
   };
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
+  /** Global Enabled */
   globalEnabled: true,
+  /** Categories */
   categories: {
+    /** Orders */
     orders: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: true, inApp: true },
     },
+    /** Shipping */
     shipping: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: true, inApp: true },
     },
+    /** Payments */
     payments: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: true, inApp: true },
     },
+    /** Reviews */
     reviews: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: false, inApp: true },
     },
+    /** Returns */
     returns: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: true, inApp: true },
     },
+    /** Promotions */
     promotions: {
+      /** Enabled */
       enabled: false,
+      /** Channels */
       channels: { email: false, push: false, inApp: true },
     },
+    /** Security */
     security: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: true, push: true, inApp: true },
     },
+    /** System */
     system: {
+      /** Enabled */
       enabled: true,
+      /** Channels */
       channels: { email: false, push: false, inApp: true },
     },
   },
+  /** Digest */
   digest: {
+    /** Enabled */
     enabled: true,
+    /** Frequency */
     frequency: "daily",
+    /** Time */
     time: "09:00",
   },
+  /** Quiet Hours */
   quietHours: {
+    /** Enabled */
     enabled: false,
+    /** Start */
     start: "22:00",
+    /** End */
     end: "08:00",
   },
 };
@@ -124,44 +202,76 @@ const categoryInfo: Record<
   keyof NotificationSettings["categories"],
   { label: string; description: string; icon: React.ReactNode }
 > = {
+  /** Orders */
   orders: {
+    /** Label */
     label: "Orders",
+    /** Description */
     description: "New orders, order updates, cancellations",
+    /** Icon */
     icon: <ShoppingBag className="w-5 h-5 text-blue-500" />,
   },
+  /** Shipping */
   shipping: {
+    /** Label */
     label: "Shipping",
+    /** Description */
     description: "Shipping updates, delivery notifications",
+    /** Icon */
     icon: <Package className="w-5 h-5 text-green-500" />,
   },
+  /** Payments */
   payments: {
+    /** Label */
     label: "Payments",
+    /** Description */
     description: "Payment confirmations, refunds, payouts",
+    /** Icon */
     icon: <CreditCard className="w-5 h-5 text-purple-500" />,
   },
+  /** Reviews */
   reviews: {
+    /** Label */
     label: "Reviews",
+    /** Description */
     description: "New reviews, review responses",
+    /** Icon */
     icon: <Star className="w-5 h-5 text-yellow-500" />,
   },
+  /** Returns */
   returns: {
+    /** Label */
     label: "Returns",
+    /** Description */
     description: "Return requests, return status updates",
+    /** Icon */
     icon: <Package className="w-5 h-5 text-orange-500" />,
   },
+  /** Promotions */
   promotions: {
+    /** Label */
     label: "Promotions",
+    /** Description */
     description: "Marketing campaigns, special offers",
+    /** Icon */
     icon: <MessageSquare className="w-5 h-5 text-pink-500" />,
   },
+  /** Security */
   security: {
+    /** Label */
     label: "Security",
+    /** Description */
     description: "Login alerts, password changes, suspicious activity",
+    /** Icon */
     icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
   },
+  /** System */
   system: {
+    /** Label */
     label: "System",
+    /** Description */
     description: "Maintenance notices, feature updates",
+    /** Icon */
     icon: <Monitor className="w-5 h-5 text-gray-500" />,
   },
 };
@@ -172,15 +282,21 @@ export default function AdminNotificationSettingsPage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const {
+    /** Is Loading */
     isLoading: loading,
     error,
+    /** Data */
     data: settings,
+    /** Set Data */
     setData: setSettings,
     execute,
   } = useLoadingState<NotificationSettings>({
+    /** Initial Data */
     initialData: DEFAULT_SETTINGS,
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, {
+        /** Component */
         component: "AdminNotificationSettings.loadSettings",
       });
     },
@@ -189,6 +305,22 @@ export default function AdminNotificationSettingsPage() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const loadSettings = async () => {
     await execute(async () => {
@@ -203,6 +335,26 @@ export default function AdminNotificationSettingsPage() {
     });
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {React.FormEvent} e - The e
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -212,6 +364,7 @@ export default function AdminNotificationSettingsPage() {
       setSuccess(null);
       if (!settings) return;
       await apiService.put("/api/admin/settings", {
+        /** Category */
         category: "notifications",
         settings,
       });
@@ -227,33 +380,73 @@ export default function AdminNotificationSettingsPage() {
     }
   };
 
+  /**
+   * Performs toggle category operation
+   *
+   * @param {keyof NotificationSettings["categories"]} category - The category
+   *
+   * @returns {any} The togglecategory result
+   */
+
+  /**
+   * Performs toggle category operation
+   *
+   * @param {keyof NotificationSettings["categories"]} /** Category */
+    category - The /**  category */
+    category
+   *
+   * @returns {any} The togglecategory result
+   */
+
   const toggleCategory = (
+    /** Category */
     category: keyof NotificationSettings["categories"]
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Categories */
       categories: {
         ...settings.categories,
         [category]: {
           ...settings.categories[category],
+          /** Enabled */
           enabled: !settings.categories[category].enabled,
         },
       },
     });
   };
 
+  /**
+   * Performs toggle channel operation
+   *
+   * @param {keyof NotificationSettings["categories"]} category - The category
+   * @param {"email" | "push" | "inApp"} channel - The channel
+   *
+   * @returns {any} The togglechannel result
+   */
+
+  /**
+   * Performs toggle channel operation
+   *
+   * @returns {any} The togglechannel result
+   */
+
   const toggleChannel = (
+    /** Category */
     category: keyof NotificationSettings["categories"],
+    /** Channel */
     channel: "email" | "push" | "inApp"
   ) => {
     if (!settings) return;
     setSettings({
       ...settings,
+      /** Categories */
       categories: {
         ...settings.categories,
         [category]: {
           ...settings.categories[category],
+          /** Channels */
           channels: {
             ...settings.categories[category].channels,
             [channel]: !settings.categories[category].channels[channel],
@@ -358,6 +551,7 @@ export default function AdminNotificationSettingsPage() {
                   if (settings) {
                     setSettings({
                       ...settings,
+                      /** Global Enabled */
                       globalEnabled: !settings.globalEnabled,
                     });
                   }
@@ -505,8 +699,10 @@ export default function AdminNotificationSettingsPage() {
                 onClick={() =>
                   setSettings({
                     ...settings,
+                    /** Digest */
                     digest: {
                       ...settings.digest,
+                      /** Enabled */
                       enabled: !settings.digest.enabled,
                     },
                   })
@@ -534,8 +730,10 @@ export default function AdminNotificationSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Digest */
                       digest: {
                         ...settings.digest,
+                        /** Frequency */
                         frequency: e.target.value as
                           | "daily"
                           | "weekly"
@@ -556,6 +754,7 @@ export default function AdminNotificationSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Digest */
                       digest: { ...settings.digest, time: e.target.value },
                     })
                   }
@@ -580,8 +779,10 @@ export default function AdminNotificationSettingsPage() {
                 onClick={() =>
                   setSettings({
                     ...settings,
+                    /** Quiet Hours */
                     quietHours: {
                       ...settings.quietHours,
+                      /** Enabled */
                       enabled: !settings.quietHours.enabled,
                     },
                   })
@@ -612,8 +813,10 @@ export default function AdminNotificationSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Quiet Hours */
                       quietHours: {
                         ...settings.quietHours,
+                        /** Start */
                         start: e.target.value,
                       },
                     })
@@ -627,8 +830,10 @@ export default function AdminNotificationSettingsPage() {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
+                      /** Quiet Hours */
                       quietHours: {
                         ...settings.quietHours,
+                        /** End */
                         end: e.target.value,
                       },
                     })

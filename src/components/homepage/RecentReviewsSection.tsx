@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/homepage/RecentReviewsSection
+ * @description This file contains the RecentReviewsSection component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,10 +19,49 @@ import { analyticsService } from "@/services/analytics.service";
 import type { ReviewFE } from "@/types/frontend/review.types";
 import { ExternalLink } from "lucide-react";
 
+/**
+ * RecentReviewsSectionProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RecentReviewsSectionProps
+ */
 interface RecentReviewsSectionProps {
+  /** Limit */
   limit?: number;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Function: Recent Reviews Section
+ */
+/**
+ * Performs recent reviews section operation
+ *
+ * @param {RecentReviewsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The recentreviewssection result
+ *
+ * @example
+ * RecentReviewsSection({
+  limit);
+ */
+
+/**
+ * Performs recent reviews section operation
+ *
+ * @param {RecentReviewsSectionProps} [{
+  limit] - The {
+  limit
+ *
+ * @returns {any} The recentreviewssection result
+ *
+ * @example
+ * RecentReviewsSection({
+  limit);
+ */
 
 export function RecentReviewsSection({
   limit = 10,
@@ -26,6 +74,22 @@ export function RecentReviewsSection({
     loadReviews();
   }, [limit]);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadReviews = async () => {
     try {
       setLoading(true);
@@ -34,11 +98,13 @@ export function RecentReviewsSection({
 
       if (data.length > 0) {
         analyticsService.trackEvent("homepage_recent_reviews_viewed", {
+          /** Count */
           count: data.length,
         });
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "RecentReviewsSection.loadReviews",
       });
     } finally {

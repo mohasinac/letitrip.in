@@ -1,23 +1,52 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/events/EventBanner
+ * @description This file contains the EventBanner component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Calendar, CheckCircle, Clock, MapPin, Users } from "lucide-react";
 
+/**
+ * EventBannerProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for EventBannerProps
+ */
 export interface EventBannerProps {
+  /** Event */
   event: {
+    /** Title */
     title: string;
+    /** Description */
     description: string;
+    /** Type */
     type: string;
+    /** Start Date */
     startDate: string;
+    /** End Date */
     endDate: string;
+    /** Location */
     location?: string;
+    /** Is Online */
     isOnline: boolean;
+    /** Participant Count */
     participantCount: number;
+    /** Max Participants */
     maxParticipants?: number;
+    /** Image Url */
     imageUrl?: string;
   };
+  /** Is Registered */
   isRegistered?: boolean;
+  /** Show Registration Button */
   showRegistrationButton?: boolean;
+  /** On Register */
   onRegister?: () => void;
 }
 
@@ -42,6 +71,24 @@ export interface EventBannerProps {
  * />
  * ```
  */
+/**
+ * Performs event banner operation
+ *
+ * @returns {any} The eventbanner result
+ *
+ * @example
+ * EventBanner();
+ */
+
+/**
+ * Performs event banner operation
+ *
+ * @returns {any} The eventbanner result
+ *
+ * @example
+ * EventBanner();
+ */
+
 export function EventBanner({
   event,
   isRegistered = false,

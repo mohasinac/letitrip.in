@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/forms/AddressInput
+ * @description This file contains the AddressInput component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 /**
@@ -29,29 +38,76 @@ import { useEffect, useState } from "react";
 // TYPES
 // ============================================================================
 
+/**
+ * AddressInputValue interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressInputValue
+ */
 export interface AddressInputValue {
+  /** Line1 */
   line1: string;
+  /** Line2 */
   line2?: string;
+  /** City */
   city: string;
+  /** State */
   state: string;
+  /** Postal Code */
   postalCode: string;
+  /** Country */
   country: string;
+  /** Landmark */
   landmark?: string;
 }
 
+/**
+ * AddressInputProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AddressInputProps
+ */
 export interface AddressInputProps {
+  /** Value */
   value: AddressInputValue;
+  /** On Change */
   onChange: (value: AddressInputValue) => void;
+  /** Errors */
   errors?: Partial<Record<keyof AddressInputValue, string>>;
+  /** Required */
   required?: boolean;
+  /** Disabled */
   disabled?: boolean;
+  /** Show Landmark */
   showLandmark?: boolean;
+  /** Default Country */
   defaultCountry?: string;
 }
 
 // ============================================================================
 // COMPONENT
 // ============================================================================
+
+/**
+ * Function: Address Input
+ */
+/**
+ * Performs address input operation
+ *
+ * @returns {any} The addressinput result
+ *
+ * @example
+ * AddressInput();
+ */
+
+/**
+ * Performs address input operation
+ *
+ * @returns {any} The addressinput result
+ *
+ * @example
+ * AddressInput();
+ */
 
 export function AddressInput({
   value,
@@ -100,6 +156,26 @@ export function AddressInput({
     }
   }, [debouncedCity, value.state, value.country]);
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} pincode - The pincode
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} pincode - The pincode
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const lookupPincode = async (pincode: string) => {
     try {
       setLookingUpPincode(true);
@@ -111,8 +187,11 @@ export function AddressInput({
         // Auto-fill city, state from PIN code
         onChange({
           ...value,
+          /** City */
           city: details.city,
+          /** State */
           state: details.state,
+          /** Country */
           country: details.country,
         });
         setPincodeStatus("success");
@@ -121,6 +200,7 @@ export function AddressInput({
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressInput.lookupPincode",
         pincode,
       });
@@ -131,20 +211,44 @@ export function AddressInput({
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @param {string} query - The query
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} query - The query
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const loadCitySuggestions = async (query: string) => {
     try {
       setLoadingCities(true);
 
       const results = await addressService.autocompleteCities({
         query,
+        /** State */
         state: value.state,
+        /** Country */
         country: value.country,
+        /** Limit */
         limit: 5,
       });
 
       setCities(results.map((r) => r.city));
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AddressInput.loadCitySuggestions",
         query,
       });
@@ -153,8 +257,25 @@ export function AddressInput({
     }
   };
 
+  /**
+   * Handles field change event
+   *
+   * @param {keyof AddressInputValue} field - The field
+   * @param {string} fieldValue - The field value
+   *
+   * @returns {string} The handlefieldchange result
+   */
+
+  /**
+   * Handles field change event
+   *
+   * @returns {string} The handlefieldchange result
+   */
+
   const handleFieldChange = (
+    /** Field */
     field: keyof AddressInputValue,
+    /** Field Value */
     fieldValue: string
   ) => {
     onChange({
@@ -163,11 +284,35 @@ export function AddressInput({
     });
   };
 
+  /**
+   * Retrieves postal code label
+   *
+   * @returns {any} The postalcodelabel result
+   */
+
+  /**
+   * Retrieves postal code label
+   *
+   * @returns {any} The postalcodelabel result
+   */
+
   const getPostalCodeLabel = () => {
     if (value.country === "India") return "PIN Code";
     if (value.country === "United States") return "ZIP Code";
     return "Postal Code";
   };
+
+  /**
+   * Retrieves postal code placeholder
+   *
+   * @returns {any} The postalcodeplaceholder result
+   */
+
+  /**
+   * Retrieves postal code placeholder
+   *
+   * @returns {any} The postalcodeplaceholder result
+   */
 
   const getPostalCodePlaceholder = () => {
     if (value.country === "India") return "110001";
@@ -328,7 +473,9 @@ export function AddressInput({
             options={[
               { value: "", label: "Select State" },
               ...INDIAN_STATES.map((state) => ({
+                /** Value */
                 value: state.name,
+                /** Label */
                 label: state.name,
               })),
             ]}

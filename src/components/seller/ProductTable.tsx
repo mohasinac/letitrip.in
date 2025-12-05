@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/seller/ProductTable
+ * @description This file contains the ProductTable component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -15,9 +24,18 @@ import { ProductInlineForm } from "./ProductInlineForm";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
+/**
+ * ProductTableProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductTableProps
+ */
 interface ProductTableProps {
+  /** Products */
   products: ProductCardFE[];
+  /** Is Loading */
   isLoading?: boolean;
+  /** On Refresh */
   onRefresh?: () => void;
 }
 
@@ -33,6 +51,22 @@ export default function ProductTable({
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleDelete = async () => {
     if (!selectedProduct) return;
 
@@ -44,7 +78,9 @@ export default function ProductTable({
       onRefresh?.();
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "ProductTable.handleConfirmDelete",
+        /** Metadata */
         metadata: { productSlug: selectedProduct.slug },
       });
       toast.error("Failed to delete product. Please try again.");
@@ -52,6 +88,18 @@ export default function ProductTable({
       setIsDeleting(false);
     }
   };
+
+  /**
+   * Handles quick edit success event
+   *
+   * @returns {any} The handlequickeditsuccess result
+   */
+
+  /**
+   * Handles quick edit success event
+   *
+   * @returns {any} The handlequickeditsuccess result
+   */
 
   const handleQuickEditSuccess = () => {
     setShowEditModal(false);
@@ -61,9 +109,13 @@ export default function ProductTable({
 
   const columns: Column<ProductCardFE>[] = [
     {
+      /** Key */
       key: "image",
+      /** Label */
       label: "Image",
+      /** Width */
       width: "80px",
+      /** Render */
       render: (_, ProductCardFE) => (
         <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex-shrink-0">
           {ProductCardFE.images?.[0] ? (
@@ -84,24 +136,33 @@ export default function ProductTable({
       ),
     },
     {
+      /** Key */
       key: "name",
+      /** Label */
       label: "ProductCardFE Name",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (_, ProductCardFE) => (
         <div className="min-w-[200px]">
           <div className="font-medium text-gray-900 dark:text-white">
             {ProductCardFE.name}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            /** S K U */
             SKU: {ProductCardFE.sku || "N/A"}
           </div>
         </div>
       ),
     },
     {
+      /** Key */
       key: "categoryId",
+      /** Label */
       label: "Category",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (categoryId) => (
         <div className="text-sm text-gray-900 dark:text-white">
           {categoryId || "Uncategorized"}
@@ -109,8 +170,11 @@ export default function ProductTable({
       ),
     },
     {
+      /** Key */
       key: "slug",
+      /** Label */
       label: "Slug",
+      /** Render */
       render: (slug) => (
         <div className="text-xs text-gray-500 dark:text-gray-400 font-mono max-w-[150px] truncate">
           {slug}
@@ -118,9 +182,13 @@ export default function ProductTable({
       ),
     },
     {
+      /** Key */
       key: "price",
+      /** Label */
       label: "Price",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (_, ProductCardFE) => (
         <div className="min-w-[100px]">
           <div className="font-medium text-gray-900 dark:text-white">
@@ -136,9 +204,13 @@ export default function ProductTable({
       ),
     },
     {
+      /** Key */
       key: "stockCount",
+      /** Label */
       label: "Stock",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (stockCount, ProductCardFE) => {
         const isLowStock =
           stockCount <= (ProductCardFE.lowStockThreshold || 5) &&
@@ -173,15 +245,23 @@ export default function ProductTable({
       },
     },
     {
+      /** Key */
       key: "status",
+      /** Label */
       label: "Status",
+      /** Sortable */
       sortable: true,
+      /** Render */
       render: (status) => <StatusBadge status={status} />,
     },
     {
+      /** Key */
       key: "actions",
+      /** Label */
       label: "Actions",
+      /** Width */
       width: "160px",
+      /** Render */
       render: (_, ProductCardFE) => (
         <div className="flex items-center gap-2">
           {/* View Public Page */}

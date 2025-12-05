@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/UploadProgress
+ * @description This file contains the UploadProgress component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * UploadProgress Component
  *
  * Global upload progress indicator (fixed bottom-right)
@@ -19,6 +28,14 @@ import {
 } from "lucide-react";
 import { useUploadContext } from "@/contexts/UploadContext";
 
+/**
+ * Performs upload progress operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = UploadProgress();
+ */
 export default function UploadProgress() {
   const {
     uploads,
@@ -80,6 +97,7 @@ export default function UploadProgress() {
             <div className="flex items-center gap-4">
               {uploadingCount > 0 && (
                 <span className="text-blue-600">
+                  /** Uploading */
                   Uploading: {uploadingCount}
                 </span>
               )}

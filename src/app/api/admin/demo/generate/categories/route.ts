@@ -1,3 +1,12 @@
+/**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/demo/generate/categories/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
@@ -9,93 +18,121 @@ const CATEGORY_IMAGES: Record<
   string,
   { image: string; banner: string; icon: string }
 > = {
+  /** Beyblades */
   Beyblades: {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
   },
   "Beyblade Burst": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=100&h=100&fit=crop",
   },
   "Beyblade X": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=100&h=100&fit=crop",
   },
   "Attack Types": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop",
   },
   "Defense Types": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=100&h=100&fit=crop",
   },
   "Stamina Types": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=100&h=100&fit=crop",
   },
   "Balance Types": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&h=100&fit=crop",
   },
   "Launchers & Gear": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?w=100&h=100&fit=crop",
   },
   "Stadiums & Arenas": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop",
   },
   "Parts & Upgrades": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&h=100&fit=crop",
   },
   "Limited Editions": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=100&h=100&fit=crop",
   },
   "Vintage & Rare": {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=100&h=100&fit=crop",
   },
+  /** Accessories */
   Accessories: {
+    /** Image */
     image:
       "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=300&fit=crop",
+    /** Banner */
     banner:
       "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=400&fit=crop",
     icon: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop",
@@ -116,9 +153,12 @@ const DEFAULT_CATEGORY_IMAGES = [
 
 // Beyblade-focused category tree
 const CATEGORY_TREE = {
+  /** Beyblades */
   Beyblades: {
+    /** Children */
     children: {
       "Beyblade Burst": {
+        /** Children */
         children: {
           "Attack Types": { isLeaf: true },
           "Defense Types": { isLeaf: true },
@@ -127,6 +167,7 @@ const CATEGORY_TREE = {
         },
       },
       "Beyblade X": {
+        /** Children */
         children: {
           "X Attack": { isLeaf: true },
           "X Defense": { isLeaf: true },
@@ -135,6 +176,7 @@ const CATEGORY_TREE = {
         },
       },
       "Metal Fight": {
+        /** Children */
         children: {
           "Metal Fusion": { isLeaf: true },
           "Metal Masters": { isLeaf: true },
@@ -142,6 +184,7 @@ const CATEGORY_TREE = {
         },
       },
       "Original Series": {
+        /** Children */
         children: {
           "Plastic Gen": { isLeaf: true },
           "HMS (Heavy Metal System)": { isLeaf: true },
@@ -150,6 +193,7 @@ const CATEGORY_TREE = {
     },
   },
   "Launchers & Gear": {
+    /** Children */
     children: {
       "String Launchers": { isLeaf: true },
       "Ripcord Launchers": { isLeaf: true },
@@ -159,6 +203,7 @@ const CATEGORY_TREE = {
     },
   },
   "Stadiums & Arenas": {
+    /** Children */
     children: {
       "Standard Stadiums": { isLeaf: true },
       "Burst Stadiums": { isLeaf: true },
@@ -167,16 +212,21 @@ const CATEGORY_TREE = {
     },
   },
   "Parts & Upgrades": {
+    /** Children */
     children: {
       "Energy Layers": { isLeaf: true },
       "Forge Discs": { isLeaf: true },
       "Performance Tips": { isLeaf: true },
+      /** Blades */
       Blades: { isLeaf: true },
+      /** Ratchets */
       Ratchets: { isLeaf: true },
+      /** Bits */
       Bits: { isLeaf: true },
     },
   },
   "Limited Editions": {
+    /** Children */
     children: {
       "Tournament Exclusives": { isLeaf: true },
       "Store Exclusives": { isLeaf: true },
@@ -185,13 +235,16 @@ const CATEGORY_TREE = {
     },
   },
   "Vintage & Rare": {
+    /** Children */
     children: {
       "Vintage Beyblades": { isLeaf: true },
       "Rare Finds": { isLeaf: true },
       "Collector Items": { isLeaf: true },
     },
   },
+  /** Accessories */
   Accessories: {
+    /** Children */
     children: {
       "Carrying Cases": { isLeaf: true },
       "Tool Kits": { isLeaf: true },
@@ -201,6 +254,31 @@ const CATEGORY_TREE = {
   },
 };
 
+/**
+ * Function: P O S T
+ */
+/**
+ * Performs p o s t operation
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST();
+ */
+
+/**
+ * Performs p o s t operation
+ *
+ * @returns {Promise<any>} Promise resolving to post result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * POST();
+ */
+
 export async function POST() {
   try {
     const db = getFirestoreAdmin();
@@ -208,9 +286,32 @@ export async function POST() {
     const categoryMap: Record<string, string> = {};
     let categoryCount = 0;
 
+    /**
+     * Creates a new categories
+     *
+     * @param {Record<string, any>} tree - The tree
+     * @param {string | null} [parentId] - parent identifier
+     * @param {string[]} [parentIds] - The parent ids
+     *
+     * @returns {Promise<any>} Promise resolving to categories result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Creates a new categories
+     *
+     * @returns {Promise<any>} Promise resolving to categories result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     async function createCategories(
+      /** Tree */
       tree: Record<string, any>,
+      /** Parent Id */
       parentId: string | null = null,
+      /** Parent Ids */
       parentIds: string[] = [],
     ): Promise<void> {
       for (const [name, data] of Object.entries(tree)) {
@@ -221,14 +322,20 @@ export async function POST() {
 
         // Get category-specific images or use defaults
         const catImages = CATEGORY_IMAGES[name] || {
+          /** Image */
           image: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=400&h=300&fit=crop`,
+          /** Banner */
           banner: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=1200&h=400&fit=crop`,
+          /** Icon */
           icon: `${DEFAULT_CATEGORY_IMAGES[categoryCount % DEFAULT_CATEGORY_IMAGES.length]}?w=100&h=100&fit=crop`,
         };
 
         await categoryRef.set({
+          /** Name */
           name: categoryName,
+          /** Slug */
           slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          /** Description */
           description: `Premium ${name} collection - authentic Beyblades and accessories`,
           parent_id: parentId,
           parent_ids: [...parentIds, ...(parentId ? [parentId] : [])],
@@ -241,8 +348,10 @@ export async function POST() {
           out_of_stock_count: 0,
           live_auction_count: 0,
           ended_auction_count: 0,
+          /** Image */
           image: catImages.image,
           banner_image: catImages.banner,
+          /** Icon */
           icon: catImages.icon,
           thumbnail: `https://picsum.photos/seed/cat-thumb-${categoryId}/150/150`,
           created_at: timestamp,
@@ -265,9 +374,13 @@ export async function POST() {
     await createCategories(CATEGORY_TREE);
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Step */
       step: "categories",
+      /** Data */
       data: {
+        /** Count */
         count: categoryCount,
         categoryMap,
       },

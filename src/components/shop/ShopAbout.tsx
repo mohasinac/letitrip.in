@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/shop/ShopAbout
+ * @description This file contains the ShopAbout component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -12,8 +21,16 @@ import {
 } from "lucide-react";
 import type { ShopFE } from "@/types/frontend/shop.types";
 
+/**
+ * ShopAboutProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopAboutProps
+ */
 export interface ShopAboutProps {
+  /** Shop */
   shop: ShopFE;
+  /** Class Name */
   className?: string;
 }
 
@@ -35,45 +52,104 @@ export interface ShopAboutProps {
  * <ShopAbout shop={shop} />
  * ```
  */
+/**
+ * Performs shop about operation
+ *
+ * @param {ShopAboutProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shopabout result
+ *
+ * @example
+ * ShopAbout({ shop, className);
+ */
+
+/**
+ * Performs shop about operation
+ *
+ * @param {ShopAboutProps} [{ shop, className] - Name of { shop, class
+ *
+ * @returns {any} The shopabout result
+ *
+ * @example
+ * ShopAbout({ shop, className);
+ */
+
 export function ShopAbout({ shop, className = "" }: ShopAboutProps) {
   const [activePolicy, setActivePolicy] = useState<string | null>("return");
 
   const contactMethods = [
     {
+      /** Icon */
       icon: Mail,
+      /** Label */
       label: "Email",
+      /** Value */
       value: shop.email,
+      /** Href */
       href: `mailto:${shop.email}`,
+      /** Show */
       show: !!shop.email,
     },
     {
+      /** Icon */
       icon: Phone,
+      /** Label */
       label: "Call",
+      /** Value */
       value: shop.phone,
+      /** Href */
       href: `tel:${shop.phone}`,
+      /** Show */
       show: !!shop.phone,
     },
     {
+      /** Icon */
       icon: Globe,
+      /** Label */
       label: "Website",
+      /** Value */
       value: shop.website,
+      /** Href */
       href: shop.website,
+      /** Show */
       show: !!shop.website,
     },
   ];
 
   const policies = [
     {
+      /** Id */
       id: "return",
+      /** Label */
       label: "Return Policy",
+      /** Content */
       content: shop.policies?.returnPolicy || "No return policy specified.",
     },
     {
+      /** Id */
       id: "shipping",
+      /** Label */
       label: "Shipping Policy",
+      /** Content */
       content: shop.policies?.shippingPolicy || "No shipping policy specified.",
     },
   ];
+
+  /**
+   * Performs toggle policy operation
+   *
+   * @param {string} policyId - policy identifier
+   *
+   * @returns {string} The togglepolicy result
+   */
+
+  /**
+   * Performs toggle policy operation
+   *
+   * @param {string} policyId - policy identifier
+   *
+   * @returns {string} The togglepolicy result
+   */
 
   const togglePolicy = (policyId: string) => {
     setActivePolicy(activePolicy === policyId ? null : policyId);
@@ -95,9 +171,12 @@ export function ShopAbout({ shop, className = "" }: ShopAboutProps) {
           <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Calendar className="w-4 h-4" />
             <span>
+              /** Established */
               Established:{" "}
               {new Date(shop.createdAt).toLocaleDateString("en-US", {
+                /** Year */
                 year: "numeric",
+                /** Month */
                 month: "long",
               })}
             </span>

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/orders/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -9,6 +18,14 @@ import type { OrderCardFE } from "@/types/frontend/order.types";
 import { Eye, Package } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Performs seller orders page operation
+ *
+ * @returns {void} Function return value
+ *
+ * @example
+ * const result = SellerOrdersPage();
+ */
 export default function SellerOrdersPage() {
   return (
     <SellerResourcePage<OrderCardFE>
@@ -16,21 +33,30 @@ export default function SellerOrdersPage() {
       resourceNamePlural="Orders"
       loadData={async (options) => {
         const response = await ordersService.getSellerOrders({
+          /** Search */
           search: options.search,
           ...options.filters,
+          /** Limit */
           limit: 50,
         } as any);
         return {
+          /** Items */
           items: response.data || [],
+          /** Next Cursor */
           nextCursor: null,
+          /** Has Next Page */
           hasNextPage: false,
         };
       }}
       columns={[
         {
+          /** Key */
           key: "orderNumber",
+          /** Label */
           label: "Order #",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (order) => (
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
@@ -43,8 +69,11 @@ export default function SellerOrdersPage() {
           ),
         },
         {
+          /** Key */
           key: "customer",
+          /** Label */
           label: "Customer",
+          /** Render */
           render: (order) => (
             <div>
               <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -57,9 +86,13 @@ export default function SellerOrdersPage() {
           ),
         },
         {
+          /** Key */
           key: "totalAmount",
+          /** Label */
           label: "Total",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (order) => (
             <div className="font-medium text-gray-900 dark:text-white">
               <Price amount={order.total} />
@@ -67,8 +100,11 @@ export default function SellerOrdersPage() {
           ),
         },
         {
+          /** Key */
           key: "itemCount",
+          /** Label */
           label: "Items",
+          /** Render */
           render: (order) => (
             <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
               <Package className="h-4 w-4" />
@@ -77,19 +113,29 @@ export default function SellerOrdersPage() {
           ),
         },
         {
+          /** Key */
           key: "paymentStatus",
+          /** Label */
           label: "Payment",
+          /** Render */
           render: (order) => <StatusBadge status={order.paymentStatus} />,
         },
         {
+          /** Key */
           key: "fulfillmentStatus",
+          /** Label */
           label: "Fulfillment",
+          /** Render */
           render: (order) => <StatusBadge status={order.status} />,
         },
         {
+          /** Key */
           key: "createdAt",
+          /** Label */
           label: "Date",
+          /** Sortable */
           sortable: true,
+          /** Render */
           render: (order) => (
             <div className="text-sm text-gray-600 dark:text-gray-400">
               <DateDisplay date={order.createdAt} format="medium" />
@@ -97,8 +143,11 @@ export default function SellerOrdersPage() {
           ),
         },
         {
+          /** Key */
           key: "actions",
+          /** Label */
           label: "Actions",
+          /** Render */
           render: (order) => (
             <div className="flex items-center justify-end gap-2">
               <Link
@@ -114,14 +163,21 @@ export default function SellerOrdersPage() {
       ]}
       fields={[
         {
+          /** Name */
           name: "fulfillmentStatus",
+          /** Label */
           label: "Fulfillment Status",
+          /** Type */
           type: "select",
+          /** Required */
           required: true,
         },
         {
+          /** Name */
           name: "trackingNumber",
+          /** Label */
           label: "Tracking Number",
+          /** Type */
           type: "text",
         },
       ]}

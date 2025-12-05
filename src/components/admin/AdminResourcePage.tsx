@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/AdminResourcePage
+ * @description This file contains the AdminResourcePage component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { BulkActionBar } from "@/components/common/BulkActionBar";
@@ -18,83 +27,193 @@ import { ReactNode, useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 // Define inline types since they're not exported
+/**
+ * InlineField interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for InlineField
+ */
 interface InlineField {
+  /** Name */
   name: string;
+  /** Label */
   label: string;
+  /** Type */
   type: string;
+  /** Required */
   required?: boolean;
+  /** Options */
   options?: Array<{ value: string; label: string }>;
 }
 
+/**
+ * BulkActionConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BulkActionConfig
+ */
 interface BulkActionConfig {
+  /** Id */
   id: string;
+  /** Label */
   label: string;
+  /** Icon */
   icon?: string;
+  /** Variant */
   variant?: "default" | "danger";
+  /** Requires Confirmation */
   requiresConfirmation?: boolean;
 }
 
+/**
+ * AdminResourcePageProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for AdminResourcePageProps
+ */
 export interface AdminResourcePageProps<T> {
   // Resource Configuration
+  /** Resource Name */
   resourceName: string;
+  /** Resource Name Plural */
   resourceNamePlural: string;
 
   // Data Loading
+  /** Load Data */
   loadData: (options: LoadDataOptions) => Promise<LoadDataResult<T>>;
 
   // Column Configuration
+  /** Columns */
   columns: ResourceColumn<T>[];
+  /** Fields */
   fields: InlineField[];
 
   // Actions
+  /** Bulk Actions */
   bulkActions?: BulkAction[];
+  /** On Save */
   onSave?: (id: string, data: Partial<T>) => Promise<void>;
+  /** On Delete */
   onDelete?: (id: string) => Promise<void>;
 
   // Filters (optional)
+  /** Filters */
   filters?: FilterConfig[];
 
   // Stats (optional)
+  /** Stats */
   stats?: ResourceStat[];
 
   // Custom Rendering
+  /** Render Mobile Card */
   renderMobileCard?: (item: T) => ReactNode;
+  /** Render Grid Card */
   renderGridCard?: (item: T) => ReactNode;
 }
 
+/**
+ * LoadDataOptions interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadDataOptions
+ */
 export interface LoadDataOptions {
+  /** Cursor */
   cursor: string | null;
+  /** Search */
   search?: string;
+  /** Filters */
   filters?: Record<string, string>;
 }
 
+/**
+ * LoadDataResult interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for LoadDataResult
+ */
 export interface LoadDataResult<T> {
+  /** Items */
   items: T[];
+  /** Next Cursor */
   nextCursor: string | null;
+  /** Has Next Page */
   hasNextPage: boolean;
 }
 
+/**
+ * ResourceColumn interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceColumn
+ */
 export interface ResourceColumn<T> {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Render */
   render: (item: T) => ReactNode;
+  /** Sortable */
   sortable?: boolean;
+  /** Width */
   width?: string;
 }
 
+/**
+ * FilterConfig interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for FilterConfig
+ */
 export interface FilterConfig {
+  /** Key */
   key: string;
+  /** Label */
   label: string;
+  /** Type */
   type: "select" | "text" | "date";
+  /** Options */
   options?: { value: string; label: string }[];
 }
 
+/**
+ * ResourceStat interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ResourceStat
+ */
 export interface ResourceStat {
+  /** Label */
   label: string;
+  /** Value */
   value: string | number;
+  /** Icon */
   icon?: ReactNode;
+  /** Color */
   color?: string;
 }
+
+/**
+ * Function: Admin Resource Page
+ */
+/**
+ * Performs admin resource page operation
+ *
+ * @returns {string} The adminresourcepage result
+ *
+ * @example
+ * AdminResourcePage();
+ */
+
+/**
+ * Performs admin resource page operation
+ *
+ * @returns {string} The adminresourcepage result
+ *
+ * @example
+ * AdminResourcePage();
+ */
 
 export function AdminResourcePage<T extends { id: string }>({
   resourceName,
@@ -150,8 +269,11 @@ export function AdminResourcePage<T extends { id: string }>({
 
     try {
       const result = await loadData({
+        /** Cursor */
         cursor: cursors[currentPage - 1],
+        /** Search */
         search: debouncedSearchQuery,
+        /** Filters */
         filters: activeFilters,
       });
 
@@ -164,7 +286,9 @@ export function AdminResourcePage<T extends { id: string }>({
       }
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "AdminResourcePage.loadItems",
+        /** Metadata */
         metadata: { resource: resourceNamePlural, page: currentPage },
       });
       setError(`Failed to load ${resourceNamePlural}`);
@@ -184,11 +308,35 @@ export function AdminResourcePage<T extends { id: string }>({
   ]);
 
   // Pagination handlers
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
+  /**
+   * Handles next page event
+   *
+   * @returns {any} The handlenextpage result
+   */
+
   const handleNextPage = () => {
     if (hasNextPage) {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
+
+  /**
+   * Handles prev page event
+   *
+   * @returns {any} The handleprevpage result
+   */
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -197,6 +345,18 @@ export function AdminResourcePage<T extends { id: string }>({
   };
 
   // Selection handlers
+  /**
+   * Handles select all event
+   *
+   * @returns {any} The handleselectall result
+   */
+
+  /**
+   * Handles select all event
+   *
+   * @returns {any} The handleselectall result
+   */
+
   const handleSelectAll = () => {
     if (selectedIds.length === items.length) {
       setSelectedIds([]);
@@ -204,6 +364,22 @@ export function AdminResourcePage<T extends { id: string }>({
       setSelectedIds(items.map((item) => item.id));
     }
   };
+
+  /**
+   * Handles select one event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleselectone result
+   */
+
+  /**
+   * Handles select one event
+   *
+   * @param {string} id - Unique identifier
+   *
+   * @returns {string} The handleselectone result
+   */
 
   const handleSelectOne = (id: string) => {
     setSelectedIds((prev) =>
@@ -214,6 +390,28 @@ export function AdminResourcePage<T extends { id: string }>({
   };
 
   // Save handler
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<T>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} id - Unique identifier
+   * @param {Partial<T>} data - Data object containing information
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSave = async (id: string, data: Partial<T>) => {
     if (!onSave) return;
 
@@ -223,7 +421,9 @@ export function AdminResourcePage<T extends { id: string }>({
       loadItems();
     } catch (err) {
       logError(err as Error, {
+        /** Component */
         component: "AdminResourcePage.handleSave",
+        /** Metadata */
         metadata: { resource: resourceName, itemId: id },
       });
       toast.error(`Failed to update ${resourceName}`);

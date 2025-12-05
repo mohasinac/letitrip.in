@@ -1,19 +1,99 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/admin/blog-wizard/BasicInfoStep
+ * @description This file contains the BasicInfoStep component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { BlogFormData, OnBlogChange } from "./types";
 
+/**
+ * BasicInfoStepProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for BasicInfoStepProps
+ */
 interface BasicInfoStepProps {
+  /** Form Data */
   formData: BlogFormData;
+  /** On Change */
   onChange: OnBlogChange;
+  /** Errors */
   errors?: Record<string, string>;
 }
+
+/**
+ * Function: Basic Info Step
+ */
+/**
+ * Performs basic info step operation
+ *
+ * @param {BasicInfoStepProps} [{
+  formData,
+  onChange,
+  errors] - The {
+  form data,
+  on change,
+  errors
+ *
+ * @returns {any} The basicinfostep result
+ *
+ * @example
+ * BasicInfoStep({
+  formData,
+  onChange,
+  errors);
+ */
+
+/**
+ * Performs basic info step operation
+ *
+ * @param {BasicInfoStepProps} [{
+  formData,
+  onChange,
+  errors] - The {
+  form data,
+  on change,
+  errors
+ *
+ * @returns {any} The basicinfostep result
+ *
+ * @example
+ * BasicInfoStep({
+  formData,
+  onChange,
+  errors);
+ */
 
 export function BasicInfoStep({
   formData,
   onChange,
   errors = {},
 }: BasicInfoStepProps) {
+  /**
+   * Handles input change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - The e
+   *
+   * @returns {any} The handleinputchange result
+   */
+
+  /**
+   * Handles input change event
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} /** E */
+    e - The /**  e */
+    e
+   *
+   * @returns {any} The handleinputchange result
+   */
+
   const handleInputChange = (
+    /** E */
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;

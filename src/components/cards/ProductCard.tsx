@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/cards/ProductCard
+ * @description This file contains the ProductCard component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { FavoriteButton } from "@/components/common/FavoriteButton";
@@ -11,55 +20,115 @@ import { Edit, Eye, ShoppingCart, Star } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
+/**
+ * ProductCardVariant type
+ * 
+ * @typedef {Object} ProductCardVariant
+ * @description Type definition for ProductCardVariant
+ */
 export type ProductCardVariant = "public" | "admin" | "seller" | "compact";
 
+/**
+ * ProductCardProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ProductCardProps
+ */
 export interface ProductCardProps {
+  /** Id */
   id: string;
+  /** Name */
   name: string;
+  /** Slug */
   slug: string;
+  /** Price */
   price: number;
+  /** Original Price */
   originalPrice?: number;
+  /** Image */
   image: string;
   images?: string[]; // Additional images for carousel
   videos?: string[]; // Video URLs
+  /** Rating */
   rating?: number;
+  /** Review Count */
   reviewCount?: number;
+  /** Shop Name */
   shopName?: string;
+  /** Shop Slug */
   shopSlug?: string;
+  /** Shop Id */
   shopId?: string;
+  /** In Stock */
   inStock: boolean;
+  /** Featured */
   featured?: boolean;
+  /** Condition */
   condition?: "new" | "used" | "refurbished";
   // Admin/Seller specific
+  /** Status */
   status?: ProductStatus;
+  /** Sku */
   sku?: string;
+  /** Stock Count */
   stockCount?: number;
+  /** Sales Count */
   salesCount?: number;
   // Variant control
+  /** Variant */
   variant?: ProductCardVariant;
   // Action handlers
+  /** On Add To Cart */
   onAddToCart?: (
+    /** Id */
     id: string,
+    /** Product Details */
     productDetails?: {
+      /** Name */
       name: string;
+      /** Price */
       price: number;
+      /** Image */
       image: string;
+      /** Shop Id */
       shopId: string;
+      /** Shop Name */
       shopName: string;
     }
   ) => void;
+  /** On Toggle Favorite */
   onToggleFavorite?: (id: string) => void;
+  /** On Quick View */
   onQuickView?: (id: string) => void;
+  /** On Edit */
   onEdit?: (slug: string) => void;
+  /** On Delete */
   onDelete?: (slug: string) => void;
+  /** On Select */
   onSelect?: (id: string, selected: boolean) => void;
+  /** Is Favorite */
   isFavorite?: boolean;
+  /** Is Selected */
   isSelected?: boolean;
+  /** Show Shop Name */
   showShopName?: boolean;
   /** @deprecated Use variant="compact" instead */
   compact?: boolean;
+  /** Class Name */
   className?: string;
 }
+
+/**
+ * Performs product card component operation
+ *
+ * @returns {any} The productcardcomponent result
+ */
+
+/**
+ * Performs product card component operation
+ *
+ * @returns {any} The productcardcomponent result
+ */
 
 const ProductCardComponent: React.FC<ProductCardProps> = ({
   id,
@@ -153,6 +222,18 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
       }
     }
 
+    /**
+     * Performs start image rotation operation
+     *
+     * @returns {any} The startimagerotation result
+     */
+
+    /**
+     * Performs start image rotation operation
+     *
+     * @returns {any} The startimagerotation result
+     */
+
     function startImageRotation() {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -172,6 +253,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
 
   const currentImage = allImages[currentMediaIndex] || allImages[0] || image;
 
+  /**
+   * Handles add to cart event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleaddtocart result
+   */
+
+  /**
+   * Handles add to cart event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleaddtocart result
+   */
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -180,11 +277,28 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         name,
         price,
         image,
+        /** Shop Id */
         shopId: shopId || shopSlug,
         shopName,
       });
     }
   };
+
+  /**
+   * Handles toggle favorite event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handletogglefavorite result
+   */
+
+  /**
+   * Handles toggle favorite event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handletogglefavorite result
+   */
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -194,6 +308,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     }
   };
 
+  /**
+   * Handles quick view event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlequickview result
+   */
+
+  /**
+   * Handles quick view event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handlequickview result
+   */
+
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -201,6 +331,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
       onQuickView(id);
     }
   };
+
+  /**
+   * Handles edit event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleedit result
+   */
+
+  /**
+   * Handles edit event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleedit result
+   */
 
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -210,6 +356,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     }
   };
 
+  /**
+   * Handles delete event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledelete result
+   */
+
+  /**
+   * Handles delete event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handledelete result
+   */
+
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -217,6 +379,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
       onDelete(slug);
     }
   };
+
+  /**
+   * Handles select event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselect result
+   */
+
+  /**
+   * Handles select event
+   *
+   * @param {React.MouseEvent} e - The e
+   *
+   * @returns {any} The handleselect result
+   */
 
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -417,6 +595,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         {/* SKU - Admin/Seller only */}
         {isAdminOrSeller && sku && (
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 truncate">
+            /** S K U */
             SKU: {sku}
           </p>
         )}
@@ -465,6 +644,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           {/* Stock count - Admin/Seller */}
           {isAdminOrSeller && stockCount !== undefined && (
             <span className="text-sm text-gray-600 dark:text-gray-400">
+              /** Stock */
               Stock: {stockCount}
             </span>
           )}
@@ -534,4 +714,8 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
 };
 
 // Memoized export for performance optimization
+/**
+ * P
+ * @constant
+ */
 export const ProductCard = React.memo(ProductCardComponent);

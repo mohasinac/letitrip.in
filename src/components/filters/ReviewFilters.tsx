@@ -1,22 +1,77 @@
+/**
+ * @fileoverview React Component
+ * @module src/components/filters/ReviewFilters
+ * @description This file contains the ReviewFilters component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import React from "react";
 import { Filter, X } from "lucide-react";
 
+/**
+ * ReviewFilterValues interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewFilterValues
+ */
 export interface ReviewFilterValues {
+  /** Rating */
   rating?: string[];
+  /** Verified Purchase */
   verifiedPurchase?: boolean;
+  /** Has Media */
   hasMedia?: boolean;
+  /** Status */
   status?: "approved" | "pending" | "rejected";
 }
 
+/**
+ * ReviewFiltersProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ReviewFiltersProps
+ */
 interface ReviewFiltersProps {
+  /** Filters */
   filters: ReviewFilterValues;
+  /** On Change */
   onChange: (filters: ReviewFilterValues) => void;
+  /** On Apply */
   onApply: () => void;
+  /** On Reset */
   onReset: () => void;
 }
 
+/**
+ * Performs review filters operation
+ *
+ * @returns {any} The reviewfilters result
+ *
+ * @example
+ * ReviewFilters();
+ */
+
+/**
+ * R
+ * @constant
+ */
+/**
+ * Performs review filters operation
+ *
+ * @returns {any} The reviewfilters result
+ *
+ * @example
+ * ReviewFilters();
+ */
+
+/**
+ * R
+ * @constant
+ */
 export const ReviewFilters: React.FC<ReviewFiltersProps> = ({
   filters,
   onChange,
@@ -26,11 +81,29 @@ export const ReviewFilters: React.FC<ReviewFiltersProps> = ({
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   const updateFilter = <K extends keyof ReviewFilterValues>(
+    /** Key */
     key: K,
+    /** Value */
     value: ReviewFilterValues[K],
   ) => {
     onChange({ ...filters, [key]: value });
   };
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
+
+  /**
+   * Performs toggle array filter operation
+   *
+   * @param {string} value - The value
+   *
+   * @returns {string} The togglearrayfilter result
+   */
 
   const toggleArrayFilter = (value: string) => {
     const current = filters.rating || [];

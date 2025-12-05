@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/auctions/create/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
@@ -18,31 +27,46 @@ import { toast } from "sonner";
 // Step definitions - Simplified 2-step wizard
 const STEPS = [
   {
+    /** Id */
     id: "required",
+    /** Name */
     name: "Required Info",
+    /** Description */
     description: "Essential auction details",
   },
   {
+    /** Id */
     id: "optional",
+    /** Name */
     name: "Additional Details",
+    /** Description */
     description: "Optional settings",
   },
 ];
 
 const AUCTION_TYPES = [
   {
+    /** Value */
     value: "standard",
+    /** Label */
     label: "Standard Auction",
+    /** Description */
     description: "Traditional highest bid wins",
   },
   {
+    /** Value */
     value: "reserve",
+    /** Label */
     label: "Reserve Auction",
+    /** Description */
     description: "Minimum price must be met",
   },
   {
+    /** Value */
     value: "buyNow",
+    /** Label */
     label: "Auction with Buy Now",
+    /** Description */
     description: "Bidders can buy immediately",
   },
 ];
@@ -67,10 +91,29 @@ export default function CreateAuctionWizardPage() {
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
+    /** Bidding */
     bidding: false,
+    /** Schedule */
     schedule: false,
+    /** Shipping */
     shipping: false,
   });
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} section - The section
+   *
+   * @returns {string} The togglesection result
+   */
+
+  /**
+   * Performs toggle section operation
+   *
+   * @param {string} section - The section
+   *
+   * @returns {string} The togglesection result
+   */
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -79,36 +122,70 @@ export default function CreateAuctionWizardPage() {
   // Form data
   const [formData, setFormData] = useState<AuctionFormData>({
     // Step 1: Basic Info
+    /** Title */
     title: "",
+    /** Slug */
     slug: "",
+    /** Shop Id */
     shopId: "",
+    /** Category */
     category: "",
+    /** Auction Type */
     auctionType: "standard",
+    /** Description */
     description: "",
+    /** Condition */
     condition: "new",
+    /** Images */
     images: [],
+    /** Videos */
     videos: [],
 
     // Step 2: Bidding Rules
+    /** Starting Bid */
     startingBid: "",
+    /** Reserve Price */
     reservePrice: "",
+    /** Bid Increment */
     bidIncrement: "100",
+    /** Buy Now Price */
     buyNowPrice: "",
 
     // Schedule
     startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
     endTime: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), // 8 days
+    /** Auto Extend Minutes */
     autoExtendMinutes: "5",
 
     // Terms & Publishing
+    /** Shipping Terms */
     shippingTerms: "",
+    /** Return Policy */
     returnPolicy: "no-returns",
+    /** Status */
     status: "scheduled",
+    /** Featured */
     featured: false,
   });
 
   // Load categories
   useEffect(() => {
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Performs async operation
+     *
+     * @returns {Promise<any>} Promise resolving to async  result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadCategories = async () => {
       try {
         const response = await categoriesService.list({});
@@ -121,6 +198,26 @@ export default function CreateAuctionWizardPage() {
   }, []);
 
   // Validate slug
+  /**
+   * Performs async operation
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @param {string} slug - URL-friendly identifier
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const validateSlug = async (slug: string) => {
     if (!slug || slug.length < 3) {
       setSlugError("");
@@ -137,13 +234,33 @@ export default function CreateAuctionWizardPage() {
       }
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "AuctionCreate.validateSlug",
+        /** Metadata */
         metadata: { slug },
       });
     } finally {
       setIsValidatingSlug(false);
     }
   };
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
+
+  /**
+   * Handles change event
+   *
+   * @param {string} field - The field
+   * @param {unknown} value - The value
+   *
+   * @returns {string} The handlechange result
+   */
 
   const handleChange = (field: string, value: unknown) => {
     setFormData((prev: AuctionFormData) => ({ ...prev, [field]: value }));
@@ -212,6 +329,22 @@ export default function CreateAuctionWizardPage() {
     }
   }, [validateStep]);
 
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs next step operation
+   *
+   * @returns {any} The nextstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const nextStep = () => {
     const stepErrors = validateStep(currentStep);
     if (stepErrors.length === 0) {
@@ -226,10 +359,46 @@ export default function CreateAuctionWizardPage() {
     }
   };
 
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs prev step operation
+   *
+   * @returns {any} The prevstep result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const prevStep = () => {
     setError("");
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
+
+  /**
+   * Handles step click event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handlestepclick result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Handles step click event
+   *
+   * @param {number} index - The index
+   *
+   * @returns {number} The handlestepclick result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
 
   const handleStepClick = (index: number) => {
     setError("");
@@ -237,29 +406,59 @@ export default function CreateAuctionWizardPage() {
   };
 
   // Save as draft
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSaveDraft = async () => {
     try {
       setIsSaving(true);
       setError("");
 
       const auctionData: any = {
+        /** Name */
         name: formData.title,
+        /** Slug */
         slug: formData.slug,
+        /** Category Id */
         categoryId: formData.category,
+        /** Description */
         description: formData.description,
+        /** Starting Bid */
         startingBid: parseFloat(formData.startingBid) || 0,
+        /** Reserve Price */
         reservePrice: formData.reservePrice
           ? parseFloat(formData.reservePrice)
           : undefined,
+        /** Bid Increment */
         bidIncrement: parseFloat(formData.bidIncrement),
+        /** Buyout Price */
         buyoutPrice: formData.buyNowPrice
           ? parseFloat(formData.buyNowPrice)
           : undefined,
+        /** Start Time */
         startTime: formData.startTime,
+        /** End Time */
         endTime: formData.endTime,
+        /** Status */
         status: "draft",
+        /** Images */
         images: formData.images,
+        /** Videos */
         videos: formData.videos,
+        /** Featured */
         featured: formData.featured,
       };
 
@@ -275,6 +474,22 @@ export default function CreateAuctionWizardPage() {
     }
   };
 
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
+  /**
+   * Performs async operation
+   *
+   * @returns {Promise<any>} Promise resolving to async  result
+   *
+   * @throws {Error} When operation fails or validation errors occur
+   */
+
   const handleSubmit = async () => {
     if (!handleValidate()) return;
 
@@ -283,23 +498,37 @@ export default function CreateAuctionWizardPage() {
       setError("");
 
       const auctionData: any = {
+        /** Name */
         name: formData.title,
+        /** Slug */
         slug: formData.slug,
+        /** Category Id */
         categoryId: formData.category,
+        /** Description */
         description: formData.description,
+        /** Starting Bid */
         startingBid: parseFloat(formData.startingBid),
+        /** Reserve Price */
         reservePrice: formData.reservePrice
           ? parseFloat(formData.reservePrice)
           : undefined,
+        /** Bid Increment */
         bidIncrement: parseFloat(formData.bidIncrement),
+        /** Buyout Price */
         buyoutPrice: formData.buyNowPrice
           ? parseFloat(formData.buyNowPrice)
           : undefined,
+        /** Start Time */
         startTime: formData.startTime,
+        /** End Time */
         endTime: formData.endTime,
+        /** Status */
         status: formData.status,
+        /** Images */
         images: formData.images,
+        /** Videos */
         videos: formData.videos,
+        /** Featured */
         featured: formData.featured,
       };
 

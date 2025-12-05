@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/admin/dashboard/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,35 +32,67 @@ import {
 import Link from "next/link";
 import { useEffect } from "react";
 
+/**
+ * DashboardStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DashboardStats
+ */
 interface DashboardStats {
+  /** Overview */
   overview: {
+    /** Total Users */
     totalUsers: number;
+    /** Total Sellers */
     totalSellers: number;
+    /** Total Shops */
     totalShops: number;
+    /** Total Products */
     totalProducts: number;
+    /** Total Orders */
     totalOrders: number;
+    /** Total Revenue */
     totalRevenue: number;
+    /** Active Auctions */
     activeAuctions: number;
+    /** Total Coupons */
     totalCoupons: number;
   };
+  /** Trends */
   trends: {
+    /** Users */
     users: { value: number; isPositive: boolean };
+    /** Shops */
     shops: { value: number; isPositive: boolean };
+    /** Products */
     products: { value: number; isPositive: boolean };
+    /** Orders */
     orders: { value: number; isPositive: boolean };
+    /** Revenue */
     revenue: { value: number; isPositive: boolean };
   };
+  /** Recent Activity */
   recentActivity: Array<{
+    /** Id */
     id: string;
+    /** Type */
     type: string;
+    /** Message */
     message: string;
+    /** Time */
     time: string;
+    /** Status */
     status: "success" | "warning" | "info" | "error";
   }>;
+  /** Pending Actions */
   pendingActions: {
+    /** Pending Shops */
     pendingShops: number;
+    /** Pending Products */
     pendingProducts: number;
+    /** Pending Returns */
     pendingReturns: number;
+    /** Open Tickets */
     openTickets: number;
   };
 }
@@ -59,50 +100,94 @@ interface DashboardStats {
 export default function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
   const {
+    /** Is Loading */
     isLoading: loading,
+    /** Data */
     data: stats,
     execute,
   } = useLoadingState<DashboardStats>({
+    /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "AdminDashboardPage.loadStats" });
     },
   });
 
   useEffect(() => {
+    /**
+     * Fetches stats from server
+     *
+     * @returns {Promise<any>} Promise resolving to stats result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
+    /**
+     * Fetches stats from server
+     *
+     * @returns {Promise<any>} Promise resolving to stats result
+     *
+     * @throws {Error} When operation fails or validation errors occur
+     */
+
     const loadStats = () =>
       execute(async () => {
         const data = await analyticsService.getOverview();
 
         // Map analytics data to dashboard stats format
         return {
+          /** Overview */
           overview: {
+            /** Total Users */
             totalUsers: (data as any).totalUsers || data.totalCustomers || 0,
+            /** Total Sellers */
             totalSellers: (data as any).totalSellers || 0,
+            /** Total Shops */
             totalShops: (data as any).totalShops || 0,
+            /** Total Products */
             totalProducts: data.totalProducts || 0,
+            /** Total Orders */
             totalOrders: data.totalOrders || 0,
+            /** Total Revenue */
             totalRevenue: data.totalRevenue || 0,
+            /** Active Auctions */
             activeAuctions: (data as any).activeAuctions || 0,
+            /** Total Coupons */
             totalCoupons: (data as any).totalCoupons || 0,
           },
+          /** Trends */
           trends: (data as any).trends || {
+            /** Users */
             users: { value: 0, isPositive: true },
+            /** Shops */
             shops: { value: 0, isPositive: true },
+            /** Products */
             products: { value: 0, isPositive: true },
+            /** Orders */
             orders: {
+              /** Value */
               value: data.ordersGrowth || 0,
+              /** Is Positive */
               isPositive: (data.ordersGrowth || 0) >= 0,
             },
+            /** Revenue */
             revenue: {
+              /** Value */
               value: data.revenueGrowth || 0,
+              /** Is Positive */
               isPositive: (data.revenueGrowth || 0) >= 0,
             },
           },
+          /** Recent Activity */
           recentActivity: (data as any).recentActivity || [],
+          /** Pending Actions */
           pendingActions: (data as any).pendingActions || {
+            /** Pending Shops */
             pendingShops: 0,
+            /** Pending Products */
             pendingProducts: 0,
+            /** Pending Returns */
             pendingReturns: 0,
+            /** Open Tickets */
             openTickets: 0,
           },
         };
@@ -123,109 +208,201 @@ export default function AdminDashboardPage() {
 
   const statsCards = [
     {
+      /** Title */
       title: "Total Users",
+      /** Value */
       value: stats?.overview.totalUsers || 0,
+      /** Change */
       change: stats?.trends.users.value || 0,
+      /** Trend */
       trend: stats?.trends.users.isPositive ? "up" : "down",
+      /** Icon */
       icon: Users,
+      /** Color */
       color: "blue",
+      /** Href */
       href: "/admin/users",
     },
     {
+      /** Title */
       title: "Active Shops",
+      /** Value */
       value: stats?.overview.totalShops || 0,
+      /** Change */
       change: stats?.trends.shops.value || 0,
+      /** Trend */
       trend: stats?.trends.shops.isPositive ? "up" : "down",
+      /** Icon */
       icon: Store,
+      /** Color */
       color: "purple",
+      /** Href */
       href: "/admin/shops",
     },
     {
+      /** Title */
       title: "Total Products",
+      /** Value */
       value: stats?.overview.totalProducts || 0,
+      /** Change */
       change: stats?.trends.products.value || 0,
+      /** Trend */
       trend: stats?.trends.products.isPositive ? "up" : "down",
+      /** Icon */
       icon: Package,
+      /** Color */
       color: "green",
+      /** Href */
       href: "/admin/products",
     },
     {
+      /** Title */
       title: "Total Orders",
+      /** Value */
       value: stats?.overview.totalOrders || 0,
+      /** Change */
       change: stats?.trends.orders.value || 0,
+      /** Trend */
       trend: stats?.trends.orders.isPositive ? "up" : "down",
+      /** Icon */
       icon: ShoppingCart,
+      /** Color */
       color: "orange",
+      /** Href */
       href: "/admin/orders",
     },
     {
+      /** Title */
       title: "Revenue",
+      /** Value */
       value: `₹${((stats?.overview.totalRevenue || 0) / 100000).toFixed(1)}L`,
+      /** Change */
       change: stats?.trends.revenue.value || 0,
+      /** Trend */
       trend: stats?.trends.revenue.isPositive ? "up" : "down",
+      /** Icon */
       icon: DollarSign,
+      /** Color */
       color: "emerald",
+      /** Href */
       href: "/admin/payments",
     },
     {
+      /** Title */
       title: "Active Auctions",
+      /** Value */
       value: stats?.overview.activeAuctions || 0,
+      /** Change */
       change: 0,
+      /** Trend */
       trend: "up" as const,
+      /** Icon */
       icon: Gavel,
+      /** Color */
       color: "amber",
+      /** Href */
       href: "/admin/auctions/live",
     },
     {
+      /** Title */
       title: "Active Coupons",
+      /** Value */
       value: stats?.overview.totalCoupons || 0,
+      /** Change */
       change: 0,
+      /** Trend */
       trend: "up" as const,
+      /** Icon */
       icon: Ticket,
+      /** Color */
       color: "pink",
+      /** Href */
       href: "/admin/coupons",
     },
     {
+      /** Title */
       title: "Sellers",
+      /** Value */
       value: stats?.overview.totalSellers || 0,
+      /** Change */
       change: 0,
+      /** Trend */
       trend: "up" as const,
+      /** Icon */
       icon: Store,
+      /** Color */
       color: "indigo",
+      /** Href */
       href: "/admin/users?role=seller",
     },
   ];
 
   const pendingActions = [
     {
+      /** Title */
       title: "Pending Shops",
+      /** Count */
       count: stats?.pendingActions.pendingShops || 0,
+      /** Href */
       href: "/admin/shops?status=pending",
+      /** Icon */
       icon: Store,
+      /** Color */
       color: "yellow",
     },
     {
+      /** Title */
       title: "Pending Products",
+      /** Count */
       count: stats?.pendingActions.pendingProducts || 0,
+      /** Href */
       href: "/admin/products?status=pending",
+      /** Icon */
       icon: Package,
+      /** Color */
       color: "blue",
     },
     {
+      /** Title */
       title: "Pending Returns",
+      /** Count */
       count: stats?.pendingActions.pendingReturns || 0,
+      /** Href */
       href: "/admin/returns?status=pending",
+      /** Icon */
       icon: RefreshCw,
+      /** Color */
       color: "orange",
     },
     {
+      /** Title */
       title: "Open Tickets",
+      /** Count */
       count: stats?.pendingActions.openTickets || 0,
+      /** Href */
       href: "/admin/support-tickets?status=open",
+      /** Icon */
       icon: AlertCircle,
+      /** Color */
       color: "red",
     },
   ];
+
+  /**
+   * Retrieves activity icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The activityicon result
+   */
+
+  /**
+   * Retrieves activity icon
+   *
+   * @param {string} type - The type
+   *
+   * @returns {string} The activityicon result
+   */
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -239,10 +416,27 @@ export default function AdminDashboardPage() {
         return Package;
       case "ticket":
         return AlertCircle;
+      /** Default */
       default:
         return Activity;
     }
   };
+
+  /**
+   * Retrieves activity color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The activitycolor result
+   */
+
+  /**
+   * Retrieves activity color
+   *
+   * @param {string} status - The status
+   *
+   * @returns {string} The activitycolor result
+   */
 
   const getActivityColor = (status: string) => {
     switch (status) {
@@ -252,6 +446,7 @@ export default function AdminDashboardPage() {
         return "yellow";
       case "error":
         return "red";
+      /** Default */
       default:
         return "blue";
     }

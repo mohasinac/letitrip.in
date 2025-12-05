@@ -1,3 +1,12 @@
+/**
+ * @fileoverview React Component
+ * @module src/app/seller/my-shops/[slug]/page
+ * @description This file contains the page component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -20,8 +29,16 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
+/**
+ * ShopWithStats interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for ShopWithStats
+ */
 interface ShopWithStats {
+  /** Shop */
   shop: ShopFE;
+  /** Stats */
   stats: any;
 }
 
@@ -31,6 +48,7 @@ export default function ShopDashboardPage() {
   const slug = params.slug as string;
 
   const { data, isLoading, execute } = useLoadingState<ShopWithStats | null>({
+    /** Initial Data */
     initialData: null,
   });
 
@@ -45,7 +63,9 @@ export default function ShopDashboardPage() {
         statsData = await shopsService.getStats(slug);
       } catch (error) {
         logError(error as Error, {
+          /** Component */
           component: "SellerShopDetail.loadShopData.stats",
+          /** Metadata */
           metadata: { slug },
         });
         // Continue even if stats fail
@@ -54,7 +74,9 @@ export default function ShopDashboardPage() {
       return { shop: shopData, stats: statsData };
     } catch (error) {
       logError(error as Error, {
+        /** Component */
         component: "SellerShopDetail.loadShopData",
+        /** Metadata */
         metadata: { slug },
       });
       toast.error("Shop not found");

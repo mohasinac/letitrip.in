@@ -1,4 +1,13 @@
 /**
+ * @fileoverview TypeScript Module
+ * @module src/app/api/admin/riplimit/users/[id]/route
+ * @description This file contains functionality related to route
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Admin RipLimit User Management API
  * Epic: E028 - RipLimit Bidding Currency
  *
@@ -10,7 +19,14 @@ import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getBalanceDetails } from "@/app/api/lib/riplimit/account";
 import { getTransactionHistory } from "@/app/api/lib/riplimit/transactions";
 
+/**
+ * RouteParams interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for RouteParams
+ */
 interface RouteParams {
+  /** Params */
   params: Promise<{ id: string }>;
 }
 
@@ -18,6 +34,34 @@ interface RouteParams {
  * GET /api/admin/riplimit/users/[id]
  * Returns detailed RipLimit info for a specific user (admin only)
  */
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {RouteParams} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, { params });
+ */
+
+/**
+ * Performs g e t operation
+ *
+ * @param {NextRequest} request - The request
+ * @param {RouteParams} { params } - The { params }
+ *
+ * @returns {Promise<any>} Promise resolving to get result
+ *
+ * @throws {Error} When operation fails or validation errors occur
+ *
+ * @example
+ * GET(request, { params });
+ */
+
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: userId } = await params;
@@ -43,9 +87,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { transactions } = await getTransactionHistory(userId, { limit: 50 });
 
     return NextResponse.json({
+      /** Success */
       success: true,
+      /** Data */
       data: {
         ...balance,
+        /** Recent Transactions */
         recentTransactions: transactions,
       },
     });

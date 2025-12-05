@@ -1,4 +1,13 @@
 /**
+ * @fileoverview React Component
+ * @module src/components/common/values/Dimensions
+ * @description This file contains the Dimensions component and its related functionality
+ * 
+ * @created 2025-12-05
+ * @author Development Team
+ */
+
+/**
  * Dimensions Display Component
  *
  * Displays product dimensions in standard format.
@@ -13,14 +22,47 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * DimensionsProps interface
+ * 
+ * @interface
+ * @description Defines the structure and contract for DimensionsProps
+ */
 interface DimensionsProps {
+  /** Length */
   length: number;
+  /** Width */
   width: number;
+  /** Height */
   height?: number;
+  /** Unit */
   unit?: "cm" | "m" | "in" | "ft";
+  /** Class Name */
   className?: string;
+  /** Compact */
   compact?: boolean;
 }
+
+/**
+ * Function: Dimensions
+ */
+/**
+ * Performs dimensions operation
+ *
+ * @returns {any} The dimensions result
+ *
+ * @example
+ * Dimensions();
+ */
+
+/**
+ * Performs dimensions operation
+ *
+ * @returns {any} The dimensions result
+ *
+ * @example
+ * Dimensions();
+ */
 
 export function Dimensions({
   length,
