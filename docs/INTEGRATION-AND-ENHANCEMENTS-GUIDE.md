@@ -6799,6 +6799,23 @@ const results = await batch.commit();
 
 ---
 
+## 📋 IMPLEMENTATION TASK LIST
+
+> **Task List Moved**: All implementation tasks have been moved to a dedicated document for better organization.
+>
+> **📄 See**: [`/docs/IMPLEMENTATION-TASK-LIST.md`](./IMPLEMENTATION-TASK-LIST.md)
+>
+> The task list includes:
+>
+> - 🔥 Firebase Integration Strategy
+> - 🎯 Phase 1: Create New Components & Services (70+ tasks)
+> - 🔗 Phase 2: Integrate Existing Code (60+ tasks)
+> - 🔧 Phase 3: Fix TypeScript Errors (15+ tasks)
+> - 📊 Progress Tracking
+> - ✅ Definition of Done
+
+---
+
 ## Testing Checklist (Updated)
 
 ### Product/Auction Creation
@@ -6908,8 +6925,853 @@ Implement systematically, test thoroughly, and maintain code quality throughout.
 
 For questions or clarifications, refer to:
 
-- **AI Agent Guide**: `/TDD/AI-AGENT-GUIDE.md`
-- **AI Agent Map**: `/TDD/AI-AGENT-MAP.md`
-- **Project README**: `/README.md`
+- **Integration Guide**: This document for technical specifications
+- **Task List**: `/docs/IMPLEMENTATION-TASK-LIST.md` for detailed implementation tasks
+- **AI Agent Guide**: `/TDD/AI-AGENT-GUIDE.md` for existing patterns
+- **AI Agent Map**: `/TDD/AI-AGENT-MAP.md` for architecture overview
+- **Project README**: `/README.md` for project setup and overview
 
 **Remember**: Code quality over speed. Follow existing patterns. Test everything.
+
+---
+
+    - Update Firestore order document with label URL
+    - Trigger via Firestore onUpdate trigger
+
+- [ ] **CREATE**: `functions/src/shipping/trackingUpdates.ts`
+  - Firebase Function for Shiprocket webhook handler
+  - Update Firestore order tracking status
+  - Create notification document for customer updates
+- [ ] **CREATE**: `functions/src/shipping/autoPickup.ts`
+  - Firebase Function to schedule pickups automatically
+  - Trigger via scheduled function (daily at 10 AM)
+  - Query Firestore for pending pickup orders
+- [ ] ✅ Use Firebase Storage for label/manifest PDFs
+- [ ] ✅ Use Firestore triggers for automatic workflow
+
+#### 1.4 WhatsApp Integration (Priority: MEDIUM)
+
+- [ ] **Task 1.4.1**: Create `src/services/whatsapp.service.ts`
+
+  - [ ] Add sendMessage method
+  - [ ] Add sendTemplateMessage method
+  - [ ] Add sendBulkMessages method
+  - [ ] Add createGroup method
+  - [ ] Add addToGroup method
+  - [ ] Add subscribeToCategory method
+
+- [ ] **Task 1.4.2**: Create `src/constants/whatsapp-templates.ts`
+
+  - [ ] Define WhatsApp message templates
+  - [ ] Add templates for all notification types
+
+- [ ] **Task 1.4.3**: Create `src/app/admin/settings/whatsapp/page.tsx`
+
+  - [ ] Build WhatsApp settings UI
+  - [ ] Add API configuration fields
+  - [ ] Add test connection button
+  - [ ] ✅ Mobile responsive
+  - [ ] ✅ Dark mode support
+
+- [ ] **Task 1.4.4**: Create WhatsApp API routes
+
+  - [ ] Create `src/app/api/whatsapp/send/route.ts`
+  - [ ] Create `src/app/api/whatsapp/subscribe/route.ts`
+  - [ ] Create `src/app/api/whatsapp/webhook/route.ts`
+  - [ ] Create `src/app/api/whatsapp/groups/route.ts`
+
+- [ ] **Task 1.4.5**: 🔥 Create Firebase Functions for WhatsApp Notifications
+  - [ ] **CREATE**: `functions/src/notifications/whatsapp/orderNotifications.ts`
+    - Firebase Function triggered by Firestore order status changes
+    - Send WhatsApp message via Twilio/Gupshup API
+    - Use Firestore onUpdate trigger on orders collection
+    - Log notification status to Firestore notifications collection
+  - [ ] **CREATE**: `functions/src/notifications/whatsapp/bidNotifications.ts`
+    - Firebase Function triggered by Firestore bid creation
+    - Send WhatsApp message to auction owner and outbid users
+    - Use Firestore onCreate trigger on bids collection
+  - [ ] **CREATE**: `functions/src/notifications/whatsapp/bulkMessages.ts`
+    - Firebase Function for scheduled bulk WhatsApp campaigns
+    - Trigger via scheduled function or manual HTTP call
+    - Query Firestore for user segments
+    - Rate limit to avoid API throttling
+  - [ ] ✅ Use Firebase Functions config for WhatsApp API credentials
+  - [ ] ✅ Use Firestore triggers for event-driven notifications
+  - [ ] ✅ Store notification logs in Firestore for audit trail
+
+#### 1.5 Email Integration (Priority: MEDIUM)
+
+- [ ] **Task 1.5.1**: Create `src/services/email.service.ts`
+
+  - [ ] Add sendEmail method
+  - [ ] Add sendBulkEmail method
+  - [ ] Add sendTemplateEmail method
+  - [ ] Add createTemplate method
+  - [ ] Add getInbox method
+  - [ ] Add sendNewsletter method
+
+- [ ] **Task 1.5.2**: Create email templates directory
+
+  - [ ] Create `src/templates/email/` directory
+  - [ ] Create OrderConfirmation.tsx
+  - [ ] Create ShippingUpdate.tsx
+  - [ ] Create AuctionBidNotification.tsx
+  - [ ] Create PasswordReset.tsx
+  - [ ] Create WelcomeEmail.tsx
+  - [ ] Create Newsletter.tsx
+
+- [ ] **Task 1.5.3**: Create `src/app/admin/settings/email/page.tsx`
+
+  - [ ] Build email settings UI
+  - [ ] Add provider configuration
+  - [ ] Add SMTP/IMAP settings
+  - [ ] Add test email button
+  - [ ] ✅ Mobile responsive
+  - [ ] ✅ Dark mode support
+
+- [ ] **Task 1.5.4**: Create `src/app/admin/emails/page.tsx`
+
+  - [ ] Build email dashboard
+  - [ ] Add sent emails list
+  - [ ] Add inbox viewer
+  - [ ] Add template manager
+  - [ ] Add newsletter composer
+  - [ ] ✅ Mobile responsive
+  - [ ] ✅ Dark mode support
+
+- [ ] **Task 1.5.5**: Create email API routes
+
+  - [ ] Create `src/app/api/email/send/route.ts`
+  - [ ] Create `src/app/api/email/templates/route.ts`
+  - [ ] Create `src/app/api/email/inbox/route.ts`
+  - [ ] Create `src/app/api/email/webhook/route.ts`
+
+- [ ] **Task 1.5.6**: 🔥 Create Firebase Functions for Email Notifications
+  - [ ] **CREATE**: `functions/src/notifications/email/orderEmails.ts`
+    - Firebase Function triggered by Firestore order events
+    - Send transactional emails via Resend/SendGrid API
+    - Use Firestore triggers (onCreate, onUpdate) on orders collection
+    - Render React email templates to HTML
+    - Log email status to Firestore notifications collection
+  - [ ] **CREATE**: `functions/src/notifications/email/auctionEmails.ts`
+    - Firebase Function for auction-related emails
+    - Trigger on bid creation, auction ending, auction won
+    - Use Firestore triggers on auctions and bids collections
+  - [ ] **CREATE**: `functions/src/notifications/email/welcomeEmail.ts`
+    - Firebase Function triggered by Firebase Auth onCreate
+    - Send welcome email with email verification link
+    - Use Firebase Auth trigger
+  - [ ] **CREATE**: `functions/src/notifications/email/scheduledNewsletter.ts`
+    - Firebase Function for scheduled newsletter campaigns
+    - Trigger via scheduled function (weekly/monthly)
+    - Query Firestore for subscribed users
+    - Support batch sending with rate limiting
+  - [ ] **OPTIONAL**: Consider Firebase Extension "Trigger Email" for simpler setup
+  - [ ] ✅ Use Firebase Functions config for email API credentials
+  - [ ] ✅ Use Firestore triggers for event-driven emails
+  - [ ] ✅ Use Firebase Auth triggers for authentication emails
+  - [ ] ✅ Store email logs in Firestore for tracking
+
+#### 1.6 Payment API Routes (Priority: CRITICAL)
+
+> **Note**: Webhook handlers moved to Firebase Functions (see Task 1.1.7). API routes below are for frontend-triggered actions only.
+
+- [ ] **Task 1.6.1**: Create Razorpay API routes
+
+  - [ ] Create `src/app/api/payments/razorpay/order/route.ts` (initiate payment)
+  - [ ] Create `src/app/api/payments/razorpay/verify/route.ts` (verify payment signature)
+  - [ ] Create `src/app/api/payments/razorpay/capture/route.ts` (capture authorized payment)
+  - [ ] Create `src/app/api/payments/razorpay/refund/route.ts` (initiate refund)
+  - [ ] ~~Webhook moved to Firebase Function: `functions/src/webhooks/razorpay.ts`~~
+
+- [ ] **Task 1.6.2**: Create PayPal API routes
+
+  - [ ] Create `src/app/api/payments/paypal/order/route.ts` (create PayPal order)
+  - [ ] Create `src/app/api/payments/paypal/capture/route.ts` (capture PayPal payment)
+  - [ ] Create `src/app/api/payments/paypal/refund/route.ts` (initiate refund)
+  - [ ] ~~Webhook moved to Firebase Function: `functions/src/webhooks/paypal.ts`~~
+
+- [ ] **Task 1.6.3**: Create gateway management API routes
+
+  - [ ] Create `src/app/api/admin/settings/payment-gateways/route.ts`
+  - [ ] Create `src/app/api/admin/settings/payment-gateways/toggle/route.ts`
+  - [ ] Create `src/app/api/admin/settings/payment-gateways/config/route.ts`
+  - [ ] Create `src/app/api/admin/settings/payment-gateways/test/route.ts`
+  - [ ] ✅ Store gateway config in Firestore admin settings collection
+  - [ ] ✅ Use Firebase Admin SDK for secure updates
+
+- [ ] **Task 1.6.4**: Create available gateways API route
+  - [ ] Create `src/app/api/payments/available-gateways/route.ts`
+  - [ ] ✅ Query Firestore for enabled gateways
+  - [ ] ✅ Filter by country/currency support
+
+#### 1.7 Address API Routes (Priority: HIGH)
+
+- [ ] **Task 1.7.1**: Create address lookup API routes
+
+  - [ ] Create `src/app/api/address/lookup/route.ts`
+  - [ ] Create `src/app/api/address/countries/route.ts`
+  - [ ] Create `src/app/api/address/states/[countryCode]/route.ts`
+  - [ ] Create `src/app/api/address/validate/route.ts`
+  - [ ] Create `src/app/api/address/autocomplete/route.ts`
+
+- [ ] **Task 1.7.2**: Create address settings API route
+  - [ ] Create `src/app/api/admin/settings/address-api/route.ts`
+
+#### 1.8 Common Hooks & Utilities (Priority: MEDIUM)
+
+- [ ] **Task 1.8.1**: Create `src/hooks/useResourceList.ts`
+
+  - [ ] Implement unified resource list hook
+  - [ ] Add Sieve pagination support
+  - [ ] Add filtering support
+  - [ ] Add sorting support
+  - [ ] Add search support
+
+- [ ] **Task 1.8.2**: Create `src/hooks/useWindowResize.ts`
+  - [ ] Implement window resize hook
+  - [ ] Add debounce support
+
+#### 1.9 Shop Settings Pages (Priority: MEDIUM)
+
+- [ ] **Task 1.9.1**: Create `src/app/seller/shops/[slug]/settings/page.tsx`
+  - [ ] Build shop settings UI with tabs
+  - [ ] Add General Settings tab
+  - [ ] Add Shipping Settings tab
+  - [ ] Add Payment Settings tab
+  - [ ] Add Default Policies tab
+  - [ ] Add Team Management tab
+  - [ ] ✅ Mobile responsive (tabs → accordion)
+  - [ ] ✅ Dark mode support
+
+#### 1.10 Server Actions (Priority: HIGH)
+
+- [ ] **Task 1.10.1**: Create `src/app/actions/payment.ts`
+  - [ ] Add initiatePayment server action
+  - [ ] Add verifyPayment server action
+  - [ ] Add server-side validation
+
+#### 1.11 🔥 Firebase Firestore Triggers (Priority: HIGH)
+
+- [ ] **Task 1.11.1**: Create order status automation
+
+  - [ ] **CREATE**: `functions/src/triggers/orderStatusUpdate.ts`
+    - Firestore trigger on orders collection onUpdate
+    - Automatically update inventory when order confirmed
+    - Create notification documents for buyer and seller
+    - Update seller metrics (total sales, etc.)
+    - Log order status changes to audit collection
+  - [ ] ✅ Use Firestore batch writes for atomic updates
+
+- [ ] **Task 1.11.2**: Create auction automation
+
+  - [ ] **CREATE**: `functions/src/triggers/auctionEndHandler.ts`
+    - Firestore trigger when auction endDate passes
+    - Determine winner and create winning notification
+    - Create order document for winner automatically
+    - Update auction status to "ended"
+    - Notify all bidders of auction result
+  - [ ] **CREATE**: `functions/src/triggers/bidNotification.ts`
+    - Firestore trigger on bids collection onCreate
+    - Notify auction owner of new bid
+    - Notify previous highest bidder they've been outbid
+    - Update auction currentBid and bidCount
+  - [ ] ✅ Use scheduled function to check for ended auctions every hour
+
+- [ ] **Task 1.11.3**: Create user activity tracking
+
+  - [ ] **CREATE**: `functions/src/triggers/userActivityLog.ts`
+    - Firestore trigger on multiple collections
+    - Log user actions (product views, searches, purchases)
+    - Update user preferences based on activity
+    - Aggregate data for analytics dashboard
+  - [ ] ✅ Use Firestore subcollections for user activity logs
+
+- [ ] **Task 1.11.4**: Create review moderation
+
+  - [ ] **CREATE**: `functions/src/triggers/reviewModeration.ts`
+    - Firestore trigger on reviews collection onCreate
+    - Auto-flag reviews with profanity or spam patterns
+    - Update product/shop average rating
+    - Notify shop owner of new review
+  - [ ] ✅ Use Cloud Natural Language API for sentiment analysis (optional)
+
+- [ ] **Task 1.11.5**: Create image processing automation
+  - [ ] **CREATE**: `functions/src/triggers/imageOptimization.ts`
+    - Firebase Storage trigger on image upload
+    - Generate multiple thumbnail sizes
+    - Optimize image compression
+    - Store thumbnails in Storage
+    - Update Firestore document with thumbnail URLs
+  - [ ] **OPTIONAL**: Consider Firebase Extension "Resize Images" for simpler setup
+  - [ ] ✅ Use Sharp library for image processing
+
+---
+
+### 🔗 PHASE 2: INTEGRATE EXISTING CODE (Priority 2)
+
+**Goal**: Connect new components with existing pages and flows
+
+#### 2.1 Payment Gateway Integration
+
+- [ ] **Task 2.1.1**: Update `src/app/checkout/page.tsx`
+
+  - [ ] Replace manual address fields with `<AddressInput />`
+  - [ ] Add dynamic gateway loading based on address
+  - [ ] Add PayPal option for international addresses
+  - [ ] Add Razorpay/PayU for Indian addresses
+  - [ ] Add currency selector for international orders
+  - [ ] Add converted amount display
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.1.2**: Update `src/app/checkout/success/page.tsx`
+
+  - [ ] Add PayPal capture handler
+  - [ ] Add redirect logic after payment
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.1.3**: Update `src/app/admin/settings/payment/page.tsx`
+
+  - [ ] Add Razorpay configuration section
+  - [ ] Add PayPal configuration section
+  - [ ] Add PayU configuration section
+  - [ ] Link to payment-gateways page
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.1.4**: Update `src/app/admin/analytics/payments/page.tsx`
+
+  - [ ] Add gateway breakdown chart
+  - [ ] Add currency-wise revenue tracking
+  - [ ] Add international vs domestic split
+  - [ ] Add transaction fees analysis
+  - [ ] ✅ Query Firestore orders collection with payment gateway filters
+  - [ ] ✅ Aggregate data using Firestore queries or Firebase Functions
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.1.5**: 🔥 Update Payment Flow to Use Firebase Functions
+  - [ ] Update checkout page to call Firebase Function for order creation
+  - [ ] Use Firebase Callable Functions for payment initiation
+  - [ ] Store payment status in Firestore orders collection
+  - [ ] Listen to Firestore real-time updates for payment status changes
+  - [ ] ✅ Use Firebase Callable Functions instead of Next.js API routes where possible
+  - [ ] ✅ Use Firestore real-time listeners for instant UI updates
+
+#### 2.2 Address Integration
+
+- [ ] **Task 2.2.1**: Update all address input forms
+
+  - [ ] Update `src/app/user/profile/page.tsx`
+  - [ ] Update `src/app/seller/shops/[slug]/edit/page.tsx`
+  - [ ] Update seller registration flow
+  - [ ] Update user registration flow
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.2.2**: 🔥 Create Firestore Triggers for Address Validation
+  - [ ] **CREATE**: `functions/src/triggers/validateAddress.ts`
+    - Firestore trigger on user addresses collection
+    - Validate address format and postal code
+    - Auto-correct common formatting issues
+    - Flag invalid addresses for manual review
+    - Use Firestore onWrite trigger
+
+#### 2.3 Shipping Integration
+
+- [ ] **Task 2.3.1**: Update `src/app/admin/settings/shipping/page.tsx`
+
+  - [ ] Add Shiprocket configuration section
+  - [ ] Add API credentials fields
+  - [ ] Add test connection button
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.3.2**: Update `src/app/seller/orders/[id]/page.tsx`
+  - [ ] Add Generate AWB button
+  - [ ] Add Select Courier dropdown
+  - [ ] Add Schedule Pickup button
+  - [ ] Add Print Label button
+  - [ ] Add Track Shipment section
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.4 Notification Preferences
+
+- [ ] **Task 2.4.1**: Update `src/app/user/settings/notifications/page.tsx`
+  - [ ] Add WhatsApp notification toggles
+  - [ ] Add email notification toggles
+  - [ ] Add notification categories
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.5 Shop Settings Integration
+
+- [ ] **Task 2.5.1**: Update shop about page
+
+  - [ ] Update `src/app/shops/[slug]/about/page.tsx`
+  - [ ] Display accepted payment modes
+  - [ ] Display shipping options
+  - [ ] Display return policy
+  - [ ] Display warranty policy
+  - [ ] Add shop tabs navigation
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.5.2**: Create `src/components/shop/ShopTabs.tsx`
+  - [ ] Add tabs component (Products | Auctions | About | Reviews | Contact)
+  - [ ] ✅ Mobile responsive (horizontal scroll)
+  - [ ] ✅ Dark mode support
+
+#### 2.6 Homepage Enhancements
+
+- [ ] **Task 2.6.1**: Update product sections
+
+  - [ ] Update `src/components/homepage/ProductsSection.tsx`
+  - [ ] Update `src/components/homepage/FeaturedProductsSection.tsx`
+  - [ ] Update `src/components/homepage/FeaturedAuctionsSection.tsx`
+  - [ ] Update `src/components/homepage/FeaturedShopsSection.tsx`
+  - [ ] Ensure using `<HorizontalScrollContainer />`
+  - [ ] Verify single-row display
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.6.2**: Verify homepage sections
+  - [ ] Check `src/app/page.tsx` for missing sections
+  - [ ] Ensure FeaturedCategoriesSection is rendered
+  - [ ] Ensure FeaturedShopsSection is rendered
+  - [ ] Debug data loading issues
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.7 Product/Auction Display Fixes
+
+- [ ] **Task 2.7.1**: Update `src/components/product/ProductImageGallery.tsx`
+
+  - [ ] Fix auto slideshow (cycle through all images)
+  - [ ] Fix click to open lightbox
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.7.2**: Update `src/components/product/ProductImageModal.tsx`
+
+  - [ ] Remove purchase button from lightbox
+  - [ ] Keep only navigation and close buttons
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.7.3**: Update `src/components/common/ProductVariantSelector.tsx`
+
+  - [ ] Verify variant rendering
+  - [ ] Verify variant selection updates state
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.7.4**: Update product similar items
+  - [ ] Fix similar items query in `src/app/products/[slug]/page.tsx`
+  - [ ] Improve similarity algorithm
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.8 Filter & Navigation Improvements
+
+- [ ] **Task 2.8.1**: Update `src/components/common/UnifiedFilterSidebar.tsx`
+
+  - [ ] Add search input to each filter section
+  - [ ] Add "Expand All" / "Collapse All" buttons
+  - [ ] Implement filter search functionality
+  - [ ] Save expanded state to localStorage
+  - [ ] Verify mobile responsiveness (drawer on mobile)
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.8.2**: Update `src/components/common/CollapsibleFilter.tsx`
+
+  - [ ] Add search prop
+  - [ ] Implement search filtering
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+- [ ] **Task 2.8.3**: Fix category filters
+  - [ ] Debug `src/app/categories/[slug]/page.tsx`
+  - [ ] Verify filter state passes to API
+  - [ ] Verify Sieve query construction
+  - [ ] Verify filtered results render
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.9 Dark Mode Fixes
+
+- [ ] **Task 2.9.1**: Update category details page
+
+  - [ ] Add dark mode classes to `src/app/categories/[slug]/page.tsx`
+  - [ ] Verify all elements support dark mode
+
+- [ ] **Task 2.9.2**: Update shop details page
+  - [ ] Add dark mode classes to `src/app/shops/[slug]/page.tsx`
+  - [ ] Verify all elements support dark mode
+
+#### 2.10 Data Loading Fixes
+
+- [ ] **Task 2.10.1**: Debug reviews API
+
+  - [ ] Check `src/app/api/reviews/route.ts` query logic
+  - [ ] Verify Sieve parameters
+  - [ ] Check permissions
+
+- [ ] **Task 2.10.2**: Debug category products
+
+  - [ ] Check `src/app/api/products/route.ts` categoryId filter
+  - [ ] Verify Sieve query construction
+
+- [ ] **Task 2.10.3**: Debug blog posts
+
+  - [ ] Check `src/app/api/blog/route.ts` query logic
+  - [ ] Verify published filter
+
+- [ ] **Task 2.10.4**: Debug category auctions
+
+  - [ ] Check `src/app/api/auctions/route.ts` categoryId filter
+
+- [ ] **Task 2.10.5**: Debug category metrics
+
+  - [ ] Check `src/app/api/categories/[slug]/metrics/route.ts`
+  - [ ] Verify aggregation logic
+
+- [ ] **Task 2.10.6**: Debug shop items
+
+  - [ ] Verify shopId filter in products/auctions APIs
+  - [ ] Ensure products/auctions have shopId field
+
+- [ ] **Task 2.10.7**: Update auction/product cards
+  - [ ] Fix metrics display on cards
+  - [ ] Verify mobile responsiveness
+  - [ ] Verify dark mode
+
+#### 2.11 Responsive Scaling
+
+- [ ] **Task 2.11.1**: Update `src/components/common/HorizontalScrollContainer.tsx`
+
+  - [ ] Add window resize recalculation
+  - [ ] Update visible items count on resize
+  - [ ] Adjust scroll position on resize
+
+- [ ] **Task 2.11.2**: Update layout components
+  - [ ] Add max-width constraints
+  - [ ] Use container queries where applicable
+  - [ ] Ensure grids recalculate on resize
+
+#### 2.12 Pagination Migration
+
+- [ ] **Task 2.12.1**: Migrate admin list pages to useResourceList
+
+  - [ ] Update admin users page
+  - [ ] Update admin products page
+  - [ ] Update admin auctions page
+  - [ ] Update admin orders page
+  - [ ] Update admin shops page
+
+- [ ] **Task 2.12.2**: Migrate seller list pages to useResourceList
+
+  - [ ] Update seller products page
+  - [ ] Update seller auctions page
+  - [ ] Update seller orders page
+
+- [ ] **Task 2.12.3**: Migrate user list pages to useResourceList
+
+  - [ ] Update user orders page
+  - [ ] Update user wishlist page
+  - [ ] Update user viewing history page
+
+- [ ] **Task 2.12.4**: Remove cursor pagination support
+  - [ ] Remove cursor pagination code from all pages
+  - [ ] Keep only Sieve pagination
+
+---
+
+### 🔧 PHASE 3: FIX TYPESCRIPT ERRORS (Priority 3)
+
+**Goal**: Ensure type safety across entire codebase
+
+#### 3.1 Initial TypeScript Check
+
+- [ ] **Task 3.1.1**: Run initial TypeScript check
+  ```bash
+  npx tsc --noEmit
+  ```
+  - [ ] Document all errors in a file
+  - [ ] Categorize errors by type
+  - [ ] Prioritize critical errors
+
+#### 3.2 Fix New Code TypeScript Errors
+
+- [ ] **Task 3.2.1**: Fix payment gateway config errors
+
+  - [ ] Verify all interfaces are properly typed
+  - [ ] Fix any type mismatches
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.2.2**: Fix address service errors
+
+  - [ ] Verify return types
+  - [ ] Fix promise types
+  - [ ] Fix cache types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.2.3**: Fix payment service errors
+
+  - [ ] Verify all method signatures
+  - [ ] Fix gateway-specific types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.2.4**: Fix API route errors
+
+  - [ ] Verify NextRequest/NextResponse types
+  - [ ] Fix request body types
+  - [ ] Fix response types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.2.5**: Fix component prop errors
+
+  - [ ] Fix AddressInput prop types
+  - [ ] Fix GatewayConfigModal prop types
+  - [ ] Fix all new component prop types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.2.6**: 🔥 Fix Firebase Functions TypeScript Errors
+  - [ ] Run `npx tsc --noEmit` in `functions/` directory
+  - [ ] Fix webhook handler types
+  - [ ] Fix Firestore Admin SDK types
+  - [ ] Fix Firebase Functions config types
+  - [ ] Fix notification trigger types
+  - [ ] Verify `functions/tsconfig.json` is properly configured
+  - [ ] Ensure Firebase Admin SDK types are installed
+
+#### 3.3 Fix Integration TypeScript Errors
+
+- [ ] **Task 3.3.1**: Fix checkout page errors
+
+  - [ ] Fix address state types
+  - [ ] Fix gateway types
+  - [ ] Fix payment handler types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.3.2**: Fix shop settings errors
+
+  - [ ] Fix settings state types
+  - [ ] Fix tab types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.3.3**: Fix filter component errors
+
+  - [ ] Fix filter state types
+  - [ ] Fix search types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.3.4**: Fix homepage errors
+  - [ ] Fix section component types
+  - [ ] Fix data types
+  - [ ] Run `npx tsc --noEmit` to verify
+
+#### 3.4 Fix Existing TypeScript Errors
+
+- [ ] **Task 3.4.1**: Fix any type assertions
+
+  - [ ] Replace `any` with proper types
+  - [ ] Add type guards where needed
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.4.2**: Fix missing type definitions
+
+  - [ ] Add missing interface definitions
+  - [ ] Add missing type exports
+  - [ ] Run `npx tsc --noEmit` to verify
+
+- [ ] **Task 3.4.3**: Fix strict mode errors
+  - [ ] Fix null/undefined checks
+  - [ ] Fix optional chaining issues
+  - [ ] Run `npx tsc --noEmit` to verify
+
+#### 3.5 Final TypeScript Validation
+
+- [ ] **Task 3.5.1**: Run final TypeScript check
+
+  ```bash
+  npx tsc --noEmit
+  ```
+
+  - [ ] Verify zero errors
+  - [ ] Document any remaining warnings
+  - [ ] Create issues for any suppressed errors
+
+- [ ] **Task 3.5.2**: Run build check
+
+  ```bash
+  npm run build
+  ```
+
+  - [ ] Verify successful build
+  - [ ] Fix any build-time errors
+  - [ ] Document build warnings
+
+- [ ] **Task 3.5.3**: 🔥 Validate Firebase Functions Build
+  ```bash
+  cd functions
+  npm run build
+  ```
+  - [ ] Verify successful build
+  - [ ] Fix any Firebase Functions errors
+  - [ ] Test functions locally with Firebase Emulators
+  - [ ] Deploy to Firebase (staging first, then production)
+
+---
+
+### 📊 Progress Tracking
+
+#### Phase 1: Create New Components
+
+- **Total Tasks**: 70+
+- **Completed**: 0
+- **In Progress**: 0
+- **Blocked**: 0
+
+#### Phase 2: Integration
+
+- **Total Tasks**: 60+
+- **Completed**: 0
+- **In Progress**: 0
+- **Blocked**: 0
+
+#### Phase 3: TypeScript Fixes
+
+- **Total Tasks**: 15+
+- **Completed**: 0
+- **In Progress**: 0
+- **Blocked**: 0
+
+#### Overall Progress
+
+- **Total Tasks**: 145+
+- **Completed**: 0 (0%)
+- **Estimated Time**: 4-6 weeks (with team)
+
+---
+
+### 🎯 Quick Start Guide
+
+1. **Start with Phase 1**: Create all new components and services
+2. **Mobile & Dark Mode**: Test each component immediately after creation
+3. **Run TypeScript**: Check types as you create each file: `npx tsc --noEmit`
+4. **Move to Phase 2**: Only after Phase 1 is complete
+5. **Integration Testing**: Test each integration thoroughly
+6. **Final Phase 3**: Fix all remaining TypeScript errors
+7. **Build**: Verify with `npm run build`
+
+---
+
+### ✅ Definition of Done (for each task)
+
+- [ ] Code written and committed
+- [ ] Mobile responsive verified
+- [ ] Dark mode verified
+- [ ] TypeScript errors checked (`npx tsc --noEmit`)
+- [ ] Component documented (if new)
+- [ ] Unit tests written (if applicable)
+- [ ] Peer reviewed
+- [ ] QA tested
+- [ ] 🔥 **Firebase Integration Checklist** (if applicable):
+  - [ ] Uses Firebase Admin SDK for Firestore (backend only)
+  - [ ] Uses Firebase Functions config for secrets (not hardcoded)
+  - [ ] Implements proper error logging to Firebase Functions logs
+  - [ ] Uses Firestore triggers instead of polling where applicable
+  - [ ] Stores files in Firebase Storage with proper access rules
+  - [ ] Tested locally with Firebase Emulators before deployment
+  - [ ] Deployed to staging environment first
+  - [ ] Monitoring enabled in Firebase Console
+
+---
+
+- [ ] SKU auto-generates and shows barcode
+- [ ] Slug auto-generates from name
+- [ ] Slug validation works (checks duplicates)
+- [ ] Stock defaults to 1, max 100 enforced
+- [ ] 1 video + 5 images upload works
+- [ ] Camera capture works
+- [ ] Video thumbnail generates
+- [ ] Rich text editor preserves formatting
+- [ ] Paste from Word/Google Docs works
+- [ ] Featured toggle only shows for admin
+- [ ] Validation errors show below inputs
+- [ ] Validation triggers on blur/after 3 seconds
+- [ ] Auction date validation works
+- [ ] Default starting bid is ₹10
+- [ ] Condition dropdown works
+
+### Category System
+
+- [ ] List view shows hierarchy
+- [ ] Grid view shows cards
+- [ ] Graph view renders correctly
+- [ ] Graph draws from center
+- [ ] Quick actions work (create/edit/delete)
+- [ ] Category hierarchy saved correctly
+- [ ] Leaf category validation works
+
+### Admin Features
+
+- [ ] Navigation tabs work
+- [ ] Settings grouped properly
+- [ ] Homepage settings save
+- [ ] Hero slides work
+- [ ] Resend verification email works
+- [ ] All users load correctly
+- [ ] Shipping providers management works
+
+### Shop Management
+
+- [ ] Shop verification flow works
+- [ ] Product creation blocked if not verified
+- [ ] Shop address selector works
+- [ ] Can only select 1 address
+- [ ] Wizard step navigation works
+- [ ] Next button visible and works
+- [ ] Can jump to previous steps
+
+### Cart & Checkout
+
+- [ ] Cart badge shows count
+- [ ] Cart displays items
+- [ ] Address selector in checkout works
+- [ ] Can add new address in checkout modal
+- [ ] User address page works
+- [ ] Can set default address
+
+### User Experience
+
+- [ ] Real-time validation works
+- [ ] Favorites replaces watchlist
+- [ ] Auction history tracks views
+- [ ] Image zoom -50% to +100% works
+- [ ] Support ticket requires email
+- [ ] Shop support pre-fills user data
+
+### Bug Fixes
+
+- [ ] No resource not found errors
+- [ ] Date handling consistent
+- [ ] Filters don't make URL too long
+- [ ] All users load without errors
+
+### Performance
+
+- [ ] Sieve requests complete in < 1 second
+- [ ] Firestore composite indexes created
+- [ ] Query optimization applied (most selective filters first)
+- [ ] Caching implemented for frequent queries
+- [ ] Client-side debouncing works (500ms)
+- [ ] Cursor-based pagination implemented
+- [ ] Only required fields fetched
+- [ ] Response time monitoring active
+- [ ] Slow query alerts configured
+- [ ] Data denormalization applied where needed
