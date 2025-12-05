@@ -4,9 +4,9 @@
  * Tracks performance metrics and user actions
  */
 
-import { logEvent, isSupported } from "firebase/analytics";
 import { analytics as firebaseAnalytics } from "@/app/api/lib/firebase/app";
 import { logError } from "@/lib/firebase-error-logger";
+import { isSupported, logEvent } from "firebase/analytics";
 
 // Initialize analytics (client-side only)
 let analytics: any = null;
@@ -24,7 +24,7 @@ if (typeof window !== "undefined") {
  */
 export function trackEvent(
   eventName: string,
-  params?: Record<string, any>,
+  params?: Record<string, any>
 ): void {
   if (!analytics) return;
 
