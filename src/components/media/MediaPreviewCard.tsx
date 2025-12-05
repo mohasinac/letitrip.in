@@ -1,10 +1,9 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { X, Edit2, RotateCw, AlertCircle, CheckCircle2 } from "lucide-react";
+import { formatDuration, formatFileSize } from "@/lib/formatters";
 import { MediaFile } from "@/types/media";
-import { formatFileSize, formatDuration } from "@/lib/formatters";
+import { AlertCircle, CheckCircle2, Edit2, RotateCw, X } from "lucide-react";
+import Image from "next/image";
 
 interface MediaPreviewCardProps {
   media: MediaFile;

@@ -3,6 +3,28 @@
 > **Last Updated:** December 5, 2025  
 > **Purpose:** Central registry of all importable modules, functions, components, and types in the application
 
+## ⚠️ Recent Breaking Changes (December 2025)
+
+**Removed Deprecated Functions:**
+- ❌ `formatCurrency` from `@/lib/formatters` - Use `formatPrice` from `@/lib/price.utils` instead
+- ❌ Re-exports from `media-validator.ts` - Import directly from `@/lib/formatters`
+- ❌ Re-exports from `location/pincode.ts` and `constants/location.ts`
+
+**New Utilities:**
+- ✅ `@/lib/validators.ts` - Centralized validation functions (email, phone, GST, PAN, etc.)
+- ✅ `@/lib/price.utils.ts` - Enhanced price formatting with null safety
+
+**Migration Guide:**
+```typescript
+// ❌ Old (removed)
+import { formatCurrency } from "@/lib/formatters";
+const price = formatCurrency(1000);
+
+// ✅ New (recommended)
+import { formatPrice } from "@/lib/price.utils";
+const price = formatPrice(1000); // Handles nulls safely
+```
+
 ## 📋 Table of Contents
 
 - [Services](#services)
@@ -1110,21 +1132,39 @@ import { seoConfig } from "@/config/seo";
 ```typescript
 // Format Utilities
 import {
-  formatCurrency,
   formatDate,
   formatTime,
   formatDateTime,
+  formatRelativeTime,
   formatNumber,
   formatFileSize,
-} from "@/lib/format";
+  formatDuration,
+  formatPhoneNumber,
+  formatPincode,
+  formatCompactCurrency,
+} from "@/lib/formatters";
+
+// Price Formatting (Recommended)
+import {
+  formatPrice,        // Null-safe price formatting
+  formatPriceRange,   // Min-Max range
+  formatDiscount,     // Discount percentage
+  formatINR,         // Indian Rupee formatting
+  parsePrice,        // Parse string to number
+} from "@/lib/price.utils";
 
 // Validation Utilities
 import {
-  isValidEmail,
-  isValidPhone,
-  isValidPincode,
-  isValidURL,
-} from "@/lib/validation";
+  validateEmail,
+  validatePhone,
+  validateUrl,
+  validatePincode,
+  validatePassword,
+  validateSKU,
+  validateSlug,
+  validateGST,
+  validatePAN,
+} from "@/lib/validators";
 
 // String Utilities
 import { slugify, capitalize, truncate, pluralize } from "@/lib/string";
@@ -1380,7 +1420,8 @@ import {
    import type { ProductFE } from "@/types/frontend/product.types";
 
    // Utilities
-   import { formatCurrency } from "@/lib/format";
+   import { formatPrice } from "@/lib/price.utils";
+   import { formatDate } from "@/lib/formatters";
    ```
 
 ---

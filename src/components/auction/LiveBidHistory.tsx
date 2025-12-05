@@ -7,10 +7,10 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { TrendingUp, User, Clock } from "lucide-react";
 import { formatRelativeTime } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
+import { Clock, TrendingUp, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Bid {
   id: string;
