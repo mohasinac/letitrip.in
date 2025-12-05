@@ -1,7 +1,7 @@
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { logError } from "@/lib/firebase-error-logger";
 import { searchService } from "@/services/search.service";
 import type { SearchResultFE } from "@/types/frontend/search.types";

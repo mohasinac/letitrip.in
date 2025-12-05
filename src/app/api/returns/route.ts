@@ -1,11 +1,9 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getReturnsQuery, UserRole } from "@/app/api/lib/firebase/queries";
 import { getCurrentUser } from "@/app/api/lib/session";
-import {
-  createPaginationMeta,
-  parseSieveQuery,
-  returnsSieveConfig,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { returnsSieveConfig } from "@/app/api/lib/sieve/config";
 import { logError } from "@/lib/firebase-error-logger";
 import { Query } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";

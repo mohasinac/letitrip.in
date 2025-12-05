@@ -15,9 +15,10 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FormField, FormSelect } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { mediaService } from "@/services/media.service";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import {

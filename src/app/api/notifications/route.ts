@@ -9,11 +9,9 @@
 
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import {
-  createPaginationMeta,
-  notificationsSieveConfig,
-  parseSieveQuery,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { notificationsSieveConfig } from "@/app/api/lib/sieve/config";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { COLLECTIONS } from "@/constants/database";
 import { NextRequest, NextResponse } from "next/server";
 

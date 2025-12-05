@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Plus, Loader2, Tag, GripVertical } from "lucide-react";
 import { toast } from "sonner";
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 

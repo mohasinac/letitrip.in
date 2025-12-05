@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Price, DateDisplay } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { ordersService } from "@/services/orders.service";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";

@@ -6,11 +6,9 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS } from "@/constants/database";
 import { ValidationError, errorToJson, ApiError } from "@/lib/api-errors";
-import {
-  parseSieveQuery,
-  heroSlidesSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { heroSlidesSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 
 // Extended Sieve config with field mappings for hero slides
 const slidesConfig = {

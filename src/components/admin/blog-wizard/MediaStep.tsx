@@ -1,4 +1,4 @@
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { Upload, X } from "lucide-react";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { X } from "lucide-react";
 import type { BlogFormData, OnBlogChange } from "./types";
 

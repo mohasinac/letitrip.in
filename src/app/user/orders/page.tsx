@@ -3,7 +3,8 @@
 import { EmptyState } from "@/components/common/EmptyState";
 import { PageState } from "@/components/common/PageState";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay, Price } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
 import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { useAuth } from "@/contexts/AuthContext";

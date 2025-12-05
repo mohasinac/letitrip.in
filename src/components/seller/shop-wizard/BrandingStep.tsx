@@ -1,7 +1,9 @@
 "use client";
 
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormField, FormInput, FormTextarea } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface BrandingStepProps {

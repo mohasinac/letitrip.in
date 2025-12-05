@@ -1,10 +1,8 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop, UserRole } from "@/app/api/lib/firebase/queries";
-import {
-  createPaginationMeta,
-  parseSieveQuery,
-  productsSieveConfig,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { productsSieveConfig } from "@/app/api/lib/sieve/config";
 import { withCache } from "@/app/api/middleware/cache";
 import {
   getUserFromRequest,

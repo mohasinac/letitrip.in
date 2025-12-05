@@ -13,7 +13,7 @@
  * - Dark mode support
  */
 
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import { Button } from "@/components/ui/Button";
 import type { CategoryCardFE } from "@/types/frontend/category.types";
 import { Download, Maximize2, Search, ZoomIn, ZoomOut } from "lucide-react";

@@ -9,7 +9,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { FormModal } from "@/components/common/FormModal";
 import { ProductInlineForm } from "./ProductInlineForm";
 import { productsService } from "@/services/products.service";

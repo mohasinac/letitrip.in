@@ -3,7 +3,9 @@
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { FormCheckbox, FormInput, FormLabel } from "@/components/forms";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import type { CategoryFormData, OnChange } from "./types";
 

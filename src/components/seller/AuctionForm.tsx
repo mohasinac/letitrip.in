@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { logError } from "@/lib/error-logger";
 import DateTimePicker from "@/components/common/DateTimePicker";
-import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
+import SlugInput from "@/components/common/SlugInput";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
+import { Card } from "@/components/ui/Card";
+import { FormActions } from "@/components/ui/FormActions";
+import { logError } from "@/lib/error-logger";
+import { auctionsService } from "@/services/auctions.service";
 import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
-import { auctionsService } from "@/services/auctions.service";
-import { Card, FormActions } from "@/components/ui";
-import {
-  FormField,
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface AuctionFormProps {
   mode: "create" | "edit";
@@ -117,7 +116,7 @@ export default function AuctionForm({
 
     if (formData.reservePrice && formData.reservePrice < formData.startingBid) {
       toast.error(
-        "Reserve price must be greater than or equal to starting bid",
+        "Reserve price must be greater than or equal to starting bid"
       );
       return;
     }
@@ -276,7 +275,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={3}
@@ -297,7 +296,7 @@ export default function AuctionForm({
                   e.target.value
                     .split(",")
                     .map((s) => s.trim())
-                    .filter(Boolean),
+                    .filter(Boolean)
                 )
               }
               rows={2}
@@ -316,12 +315,12 @@ export default function AuctionForm({
             formData.status === AuctionStatus.DRAFT
               ? "Draft auctions are not visible to buyers"
               : formData.status === AuctionStatus.SCHEDULED
-                ? "Auction will go live at the scheduled start time"
-                : formData.status === AuctionStatus.ACTIVE
-                  ? "Auction is currently accepting bids"
-                  : formData.status === AuctionStatus.ENDED
-                    ? "Auction has ended"
-                    : "Auction has been cancelled"
+              ? "Auction will go live at the scheduled start time"
+              : formData.status === AuctionStatus.ACTIVE
+              ? "Auction is currently accepting bids"
+              : formData.status === AuctionStatus.ENDED
+              ? "Auction has ended"
+              : "Auction has been cancelled"
           }
         >
           <FormSelect

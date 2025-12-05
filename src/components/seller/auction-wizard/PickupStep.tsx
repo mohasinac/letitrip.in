@@ -1,6 +1,7 @@
 "use client";
 
-import { FormLabel, FormTextarea } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import type { StepProps } from "./types";
 import type { AddressFE } from "@/types/frontend/address.types";

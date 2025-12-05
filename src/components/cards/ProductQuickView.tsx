@@ -18,7 +18,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 
 export interface ProductQuickViewProps {
   product: {

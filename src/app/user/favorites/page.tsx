@@ -1,6 +1,6 @@
 "use client";
 
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";

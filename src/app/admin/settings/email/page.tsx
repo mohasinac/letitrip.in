@@ -12,7 +12,8 @@
  * - Sender information
  */
 
-import { FormInput, FormLabel } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";

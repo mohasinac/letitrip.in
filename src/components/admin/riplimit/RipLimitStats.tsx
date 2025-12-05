@@ -1,6 +1,6 @@
 "use client";
 
-import { Quantity } from "@/components/common/values";
+import { Quantity } from "@/components/common/values/Quantity";
 import { Card } from "@/components/ui/Card";
 import { AlertTriangle, DollarSign, Users, Wallet } from "lucide-react";
 

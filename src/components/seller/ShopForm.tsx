@@ -6,8 +6,12 @@ import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
-import { Card, Button, FormActions } from "@/components/ui";
-import { FormField, FormInput, FormLabel } from "@/components/forms";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { FormActions } from "@/components/ui/FormActions";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 interface ShopFormProps {
   shop?: ShopFE;

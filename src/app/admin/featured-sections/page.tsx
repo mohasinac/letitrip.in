@@ -1,6 +1,8 @@
 "use client";
 
-import { AdminPageHeader, LoadingSpinner, toast } from "@/components/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { toast } from "@/components/admin/Toast";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { useAuth } from "@/contexts/AuthContext";

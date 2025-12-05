@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";

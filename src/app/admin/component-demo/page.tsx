@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  AdminPageHeader,
-  LoadingSpinner,
-  ToggleSwitch,
-  toast,
-} from "@/components/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
+import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
+import { toast } from "@/components/admin/Toast";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 
 /**

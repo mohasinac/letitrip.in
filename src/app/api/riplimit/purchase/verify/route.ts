@@ -7,7 +7,7 @@
 
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { creditBalance } from "@/app/api/lib/riplimit";
+import { creditBalance } from "@/app/api/lib/riplimit/account";
 import { COLLECTIONS } from "@/constants/database";
 import {
   RipLimitPurchaseBE,

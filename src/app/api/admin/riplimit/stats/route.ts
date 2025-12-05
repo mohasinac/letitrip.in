@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import { getAdminStats } from "@/app/api/lib/riplimit";
+import { getAdminStats } from "@/app/api/lib/riplimit/admin";
 
 /**
  * GET /api/admin/riplimit/stats

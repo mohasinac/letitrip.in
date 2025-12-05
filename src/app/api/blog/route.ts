@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import {
-  parseSieveQuery,
-  blogSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { blogSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 
 const COLLECTION = "blog_posts";
 

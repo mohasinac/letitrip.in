@@ -2,12 +2,10 @@
 
 import { toast } from "@/components/admin/Toast";
 import AuthGuard from "@/components/auth/AuthGuard";
-import {
-  FormCheckbox,
-  FormInput,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";

@@ -37,7 +37,9 @@ const TIPS_LIST = [
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supportService } from "@/services/support.service";
-import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { logError } from "@/lib/firebase-error-logger";
 
 export default function SupportTicketPage() {

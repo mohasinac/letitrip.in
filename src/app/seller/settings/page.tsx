@@ -16,13 +16,11 @@ import { logError } from "@/lib/firebase-error-logger";
  */
 
 import { PageState } from "@/components/common/PageState";
-import { Price } from "@/components/common/values";
-import {
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { Price } from "@/components/common/values/Price";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { apiService } from "@/services/api.service";

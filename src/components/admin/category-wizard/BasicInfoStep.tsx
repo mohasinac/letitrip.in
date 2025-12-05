@@ -1,6 +1,8 @@
 "use client";
 
-import { FormInput, FormSelect, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { CategoryFormData, OnChange } from "./types";
 

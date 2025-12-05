@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import ShopSelector from "@/components/seller/ShopSelector";
 import DateTimePicker from "@/components/common/DateTimePicker";
-import { FormLabel } from "@/components/forms";
+import { FormLabel } from "@/components/forms/FormLabel";
 import AnalyticsOverview from "@/components/seller/AnalyticsOverview";
 import SalesChart from "@/components/seller/SalesChart";
 import TopProducts from "@/components/seller/TopProducts";

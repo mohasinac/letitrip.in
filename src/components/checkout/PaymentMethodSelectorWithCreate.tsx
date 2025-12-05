@@ -6,7 +6,9 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FormField, FormInput, FormSelect } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { logError } from "@/lib/firebase-error-logger";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import {

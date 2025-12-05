@@ -12,7 +12,8 @@
  * - Notification preferences
  */
 
-import { FormInput, FormSelect } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";

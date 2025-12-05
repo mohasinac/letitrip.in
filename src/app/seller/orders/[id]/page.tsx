@@ -2,8 +2,10 @@
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { DateDisplay, Price } from "@/components/common/values";
-import { FormInput, FormSelect } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";

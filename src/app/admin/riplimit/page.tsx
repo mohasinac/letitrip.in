@@ -14,7 +14,7 @@
 import { AdjustBalanceModal } from "@/components/admin/riplimit/AdjustBalanceModal";
 import { RipLimitStatsCards } from "@/components/admin/riplimit/RipLimitStats";
 import { UsersTable } from "@/components/admin/riplimit/UsersTable";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";

@@ -14,7 +14,9 @@
  * - Maintenance mode
  */
 
-import { FormInput, FormLabel, FormTextarea } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {

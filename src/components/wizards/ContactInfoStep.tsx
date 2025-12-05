@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInput } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
 import MobileInput from "@/components/common/MobileInput";
 
 export interface ContactInfoStepProps {

@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { getCurrentUser } from "@/app/api/lib/session";
-import {
-  parseSieveQuery,
-  favoritesSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { favoritesSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 
 // Extended Sieve config with field mappings for favorites
 const favoritesConfig = {

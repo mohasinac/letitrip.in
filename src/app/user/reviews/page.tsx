@@ -20,8 +20,9 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { DateDisplay } from "@/components/common/values";
-import { FormInput, FormSelect } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useLoadingState } from "@/hooks/useLoadingState";

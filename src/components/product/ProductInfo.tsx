@@ -17,8 +17,8 @@ import {
   Plus,
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
-import { FormLabel } from "@/components/forms";
-import { Price } from "@/components/common/values";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { Price } from "@/components/common/values/Price";
 
 interface ProductInfoProps {
   product: {

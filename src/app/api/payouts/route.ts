@@ -1,9 +1,7 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
-import {
-  createPaginationMeta,
-  parseSieveQuery,
-  payoutsSieveConfig,
-} from "@/app/api/lib/sieve";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { payoutsSieveConfig } from "@/app/api/lib/sieve/config";
 import {
   getUserFromRequest,
   requireAuth,

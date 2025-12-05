@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { logError } from "@/lib/firebase-error-logger";
 import { cartService } from "@/services/cart.service";
 import { useAuth } from "@/contexts/AuthContext";
-import type { CartItemFE, CartFE } from "@/types";
+import type { CartItemFE, CartFE } from "@/types/frontend/cart.types";
 
 export function useCart() {
   const { user } = useAuth();

@@ -6,11 +6,9 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { updateCategoryAuctionCounts } from "@/lib/category-hierarchy";
-import {
-  parseSieveQuery,
-  auctionsSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { auctionsSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,

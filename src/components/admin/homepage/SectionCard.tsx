@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleSwitch } from "@/components/admin";
+import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp } from "lucide-react";
 import { ReactNode } from "react";
 

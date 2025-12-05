@@ -2,7 +2,7 @@
 
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { PageState } from "@/components/common/PageState";
-import { Price } from "@/components/common/values";
+import { Price } from "@/components/common/values/Price";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { shopsService } from "@/services/shops.service";

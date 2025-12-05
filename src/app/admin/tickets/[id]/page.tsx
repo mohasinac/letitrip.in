@@ -5,8 +5,10 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { DateDisplay } from "@/components/common/values";
-import { FormSelect, FormTextarea, FormCheckbox } from "@/components/forms";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { supportService } from "@/services/support.service";
 import { useLoadingState } from "@/hooks/useLoadingState";
 

@@ -12,7 +12,8 @@ import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { Eye, CheckCircle, XCircle, Edit, Flag, Clock } from "lucide-react";
-import { DateDisplay, Price } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
 import { useLoadingState } from "@/hooks/useLoadingState";
 
 export default function AuctionModerationPage() {

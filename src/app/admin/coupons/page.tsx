@@ -3,7 +3,7 @@
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { couponsService } from "@/services/coupons.service";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Ticket, Percent } from "lucide-react";
 import { getCouponBulkActions } from "@/constants/bulk-actions";
 import { COUPON_FIELDS, toInlineFields } from "@/constants/form-fields";

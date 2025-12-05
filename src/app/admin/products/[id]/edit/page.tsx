@@ -3,12 +3,10 @@
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import SlugInput from "@/components/common/SlugInput";
-import {
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";

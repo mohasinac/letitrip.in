@@ -6,7 +6,9 @@ import CategorySelector, {
   Category as CategoryType,
 } from "@/components/common/CategorySelector";
 import SlugInput from "@/components/common/SlugInput";
-import { FormInput, FormTextarea, FormLabel } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormLabel } from "@/components/forms/FormLabel";
 import { categoriesService } from "@/services/categories.service";
 import { logError } from "@/lib/firebase-error-logger";
 import {

@@ -1,7 +1,8 @@
 "use client";
 
 import { SettingsSection } from "@/components/common/SettingsSection";
-import { FormField, FormInput } from "@/components/forms";
+import { FormField } from "@/components/forms/FormField";
+import { FormInput } from "@/components/forms/FormInput";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";

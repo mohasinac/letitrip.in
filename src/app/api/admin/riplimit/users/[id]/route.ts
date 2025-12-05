@@ -7,10 +7,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
-import {
-  getBalanceDetails,
-  getTransactionHistory,
-} from "@/app/api/lib/riplimit";
+import { getBalanceDetails } from "@/app/api/lib/riplimit/account";
+import { getTransactionHistory } from "@/app/api/lib/riplimit/transactions";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromRequest } from "@/app/api/lib/auth";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { parseSieveQuery } from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import { COLLECTIONS } from "@/constants/database";
 import { RipLimitAccountBE } from "@/types/backend/riplimit.types";
 

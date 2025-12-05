@@ -15,13 +15,11 @@ import { logError } from "@/lib/firebase-error-logger";
  * - Purchase and refund actions
  */
 
-import { Price } from "@/components/common/values";
-import {
-  FormInput,
-  FormLabel,
-  FormSelect,
-  FormTextarea,
-} from "@/components/forms";
+import { Price } from "@/components/common/values/Price";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";

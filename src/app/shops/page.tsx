@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Filter, Grid, List, AlertCircle } from "lucide-react";
-import { FormSelect } from "@/components/forms";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";

@@ -1,8 +1,9 @@
 "use client";
 
-import { ToggleSwitch } from "@/components/admin";
+import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { FormInput, FormLabel } from "@/components/forms";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormLabel } from "@/components/forms/FormLabel";
 
 interface BannerSettings {
   enabled: boolean;

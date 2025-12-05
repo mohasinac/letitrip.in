@@ -6,11 +6,9 @@ import {
 } from "@/app/api/middleware/rbac-auth";
 import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
-import {
-  parseSieveQuery,
-  categoriesSieveConfig,
-  createPaginationMeta,
-} from "@/app/api/lib/sieve";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { categoriesSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/api";
 
 // Extended Sieve config with field mappings for categories
 const categoriesConfig = {

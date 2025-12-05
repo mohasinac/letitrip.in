@@ -3,7 +3,8 @@
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { PageState } from "@/components/common/PageState";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay, Price } from "@/components/common/values";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
