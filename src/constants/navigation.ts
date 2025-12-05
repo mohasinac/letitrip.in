@@ -24,13 +24,12 @@ export const USER_MENU_ITEMS = [
         link: "/user",
         icon: "layout-dashboard",
       },
-      // REMOVED: /user/notifications - E016 Notifications not implemented
-      // {
-      //   id: "notifications",
-      //   name: "Notifications",
-      //   link: "/user/notifications",
-      //   icon: "bell",
-      // },
+      {
+        id: "notifications",
+        name: "Notifications",
+        link: "/user/notifications",
+        icon: "bell",
+      },
     ],
   },
   {
@@ -114,10 +113,6 @@ export const USER_MENU_ITEMS = [
 ];
 
 // Seller Sidebar Navigation (Grouped)
-// BROKEN ROUTES FIXED:
-// - /seller/settings - Route does not exist (use shop edit page)
-// - /seller/reviews - Route does not exist
-// - /seller/help - Route does not exist
 export const SELLER_MENU_ITEMS = [
   {
     id: "overview",
@@ -143,11 +138,6 @@ export const SELLER_MENU_ITEMS = [
         link: "/seller/my-shops/create",
         icon: "plus-circle",
       },
-      // REMOVED: /seller/settings - Route does not exist, use shop edit page instead
-      // {
-      //   id: "settings",
-      //   name: "Shop Settings",
-      //   link: "/seller/settings",
       //   icon: "settings",
       // },
     ],
@@ -267,12 +257,6 @@ export const SELLER_MENU_ITEMS = [
 ];
 
 // Admin Sidebar Navigation (Grouped)
-// BROKEN ROUTES FIXED:
-// - /admin/featured-sections - Route does not exist (use /admin/homepage)
-// - /admin/analytics/* - Routes do not exist (analytics not implemented)
-// - /admin/blog/categories - Route does not exist
-// - /admin/blog/tags - Route does not exist
-// - /admin/settings/* - Individual settings pages do not exist (only /admin/settings)
 export const ADMIN_MENU_ITEMS = [
   {
     id: "dashboard",
