@@ -1,0 +1,147 @@
+{
+  "common": {
+    "loading": "ஏற்றுகிறது...",
+    "uploading": "பதிவேற்றுகிறது...",
+    "pleaseWait": "தயவுசெய்து காத்திருக்கவும்...",
+    "processing": "செயலாக்குகிறது...",
+    "search": "தேடு...",
+    "filter": "வடிகட்டி",
+    "sortBy": "வரிசைப்படுத்து",
+    "apply": "பயன்படுத்து",
+    "reset": "மீட்டமை",
+    "clear": "அழி",
+    "cancel": "ரத்து செய்",
+    "confirm": "உறுதிப்படுத்து",
+    "save": "சேமி",
+    "saveChanges": "மாற்றங்களை சேமி",
+    "delete": "நீக்கு",
+    "edit": "திருத்து",
+    "view": "காண்க",
+    "back": "பின்",
+    "next": "அடுத்து",
+    "previous": "முந்தைய",
+    "continue": "தொடர்",
+    "submit": "சமர்ப்பி",
+    "close": "மூடு",
+    "viewAll": "அனைத்தையும் காண்க",
+    "seeAll": "அனைத்தையும் பார்"
+  },
+  "auth": {
+    "login": {
+      "title": "மீண்டும் வரவேற்கிறோம்",
+      "subtitle": "தொடர உங்கள் கணக்கில் உள்நுழைக",
+      "email": "மின்னஞ்சல் முகவரி",
+      "emailPlaceholder": "you@example.com",
+      "emailRequired": "மின்னஞ்சல் தேவை",
+      "password": "கடவுச்சொல்",
+      "passwordRequired": "கடவுச்சொல் தேவை",
+      "rememberMe": "என்னை நினைவில் வைத்துக் கொள்",
+      "forgotPassword": "கடவுச்சொல் மறந்துவிட்டதா?",
+      "signIn": "உள்நுழை",
+      "signInWithGoogle": "Google மூலம் உள்நுழை",
+      "orContinueWith": "அல்லது தொடரவும்",
+      "noAccount": "கணக்கு இல்லையா?",
+      "createAccount": "கணக்கை உருவாக்கு",
+      "agreementText": "உள்நுழைவதன் மூலம், நீங்கள் எங்களுடைய",
+      "termsOfService": "சேவை விதிமுறைகள்",
+      "and": "மற்றும்",
+      "privacyPolicy": "தனியுரிமை கொள்கை"
+    },
+    "register": {
+      "title": "உங்கள் கணக்கை உருவாக்குங்கள்",
+      "subtitle": "எங்களுடன் சேர்ந்து இன்றே கொள்முதல் செய்யத் தொடங்குங்கள்",
+      "fullName": "முழு பெயர்",
+      "email": "மின்னஞ்சல் முகவரி",
+      "password": "கடவுச்சொல்",
+      "confirmPassword": "கடவுச்சொல்லை உறுதிப்படுத்து",
+      "passwordHint": "குறைந்தது 8 எழுத்துக்கள் இருக்க வேண்டும்",
+      "agreeToTerms": "சேவை விதிமுறைகள் மற்றும் தனியுரிமை கொள்கையை ஏற்கிறேன்",
+      "alreadyHaveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
+      "signIn": "உள்நுழை",
+      "createAccountButton": "கணக்கை உருவாக்கு",
+      "signUpWithGoogle": "Google மூலம் பதிவு செய்"
+    }
+  },
+  "nav": {
+    "header": {
+      "welcome": "{{companyName}}-க்கு வரவேற்கிறோம்",
+      "tagline": "உண்மையான சேகரிப்புகளுக்கான உங்கள் நுழைவாயில்",
+      "searchPlaceholder": "தயாரிப்புகள், கடைகள், ஏலங்களைத் தேடு...",
+      "products": "தயாரிப்புகள்",
+      "auctions": "ஏலங்கள்",
+      "shops": "கடைகள்",
+      "categories": "வகைகள்",
+      "about": "எங்களை பற்றி",
+      "contact": "தொடர்பு கொள்ள",
+      "cart": "வண்டி",
+      "myAccount": "என் கணக்கு",
+      "signIn": "உள்நுழை",
+      "signOut": "வெளியேறு"
+    }
+  },
+  "product": {
+    "card": {
+      "addToCart": "வண்டியில் சேர்",
+      "quickView": "விரைவு காட்சி",
+      "addToFavorites": "விருப்பங்களில் சேர்",
+      "outOfStock": "கையிருப்பில் இல்லை",
+      "inStock": "கையிருப்பில் உள்ளது",
+      "freeShipping": "இலவச ஷிப்பிங்"
+    },
+    "details": {
+      "description": "விளக்கம்",
+      "specifications": "விவரக்குறிப்புகள்",
+      "reviews": "மதிப்புரைகள்",
+      "relatedProducts": "தொடர்புடைய தயாரிப்புகள்",
+      "addToCart": "வண்டியில் சேர்",
+      "buyNow": "இப்போது வாங்கு",
+      "quantity": "அளவு",
+      "inStock": "கையிருப்பில் {{count}}",
+      "onlyLeft": "{{count}} மட்டுமே உள்ளது"
+    }
+  },
+  "cart": {
+    "title": "கொள்முதல் வண்டி",
+    "empty": "வண்டி காலியாக உள்ளது",
+    "continueShopping": "கொள்முதலைத் தொடரவும்",
+    "proceedCheckout": "செக்அவுட்டுக்கு செல்",
+    "remove": "அகற்று",
+    "quantity": "அளவு",
+    "price": "விலை",
+    "subtotal": "துணை மொத்தம்",
+    "total": "மொத்தம்",
+    "itemsInCart": "வண்டியில் {{count}} பொருட்கள்"
+  },
+  "checkout": {
+    "title": "செக்அவுட்",
+    "shippingAddress": "ஷிப்பிங் முகவரி",
+    "paymentMethod": "கட்டண முறை",
+    "orderSummary": "ஆர்டர் சுருக்கம்",
+    "placeOrder": "ஆர்டர் செய்",
+    "total": "மொத்தம்"
+  },
+  "order": {
+    "myOrders": "என் ஆர்டர்கள்",
+    "orderNumber": "ஆர்டர் #{{number}}",
+    "orderDate": "ஆர்டர் தேதி",
+    "orderStatus": "ஆர்டர் நிலை",
+    "trackOrder": "ஆர்டரைக் கண்காணி",
+    "cancelOrder": "ஆர்டரை ரத்து செய்",
+    "noOrders": "இன்னும் ஆர்டர்கள் இல்லை",
+    "startShopping": "உங்கள் ஆர்டர்களை இங்கே காண கொள்முதல் செய்யத் தொடங்குங்கள்"
+  },
+  "status": {
+    "pending": "நிலுவையில்",
+    "confirmed": "உறுதி செய்யப்பட்டது",
+    "processing": "செயலாக்கத்தில்",
+    "shipped": "அனுப்பப்பட்டது",
+    "delivered": "வழங்கப்பட்டது",
+    "cancelled": "ரத்து செய்யப்பட்டது"
+  },
+  "messages": {
+    "success": "வெற்றி!",
+    "error": "பிழை",
+    "somethingWrong": "ஏதோ தவறு ஏற்பட்டது",
+    "tryAgain": "தயவுசெய்து மீண்டும் முயற்சிக்கவும்"
+  }
+}

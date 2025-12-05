@@ -1,33 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 import {
-  ShoppingCart,
-  User,
-  ChevronDown,
-  Menu,
-  Search,
-  LogIn,
-  UserPlus,
-  LayoutDashboard,
-  ShoppingBag,
-  Database,
-  Bell,
-  Wallet,
-  MessageSquare,
-} from "lucide-react";
-import {
-  COMPANY_NAME,
-  USER_MENU_ITEMS,
   ADMIN_MENU_ITEMS,
+  COMPANY_NAME,
   SELLER_MENU_ITEMS,
+  USER_MENU_ITEMS,
 } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { useHeaderStats } from "@/hooks/useHeaderStats";
-import { ThemeToggle } from "@/components/common/ThemeToggle";
+import {
+  Bell,
+  ChevronDown,
+  Database,
+  LayoutDashboard,
+  LogIn,
+  Menu,
+  MessageSquare,
+  Search,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+  UserPlus,
+  Wallet,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 export default function MainNavBar({
   onMobileMenuToggle,
@@ -197,7 +197,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -258,7 +258,7 @@ export default function MainNavBar({
                           </Link>
                         ))}
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -288,6 +288,11 @@ export default function MainNavBar({
 
           {/* Theme Toggle - Visible on all screen sizes */}
           <ThemeToggle size="sm" />
+
+          {/* Language Selector - Desktop only */}
+          {/* <div className="hidden lg:block">
+            <LanguageSelector />
+          </div> */}
 
           {/* Messages - Mobile/Tablet version */}
           {isAuthenticated && (
@@ -518,7 +523,7 @@ export default function MainNavBar({
                               </Link>
                             ))}
                         </div>
-                      ),
+                      )
                     )}
                   </div>
                 )}
