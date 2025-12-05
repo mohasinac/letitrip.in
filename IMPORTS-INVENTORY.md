@@ -6,15 +6,18 @@
 ## ⚠️ Recent Breaking Changes (December 2025)
 
 **Removed Deprecated Functions:**
+
 - ❌ `formatCurrency` from `@/lib/formatters` - Use `formatPrice` from `@/lib/price.utils` instead
 - ❌ Re-exports from `media-validator.ts` - Import directly from `@/lib/formatters`
 - ❌ Re-exports from `location/pincode.ts` and `constants/location.ts`
 
 **New Utilities:**
+
 - ✅ `@/lib/validators.ts` - Centralized validation functions (email, phone, GST, PAN, etc.)
 - ✅ `@/lib/price.utils.ts` - Enhanced price formatting with null safety
 
 **Migration Guide:**
+
 ```typescript
 // ❌ Old (removed)
 import { formatCurrency } from "@/lib/formatters";
@@ -1146,11 +1149,11 @@ import {
 
 // Price Formatting (Recommended)
 import {
-  formatPrice,        // Null-safe price formatting
-  formatPriceRange,   // Min-Max range
-  formatDiscount,     // Discount percentage
-  formatINR,         // Indian Rupee formatting
-  parsePrice,        // Parse string to number
+  formatPrice, // Null-safe price formatting
+  formatPriceRange, // Min-Max range
+  formatDiscount, // Discount percentage
+  formatINR, // Indian Rupee formatting
+  parsePrice, // Parse string to number
 } from "@/lib/price.utils";
 
 // Validation Utilities
