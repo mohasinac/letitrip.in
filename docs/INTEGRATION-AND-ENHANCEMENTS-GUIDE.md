@@ -7,6 +7,100 @@
 
 ---
 
+## ⚠️ CRITICAL IMPLEMENTATION GUIDELINES
+
+### Code Reusability & Component First Approach
+
+**BEFORE writing ANY new code:**
+
+1. ✅ **CHECK for existing components** in `src/components/`
+2. ✅ **USE existing hooks** from `src/hooks/`
+3. ✅ **UPDATE existing files** instead of creating duplicates
+4. ✅ **REUSE service methods** from `src/services/`
+5. ✅ **EXTEND existing utilities** in `src/lib/`
+
+### Component Hierarchy (USE IN THIS ORDER)
+
+1. **Existing Components** - Search before creating
+
+   - Check `src/components/common/` for reusable UI components
+   - Check `src/components/forms/` for form components
+   - Check `src/components/admin/`, `src/components/seller/` for feature-specific components
+
+2. **Existing Hooks** - Always use if available
+
+   - `useLoadingState` for data fetching
+   - `useDebounce` for search/filters
+   - `useFilters` for list filtering
+   - See `/TDD/AI-AGENT-GUIDE.md` for complete list
+
+3. **Existing Services** - Never duplicate API logic
+
+   - Use `src/services/*.service.ts` for all API calls
+   - Add methods to existing services instead of creating new ones
+
+4. **When to Create NEW Code** (ONLY if absolutely necessary):
+   - ❌ Component doesn't exist AND can't be composed from existing ones
+   - ❌ Hook doesn't exist AND pattern is reusable
+   - ❌ Service doesn't exist AND API pattern is unique
+   - ❌ Utility function is genuinely new logic
+
+### Example: DON'T vs DO
+
+```typescript
+// ❌ DON'T: Create new payment form component
+export function NewPaymentForm() { ... }
+
+// ✅ DO: Use existing FormField components
+import { FormField, FormInput, FormSelect } from '@/components/forms';
+// Then compose your form
+
+// ❌ DON'T: Create new loading state management
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+// ... 30 lines of try-catch-finally
+
+// ✅ DO: Use existing useLoadingState hook
+import { useLoadingState } from '@/hooks/useLoadingState';
+const { isLoading, error, execute } = useLoadingState();
+
+// ❌ DON'T: Create new address service
+class NewAddressService { ... }
+
+// ✅ DO: Extend existing address service
+// Update src/services/address.service.ts with new methods
+
+// ❌ DON'T: Create duplicate form input
+export function CustomInput() { ... }
+
+// ✅ DO: Use and extend existing FormInput
+import { FormInput } from '@/components/forms';
+// Add props if needed via PR to existing component
+```
+
+### File Modification Protocol
+
+1. **Search First**: Use `grep_search` or `semantic_search` to find existing code
+2. **Read Existing**: Use `read_file` to understand current implementation
+3. **Update, Don't Replace**: Use `replace_string_in_file` to modify existing files
+4. **Create Only When Necessary**: Only use `create_file` if genuinely new
+5. **Document Changes**: Update component props/types if extending
+
+### Integration Checklist
+
+Before implementing any task in this guide:
+
+- [ ] Searched for existing similar components
+- [ ] Checked if existing hooks can be used
+- [ ] Verified if service method exists
+- [ ] Reviewed AI-AGENT-GUIDE.md for patterns
+- [ ] Confirmed new file is absolutely necessary
+- [ ] Planned to reuse existing UI components
+
+**Remember**: Every new file adds maintenance burden. Reuse maximizes consistency and reduces bugs.
+
+---
+
 ## 📋 Table of Contents
 
 1. [Payment Gateway Integrations](#1-payment-gateway-integrations)
@@ -2157,6 +2251,1116 @@ function calculateFee(gateway: PaymentGatewayConfig, amount: number): number {
   const fixedFee = gateway.fees.fixed || 0;
   return percentageFee + fixedFee;
 }
+```
+
+---
+
+## 1.5 Address API Integration (Third-Party)
+
+#### Overview
+
+Integration with third-party address APIs for dynamic country, state, and city loading based on user input (pincode/zip code). Supports both Indian and international addresses with automatic data population.
+
+#### Current Status
+
+- ❌ No address API integration
+- ⚠️ Static country/state dropdowns
+- ⚠️ No address validation
+
+#### Implementation Tasks
+
+**Task 1.5.1: Address API Configuration**
+
+- **File**: `src/config/address-api.config.ts` (CREATE NEW)
+
+```typescript
+export interface AddressAPIProvider {
+  id: string;
+  name: string;
+  type: "india" | "international" | "both";
+  endpoints: {
+    countries?: string;
+    states?: string;
+    cities?: string;
+    postalLookup?: string;
+    validateAddress?: string;
+  };
+  apiKey?: string;
+  rateLimit?: {
+    requestsPerMinute: number;
+    requestsPerDay: number;
+  };
+  features: {
+    postalCodeLookup: boolean;
+    reverseGeocode: boolean;
+    addressValidation: boolean;
+    autoComplete: boolean;
+  };
+}
+
+export const ADDRESS_API_PROVIDERS: Record<string, AddressAPIProvider> = {
+  // For Indian Addresses
+  postalpincode: {
+    id: "postalpincode",
+    name: "Postal Pincode API",
+    type: "india",
+    endpoints: {
+      postalLookup: "https://api.postalpincode.in/pincode/{pincode}",
+    },
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: false,
+      addressValidation: false,
+      autoComplete: false,
+    },
+  },
+
+  indiapost: {
+    id: "indiapost",
+    name: "India Post PIN Code API",
+    type: "india",
+    endpoints: {
+      postalLookup:
+        "https://api.data.gov.in/resource/6176ee09-3d56-4a3b-8115-21841576b2f6",
+    },
+    apiKey: process.env.INDIA_POST_API_KEY,
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: false,
+      addressValidation: false,
+      autoComplete: false,
+    },
+  },
+
+  // For International Addresses
+  zippopotamus: {
+    id: "zippopotamus",
+    name: "Zippopotam.us",
+    type: "international",
+    endpoints: {
+      postalLookup: "https://api.zippopotam.us/{countryCode}/{postalCode}",
+    },
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: false,
+      addressValidation: false,
+      autoComplete: false,
+    },
+  },
+
+  googleplaces: {
+    id: "googleplaces",
+    name: "Google Places API",
+    type: "both",
+    endpoints: {
+      postalLookup: "https://maps.googleapis.com/maps/api/geocode/json",
+      autoComplete:
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+      validateAddress:
+        "https://addressvalidation.googleapis.com/v1:validateAddress",
+    },
+    apiKey: process.env.GOOGLE_PLACES_API_KEY,
+    rateLimit: {
+      requestsPerMinute: 100,
+      requestsPerDay: 25000,
+    },
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: true,
+      addressValidation: true,
+      autoComplete: true,
+    },
+  },
+
+  positionstack: {
+    id: "positionstack",
+    name: "PositionStack",
+    type: "both",
+    endpoints: {
+      postalLookup: "http://api.positionstack.com/v1/forward",
+      reverseGeocode: "http://api.positionstack.com/v1/reverse",
+    },
+    apiKey: process.env.POSITIONSTACK_API_KEY,
+    rateLimit: {
+      requestsPerMinute: 100,
+      requestsPerDay: 25000,
+    },
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: true,
+      addressValidation: false,
+      autoComplete: false,
+    },
+  },
+
+  geonames: {
+    id: "geonames",
+    name: "GeoNames",
+    type: "international",
+    endpoints: {
+      countries: "http://api.geonames.org/countryInfoJSON",
+      states: "http://api.geonames.org/childrenJSON",
+      cities: "http://api.geonames.org/searchJSON",
+      postalLookup: "http://api.geonames.org/postalCodeLookupJSON",
+    },
+    apiKey: process.env.GEONAMES_USERNAME,
+    features: {
+      postalCodeLookup: true,
+      reverseGeocode: true,
+      addressValidation: false,
+      autoComplete: true,
+    },
+  },
+
+  restcountries: {
+    id: "restcountries",
+    name: "REST Countries",
+    type: "international",
+    endpoints: {
+      countries: "https://restcountries.com/v3.1/all",
+    },
+    features: {
+      postalCodeLookup: false,
+      reverseGeocode: false,
+      addressValidation: false,
+      autoComplete: false,
+    },
+  },
+};
+
+export interface CountryData {
+  code: string; // ISO 3166-1 alpha-2
+  name: string;
+  currency: string;
+  phoneCode: string;
+  postalCodeFormat?: RegExp;
+  postalCodeExample?: string;
+}
+
+export interface StateData {
+  code: string;
+  name: string;
+  countryCode: string;
+}
+
+export interface CityData {
+  name: string;
+  stateCode: string;
+  countryCode: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface PostalLookupResult {
+  postalCode: string;
+  country: string;
+  countryCode: string;
+  state: string;
+  stateCode?: string;
+  city: string;
+  district?: string;
+  area?: string;
+  latitude?: number;
+  longitude?: number;
+}
+```
+
+**Task 1.5.2: Address Service**
+
+- **File**: `src/services/address.service.ts` (CREATE NEW)
+
+```typescript
+import {
+  ADDRESS_API_PROVIDERS,
+  PostalLookupResult,
+  CountryData,
+  StateData,
+} from "@/config/address-api.config";
+import { logError } from "@/lib/firebase-error-logger";
+
+class AddressService {
+  private cache: Map<string, any> = new Map();
+  private cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
+
+  /**
+   * Lookup address details by postal/pin code
+   */
+  async lookupByPostalCode(
+    postalCode: string,
+    countryCode: string = "IN"
+  ): Promise<PostalLookupResult | null> {
+    const cacheKey = `postal:${countryCode}:${postalCode}`;
+
+    // Check cache
+    if (this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
+      if (Date.now() - cached.timestamp < this.cacheDuration) {
+        return cached.data;
+      }
+    }
+
+    try {
+      let result: PostalLookupResult | null = null;
+
+      if (countryCode === "IN") {
+        // Use Indian-specific APIs
+        result = await this.lookupIndianPincode(postalCode);
+      } else {
+        // Use international APIs
+        result = await this.lookupInternationalPostalCode(
+          postalCode,
+          countryCode
+        );
+      }
+
+      // Cache result
+      if (result) {
+        this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
+      }
+
+      return result;
+    } catch (error) {
+      logError(error, {
+        context: "Address lookup by postal code",
+        postalCode,
+        countryCode,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Lookup Indian PIN code
+   */
+  private async lookupIndianPincode(
+    pincode: string
+  ): Promise<PostalLookupResult | null> {
+    try {
+      // Try Postal Pincode API first (free, no API key required)
+      const response = await fetch(
+        `https://api.postalpincode.in/pincode/${pincode}`
+      );
+      const data = await response.json();
+
+      if (data[0].Status === "Success" && data[0].PostOffice?.length > 0) {
+        const postOffice = data[0].PostOffice[0];
+
+        return {
+          postalCode: pincode,
+          country: "India",
+          countryCode: "IN",
+          state: postOffice.State,
+          stateCode: this.getIndianStateCode(postOffice.State),
+          city: postOffice.District,
+          district: postOffice.District,
+          area: postOffice.Name,
+        };
+      }
+
+      // Fallback to India Post API if available
+      if (process.env.INDIA_POST_API_KEY) {
+        return await this.lookupIndiaPostAPI(pincode);
+      }
+
+      return null;
+    } catch (error) {
+      logError(error, { context: "Indian pincode lookup", pincode });
+      return null;
+    }
+  }
+
+  /**
+   * Lookup international postal code
+   */
+  private async lookupInternationalPostalCode(
+    postalCode: string,
+    countryCode: string
+  ): Promise<PostalLookupResult | null> {
+    try {
+      // Try Zippopotam.us first (free, no API key required)
+      const response = await fetch(
+        `https://api.zippopotam.us/${countryCode}/${postalCode}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.places?.length > 0) {
+          const place = data.places[0];
+
+          return {
+            postalCode: postalCode,
+            country: data.country,
+            countryCode: data["country abbreviation"],
+            state: place.state,
+            stateCode: place["state abbreviation"],
+            city: place["place name"],
+            latitude: parseFloat(place.latitude),
+            longitude: parseFloat(place.longitude),
+          };
+        }
+      }
+
+      // Fallback to Google Places API if available
+      if (process.env.GOOGLE_PLACES_API_KEY) {
+        return await this.lookupGooglePlaces(postalCode, countryCode);
+      }
+
+      // Fallback to GeoNames API if available
+      if (process.env.GEONAMES_USERNAME) {
+        return await this.lookupGeoNames(postalCode, countryCode);
+      }
+
+      return null;
+    } catch (error) {
+      logError(error, {
+        context: "International postal code lookup",
+        postalCode,
+        countryCode,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Get all countries
+   */
+  async getCountries(): Promise<CountryData[]> {
+    const cacheKey = "countries:all";
+
+    // Check cache
+    if (this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
+      if (Date.now() - cached.timestamp < this.cacheDuration) {
+        return cached.data;
+      }
+    }
+
+    try {
+      // Use REST Countries API (free, no API key)
+      const response = await fetch("https://restcountries.com/v3.1/all");
+      const data = await response.json();
+
+      const countries: CountryData[] = data
+        .map((country: any) => ({
+          code: country.cca2,
+          name: country.name.common,
+          currency: Object.keys(country.currencies || {})[0] || "USD",
+          phoneCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
+        }))
+        .sort((a: CountryData, b: CountryData) => a.name.localeCompare(b.name));
+
+      // Cache result
+      this.cache.set(cacheKey, { data: countries, timestamp: Date.now() });
+
+      return countries;
+    } catch (error) {
+      logError(error, { context: "Get countries" });
+      // Return fallback minimal list
+      return this.getFallbackCountries();
+    }
+  }
+
+  /**
+   * Get states for a country
+   */
+  async getStates(countryCode: string): Promise<StateData[]> {
+    const cacheKey = `states:${countryCode}`;
+
+    // Check cache
+    if (this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
+      if (Date.now() - cached.timestamp < this.cacheDuration) {
+        return cached.data;
+      }
+    }
+
+    try {
+      let states: StateData[] = [];
+
+      if (countryCode === "IN") {
+        // Return Indian states
+        states = this.getIndianStates();
+      } else if (countryCode === "US") {
+        // Return US states
+        states = this.getUSStates();
+      } else if (process.env.GEONAMES_USERNAME) {
+        // Use GeoNames API for other countries
+        states = await this.getGeoNamesStates(countryCode);
+      }
+
+      // Cache result
+      this.cache.set(cacheKey, { data: states, timestamp: Date.now() });
+
+      return states;
+    } catch (error) {
+      logError(error, { context: "Get states", countryCode });
+      return [];
+    }
+  }
+
+  /**
+   * Validate address
+   */
+  async validateAddress(address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  }): Promise<{ valid: boolean; suggestions?: any[] }> {
+    try {
+      // Use Google Address Validation API if available
+      if (process.env.GOOGLE_PLACES_API_KEY) {
+        return await this.validateGoogleAddress(address);
+      }
+
+      // Fallback to basic postal code validation
+      const result = await this.lookupByPostalCode(
+        address.postalCode,
+        address.country
+      );
+
+      if (!result) {
+        return { valid: false };
+      }
+
+      // Check if city and state match
+      const cityMatch =
+        result.city.toLowerCase() === address.city.toLowerCase();
+      const stateMatch =
+        result.state.toLowerCase() === address.state.toLowerCase();
+
+      return { valid: cityMatch && stateMatch };
+    } catch (error) {
+      logError(error, { context: "Validate address", address });
+      return { valid: false };
+    }
+  }
+
+  /**
+   * Get autocomplete suggestions
+   */
+  async getAddressSuggestions(
+    query: string,
+    countryCode?: string
+  ): Promise<any[]> {
+    try {
+      if (process.env.GOOGLE_PLACES_API_KEY) {
+        return await this.getGooglePlacesAutocomplete(query, countryCode);
+      }
+
+      return [];
+    } catch (error) {
+      logError(error, { context: "Get address suggestions", query });
+      return [];
+    }
+  }
+
+  // Helper methods
+  private getIndianStateCode(stateName: string): string {
+    const stateCodeMap: Record<string, string> = {
+      "Andhra Pradesh": "AP",
+      "Arunachal Pradesh": "AR",
+      Assam: "AS",
+      Bihar: "BR",
+      Chhattisgarh: "CG",
+      Goa: "GA",
+      Gujarat: "GJ",
+      Haryana: "HR",
+      "Himachal Pradesh": "HP",
+      Jharkhand: "JH",
+      Karnataka: "KA",
+      Kerala: "KL",
+      "Madhya Pradesh": "MP",
+      Maharashtra: "MH",
+      Manipur: "MN",
+      Meghalaya: "ML",
+      Mizoram: "MZ",
+      Nagaland: "NL",
+      Odisha: "OR",
+      Punjab: "PB",
+      Rajasthan: "RJ",
+      Sikkim: "SK",
+      "Tamil Nadu": "TN",
+      Telangana: "TG",
+      Tripura: "TR",
+      "Uttar Pradesh": "UP",
+      Uttarakhand: "UK",
+      "West Bengal": "WB",
+      Delhi: "DL",
+    };
+
+    return stateCodeMap[stateName] || "";
+  }
+
+  private getIndianStates(): StateData[] {
+    return [
+      { code: "AP", name: "Andhra Pradesh", countryCode: "IN" },
+      { code: "AR", name: "Arunachal Pradesh", countryCode: "IN" },
+      { code: "AS", name: "Assam", countryCode: "IN" },
+      { code: "BR", name: "Bihar", countryCode: "IN" },
+      { code: "CG", name: "Chhattisgarh", countryCode: "IN" },
+      { code: "GA", name: "Goa", countryCode: "IN" },
+      { code: "GJ", name: "Gujarat", countryCode: "IN" },
+      { code: "HR", name: "Haryana", countryCode: "IN" },
+      { code: "HP", name: "Himachal Pradesh", countryCode: "IN" },
+      { code: "JH", name: "Jharkhand", countryCode: "IN" },
+      { code: "KA", name: "Karnataka", countryCode: "IN" },
+      { code: "KL", name: "Kerala", countryCode: "IN" },
+      { code: "MP", name: "Madhya Pradesh", countryCode: "IN" },
+      { code: "MH", name: "Maharashtra", countryCode: "IN" },
+      { code: "MN", name: "Manipur", countryCode: "IN" },
+      { code: "ML", name: "Meghalaya", countryCode: "IN" },
+      { code: "MZ", name: "Mizoram", countryCode: "IN" },
+      { code: "NL", name: "Nagaland", countryCode: "IN" },
+      { code: "OR", name: "Odisha", countryCode: "IN" },
+      { code: "PB", name: "Punjab", countryCode: "IN" },
+      { code: "RJ", name: "Rajasthan", countryCode: "IN" },
+      { code: "SK", name: "Sikkim", countryCode: "IN" },
+      { code: "TN", name: "Tamil Nadu", countryCode: "IN" },
+      { code: "TG", name: "Telangana", countryCode: "IN" },
+      { code: "TR", name: "Tripura", countryCode: "IN" },
+      { code: "UP", name: "Uttar Pradesh", countryCode: "IN" },
+      { code: "UK", name: "Uttarakhand", countryCode: "IN" },
+      { code: "WB", name: "West Bengal", countryCode: "IN" },
+      { code: "DL", name: "Delhi", countryCode: "IN" },
+      { code: "AN", name: "Andaman and Nicobar Islands", countryCode: "IN" },
+      { code: "CH", name: "Chandigarh", countryCode: "IN" },
+      {
+        code: "DN",
+        name: "Dadra and Nagar Haveli and Daman and Diu",
+        countryCode: "IN",
+      },
+      { code: "JK", name: "Jammu and Kashmir", countryCode: "IN" },
+      { code: "LA", name: "Ladakh", countryCode: "IN" },
+      { code: "LD", name: "Lakshadweep", countryCode: "IN" },
+      { code: "PY", name: "Puducherry", countryCode: "IN" },
+    ];
+  }
+
+  private getUSStates(): StateData[] {
+    return [
+      { code: "AL", name: "Alabama", countryCode: "US" },
+      { code: "AK", name: "Alaska", countryCode: "US" },
+      { code: "AZ", name: "Arizona", countryCode: "US" },
+      { code: "AR", name: "Arkansas", countryCode: "US" },
+      { code: "CA", name: "California", countryCode: "US" },
+      { code: "CO", name: "Colorado", countryCode: "US" },
+      { code: "CT", name: "Connecticut", countryCode: "US" },
+      { code: "DE", name: "Delaware", countryCode: "US" },
+      { code: "FL", name: "Florida", countryCode: "US" },
+      { code: "GA", name: "Georgia", countryCode: "US" },
+      // ... add all US states
+    ];
+  }
+
+  private getFallbackCountries(): CountryData[] {
+    return [
+      { code: "IN", name: "India", currency: "INR", phoneCode: "+91" },
+      { code: "US", name: "United States", currency: "USD", phoneCode: "+1" },
+      { code: "GB", name: "United Kingdom", currency: "GBP", phoneCode: "+44" },
+      { code: "CA", name: "Canada", currency: "CAD", phoneCode: "+1" },
+      { code: "AU", name: "Australia", currency: "AUD", phoneCode: "+61" },
+      // Add more common countries
+    ];
+  }
+
+  // Google Places API methods
+  private async lookupGooglePlaces(
+    postalCode: string,
+    countryCode: string
+  ): Promise<PostalLookupResult | null> {
+    // Implementation for Google Places API
+    return null;
+  }
+
+  private async validateGoogleAddress(
+    address: any
+  ): Promise<{ valid: boolean; suggestions?: any[] }> {
+    // Implementation for Google Address Validation API
+    return { valid: false };
+  }
+
+  private async getGooglePlacesAutocomplete(
+    query: string,
+    countryCode?: string
+  ): Promise<any[]> {
+    // Implementation for Google Places Autocomplete API
+    return [];
+  }
+
+  // GeoNames API methods
+  private async lookupGeoNames(
+    postalCode: string,
+    countryCode: string
+  ): Promise<PostalLookupResult | null> {
+    // Implementation for GeoNames API
+    return null;
+  }
+
+  private async getGeoNamesStates(countryCode: string): Promise<StateData[]> {
+    // Implementation for GeoNames API
+    return [];
+  }
+
+  // India Post API method
+  private async lookupIndiaPostAPI(
+    pincode: string
+  ): Promise<PostalLookupResult | null> {
+    // Implementation for India Post API
+    return null;
+  }
+}
+
+export const addressService = new AddressService();
+```
+
+**Task 1.5.3: API Routes**
+
+- **Create**: `src/app/api/address/lookup/route.ts` (POST)
+
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { addressService } from "@/services/address.service";
+import { logError } from "@/lib/firebase-error-logger";
+
+export async function POST(request: NextRequest) {
+  try {
+    const { postalCode, countryCode } = await request.json();
+
+    if (!postalCode) {
+      return NextResponse.json(
+        { error: "Postal code required" },
+        { status: 400 }
+      );
+    }
+
+    const result = await addressService.lookupByPostalCode(
+      postalCode,
+      countryCode || "IN"
+    );
+
+    if (!result) {
+      return NextResponse.json({ error: "Address not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(result);
+  } catch (error) {
+    logError(error, { context: "Address lookup API" });
+    return NextResponse.json(
+      { error: "Failed to lookup address" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+- **Create**: `src/app/api/address/countries/route.ts` (GET)
+- **Create**: `src/app/api/address/states/[countryCode]/route.ts` (GET)
+- **Create**: `src/app/api/address/validate/route.ts` (POST)
+- **Create**: `src/app/api/address/autocomplete/route.ts` (POST)
+
+**Task 1.5.4: Address Input Component**
+
+- **File**: `src/components/forms/AddressInput.tsx` (CREATE NEW)
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { FormField, FormInput, FormSelect } from "@/components/forms";
+import { addressService } from "@/services/address.service";
+import type {
+  CountryData,
+  StateData,
+  PostalLookupResult,
+} from "@/config/address-api.config";
+
+interface AddressInputProps {
+  value: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    stateCode?: string;
+    postalCode: string;
+    country: string;
+    countryCode: string;
+  };
+  onChange: (address: any) => void;
+  errors?: Record<string, string>;
+  disabled?: boolean;
+}
+
+export function AddressInput({
+  value,
+  onChange,
+  errors,
+  disabled,
+}: AddressInputProps) {
+  const [countries, setCountries] = useState<CountryData[]>([]);
+  const [states, setStates] = useState<StateData[]>([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [lookingUpPostal, setLookingUpPostal] = useState(false);
+
+  const debouncedPostalCode = useDebounce(value.postalCode, 500);
+
+  // Load countries on mount
+  useEffect(() => {
+    const loadCountries = async () => {
+      const countriesList = await addressService.getCountries();
+      setCountries(countriesList);
+    };
+    loadCountries();
+  }, []);
+
+  // Load states when country changes
+  useEffect(() => {
+    const loadStates = async () => {
+      if (!value.countryCode) return;
+
+      setLoadingStates(true);
+      const statesList = await addressService.getStates(value.countryCode);
+      setStates(statesList);
+      setLoadingStates(false);
+    };
+
+    loadStates();
+  }, [value.countryCode]);
+
+  // Lookup address by postal code
+  useEffect(() => {
+    const lookupPostalCode = async () => {
+      if (!debouncedPostalCode || debouncedPostalCode.length < 3) return;
+
+      setLookingUpPostal(true);
+
+      try {
+        const result = await fetch("/api/address/lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            postalCode: debouncedPostalCode,
+            countryCode: value.countryCode,
+          }),
+        });
+
+        if (result.ok) {
+          const data: PostalLookupResult = await result.json();
+
+          // Auto-fill city and state
+          onChange({
+            ...value,
+            city: data.city,
+            state: data.state,
+            stateCode: data.stateCode,
+            country: data.country,
+            countryCode: data.countryCode,
+          });
+
+          // Load states if not already loaded
+          if (!states.length) {
+            const statesList = await addressService.getStates(data.countryCode);
+            setStates(statesList);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to lookup postal code:", error);
+      } finally {
+        setLookingUpPostal(false);
+      }
+    };
+
+    lookupPostalCode();
+  }, [debouncedPostalCode]);
+
+  const handleCountryChange = (countryCode: string) => {
+    const country = countries.find((c) => c.code === countryCode);
+
+    onChange({
+      ...value,
+      countryCode,
+      country: country?.name || "",
+      state: "",
+      stateCode: "",
+      city: "",
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Country */}
+      <FormField label="Country" required error={errors?.country}>
+        <FormSelect
+          value={value.countryCode}
+          onChange={(e) => handleCountryChange(e.target.value)}
+          disabled={disabled}
+        >
+          <option value="">Select Country</option>
+          {countries.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name}
+            </option>
+          ))}
+        </FormSelect>
+      </FormField>
+
+      {/* Postal Code (PIN Code) */}
+      <FormField
+        label={value.countryCode === "IN" ? "PIN Code" : "Postal Code"}
+        required
+        error={errors?.postalCode}
+      >
+        <FormInput
+          type="text"
+          value={value.postalCode}
+          onChange={(e) => onChange({ ...value, postalCode: e.target.value })}
+          placeholder={value.countryCode === "IN" ? "110001" : ""}
+          disabled={disabled || !value.countryCode}
+          suffix={lookingUpPostal ? "🔄" : undefined}
+        />
+        {!value.countryCode && (
+          <p className="text-xs text-gray-500 mt-1">Select country first</p>
+        )}
+        {lookingUpPostal && (
+          <p className="text-xs text-blue-600 mt-1">Looking up address...</p>
+        )}
+      </FormField>
+
+      {/* State - Only shown after country or postal code is entered */}
+      {(value.countryCode || value.postalCode) && (
+        <FormField label="State / Province" required error={errors?.state}>
+          {loadingStates ? (
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <span className="animate-spin">⚙️</span>
+              <span>Loading states...</span>
+            </div>
+          ) : states.length > 0 ? (
+            <FormSelect
+              value={value.stateCode || value.state}
+              onChange={(e) => {
+                const selectedState = states.find(
+                  (s) => s.code === e.target.value || s.name === e.target.value
+                );
+                onChange({
+                  ...value,
+                  state: selectedState?.name || e.target.value,
+                  stateCode: selectedState?.code,
+                });
+              }}
+              disabled={disabled}
+            >
+              <option value="">Select State</option>
+              {states.map((state) => (
+                <option key={state.code} value={state.code}>
+                  {state.name}
+                </option>
+              ))}
+            </FormSelect>
+          ) : (
+            <FormInput
+              type="text"
+              value={value.state}
+              onChange={(e) => onChange({ ...value, state: e.target.value })}
+              placeholder="Enter state"
+              disabled={disabled}
+            />
+          )}
+        </FormField>
+      )}
+
+      {/* City */}
+      <FormField label="City" required error={errors?.city}>
+        <FormInput
+          type="text"
+          value={value.city}
+          onChange={(e) => onChange({ ...value, city: e.target.value })}
+          placeholder="Enter city"
+          disabled={disabled || !value.countryCode}
+        />
+      </FormField>
+
+      {/* Address Line 1 */}
+      <FormField label="Address Line 1" required error={errors?.line1}>
+        <FormInput
+          type="text"
+          value={value.line1}
+          onChange={(e) => onChange({ ...value, line1: e.target.value })}
+          placeholder="House No., Building Name"
+          disabled={disabled}
+        />
+      </FormField>
+
+      {/* Address Line 2 */}
+      <FormField label="Address Line 2 (Optional)" error={errors?.line2}>
+        <FormInput
+          type="text"
+          value={value.line2 || ""}
+          onChange={(e) => onChange({ ...value, line2: e.target.value })}
+          placeholder="Road Name, Area, Landmark"
+          disabled={disabled}
+        />
+      </FormField>
+    </div>
+  );
+}
+```
+
+**Task 1.5.5: Admin Settings for Address API**
+
+- **File**: `src/app/admin/settings/address-api/page.tsx` (CREATE NEW)
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { ADDRESS_API_PROVIDERS } from "@/config/address-api.config";
+import {
+  FormField,
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+} from "@/components/forms";
+import { toast } from "react-hot-toast";
+
+export default function AddressAPISettingsPage() {
+  const [settings, setSettings] = useState({
+    primaryProvider: "postalpincode",
+    fallbackProvider: "zippopotamus",
+    enableAutoLookup: true,
+    enableValidation: false,
+    enableAutocomplete: false,
+  });
+
+  const handleSave = async () => {
+    try {
+      await fetch("/api/admin/settings/address-api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+
+      toast.success("Address API settings saved");
+    } catch (error) {
+      toast.error("Failed to save settings");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Address API Configuration</h1>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <FormField label="Primary Provider (India)">
+          <FormSelect
+            value={settings.primaryProvider}
+            onChange={(e) =>
+              setSettings({ ...settings, primaryProvider: e.target.value })
+            }
+          >
+            {Object.values(ADDRESS_API_PROVIDERS)
+              .filter((p) => p.type === "india" || p.type === "both")
+              .map((provider) => (
+                <option key={provider.id} value={provider.id}>
+                  {provider.name}
+                </option>
+              ))}
+          </FormSelect>
+        </FormField>
+
+        <FormField label="Fallback Provider (International)">
+          <FormSelect
+            value={settings.fallbackProvider}
+            onChange={(e) =>
+              setSettings({ ...settings, fallbackProvider: e.target.value })
+            }
+          >
+            {Object.values(ADDRESS_API_PROVIDERS)
+              .filter((p) => p.type === "international" || p.type === "both")
+              .map((provider) => (
+                <option key={provider.id} value={provider.id}>
+                  {provider.name}
+                </option>
+              ))}
+          </FormSelect>
+        </FormField>
+
+        <FormField label="Features">
+          <FormCheckbox
+            checked={settings.enableAutoLookup}
+            onChange={(e) =>
+              setSettings({ ...settings, enableAutoLookup: e.target.checked })
+            }
+            label="Enable automatic address lookup by postal code"
+          />
+          <FormCheckbox
+            checked={settings.enableValidation}
+            onChange={(e) =>
+              setSettings({ ...settings, enableValidation: e.target.checked })
+            }
+            label="Enable address validation"
+          />
+          <FormCheckbox
+            checked={settings.enableAutocomplete}
+            onChange={(e) =>
+              setSettings({ ...settings, enableAutocomplete: e.target.checked })
+            }
+            label="Enable address autocomplete suggestions"
+          />
+        </FormField>
+
+        <button
+          onClick={handleSave}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Save Settings
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**Task 1.5.6: Environment Variables**
+
+```env
+# Address API Keys (optional, free tiers available)
+GOOGLE_PLACES_API_KEY=xxxxx
+GEONAMES_USERNAME=xxxxx
+POSITIONSTACK_API_KEY=xxxxx
+INDIA_POST_API_KEY=xxxxx
+
+# Cache settings
+ADDRESS_CACHE_DURATION=86400000 # 24 hours in milliseconds
+```
+
+**Task 1.5.7: Usage in Checkout/Profile**
+
+- **File**: `src/app/checkout/page.tsx`
+- **Action**: Replace manual address fields with `AddressInput` component
+
+```tsx
+import { AddressInput } from "@/components/forms/AddressInput";
+
+const [shippingAddress, setShippingAddress] = useState({
+  line1: "",
+  line2: "",
+  city: "",
+  state: "",
+  stateCode: "",
+  postalCode: "",
+  country: "",
+  countryCode: "IN", // Default to India
+});
+
+<AddressInput
+  value={shippingAddress}
+  onChange={setShippingAddress}
+  errors={addressErrors}
+/>;
 ```
 
 ---
