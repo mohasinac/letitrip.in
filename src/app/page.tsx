@@ -1,17 +1,15 @@
 "use client";
 
 import FAQSection from "@/components/faq/FAQSection";
-import {
-  FeaturedBlogsSection,
-  FeaturedCategoriesSection,
-  FeaturedShopsSection,
-  HeroSection,
-  RecentReviewsSection,
-  ValueProposition,
-  WelcomeHero,
-} from "@/components/homepage";
 import { AuctionsSection } from "@/components/homepage/AuctionsSection";
+import { FeaturedBlogsSection } from "@/components/homepage/FeaturedBlogsSection";
+import { FeaturedCategoriesSection } from "@/components/homepage/FeaturedCategoriesSection";
+import { FeaturedShopsSection } from "@/components/homepage/FeaturedShopsSection";
+import { HeroSection } from "@/components/homepage/HeroSection";
 import { ProductsSection } from "@/components/homepage/ProductsSection";
+import { RecentReviewsSection } from "@/components/homepage/RecentReviewsSection";
+import { ValueProposition } from "@/components/homepage/ValueProposition";
+import { WelcomeHero } from "@/components/homepage/WelcomeHero";
 import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 import { useIsMobile } from "@/hooks/useMobile";
 

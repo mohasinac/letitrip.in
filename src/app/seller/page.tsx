@@ -2,8 +2,7 @@
 
 import { PageState } from "@/components/common/PageState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { CompactPrice } from "@/components/common/values/CompactPrice";
-import { Price } from "@/components/common/values/Price";
+import { CompactPrice, Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { analyticsService } from "@/services/analytics.service";
@@ -178,8 +177,8 @@ export default function SellerDashboardPage() {
                     stats.revenue.lastMonth) *
                   100
                 : stats.revenue.thisMonth > 0
-                  ? 100
-                  : 0,
+                ? 100
+                : 0,
             isPositive: stats.revenue.thisMonth > stats.revenue.lastMonth,
           }}
         />
@@ -296,8 +295,8 @@ export default function SellerDashboardPage() {
                         order.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : order.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
                       }`}
                     >
                       {order.status}

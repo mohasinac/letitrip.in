@@ -1,18 +1,15 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Star, ShoppingCart, Eye, Edit, Trash2, Package } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
-import { CompareButton } from "@/components/products/CompareButton";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import {
-  formatCurrency,
-  formatDiscount,
-  formatCompactNumber,
-} from "@/lib/formatters";
+import { CompareButton } from "@/components/products/CompareButton";
+import { formatDiscount } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import type { ProductStatus } from "@/types/shared/common.types";
+import { Edit, Eye, ShoppingCart, Star } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 
 export type ProductCardVariant = "public" | "admin" | "seller" | "compact";
 
@@ -49,7 +46,7 @@ export interface ProductCardProps {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => void;
   onToggleFavorite?: (id: string) => void;
   onQuickView?: (id: string) => void;
@@ -457,11 +454,11 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
                 isCompact ? "text-lg" : "text-xl"
               }`}
             >
-              {formatCurrency(price)}
+              {formatPrice(price)}
             </span>
             {originalPrice && originalPrice > price && (
               <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                {formatCurrency(originalPrice)}
+                {formatPrice(originalPrice)}
               </span>
             )}
           </div>

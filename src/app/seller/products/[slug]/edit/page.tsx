@@ -3,13 +3,11 @@
 import { PageState } from "@/components/common/PageState";
 import { WizardActionBar } from "@/components/forms/WizardActionBar";
 import { WizardSteps } from "@/components/forms/WizardSteps";
-import {
-  BasicInfoStep,
-  DetailsStep,
-  InventoryStep,
-  ReviewStep,
-  type ProductEditFormData,
-} from "@/components/seller/product-edit-wizard";
+import { BasicInfoStep } from "@/components/seller/product-edit-wizard/BasicInfoStep";
+import { DetailsStep } from "@/components/seller/product-edit-wizard/DetailsStep";
+import { InventoryStep } from "@/components/seller/product-edit-wizard/InventoryStep";
+import { ReviewStep } from "@/components/seller/product-edit-wizard/ReviewStep";
+import type { ProductEditFormData } from "@/components/seller/product-edit-wizard/types";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";

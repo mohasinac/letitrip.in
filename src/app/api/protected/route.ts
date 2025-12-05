@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withMiddleware } from "../middleware";
-import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
+import { AuthenticatedRequest, requireAuth } from "../middleware/auth";
 
 /**
  * Example protected route that requires authentication
@@ -21,15 +20,10 @@ async function protectedHandler(req: AuthenticatedRequest) {
       sessionId,
       timestamp: new Date().toISOString(),
     },
-    { status: 200 },
+    { status: 200 }
   );
 }
 
 export async function GET(req: NextRequest) {
-  return withMiddleware(req, (r) => requireAuth(r, protectedHandler), {
-    rateLimit: {
-      maxRequests: 30,
-      windowMs: 60 * 1000,
-    },
-  });
+  return requireAuth(req, protectedHandler);
 }

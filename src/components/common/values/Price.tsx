@@ -13,12 +13,8 @@
 
 "use client";
 
-import React from "react";
-import {
-  formatCurrency,
-  formatCompactCurrency,
-  formatDiscount,
-} from "@/lib/formatters";
+import { formatCompactCurrency, formatDiscount } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { cn } from "@/lib/utils";
 
 interface PriceProps {
@@ -50,7 +46,10 @@ export function Price({
   strikethroughClassName,
   showDiscount = true,
 }: PriceProps) {
-  const formattedPrice = formatCurrency(amount, { showDecimals, showSymbol });
+  const formattedPrice = formatPrice(amount, {
+    showDecimals,
+    showSymbol: showSymbol,
+  });
   const hasDiscount = originalPrice && originalPrice > amount;
   const discountPercent = hasDiscount
     ? formatDiscount(originalPrice, amount)
@@ -63,7 +62,7 @@ export function Price({
       <span
         className={cn(
           "font-semibold text-gray-900 dark:text-white",
-          sizeClasses[size],
+          sizeClasses[size]
         )}
       >
         {formattedPrice}
@@ -77,12 +76,15 @@ export function Price({
               size === "xl"
                 ? "text-base"
                 : size === "lg"
-                  ? "text-sm"
-                  : "text-xs",
-              strikethroughClassName,
+                ? "text-sm"
+                : "text-xs",
+              strikethroughClassName
             )}
           >
-            {formatCurrency(originalPrice, { showDecimals, showSymbol })}
+            {formatPrice(originalPrice, {
+              showDecimals,
+              showSymbol: showSymbol,
+            })}
           </span>
 
           {showDiscount && discountPercent && (

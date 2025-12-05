@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { heroSlidesSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
 import {
   getUserFromRequest,
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
 import { COLLECTIONS } from "@/constants/database";
-import { ValidationError, errorToJson, ApiError } from "@/lib/api-errors";
-import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
-import { heroSlidesSieveConfig } from "@/app/api/lib/sieve/config";
-import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { ApiError, ValidationError, errorToJson } from "@/lib/api-errors";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for hero slides
 const slidesConfig = {
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
           error: "Invalid query parameters",
           details: errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
         query = query.where(
           dbField,
           filter.operator as FirebaseFirestore.WhereFilterOp,
-          filter.value,
+          filter.value
         );
       }
     }
@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
     const slides = snapshot.docs.map((doc) =>
       isAdmin
         ? transformSlideForAdmin(doc.id, doc.data())
-        : transformSlideForPublic(doc.id, doc.data()),
+        : transformSlideForPublic(doc.id, doc.data())
     );
 
     // Build response with Sieve pagination meta
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
           ...slideData,
         },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error creating hero slide:", error);
@@ -231,7 +231,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(
       { error: "Failed to create hero slide" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

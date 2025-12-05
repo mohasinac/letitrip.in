@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Collections } from "@/app/api/lib/firebase/collections";
+import { categoriesSieveConfig } from "@/app/api/lib/sieve/config";
+import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
+import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { withCache } from "@/app/api/middleware/cache";
 import {
   getUserFromRequest,
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
-import { withCache } from "@/app/api/middleware/cache";
 import { ValidationError } from "@/lib/api-errors";
-import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
-import { categoriesSieveConfig } from "@/app/api/lib/sieve/config";
-import { createPaginationMeta } from "@/app/api/lib/sieve/api";
+import { NextRequest, NextResponse } from "next/server";
 
 // Extended Sieve config with field mappings for categories
 const categoriesConfig = {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
               error: "Invalid query parameters",
               details: errors,
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -112,14 +112,14 @@ export async function GET(request: NextRequest) {
           query = query.where(
             "show_on_homepage",
             "==",
-            showOnHomepage === "true",
+            showOnHomepage === "true"
           );
         }
         if (parentId !== null) {
           query = query.where(
             "parent_id",
             "==",
-            parentId === "null" ? null : parentId,
+            parentId === "null" ? null : parentId
           );
         }
 
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
             query = query.where(
               dbField,
               filter.operator as FirebaseFirestore.WhereFilterOp,
-              filter.value,
+              filter.value
             );
           }
         }
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
         // Execute query
         const snapshot = await query.get();
         const categories = snapshot.docs.map((doc) =>
-          transformCategory(doc.id, doc.data()),
+          transformCategory(doc.id, doc.data())
         );
 
         // Build Sieve pagination meta
@@ -187,11 +187,11 @@ export async function GET(request: NextRequest) {
         console.error("Error listing categories:", error);
         return NextResponse.json(
           { success: false, error: "Failed to list categories" },
-          { status: 500 },
+          { status: 500 }
         );
       }
     },
-    { ttl: 300 },
+    { ttl: 300 }
   );
 }
 
@@ -227,7 +227,7 @@ export async function POST(request: NextRequest) {
     if (existingDoc.exists) {
       return NextResponse.json(
         { success: false, error: "Category slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
     if (!existing.empty) {
       return NextResponse.json(
         { success: false, error: "Category slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -327,19 +327,19 @@ export async function POST(request: NextRequest) {
           updatedAt: createdData.updated_at,
         },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error: any) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { success: false, error: error.message, errors: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     console.error("Error creating category:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create category" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
