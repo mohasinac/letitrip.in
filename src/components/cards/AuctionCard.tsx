@@ -26,7 +26,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
-import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
+import { formatTimeRemaining } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { getTimeRemaining } from "@/lib/validation/auction";
 import { cn } from "@/lib/utils";
 
@@ -577,7 +578,7 @@ const AuctionCardComponent = ({
                 isCompact ? "text-sm" : "text-lg",
               )}
             >
-              {formatCurrency(currentBid)}
+              {formatPrice(currentBid)}
             </span>
             {!isCompact && auction.bidCount > 0 && (
               <span className="text-xs text-gray-500 dark:text-gray-400">

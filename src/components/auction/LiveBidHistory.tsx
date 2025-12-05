@@ -9,7 +9,8 @@
 
 import { useEffect, useState } from "react";
 import { TrendingUp, User, Clock } from "lucide-react";
-import { formatCurrency, formatRelativeTime } from "@/lib/formatters";
+import { formatRelativeTime } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 
 interface Bid {
   id: string;
@@ -68,7 +69,7 @@ export default function LiveBidHistory({
         <div className="mt-1 text-sm text-gray-600">
           Current:{" "}
           <span className="font-bold text-green-600">
-            {formatCurrency(currentBid)}
+            {formatPrice(currentBid)}
           </span>
         </div>
       </div>
@@ -123,7 +124,7 @@ export default function LiveBidHistory({
                       isLatest ? "text-green-600 text-lg" : "text-gray-900"
                     }`}
                   >
-                    {formatCurrency(bid.amount)}
+                    {formatPrice(bid.amount)}
                   </div>
                 </div>
               </div>

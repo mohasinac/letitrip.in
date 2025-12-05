@@ -106,7 +106,7 @@ export function isValidIndianPhone(phone: string): boolean {
  */
 export function formatPhone(
   phone: string,
-  countryCode: string = "+91",
+  countryCode: string = "+91"
 ): string {
   const cleaned = phone.replace(/\D/g, "");
   if (cleaned.length === 10) {
@@ -114,6 +114,3 @@ export function formatPhone(
   }
   return phone;
 }
-
-// Re-export from formatters for backward compatibility
-export { formatPincode } from "@/lib/formatters";

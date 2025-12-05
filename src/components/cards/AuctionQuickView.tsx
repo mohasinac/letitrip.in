@@ -21,7 +21,8 @@ import {
   ExternalLink,
   AlertCircle,
 } from "lucide-react";
-import { formatCurrency, formatTimeRemaining } from "@/lib/formatters";
+import { formatTimeRemaining } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { getTimeRemaining, getNextMinimumBid } from "@/lib/validation/auction";
 import { FormLabel } from "@/components/forms/FormLabel";
 
@@ -122,7 +123,7 @@ export default function AuctionQuickView({
 
     // Validation
     if (isNaN(bid) || bid < minNextBid) {
-      setBidError(`Minimum bid is ${formatCurrency(minNextBid)}`);
+      setBidError(`Minimum bid is ${formatPrice(minNextBid)}`);
       return;
     }
 
@@ -298,7 +299,7 @@ export default function AuctionQuickView({
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {formatCurrency(currentBid)}
+                      {formatPrice(currentBid)}
                     </span>
                     {auction.bidCount > 0 && (
                       <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -328,7 +329,7 @@ export default function AuctionQuickView({
                 <div className="space-y-3 mb-4">
                   <div>
                     <FormLabel htmlFor="quick-bid-amount">
-                      Your Bid (Min: {formatCurrency(minNextBid)})
+                      Your Bid (Min: {formatPrice(minNextBid)})
                     </FormLabel>
                     <div className="flex gap-2">
                       <input
@@ -339,7 +340,7 @@ export default function AuctionQuickView({
                           setBidAmount(e.target.value);
                           setBidError("");
                         }}
-                        placeholder={`Enter ${formatCurrency(
+                        placeholder={`Enter ${formatPrice(
                           minNextBid,
                         )} or more`}
                         className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

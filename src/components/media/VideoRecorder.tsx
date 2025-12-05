@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Video, X, Square, Pause, Play, Monitor, Camera } from "lucide-react";
 import { logError } from "@/lib/error-logger";
 import { MediaFile } from "@/types/media";
-import { formatDuration } from "@/lib/media/media-validator";
+import { formatDuration } from "@/lib/formatters";
 
 interface VideoRecorderProps {
   onRecorded: (mediaFile: MediaFile) => void;

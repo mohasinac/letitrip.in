@@ -2,6 +2,9 @@
  * AUCTION TYPE TRANSFORMATIONS
  */
 
+import { safeToISOString } from "@/lib/date-utils";
+import { formatDate } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import { Timestamp } from "firebase/firestore";
 import {
   AuctionBE,
@@ -11,15 +14,12 @@ import {
   PlaceBidRequestBE,
 } from "../backend/auction.types";
 import {
-  AuctionFE,
   AuctionCardFE,
+  AuctionFE,
   BidFE,
   PlaceBidFormFE,
 } from "../frontend/auction.types";
-import { safeToISOString } from "@/lib/date-utils";
 import { AuctionStatus, AuctionType } from "../shared/common.types";
-import { formatDate } from "@/lib/formatters";
-import { formatPrice } from "@/lib/price.utils";
 
 function parseDate(date: Timestamp | string | null): Date | null {
   if (!date) return null;
@@ -49,7 +49,7 @@ function formatTimeRemaining(endTime: Date | null): {
 
 function generateAuctionBadges(
   auctionBE: AuctionBE,
-  timeRemainingSeconds: number,
+  timeRemainingSeconds: number
 ): string[] {
   const badges: string[] = [];
 
@@ -70,7 +70,7 @@ function generateAuctionBadges(
 export function toFEBid(
   bidBE: BidBE,
   currentUserId?: string,
-  highestBidId?: string,
+  highestBidId?: string
 ): BidFE {
   const createdAt = parseDate(bidBE.createdAt) || new Date();
   const now = new Date();
@@ -92,7 +92,7 @@ export function toFEBid(
 
 export function toFEAuction(
   auctionBE: AuctionBE,
-  currentUserId?: string,
+  currentUserId?: string
 ): AuctionFE {
   const startTime = parseDate(auctionBE.startTime) || new Date();
   const endTime = parseDate(auctionBE.endTime) || new Date();
@@ -180,8 +180,8 @@ export function toFEAuction(
     reserveStatus: !auctionBE.reservePrice
       ? "No reserve"
       : auctionBE.reserveMet
-        ? "Reserve met"
-        : "Reserve not met",
+      ? "Reserve met"
+      : "Reserve not met",
     priceProgress: auctionBE.buyNowPrice
       ? ((auctionBE.currentPrice - auctionBE.startingPrice) /
           (auctionBE.buyNowPrice - auctionBE.startingPrice)) *
@@ -262,7 +262,7 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
 }
 
 export function toBECreateAuctionRequest(
-  formData: any,
+  formData: any
 ): CreateAuctionRequestBE {
   return {
     productId: formData.productId,
@@ -279,7 +279,7 @@ export function toBECreateAuctionRequest(
 }
 
 export function toBEPlaceBidRequest(
-  formData: PlaceBidFormFE,
+  formData: PlaceBidFormFE
 ): PlaceBidRequestBE {
   return {
     amount: formData.amount,
@@ -290,13 +290,13 @@ export function toBEPlaceBidRequest(
 
 export function toFEAuctions(
   auctionsBE: AuctionBE[],
-  currentUserId?: string,
+  currentUserId?: string
 ): AuctionFE[] {
   return auctionsBE.map((a) => toFEAuction(a, currentUserId));
 }
 
 export function toFEAuctionCards(
-  auctionsBE: AuctionListItemBE[],
+  auctionsBE: AuctionListItemBE[]
 ): AuctionCardFE[] {
   return auctionsBE.map(toFEAuctionCard);
 }

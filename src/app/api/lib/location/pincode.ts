@@ -4,8 +4,8 @@
 
 import type {
   IndiaPostPincodeResponse,
-  PincodeLookupResult,
   PincodeData,
+  PincodeLookupResult,
 } from "@/types/shared/location.types";
 
 // India Post API endpoint
@@ -15,7 +15,7 @@ const INDIA_POST_API = "https://api.postalpincode.in/pincode";
  * Fetches pincode data from India Post API
  */
 export async function fetchPincodeData(
-  pincode: string,
+  pincode: string
 ): Promise<PincodeLookupResult> {
   // Validate pincode format
   const cleaned = pincode.replace(/\D/g, "");
@@ -92,7 +92,7 @@ export async function fetchPincodeData(
  * Transforms India Post response to internal format
  */
 export function transformPincodeResponse(
-  response: IndiaPostPincodeResponse[],
+  response: IndiaPostPincodeResponse[]
 ): PincodeData | null {
   const result = response[0];
 
@@ -116,9 +116,6 @@ export function transformPincodeResponse(
     country: "India",
   };
 }
-
-// Re-export from formatters for backward compatibility
-export { formatPincode } from "@/lib/formatters";
 
 /**
  * Validates pincode format

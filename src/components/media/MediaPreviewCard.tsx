@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { X, Edit2, RotateCw, AlertCircle, CheckCircle2 } from "lucide-react";
 import { MediaFile } from "@/types/media";
-import { formatFileSize, formatDuration } from "@/lib/media/media-validator";
+import { formatFileSize, formatDuration } from "@/lib/formatters";
 
 interface MediaPreviewCardProps {
   media: MediaFile;

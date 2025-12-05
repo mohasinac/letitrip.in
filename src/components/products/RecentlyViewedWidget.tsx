@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { formatCurrency } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 
 interface RecentlyViewedWidgetProps {
   /** Maximum items to show */
@@ -121,7 +121,7 @@ export function RecentlyViewedWidget({
 
             {/* Price */}
             <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
-              {formatCurrency(item.price)}
+              {formatPrice(item.price)}
             </p>
           </Link>
         ))}
