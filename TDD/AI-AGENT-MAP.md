@@ -15,12 +15,14 @@
 - [Wrapper Components](#wrapper-components) - `AdminResourcePage`, `FormField`, `Price`
 - [Constants](#constants) - `COLLECTIONS`, `ROUTES`, `VALIDATION_RULES`
 - [Validation Helpers](#validation-helpers) - `isValidEmail`, `isValidPhone`, `isValidGST`
+- [Import Patterns](#import-patterns) - **NO index.ts files** - Import directly from actual files
 
 ### 📁 PROJECT STRUCTURE
 
 - [File Organization](#file-organization) - Where files belong
 - [Naming Conventions](#naming-conventions) - How to name things
 - [File Size Limits](#file-size-limits) - When to split files
+- [Import Patterns](#import-patterns) - No index.ts, direct imports only
 
 ### 🎨 UI/UX PATTERNS
 
