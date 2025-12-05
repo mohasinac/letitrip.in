@@ -196,6 +196,15 @@ Update current user's profile.
 
 ### User Addresses
 
+**Phase 1 Implementation**: Enhanced address management with:
+
+- Google Places autocomplete integration
+- Indian Pincode API validation
+- Default address selection (shipping/billing)
+- Address verification
+
+**Related**: [E039: Phase 1 Backend Infrastructure](/TDD/epics/E039-phase1-backend-infrastructure.md)
+
 #### GET /api/user/addresses
 
 Get user's saved addresses.
@@ -311,6 +320,128 @@ Delete an address.
   "message": "Address deleted successfully"
 }
 ```
+
+---
+
+#### POST /api/user/addresses/:id/set-default
+
+Set address as default for shipping or billing.
+
+**Headers**: `Authorization: Bearer <token>`
+
+**Request Body**:
+
+```json
+{
+  "type": "shipping"
+}
+```
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "addr_001",
+    "isDefaultShipping": true,
+    "isDefaultBilling": false,
+    "updatedAt": "2024-12-06T10:00:00Z"
+  }
+}
+```
+
+---
+
+## Phase 1: Enhanced Address Management
+
+### Address Autocomplete (Google Places)
+
+**Endpoint**: `GET /api/addresses/autocomplete`
+
+**Query Parameters**:
+
+| Param | Type   | Description              |
+| ----- | ------ | ------------------------ |
+| input | string | User input (min 3 chars) |
+| types | string | address, locality, etc.  |
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "predictions": [
+    {
+      "placeId": "ChIJL_P_CCoEDTkRw0ZdG-0h2_w",
+      "description": "Mumbai, Maharashtra, India",
+      "mainText": "Mumbai",
+      "secondaryText": "Maharashtra, India"
+    }
+  ]
+}
+```
+
+---
+
+### Address Details (Google Places)
+
+**Endpoint**: `GET /api/addresses/place-details`
+
+**Query Parameters**:
+
+| Param   | Type   | Description     |
+| ------- | ------ | --------------- |
+| placeId | string | Google Place ID |
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "addressLine1": "123 Main Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India",
+    "latitude": 19.076,
+    "longitude": 72.8777
+  }
+}
+```
+
+---
+
+### Pincode Validation (Indian Postal API)
+
+**Endpoint**: `GET /api/addresses/pincode/:pincode`
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "pincode": "400001",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "district": "Mumbai",
+    "areas": ["Fort", "Churchgate", "Colaba"],
+    "deliverable": true
+  }
+}
+```
+
+---
+
+### Firebase Functions (Phase 1)
+
+**Address Verification**:
+
+- Auto-verify addresses via Google Places
+- Validate Indian pincodes via Postal API
+- Geocoding for location-based features
 
 ---
 

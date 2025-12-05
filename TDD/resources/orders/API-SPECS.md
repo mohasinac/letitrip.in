@@ -4,6 +4,16 @@
 
 Order management APIs for checkout, order lifecycle, tracking, and admin/seller operations.
 
+**Phase 1 Implementation**: Automated shipping and notifications:
+
+- Shiprocket integration for shipping
+- Auto-pickup scheduling
+- Real-time tracking updates
+- Multi-channel notifications (Email/WhatsApp)
+- Order status webhooks
+
+**Related**: [E039: Phase 1 Backend Infrastructure](/TDD/epics/E039-phase1-backend-infrastructure.md)
+
 ---
 
 ## Endpoints
@@ -471,6 +481,146 @@ Bulk order operations.
 ```
 
 **Supported Actions**: `mark_processing`, `mark_shipped`, `mark_delivered`, `print_labels`, `export`
+
+---
+
+## Phase 1: Shipping Automation (Shiprocket Integration)
+
+### Automated Pickup Scheduling
+
+**Firebase Function**: `functions/src/shipping/schedulePickup.ts`
+
+**Trigger**: Order status updated to "processing"
+
+**Process**:
+
+1. Create shipment in Shiprocket
+2. Schedule pickup (next business day)
+3. Generate AWB number
+4. Send notifications (Email/WhatsApp)
+5. Update order with tracking info
+
+### Track Shipment Updates
+
+**Firebase Function**: `functions/src/shipping/trackShipment.ts`
+
+**Trigger**: Scheduled (every 4 hours)
+
+**Process**:
+
+1. Query active shipments
+2. Fetch tracking updates from Shiprocket
+3. Update order status
+4. Send customer notifications
+5. Log tracking events
+
+### Shipping Webhook Handler
+
+**Firebase Function**: `functions/src/webhooks/shipping/shiprocketWebhook.ts`
+
+**Events Handled**:
+
+- `SHIPMENT_PICKED` - Pickup completed
+- `SHIPMENT_IN_TRANSIT` - In transit
+- `SHIPMENT_OUT_FOR_DELIVERY` - Out for delivery
+- `SHIPMENT_DELIVERED` - Delivered
+- `SHIPMENT_DELAYED` - Delayed
+- `SHIPMENT_RTO` - Return to origin
+
+### Seller Shipping APIs
+
+#### POST /api/seller/shipments/schedule-pickup
+
+Manually schedule pickup for order.
+
+**Request Body**:
+
+```json
+{
+  "orderId": "order_001",
+  "pickupDate": "2024-12-07",
+  "pickupTime": "10:00-14:00"
+}
+```
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "shipmentId": "ship_001",
+    "awbNumber": "DTDC123456789",
+    "pickupScheduled": "2024-12-07T10:00:00Z",
+    "carrier": "DTDC"
+  }
+}
+```
+
+---
+
+#### GET /api/seller/shipments
+
+List all shipments for seller's shop.
+
+**Query Parameters**:
+
+| Param  | Type   | Default | Description                           |
+| ------ | ------ | ------- | ------------------------------------- |
+| status | string | -       | pickup_scheduled/in_transit/delivered |
+| from   | date   | -       | Start date                            |
+| to     | date   | -       | End date                              |
+
+**Response (200)**:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ship_001",
+      "orderId": "order_001",
+      "orderNumber": "ORD-2024-001234",
+      "awbNumber": "DTDC123456789",
+      "carrier": "DTDC",
+      "status": "in_transit",
+      "trackingUrl": "https://tracking.dtdc.com/...",
+      "pickupDate": "2024-12-06T10:00:00Z",
+      "deliveryETA": "2024-12-10T18:00:00Z",
+      "lastUpdate": {
+        "status": "In Transit",
+        "location": "Pune Hub",
+        "timestamp": "2024-12-07T08:30:00Z"
+      }
+    }
+  ]
+}
+```
+
+---
+
+### Admin Shipping Management
+
+#### GET /api/admin/shipments
+
+List all shipments across all shops.
+
+---
+
+#### POST /api/admin/shipments/:id/cancel
+
+Cancel shipment (admin override).
+
+---
+
+### Environment Variables
+
+```env
+SHIPROCKET_API_KEY=...
+SHIPROCKET_EMAIL=...
+SHIPROCKET_PASSWORD=...
+SHIPROCKET_WEBHOOK_SECRET=...
+```
 
 ---
 
