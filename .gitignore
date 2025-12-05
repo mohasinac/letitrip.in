@@ -43,6 +43,8 @@ yarn-error.log*
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+# Generated index file (use npm run indexes:build to regenerate)
+firestore.indexes.json
 
 # vercel
 .vercel
