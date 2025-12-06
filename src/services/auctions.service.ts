@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Auctions Service - Extends BaseService
  * @module src/services/auctions.service
- * @description This file contains service functions for auctions operations
+ * @description Auction management service with CRUD and bidding operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
@@ -37,26 +40,35 @@ import type {
   BulkActionResponse,
 } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
-import { getUserFriendlyError } from "@/components/common/ErrorMessage";
 
 /**
- * AuctionsService class
- * 
- * @class
- * @description Description of AuctionsService class functionality
+ * Auctions Service
+ * Extends BaseService for common CRUD operations
+ * Adds auction-specific methods (bidding, live status, featured management, etc.)
  */
-class AuctionsService {
-  /**
-   * Handle service errors and convert to user-friendly messages
-   */
-  private handleError(error: any, context: string): never {
-    logServiceError("AuctionsService", context, error);
-    throw error;
+class AuctionsService extends BaseService<
+  AuctionBE,
+  AuctionFE,
+  AuctionFormFE,
+  AuctionFiltersBE
+> {
+  protected endpoint = AUCTION_ROUTES.LIST;
+  protected entityName = "Auction";
+
+  protected toBE(form: AuctionFormFE): Partial<AuctionBE> {
+    return toBECreateAuctionRequest(form) as Partial<AuctionBE>;
   }
 
-  // List auctions (role-filtered) with cursor-based pagination
+  protected toFE(be: AuctionBE): AuctionFE {
+    return toFEAuction(be);
+  }
+
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
+  /**
+   * Override list to transform to AuctionCardFE
+   */
   async list(
-    /** Filters */
     filters?: Partial<AuctionFiltersBE>,
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
     try {
@@ -64,11 +76,8 @@ class AuctionsService {
       const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
       return {
-        /** Data */
         data: (response.data || []).map(toFEAuctionCard),
-        /** Count */
         count: response.count,
-        /** Pagination */
         pagination: response.pagination,
       };
     } catch (error) {
@@ -76,19 +85,9 @@ class AuctionsService {
     }
   }
 
-  // Get auction by ID
-  async getById(id: string): Promise<AuctionFE> {
-    try {
-      const auctionBE = await apiService.get<AuctionBE>(
-        AUCTION_ROUTES.BY_ID(id),
-      );
-      return toFEAuction(auctionBE);
-    } catch (error) {
-      this.handleError(error, `getById(${id})`);
-    }
-  }
-
-  // Get auction by slug
+  /**
+   * Get auction by slug (auctions use slug instead of ID for public access)
+   */
   async getBySlug(slug: string): Promise<AuctionFE> {
     try {
       const auctionBE = await apiService.get<AuctionBE>(
@@ -97,47 +96,6 @@ class AuctionsService {
       return toFEAuction(auctionBE);
     } catch (error) {
       this.handleError(error, `getBySlug(${slug})`);
-    }
-  }
-
-  // Create auction (seller/admin)
-  async create(formData: AuctionFormFE): Promise<AuctionFE> {
-    try {
-      const request = toBECreateAuctionRequest(formData);
-      const auctionBE = await apiService.post<AuctionBE>(
-        AUCTION_ROUTES.LIST,
-        request,
-      );
-      return toFEAuction(auctionBE);
-    } catch (error) {
-      this.handleError(error, "create");
-    }
-  }
-
-  // Update auction (owner/admin)
-  async update(
-    /** Id */
-    id: string,
-    /** Form Data */
-    formData: Partial<AuctionFormFE>,
-  ): Promise<AuctionFE> {
-    try {
-      const auctionBE = await apiService.patch<AuctionBE>(
-        AUCTION_ROUTES.BY_ID(id),
-        formData,
-      );
-      return toFEAuction(auctionBE);
-    } catch (error) {
-      this.handleError(error, `update(${id})`);
-    }
-  }
-
-  // Delete auction (owner/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    try {
-      return apiService.delete<{ message: string }>(AUCTION_ROUTES.BY_ID(id));
-    } catch (error) {
-      this.handleError(error, `delete(${id})`);
     }
   }
 
