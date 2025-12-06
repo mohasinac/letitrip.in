@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Shops Service - Extends BaseService
  * @module src/services/shops.service
- * @description This file contains service functions for shops operations
+ * @description Shop management service with CRUD and admin operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { SHOP_ROUTES } from "@/constants/api-routes";
 import { logError } from "@/lib/firebase-error-logger";
@@ -82,24 +85,36 @@ interface ShopPaymentData {
 }
 
 /**
- * ShopsService class
- * 
- * @class
- * @description Description of ShopsService class functionality
+ * Shops Service
+ * Extends BaseService for common CRUD operations
+ * Adds shop-specific methods (verification, bans, payments, stats, etc.)
  */
-class ShopsService {
-  // List shops (filtered by role) with cursor-based pagination
+class ShopsService extends BaseService<
+  ShopBE,
+  ShopFE,
+  ShopFormFE,
+  Record<string, any>
+> {
+  protected endpoint = SHOP_ROUTES.LIST;
+  protected entityName = "Shop";
+
+  protected toBE(form: ShopFormFE): Partial<ShopBE> {
+    return toBECreateShopRequest(form) as Partial<ShopBE>;
+  }
+
+  protected toFE(be: ShopBE): ShopFE {
+    return toFEShop(be);
+  }
+
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
+  /**
+   * Override list to transform to ShopCardFE
+   */
   async list(
-    /** Filters */
     filters?: Record<string, any>,
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -121,47 +136,18 @@ const params = new URLSearchParams();
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
 
     return {
-      /** Data */
       data: (response.data || []).map(toFEShopCard),
-      /** Count */
       count: response.count,
-      /** Pagination */
       pagination: response.pagination,
     };
   }
 
-  // Get shop by slug
+  /**
+   * Get shop by slug (shops use slug for public access)
+   */
   async getBySlug(slug: string): Promise<ShopFE> {
     const response: any = await apiService.get(SHOP_ROUTES.BY_SLUG(slug));
     return toFEShop(response.shop);
-  }
-
-  // Get shop by ID
-  async getById(id: string): Promise<ShopFE> {
-    const response: any = await apiService.get(SHOP_ROUTES.BY_ID(id));
-    return toFEShop(response.shop);
-  }
-
-  // Create shop (seller/admin)
-  async create(formData: ShopFormFE): Promise<ShopFE> {
-    const request = toBECreateShopRequest(formData);
-    const response: any = await apiService.post(SHOP_ROUTES.LIST, request);
-    return toFEShop(response.data);
-  }
-
-  // Update shop (owner/admin)
-  async update(slug: string, formData: Partial<ShopFormFE>): Promise<ShopFE> {
-    const request = toBECreateShopRequest(formData as ShopFormFE);
-    const response: any = await apiService.patch(
-      SHOP_ROUTES.BY_SLUG(slug),
-      request,
-    );
-    return toFEShop(response.data);
-  }
-
-  // Delete shop (owner/admin)
-  async delete(slug: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(SHOP_ROUTES.BY_SLUG(slug));
   }
 
   // Verify shop (admin only)
