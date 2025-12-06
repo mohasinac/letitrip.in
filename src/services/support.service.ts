@@ -8,6 +8,7 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { TICKET_ROUTES } from "@/constants/api-routes";
 import type {
@@ -47,74 +48,20 @@ import {
  * Manages support tickets with role-based access (User, Seller, Admin)
  */
 
-class SupportService {
-  // List tickets (role-filtered: user sees own, seller sees shop, admin sees all)
-  async listTickets(
-    /** Filters */
-    filters?: Partial<SupportTicketFiltersBE>,
-  ): Promise<PaginatedResponseFE<SupportTicketFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
-
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `${TICKET_ROUTES.LIST}?${queryString}`
-      : TICKET_ROUTES.LIST;
-
-    const response =
-      await apiService.get<PaginatedResponseBE<SupportTicketBE>>(endpoint);
-
-    return {
-      /** Data */
-      data: toFESupportTickets(response.data),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+class SupportService extends BaseService<
+  SupportTicketBE,
+  SupportTicketFE,
+  SupportTicketFormFE,
+  SupportTicketFiltersBE
+> {
+  constructor() {
+    super({
+      baseRoute: TICKET_ROUTES.LIST,
+      toBE: toBECreateSupportTicketRequest,
+      toFE: toFESupportTicket,
+      toFEList: toFESupportTickets,
+    });
   }
-
-  // Get ticket by ID (owner, related seller, or admin only)
-  async getTicket(id: string): Promise<SupportTicketFE> {
-    const response: any = await apiService.get(TICKET_ROUTES.BY_ID(id));
-    return toFESupportTicket(response.data);
-  }
-
-  // Create ticket (authenticated users only)
-  async createTicket(data: SupportTicketFormFE): Promise<SupportTicketFE> {
-    const request = toBECreateSupportTicketRequest(data);
-    const response: any = await apiService.post(TICKET_ROUTES.LIST, request);
-    return toFESupportTicket(response.data);
-  }
-
-  // Update ticket (owner with limited fields, admin with all fields)
-  async updateTicket(
-    /** Id */
-    id: string,
-    /** Data */
-    data: UpdateTicketFormFE,
-  ): Promise<SupportTicketFE> {
-    const request = toBEUpdateSupportTicketRequest(data);
-    const response: any = await apiService.patch(
-      TICKET_ROUTES.BY_ID(id),
-      request,
-    );
-    return toFESupportTicket(response.data);
-  }
-
   // Close ticket (now uses PATCH with status update)
   async closeTicket(id: string): Promise<SupportTicketFE> {
     const response: any = await apiService.patch(TICKET_ROUTES.BY_ID(id), {
@@ -188,7 +135,7 @@ const params = new URLSearchParams();
       /** Updates */
       updates: request,
     });
-    return this.getTicket(id);
+    return this.getById(id);
   }
 
   // Escalate ticket (admin only - now uses bulk endpoint)
@@ -199,7 +146,7 @@ const params = new URLSearchParams();
       /** Ids */
       ids: [id],
     });
-    return this.getTicket(id);
+    return this.getById(id);
   }
 
   // Bulk operations (admin only)
@@ -314,7 +261,7 @@ const params = new URLSearchParams();
     /** Filters */
     filters?: Omit<Partial<SupportTicketFiltersBE>, "assignedTo">,
   ): Promise<PaginatedResponseFE<SupportTicketFE>> {
-    return this.listTickets(filters);
+    return this.list(filters);
   }
 
   // Get ticket count/**
