@@ -2,7 +2,7 @@
  * @fileoverview React Component - Contact Selector with Inline Creation
  * @module src/components/common/ContactSelectorWithCreate
  * @description Contact selector using SelectorWithCreate pattern
- * 
+ *
  * @pattern SelectorWithCreate - Generic dropdown with inline creation capability
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to SelectorWithCreate pattern
@@ -12,19 +12,18 @@
 
 "use client";
 
-import React from "react";
-import { Phone } from "lucide-react";
-import { z } from "zod";
-import { SelectorWithCreate } from "@/components/patterns/SelectorWithCreate";
+import { MobileInput } from "@/components/common/MobileInput";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
-import { MobileInput } from "@/components/common/MobileInput";
+import { SelectorWithCreate } from "@/components/patterns/SelectorWithCreate";
 import {
-  VALIDATION_RULES,
   VALIDATION_MESSAGES,
+  VALIDATION_RULES,
   isValidPhone,
 } from "@/constants/validation-messages";
+import { Phone } from "lucide-react";
 import { Controller, UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 
 /**
  * Contact entity interface
@@ -75,8 +74,18 @@ export interface ContactSelectorWithCreateProps {
 /**
  * Contact form fields component for inline creation
  */
-const ContactFormFields = ({ form }: { form: UseFormReturn<ContactFormData> }) => {
-  const { register, control, watch, setValue, formState: { errors } } = form;
+const ContactFormFields = ({
+  form,
+}: {
+  form: UseFormReturn<ContactFormData>;
+}) => {
+  const {
+    register,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form;
 
   return (
     <>

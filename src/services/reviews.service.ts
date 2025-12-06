@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Reviews Service - Extends BaseService
  * @module src/services/reviews.service
- * @description This file contains service functions for reviews operations
+ * @description Review management service with CRUD and moderation operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { REVIEW_ROUTES } from "@/constants/api-routes";
 import { ReviewBE } from "@/types/backend/review.types";
@@ -26,90 +29,29 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
-/**
- * ModerateReviewData interface
- * 
- * @interface
- * @description Defines the structure and contract for ModerateReviewData
- */
 interface ModerateReviewData {
-  /** Is Approved */
   isApproved: boolean;
-  /** Moderation Notes */
   moderationNotes?: string;
 }
 
-/**
- * ReviewsService class
- * 
- * @class
- * @description Description of ReviewsService class functionality
- */
-class ReviewsService {
-  // List reviews with cursor-based pagination
-  async list(
-    /** Filters */
-    filters?: Record<string, any>,
-  ): Promise<PaginatedResponseFE<ReviewFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+class ReviewsService extends BaseService<
+  ReviewBE,
+  ReviewFE,
+  ReviewFormFE,
+  Record<string, any>
+> {
+  protected endpoint = REVIEW_ROUTES.LIST;
+  protected entityName = "Review";
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `${REVIEW_ROUTES.LIST}?${queryString}`
-      : REVIEW_ROUTES.LIST;
-
-    const response: any = await apiService.get(endpoint);
-    return {
-      /** Data */
-      data: toFEReviews(response.data || response.reviews || []),
-      /** Count */
-      count: response.count || 0,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: ReviewFormFE): Partial<ReviewBE> {
+    return toBECreateReviewRequest(form) as Partial<ReviewBE>;
   }
 
-  // Get review by ID
-  async getById(id: string): Promise<ReviewFE> {
-    const response: any = await apiService.get(REVIEW_ROUTES.BY_ID(id));
-    return toFEReview(response.data);
+  protected toFE(be: ReviewBE): ReviewFE {
+    return toFEReview(be);
   }
 
-  // Create review (authenticated users after purchase)
-  async create(formData: ReviewFormFE): Promise<ReviewFE> {
-    const request = toBECreateReviewRequest(formData);
-    const response: any = await apiService.post(REVIEW_ROUTES.CREATE, request);
-    return toFEReview(response.data);
-  }
-
-  // Update review (author only)
-  async update(id: string, formData: Partial<ReviewFormFE>): Promise<ReviewFE> {
-    const request = toBECreateReviewRequest(formData as ReviewFormFE);
-    const response: any = await apiService.patch(
-      REVIEW_ROUTES.UPDATE(id),
-      request,
-    );
-    return toFEReview(response.data);
-  }
-
-  // Delete review (author/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(REVIEW_ROUTES.DELETE(id));
-  }
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
 
   // Moderate review (shop owner/admin)
   async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {

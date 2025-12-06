@@ -2,7 +2,7 @@
  * @fileoverview Products Service - Extends BaseService
  * @module src/services/products.service
  * @description Product management service with CRUD operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,27 +10,27 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
-import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { PRODUCT_STATUS } from "@/constants/statuses";
+import { logServiceError } from "@/lib/error-logger";
 import { ProductBE, ProductListItemBE } from "@/types/backend/product.types";
 import {
-  ProductFE,
   ProductCardFE,
-  ProductFormFE,
+  ProductFE,
   ProductFiltersFE,
+  ProductFormFE,
 } from "@/types/frontend/product.types";
+import type { BulkActionResponse } from "@/types/shared/common.types";
+import type { PaginatedResponse } from "@/types/shared/pagination.types";
 import {
-  toFEProduct,
-  toFEProductCards,
   toBEProductCreate,
   toBEProductUpdate,
+  toFEProduct,
+  toFEProductCards,
 } from "@/types/transforms/product.transforms";
-import type { PaginatedResponse } from "@/types/shared/pagination.types";
-import type { BulkActionResponse } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
+import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 /**
  * Products Service
@@ -59,7 +59,7 @@ class ProductsService extends BaseService<
    * Override list to transform to ProductCardFE instead of ProductFE
    */
   async list(
-    filters?: ProductFiltersFE,
+    filters?: ProductFiltersFE
   ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     try {
       const beFilters: any = {
@@ -119,7 +119,7 @@ class ProductsService extends BaseService<
   async getVariants(slug: string): Promise<ProductCardFE[]> {
     try {
       const response: any = await apiService.get(
-        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`,
+        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
       );
       return toFEProductCards(response.data || []);
     } catch (error) {
@@ -149,7 +149,7 @@ class ProductsService extends BaseService<
     /** Slug */
     slug: string,
     /** Limit */
-    limit?: number,
+    limit?: number
   ): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
       limit,
@@ -197,8 +197,9 @@ class ProductsService extends BaseService<
       /** Limit */
       limit: 100,
     });
-    const response =
-      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
     return toFEProductCards(response.data || []);
   }
 
@@ -214,8 +215,9 @@ class ProductsService extends BaseService<
       /** Limit */
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
-    const response =
-      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
     return toFEProductCards(response.data || []);
   }
 
@@ -228,7 +230,7 @@ class ProductsService extends BaseService<
     /** Product Ids */
     productIds: string[],
     /** Data */
-    data?: any,
+    data?: any
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -239,7 +241,7 @@ class ProductsService extends BaseService<
           ids: productIds,
           /** Updates */
           updates: data,
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -290,7 +292,7 @@ class ProductsService extends BaseService<
     /** Product Ids */
     productIds: string[],
     /** Stock Count */
-    stockCount: number,
+    stockCount: number
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update-stock", productIds, { stockCount });
   }
@@ -309,7 +311,7 @@ class ProductsService extends BaseService<
     /** Product Ids */
     productIds: string[],
     /** Updates */
-    updates: Partial<ProductFormFE>,
+    updates: Partial<ProductFormFE>
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", productIds, toBEProductUpdate(updates));
   }
@@ -347,7 +349,7 @@ class ProductsService extends BaseService<
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
     const productBE = await apiService.patch<ProductBE>(
       PRODUCT_ROUTES.BY_SLUG(slug),
-      data,
+      data
     );
     return toFEProduct(productBE);
   }

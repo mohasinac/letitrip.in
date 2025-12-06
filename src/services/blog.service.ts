@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Blog Service - Extends BaseService
  * @module src/services/blog.service
- * @description This file contains service functions for blog operations
+ * @description Blog post management service with CRUD operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { PAGINATION } from "@/constants/limits";
 import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
 import { PaginatedResponseBE } from "@/types/shared/common.types";
@@ -133,76 +136,27 @@ interface UpdateBlogPostData
   status?: BlogStatus;
 }
 
-/**
- * BlogService class
- * 
- * @class
- * @description Description of BlogService class functionality
- */
-class BlogService {
-  // List blog posts (role-filtered)
-  async list(
-    /** Filters */
-    filters?: BlogFilters
-  ): Promise<{ data: BlogPost[]; count: number; pagination: any }> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+class BlogService extends BaseService<
+  BlogPost,
+  BlogPost,
+  CreateBlogPostData,
+  BlogFilters
+> {
+  protected endpoint = "/blog";
+  protected entityName = "BlogPost";
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach((v) => params.append(key, v.toString()));
-          } else {
-            params.append(key, value.toString());
-          }
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/blog?${queryString}` : "/blog";
-
-    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
-
-    return {
-      /** Data */
-      data: response.data || [],
-      /** Count */
-      count: response.count || 0,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: CreateBlogPostData): Partial<BlogPost> {
+    return form as Partial<BlogPost>;
   }
 
-  // Get blog post by ID
-  async getById(id: string): Promise<BlogPost> {
-    return apiService.get<BlogPost>(`/blog/${id}`);
+  protected toFE(be: BlogPost): BlogPost {
+    return be;
   }
 
-  // Get blog post by slug
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   async getBySlug(slug: string): Promise<BlogPost> {
     return apiService.get<BlogPost>(`/blog/slug/${slug}`);
-  }
-
-  // Create blog post (admin)
-  async create(data: CreateBlogPostData): Promise<BlogPost> {
-    return apiService.post<BlogPost>("/blog", data);
-  }
-
-  // Update blog post (author/admin)
-  async update(id: string, data: UpdateBlogPostData): Promise<BlogPost> {
-    return apiService.patch<BlogPost>(`/blog/${id}`, data);
-  }
-
-  // Delete blog post (author/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/blog/${id}`);
   }
 
   // Get featured blog posts

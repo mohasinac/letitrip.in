@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Categories Service - Extends BaseService
  * @module src/services/categories.service
- * @description This file contains service functions for categories operations
+ * @description Category management service with CRUD and tree operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
 import { logError } from "@/lib/firebase-error-logger";
@@ -30,62 +33,28 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
-/**
- * CategoriesService class
- * 
- * @class
- * @description Description of CategoriesService class functionality
- */
-class CategoriesService {
-  // List categories
-  async list(
-    /** Filters */
-    filters?: Record<string, any>,
-  ): Promise<PaginatedResponseFE<CategoryFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+class CategoriesService extends BaseService<
+  CategoryBE,
+  CategoryFE,
+  CategoryFormFE,
+  Record<string, any>
+> {
+  protected endpoint = "/categories";
+  protected entityName = "Category";
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/categories?${queryString}` : "/categories";
-
-    const response =
-      await apiService.get<PaginatedResponseBE<CategoryBE>>(endpoint);
-
-    return {
-      /** Data */
-      data: toFECategories(response.data || []),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: CategoryFormFE): Partial<CategoryBE> {
+    return toBECreateCategoryRequest(form) as Partial<CategoryBE>;
   }
 
-  // Get category by ID
-  async getById(id: string): Promise<CategoryFE> {
-    const response: any = await apiService.get(`/categories/${id}`);
-    return toFECategory(response.data);
+  protected toFE(be: CategoryBE): CategoryFE {
+    return toFECategory(be);
   }
 
-  // Get category by slug
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   async getBySlug(slug: string): Promise<CategoryFE> {
     const response = await apiService.get<{
-      /** Success */
       success: boolean;
-      /** Data */
       data: CategoryBE;
     }>(`/categories/${slug}`);
     return toFECategory(response.data);
@@ -110,49 +79,12 @@ const params = new URLSearchParams();
     return (response.data || []).map(toFECategoryTreeNode);
   }
 
-  // Get leaf categories (for product creation)
   async getLeaves(): Promise<CategoryFE[]> {
     const response = await apiService.get<{
-      /** Success */
       success: boolean;
-      /** Data */
       data: CategoryBE[];
     }>("/categories/leaves");
     return toFECategories(response.data || []);
-  }
-
-  // Create category (admin only)
-  async create(formData: CategoryFormFE): Promise<CategoryFE> {
-    const request = toBECreateCategoryRequest(formData);
-    const response = await apiService.post<{
-      /** Success */
-      success: boolean;
-      /** Data */
-      data: CategoryBE;
-    }>("/categories", request);
-    return toFECategory(response.data);
-  }
-
-  // Update category (admin only)
-  async update(
-    /** Slug */
-    slug: string,
-    /** Form Data */
-    formData: Partial<CategoryFormFE>,
-  ): Promise<CategoryFE> {
-    const request = toBECreateCategoryRequest(formData as CategoryFormFE);
-    const response = await apiService.patch<{
-      /** Success */
-      success: boolean;
-      /** Data */
-      data: CategoryBE;
-    }>(`/categories/${slug}`, request);
-    return toFECategory(response.data);
-  }
-
-  // Delete category (admin only)
-  async delete(slug: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(`/categories/${slug}`);
   }
 
   // Add parent to category (admin only)

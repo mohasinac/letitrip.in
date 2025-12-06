@@ -2,7 +2,7 @@
  * @fileoverview Auctions Service - Extends BaseService
  * @module src/services/auctions.service
  * @description Auction management service with CRUD and bidding operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,36 +10,36 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
-import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { AUCTION_STATUS } from "@/constants/statuses";
+import { logServiceError } from "@/lib/error-logger";
 import {
   AuctionBE,
   AuctionFiltersBE,
   BidBE,
 } from "@/types/backend/auction.types";
 import {
-  AuctionFE,
   AuctionCardFE,
+  AuctionFE,
   AuctionFormFE,
-  PlaceBidFormFE,
   BidFE,
+  PlaceBidFormFE,
 } from "@/types/frontend/auction.types";
-import {
-  toFEAuction,
-  toFEAuctions,
-  toFEAuctionCard,
-  toFEBid,
-  toBECreateAuctionRequest,
-} from "@/types/transforms/auction.transforms";
 import type {
+  BulkActionResponse,
   PaginatedResponseBE,
   PaginatedResponseFE,
-  BulkActionResponse,
 } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
+import {
+  toBECreateAuctionRequest,
+  toFEAuction,
+  toFEAuctionCard,
+  toFEAuctions,
+  toFEBid,
+} from "@/types/transforms/auction.transforms";
+import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 /**
  * Auctions Service
@@ -69,7 +69,7 @@ class AuctionsService extends BaseService<
    * Override list to transform to AuctionCardFE
    */
   async list(
-    filters?: Partial<AuctionFiltersBE>,
+    filters?: Partial<AuctionFiltersBE>
   ): Promise<PaginatedResponseFE<AuctionCardFE>> {
     try {
       const endpoint = buildUrl(AUCTION_ROUTES.LIST, filters);
@@ -91,7 +91,7 @@ class AuctionsService extends BaseService<
   async getBySlug(slug: string): Promise<AuctionFE> {
     try {
       const auctionBE = await apiService.get<AuctionBE>(
-        AUCTION_ROUTES.BY_SLUG(slug),
+        AUCTION_ROUTES.BY_SLUG(slug)
       );
       return toFEAuction(auctionBE);
     } catch (error) {
@@ -104,14 +104,14 @@ class AuctionsService extends BaseService<
     /** Slug */
     slug: string,
     /** Shop Id */
-    shopId?: string,
+    shopId?: string
   ): Promise<{ available: boolean; message?: string }> {
     const params = new URLSearchParams();
     params.append("slug", slug);
     if (shopId) params.append("shop_id", shopId);
 
     return apiService.get<{ available: boolean; message?: string }>(
-      `/auctions/validate-slug?${params.toString()}`,
+      `/auctions/validate-slug?${params.toString()}`
     );
   }
 
@@ -124,7 +124,7 @@ class AuctionsService extends BaseService<
     /** Start After */
     startAfter?: string | null,
     /** Sort Order */
-    sortOrder: "asc" | "desc" = "desc",
+    sortOrder: "asc" | "desc" = "desc"
   ): Promise<PaginatedResponseFE<BidFE>> {
     try {
       const params = new URLSearchParams();
@@ -138,15 +138,16 @@ class AuctionsService extends BaseService<
         : `/auctions/${id}/bid`;
 
       /**
- * Performs response operation
- *
- * @param {any} endpoint - The endpoint
- *
- * @returns {any} The response result
- *
- */
-const response =
-        await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
+       * Performs response operation
+       *
+       * @param {any} endpoint - The endpoint
+       *
+       * @returns {any} The response result
+       *
+       */
+      const response = await apiService.get<PaginatedResponseBE<BidBE>>(
+        endpoint
+      );
 
       return {
         /** Data */
@@ -185,7 +186,7 @@ const response =
     /** Featured */
     featured: boolean,
     /** Priority */
-    priority?: number,
+    priority?: number
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       `/auctions/${id}/feature`,
@@ -193,7 +194,7 @@ const response =
         featured,
         /** Featured Priority */
         featuredPriority: priority,
-      },
+      }
     );
     return toFEAuction(auctionBE);
   }
@@ -274,15 +275,15 @@ const response =
   async getMyBids(): Promise<BidFE[]> {
     try {
       const response = await apiService.get<{
-      /**
- * Performs bids b e operation
- *
- * @param {any} (bid - The (bid
- *
- * @returns {any} The bidsbe result
- *
- */
-  /** Success */
+        /**
+         * Performs bids b e operation
+         *
+         * @param {any} (bid - The (bid
+         *
+         * @returns {any} The bidsbe result
+         *
+         */
+        /** Success */
         success: boolean;
         /** Data */
         data: BidBE[];
@@ -319,7 +320,7 @@ const response =
     /** Auction Ids */
     auctionIds: string[],
     /** Data */
-    data?: any,
+    data?: any
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -330,7 +331,7 @@ const response =
           ids: auctionIds,
           /** Updates */
           updates: data,
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -388,7 +389,7 @@ const response =
     /** Auction Ids */
     auctionIds: string[],
     /** Updates */
-    updates: Partial<AuctionFormFE>,
+    updates: Partial<AuctionFormFE>
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", auctionIds, updates);
   }
@@ -423,11 +424,11 @@ const response =
     /** Id */
     id: string,
     /** Data */
-    data: Partial<AuctionFormFE>,
+    data: Partial<AuctionFormFE>
   ): Promise<AuctionFE> {
     const auctionBE = await apiService.patch<AuctionBE>(
       AUCTION_ROUTES.BY_ID(id),
-      data,
+      data
     );
     return toFEAuction(auctionBE);
   }
