@@ -1,21 +1,21 @@
 /**
- * @fileoverview React Component
+ * @fileoverview React Component - Contact Selector with Inline Creation
  * @module src/components/common/ContactSelectorWithCreate
- * @description This file contains the ContactSelectorWithCreate component and its related functionality
+ * @description Contact selector using SelectorWithCreate pattern
  * 
+ * @pattern SelectorWithCreate - Generic dropdown with inline creation capability
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to SelectorWithCreate pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Phone, Plus, Loader2, Check } from "lucide-react";
-import { toast } from "sonner";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { Phone } from "lucide-react";
 import { z } from "zod";
+import { SelectorWithCreate } from "@/components/patterns/SelectorWithCreate";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { MobileInput } from "@/components/common/MobileInput";
@@ -24,118 +24,148 @@ import {
   VALIDATION_MESSAGES,
   isValidPhone,
 } from "@/constants/validation-messages";
-import { logError } from "@/lib/firebase-error-logger";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { Controller, UseFormReturn } from "react-hook-form";
 
 /**
- * Contact interface
- * 
- * @interface
- * @description Defines the structure and contract for Contact
+ * Contact entity interface
  */
 export interface Contact {
-  /** Id */
   id: string;
-  /** Name */
   name: string;
-  /** Phone */
   phone: string;
-  /** Country Code */
   countryCode: string;
-  /** Email */
   email?: string;
-  /** Relationship */
   relationship?: string;
-  /** Is Primary */
   isPrimary: boolean;
-  /** Created At */
   createdAt: Date;
 }
 
 /**
- * Performs contact schema operation
- *
- * @param {object} {
-  
-  name - The {
-  
-  name
- *
- * @returns {any} The contactschema result
- *
+ * Contact form validation schema
  */
-const ContactSchema = z.object({
-  /** Name */
+export const ContactSchema = z.object({
   name: z
     .string()
     .min(VALIDATION_RULES.NAME.MIN_LENGTH, VALIDATION_MESSAGES.NAME.TOO_SHORT),
-  /** Phone */
   phone: z
     .string()
     .length(10, "Phone must be 10 digits")
     .refine((val) => isValidPhone(`+91${val}`), "Invalid phone number"),
-  /** Country Code */
   countryCode: z.string(),
-  /** Email */
   email: z.string().email("Invalid email").optional().or(z.literal("")),
-  /** Relationship */
   relationship: z.string().optional(),
-  /** Is Primary */
   isPrimary: z.boolean(),
 });
 
-/**
- * ContactFormData type
- * 
- * @typedef {Object} ContactFormData
- * @description Type definition for ContactFormData
- */
-type ContactFormData = z.infer<typeof ContactSchema>;
+export type ContactFormData = z.infer<typeof ContactSchema>;
 
 /**
- * ContactSelectorWithCreateProps interface
- * 
- * @interface
- * @description Defines the structure and contract for ContactSelectorWithCreateProps
+ * Props for ContactSelectorWithCreate component
  */
 export interface ContactSelectorWithCreateProps {
-  /** Value */
   value?: string | null;
-  /** On Change */
   onChange: (contactId: string, contact: Contact) => void;
-  /** Required */
   required?: boolean;
-  /** Error */
   error?: string;
-  /** Label */
   label?: string;
-  /** Auto Select Primary */
   autoSelectPrimary?: boolean;
-  /** Class Name */
   className?: string;
 }
 
 /**
- * Function: Contact Selector With Create
+ * Contact form fields component for inline creation
  */
-/**
- * Performs contact selector with create operation
- *
- * @returns {any} The contactselectorwithcreate result
- *
- * @example
- * ContactSelectorWithCreate();
- */
+const ContactFormFields = ({ form }: { form: UseFormReturn<ContactFormData> }) => {
+  const { register, control, watch, setValue, formState: { errors } } = form;
+
+  return (
+    <>
+      <FormField label="Name" required error={errors.name?.message}>
+        <FormInput {...register("name")} placeholder="Full Name" />
+      </FormField>
+
+      <Controller
+        name="phone"
+        control={control}
+        render={({ field }) => (
+          <MobileInput
+            value={field.value || ""}
+            onChange={field.onChange}
+            countryCode={watch("countryCode")}
+            onCountryCodeChange={(code) => setValue("countryCode", code)}
+            required
+            error={errors.phone?.message}
+            label="Phone Number"
+          />
+        )}
+      />
+
+      <FormField label="Email (Optional)" error={errors.email?.message}>
+        <FormInput
+          {...register("email")}
+          type="email"
+          placeholder="email@example.com"
+        />
+      </FormField>
+
+      <FormField label="Relationship (Optional)">
+        <FormInput
+          {...register("relationship")}
+          placeholder="e.g., Spouse, Parent"
+        />
+      </FormField>
+
+      <div className="flex items-center gap-3 py-2">
+        <input
+          {...register("isPrimary")}
+          type="checkbox"
+          id="isPrimary"
+          className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
+        />
+        <label
+          htmlFor="isPrimary"
+          className="text-sm text-gray-700 dark:text-gray-300"
+        >
+          Set as primary contact
+        </label>
+      </div>
+    </>
+  );
+};
 
 /**
- * Performs contact selector with create operation
- *
- * @returns {any} The contactselectorwithcreate result
- *
- * @example
- * ContactSelectorWithCreate();
+ * Renders contact item display
  */
+const renderContactItem = (contact: Contact) => (
+  <div className="flex items-start gap-3 w-full">
+    <Phone className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5" />
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="font-medium text-gray-900 dark:text-white">
+          {contact.name}
+        </span>
+        {contact.isPrimary && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+            Primary
+          </span>
+        )}
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        {contact.countryCode} {contact.phone}
+      </p>
+      {contact.email && (
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          {contact.email}
+        </p>
+      )}
+    </div>
+  </div>
+);
 
+/**
+ * ContactSelectorWithCreate - Contact selector with inline creation
+ * Refactored to use SelectorWithCreate pattern
+ */
 export function ContactSelectorWithCreate({
   value,
   onChange,
@@ -145,388 +175,51 @@ export function ContactSelectorWithCreate({
   autoSelectPrimary = true,
   className = "",
 }: ContactSelectorWithCreateProps) {
-  const {
-    /** Is Loading */
-    isLoading: loading,
-    /** Data */
-    data: contacts,
-    /** Set Data */
-    setData: setContacts,
-    execute,
-  } = useLoadingState<Contact[]>({
-    /** Initial Data */
-    initialData: [],
-    /** On Load Error */
-    onLoadError: (error) => {
-      logError(error as Error, {
-        /** Component */
-        component: "ContactSelectorWithCreate.loadContacts",
-      });
-      toast.error("Failed to load contacts");
-    },
-  });
-  const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(value || null);
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    setValue,
-    /** Form State */
-    formState: { errors },
-  } = useForm<ContactFormData>({
-    /** Resolver */
-    resolver: zodResolver(ContactSchema),
-    /** Default Values */
-    defaultValues: {
-      /** Country Code */
-      countryCode: "+91",
-      /** Is Primary */
-      isPrimary: false,
-    },
-  });
-
-  useEffect(() => {
-    loadContacts();
-  }, []);
-
-  useEffect(() => {
-    if (autoSelectPrimary && (contacts || []).length > 0 && !selectedId) {
-      /**
-       * Performs primary operation
-       *
-       * @param {any} contacts || []).find((c - The contacts || []).find((c
-       *
-       * @returns {any} The primary result
-       */
-
-      /**
-       * Performs primary operation
-       *
-       * @param {any} contacts || []).find((c - The contacts || []).find((c
-       *
-       * @returns {any} The primary result
-       */
-
-      const primary = (contacts || []).find((c) => c.isPrimary);
-      if (primary) {
-        setSelectedId(primary.id);
-        onChange(primary.id, primary);
-      }
-    }
-  }, [contacts, autoSelectPrimary, selectedId, onChange]);
-
-  /**
-   * Fetches contacts from server
-   *
-   * @returns {Promise<any>} Promise resolving to contacts result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  /**
-   * Fetches contacts from server
-   *
-   * @returns {Promise<any>} Promise resolving to contacts result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const loadContacts = () =>
-    execute(async () => {
-      // TODO: Implement actual API
-      return [];
-    });
-
-  /**
-   * Handles contact select event
-   *
-   * @param {Contact} contact - The contact
-   *
-   * @returns {any} The handlecontactselect result
-   */
-
-  /**
-   * Handles contact select event
-   *
-   * @param {Contact} contact - The contact
-   *
-   * @returns {any} The handlecontactselect result
-   */
-
-  const handleContactSelect = (contact: Contact) => {
-    setSelectedId(contact.id);
-    onChange(contact.id, contact);
-  };
-
-  /**
-   * Performs async operation
-   *
-   * @param {ContactFormData} data - Data object containing information
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  /**
-   * Performs async operation
-   *
-   * @param {ContactFormData} data - Data object containing information
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const onSubmit = async (data: ContactFormData) => {
-    try {
-      setSubmitting(true);
-      const newContact: Contact = {
-        /** Id */
-        id: `contact_${Date.now()}`,
-        /** Name */
-        name: data.name,
-        /** Phone */
-        phone: data.phone,
-        /** Country Code */
-        countryCode: data.countryCode,
-        /** Email */
-        email: data.email,
-        /** Relationship */
-        relationship: data.relationship,
-        /** Is Primary */
-        isPrimary: data.isPrimary,
-        /** Created At */
-        createdAt: new Date(),
-      };
-
-      setContacts([...(contacts || []), newContact]);
-      setSelectedId(newContact.id);
-      onChange(newContact.id, newContact);
-      setShowForm(false);
-      toast.success("Contact added successfully");
-    } catch (error) {
-      logError(error as Error, {
-        /** Component */
-        component: "ContactSelectorWithCreate.addContact",
-      });
-      toast.error("Failed to add contact");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  if (loading && (contacts || []).length === 0) {
-    return (
-      <div className={`space-y-2 ${className}`}>
-        {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <div className="flex items-center justify-center p-8 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
-          <Loader2 className="w-6 h-6 text-primary animate-spin" />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`space-y-3 ${className}`}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-      )}
-
-      <div className="space-y-3">
-        {(contacts || []).length === 0 ? (
-          <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <Phone className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              No saved contacts
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowForm(true)}
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Contact
-            </button>
-          </div>
-        ) : (
-          <>
-            {(contacts || []).map((contact) => (
-              <button
-                key={contact.id}
-                type="button"
-                onClick={() => handleContactSelect(contact)}
-                className={`
-                  w-full text-left p-4 rounded-lg border-2 transition-all
-                  ${
-                    selectedId === contact.id
-                      ? "border-primary bg-primary/5 dark:bg-primary/10"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary/50"
-                  }
-                `}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-0.5">
-                    {selectedId === contact.id ? (
-                      <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white" />
-                      </div>
-                    ) : (
-                      <Phone className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        {contact.name}
-                      </span>
-                      {contact.isPrimary && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                          Primary
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {contact.countryCode} {contact.phone}
-                    </p>
-                    {contact.email && (
-                      <p className="text-sm text-gray-500 dark:text-gray-500">
-                        {contact.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </button>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => setShowForm(true)}
-              className="w-full p-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all"
-            >
-              <div className="flex items-center justify-center gap-2 text-primary">
-                <Plus className="w-5 h-5" />
-                <span className="font-medium">Add New Contact</span>
-              </div>
-            </button>
-          </>
-        )}
-      </div>
-
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
-
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-lg max-w-md w-full">
-            <div className="border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Add Contact
-              </h2>
-              <button
-                onClick={() => setShowForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-              <FormField label="Name" required error={errors.name?.message}>
-                <FormInput {...register("name")} placeholder="Full Name" />
-              </FormField>
-
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <MobileInput
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                    countryCode={watch("countryCode")}
-                    onCountryCodeChange={(code) =>
-                      setValue("countryCode", code)
-                    }
-                    required
-                    error={errors.phone?.message}
-                    label="Phone Number"
-                  />
-                )}
-              />
-
-              <FormField label="Email (Optional)" error={errors.email?.message}>
-                <FormInput
-                  {...register("email")}
-                  type="email"
-                  placeholder="email@example.com"
-                />
-              </FormField>
-
-              <FormField label="Relationship (Optional)">
-                <FormInput
-                  {...register("relationship")}
-                  placeholder="e.g., Spouse, Parent"
-                />
-              </FormField>
-
-              <div className="flex items-center gap-3 py-2">
-                <input
-                  {...register("isPrimary")}
-                  type="checkbox"
-                  id="isPrimary"
-                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
-                />
-                <label
-                  htmlFor="isPrimary"
-                  className="text-sm text-gray-700 dark:text-gray-300"
-                >
-                  Set as primary contact
-                </label>
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="btn-secondary flex-1"
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary flex-1"
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Adding...
-                    </>
-                  ) : (
-                    "Add Contact"
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    <SelectorWithCreate<Contact, ContactFormData>
+      value={value}
+      onChange={(id, contact) => onChange(id, contact)}
+      required={required}
+      error={error}
+      label={label}
+      className={className}
+      icon={Phone}
+      emptyStateConfig={{
+        icon: Phone,
+        message: "No saved contacts",
+        buttonText: "Add Contact",
+      }}
+      fetchItems={async () => {
+        // TODO: Implement actual API call
+        // return await contactsService.list();
+        return [];
+      }}
+      createItem={async (data) => {
+        // TODO: Implement actual API call
+        // return await contactsService.create(data);
+        const newContact: Contact = {
+          id: `contact_${Date.now()}`,
+          name: data.name,
+          phone: data.phone,
+          countryCode: data.countryCode,
+          email: data.email,
+          relationship: data.relationship,
+          isPrimary: data.isPrimary,
+          createdAt: new Date(),
+        };
+        return newContact;
+      }}
+      formSchema={ContactSchema}
+      formDefaultValues={{
+        countryCode: "+91",
+        isPrimary: false,
+      }}
+      renderFormFields={(form) => <ContactFormFields form={form} />}
+      renderItem={renderContactItem}
+      getItemLabel={(contact) => contact.name}
+      modalTitle="Add Contact"
+      autoSelectPrimary={autoSelectPrimary}
+    />
   );
 }
 
