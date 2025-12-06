@@ -1,305 +1,85 @@
 /**
  * @fileoverview React Component
  * @module src/components/layout/FeaturedCategoriesSection
- * @description This file contains the FeaturedCategoriesSection component and its related functionality
+ * @description Featured categories section using FeaturedSection pattern
  * 
  * @created 2025-12-05
+ * @updated 2025-12-06
  * @author mohasinac
- * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { ProductCard } from "@/components/cards/ProductCard";
-import { logError } from "@/lib/firebase-error-logger";
+import { FolderTree } from "lucide-react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { CategoryCard } from "@/components/cards/CategoryCard";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { categoriesService } from "@/services/categories.service";
-import { productsService } from "@/services/products.service";
 import { apiService } from "@/services/api.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
-import type { ProductCardFE } from "@/types/frontend/product.types";
 
-/**
- * FeaturedItem interface
- * 
- * @interface
- * @description Defines the structure and contract for FeaturedItem
- */
 interface FeaturedItem {
-  /** Id */
   id: string;
-  /** Type */
   type: string;
-  /** Item Id */
   itemId: string;
-  /** Name */
   name: string;
-  /** Image */
   image?: string;
-  /** Position */
   position: number;
-  /** Active */
   active: boolean;
 }
 
-/**
- * CategoryWithProducts interface
- * 
- * @interface
- * @description Defines the structure and contract for CategoryWithProducts
- */
-interface CategoryWithProducts {
-  /** Category */
-  category: CategoryFE;
-  /** Products */
-  products: ProductCardFE[];
-}
-
-/**
- * Props interface
- * 
- * @interface
- * @description Defines the structure and contract for Props
- */
 interface Props {
-  /** Max Categories */
   maxCategories?: number;
-  /** Products Per Category */
-  productsPerCategory?: number;
 }
 
-export default /**
- * Performs featured categories section operation
- *
- * @param {Props} [{
-  maxCategories = 3,
-  productsPerCategory = 5,
-}] - The {
-  maxcategories = 3,
-  productspercategory = 5,
-}
- *
- * @returns {any} The featuredcategoriessection result
- *
- */
-function FeaturedCategoriesSection({
-  maxCategories = 3,
-  productsPerCategory = 5,
-}: Props) {
-  const [categoriesWithProducts, setCategoriesWithProducts] = useState<
-    CategoryWithProducts[]
-  >([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchFeaturedCategories();
-  }, [maxCategories, productsPerCategory]);
-
-  /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const fetchFeaturedCategories = async () => {
+export default function FeaturedCategoriesSection({ maxCategories = 10 }: Props) {
+  const fetchFeaturedCategories = async (): Promise<CategoryFE[]> => {
     try {
-      setLoading(true);
-
-      // First, try to get admin-curated featured categories
-      let curatedCategories: CategoryFE[] = [];
-
-      try {
-        const response: any = await apiService.get("/homepage");
-        const featuredItems: FeaturedItem[] =
-          response.data?.featuredItems?.categories || [];
-
-        // Filter active items and sort by position
-        /**
- * Performs active items operation
- *
- * @param {any} (item - The (item
- *
- * @returns {any} The activeitems result
- *
- */
-const activeItems = featuredItems
+      const response: any = await apiService.get("/homepage");
+      const featuredItems: FeaturedItem[] = response.data?.featuredItems?.categories || [];
+      
+      if (featuredItems.length > 0) {
+        const activeItems = featuredItems
           .filter((item) => item.active)
-          .so/**
- * Performs category ids operation
- *
- * @param {any} (item - The (item
- *
- * @returns {any} The categoryids result
- *
- */
-rt((a, b) => a.position - b.position)
+          .sort((a, b) => a.position - b.position)
           .slice(0, maxCategories);
-
-        if (activeItems.length > 0) {
-          const categoryIds = activeItems.map((item) => item.itemId);
-          curatedCategories = await categoriesService.getByIds(categoryIds);
-        }
-      } catch {
-        // No curated categories, fallback to homepage query
-      }
-
-      // Use curated categories or fallback to homepage query
-      let topCategories: CategoryFE[];
-      if (curatedCategories.length > /**
- * Performs categories data operation
- *
- * @param {CategoryFE} topCategories.map(async(category - The topcategories.map(async(category
- *
- * @returns {Promise<any>} The categoriesdata result
- *
- */
-0) {
-        topCategories = curatedCategories;
-      } else {
-        const categories = await categoriesService.getHomepage();
-        topCategories = categories.slice(0, maxCategories);
-      }
-
-      // Fetch products for each category
-      const categoriesData = await Promise.all(
-        topCategories.map(async (category: CategoryFE) => {
-          try {
-            const productsData = await productsService.list({
-              /** Category Id */
-              categoryId: category.id,
-              /** Limit */
-              limit: productsPerCategory,
-            } as any);
-            return {
-              category,
-              /** Products */
-              products: productsData.data,
-            };
-          } catch (error) {
-            logError(error as Error, {
-              /** Component */
-              component: "FeaturedCategoriesSection.fetchFeaturedCategories",
-              /** Metadata */
-              metadata: { categoryId: category.id },
-            });
-            return {
-              category,
-              /** Products */
-              products: [],
-            };
+        
+        const categoryIds = activeItems.map((item) => item.itemId);
+        if (categoryIds.length > 0) {
+          const categoriesData = await categoriesService.list({ ids: categoryIds });
+          const sortedCategories = categoryIds
+            .map((id) => categoriesData.find((c) => c.id === id))
+            .filter((c): c is CategoryFE => c !== undefined);
+          if (sortedCategories.length > 0) {
+            return sortedCategories;
           }
-        }),
-      );
+        }
+      }
+    } catch (error) {}
 
-      setCategoriesWithProducts(
-        categoriesData.filter(
-          (item: CategoryWithProducts) => item.products.length > 0,
-        ),
-      );
-    } catch (error) {
-      logError(error as Error, {
-        /** Component */
-        component: "FeaturedCategoriesSection.fetchFeaturedCategories",
-      });
-      setCategoriesWithProducts([]);
-    } finally {
-      setLoading(false);
-    }
+    const featuredCategories = await categoriesService.list({ featured: true, limit: maxCategories });
+    return featuredCategories;
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-12 py-8">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
-            <div className="flex gap-4 overflow-hidden">
-              {[1, 2, 3, 4].map((j) => (
-                <div
-                  key={j}
-                  className="min-w-[280px] h-96 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                ></div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (categoriesWithProducts.length === 0) {
-    return null;
-  }
-
   return (
-    <div className="space-y-12 py-8">
-      <div className="mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Shop by Category
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Explore our featured categories and their top products
-        </p>
-      </div>
-      {categoriesWithProducts.map(({ category, products }) => (
-        <section key={category.id} className="space-y-4">
-          {/* Category Header Card */}
-          <div className="mb-4">
-            <CategoryCard
-              id={category.id}
-              name={category.name}
-              slug={category.slug}
-              image={category.image || category.icon || undefined}
-              description={category.description || undefined}
-              productCount={category.productCount || 0}
-              featured={category.featured}
-              variant="compact"
-            />
-          </div>
-
-          <HorizontalScrollContainer
-            title=""
-            viewAllLink={`/categories/${category.slug}`}
-            viewAllText="View All in Category"
-            itemWidth="280px"
-            gap="1rem"
-            headingLevel="h3"
-          >
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                originalPrice={product.originalPrice || undefined}
-                image={product.images[0] || "/placeholder-product.png"}
-                rating={product.rating}
-                reviewCount={product.reviewCount}
-                shopName="Shop"
-                shopSlug={`/shops/${product.shopId}`}
-                inStock={product.stockCount > 0}
-                featured={product.featured}
-                condition={product.condition}
-                showShopName={true}
-                compact={false}
-              />
-            ))}
-          </HorizontalScrollContainer>
-        </section>
-      ))}
-    </div>
+    <FeaturedSection<CategoryFE>
+      title=" Popular Categories"
+      icon={FolderTree}
+      viewAllLink="/categories"
+      viewAllText="View All Categories"
+      fetchData={fetchFeaturedCategories}
+      renderItem={(category) => (
+        <CategoryCard
+          key={category.id}
+          id={category.id}
+          name={category.name}
+          slug={category.slug}
+          image={category.image}
+          description={category.description}
+          productCount={category.productCount}
+          featured={category.featured}
+        />
+      )}
+      itemWidth="280px"
+    />
   );
 }
