@@ -1,20 +1,19 @@
 /**
- * @fileoverview React Component
+ * @fileoverview Featured Products Section (Using Generic FeaturedSection Pattern)
  * @module src/components/homepage/FeaturedProductsSection
- * @description This file contains the FeaturedProductsSection component and its related functionality
+ * @description Specialized featured products section using the generic FeaturedSection pattern
  * 
  * @created 2025-12-05
+ * @updated 2025-12-06
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { logError } from "@/lib/error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import React from "react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -23,165 +22,63 @@ import type { ProductCardFE } from "@/types/frontend/product.types";
  * FeaturedProductsSectionProps interface
  * 
  * @interface
- * @description Defines the structure and contract for FeaturedProductsSectionProps
+ * @description Props for featured products section
  */
 interface FeaturedProductsSectionProps {
-  /** Limit */
+  /** Number of products to display */
   limit?: number;
-  /** Class Name */
+  /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Function: Featured Products Section
- */
-/**
- * Performs featured products section operation
- *
- * @param {FeaturedProductsSectionProps} [{
-  limit] - The {
-  limit
- *
- * @returns {any} The featuredproductssection result
- *
+ * Featured Products Section Component
+ * 
+ * Displays featured products using the generic FeaturedSection pattern.
+ * Automatically tracks product impressions for analytics.
+ * 
+ * @param {FeaturedProductsSectionProps} props - Component props
+ * @returns {JSX.Element} Rendered component
+ * 
  * @example
- * FeaturedProductsSection({
-  limit);
- */
-
-/**
- * Performs featured products section operation
- *
- * @param {FeaturedProductsSectionProps} [{
-  limit] - The {
-  limit
- *
- * @returns {any} The featuredproductssection result
- *
- * @example
- * FeaturedProductsSection({
-  limit);
- */
-
-/**
- * Performs featured products section operation
- *
- * @param {FeaturedProductsSectionProps} [{
-  limit = 10,
-  className = "",
-}] - The {
-  limit = 10,
-  classname = "",
-}
- *
- * @returns {any} The featuredproductssection result
- *
- * @example
- * FeaturedProductsSection({
-  limit = 10,
-  className = "",
-});
+ * <FeaturedProductsSection limit={10} />
  */
 export function FeaturedProductsSection({
   limit = 10,
   className = "",
 }: FeaturedProductsSectionProps) {
-  const [products, setProducts] = useState<ProductCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadProducts();
-  }, [limit]);
-
   /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
+   * Fetch featured products
    */
-
-  /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await homepageService.getFeaturedProducts(limit);
-      setProducts(data);
-
-      if (data.length > 0) {
-        analyticsService.trackEvent("homepage_featured_products_viewed", {
-          /** Count */
-          count: data.length,
-        });
-      }
-    } catch (error) {
-      logError(error as Error, {
-        /** Component */
-        component: "FeaturedProductsSection.loadProducts",
-      });
-    } finally {
-      setLoading(false);
+  const fetchProducts = async (): Promise<ProductCardFE[]> => {
+    const products = await homepageService.getFeaturedProducts(limit);
+    
+    // Track impressions for analytics
+    if (products.length > 0) {
+      analyticsService.trackProductImpressions(products);
     }
+    
+    return products;
   };
 
-  // Don't render if no products
-  if (!loading && products.length === 0) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <section className={`py-8 ${className}`}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          Featured Products
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {Array.from({ length: Math.min(limit, 5) }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className={`py-8 ${className}`}>
-      <HorizontalScrollContainer
-        title="Featured Products"
-        viewAllLink="/products?featured=true"
-        viewAllText="View All Featured"
-        itemWidth="280px"
-        gap="1rem"
-      >
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            slug={product.slug}
-            price={product.price}
-            originalPrice={product.originalPrice ?? undefined}
-            image={product.images?.[0] || "/placeholder-product.jpg"}
-            images={product.images}
-            rating={product.rating}
-            reviewCount={product.reviewCount}
-            shopName={product.shop?.name}
-            shopSlug={product.shop?.slug}
-            shopId={product.shopId}
-            inStock={(product.stockCount ?? 0) > 0}
-            featured={product.featured}
-            condition={product.condition}
-            variant="public"
-          />
-        ))}
-      </HorizontalScrollContainer>
-    </section>
+    <FeaturedSection<ProductCardFE>
+      title="Featured Products"
+      subtitle="Handpicked items just for you"
+      fetchFn={fetchProducts}
+      renderCard={(product, index) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          priority={index < 4}
+        />
+      )}
+      viewAllLink="/products?featured=true"
+      viewAllText="View All Products"
+      columns={4}
+      emptyMessage="No featured products available at the moment"
+      className={className}
+      skeletonCount={Math.min(limit, 5)}
+    />
   );
 }

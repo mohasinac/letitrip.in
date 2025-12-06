@@ -1,9 +1,10 @@
 /**
- * @fileoverview React Component
+ * @fileoverview Address Selector Component (Using Generic SelectorWithCreate Pattern)
  * @module src/components/common/AddressSelectorWithCreate
- * @description This file contains the AddressSelectorWithCreate component and its related functionality
+ * @description Specialized address selector using the generic SelectorWithCreate pattern
  * 
  * @created 2025-12-05
+ * @updated 2025-12-06
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
@@ -11,36 +12,36 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MapPin, Plus, Home, Briefcase, Loader2, Check } from "lucide-react";
+import { MapPin, Home, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { addressService } from "@/services/address.service";
 import { SmartAddressForm } from "./SmartAddressForm";
-import type { AddressFE } from "@/types/frontend/address.types";
+import { SelectorWithCreate, type SelectorOption } from "./SelectorWithCreate";
+import type { AddressFE, AddressFormFE } from "@/types/frontend/address.types";
 import { logError } from "@/lib/firebase-error-logger";
-import { useLoadingState } from "@/hooks/useLoadingState";
 
 /**
  * AddressSelectorWithCreateProps interface
  * 
  * @interface
- * @description Defines the structure and contract for AddressSelectorWithCreateProps
+ * @description Props for specialized address selector
  */
 export interface AddressSelectorWithCreateProps {
-  /** Value */
+  /** Selected address ID */
   value?: string | null;
-  /** On Change */
+  /** Change handler with address data */
   onChange: (addressId: string, address: AddressFE) => void;
-  /** Filter Type */
+  /** Filter addresses by type */
   filterType?: "home" | "work" | "other" | "all";
-  /** Required */
+  /** Whether field is required */
   required?: boolean;
-  /** Error */
+  /** Error message */
   error?: string;
-  /** Label */
+  /** Field label */
   label?: string;
-  /** Auto Select Default */
+  /** Auto-select default address */
   autoSelectDefault?: boolean;
-  /** Class Name */
+  /** Additional CSS classes */
   className?: string;
 }
 
@@ -57,14 +58,27 @@ export interface AddressSelectorWithCreateProps {
  */
 
 /**
- * Performs address selector with create operation
- *
- * @returns {any} The addressselectorwithcreate result
- *
- * @example
- * AddressSelectorWithCreate();
+ * Get icon for address type
  */
+const getAddressIcon = (type?: string): React.ReactElement => {
+  switch (type) {
+    case "home":
+      return <Home className="w-4 h-4" />;
+    case "work":
+      return <Briefcase className="w-4 h-4" />;
+    default:
+      return <MapPin className="w-4 h-4" />;
+  }
+};
 
+/**
+ * Address Selector Component with Create Capability
+ * 
+ * Wraps the generic SelectorWithCreate pattern with address-specific logic
+ * 
+ * @param {AddressSelectorWithCreateProps} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 export function AddressSelectorWithCreate({
   value,
   onChange,
@@ -75,298 +89,120 @@ export function AddressSelectorWithCreate({
   autoSelectDefault = true,
   className = "",
 }: AddressSelectorWithCreateProps) {
-  const {
-    /** Is Loading */
-    isLoading: loading,
-    /** Data */
-    data: addresses,
-    /** Set Data */
-    setData: setAddresses,
-    execute,
-  } = useLoadingState<AddressFE[]>({
-    /** Initial Data */
-    initialData: [],
-    /** On Load Error */
-    onLoadError: (error) => {
-      logError(error as Error, {
-        /** Component */
-        component: "AddressSelectorWithCreate",
-        /** Action */
-        action: "loadAddresses",
-      });
-      toast.error("Failed to load addresses");
-    },
-  });
+  const [addresses, setAddresses] = useState<AddressFE[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [showForm, setShowForm] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(value || null);
-
-  // Load addresses
+  // Load addresses on mount
   useEffect(() => {
     loadAddresses();
   }, []);
 
   // Auto-select default address
   useEffect(() => {
-    if (autoSelectDefault && addresses && addresses.length > 0 && !selectedId) {
-      /**
- * Performs default address operation
- *
- * @param {any} (addr - The (addr
- *
- * @returns {any} The defaultaddress result
- *
- */
-const defaultAddress = addresses.find((addr) => addr.isDefault);
+    if (autoSelectDefault && addresses.length > 0 && !value) {
+      const defaultAddress = addresses.find((addr) => addr.isDefault);
       if (defaultAddress) {
-        setSelectedId(defaultAddress.id);
         onChange(defaultAddress.id, defaultAddress);
       }
     }
-  }, [addresses, autoSelectDefault, selectedId, onChange]);
+  }, [addresses, autoSelectDefault, value, onChange]);
 
   /**
-   * Fetches addresses from server
-   *
-   * @returns {Promise<any>} Promise resolving to addresses result
-   *
-   * @throws {Error} When operation fails or validation errors occur
+   * Load addresses from service
    */
-
-  /**
-   * Fetches addresses from server
-   *
-   * @returns {Promise<any>} Promise resolving to addresses result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const loadAddresses = () =>
-    execute(async () => {
+  const loadAddresses = async () => {
+    try {
+      setLoading(true);
       const data = await addressService.getAll();
+      
       // Filter by type if specified
       const filtered =
         filterType === "all"
           ? data
           : data.filter((addr) => addr.addressType === filterType);
-      return filtered;
-    });
-
-  /**
-   * Handles address select event
-   *
-   * @param {AddressFE} address - The address
-   *
-   * @returns {any} The handleaddressselect result
-   */
-
-  /**
-   * Handles address select event
-   *
-   * @param {AddressFE} address - The address
-   *
-   * @returns {any} The handleaddressselect result
-   */
-
-  const handleAddressSelect = (address: AddressFE) => {
-    setSelectedId(address.id);
-    onChange(address.id, address);
-  };
-
-  /**
-   * Handles address created event
-   *
-   * @param {AddressFE} newAddress - The new address
-   *
-   * @returns {any} The handleaddresscreated result
-   */
-
-  /**
-   * Handles address created event
-   *
-   * @param {AddressFE} newAddress - The new address
-   *
-   * @returns {any} The handleaddresscreated result
-   */
-
-  const handleAddressCreated = (newAddress: AddressFE) => {
-    setAddresses([...(addresses || []), newAddress]);
-    setSelectedId(newAddress.id);
-    onChange(newAddress.id, newAddress);
-    setShowForm(false);
-    toast.success("Address added successfully");
-  };
-
-  /**
-   * Retrieves address icon
-   *
-   * @param {string} type - The type
-   *
-   * @returns {string} The addressicon result
-   */
-
-  /**
-   * Retrieves address icon
-   *
-   * @param {string} type - The type
-   *
-   * @returns {string} The addressicon result
-   */
-
-  const getAddressIcon = (type: string) => {
-    switch (type) {
-      case "home":
-        return <Home className="w-4 h-4" />;
-      case "work":
-        return <Briefcase className="w-4 h-4" />;
-      /** Default */
-      default:
-        return <MapPin className="w-4 h-4" />;
+      
+      setAddresses(filtered);
+    } catch (err) {
+      logError(err as Error, {
+        component: "AddressSelectorWithCreate",
+        action: "loadAddresses",
+      });
+      toast.error("Failed to load addresses");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className={`space-y-2 ${className}`}>
-        {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <div className="flex items-center justify-center p-8 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
-          <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-            Loading addresses...
-          </span>
-        </div>
-      </div>
-    );
-  }
+  /**
+   * Handle address creation
+   */
+  const handleCreateAddress = async (
+    formData: AddressFormFE
+  ): Promise<SelectorOption> => {
+    try {
+      const newAddress = await addressService.create(formData);
+      
+      // Add to local state
+      setAddresses((prev) => [...prev, newAddress]);
+      
+      toast.success("Address added successfully");
+      
+      // Return as selector option
+      return {
+        value: newAddress.id,
+        label: `${newAddress.street}, ${newAddress.city}, ${newAddress.state} ${newAddress.postalCode}`,
+        icon: getAddressIcon(newAddress.addressType),
+        metadata: newAddress,
+      };
+    } catch (err) {
+      logError(err as Error, {
+        component: "AddressSelectorWithCreate",
+        action: "createAddress",
+      });
+      throw new Error("Failed to create address");
+    }
+  };
+
+  // Transform addresses to selector options
+  const options: SelectorOption[] = addresses.map((addr) => ({
+    value: addr.id,
+    label: `${addr.street}, ${addr.city}, ${addr.state} ${addr.postalCode}`,
+    icon: getAddressIcon(addr.addressType),
+    metadata: addr,
+  }));
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      {/* Label */}
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-      )}
-
-      {/* Address Cards */}
-      <div className="space-y-3">
-        {!addresses || addresses.length === 0 ? (
-          <div className="text-center p-6 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              No saved addresses found
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowForm(true)}
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Your First Address
-            </button>
-          </div>
-        ) : (
-          <>
-            {addresses.map((address) => (
-              <button
-                key={address.id}
-                type="button"
-                onClick={() => handleAddressSelect(address)}
-                className={`
-                  w-full text-left p-4 rounded-lg border-2 transition-all
-                  ${
-                    selectedId === address.id
-                      ? "border-primary bg-primary/5 dark:bg-primary/10"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary/50"
-                  }
-                `}
-              >
-                <div className="flex items-start gap-3">
-                  {/* Icon & Checkmark */}
-                  <div className="flex-shrink-0 mt-0.5">
-                    {selectedId === address.id ? (
-                      <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white" />
-                      </div>
-                    ) : (
-                      <div className="text-gray-400 dark:text-gray-500">
-                        {getAddressIcon(address.addressType)}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    {/* Header */}
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        {address.fullName}
-                      </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        {getAddressIcon(address.addressType)}
-                        <span className="capitalize">{address.typeLabel}</span>
-                      </span>
-                      {address.isDefault && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                          Default
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Address Lines */}
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      {address.addressLine1}
-                      {address.addressLine2 && `, ${address.addressLine2}`}
-                    </p>
-
-                    {/* City, State, Pincode */}
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {address.city}, {address.state} {address.postalCode}
-                    </p>
-
-                    {/* Phone */}
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                      📞 {address.phoneNumber}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            ))}
-
-            {/* Add New Button */}
-            <button
-              type="button"
-              onClick={() => setShowForm(true)}
-              className="w-full p-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all"
-            >
-              <div className="flex items-center justify-center gap-2 text-primary">
-                <Plus className="w-5 h-5" />
-                <span className="font-medium">Add New Address</span>
-              </div>
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
-
-      {/* Address Form Modal */}
-      {showForm && (
+    <SelectorWithCreate
+      label={label}
+      value={value || null}
+      options={options}
+      onChange={(addressId, option) => {
+        const address = option?.metadata as AddressFE;
+        if (address) {
+          onChange(addressId, address);
+        }
+      }}
+      placeholder="Select an address"
+      required={required}
+      error={error}
+      className={className}
+      allowCreate
+      createLabel="Add Address"
+      createTitle="Add New Address"
+      createForm={({ onSubmit, onCancel }) => (
         <SmartAddressForm
-          onClose={() => setShowForm(false)}
-          onSuccess={handleAddressCreated}
-          mode="modal"
-          showGPS={false}
+          onSubmit={(data) => onSubmit(data as AddressFormFE)}
+          onCancel={onCancel}
         />
+      )}
+      onCreateSubmit={handleCreateAddress}
+      searchable
+      emptyState={
+        <p className="text-gray-500 text-sm">
+          No addresses found. Click "Add Address" to create one.
+        </p>
+      }
+    />
       )}
     </div>
   );
