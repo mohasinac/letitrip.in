@@ -10,15 +10,16 @@
 **Before writing ANY code, check these:**
 
 1. ✅ **Use existing hooks**: `useLoadingState`, `useDebounce`, `useFilters`, `useAdminLoad`
-2. ✅ **Use existing components**: `AdminResourcePage`, `StatsCardGrid`, `UnifiedFilterSidebar`
+2. ✅ **Use existing components**: `AdminResourcePage`, `StatsCardGrid`, `UnifiedFilterSidebar`, `CopyButton`
 3. ✅ **Use generic patterns**: `FeaturedSection<T>`, `SelectorWithCreate<T>`, `BaseService<T>`
 4. ✅ **Use value components**: `<Price />`, `<DateDisplay />`, `<StatusBadge />`
-5. ✅ **Use constants**: `COLLECTIONS.*`, `ROUTES.*`, `QUERY_LIMITS.*`, `VALIDATION_RULES.*`, `VALIDATION_MESSAGES.*`
-6. ✅ **Use validation helpers**: `isValidEmail()`, `isValidPhone()`, `isValidPassword()`
-7. ✅ **Include dark mode**: Add `dark:*` variants to all colors
-8. ✅ **Use services**: Call `productsService.getBySlug()` not `fetch()`
-9. ✅ **Debounce searches**: Use `useDebounce(searchTerm, 300)`
-10. ✅ **Check file size**: Split if >350 lines (use `AdminResourcePage` for lists)
+5. ✅ **Use helper utilities**: `toastCrud.*`, `shortId()`, `asyncHandler()`, `buildFilter()`
+6. ✅ **Use constants**: `COLLECTIONS.*`, `ROUTES.*`, `QUERY_LIMITS.*`, `VALIDATION_RULES.*`, `VALIDATION_MESSAGES.*`
+7. ✅ **Use validation helpers**: `isValidEmail()`, `isValidPhone()`, `isValidPassword()`
+8. ✅ **Include dark mode**: Add `dark:*` variants to all colors
+9. ✅ **Use services**: Call `productsService.getBySlug()` not `fetch()`
+10. ✅ **Debounce searches**: Use `useDebounce(searchTerm, 300)`
+11. ✅ **Check file size**: Split if >350 lines (use `AdminResourcePage` for lists)
 
 ## 🎉 NEW GENERIC PATTERNS (2025-12-06)
 
@@ -358,6 +359,167 @@ import type { Product } from "@/types/frontend/product";
 
 // 6. Relative imports (avoid when possible)
 import { helper } from "./utils";
+```
+
+---
+
+## 🆕 NEW HELPER UTILITIES (CRITICAL - USE THESE!)
+
+**Always use these helpers** to eliminate boilerplate and ensure consistency:
+
+### Toast Notifications (`src/lib/toast-helper.ts`)
+
+```typescript
+// ❌ OLD WAY (inconsistent messaging)
+toast.success('Product created successfully');
+toast.error('Failed to create product');
+
+// ✅ NEW WAY (standardized messages)
+toastCrud.created('Product');
+toastCrud.updated('Product');
+toastCrud.deleted('Product');
+
+// Action toasts
+toastAction.addedToCart();
+toastAction.addedToWishlist();
+toastAction.copied('Order ID');
+
+// Error toasts
+toastErr.notFound('Product');
+toastErr.networkError();
+toastErr.unauthorized();
+```
+
+### ID & String Helpers (`src/lib/id-helpers.ts`)
+
+```typescript
+// ❌ OLD WAY
+const shortId = id.slice(0, 8);
+const orderId = `#ORD-${id}`;
+
+// ✅ NEW WAY
+const shortId = shortId(id); // First 8 chars
+const orderId = formatOrderId(id); // #ORD-{id}
+const ticketId = formatTicketId(id); // #TKT-{id}
+
+// Text manipulation
+truncate('Long text...', 50); // Truncate to 50 chars
+truncateWords('Many words here', 10); // Truncate to 10 words
+pluralize(count, 'item'); // "1 item" or "2 items"
+
+// Privacy
+maskEmail('user@example.com'); // u***@example.com
+maskPhone('+1234567890'); // +123***7890
+```
+
+### Array Helpers (`src/lib/array-helpers.ts`)
+
+```typescript
+// ❌ OLD WAY
+const unique = [...new Set(arr)];
+const grouped = arr.reduce((acc, item) => {
+  const key = item.category;
+  if (!acc[key]) acc[key] = [];
+  acc[key].push(item);
+  return acc;
+}, {});
+
+// ✅ NEW WAY
+unique(arr); // Remove duplicates
+uniqueBy(arr, 'id'); // Unique by property
+groupBy(arr, 'category'); // Group by property
+sortBy(arr, 'createdAt', 'desc'); // Sort by property
+chunk(arr, 10); // Split into chunks of 10
+shuffle(arr); // Random order
+intersection(arr1, arr2); // Common elements
+difference(arr1, arr2); // Unique to arr1
+```
+
+### Async Helpers (`src/lib/async-helpers.ts`)
+
+```typescript
+// ❌ OLD WAY
+try {
+  const data = await fetchData();
+  return data;
+} catch (error) {
+  console.error(error);
+  toast.error('Failed to fetch data');
+  return null;
+}
+
+// ✅ NEW WAY - asyncHandler (returns result object)
+const { data, error } = await asyncHandler(fetchData());
+if (error) return; // Error logged automatically
+
+// ✅ NEW WAY - withErrorHandling (auto toast)
+const data = await withErrorHandling(
+  fetchData(),
+  'Failed to fetch data'
+);
+
+// Retry with exponential backoff
+const data = await retryAsync(fetchData, { 
+  maxRetries: 3, 
+  delay: 1000 
+});
+
+// Timeout protection
+const data = await withTimeout(fetchData(), 5000);
+
+// Debounce/Throttle async functions
+const debouncedSearch = debounceAsync(searchFunction, 300);
+const throttledSave = throttleAsync(saveFunction, 1000);
+```
+
+### Query Builder (`src/lib/query-builder.ts`)
+
+```typescript
+// ❌ OLD WAY (error-prone Sieve syntax)
+const filter = `name@=*${search}*,category==${categoryId}`;
+
+// ✅ NEW WAY (type-safe)
+const filter = buildFilter([
+  buildSearchFilter('name', search),
+  { field: 'category', operator: '==', value: categoryId }
+]);
+
+// Date ranges
+buildDateRangeFilter('createdAt', startDate, endDate);
+
+// Numeric ranges
+buildNumericRangeFilter('price', minPrice, maxPrice);
+
+// Complete query params
+const params = buildSieveParams({
+  filters: [
+    buildSearchFilter('name', search),
+    { field: 'isActive', operator: '==', value: true }
+  ],
+  sorts: [{ field: 'createdAt', direction: 'desc' }],
+  page: 1,
+  pageSize: 20
+});
+```
+
+### CopyButton Component (`src/components/common/CopyButton.tsx`)
+
+```typescript
+// Standard button with icon
+<CopyButton 
+  text="Copy this text" 
+  size="md" 
+  variant="default"
+/>
+
+// Inline copy (no button styling)
+<InlineCopyButton text="order-id-123" />
+
+// Code block with copy
+<CopyableCode code={`const x = 123;`} language="typescript" />
+
+// Custom sizes: sm, md, lg
+// Custom variants: default, ghost, outline
 ```
 
 ---
