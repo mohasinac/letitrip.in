@@ -2,42 +2,39 @@
  * @fileoverview Orders Service (Using BaseService Pattern)
  * @module src/services/orders.service
  * @description Orders service extending BaseService for common CRUD operations
- * 
+ *
  * @created 2025-12-05
  * @updated 2025-12-06
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
-import { apiService } from "./api.service";
-import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
+import { ORDER_ROUTES } from "@/constants/api-routes";
+import type { OrderBE, OrderFiltersBE } from "@/types/backend/order.types";
 import type {
-  OrderBE,
-  OrderFiltersBE,
-} from "@/types/backend/order.types";
-import type {
-  OrderFE,
-  OrderCardFE,
   CreateOrderFormFE,
+  OrderCardFE,
+  OrderFE,
   OrderStatsFE,
 } from "@/types/frontend/order.types";
 import {
+  toBECreateOrderRequest,
+  toBECreateShipmentRequest,
+  toBEUpdateOrderStatusRequest,
   toFEOrder,
   toFEOrderCard,
-  toBECreateOrderRequest,
-  toBEUpdateOrderStatusRequest,
-  toBECreateShipmentRequest,
 } from "@/types/transforms/order.transforms";
+import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 /**
  * Orders Service Class
- * 
+ *
  * Extends BaseService to inherit common CRUD operations.
  * Adds order-specific functionality like status updates, shipment tracking, etc.
- * 
+ *
  * @extends BaseService<OrderBE, OrderFE, CreateOrderFormFE, OrderFiltersBE>
- * 
+ *
  * @example
  * const orders = await ordersService.list({ status: 'pending' });
  * const order = await ordersService.getById('order_123');
@@ -132,10 +129,9 @@ class OrdersService extends BaseService<
    */
   async cancel(id: string, reason: string): Promise<OrderFE> {
     try {
-      const orderBE = await apiService.post<OrderBE>(
-        ORDER_ROUTES.CANCEL(id),
-        { reason }
-      );
+      const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
+        reason,
+      });
       return this.toFE(orderBE);
     } catch (error) {
       return this.handleError(error, `cancel:${id}`);
@@ -203,7 +199,7 @@ class OrdersService extends BaseService<
   }
 
   // Bulk operations (inherited bulkUpdate and bulkDelete from BaseService)
-  
+
   /**
    * Bulk confirm orders
    */

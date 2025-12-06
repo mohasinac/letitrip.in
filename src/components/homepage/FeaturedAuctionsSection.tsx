@@ -2,7 +2,7 @@
  * @fileoverview Featured Auctions Section (Using Generic FeaturedSection Pattern)
  * @module src/components/homepage/FeaturedAuctionsSection
  * @description Specialized featured auctions section using the generic FeaturedSection pattern
- * 
+ *
  * @created 2025-12-05
  * @updated 2025-12-06
  * @author mohasinac
@@ -11,16 +11,15 @@
 
 "use client";
 
-import React from "react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { homepageService } from "@/services/homepage.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
+import { homepageService } from "@/services/homepage.service";
 
 /**
  * FeaturedAuctionsSectionProps interface
- * 
+ *
  * @interface
  * @description Props for featured auctions section
  */
@@ -83,13 +82,13 @@ interface FeaturedAuctionsSectionProps {
  */
 /**
  * Featured Auctions Section Component
- * 
+ *
  * Displays featured auctions using the generic FeaturedSection pattern.
  * Automatically tracks auction impressions for analytics.
- * 
+ *
  * @param {FeaturedAuctionsSectionProps} props - Component props
  * @returns {JSX.Element} Rendered component
- * 
+ *
  * @example
  * <FeaturedAuctionsSection limit={10} />
  */
@@ -102,14 +101,14 @@ export function FeaturedAuctionsSection({
    */
   const fetchAuctions = async (): Promise<AuctionItemFE[]> => {
     const auctions = await homepageService.getFeaturedAuctions(limit);
-    
+
     // Track impressions for analytics
     if (auctions.length > 0) {
       analyticsService.trackEvent("homepage_featured_auctions_viewed", {
         count: auctions.length,
       });
     }
-    
+
     return auctions;
   };
 
@@ -134,8 +133,8 @@ export function FeaturedAuctionsSection({
               auction.status === "upcoming"
                 ? "pending"
                 : auction.status === "live"
-                  ? "active"
-                  : auction.status,
+                ? "active"
+                : auction.status,
             featured: true,
             shop: {
               id: auction.shopId,
