@@ -2,7 +2,7 @@
  * @fileoverview Address Service - Extends BaseService
  * @module src/services/address.service
  * @description Address management service with CRUD and lookup operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,7 +10,6 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
 import { logError } from "@/lib/firebase-error-logger";
 import { AddressBE } from "@/types/backend/address.types";
 import { AddressFE, AddressFormFE } from "@/types/frontend/address.types";
@@ -20,6 +19,7 @@ import {
   toFEAddresses,
 } from "@/types/transforms/address.transforms";
 import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 // ============================================================================
 // TYPES FOR ADDRESS LOOKUP
@@ -27,7 +27,7 @@ import { apiService } from "./api.service";
 
 /**
  * PincodeDetails interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for PincodeDetails
  */
@@ -50,7 +50,7 @@ export interface PincodeDetails {
 
 /**
  * PostalCodeDetails interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for PostalCodeDetails
  */

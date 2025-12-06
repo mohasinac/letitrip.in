@@ -2,7 +2,7 @@
  * @fileoverview Categories Service - Extends BaseService
  * @module src/services/categories.service
  * @description Category management service with CRUD and tree operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,28 +10,28 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
-import { apiService } from "./api.service";
-import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
 import { logError } from "@/lib/firebase-error-logger";
+import { CategoryBE, CategoryTreeNodeBE } from "@/types/backend/category.types";
+import type { ProductListItemBE } from "@/types/backend/product.types";
 import {
   CategoryFE,
-  CategoryTreeNodeFE,
   CategoryFormFE,
+  CategoryTreeNodeFE,
 } from "@/types/frontend/category.types";
-import {
-  toFECategory,
-  toFECategories,
-  toFECategoryTreeNode,
-  toBECreateCategoryRequest,
-} from "@/types/transforms/category.transforms";
-import type { ProductListItemBE } from "@/types/backend/product.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import { toFEProductCard } from "@/types/transforms/product.transforms";
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
+import {
+  toBECreateCategoryRequest,
+  toFECategories,
+  toFECategory,
+  toFECategoryTreeNode,
+} from "@/types/transforms/category.transforms";
+import { toFEProductCard } from "@/types/transforms/product.transforms";
+import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 class CategoriesService extends BaseService<
   CategoryBE,
@@ -92,7 +92,7 @@ class CategoriesService extends BaseService<
     /** Slug */
     slug: string,
     /** Parent Id */
-    parentId: string,
+    parentId: string
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
       /** Success */
@@ -108,7 +108,7 @@ class CategoriesService extends BaseService<
     /** Slug */
     slug: string,
     /** Parent Id */
-    parentId: string,
+    parentId: string
   ): Promise<{ message: string }> {
     const response = await apiService.post<{
       /** Success */
@@ -177,7 +177,7 @@ class CategoriesService extends BaseService<
   // Reorder categories (admin only)
   async reorder(
     /** Orders */
-    orders: { id: string; sortOrder: number }[],
+    orders: { id: string; sortOrder: number }[]
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/categories/reorder", {
       orders,
@@ -196,14 +196,16 @@ class CategoriesService extends BaseService<
       limit?: number;
       /** Include Subcategories */
       includeSubcategories?: boolean;
-      [key: /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-string]: any;
-    },
+      [
+        key: /**
+         * Performs params operation
+         *
+         * @returns {any} The params result
+         *
+         */
+        string
+      ]: any;
+    }
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     const params = new URLSearchParams();
     if (filters) {
@@ -219,8 +221,9 @@ string]: any;
       ? `/categories/${slug}/products?${qs}`
       : `/categories/${slug}/products`;
 
-    const res =
-      await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
+    const res = await apiService.get<PaginatedResponseBE<ProductListItemBE>>(
+      endpoint
+    );
     return {
       /** Data */
       data: res.data.map(toFEProductCard),
@@ -234,7 +237,7 @@ string]: any;
   // Get immediate subcategories of a category
   async getSubcategories(slug: string): Promise<CategoryFE[]> {
     const res = await apiService.get<{ data: CategoryBE[] }>(
-      `/categories/${slug}/subcategories`,
+      `/categories/${slug}/subcategories`
     );
     return toFECategories(res.data || []);
   }
@@ -244,7 +247,7 @@ string]: any;
     /** Slug */
     slug: string,
     /** Limit */
-    limit?: number,
+    limit?: number
   ): Promise<CategoryFE[]> {
     const params = new URLSearchParams();
     if (limit) params.append("limit", String(limit));
@@ -261,7 +264,7 @@ string]: any;
   // Get full category hierarchy path (breadcrumb)
   async getCategoryHierarchy(slug: string): Promise<CategoryFE[]> {
     const res = await apiService.get<{ data: CategoryBE[] }>(
-      `/categories/${slug}/hierarchy`,
+      `/categories/${slug}/hierarchy`
     );
     return toFECategories(res.data || []);
   }
@@ -340,7 +343,7 @@ string]: any;
     /** Ids */
     ids: string[],
     /** Updates */
-    updates: Partial<CategoryFormFE>,
+    updates: Partial<CategoryFormFE>
   ): Promise<void> {
     await apiService.post("/categories/bulk", {
       /** Action */

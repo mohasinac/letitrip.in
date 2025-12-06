@@ -2,7 +2,7 @@
  * @fileoverview Blog Service - Extends BaseService
  * @module src/services/blog.service
  * @description Blog post management service with CRUD operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,15 +10,14 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
 import { PAGINATION } from "@/constants/limits";
 import { BLOG_STATUS, type BlogStatus } from "@/constants/statuses";
-import { PaginatedResponseBE } from "@/types/shared/common.types";
 import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 /**
  * BlogPost interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for BlogPost
  */
@@ -66,7 +65,7 @@ export interface BlogPost {
 
 /**
  * BlogFilters interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for BlogFilters
  */
@@ -97,7 +96,7 @@ interface BlogFilters {
 
 /**
  * CreateBlogPostData interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for CreateBlogPostData
  */
@@ -126,7 +125,7 @@ interface CreateBlogPostData {
 
 /**
  * UpdateBlogPostData interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for UpdateBlogPostData
  */
