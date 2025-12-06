@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Users Service - Extends BaseService
  * @module src/services/users.service
- * @description This file contains service functions for users operations
+ * @description User management service with CRUD and admin operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { USER_ROUTES } from "@/constants/api-routes";
 import { UserBE, UserFiltersBE } from "@/types/backend/user.types";
@@ -29,67 +32,24 @@ import type {
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
 
-/**
- * UsersService class
- * 
- * @class
- * @description Description of UsersService class functionality
- */
-class UsersService {
-  // List users (admin only)
-  async list(
-    /** Filters */
-    filters?: Partial<UserFiltersBE>,
-  ): Promise<PaginatedResponseFE<UserFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+class UsersService extends BaseService<
+  UserBE,
+  UserFE,
+  UserProfileFormFE,
+  UserFiltersBE
+> {
+  protected endpoint = USER_ROUTES.LIST;
+  protected entityName = "User";
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `${USER_ROUTES.LIST}?${queryString}`
-      : USER_ROUTES.LIST;
-
-    const response =
-      await apiService.get<PaginatedResponseBE<UserBE>>(endpoint);
-
-    return {
-      /** Data */
-      data: toFEUsers(response.data),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: UserProfileFormFE): Partial<UserBE> {
+    return toBEUpdateUserRequest(form) as Partial<UserBE>;
   }
 
-  // Get user by ID (self/admin)
-  async getById(id: string): Promise<UserFE> {
-    const response: any = await apiService.get(USER_ROUTES.BY_ID(id));
-    return toFEUser(response.data);
+  protected toFE(be: UserBE): UserFE {
+    return toFEUser(be);
   }
 
-  // Update user (self/admin)
-  async update(id: string, formData: UserProfileFormFE): Promise<UserFE> {
-    const request = toBEUpdateUserRequest(formData);
-    const response: any = await apiService.patch(USER_ROUTES.BY_ID(id), {
-      /** Updates */
-      updates: request,
-    });
-    return toFEUser(response.data);
-  }
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
 
   // Ban user (admin only)
   async ban(

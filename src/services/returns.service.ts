@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Returns Service - Extends BaseService
  * @module src/services/returns.service
- * @description This file contains service functions for returns operations
+ * @description Return management service with CRUD and approval operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import type { ReturnBE, ReturnFiltersBE } from "@/types/backend/return.types";
 import type { ReturnFE, ReturnFormFE } from "@/types/frontend/return.types";
@@ -77,67 +80,27 @@ interface ResolveDisputeData {
   notes: string;
 }
 
-/**
- * ReturnsService class
- * 
- * @class
- * @description Description of ReturnsService class functionality
- */
-class ReturnsService {
-  // List returns (role-filtered)
-  async list(
-    /** Filters */
-    filters?: Partial<ReturnFiltersBE>,
-  ): Promise<PaginatedResponseFE<ReturnFE>> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
+class ReturnsService extends BaseService<
+  ReturnBE,
+  ReturnFE,
+  ReturnFormFE,
+  ReturnFiltersBE
+> {
+  protected endpoint = "/returns";
+  protected entityName = "Return";
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString ? `/returns?${queryString}` : "/returns";
-
-    const response =
-      await apiService.get<PaginatedResponseBE<ReturnBE>>(endpoint);
-
-    return {
-      /** Data */
-      data: response.data.map(returnBEtoFE),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: ReturnFormFE): Partial<ReturnBE> {
+    return returnFormFEtoRequestBE(form) as Partial<ReturnBE>;
   }
 
-  // Get return by ID
-  async getById(id: string): Promise<ReturnFE> {
-    const response: any = await apiService.get(`/returns/${id}`);
-    return returnBEtoFE(response.data);
+  protected toFE(be: ReturnBE): ReturnFE {
+    return returnBEtoFE(be);
   }
 
-  // Initiate return (customer)
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   async initiate(data: ReturnFormFE): Promise<ReturnFE> {
-    const request = returnFormFEtoRequestBE(data);
-    const response: any = await apiService.post("/returns", request);
-    return returnBEtoFE(response.data);
-  }
-
-  // Update return (seller/admin)
-  async update(id: string, data: UpdateReturnData): Promise<ReturnFE> {
-    const response: any = await apiService.patch(`/returns/${id}`, data);
-    return returnBEtoFE(response.data);
+    return this.create(data);
   }
 
   // Approve/reject return (seller/admin)
