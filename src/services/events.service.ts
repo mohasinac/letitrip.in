@@ -8,6 +8,7 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 
 /**
@@ -91,45 +92,27 @@ export interface EventVote {
   votedAt: string;
 }
 
+interface EventFilters {
+  type?: string;
+  upcoming?: boolean;
+  status?: string;
+}
+
 /**
  * EventsService class
  * 
  * @class
  * @description Description of EventsService class functionality
  */
-class EventsService {
-  /**
-   * List events with optional filters
-   */
-  async list(params?: {
-    /** Type */
-    type?: string;
-    /** Upcoming */
-    upcoming?: boolean;
-    /** Status */
-    status?: string;
-  }): Promise<{ success: boolean; events: Event[] }> {
-    const queryParams = new URLSearchParams();
-    if (params?.type && params.type !== "all") {
-      queryParams.append("type", params.type);
-    }
-    if (params?.upcoming) {
-      queryParams.append("upcoming", "true");
-    }
-    if (params?.status) {
-      queryParams.append("status", params.status);
-    }
-
-    return apiService.get(`/api/events?${queryParams.toString()}`);
+class EventsService extends BaseService<Event, Event, Partial<Event>, EventFilters> {
+  constructor() {
+    super({
+      baseRoute: "/api/events",
+      toBE: (data) => data,
+      toFE: (data) => data,
+      toFEList: (data) => data,
+    });
   }
-
-  /**
-   * Get event by ID
-   */
-  async getById(eventId: string): Promise<{ success: boolean; event: Event }> {
-    return apiService.get(`/api/events/${eventId}`);
-  }
-
   /**
    * Register for an event
    */
@@ -164,41 +147,6 @@ class EventsService {
     return apiService.get(`/api/events/${eventId}/vote`);
   }
 
-  /**
-   * Admin: Create event
-   */
-  async create(eventData: Partial<Event>): Promise<{ success: boolean }> {
-    return apiService.post("/api/admin/events", eventData);
-  }
-
-  /**
-   * Admin: Update event
-   */
-  async update(
-    /** Event Id */
-    eventId: string,
-    /** Event Data */
-    eventData: Partial<Event>
-  ): Promise<{ success: boolean }> {
-    return apiService.put(`/api/admin/events/${eventId}`, eventData);
-  }
-
-  /**
-   * Admin: Delete event
-   */
-  async delete(eventId: string): Promise<{ success: boolean }> {
-    return apiService.delete(`/api/admin/events/${eventId}`);
-  }
-
-  /**
-   * Admin: Get event by ID
-   */
-  async getByIdAdmin(
-    /** Event Id */
-    eventId: string
-  ): Promise<{ success: boolean; event: Event }> {
-    return apiService.get(`/api/admin/events/${eventId}`);
-  }
 }
 
 export const eventsService = new EventsService();
