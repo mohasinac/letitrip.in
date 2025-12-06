@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Products Service - Extends BaseService
  * @module src/services/products.service
- * @description This file contains service functions for products operations
+ * @description Product management service with CRUD operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
@@ -28,67 +31,57 @@ import {
 import type { PaginatedResponse } from "@/types/shared/pagination.types";
 import type { BulkActionResponse } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
-import { getUserFriendlyError } from "@/components/common/ErrorMessage";
 
 /**
- * Products Service - Reference Implementation
- *
- * This service uses the new type system with automatic FE/BE transformation.
- * All methods return FE types for components, and accept FE types for forms.
+ * Products Service
+ * Extends BaseService for common CRUD operations
+ * Adds product-specific methods (reviews, variants, stock management, etc.)
  */
-class ProductsService {
-  /**
-   * Handle service errors and convert to user-friendly messages
-   */
-  private handleError(error: any, context: string): never {
-    logServiceError("ProductsService", context, error);
-    throw error;
+class ProductsService extends BaseService<
+  ProductBE,
+  ProductFE,
+  ProductFormFE,
+  ProductFiltersFE
+> {
+  protected endpoint = PRODUCT_ROUTES.LIST;
+  protected entityName = "Product";
+
+  protected toBE(form: ProductFormFE): Partial<ProductBE> {
+    return toBEProductCreate(form) as Partial<ProductBE>;
   }
 
+  protected toFE(be: ProductBE): ProductFE {
+    return toFEProduct(be);
+  }
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   /**
-   * List products with filters (returns UI-optimized types)
+   * Override list to transform to ProductCardFE instead of ProductFE
    */
   async list(
-    /** Filters */
     filters?: ProductFiltersFE,
   ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     try {
-      // Convert FE filters to BE filters - simplified mapping
       const beFilters: any = {
-        /** Shop Id */
         shopId: filters?.shopId,
-        /** Category Id */
         categoryId: filters?.categoryId,
-        /** Search */
         search: filters?.search,
-        /** Price Min */
         priceMin: filters?.priceRange?.min,
-        /** Price Max */
         priceMax: filters?.priceRange?.max,
-        /** Status */
         status: filters?.status?.[0],
-        /** In Stock */
         inStock: filters?.inStock,
-        /** Featured */
         featured: filters?.featured,
-        /** Page */
         page: filters?.page || 1,
-        /** Limit */
         limit: filters?.limit || 20,
-        /** Sort By */
         sortBy: filters?.sortBy,
       };
 
       const endpoint = buildUrl(PRODUCT_ROUTES.LIST, beFilters);
       const response: any = await apiService.get(endpoint);
 
-      // Transform BE list items to FE cards
       return {
-        /** Data */
         data: toFEProductCards(response.data || []),
-        /** Count */
         count: response.count || 0,
-        /** Pagination */
         pagination: response.pagination,
       };
     } catch (error) {
@@ -97,19 +90,7 @@ class ProductsService {
   }
 
   /**
-   * Get product by ID (returns full UI-optimized product)
-   */
-  async getById(id: string): Promise<ProductFE> {
-    try {
-      const response: any = await apiService.get(PRODUCT_ROUTES.BY_ID(id));
-      return toFEProduct(response.data);
-    } catch (error) {
-      this.handleError(error, `getById(${id})`);
-    }
-  }
-
-  /**
-   * Get product by slug (returns full UI-optimized product)
+   * Get product by slug (products use slug instead of ID)
    */
   async getBySlug(slug: string): Promise<ProductFE> {
     try {
@@ -117,56 +98,6 @@ class ProductsService {
       return toFEProduct(response.data);
     } catch (error) {
       this.handleError(error, `getBySlug(${slug})`);
-    }
-  }
-
-  /**
-   * Create product (accepts form data, returns created product)
-   */
-  async create(formData: ProductFormFE): Promise<ProductFE> {
-    try {
-      const createRequest = toBEProductCreate(formData);
-      const response: any = await apiService.post(
-        PRODUCT_ROUTES.LIST,
-        createRequest,
-      );
-      return toFEProduct(response.data);
-    } catch (error) {
-      this.handleError(error, "create");
-    }
-  }
-
-  /**
-   * Update product (accepts partial form data)
-   */
-  async update(
-    /** Slug */
-    slug: string,
-    /** Form Data */
-    formData: Partial<ProductFormFE>,
-  ): Promise<ProductFE> {
-    try {
-      const updateRequest = toBEProductUpdate(formData);
-      const response: any = await apiService.patch(
-        PRODUCT_ROUTES.BY_SLUG(slug),
-        updateRequest,
-      );
-      return toFEProduct(response.data);
-    } catch (error) {
-      this.handleError(error, `update(${slug})`);
-    }
-  }
-
-  /**
-   * Delete product
-   */
-  async delete(slug: string): Promise<{ message: string }> {
-    try {
-      return apiService.delete<{ message: string }>(
-        PRODUCT_ROUTES.BY_SLUG(slug),
-      );
-    } catch (error) {
-      this.handleError(error, `delete(${slug})`);
     }
   }
 
