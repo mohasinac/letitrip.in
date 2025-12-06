@@ -25,6 +25,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { shortId } from "@/lib/id-helpers";
 import {
   Package,
   ArrowLeft,
@@ -383,7 +384,7 @@ const loadReturns = useCallback(async () => {
                       {statusConfig.label}
                     </span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Return #{returnItem.id.slice(0, 8).toUpperCase()}
+                      Return #{shortId(returnItem.id).toUpperCase()}
                     </span>
                   </div>
                   <span className="text-sm text-gray-500 dark:text-gray-400">

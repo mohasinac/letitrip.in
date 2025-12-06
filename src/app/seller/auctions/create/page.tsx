@@ -23,6 +23,7 @@ import { ArrowLeft, ArrowRight, Info } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { toastCrud, toastErr } from "@/lib/toast-helper";
 import { toast } from "sonner";
 
 // Step definitions - Simplified 2-step wizard
@@ -337,7 +338,8 @@ tails - no required fields
       const stepErrors = validateStep(index);
       if (stepErrors.length > 0) {
         newErrorSteps.push(index);
-        allErrors[step.name] = stepErrors;/**
+        allErrors[step.name] = stepErrors;
+/**
  * Performs error summary operation
  *
  * @param {any} allErrors - The allerrors
@@ -571,12 +573,12 @@ tails - no required fields
       };
 
       await auctionsService.create(auctionData);
-      toast.success("Auction created successfully!");
+      toastCrud.created("Auction");
       router.push("/seller/auctions?created=true");
     } catch (err: any) {
       logError(err as Error, { component: "AuctionCreate.createAuction" });
       setError(err.message || "Failed to create auction");
-      toast.error("Failed to create auction");
+      toastErr.createFailed("Auction");
     } finally {
       setIsSubmitting(false);
     }

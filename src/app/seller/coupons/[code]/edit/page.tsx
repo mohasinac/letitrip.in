@@ -23,7 +23,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toastCrud, toastErr } from "@/lib/toast-helper";
 
 export default /**
  * Performs edit coupon page operation
@@ -105,7 +105,7 @@ const loadCoupon = useCallback(async () => {
     try {
       setIsSubmitting(true);
       await couponsService.update(code, data);
-      toast.success("Coupon updated successfully!");
+      toastCrud.updated("Coupon");
       execute(loadCoupon); // Reload to show updated data
     } catch (error: any) {
       logError(error as Error, {

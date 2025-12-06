@@ -65,7 +65,7 @@ export async function batchFetchDocuments<T = any>(
   const batchSize = 10; // Firestore 'in' query limit
 
   // Remove duplicates
-  const uniqueIds = [...new Set(ids)];
+  const uniqueIds = unique(ids);
 
   // Fetch in batches
   for (let i = 0; i < uniqueIds.length; i += batchSize) {

@@ -13,6 +13,7 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { shortId } from "@/lib/id-helpers";
 import {
   Package,
   MapPin,
@@ -309,7 +310,7 @@ te stats
                         >
                           Order #
                           {order.orderNumber ||
-                            order.id.slice(0, 8).toUpperCase()}
+                            shortId(order.id).toUpperCase()}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           <DateDisplay date={order.createdAt} format="medium" />

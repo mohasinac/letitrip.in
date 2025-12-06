@@ -13,7 +13,7 @@
 import { useState } from "react";
 import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toastAction, toastErr } from "@/lib/toast-helper";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
@@ -240,7 +240,7 @@ export function ShopProducts({
   const handleAddToCart = async (productId: string) => {
     try {
       if (!onAddToCart) {
-        toast.error("Add to cart not configured");
+        toastErr.notConfigured("Add to cart");
         return;
       }
 
@@ -254,7 +254,7 @@ export function ShopProducts({
  */
 const product = products.find((p) => p.id === productId);
       if (!product) {
-        toast.error("Product not found");
+        toastErr.notFound("Product");
         return;
       }
 
@@ -268,9 +268,9 @@ const product = products.find((p) => p.id === productId);
         shopId,
         shopName,
       });
-      toast.success("Added to cart!");
+      toastAction.addedToCart();
     } catch (error: any) {
-      toast.error(error.message || "Failed to add to cart");
+      toastErr.custom(error.message || "Failed to add to cart");
     }
   };
 

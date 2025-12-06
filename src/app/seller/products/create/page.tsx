@@ -22,7 +22,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
+import { toastCrud, toastErr } from "@/lib/toast-helper";
 
 /**
  * STEPS constant
@@ -64,7 +64,7 @@ function CreateProductPage() {
     /** On Load Error */
     onLoadError: (err) => {
       logError(err, { component: "CreateProductPage.handleSubmit" });
-      toast.error("Failed to create product");
+      toastErr.createFailed("Product");
     },
   });
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -393,7 +393,7 @@ ors[step.name] = stepErrors;
         returnWindowDays: 7,
       } as any);
 
-      toast.success("Product created successfully!");
+      toastCrud.created("Product");
 
       // Redirect to edit page with the slug
       if (result.slug) {

@@ -2,7 +2,7 @@
  * @fileoverview Async Handler Utilities
  * @module src/lib/async-helpers
  * @description Wrapper functions for async operations with error handling
- * 
+ *
  * @created 2025-12-06
  * @pattern Helper Utility
  */
@@ -18,7 +18,7 @@ export type AsyncResult<T> =
 
 /**
  * Wrap async function with try-catch and return result object
- * @example 
+ * @example
  * const result = await asyncHandler(() => fetchData());
  * if (result.success) console.log(result.data);
  * else console.error(result.error);
@@ -62,15 +62,15 @@ export async function withErrorHandling<T>(
     return data;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    
+
     if (options.context) {
       logError(err, { context: options.context });
     }
-    
+
     if (options.onError) {
       options.onError(err);
     }
-    
+
     return options.fallback;
   }
 }
@@ -92,12 +92,7 @@ export async function retryAsync<T>(
     onRetry?: (attempt: number, error: Error) => void;
   } = {}
 ): Promise<T> {
-  const {
-    maxRetries = 3,
-    delay = 1000,
-    backoff = 2,
-    onRetry,
-  } = options;
+  const { maxRetries = 3, delay = 1000, backoff = 2, onRetry } = options;
 
   let lastError: Error;
 
@@ -106,10 +101,10 @@ export async function retryAsync<T>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       if (attempt < maxRetries) {
         if (onRetry) onRetry(attempt + 1, lastError);
-        
+
         const waitTime = delay * Math.pow(backoff, attempt);
         await new Promise((resolve) => setTimeout(resolve, waitTime));
       }
@@ -161,7 +156,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
       latestReject = reject;
 
       clearTimeout(timeoutId);
-      
+
       timeoutId = setTimeout(async () => {
         try {
           const result = await fn(...args);
@@ -237,7 +232,10 @@ export async function parallelLimit<T>(
 
     if (executing.length >= limit) {
       await Promise.race(executing);
-      executing.splice(executing.findIndex((p) => p === promise), 1);
+      executing.splice(
+        executing.findIndex((p) => p === promise),
+        1
+      );
     }
   }
 

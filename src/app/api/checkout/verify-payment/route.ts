@@ -13,6 +13,7 @@ import { Collections } from "../../lib/firebase/collections";
 import { getCurrentUser } from "../../lib/session";
 import { batchGetOrders, batchGetProducts } from "@/app/api/lib/batch-fetch";
 import { z } from "zod";
+import { unique } from "@/lib/array-helpers";
 import crypto from "crypto";
 
 const VerifyPaymentSchema = z.object({
@@ -173,7 +174,7 @@ const productIds =
     }
 
     // Fetch and update product stock using batch fetch
-    const uniqueProductIds = [...new Set(allProductIds)];
+    const uniqueProductIds = unique(allProductIds);
     const productsMap = await batchGetProducts(uniqueProductIds);
 
     // Calculate total quantity per product across all orders
@@ -211,7 +212,7 @@ const productIds =
     });
 
     // Update coupon usage for all used coupons
-    const uniqueCoupons = [...new Set(allCoupons)];
+    const uniqueCoupons = unique(allCoupons);
     for (const couponCode of uniqueCoupons) {
       const couponSnapshot = await Collections.coupons()
         .where("code", "==", couponCode)

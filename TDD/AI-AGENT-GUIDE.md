@@ -371,21 +371,21 @@ import { helper } from "./utils";
 
 ```typescript
 // ❌ OLD WAY (inconsistent messaging)
-toast.success('Product created successfully');
-toast.error('Failed to create product');
+toast.success("Product created successfully");
+toast.error("Failed to create product");
 
 // ✅ NEW WAY (standardized messages)
-toastCrud.created('Product');
-toastCrud.updated('Product');
-toastCrud.deleted('Product');
+toastCrud.created("Product");
+toastCrud.updated("Product");
+toastCrud.deleted("Product");
 
 // Action toasts
 toastAction.addedToCart();
 toastAction.addedToWishlist();
-toastAction.copied('Order ID');
+toastAction.copied("Order ID");
 
 // Error toasts
-toastErr.notFound('Product');
+toastErr.notFound("Product");
 toastErr.networkError();
 toastErr.unauthorized();
 ```
@@ -403,13 +403,13 @@ const orderId = formatOrderId(id); // #ORD-{id}
 const ticketId = formatTicketId(id); // #TKT-{id}
 
 // Text manipulation
-truncate('Long text...', 50); // Truncate to 50 chars
-truncateWords('Many words here', 10); // Truncate to 10 words
-pluralize(count, 'item'); // "1 item" or "2 items"
+truncate("Long text...", 50); // Truncate to 50 chars
+truncateWords("Many words here", 10); // Truncate to 10 words
+pluralize(count, "item"); // "1 item" or "2 items"
 
 // Privacy
-maskEmail('user@example.com'); // u***@example.com
-maskPhone('+1234567890'); // +123***7890
+maskEmail("user@example.com"); // u***@example.com
+maskPhone("+1234567890"); // +123***7890
 ```
 
 ### Array Helpers (`src/lib/array-helpers.ts`)
@@ -426,9 +426,9 @@ const grouped = arr.reduce((acc, item) => {
 
 // ✅ NEW WAY
 unique(arr); // Remove duplicates
-uniqueBy(arr, 'id'); // Unique by property
-groupBy(arr, 'category'); // Group by property
-sortBy(arr, 'createdAt', 'desc'); // Sort by property
+uniqueBy(arr, "id"); // Unique by property
+groupBy(arr, "category"); // Group by property
+sortBy(arr, "createdAt", "desc"); // Sort by property
 chunk(arr, 10); // Split into chunks of 10
 shuffle(arr); // Random order
 intersection(arr1, arr2); // Common elements
@@ -444,7 +444,7 @@ try {
   return data;
 } catch (error) {
   console.error(error);
-  toast.error('Failed to fetch data');
+  toast.error("Failed to fetch data");
   return null;
 }
 
@@ -453,15 +453,12 @@ const { data, error } = await asyncHandler(fetchData());
 if (error) return; // Error logged automatically
 
 // ✅ NEW WAY - withErrorHandling (auto toast)
-const data = await withErrorHandling(
-  fetchData(),
-  'Failed to fetch data'
-);
+const data = await withErrorHandling(fetchData(), "Failed to fetch data");
 
 // Retry with exponential backoff
-const data = await retryAsync(fetchData, { 
-  maxRetries: 3, 
-  delay: 1000 
+const data = await retryAsync(fetchData, {
+  maxRetries: 3,
+  delay: 1000,
 });
 
 // Timeout protection
@@ -480,25 +477,25 @@ const filter = `name@=*${search}*,category==${categoryId}`;
 
 // ✅ NEW WAY (type-safe)
 const filter = buildFilter([
-  buildSearchFilter('name', search),
-  { field: 'category', operator: '==', value: categoryId }
+  buildSearchFilter("name", search),
+  { field: "category", operator: "==", value: categoryId },
 ]);
 
 // Date ranges
-buildDateRangeFilter('createdAt', startDate, endDate);
+buildDateRangeFilter("createdAt", startDate, endDate);
 
 // Numeric ranges
-buildNumericRangeFilter('price', minPrice, maxPrice);
+buildNumericRangeFilter("price", minPrice, maxPrice);
 
 // Complete query params
 const params = buildSieveParams({
   filters: [
-    buildSearchFilter('name', search),
-    { field: 'isActive', operator: '==', value: true }
+    buildSearchFilter("name", search),
+    { field: "isActive", operator: "==", value: true },
   ],
-  sorts: [{ field: 'createdAt', direction: 'desc' }],
+  sorts: [{ field: "createdAt", direction: "desc" }],
   page: 1,
-  pageSize: 20
+  pageSize: 20,
 });
 ```
 
@@ -506,9 +503,9 @@ const params = buildSieveParams({
 
 ```typescript
 // Standard button with icon
-<CopyButton 
-  text="Copy this text" 
-  size="md" 
+<CopyButton
+  text="Copy this text"
+  size="md"
   variant="default"
 />
 

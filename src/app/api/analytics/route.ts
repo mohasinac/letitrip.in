@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../lib/session";
 import { Collections } from "../lib/firebase/collections";
 import { safeToISOString } from "@/lib/date-utils";
+import { unique } from "@/lib/array-helpers";
 
 /**
  * GET /api/analytics
@@ -205,7 +206,7 @@ ancelled",
         analytics.averageOrderValue = analytics.revenue.average;
 
         // Get unique customers
-        const customerIds = [...new Set(orders.map((o: any) => o.customer_id))];
+        const customerIds = unique(orders.map((o: any) => o.customer_id));
         analytics.customers.total = customerIds.length;
 
         // Sales over time (group by day)
@@ -271,7 +272,7 @@ ancelled",
           : 0;
       analytics.averageOrderValue = analytics.revenue.average;
 
-      const customerIds = [...new Set(orders.map((o: any) => o.customer_id))];
+      const customerIds = unique(orders.map((o: any) => o.customer_id));
       analytics.customers.total = customerIds.length;
 
       // Sales over time

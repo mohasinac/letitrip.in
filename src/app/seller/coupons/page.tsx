@@ -138,7 +138,7 @@ const loadCoupons = useCallback(async () => {
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast.success("Coupon code copied to clipboard");
+    toastAction.copied("Coupon code");
   };
 
   /**
@@ -167,7 +167,7 @@ const loadCoupons = useCallback(async () => {
     try {
       await couponsService.delete(code);
       setCoupons(coupons.filter((c) => c.code !== code));
-      toast.success("Coupon deleted successfully");
+      toastCrud.deleted("Coupon");
     } catch (err) {
       logError(err as Error, {
         /** Component */
@@ -183,7 +183,7 @@ const loadCoupons = useCallback(async () => {
  */
 etadata: { code },
       });
-      toast.error("Failed to delete coupon");
+      toastErr.deleteFailed("Coupon");
     }
   };
 

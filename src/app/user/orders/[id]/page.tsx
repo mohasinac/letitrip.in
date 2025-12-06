@@ -31,6 +31,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { shortId } from "@/lib/id-helpers";
 
 /**
  * OrderPageProps interface
@@ -216,7 +217,7 @@ const loadOrder = useCallback(async () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Order #{order.id.slice(0, 8)}
+                Order #{shortId(order.id)}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Placed on{" "}

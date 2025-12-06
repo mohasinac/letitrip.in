@@ -2,7 +2,7 @@
  * @fileoverview Sieve Query Builder Helper
  * @module src/lib/query-builder
  * @description Utilities for building Sieve filter queries
- * 
+ *
  * @created 2025-12-06
  * @pattern Helper Utility
  */
@@ -34,13 +34,15 @@ export const SIEVE_SORT = {
 
 /**
  * Build Sieve filter string
- * @example 
+ * @example
  * buildFilter({ IsActive: true, Status: "published" })
  * => "IsActive==true,Status==published"
  */
 export function buildFilter(filters: Record<string, any>): string {
   return Object.entries(filters)
-    .filter(([_, value]) => value !== undefined && value !== null && value !== "")
+    .filter(
+      ([_, value]) => value !== undefined && value !== null && value !== ""
+    )
     .map(([key, value]) => {
       if (typeof value === "string") {
         return `${key}==${value}`;
@@ -111,16 +113,16 @@ export function buildComplexFilter(options: {
   or?: string[];
 }): string {
   const parts: string[] = [];
-  
+
   if (options.and && options.and.length > 0) {
     parts.push(...options.and.filter(Boolean));
   }
-  
+
   if (options.or && options.or.length > 0) {
     const orPart = `(${options.or.filter(Boolean).join("|")})`;
     parts.push(orPart);
   }
-  
+
   return parts.join(",");
 }
 
@@ -130,9 +132,12 @@ export function buildComplexFilter(options: {
  * buildSearchFilter(["Name", "Description"], "laptop")
  * => "(Name@=*laptop|Description@=*laptop)"
  */
-export function buildSearchFilter(fields: string[], searchTerm: string): string {
+export function buildSearchFilter(
+  fields: string[],
+  searchTerm: string
+): string {
   if (!searchTerm || fields.length === 0) return "";
-  
+
   const conditions = fields.map((field) => `${field}@=*${searchTerm}`);
   return `(${conditions.join("|")})`;
 }
@@ -146,9 +151,7 @@ export function buildSearchFilter(fields: string[], searchTerm: string): string 
 export function buildSort(
   sorts: Array<{ field: string; desc?: boolean }>
 ): string {
-  return sorts
-    .map((sort) => `${sort.desc ? "-" : ""}${sort.field}`)
-    .join(",");
+  return sorts.map((sort) => `${sort.desc ? "-" : ""}${sort.field}`).join(",");
 }
 
 /**
@@ -162,9 +165,13 @@ export function buildDateRangeFilter(
   startDate: Date | string,
   endDate: Date | string
 ): string {
-  const start = startDate instanceof Date ? startDate.toISOString().split("T")[0] : startDate;
-  const end = endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate;
-  
+  const start =
+    startDate instanceof Date
+      ? startDate.toISOString().split("T")[0]
+      : startDate;
+  const end =
+    endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate;
+
   return `${field}>=${start},${field}<=${end}`;
 }
 
@@ -180,10 +187,10 @@ export function buildNumericRangeFilter(
   max: number
 ): string {
   const conditions: string[] = [];
-  
+
   if (min !== undefined) conditions.push(`${field}>=${min}`);
   if (max !== undefined) conditions.push(`${field}<=${max}`);
-  
+
   return conditions.join(",");
 }
 
@@ -244,23 +251,23 @@ export function buildSieveParams(options: {
   pageSize?: number;
 } {
   const params: any = {};
-  
+
   if (options.filters) {
     const filterString = buildFilter(options.filters);
     if (filterString) params.filters = filterString;
   }
-  
+
   if (options.sorts && options.sorts.length > 0) {
     params.sorts = buildSort(options.sorts);
   }
-  
+
   if (options.page !== undefined) {
     params.page = options.page;
   }
-  
+
   if (options.pageSize !== undefined) {
     params.pageSize = options.pageSize;
   }
-  
+
   return params;
 }

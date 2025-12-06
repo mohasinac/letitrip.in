@@ -2,17 +2,17 @@
  * @fileoverview Copy to Clipboard Component
  * @module src/components/common/CopyButton
  * @description Button component for copying text to clipboard with feedback
- * 
+ *
  * @created 2025-12-06
  * @pattern Reusable Component
  */
 
 "use client";
 
-import { useState } from "react";
-import { Check, Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { toastAction } from "@/lib/toast-helper";
+import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 interface CopyButtonProps {
   /** Text to copy */
@@ -52,7 +52,7 @@ export function CopyButton({
       setCopied(true);
       toastAction.copied();
       if (onCopy) onCopy();
-      
+
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error("Failed to copy:", error);
@@ -67,8 +67,10 @@ export function CopyButton({
 
   const variantClasses = {
     default: "bg-purple-600 hover:bg-purple-700 text-white",
-    ghost: "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
-    outline: "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
+    ghost:
+      "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
+    outline:
+      "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
   };
 
   return (
@@ -85,14 +87,8 @@ export function CopyButton({
       disabled={copied}
       aria-label={copied ? "Copied!" : label}
     >
-      {copied ? (
-        <Check className="w-4 h-4" />
-      ) : (
-        <Copy className="w-4 h-4" />
-      )}
-      {showLabel && (
-        <span>{copied ? "Copied!" : label}</span>
-      )}
+      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+      {showLabel && <span>{copied ? "Copied!" : label}</span>}
     </button>
   );
 }
@@ -100,7 +96,13 @@ export function CopyButton({
 /**
  * Inline copy button (small, no label, for use in text)
  */
-export function InlineCopyButton({ text, className }: { text: string; className?: string }) {
+export function InlineCopyButton({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
   return (
     <CopyButton
       text={text}

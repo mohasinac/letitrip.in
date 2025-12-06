@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { shortId } from "@/lib/id-helpers";
 
 export default /**
  * Performs seller support tickets page operation
@@ -459,7 +460,7 @@ const loadData = useCallback(async () => {
                             {ticket.subject}
                           </h3>
                           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                            <span>#{ticket.id.slice(0, 8)}</span>
+                            <span>#{shortId(ticket.id)}</span>
                             <span>•</span>
                             <span className="capitalize">
                               {ticket.category}
@@ -467,7 +468,7 @@ const loadData = useCallback(async () => {
                             {ticket.orderId && (
                               <>
                                 <span>•</span>
-                                <span>Order #{ticket.orderId.slice(0, 8)}</span>
+                                <span>Order #{shortId(ticket.orderId)}</span>
                               </>
                             )}
                           </div>

@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { shortId } from "@/lib/id-helpers";
 
 const statusColors = {
   /** Open */
@@ -232,7 +233,7 @@ const fetchTicket = useCallback(async () => {
               </div>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              <p>Ticket #{ticketId.slice(0, 8)}</p>
+              <p>Ticket #{shortId(ticketId)}</p>
               <p>
                 Created{" "}
                 <DateDisplay
