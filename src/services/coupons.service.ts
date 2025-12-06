@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Coupons Service - Extends BaseService
  * @module src/services/coupons.service
- * @description This file contains service functions for coupons operations
+ * @description Coupon management service with CRUD and validation operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { COUPON_ROUTES, buildUrl } from "@/constants/api-routes";
 import type { CouponBE, CouponFiltersBE } from "@/types/backend/coupon.types";
@@ -71,69 +74,30 @@ interface ValidateCouponResponse {
   message?: string;
 }
 
-/**
- * CouponsService class
- * 
- * @class
- * @description Description of CouponsService class functionality
- */
-class CouponsService {
-  // List coupons (public active/owner all)
-  async list(
-    /** Filters */
-    filters?: Partial<CouponFiltersBE>,
-  ): Promise<PaginatedResponseFE<CouponFE>> {
-    const endpoint = buildUrl(COUPON_ROUTES.LIST, filters);
-    const response =
-      await apiService.get<PaginatedResponseBE<CouponBE>>(endpoint);
+class CouponsService extends BaseService<
+  CouponBE,
+  CouponFE,
+  CouponFormFE,
+  CouponFiltersBE
+> {
+  protected endpoint = COUPON_ROUTES.LIST;
+  protected entityName = "Coupon";
 
-    return {
-      /** Data */
-      data: toFECoupons(response.data),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  protected toBE(form: CouponFormFE): Partial<CouponBE> {
+    return toBECreateCouponRequest(form) as Partial<CouponBE>;
   }
 
-  // Get coupon by ID (or code)
-  async getById(id: string): Promise<CouponFE> {
-    const couponBE = await apiService.get<CouponBE>(COUPON_ROUTES.BY_CODE(id));
-    return toFECoupon(couponBE);
+  protected toFE(be: CouponBE): CouponFE {
+    return toFECoupon(be);
   }
 
-  // Get coupon by code
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   async getByCode(code: string): Promise<CouponFE> {
     const couponBE = await apiService.get<CouponBE>(
       COUPON_ROUTES.BY_CODE(code),
     );
     return toFECoupon(couponBE);
-  }
-
-  // Create coupon (seller/admin)
-  async create(data: CouponFormFE): Promise<CouponFE> {
-    const request = toBECreateCouponRequest(data);
-    const couponBE = await apiService.post<CouponBE>(
-      COUPON_ROUTES.LIST,
-      request,
-    );
-    return toFECoupon(couponBE);
-  }
-
-  // Update coupon (owner/admin)
-  async update(code: string, data: Partial<CouponFormFE>): Promise<CouponFE> {
-    const request = toBEUpdateCouponRequest(data);
-    const couponBE = await apiService.patch<CouponBE>(
-      COUPON_ROUTES.BY_CODE(code),
-      request,
-    );
-    return toFECoupon(couponBE);
-  }
-
-  // Delete coupon (owner/admin)
-  async delete(code: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(COUPON_ROUTES.BY_CODE(code));
   }
 
   // Validate coupon

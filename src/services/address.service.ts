@@ -1,13 +1,16 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Address Service - Extends BaseService
  * @module src/services/address.service
- * @description This file contains service functions for address operations
+ * @description Address management service with CRUD and lookup operations
  * 
+ * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
+ * @refactored 2026-01-08 - Migrated to BaseService pattern
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { logError } from "@/lib/firebase-error-logger";
 import { AddressBE } from "@/types/backend/address.types";
 import { AddressFE, AddressFormFE } from "@/types/frontend/address.types";
@@ -79,49 +82,30 @@ export interface PostalCodeDetails {
 // ADDRESS SERVICE
 // ============================================================================
 
-/**
- * AddressService class
- * 
- * @class
- * @description Description of AddressService class functionality
- */
-class AddressService {
+class AddressService extends BaseService<
+  AddressBE,
+  AddressFE,
+  AddressFormFE,
+  Record<string, any>
+> {
+  protected endpoint = "/user/addresses";
+  protected entityName = "Address";
+
+  protected toBE(form: AddressFormFE): Partial<AddressBE> {
+    return toBECreateAddressRequest(form) as Partial<AddressBE>;
+  }
+
+  protected toFE(be: AddressBE): AddressFE {
+    return toFEAddress(be);
+  }
+
+  // Note: list(), getById(), create(), update(), delete() inherited from BaseService
+
   async getAll(): Promise<AddressFE[]> {
     const response = await apiService.get<{ addresses: AddressBE[] }>(
       "/user/addresses"
     );
     return toFEAddresses(response.addresses);
-  }
-
-  async getById(id: string): Promise<AddressFE> {
-    const addressBE = await apiService.get<AddressBE>(`/user/addresses/${id}`);
-    return toFEAddress(addressBE);
-  }
-
-  async create(formData: AddressFormFE): Promise<AddressFE> {
-    const request = toBECreateAddressRequest(formData);
-    const addressBE = await apiService.post<AddressBE>(
-      "/user/addresses",
-      request
-    );
-    return toFEAddress(addressBE);
-  }
-
-  async update(
-    /** Id */
-    id: string,
-    /** Form Data */
-    formData: Partial<AddressFormFE>
-  ): Promise<AddressFE> {
-    const addressBE = await apiService.patch<AddressBE>(
-      `/user/addresses/${id}`,
-      formData
-    );
-    return toFEAddress(addressBE);
-  }
-
-  async delete(id: string): Promise<void> {
-    await apiService.delete(`/user/addresses/${id}`);
   }
 
   async setDefault(id: string): Promise<AddressFE> {
