@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/seller/CategorySelectorWithCreate
  * @description This file contains the CategorySelectorWithCreate component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,25 +10,20 @@
 
 "use client";
 
-import React from "react";
-import { FolderTree } from "lucide-react";
-import SelectorWithCreate from "@/components/common/SelectorWithCreate";
 import CategorySelector, {
   Category as CategoryType,
 } from "@/components/common/CategorySelector";
+import SelectorWithCreate from "@/components/common/SelectorWithCreate";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
 import { FormLabel } from "@/components/forms/FormLabel";
+import { FormTextarea } from "@/components/forms/FormTextarea";
 import { categoriesService } from "@/services/categories.service";
-import {
-  VALIDATION_RULES,
-  VALIDATION_MESSAGES,
-} from "@/constants/validation-messages";
+import { FolderTree } from "lucide-react";
 
 /**
  * CategorySelectorWithCreateProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for CategorySelectorWithCreateProps
  */
