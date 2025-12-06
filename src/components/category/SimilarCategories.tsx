@@ -1,348 +1,80 @@
 /**
- * @fileoverview React Component
+ * @fileoverview Similar Categories Section (Using FeaturedSection Pattern)
  * @module src/components/category/SimilarCategories
- * @description This file contains the SimilarCategories component and its related functionality
+ * @description Displays similar categories with image cards
  * 
- * @created 2025-12-05
- * @author mohasinac
- * @see {@link https://mohasin.chinnapattan.com}
+ * @refactored 2025-12-06 - Migrated to FeaturedSection pattern (~280 lines saved)
+ * @pattern FeaturedSection<CategoryFE>
  */
 
 "use client";
 
+import { Folder } from "lucide-react";
+import Link from "next/link";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import OptimizedImage from "@/components/common/OptimizedImage";
-import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
-import { ChevronLeft, ChevronRight, Folder, Grid3X3 } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
-/**
- * SimilarCategoriesProps interface
- * 
- * @interface
- * @description Defines the structure and contract for SimilarCategoriesProps
- */
 interface SimilarCategoriesProps {
-  /** Category Slug */
   categorySlug: string;
-  /** Category Name */
   categoryName?: string;
-  /** Limit */
   limit?: number;
 }
 
 /**
- * Function: Similar Categories
- */
-/**
- * Performs similar categories operation
- *
- * @param {SimilarCategoriesProps} [{
-  categorySlug,
-  categoryName] - Name of {
-  categoryslug,
-  category
- *
- * @returns {any} The similarcategories result
- *
- * @example
- * SimilarCategories({
-  categorySlug,
-  categoryName);
- */
-
-/**
- * Performs similar categories operation
- *
- * @param {SimilarCategoriesProps} [{
-  categorySlug,
-  categoryName] - Name of {
-  categoryslug,
-  category
- *
- * @returns {any} The similarcategories result
- *
- * @example
- * SimilarCategories({
-  categorySlug,
-  categoryName);
- */
-
-/**
- * Performs similar categories operation
- *
- * @param {SimilarCategoriesProps} [{
-  categorySlug,
-  categoryName = "this category",
-  limit = 10,
-}] - The {
-  categoryslug,
-  categoryname = "this category",
-  limit = 10,
-}
- *
- * @returns {any} The similarcategories result
- *
- * @example
- * SimilarCategories({
-  categorySlug,
-  categoryName = "this category",
-  limit = 10,
-});
+ * Displays similar categories
+ * Excludes current category
  */
 export function SimilarCategories({
   categorySlug,
   categoryName = "this category",
   limit = 10,
 }: SimilarCategoriesProps) {
-  const [categories, setCategories] = useState<CategoryFE[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  useEffect(() => {
-    loadSimilarCategories();
-  }, [categorySlug]);
-
-  /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  /**
-   * Performs async operation
-   *
-   * @returns {Promise<any>} Promise resolving to async  result
-   *
-   * @throws {Error} When operation fails or validation errors occur
-   */
-
-  const loadSimilarCategories = async () => {
-    try {
-      setLoading(true);
-      const response = await categoriesService.getSimilarCategories(
-        categorySlug,
-        limit,
-      );
-      setCategories(response || []);
-    } catch (error) {
-      logError(error as Error, {
-        /** Component */
-        component: "SimilarCategories.loadCategories",
-        /** Metadata */
-        metadata: { categorySlug, limit },
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Handles scroll event
-   *
-   * @param {"left" | "right"} direction - The direction
-   *
-   * @returns {any} The handlescroll result
-   */
-
-  /**
-   * Handles scroll event
-   *
-   * @param {"left" | "right"} direction - The direction
-   *
-   * @returns {any} The handlescroll result
-   */
-
-  const handleScroll = (direction: "left" | "right") => {
-    const container = document.getElementById("similar-categories-scroll");
-    if (!container) return;
-
-    const scrollAmount = container.offsetWidth * 0.8;
-    const newPosition =
-      direction === "left"
-        ? container.scrollLeft - scrollAmount
-        : container.scrollLeft + scrollAmount;
-
-    container.scrollTo({
-      /** Left */
-      left: newPosition,
-      /** Behavior */
-      behavior: "smooth",
-    });
-  };
-
-  /**
-   * Updates existing scroll buttons
-   *
-   * @returns {any} The updatescrollbuttons result
-   */
-
-  /**
-   * Updates existing scroll buttons
-   *
-   * @returns {any} The updatescrollbuttons result
-   */
-
-  const updateScrollButtons = () => {
-    /**
- * Performs container operation
- *
- * @param {any} "similar-categories-scroll" - The "similar-categories-scroll"
- *
- * @returns {any} The container result
- *
- */
-const container = document.getElementById("similar-categories-scroll");
-    if (!container) return;
-
-    setCanScrollLeft(container.scrollLeft > 0);
-    setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
-    );
-  };
-
-  useEffect(() => {
-    const container = document.getElementById("similar-categories-scroll");
-    if (!container) return;
-
-    updateScrollButtons();
-    container.addEventListener("scroll", updateScrollButtons);
-    globalThis.addEventListener("resize", updateScrollButtons);
-
-    return () => {
-      container.removeEventListener("scroll", updateScrollButtons);
-      globalThis.removeEventListener("resize", updateScrollButtons);
-    };
-  }, [categories]);
-
-  if (loading) {
-    return (
-      <div className="space-y-4 mt-8">
-        <div className="flex items-center gap-2">
-          <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            Similar Categories
-          </h3>
-        </div>
-        <div className="flex gap-4 overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-40 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!categories || categories.length === 0) {
-    return (
-      <div className="space-y-4 mt-8">
-        <div className="flex items-center gap-2">
-          <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            Similar Categories
-          </h3>
-        </div>
-        <div className="flex flex-col items-center justify-center py-12 px-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-          <Folder className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
-          <p className="text-gray-600 dark:text-gray-400 mb-4 text-center">
-            No similar categories available
-          </p>
-          <Link
-            href="/categories"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-          >
-            View All Categories
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4 mt-8">
-      <div className="flex items-center gap-2">
-        <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-          Similar Categories
-        </h3>
-      </div>
-
-      <div className="relative group">
-        {canScrollLeft && (
-          <button
-            onClick={() => handleScroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-          </button>
-        )}
-
-        <div
-          id="similar-categories-scroll"
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+    <FeaturedSection<CategoryFE>
+      title={`Similar to ${categoryName}`}
+      icon={Folder}
+      fetchData={async () => {
+        return await categoriesService.list({
+          filters: `Slug!=${categorySlug},IsActive==true`,
+          sorts: "-ItemCount",
+          page: 1,
+          pageSize: limit,
+        });
+      }}
+      renderItem={(category) => (
+        <Link
+          key={category.id}
+          href={`/categories/${category.slug}`}
+          className="group block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-400 transition-all hover:shadow-md p-4"
         >
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/categories/${category.slug}`}
-              className="flex-shrink-0 w-40 group/card"
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
-                  {category.image ? (
-                    <OptimizedImage
-                      src={category.image}
-                      alt={category.name}
-                      fill
-                      objectFit="cover"
-                      className="group-hover/card:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-full h-full">
-                      <Folder className="w-10 h-10 text-blue-400 dark:text-blue-500" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors">
-                    {category.name}
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {category.productCount || 0} products
-                  </p>
-                </div>
+          <div className="aspect-square relative mb-3 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
+            {category.image ? (
+              <OptimizedImage
+                src={category.image}
+                alt={category.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Folder className="w-12 h-12 text-gray-400 dark:text-gray-600" />
               </div>
-            </Link>
-          ))}
-        </div>
-
-        {canScrollRight && (
-          <button
-            onClick={() => handleScroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-          </button>
-        )}
-      </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          /** Display */
-          display: none;
-        }
-      `}</style>
-    </div>
+            )}
+          </div>
+          <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 truncate">
+            {category.name}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {category.itemCount || 0} items
+          </p>
+        </Link>
+      )}
+      emptyMessage="No similar categories found"
+      columns={{ default: 2, sm: 3, md: 4, lg: 5 }}
+    />
   );
 }
+
+export default SimilarCategories;
