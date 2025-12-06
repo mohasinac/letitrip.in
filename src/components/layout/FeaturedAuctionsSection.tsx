@@ -10,14 +10,12 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { Gavel } from "lucide-react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { logError } from "@/lib/firebase-error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
-import { AuctionStatus } from "@/types/shared/common.types";
 
 /**
  * FeaturedItem interface
@@ -53,21 +51,74 @@ interface Props {
   maxAuctions?: number;
 }
 
-export default /**
- * Performs featured auctions section operation
- *
- * @param {Props} [{ maxAuctions = 10 }] - The { maxauctions = 10 }
- *
- * @returns {any} The featuredauctionssection result
- *
- */
-function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
-  const [auctions, setAuctions] = useState<AuctionCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function FeaturedAuctionsSection({ maxAuctions = 10 }: Props) {
+  const fetchFeaturedAuctions = async (): Promise<AuctionCardFE[]> => {
+    // Try to get admin-curated featured items
+    try {
+      const response: any = await apiService.get("/homepage");
+      const featuredItems: FeaturedItem[] = response.data?.featuredItems?.auctions || [];
+      
+      if (featuredItems.length > 0) {
+        const activeItems = featuredItems
+          .filter((item) => item.active)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, maxAuctions);
+        
+        const auctionIds = activeItems.map((item) => item.itemId);
+        if (auctionIds.length > 0) {
+          const auctionsData = await auctionsService.list({ ids: auctionIds });
+          const sortedAuctions = auctionIds
+            .map((id) => auctionsData.find((a) => a.id === id))
+            .filter((a): a is AuctionCardFE => a !== undefined);
+          if (sortedAuctions.length > 0) {
+            return sortedAuctions;
+          }
+        }
+      }
+    } catch (error) {
+      // Fall back to live auctions
+    }
 
-  useEffect(() => {
-    fetchFeaturedAuctions();
-  }, [maxAuctions]);
+    // Fallback: Get live auctions
+    const liveAuctions = await auctionsService.list({ status: "active", limit: maxAuctions });
+    return liveAuctions;
+  };
+
+  return (
+    <FeaturedSection<AuctionCardFE>
+      title="🔥 Live Auctions"
+      icon={Gavel}
+      viewAllLink="/auctions?status=live"
+      viewAllText="View All Auctions"
+      fetchData={fetchFeaturedAuctions}
+      renderItem={(auction) => (
+        <AuctionCard
+          key={auction.id}
+          auction={{
+            id: auction.id,
+            name: auction.productName || auction.name || "",
+            slug: auction.productSlug || auction.slug || "",
+            images: auction.images || (auction.productImage ? [auction.productImage] : []),
+            currentBid: auction.currentPrice || auction.currentBid || auction.startingBid || 0,
+            startingBid: auction.startingBid || 0,
+            bidCount: auction.totalBids || auction.bidCount || 0,
+            endTime: auction.endTime,
+            featured: auction.featured,
+            status: auction.status || "active",
+            shop: auction.shopId
+              ? {
+                  id: auction.shopId,
+                  name: (auction as any).shopName || "Shop",
+                }
+              : undefined,
+          } as any}
+          showShopInfo={true}
+        />
+      )}
+      itemWidth="280px"
+    />
+  );
+}
 
   /**
    * Performs async operation

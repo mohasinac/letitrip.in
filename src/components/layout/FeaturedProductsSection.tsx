@@ -10,15 +10,12 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { ShoppingBag } from "lucide-react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { logError } from "@/lib/firebase-error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
 import { productsService } from "@/services/products.service";
-import { homepageSettingsService } from "@/services/homepage-settings.service";
 import { apiService } from "@/services/api.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import { ShoppingBag } from "lucide-react";
 
 /**
  * FeaturedItem interface
@@ -54,21 +51,69 @@ interface Props {
   maxProducts?: number;
 }
 
-export default /**
- * Performs featured products section operation
- *
- * @param {Props} [{ maxProducts = 10 }] - The { maxproducts = 10 }
- *
- * @returns {any} The featuredproductssection result
- *
- */
-function FeaturedProductsSection({ maxProducts = 10 }: Props) {
-  const [products, setProducts] = useState<ProductCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function FeaturedProductsSection({ maxProducts = 10 }: Props) {
+  const fetchFeaturedProducts = async (): Promise<ProductCardFE[]> => {
+    // Try to get admin-curated featured items
+    try {
+      const response: any = await apiService.get("/homepage");
+      const featuredItems: FeaturedItem[] = response.data?.featuredItems?.products || [];
+      
+      if (featuredItems.length > 0) {
+        const activeItems = featuredItems
+          .filter((item) => item.active)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, maxProducts);
+        
+        const productIds = activeItems.map((item) => item.itemId);
+        if (productIds.length > 0) {
+          const productsData = await productsService.list({ ids: productIds });
+          const sortedProducts = productIds
+            .map((id) => productsData.find((p) => p.id === id))
+            .filter((p): p is ProductCardFE => p !== undefined);
+          if (sortedProducts.length > 0) {
+            return sortedProducts;
+          }
+        }
+      }
+    } catch (error) {
+      // Fall back to featured products from service
+    }
 
-  useEffect(() => {
-    fetchFeaturedProducts();
-  }, [maxProducts]);
+    // Fallback: Get featured products
+    const featuredProducts = await productsService.list({ featured: true, limit: maxProducts });
+    return featuredProducts;
+  };
+
+  return (
+    <FeaturedSection<ProductCardFE>
+      title="✨ Featured Products"
+      icon={ShoppingBag}
+      viewAllLink="/products?featured=true"
+      viewAllText="View All Products"
+      fetchData={fetchFeaturedProducts}
+      renderItem={(product) => (
+        <ProductCard
+          key={product.id}
+          id={product.id}
+          name={product.name}
+          slug={product.slug}
+          price={product.price}
+          originalPrice={product.originalPrice || undefined}
+          image={product.images[0] || "/placeholder-product.jpg"}
+          rating={product.rating}
+          reviewCount={product.reviewCount}
+          shopName="Shop"
+          shopSlug={product.shopId}
+          inStock={product.stockCount > 0}
+          featured={product.featured}
+          condition={product.condition}
+          showShopName={true}
+        />
+      )}
+      itemWidth="280px"
+    />
+  );
+}
 
   /**
    * Performs async operation
