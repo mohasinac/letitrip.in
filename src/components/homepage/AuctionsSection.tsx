@@ -10,9 +10,8 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { logError } from "@/lib/error-logger";
+import { Gavel, Flame } from "lucide-react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
@@ -91,12 +90,100 @@ export function AuctionsSection({
   featuredLimit = 8,
   className = "",
 }: AuctionsSectionProps) {
-  const [hotAuctions, setHotAuctions] = useState<AuctionItemFE[]>([]);
-  const [featuredAuctions, setFeaturedAuctions] = useState<AuctionItemFE[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadAuctions();
+  return (
+    <div className={className}>
+      {/* Hot Auctions */}
+      <FeaturedSection<AuctionItemFE>
+        title="Hot Auctions"
+        icon={Flame}
+        viewAllLink="/auctions"
+        viewAllText="View All Auctions"
+        fetchData={async () => {
+          const data = await homepageService.getHotAuctions(hotLimit);
+          if (data.length > 0) {
+            analyticsService.trackEvent("homepage_hot_auctions_viewed", {
+              count: data.length,
+            });
+          }
+          return data;
+        }}
+        renderItem={(auction) => (
+          <AuctionCard
+            key={auction.id}
+            auction={{
+              id: auction.id,
+              name: auction.name,
+              slug: auction.slug,
+              images: auction.images,
+              currentBid: auction.currentBid,
+              startingBid: auction.startingBid,
+              bidCount: auction.bidCount,
+              endTime: auction.endTime,
+              status:
+                auction.status === "upcoming"
+                  ? "pending"
+                  : auction.status === "live"
+                    ? "active"
+                    : auction.status,
+              shop: {
+                id: auction.shopId,
+                name: auction.shopName,
+              },
+            }}
+            variant="compact"
+          />
+        )}
+        itemWidth="280px"
+        className="mb-12"
+      />
+      
+      {/* Featured Auctions */}
+      <FeaturedSection<AuctionItemFE>
+        title="Featured Auctions"
+        icon={Gavel}
+        viewAllLink="/auctions?featured=true"
+        viewAllText="View Featured"
+        fetchData={async () => {
+          const data = await homepageService.getFeaturedAuctions(featuredLimit);
+          if (data.length > 0) {
+            analyticsService.trackEvent("homepage_featured_auctions_viewed", {
+              count: data.length,
+            });
+          }
+          return data;
+        }}
+        renderItem={(auction) => (
+          <AuctionCard
+            key={auction.id}
+            auction={{
+              id: auction.id,
+              name: auction.name,
+              slug: auction.slug,
+              images: auction.images,
+              currentBid: auction.currentBid,
+              startingBid: auction.startingBid,
+              bidCount: auction.bidCount,
+              endTime: auction.endTime,
+              status:
+                auction.status === "upcoming"
+                  ? "pending"
+                  : auction.status === "live"
+                    ? "active"
+                    : auction.status,
+              featured: true,
+              shop: {
+                id: auction.shopId,
+                name: auction.shopName,
+              },
+            }}
+            variant="compact"
+          />
+        )}
+        itemWidth="280px"
+      />
+    </div>
+  );
+}
   }, [hotLimit, featuredLimit]);
 
   /**

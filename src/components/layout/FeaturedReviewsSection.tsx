@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/layout/FeaturedReviewsSection
  * @description This file contains the FeaturedReviewsSection component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,11 +10,11 @@
 
 "use client";
 
-import { Star } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ReviewCard } from "@/components/cards/ReviewCard";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE } from "@/types/frontend/review.types";
+import { Star } from "lucide-react";
 
 export default function FeaturedReviewsSection() {
   return (

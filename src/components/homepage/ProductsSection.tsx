@@ -10,11 +10,9 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { logError } from "@/lib/error-logger";
+import { Package, Star } from "lucide-react";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
@@ -92,12 +90,89 @@ export function ProductsSection({
   featuredLimit = 8,
   className = "",
 }: ProductsSectionProps) {
-  const [latestProducts, setLatestProducts] = useState<ProductCardFE[]>([]);
-  const [featuredProducts, setFeaturedProducts] = useState<ProductCardFE[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadProducts();
+  return (
+    <div className={className}>
+      {/* Latest Products */}
+      <FeaturedSection<ProductCardFE>
+        title="Latest Products"
+        icon={Package}
+        viewAllLink="/products"
+        viewAllText="View All Products"
+        fetchData={async () => {
+          const data = await homepageService.getLatestProducts(latestLimit);
+          if (data.length > 0) {
+            analyticsService.trackEvent("homepage_latest_products_viewed", {
+              count: data.length,
+            });
+          }
+          return data;
+        }}
+        renderItem={(product) => (
+          <ProductCard
+            key={product.id}
+            id={product.id}
+            name={product.name}
+            slug={product.slug}
+            price={product.price}
+            originalPrice={product.originalPrice ?? undefined}
+            image={product.images?.[0] || "/placeholder-product.jpg"}
+            images={product.images}
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            shopName={product.shop?.name}
+            shopSlug={product.shop?.slug}
+            shopId={product.shopId}
+            inStock={(product.stockCount ?? 0) > 0}
+            featured={product.featured}
+            condition={product.condition}
+            variant="public"
+          />
+        )}
+        itemWidth="280px"
+        className="mb-12"
+      />
+      
+      {/* Featured Products */}
+      <FeaturedSection<ProductCardFE>
+        title="Featured Products"
+        icon={Star}
+        viewAllLink="/products?featured=true"
+        viewAllText="View Featured"
+        fetchData={async () => {
+          const data = await homepageService.getFeaturedProducts(featuredLimit);
+          if (data.length > 0) {
+            analyticsService.trackEvent("homepage_featured_products_viewed", {
+              count: data.length,
+            });
+          }
+          return data;
+        }}
+        renderItem={(product) => (
+          <ProductCard
+            key={product.id}
+            id={product.id}
+            name={product.name}
+            slug={product.slug}
+            price={product.price}
+            originalPrice={product.originalPrice ?? undefined}
+            image={product.images?.[0] || "/placeholder-product.jpg"}
+            images={product.images}
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            shopName={product.shop?.name}
+            shopSlug={product.shop?.slug}
+            shopId={product.shopId}
+            inStock={(product.stockCount ?? 0) > 0}
+            featured={product.featured}
+            condition={product.condition}
+            variant="public"
+          />
+        )}
+        itemWidth="280px"
+      />
+    </div>
+  );
+}
   }, [latestLimit, featuredLimit]);
 
   /**

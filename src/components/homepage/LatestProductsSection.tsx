@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/homepage/LatestProductsSection
  * @description This file contains the LatestProductsSection component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,16 +10,16 @@
 
 "use client";
 
-import { Package } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { homepageService } from "@/services/homepage.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { analyticsService } from "@/services/analytics.service";
+import { homepageService } from "@/services/homepage.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Package } from "lucide-react";
 
 /**
  * LatestProductsSectionProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for LatestProductsSectionProps
  */

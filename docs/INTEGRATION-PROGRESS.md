@@ -159,6 +159,7 @@
 **File:** `src/components/homepage/FeaturedShopsSection.tsx`
 **Lines Reduced:** 309 lines (339 → ~30)
 **Benefits:**
+
 - Removed duplicate loading/error/scroll container logic
 - Uses generic FeaturedSection<ShopWithItems>
 - Consistent with other featured sections
@@ -169,6 +170,7 @@
 **File:** `src/components/homepage/FeaturedCategoriesSection.tsx`
 **Lines Reduced:** 300 lines (330 → ~30)
 **Benefits:**
+
 - Removed duplicate section boilerplate
 - Uses FeaturedSection<CategoryWithItems>
 - Displays categories with items count
@@ -183,11 +185,12 @@
 
 **Status:** ✅ Migrated (Bulk)
 **Files:**
+
 - `src/components/homepage/LatestProductsSection.tsx` (-148 lines)
 - `src/components/homepage/HotAuctionsSection.tsx` (-177 lines)
 - `src/components/homepage/RecentReviewsSection.tsx` (-180 lines)
-**Total Lines Reduced:** 505 lines
-**Benefits:**
+  **Total Lines Reduced:** 505 lines
+  **Benefits:**
 - Consistent FeaturedSection pattern across homepage
 - Automatic loading states and error handling
 - Clean fetchData() and renderItem() implementations
@@ -196,11 +199,12 @@
 
 **Status:** ✅ Migrated (Bulk)
 **Files:**
+
 - `src/components/layout/FeaturedProductsSection.tsx` (-100 lines)
 - `src/components/layout/FeaturedReviewsSection.tsx` (-85 lines)
 - `src/components/layout/FeaturedAuctionsSection.tsx` (-149 lines)
-**Total Lines Reduced:** 334 lines
-**Benefits:**
+  **Total Lines Reduced:** 334 lines
+  **Benefits:**
 - Reusable layout sections with admin curation support
 - Fallback to featured items when curated items unavailable
 
@@ -208,10 +212,11 @@
 
 **Status:** ✅ Migrated (Bulk)
 **Files:**
+
 - `src/components/layout/FeaturedShopsSection.tsx` (-218 lines)
 - `src/components/layout/FeaturedCategoriesSection.tsx` (-218 lines)
 - `src/components/layout/FeaturedBlogsSection.tsx` (-67 lines)
-**Total Lines Reduced:** 503 lines
+  **Total Lines Reduced:** 503 lines
 
 ---
 
@@ -293,12 +298,14 @@
 ### High Priority (Completed ✅)
 
 1. ✅ **SelectorWithCreate Pattern (4 migrations):**
+
    - AddressSelectorWithCreate (~120 lines)
    - ContactSelectorWithCreate (~394 lines)
    - DocumentSelectorWithUpload (~240 lines)
    - CategorySelectorWithCreate (~386 lines)
 
 2. ✅ **FeaturedSection Pattern (5 migrations):**
+
    - FeaturedProductsSection (~100 lines)
    - FeaturedAuctionsSection (~100 lines)
    - FeaturedShopsSection (~309 lines)

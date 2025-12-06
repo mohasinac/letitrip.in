@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/homepage/HotAuctionsSection
  * @description This file contains the HotAuctionsSection component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,16 +10,16 @@
 
 "use client";
 
-import { Gavel } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { homepageService } from "@/services/homepage.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
+import { homepageService } from "@/services/homepage.service";
+import { Gavel } from "lucide-react";
 
 /**
  * HotAuctionsSectionProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for HotAuctionsSectionProps
  */
@@ -115,8 +115,8 @@ export function HotAuctionsSection({
               auction.status === "upcoming"
                 ? "pending"
                 : auction.status === "live"
-                  ? "active"
-                  : auction.status,
+                ? "active"
+                : auction.status,
             shop: {
               id: auction.shopId,
               name: auction.shopName,

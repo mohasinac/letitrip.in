@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/layout/FeaturedBlogsSection
  * @description This file contains the FeaturedBlogsSection component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,11 +10,11 @@
 
 "use client";
 
-import { BookOpen } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { BlogCard } from "@/components/cards/BlogCard";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import type { BlogPost } from "@/services/blog.service";
 import { blogService } from "@/services/blog.service";
+import { BookOpen } from "lucide-react";
 
 export default function FeaturedBlogsSection() {
   return (

@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/layout/FeaturedShopsSection
  * @description Featured shops section using FeaturedSection pattern
- * 
+ *
  * @created 2025-12-05
  * @updated 2025-12-06
  * @author mohasinac
@@ -10,12 +10,12 @@
 
 "use client";
 
-import { Store } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ShopCard } from "@/components/cards/ShopCard";
-import { shopsService } from "@/services/shops.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { apiService } from "@/services/api.service";
+import { shopsService } from "@/services/shops.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { Store } from "lucide-react";
 
 interface FeaturedItem {
   id: string;
@@ -35,14 +35,15 @@ export default function FeaturedShopsSection({ maxShops = 10 }: Props) {
   const fetchFeaturedShops = async (): Promise<ShopCardFE[]> => {
     try {
       const response: any = await apiService.get("/homepage");
-      const featuredItems: FeaturedItem[] = response.data?.featuredItems?.shops || [];
-      
+      const featuredItems: FeaturedItem[] =
+        response.data?.featuredItems?.shops || [];
+
       if (featuredItems.length > 0) {
         const activeItems = featuredItems
           .filter((item) => item.active)
           .sort((a, b) => a.position - b.position)
           .slice(0, maxShops);
-        
+
         const shopIds = activeItems.map((item) => item.itemId);
         if (shopIds.length > 0) {
           const shopsData = await shopsService.list({ ids: shopIds });
@@ -56,7 +57,10 @@ export default function FeaturedShopsSection({ maxShops = 10 }: Props) {
       }
     } catch (error) {}
 
-    const featuredShops = await shopsService.list({ featured: true, limit: maxShops });
+    const featuredShops = await shopsService.list({
+      featured: true,
+      limit: maxShops,
+    });
     return featuredShops;
   };
 

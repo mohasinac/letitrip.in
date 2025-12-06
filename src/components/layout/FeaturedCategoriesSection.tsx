@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/layout/FeaturedCategoriesSection
  * @description Featured categories section using FeaturedSection pattern
- * 
+ *
  * @created 2025-12-05
  * @updated 2025-12-06
  * @author mohasinac
@@ -10,12 +10,12 @@
 
 "use client";
 
-import { FolderTree } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { CategoryCard } from "@/components/cards/CategoryCard";
-import { categoriesService } from "@/services/categories.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { apiService } from "@/services/api.service";
+import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import { FolderTree } from "lucide-react";
 
 interface FeaturedItem {
   id: string;
@@ -31,21 +31,26 @@ interface Props {
   maxCategories?: number;
 }
 
-export default function FeaturedCategoriesSection({ maxCategories = 10 }: Props) {
+export default function FeaturedCategoriesSection({
+  maxCategories = 10,
+}: Props) {
   const fetchFeaturedCategories = async (): Promise<CategoryFE[]> => {
     try {
       const response: any = await apiService.get("/homepage");
-      const featuredItems: FeaturedItem[] = response.data?.featuredItems?.categories || [];
-      
+      const featuredItems: FeaturedItem[] =
+        response.data?.featuredItems?.categories || [];
+
       if (featuredItems.length > 0) {
         const activeItems = featuredItems
           .filter((item) => item.active)
           .sort((a, b) => a.position - b.position)
           .slice(0, maxCategories);
-        
+
         const categoryIds = activeItems.map((item) => item.itemId);
         if (categoryIds.length > 0) {
-          const categoriesData = await categoriesService.list({ ids: categoryIds });
+          const categoriesData = await categoriesService.list({
+            ids: categoryIds,
+          });
           const sortedCategories = categoryIds
             .map((id) => categoriesData.find((c) => c.id === id))
             .filter((c): c is CategoryFE => c !== undefined);
@@ -56,7 +61,10 @@ export default function FeaturedCategoriesSection({ maxCategories = 10 }: Props)
       }
     } catch (error) {}
 
-    const featuredCategories = await categoriesService.list({ featured: true, limit: maxCategories });
+    const featuredCategories = await categoriesService.list({
+      featured: true,
+      limit: maxCategories,
+    });
     return featuredCategories;
   };
 

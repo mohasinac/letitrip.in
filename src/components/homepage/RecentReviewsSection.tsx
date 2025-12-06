@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/homepage/RecentReviewsSection
  * @description This file contains the RecentReviewsSection component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,16 +10,16 @@
 
 "use client";
 
-import { MessageSquare } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ReviewCard } from "@/components/cards/ReviewCard";
-import { homepageService } from "@/services/homepage.service";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { analyticsService } from "@/services/analytics.service";
+import { homepageService } from "@/services/homepage.service";
 import type { ReviewFE } from "@/types/frontend/review.types";
+import { MessageSquare } from "lucide-react";
 
 /**
  * RecentReviewsSectionProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for RecentReviewsSectionProps
  */
