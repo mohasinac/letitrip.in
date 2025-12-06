@@ -136,11 +136,13 @@ const {
 **Status**: ✅ 100% of candidates migrated
 
 **Use When**:
+
 - Displaying featured products, auctions, shops, blogs, categories
 - Need horizontal scroll container
 - Want automatic loading/error states
 
 **Quick Example**:
+
 ```tsx
 import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { Package } from "lucide-react";
@@ -152,10 +154,11 @@ import { Package } from "lucide-react";
   fetchData={async () => await productsService.list({ pageSize: 10 })}
   renderItem={(product) => <ProductCard product={product} />}
   emptyMessage="No products available"
-/>
+/>;
 ```
 
 **Completed Migrations**:
+
 - Homepage: LatestProductsSection, HotAuctionsSection, RecentReviewsSection, FeaturedProductsSection, FeaturedAuctionsSection, FeaturedShopsSection, FeaturedCategoriesSection, FeaturedBlogsSection, ProductsSection (2 subsections), AuctionsSection (2 subsections)
 - Layout: FeaturedProductsSection, FeaturedReviewsSection, FeaturedAuctionsSection, FeaturedShopsSection, FeaturedCategoriesSection, FeaturedBlogsSection
 
@@ -168,10 +171,12 @@ import { Package } from "lucide-react";
 **Status**: ✅ 100% of identified services migrated
 
 **Use When**:
+
 - Creating new service with CRUD operations
 - Service needs list, getById, getBySlug, create, update, delete methods
 
 **Quick Example**:
+
 ```typescript
 import { BaseService } from "@/services/base.service";
 
@@ -186,7 +191,7 @@ class ProductsService extends BaseService<
   }
 
   // Inherits: list(), getById(), getBySlug(), create(), update(), delete()
-  
+
   // Add only specialized methods
   async getByCategory(categoryId: string) {
     return this.list({ filters: `CategoryId==${categoryId}` });
@@ -195,6 +200,7 @@ class ProductsService extends BaseService<
 ```
 
 **Completed Migrations**:
+
 - ProductsService, UsersService, ShopsService, AuctionsService, CategoriesService, BlogsService, ReviewsService, OrdersService, FavoritesService, NotificationsService, SupportService, EventsService, HeroSlidesService, HomepageService
 
 ---
@@ -206,11 +212,13 @@ class ProductsService extends BaseService<
 **Status**: ⚠️ 57% (3 complex selectors remain)
 
 **Use When**:
+
 - Dropdown selector with inline create functionality
 - Simple validation and form fields
 - NOT for multi-step creation or heavily specialized logic
 
 **Quick Example**:
+
 ```tsx
 import { SelectorWithCreate } from "@/components/common/SelectorWithCreate";
 import { MapPin } from "lucide-react";
@@ -226,13 +234,15 @@ import { MapPin } from "lucide-react";
     { name: "street", label: "Street", type: "text", required: true },
     { name: "city", label: "City", type: "text", required: true },
   ]}
-/>
+/>;
 ```
 
 **Completed Migrations**:
+
 - AddressSelectorWithCreate, ContactSelectorWithCreate, CategorySelectorWithCreate, ShippingProfileSelectorWithCreate
 
 **Remaining** (Complex, not suitable for generic pattern):
+
 - TagSelectorWithCreate (multi-select with color picker)
 - BankAccountSelectorWithCreate (IFSC validation, bank verification)
 - TaxDetailsSelectorWithCreate (GST/PAN validation, government API)

@@ -2,19 +2,19 @@
  * @fileoverview Similar Categories Section (Using FeaturedSection Pattern)
  * @module src/components/category/SimilarCategories
  * @description Displays similar categories with image cards
- * 
+ *
  * @refactored 2025-12-06 - Migrated to FeaturedSection pattern (~280 lines saved)
  * @pattern FeaturedSection<CategoryFE>
  */
 
 "use client";
 
-import { Folder } from "lucide-react";
-import Link from "next/link";
 import { FeaturedSection } from "@/components/common/FeaturedSection";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import { Folder } from "lucide-react";
+import Link from "next/link";
 
 interface SimilarCategoriesProps {
   categorySlug: string;

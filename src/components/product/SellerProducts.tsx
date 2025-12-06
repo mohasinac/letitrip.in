@@ -2,18 +2,18 @@
  * @fileoverview Seller Products Section (Using FeaturedSection Pattern)
  * @module src/components/product/SellerProducts
  * @description Displays more products from the same seller
- * 
+ *
  * @refactored 2025-12-06 - Migrated to FeaturedSection pattern (~280 lines saved)
  * @pattern FeaturedSection<ProductCardFE>
  */
 
 "use client";
 
-import { Store } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Store } from "lucide-react";
 
 interface SellerProductsProps {
   productId: string;
@@ -47,7 +47,9 @@ export function SellerProducts({
           pageSize: 30,
         });
       }}
-      renderItem={(product) => <ProductCard key={product.id} product={product} />}
+      renderItem={(product) => (
+        <ProductCard key={product.id} product={product} />
+      )}
       emptyMessage="No other products from this seller"
       columns={{ default: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
     />

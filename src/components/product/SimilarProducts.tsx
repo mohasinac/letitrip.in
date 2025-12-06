@@ -2,18 +2,18 @@
  * @fileoverview Similar Products Section (Using FeaturedSection Pattern)
  * @module src/components/product/SimilarProducts
  * @description Displays similar products from related categories
- * 
+ *
  * @refactored 2025-12-06 - Migrated to FeaturedSection pattern (~390 lines saved)
  * @pattern FeaturedSection<ProductCardFE>
  */
 
 "use client";
 
-import { Package } from "lucide-react";
-import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { FeaturedSection } from "@/components/common/FeaturedSection";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Package } from "lucide-react";
 
 interface SimilarProductsProps {
   productId: string;
@@ -53,7 +53,9 @@ export function SimilarProducts({
           pageSize: 30,
         });
       }}
-      renderItem={(product) => <ProductCard key={product.id} product={product} />}
+      renderItem={(product) => (
+        <ProductCard key={product.id} product={product} />
+      )}
       emptyMessage="No similar products found"
       columns={{ default: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
     />

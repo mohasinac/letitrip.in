@@ -36,7 +36,12 @@ import { Package } from "lucide-react";
   icon={Package}
   viewAllHref="/products"
   fetchData={async () => {
-    return await productsService.list({ filters: "IsActive==true", sorts: "-CreatedAt", page: 1, pageSize: 10 });
+    return await productsService.list({
+      filters: "IsActive==true",
+      sorts: "-CreatedAt",
+      page: 1,
+      pageSize: 10,
+    });
   }}
   renderItem={(product) => (
     <div key={product.id}>
@@ -46,10 +51,11 @@ import { Package } from "lucide-react";
   )}
   emptyMessage="No products available"
   columns={{ default: 1, sm: 2, md: 3, lg: 4 }}
-/>
+/>;
 ```
 
 **Benefits**:
+
 - Automatic loading/error states
 - Built-in horizontal scroll container
 - Mobile responsive
@@ -88,10 +94,11 @@ import { MapPin } from "lucide-react";
   validateCreate={(data) => {
     if (!data.postalCode) return "Postal code is required";
   }}
-/>
+/>;
 ```
 
 **Benefits**:
+
 - Eliminates duplicate modal/dropdown logic
 - Consistent validation UX
 - Metadata support for complex objects
@@ -109,17 +116,13 @@ import { MapPin } from "lucide-react";
 import { BaseService } from "@/services/base.service";
 
 class ProductsService extends BaseService<
-  ProductBE,        // Backend type
-  ProductFE,        // Frontend type
-  ProductFormFE,    // Form type
-  ProductFiltersFE  // Filters type
+  ProductBE, // Backend type
+  ProductFE, // Frontend type
+  ProductFormFE, // Form type
+  ProductFiltersFE // Filters type
 > {
   constructor() {
-    super(
-      COLLECTIONS.PRODUCTS,
-      "products",
-      "/api/products"
-    );
+    super(COLLECTIONS.PRODUCTS, "products", "/api/products");
   }
 
   // Inherits: list(), getById(), getBySlug(), create(), update(), delete()
@@ -132,6 +135,7 @@ class ProductsService extends BaseService<
 ```
 
 **Benefits**:
+
 - Automatic CRUD operations
 - Consistent error handling
 - Type safety with generics
@@ -146,24 +150,24 @@ class ProductsService extends BaseService<
 
 **When you see this pattern → Use this instead:**
 
-| ❌ Don't Do This                          | ✅ Do This Instead                            |
-| ----------------------------------------- | --------------------------------------------- |
-| Manual `loading`, `error`, `data` states  | `useLoadingState()` hook                      |
-| Custom featured section (300+ lines)      | `<FeaturedSection<T>>` generic component      |
-| Custom dropdown + create modal (250+ lines) | `<SelectorWithCreate<T>>` generic component |
-| Duplicate CRUD in service (400+ lines)    | `extends BaseService<T>` abstract class       |
-| Hardcoded `"users"`, `"products"` strings | `COLLECTIONS.USERS`, `COLLECTIONS.PRODUCTS`   |
-| Hardcoded Zod: `.min(2, "Too short")`     | `VALIDATION_RULES.*`, `VALIDATION_MESSAGES.*` |
-| Manual `₹{price.toLocaleString()}`        | `<Price amount={price} />`                    |
-| Manual `new Date().toLocaleDateString()`  | `<DateDisplay date={date} />`                 |
-| Raw `<img>` tag                           | `<OptimizedImage />`                          |
-| Raw `<label>` + `<input>`                 | `<FormField>` + `<FormInput>`                 |
-| Custom pagination logic (200+ lines)      | Sieve middleware                              |
-| No debounce on search                     | `useDebounce(searchTerm, 300)`                |
-| `bg-white` without dark mode              | `bg-white dark:bg-gray-800`                   |
-| Admin list page with 600-900 lines        | `<AdminResourcePage />` wrapper               |
-| `console.log()` for errors                | `logError()` from error logger                |
-| Creating `index.ts` barrel exports        | Import directly from actual files             |
+| ❌ Don't Do This                            | ✅ Do This Instead                            |
+| ------------------------------------------- | --------------------------------------------- |
+| Manual `loading`, `error`, `data` states    | `useLoadingState()` hook                      |
+| Custom featured section (300+ lines)        | `<FeaturedSection<T>>` generic component      |
+| Custom dropdown + create modal (250+ lines) | `<SelectorWithCreate<T>>` generic component   |
+| Duplicate CRUD in service (400+ lines)      | `extends BaseService<T>` abstract class       |
+| Hardcoded `"users"`, `"products"` strings   | `COLLECTIONS.USERS`, `COLLECTIONS.PRODUCTS`   |
+| Hardcoded Zod: `.min(2, "Too short")`       | `VALIDATION_RULES.*`, `VALIDATION_MESSAGES.*` |
+| Manual `₹{price.toLocaleString()}`          | `<Price amount={price} />`                    |
+| Manual `new Date().toLocaleDateString()`    | `<DateDisplay date={date} />`                 |
+| Raw `<img>` tag                             | `<OptimizedImage />`                          |
+| Raw `<label>` + `<input>`                   | `<FormField>` + `<FormInput>`                 |
+| Custom pagination logic (200+ lines)        | Sieve middleware                              |
+| No debounce on search                       | `useDebounce(searchTerm, 300)`                |
+| `bg-white` without dark mode                | `bg-white dark:bg-gray-800`                   |
+| Admin list page with 600-900 lines          | `<AdminResourcePage />` wrapper               |
+| `console.log()` for errors                  | `logError()` from error logger                |
+| Creating `index.ts` barrel exports          | Import directly from actual files             |
 
 ---
 
@@ -270,26 +274,26 @@ import type { ProductFormData } from "@/components/seller/product-wizard/types";
 
 **Use these components instead of creating new ones**:
 
-| Task                       | Component to Use                  |
-| -------------------------- | --------------------------------- |
-| Featured items section     | `FeaturedSection<T>` 🆕         |
-| Dropdown with create       | `SelectorWithCreate<T>` 🆕       |
+| Task                       | Component to Use                   |
+| -------------------------- | ---------------------------------- |
+| Featured items section     | `FeaturedSection<T>` 🆕            |
+| Dropdown with create       | `SelectorWithCreate<T>` 🆕         |
 | Service with CRUD          | `BaseService<T>` abstract class 🆕 |
-| Admin list page            | `AdminResourcePage`               |
-| Seller list page           | `SellerResourcePage`              |
-| Content type filter        | `ContentTypeFilter`               |
-| Filtering sidebar          | `UnifiedFilterSidebar`            |
-| Form fields                | `FormField` + `FormInput`         |
-| Value display              | `Price`, `DateDisplay`, etc.      |
-| Dashboard stats            | `StatsCard`, `StatsCardGrid`      |
-| Settings sections          | `SettingsSection`                 |
-| Analytics period selection | `PeriodSelector`                  |
-| Pagination                 | `SimplePagination`                |
-| Status badges              | `StatusBadge`                     |
-| Confirmation dialogs       | `ConfirmDialog`                   |
-| Loading states             | `LoadingSpinner`                  |
-| Empty states               | `EmptyState`                      |
-| Table actions              | `InlineEditRow`, `QuickCreateRow` |
+| Admin list page            | `AdminResourcePage`                |
+| Seller list page           | `SellerResourcePage`               |
+| Content type filter        | `ContentTypeFilter`                |
+| Filtering sidebar          | `UnifiedFilterSidebar`             |
+| Form fields                | `FormField` + `FormInput`          |
+| Value display              | `Price`, `DateDisplay`, etc.       |
+| Dashboard stats            | `StatsCard`, `StatsCardGrid`       |
+| Settings sections          | `SettingsSection`                  |
+| Analytics period selection | `PeriodSelector`                   |
+| Pagination                 | `SimplePagination`                 |
+| Status badges              | `StatusBadge`                      |
+| Confirmation dialogs       | `ConfirmDialog`                    |
+| Loading states             | `LoadingSpinner`                   |
+| Empty states               | `EmptyState`                       |
+| Table actions              | `InlineEditRow`, `QuickCreateRow`  |
 
 ### Service Pattern
 
