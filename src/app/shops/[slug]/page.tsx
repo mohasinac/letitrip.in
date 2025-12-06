@@ -32,7 +32,7 @@ import type { ShopFE } from "@/types/frontend/shop.types";
 import { Gavel, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toastAction, toastErr } from "@/lib/toast-helper";
 
 /**
  * ShopPageProps interface
@@ -447,9 +447,9 @@ Id */
         };
       }
       await addItem(productId, 1, undefined, productDetails);
-      toast.success("Added to cart!");
+      toastAction.addedToCart();
     } catch (error: any) {
-      toast.error(error.message || "Failed to add to cart");
+      toastErr.custom(error.message || "Failed to add to cart");
     }
   };
 

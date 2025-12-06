@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { safeToISOString } from "@/lib/date-utils";
+import { shortId } from "@/lib/id-helpers";
 import {
   requireRole,
   getShopIdFromRequest,
@@ -337,7 +338,7 @@ ders.filter(
         /** Id */
         id: order.id,
         /** Order Number */
-        orderNumber: order.order_number || `ORD-${order.id.slice(0, 8)}`,
+        orderNumber: order.order_number || `ORD-${shortId(order.id)}`,
         /** Customer */
         customer: order.customer_name || "Unknown",
         /** Amount */

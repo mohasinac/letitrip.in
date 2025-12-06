@@ -115,7 +115,8 @@ export const toastAction = {
   removedFromCart: () => toastSuccess(TOAST_MESSAGES.REMOVED_FROM_CART),
   addedToWishlist: () => toastSuccess(TOAST_MESSAGES.ADDED_TO_WISHLIST),
   removedFromWishlist: () => toastSuccess(TOAST_MESSAGES.REMOVED_FROM_WISHLIST),
-  copied: (item?: string) => toastSuccess(item ? `${item} copied to clipboard` : TOAST_MESSAGES.COPIED),
+  copied: (item?: string) =>
+    toastSuccess(item ? `${item} copied to clipboard` : TOAST_MESSAGES.COPIED),
   sent: () => toastSuccess(TOAST_MESSAGES.SENT),
   uploaded: () => toastSuccess(TOAST_MESSAGES.UPLOADED),
   downloaded: () => toastSuccess(TOAST_MESSAGES.DOWNLOADED),
@@ -141,10 +142,15 @@ export const toastErr = {
     toastError(TOAST_MESSAGES.TOO_LONG(field, max)),
 
   // Additional helpers
-  createFailed: (entity: string) => toastError(TOAST_MESSAGES.FAILED(`create ${entity.toLowerCase()}`)),
-  updateFailed: (entity: string) => toastError(TOAST_MESSAGES.FAILED(`update ${entity.toLowerCase()}`)),
-  deleteFailed: (entity: string) => toastError(TOAST_MESSAGES.FAILED(`delete ${entity.toLowerCase()}`)),
-  loadFailed: (entity: string) => toastError(TOAST_MESSAGES.FAILED(`load ${entity.toLowerCase()}`)),
-  notConfigured: (feature: string) => toastError(`${feature} is not configured`),
+  createFailed: (entity: string) =>
+    toastError(TOAST_MESSAGES.FAILED(`create ${entity.toLowerCase()}`)),
+  updateFailed: (entity: string) =>
+    toastError(TOAST_MESSAGES.FAILED(`update ${entity.toLowerCase()}`)),
+  deleteFailed: (entity: string) =>
+    toastError(TOAST_MESSAGES.FAILED(`delete ${entity.toLowerCase()}`)),
+  loadFailed: (entity: string) =>
+    toastError(TOAST_MESSAGES.FAILED(`load ${entity.toLowerCase()}`)),
+  notConfigured: (feature: string) =>
+    toastError(`${feature} is not configured`),
   custom: (message: string) => toastError(message),
 };

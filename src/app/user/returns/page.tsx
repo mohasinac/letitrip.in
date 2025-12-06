@@ -410,7 +410,7 @@ const loadReturns = useCallback(async () => {
                         Return Request
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Order #{returnItem.orderId?.slice(0, 8).toUpperCase()}
+                        Order #{shortId(returnItem.orderId || "").toUpperCase()}
                       </p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className="text-sm text-gray-600 dark:text-gray-300">

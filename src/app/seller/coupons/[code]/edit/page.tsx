@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/seller/coupons/[code]/edit/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -17,13 +17,13 @@ import CouponForm from "@/components/seller/CouponForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { toastCrud } from "@/lib/toast-helper";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toastCrud, toastErr } from "@/lib/toast-helper";
 
 export default /**
  * Performs edit coupon page operation
@@ -51,14 +51,14 @@ function EditCouponPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   /**
- * Performs load coupon operation
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The loadcoupon result
- *
- */
-const loadCoupon = useCallback(async () => {
+   * Performs load coupon operation
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The loadcoupon result
+   *
+   */
+  const loadCoupon = useCallback(async () => {
     try {
       const couponData = await couponsService.getByCode(code);
       return couponData;
@@ -115,7 +115,7 @@ const loadCoupon = useCallback(async () => {
         metadata: { code },
       });
       toast.error(
-        error.message || "Failed to update coupon. Please try again.",
+        error.message || "Failed to update coupon. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -266,7 +266,7 @@ const loadCoupon = useCallback(async () => {
                       /** Width */
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100,
+                        100
                       )}%`,
                     }}
                   />

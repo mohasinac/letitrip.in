@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/user/orders/[id]/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -18,6 +18,7 @@ import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { shortId } from "@/lib/id-helpers";
 import { ordersService } from "@/services/orders.service";
 import type { OrderFE } from "@/types/frontend/order.types";
 import {
@@ -30,12 +31,10 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
-import { shortId } from "@/lib/id-helpers";
 
 /**
  * OrderPageProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for OrderPageProps
  */
@@ -75,14 +74,14 @@ function OrderDetailPage({ params }: OrderPageProps) {
   }, [params]);
 
   /**
- * Performs load order operation
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The loadorder result
- *
- */
-const loadOrder = useCallback(async () => {
+   * Performs load order operation
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The loadorder result
+   *
+   */
+  const loadOrder = useCallback(async () => {
     if (!orderId) return;
     await execute(async () => {
       const data = await ordersService.getById(orderId);
@@ -123,7 +122,7 @@ const loadOrder = useCallback(async () => {
         /** Metadata */
         metadata: { orderId },
       });
-      toast.error("Failed to download invoice");
+      toastErr.custom("Failed to download invoice");
     }
   };
 
@@ -150,7 +149,7 @@ const loadOrder = useCallback(async () => {
     try {
       await ordersService.cancel(orderId, "Customer requested cancellation");
       await loadOrder();
-      toast.success("Order cancelled successfully");
+      toastCrud.updated("Order");
     } catch (error) {
       logError(error as Error, {
         /** Component */
@@ -158,7 +157,7 @@ const loadOrder = useCallback(async () => {
         /** Metadata */
         metadata: { orderId },
       });
-      toast.error("Failed to cancel order");
+      toastErr.custom("Failed to cancel order");
     }
   };
 
@@ -280,8 +279,7 @@ const loadOrder = useCallback(async () => {
                     {item.productName}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    /** Qty */
-                    Qty: {item.quantity}
+                    /** Qty */ Qty: {item.quantity}
                   </p>
                 </div>
                 <div className="text-right">
@@ -289,8 +287,8 @@ const loadOrder = useCallback(async () => {
                     <Price amount={item.price} />
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    /** Total */
-                    Total: <Price amount={item.price * item.quantity} />
+                    /** Total */ Total:{" "}
+                    <Price amount={item.price * item.quantity} />
                   </p>
                 </div>
               </div>
@@ -412,15 +410,19 @@ function OrderTimeline({ status }: { status: string }) {
   const steps = [
     { id: "pending", label: "Order Placed", icon: Package },
     { id: "confirmed", label: "Confirmed", icon: CheckCircle },
-    { id: "processing", label: "Processing", icon: Package /**
- * Performs status index operation
- *
- * @param {any} (s - The (s
- *
- * @returns {any} The statusindex result
- *
- */
-},
+    {
+      id: "processing",
+      label: "Processing",
+      icon: Package,
+      /**
+       * Performs status index operation
+       *
+       * @param {any} (s - The (s
+       *
+       * @returns {any} The statusindex result
+       *
+       */
+    },
     { id: "shipped", label: "Shipped", icon: Truck },
     { id: "delivered", label: "Delivered", icon: CheckCircle },
   ];
@@ -474,8 +476,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900 dark:text-white"
-                      : "text-gray-400 dark:text-gray-500"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}

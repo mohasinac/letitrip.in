@@ -13,6 +13,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { shortId } from "@/lib/id-helpers";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { TICKET_FILTERS } from "@/constants/filters";
@@ -407,7 +408,7 @@ const loadData = useCallback(async () => {
                                 href={`/admin/support-tickets/${ticket.id}`}
                                 className="text-sm font-medium text-orange-600 hover:text-orange-700"
                               >
-                                #{ticket.id.slice(0, 8)}
+                                #{shortId(ticket.id)}
                               </Link>
                             </td>
                             <td className="px-6 py-4">
@@ -417,13 +418,13 @@ const loadData = useCallback(async () => {
                               {ticket.orderId && (
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
                                   /** Order */
-                                  Order: {ticket.orderId.slice(0, 8)}
+                                  Order: {shortId(ticket.orderId)}
                                 </div>
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-900 dark:text-white">
-                                {ticket.userId.slice(0, 8)}
+                                {shortId(ticket.userId)}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">

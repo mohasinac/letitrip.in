@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/user/addresses/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -16,11 +16,11 @@ import { PageState } from "@/components/common/PageState";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { toastCrud, toastErr } from "@/lib/toast-helper";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { CheckCircle, Edit, MapPin, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 
 /**
  * Function: Addresses Content
@@ -52,14 +52,14 @@ function AddressesContent() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   /**
- * Performs load addresses operation
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The loadaddresses result
- *
- */
-const loadAddresses = useCallback(async () => {
+   * Performs load addresses operation
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The loadaddresses result
+   *
+   */
+  const loadAddresses = useCallback(async () => {
     return await addressService.getAll();
   }, []);
 
@@ -145,7 +145,7 @@ const loadAddresses = useCallback(async () => {
       await addressService.delete(deleteId);
       setDeleteId(null);
       execute(loadAddresses);
-      toast.success("Address deleted successfully");
+      toastCrud.deleted("Address");
     } catch (error) {
       logError(error as Error, {
         /** Component */
@@ -153,7 +153,7 @@ const loadAddresses = useCallback(async () => {
         /** Metadata */
         metadata: { addressId: deleteId },
       });
-      toast.error("Failed to delete address");
+      toastErr.deleteFailed("Address");
     }
   };
 
@@ -188,7 +188,7 @@ const loadAddresses = useCallback(async () => {
         /** Metadata */
         metadata: { addressId: id },
       });
-      toast.error("Failed to set default address");
+      toastErr.updateFailed("Default address");
     }
   };
 

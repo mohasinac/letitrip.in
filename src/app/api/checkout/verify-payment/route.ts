@@ -2,19 +2,19 @@
  * @fileoverview TypeScript Module
  * @module src/app/api/checkout/verify-payment/route
  * @description This file contains functionality related to route
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { Collections } from "../../lib/firebase/collections";
-import { getCurrentUser } from "../../lib/session";
 import { batchGetOrders, batchGetProducts } from "@/app/api/lib/batch-fetch";
-import { z } from "zod";
 import { unique } from "@/lib/array-helpers";
 import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { Collections } from "../../lib/firebase/collections";
+import { getCurrentUser } from "../../lib/session";
 
 const VerifyPaymentSchema = z.object({
   order_ids: z.array(z.string()).optional(), // Array of order IDs for multi-shop
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.issues[0].message },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     if (orderIdsToProcess.length === 0) {
       return NextResponse.json(
         { error: "No order IDs provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { error: "Payment verification failed" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -156,14 +156,14 @@ export async function POST(request: NextRequest) {
 
       // Collect product IDs for stock update
       /**
- * Performs product ids operation
- *
- * @param {any} (item - The (item
- *
- * @returns {any} The productids result
- *
- */
-const productIds =
+       * Performs product ids operation
+       *
+       * @param {any} (item - The (item
+       *
+       * @returns {any} The productids result
+       *
+       */
+      const productIds =
         order?.items?.map((item: any) => item.product_id) || [];
       allProductIds.push(...productIds);
 
@@ -195,7 +195,7 @@ const productIds =
         batch.update(productRef, {
           stock_count: Math.max(
             0,
-            product.stock_count - productQuantities[productId],
+            product.stock_count - productQuantities[productId]
           ),
           updated_at: new Date(),
         });
@@ -240,7 +240,7 @@ const productIds =
     console.error("Verify payment error:", error);
     return NextResponse.json(
       { error: error.message || "Failed to verify payment" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

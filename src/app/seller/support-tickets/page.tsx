@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/seller/support-tickets/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -17,6 +17,7 @@ import { TICKET_FILTERS } from "@/constants/filters";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";
+import { shortId } from "@/lib/id-helpers";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
@@ -30,7 +31,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { shortId } from "@/lib/id-helpers";
 
 export default /**
  * Performs seller support tickets page operation
@@ -48,7 +48,7 @@ function SellerSupportTicketsPage() {
 
 /**
  * TicketsData interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for TicketsData
  */
@@ -117,14 +117,14 @@ function SellerSupportTicketsContent() {
   };
 
   /**
- * Performs load data operation
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The loaddata result
- *
- */
-const loadData = useCallback(async () => {
+   * Performs load data operation
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The loaddata result
+   *
+   */
+  const loadData = useCallback(async () => {
     try {
       const [ticketsRes, totalRes, openRes, inProgressRes, resolvedRes] =
         await Promise.all([
@@ -267,7 +267,7 @@ const loadData = useCallback(async () => {
     const now = new Date();
     const ticketDate = new Date(date);
     const diffInMinutes = Math.floor(
-      (now.getTime() - ticketDate.getTime()) / 60000,
+      (now.getTime() - ticketDate.getTime()) / 60000
     );
 
     if (diffInMinutes < 1) return "Just now";
@@ -497,7 +497,7 @@ const loadData = useCallback(async () => {
                       <StatusBadge status={ticket.status} />
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPriorityColor(
-                          ticket.priority,
+                          ticket.priority
                         )}`}
                       >
                         {ticket.priority}

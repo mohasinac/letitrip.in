@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/components/shop/ShopProducts
  * @description This file contains the ShopProducts component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -10,25 +10,25 @@
 
 "use client";
 
-import { useState } from "react";
-import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toastAction, toastErr } from "@/lib/toast-helper";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
+import { ProductCard } from "@/components/cards/ProductCard";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Price } from "@/components/common/values/Price";
 import OptimizedImage from "@/components/common/OptimizedImage";
+import { Price } from "@/components/common/values/Price";
 import {
   ProductFilters,
   ProductFilterValues,
 } from "@/components/filters/ProductFilters";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { toastAction, toastErr } from "@/lib/toast-helper";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Filter as FilterIcon, Grid, List, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 /**
  * ShopProductsProps interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for ShopProductsProps
  */
@@ -245,14 +245,14 @@ export function ShopProducts({
       }
 
       /**
- * Performs product operation
- *
- * @param {any} (p - The (p
- *
- * @returns {any} The product result
- *
- */
-const product = products.find((p) => p.id === productId);
+       * Performs product operation
+       *
+       * @param {any} (p - The (p
+       *
+       * @returns {any} The product result
+       *
+       */
+      const product = products.find((p) => p.id === productId);
       if (!product) {
         toastErr.notFound("Product");
         return;

@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/user/tickets/[id]/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -15,12 +15,12 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { shortId } from "@/lib/id-helpers";
 import { supportService } from "@/services/support.service";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { shortId } from "@/lib/id-helpers";
 
 const statusColors = {
   /** Open */
@@ -74,14 +74,14 @@ function TicketDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
- * Fetches ticket
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The fetchticket result
- *
- */
-const fetchTicket = useCallback(async () => {
+   * Fetches ticket
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The fetchticket result
+   *
+   */
+  const fetchTicket = useCallback(async () => {
     await execute(() => supportService.getTicket(ticketId));
   }, [ticketId, execute]);
 

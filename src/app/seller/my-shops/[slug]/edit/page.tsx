@@ -2,7 +2,7 @@
  * @fileoverview React Component
  * @module src/app/seller/my-shops/[slug]/edit/page
  * @description This file contains the page component and its related functionality
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
@@ -16,13 +16,13 @@ import ShopForm from "@/components/seller/ShopForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
+import { toastCrud, toastErr } from "@/lib/toast-helper";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { ArrowLeft, Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export default /**
  * Performs edit shop page operation
@@ -51,14 +51,14 @@ function EditShopPage() {
   }, [slug]);
 
   /**
- * Performs load shop operation
- *
- * @param {any} async( - The async(
- *
- * @returns {Promise<any>} The loadshop result
- *
- */
-const loadShop = useCallback(async () => {
+   * Performs load shop operation
+   *
+   * @param {any} async( - The async(
+   *
+   * @returns {Promise<any>} The loadshop result
+   *
+   */
+  const loadShop = useCallback(async () => {
     await execute(async () => {
       const data = await shopsService.getBySlug(slug);
       setShop(data);
@@ -93,7 +93,7 @@ const loadShop = useCallback(async () => {
       const updatedShop = await shopsService.update(slug, data);
       setShop(updatedShop);
 
-      toast.success("Shop updated successfully!");
+      toastCrud.updated("Shop");
     } catch (error: any) {
       logError(error as Error, {
         /** Component */
@@ -101,7 +101,9 @@ const loadShop = useCallback(async () => {
         /** Metadata */
         metadata: { slug },
       });
-      toast.error(error.message || "Failed to update shop. Please try again.");
+      toastErr.custom(
+        error.message || "Failed to update shop. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -129,7 +131,7 @@ const loadShop = useCallback(async () => {
 
       await shopsService.delete(slug);
 
-      toast.success("Shop deleted successfully");
+      toastCrud.deleted("Shop");
       router.push("/seller/my-shops");
     } catch (error: any) {
       logError(error as Error, {
@@ -138,7 +140,9 @@ const loadShop = useCallback(async () => {
         /** Metadata */
         metadata: { slug },
       });
-      toast.error(error.message || "Failed to delete shop. Please try again.");
+      toastErr.custom(
+        error.message || "Failed to delete shop. Please try again."
+      );
       setShowDeleteDialog(false);
       setIsDeleting(false);
     }
