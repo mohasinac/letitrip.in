@@ -1,21 +1,22 @@
 /**
- * @fileoverview Service Module
+ * @fileoverview Orders Service (Using BaseService Pattern)
  * @module src/services/orders.service
- * @description This file contains service functions for orders operations
+ * @description Orders service extending BaseService for common CRUD operations
  * 
  * @created 2025-12-05
+ * @updated 2025-12-06
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
-import {
+import type {
   OrderBE,
   OrderFiltersBE,
-  UpdateOrderStatusRequestBE,
 } from "@/types/backend/order.types";
-import {
+import type {
   OrderFE,
   OrderCardFE,
   CreateOrderFormFE,
@@ -28,293 +29,246 @@ import {
   toBEUpdateOrderStatusRequest,
   toBECreateShipmentRequest,
 } from "@/types/transforms/order.transforms";
-import type {
-  PaginatedResponseBE,
-  PaginatedResponseFE,
-  BulkActionResponse,
-} from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
 
 /**
- * OrdersService class
+ * Orders Service Class
  * 
- * @class
- * @description Description of OrdersService class functionality
+ * Extends BaseService to inherit common CRUD operations.
+ * Adds order-specific functionality like status updates, shipment tracking, etc.
+ * 
+ * @extends BaseService<OrderBE, OrderFE, CreateOrderFormFE, OrderFiltersBE>
+ * 
+ * @example
+ * const orders = await ordersService.list({ status: 'pending' });
+ * const order = await ordersService.getById('order_123');
  */
-class OrdersService {
-  // List orders (role-filtered)
-  async list(
-    /** Filters */
-    filters?: Partial<OrderFiltersBE>,
-  ): Promise<PaginatedResponseFE<OrderCardFE>> {
-    const endpoint = buildUrl(ORDER_ROUTES.LIST, filters);
-    const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
+class OrdersService extends BaseService<
+  OrderBE,
+  OrderFE,
+  CreateOrderFormFE,
+  OrderFiltersBE
+> {
+  protected endpoint = ORDER_ROUTES.LIST;
+  protected entityName = "Order";
 
-    return {
-      /** Data */
-      data: (response.data || []).map(toFEOrderCard),
-      /** Count */
-      count: response.count,
-      /** Pagination */
-      pagination: response.pagination,
-    };
+  /**
+   * Transform form data to backend format
+   */
+  protected toBE(form: CreateOrderFormFE): Partial<OrderBE> {
+    return toBECreateOrderRequest(form) as Partial<OrderBE>;
   }
 
-  // Get seller's orders specifically (uses unified route with automatic filtering)
+  /**
+   * Transform backend data to frontend format
+   */
+  protected toFE(be: OrderBE): OrderFE {
+    return toFEOrder(be);
+  }
+
+  /**
+   * Transform backend array to frontend card format
+   * Overridden to return OrderCardFE instead of OrderFE for list views
+   */
+  protected toFEArray(beArray: OrderBE[]): OrderCardFE[] {
+    return beArray.map((order) => toFEOrderCard(order as any));
+  }
+
+  /**
+   * Get seller's orders with automatic filtering
+   */
   async getSellerOrders(
-    /** Filters */
-    filters?: Partial<OrderFiltersBE>,
-  ): Promise<PaginatedResponseFE<OrderCardFE>> {
-    // The unified route automatically filters by seller's shop
+    filters?: Partial<OrderFiltersBE>
+  ): Promise<{ data: OrderCardFE[]; count: number; pagination: any }> {
     return this.list(filters);
   }
 
-  // Get order by ID
-  async getById(id: string): Promise<OrderFE> {
-    const orderBE = await apiService.get<OrderBE>(ORDER_ROUTES.BY_ID(id));
-    return toFEOrder(orderBE);
-  }
-
-  // Create order (customer checkout)
-  async create(formData: CreateOrderFormFE): Promise<OrderFE> {
-    const request = toBECreateOrderRequest(formData);
-    const orderBE = await apiService.post<OrderBE>(
-      ORDER_ROUTES.CREATE,
-      request,
-    );
-    return toFEOrder(orderBE);
-  }
-
-  // Update order status (seller/admin)
+  /**
+   * Update order status
+   */
   async updateStatus(
-    /** Id */
     id: string,
-    /** Status */
     status: string,
-    /** Internal Notes */
-    internalNotes?: string,
+    internalNotes?: string
   ): Promise<OrderFE> {
-    const request = toBEUpdateOrderStatusRequest(status, internalNotes);
-    const orderBE = await apiService.patch<OrderBE>(
-      ORDER_ROUTES.BY_ID(id),
-      request,
-    );
-    return toFEOrder(orderBE);
+    try {
+      const request = toBEUpdateOrderStatusRequest(status, internalNotes);
+      const orderBE = await apiService.patch<OrderBE>(
+        ORDER_ROUTES.BY_ID(id),
+        request
+      );
+      return this.toFE(orderBE);
+    } catch (error) {
+      return this.handleError(error, `updateStatus:${id}`);
+    }
   }
 
-  // Create shipment (seller/admin)
+  /**
+   * Create shipment for order
+   */
   async createShipment(
-    /** Id */
     id: string,
-    /** Tracking Number */
     trackingNumber: string,
-    /** Shipping Provider */
     shippingProvider: string,
-    /** Estimated Delivery */
-    estimatedDelivery?: Date,
+    estimatedDelivery?: Date
   ): Promise<OrderFE> {
-    const request = toBECreateShipmentRequest(
-      trackingNumber,
-      shippingProvider,
-      estimatedDelivery,
-    );
-    const orderBE = await apiService.post<OrderBE>(
-      `/orders/${id}/shipment`,
-      request,
-    );
-    return toFEOrder(orderBE);
+    try {
+      const request = toBECreateShipmentRequest(
+        trackingNumber,
+        shippingProvider,
+        estimatedDelivery
+      );
+      const orderBE = await apiService.post<OrderBE>(
+        `/orders/${id}/shipment`,
+        request
+      );
+      return this.toFE(orderBE);
+    } catch (error) {
+      return this.handleError(error, `createShipment:${id}`);
+    }
   }
 
-  // Cancel order (user before shipping)
+  /**
+   * Cancel order
+   */
   async cancel(id: string, reason: string): Promise<OrderFE> {
-    const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
-      reason,
-    });
-    return toFEOrder(orderBE);
+    try {
+      const orderBE = await apiService.post<OrderBE>(
+        ORDER_ROUTES.CANCEL(id),
+        { reason }
+      );
+      return this.toFE(orderBE);
+    } catch (error) {
+      return this.handleError(error, `cancel:${id}`);
+    }
   }
 
-  // Track shipment
+  /**
+   * Track shipment
+   */
   async track(id: string): Promise<{
-    /** Tracking Number */
     trackingNumber: string;
-    /** Shipping Provider */
     shippingProvider: string;
-    /** Current Status */
     currentStatus: string;
-    /** Estimated Delivery */
     estimatedDelivery: Date | null;
-    /** Tracking Url */
     trackingUrl: string;
-    /** Events */
     events: Array<{
-      /** Status */
       status: string;
-      /** Location */
       location: string;
-      /** Timestamp */
       timestamp: Date;
-      /** Description */
       description: string;
     }>;
   }> {
-    return apiService.get(ORDER_ROUTES.TRACKING(id));
-  }
-
-  // Download invoice
-  async downloadInvoice(id: string): Promise<Blob> {
-    const response = await fetch(`/api${ORDER_ROUTES.INVOICE(id)}`, {
-      /** Method */
-      method: "GET",
-      /** Headers */
-      headers: {
-        /** Accept */
-        Accept: "application/pdf",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to download invoice");
+    try {
+      return await apiService.get(ORDER_ROUTES.TRACKING(id));
+    } catch (error) {
+      return this.handleError(error, `track:${id}`);
     }
-
-    return response.blob();
-  }
-
-  // Get order statistics
-  async getStats(filters?: {
-    /** Shop Id */
-    shopId?: string;
-    /** Start Date */
-    startDate?: string;
-    /** End Date */
-    endDate?: string;
-  }): Promise<OrderStatsFE> {
-    /**
- * Performs params operation
- *
- * @returns {any} The params result
- *
- */
-const params = new URLSearchParams();
-
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
-    }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `/orders/stats?${queryString}`
-      : "/orders/stats";
-
-    return apiService.get<OrderStatsFE>(endpoint);
   }
 
   /**
-   * Bulk actions - supports: confirm, process, ship, deliver, cancel, refund, delete, update
+   * Download invoice as PDF
    */
-  async bulkAction(
-    /** Action */
-    action: string,
-    /** Order Ids */
-    orderIds: string[],
-    /** Data */
-    data?: any,
-  ): Promise<BulkActionResponse> {
+  async downloadInvoice(id: string): Promise<Blob> {
     try {
-      const response = await apiService.post<BulkActionResponse>(
-        ORDER_ROUTES.BULK,
-        {
-          action,
-          orderIds,
-          data,
-        },
-      );
-      return response;
+      const response = await fetch(`/api${ORDER_ROUTES.INVOICE(id)}`, {
+        method: "GET",
+        headers: { Accept: "application/pdf" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download invoice");
+      }
+
+      return response.blob();
     } catch (error) {
-      logServiceError("OrdersService", "bulkAction", error as Error);
-      throw error;
+      return this.handleError(error, `downloadInvoice:${id}`);
     }
   }
 
+  /**
+   * Get order statistics
+   */
+  async getStats(filters?: {
+    shopId?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<OrderStatsFE> {
+    try {
+      const queryString = this.buildQueryString(filters as any);
+      const endpoint = `/orders/stats${queryString}`;
+      return await apiService.get<OrderStatsFE>(endpoint);
+    } catch (error) {
+      return this.handleError(error, "getStats");
+    }
+  }
+
+  // Bulk operations (inherited bulkUpdate and bulkDelete from BaseService)
+  
   /**
    * Bulk confirm orders
    */
-  async bulkConfirm(orderIds: string[]): Promise<BulkActionResponse> {
-    return this.bulkAction("confirm", orderIds);
+  async bulkConfirm(orderIds: string[]): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "confirm",
+      orderIds,
+    });
   }
 
   /**
    * Bulk process orders
    */
-  async bulkProcess(orderIds: string[]): Promise<BulkActionResponse> {
-    return this.bulkAction("process", orderIds);
+  async bulkProcess(orderIds: string[]): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "process",
+      orderIds,
+    });
   }
 
   /**
    * Bulk ship orders
    */
-  async bulkShip(
-    /** Order Ids */
-    orderIds: string[],
-    /** Tracking Number */
-    trackingNumber?: string,
-  ): Promise<BulkActionResponse> {
-    return this.bulkAction("ship", orderIds, { trackingNumber });
+  async bulkShip(orderIds: string[], trackingNumber?: string): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "ship",
+      orderIds,
+      data: { trackingNumber },
+    });
   }
 
   /**
    * Bulk deliver orders
    */
-  async bulkDeliver(orderIds: string[]): Promise<BulkActionResponse> {
-    return this.bulkAction("deliver", orderIds);
+  async bulkDeliver(orderIds: string[]): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "deliver",
+      orderIds,
+    });
   }
 
   /**
    * Bulk cancel orders
    */
-  async bulkCancel(
-    /** Order Ids */
-    orderIds: string[],
-    /** Reason */
-    reason?: string,
-  ): Promise<BulkActionResponse> {
-    return this.bulkAction("cancel", orderIds, { reason });
+  async bulkCancel(orderIds: string[], reason?: string): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "cancel",
+      orderIds,
+      data: { reason },
+    });
   }
 
   /**
    * Bulk refund orders
    */
   async bulkRefund(
-    /** Order Ids */
     orderIds: string[],
-    /** Refund Amount */
     refundAmount?: number,
-    /** Reason */
-    reason?: string,
-  ): Promise<BulkActionResponse> {
-    return this.bulkAction("refund", orderIds, { refundAmount, reason });
-  }
-
-  /**
-   * Bulk delete orders
-   */
-  async bulkDelete(orderIds: string[]): Promise<BulkActionResponse> {
-    return this.bulkAction("delete", orderIds);
-  }
-
-  /**
-   * Bulk update orders
-   */
-  async bulkUpdate(
-    /** Order Ids */
-    orderIds: string[],
-    /** Updates */
-    updates: Partial<UpdateOrderStatusRequestBE>,
-  ): Promise<BulkActionResponse> {
-    return this.bulkAction("update", orderIds, updates);
+    reason?: string
+  ): Promise<any> {
+    return apiService.post(ORDER_ROUTES.BULK, {
+      action: "refund",
+      orderIds,
+      data: { refundAmount, reason },
+    });
   }
 }
 
