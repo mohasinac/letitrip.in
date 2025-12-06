@@ -14,7 +14,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
+import { toastErr } from "@/lib/toast-helper";
 import {
   Bell,
   Check,
@@ -323,7 +323,7 @@ seState(1);
         /** Metadata */
         metadata: { notificationId: id },
       });
-      toast.error("Failed to mark notification as read");
+      toastErr.updateFailed("Notification");
     }
   };
 

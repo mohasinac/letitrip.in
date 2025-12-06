@@ -11,6 +11,7 @@
 "use client";
 
 import { toast } from "@/components/admin/Toast";
+import { toastAction, toastErr } from "@/lib/toast-helper";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { EmptyStates } from "@/components/common/EmptyState";
@@ -105,7 +106,7 @@ function ProductsContent() {
     /** On Load Error */
     onLoadError: (error) => {
       logError(error, { component: "ProductsContent.loadProducts" });
-      toast.error("Failed to load products");
+      toastErr.loadFailed("Products");
     },
   });
   const [products, setProducts] = useState<ProductCardFE[]>([]);
@@ -384,9 +385,9 @@ lItems(response.pagination?.total || productsData.length);
 
         await addItem(productId, 1, undefined, productDetails);
 
-        toast.success(`${productDetails.name} added to cart!`);
+        toastAction.addedToCart();
       } catch (error: any) {
-        toast.error(error.message || "Failed to add to cart");
+        toastErr.custom(error.message || "Failed to add to cart");
       }
     },
     [products, addItem],

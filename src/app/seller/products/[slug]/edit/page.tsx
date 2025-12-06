@@ -27,7 +27,7 @@ import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toastErr } from "@/lib/toast-helper";
 
 /**
  * STEPS constant
@@ -191,7 +191,7 @@ const loadProduct = useCallback(async () => {
         /** Metadata */
         metadata: { slug },
       });
-      toast.error("Failed to update product");
+      toastErr.updateFailed("Product");
     } finally {
       setSaving(false);
     }
