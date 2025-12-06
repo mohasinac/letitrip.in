@@ -2,18 +2,18 @@
  * @fileoverview Service Module
  * @module src/services/events.service
  * @description This file contains service functions for events operations
- * 
+ *
  * @created 2025-12-05
  * @author mohasinac
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 /**
  * Event interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for Event
  */
@@ -60,7 +60,7 @@ export interface Event {
 
 /**
  * EventRegistration interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for EventRegistration
  */
@@ -77,7 +77,7 @@ export interface EventRegistration {
 
 /**
  * EventVote interface
- * 
+ *
  * @interface
  * @description Defines the structure and contract for EventVote
  */
@@ -100,11 +100,16 @@ interface EventFilters {
 
 /**
  * EventsService class
- * 
+ *
  * @class
  * @description Description of EventsService class functionality
  */
-class EventsService extends BaseService<Event, Event, Partial<Event>, EventFilters> {
+class EventsService extends BaseService<
+  Event,
+  Event,
+  Partial<Event>,
+  EventFilters
+> {
   constructor() {
     super({
       baseRoute: "/api/events",
@@ -146,7 +151,6 @@ class EventsService extends BaseService<Event, Event, Partial<Event>, EventFilte
   ): Promise<{ success: boolean; voted: boolean; optionId?: string }> {
     return apiService.get(`/api/events/${eventId}/vote`);
   }
-
 }
 
 export const eventsService = new EventsService();

@@ -8,6 +8,7 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
+import { BaseService } from "./base.service";
 import { apiService } from "./api.service";
 import { HERO_SLIDE_ROUTES } from "@/constants/api-routes";
 
@@ -222,8 +223,20 @@ function fromApiFormat(data: Record<string, unknown>): HeroSlide {
  * Hero Slides Service
  * Manages homepage hero slides/carousel with RBAC
  */
-class HeroSlidesService {
-  private readonly BASE_PATH = "/api/hero-slides";
+class HeroSlidesService extends BaseService<
+  Record<string, unknown>,
+  HeroSlide,
+  HeroSlideFormData,
+  HeroSlideFilters
+> {
+  constructor() {
+    super({
+      baseRoute: HERO_SLIDE_ROUTES.LIST,
+      toBE: toApiFormat,
+      toFE: fromApiFormat,
+      toFEList: (slides) => slides.map(fromApiFormat),
+    });
+  }
 
   /**
    * Invalidate cache for hero slides and homepage
@@ -232,89 +245,6 @@ class HeroSlidesService {
   private invalidateCache(): void {
     apiService.invalidateCache("/hero-slides");
     apiService.invalidateCache("/homepage");
-  }
-
-  /**
-   * Get all hero slides with optional filters
-   * Public: Returns only active slides
-   * Admin: Returns all slides with full data
-   */
-  async getHeroSlides(filters?: HeroSlideFilters): Promise<HeroSlide[]> {
-    const params = new URLSearchParams();
-
-    if (filters?.isActive !== undefined) {
-      params.set("isActive", String(filters.isActive));
-    }
-    if (filters?.search) {
-      params.set("search", filters.search);
-    }
-
-    const url = params.toString()
-      ? `${HERO_SLIDE_ROUTES.LIST}?${params}`
-      : HERO_SLIDE_ROUTES.LIST;
-
-    const response = await apiService.get<{
-      /** Slides */
-      slides: Record<string, unknown>[];
-    }>(url);
-    return (response.slides || []).map(fromApiFormat);
-  }
-
-  /**
-   * Get a single hero slide by ID
-   * Public: Returns only if active
-   * Admin: Returns full slide data
-   */
-  async getHeroSlideById(id: string): Promise<HeroSlide> {
-    const response = await apiService.get<{ slide: Record<string, unknown> }>(
-      HERO_SLIDE_ROUTES.BY_ID(id),
-    );
-    return fromApiFormat(response.slide);
-  }
-
-  /**
-   * Create a new hero slide (Admin only)
-   */
-  async createHeroSlide(data: HeroSlideFormData): Promise<HeroSlide> {
-    const response = await apiService.post<{ slide: Record<string, unknown> }>(
-      HERO_SLIDE_ROUTES.LIST,
-      toApiFormat(data),
-    );
-    this.invalidateCache();
-    return fromApiFormat(response.slide);
-  }
-
-  /**
-   * Update an existing hero slide (Admin only)
-   */
-  async updateHeroSlide(
-    /** Id */
-    id: string,
-    /** Data */
-    data: Partial<HeroSlideFormData>,
-  ): Promise<HeroSlide> {
-    /**
- * Performs response operation
- *
- * @param {any} HERO_SLIDE_ROUTES.BY_ID(id - The hero_slide_routes.by_id(id
- *
- * @returns {Promise<void>} The response result
- *
- */
-const response = await apiService.patch<{ slide: Record<string, unknown> }>(
-      HERO_SLIDE_ROUTES.BY_ID(id),
-      toApiFormat(data),
-    );
-    this.invalidateCache();
-    return fromApiFormat(response.slide);
-  }
-
-  /**
-   * Delete a hero slide (Admin only)
-   */
-  async deleteHeroSlide(id: string): Promise<void> {
-    await apiService.delete(HERO_SLIDE_ROUTES.BY_ID(id));
-    this.invalidateCache();
   }
 
   /**

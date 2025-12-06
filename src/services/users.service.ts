@@ -2,7 +2,7 @@
  * @fileoverview Users Service - Extends BaseService
  * @module src/services/users.service
  * @description User management service with CRUD and admin operations
- * 
+ *
  * @pattern BaseService - Inherits common CRUD operations
  * @created 2025-12-05
  * @refactored 2026-01-08 - Migrated to BaseService pattern
@@ -10,27 +10,22 @@
  * @see {@link https://mohasin.chinnapattan.com}
  */
 
-import { BaseService } from "./base.service";
-import { apiService } from "./api.service";
 import { USER_ROUTES } from "@/constants/api-routes";
 import { UserBE, UserFiltersBE } from "@/types/backend/user.types";
 import {
-  UserFE,
-  UserProfileFormFE,
   ChangePasswordFormFE,
   OTPVerificationFormFE,
+  UserFE,
+  UserProfileFormFE,
 } from "@/types/frontend/user.types";
 import {
-  toFEUser,
-  toFEUsers,
-  toBEUpdateUserRequest,
   toBEBanUserRequest,
   toBEChangeRoleRequest,
+  toBEUpdateUserRequest,
+  toFEUser,
 } from "@/types/transforms/user.transforms";
-import type {
-  PaginatedResponseBE,
-  PaginatedResponseFE,
-} from "@/types/shared/common.types";
+import { apiService } from "./api.service";
+import { BaseService } from "./base.service";
 
 class UsersService extends BaseService<
   UserBE,
@@ -58,7 +53,7 @@ class UsersService extends BaseService<
     /** Is Banned */
     isBanned: boolean,
     /** Ban Reason */
-    banReason?: string,
+    banReason?: string
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
     const response: any = await apiService.patch(USER_ROUTES.BAN(id), request);
@@ -75,7 +70,7 @@ class UsersService extends BaseService<
   // Get current user profile
   async getMe(): Promise<UserFE> {
     const response = await apiService.get<{ user: UserBE }>(
-      USER_ROUTES.PROFILE,
+      USER_ROUTES.PROFILE
     );
     return toFEUser(response.user);
   }
@@ -85,7 +80,7 @@ class UsersService extends BaseService<
     const request = toBEUpdateUserRequest(formData);
     const response = await apiService.patch<{ user: UserBE; message: string }>(
       USER_ROUTES.UPDATE_PROFILE,
-      request,
+      request
     );
     return toFEUser(response.user);
   }
@@ -93,7 +88,7 @@ class UsersService extends BaseService<
   // Change password
   async changePassword(
     /** Form Data */
-    formData: ChangePasswordFormFE,
+    formData: ChangePasswordFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(USER_ROUTES.CHANGE_PASSWORD, {
       /** Current Password */
@@ -111,7 +106,7 @@ class UsersService extends BaseService<
   // Verify email with OTP
   async verifyEmail(
     /** Form Data */
-    formData: OTPVerificationFormFE,
+    formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-email/confirm", {
       /** Otp */
@@ -127,7 +122,7 @@ class UsersService extends BaseService<
   // Verify mobile with OTP
   async verifyMobile(
     /** Form Data */
-    formData: OTPVerificationFormFE,
+    formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
       /** Otp */
