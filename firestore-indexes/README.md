@@ -6,17 +6,22 @@ This directory contains modular Firestore index definitions, organized by collec
 
 ```
 firestore-indexes/
-├── products.js       # Product listing, filtering, sorting (11 indexes)
-├── auctions.js       # Auction queries, bidding, time-based (9 indexes)
-├── shops.js          # Shop discovery, verification (5 indexes)
-├── orders.js         # Order tracking, fulfillment (7 indexes)
-├── categories.js     # Category navigation, hierarchy (4 indexes)
-├── reviews.js        # Product/shop reviews, ratings (4 indexes)
-├── bids.js           # Bid history, tracking (4 indexes)
-├── favorites.js      # Wishlist, saved items (2 indexes)
-├── users.js          # User management, RBAC (3 indexes)
-├── deploy-indexes.js # Deployment script
-└── README.md         # This file
+├── products.js         # Product listing, filtering, sorting (19 indexes)
+├── auctions.js         # Auction queries, bidding, time-based (13 indexes)
+├── shops.js            # Shop discovery, verification (5 indexes)
+├── orders.js           # Order tracking, fulfillment (7 indexes)
+├── categories.js       # Category navigation, hierarchy (4 indexes)
+├── reviews.js          # Product/shop reviews, ratings (4 indexes)
+├── bids.js             # Bid history, tracking (4 indexes)
+├── favorites.js        # Wishlist, saved items (2 indexes)
+├── users.js            # User management, RBAC (3 indexes)
+├── user-activities.js  # IP tracking, rate limiting (4 indexes)
+├── addresses.js        # User addresses, defaults (3 indexes)
+├── support-tickets.js  # Customer support tickets (6 indexes)
+├── payments.js         # Payment tracking, history (5 indexes)
+├── riplimit-refunds.js # Refund management (2 indexes)
+├── deploy-indexes.js   # Deployment script
+└── README.md           # This file
 ```
 
 ## 🚀 Usage
