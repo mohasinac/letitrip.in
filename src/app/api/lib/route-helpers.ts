@@ -95,15 +95,15 @@ export type PublicRouteHandler = (
  * ```
  */
 export function withAuth(
-  handler: AuthenticatedRouteHandler,
+  handler: AuthenticatedRouteHandler | OptionalAuthRouteHandler,
   options: AuthOptions = {}
 ): (
   request: NextRequest,
-  context?: { params?: Record<string, string> }
+  context?: { params?: Promise<Record<string, string>> }
 ) => Promise<NextResponse> {
   return async (
     request: NextRequest,
-    routeContext?: { params?: Record<string, string> }
+    routeContext?: { params?: Promise<Record<string, string>> }
   ) => {
     try {
       // Parse user from session
@@ -122,11 +122,14 @@ export function withAuth(
         );
       }
 
-      // Build context
+      // Build context (await params if it's a Promise)
+      const params = routeContext?.params
+        ? await routeContext.params
+        : undefined;
       const context: RouteContext = {
         user,
         url: new URL(request.url),
-        params: routeContext?.params,
+        params,
       };
 
       // Call handler
@@ -162,17 +165,21 @@ export function withErrorHandler(
   handler: PublicRouteHandler
 ): (
   request: NextRequest,
-  routeContext?: { params?: Record<string, string> }
+  routeContext?: { params?: Promise<Record<string, string>> }
 ) => Promise<NextResponse> {
   return async (
     request: NextRequest,
-    routeContext?: { params?: Record<string, string> }
+    routeContext?: { params?: Promise<Record<string, string>> }
   ) => {
     try {
+      // Await params if it's a Promise
+      const params = routeContext?.params
+        ? await routeContext.params
+        : undefined;
       const context: RouteContext = {
         user: null,
         url: new URL(request.url),
-        params: routeContext?.params,
+        params,
       };
 
       return await handler(request, context);

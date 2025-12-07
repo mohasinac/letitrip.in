@@ -1,5 +1,10 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { createSuccessResponse, withAuth } from "@/app/api/lib/route-helpers";
+import {
+  createSuccessResponse,
+  withAuth,
+  type RouteContext,
+} from "@/app/api/lib/route-helpers";
+import type { UserData } from "@/app/api/lib/session";
 import { COLLECTIONS } from "@/constants/database";
 import { NextRequest } from "next/server";
 
@@ -10,7 +15,7 @@ import { NextRequest } from "next/server";
  * Admin only endpoint
  */
 export const GET = withAuth(
-  async (req: NextRequest, user) => {
+  async (req: NextRequest, user: UserData, context: RouteContext) => {
     const db = getFirestoreAdmin();
 
     // Get all users
