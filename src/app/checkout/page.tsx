@@ -9,16 +9,20 @@ import { ErrorMessage } from "@/components/common/ErrorMessage";
 import { Price } from "@/components/common/values/Price";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { FormField } from "@/components/forms/FormField";
+import { FormSelect } from "@/components/forms/FormSelect";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { logError } from "@/lib/firebase-error-logger";
+import { isInternationalAddress } from "@/lib/validators/address.validator";
 import { checkoutService } from "@/services/checkout.service";
+import type { AddressFE } from "@/types/frontend/address.types";
 import {
   Check,
   ChevronLeft,
   CreditCard,
   FileText,
+  Globe,
   Loader2,
   MapPin,
 } from "lucide-react";
@@ -50,9 +54,15 @@ export default function CheckoutPage() {
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("address");
   const [shippingAddressId, setShippingAddressId] = useState("");
+  const [shippingAddress, setShippingAddress] = useState<AddressFE | null>(
+    null
+  );
   const [billingAddressId, setBillingAddressId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "razorpay",
+  const [paymentMethod, setPaymentMethod] = useState<
+    "razorpay" | "paypal" | "cod"
+  >("razorpay");
+  const [currency, setCurrency] = useState<"INR" | "USD" | "EUR" | "GBP">(
+    "INR"
   );
   const [useSameAddress, setUseSameAddress] = useState(true);
   const [notes, setNotes] = useState("");
@@ -64,6 +74,12 @@ export default function CheckoutPage() {
   const [shopCoupons, setShopCoupons] = useState<
     Record<string, { code: string; discountAmount: number }>
   >({});
+  const [availableGateways, setAvailableGateways] = useState<string[]>([
+    "razorpay",
+    "cod",
+  ]);
+  const [isInternational, setIsInternational] = useState(false);
+  const [loadingGateways, setLoadingGateways] = useState(false);
 
   // Group cart items by shop
   const shopGroups = useMemo(() => {
@@ -88,17 +104,131 @@ export default function CheckoutPage() {
 
   // Calculate grand total across all shops
   const grandTotal = useMemo(() => {
-    return shopGroups.reduce((sum, shop) => {
+    const inrTotal = shopGroups.reduce((sum, shop) => {
       const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
-        0,
+        0
       );
       const discount = shop.coupon?.discountAmount || 0;
       const shipping = subtotal >= 5000 ? 0 : 100;
       const tax = Math.round(subtotal * 0.18);
       return sum + (subtotal + shipping + tax - discount);
     }, 0);
-  }, [shopGroups]);
+
+    // Convert to selected currency if international
+    if (isInternational && currency !== "INR") {
+      const conversionRates: Record<string, number> = {
+        USD: 0.012,
+        EUR: 0.011,
+        GBP: 0.0095,
+      };
+      return Math.round(inrTotal * conversionRates[currency] * 100) / 100;
+    }
+
+    return inrTotal;
+  }, [shopGroups, isInternational, currency]);
+
+  // Update available gateways when shipping address changes
+  useEffect(() => {
+    const fetchAvailableGateways = async () => {
+      if (!shippingAddress) return;
+
+      setLoadingGateways(true);
+      try {
+        const international = isInternationalAddress({
+          line1: shippingAddress.addressLine1,
+          line2: shippingAddress.addressLine2 || undefined,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          postalCode: shippingAddress.postalCode,
+          country: shippingAddress.country,
+        });
+        setIsInternational(international);
+
+        // Determine currency based on country
+        let detectedCurrency: "INR" | "USD" | "EUR" | "GBP" = "INR";
+        if (international) {
+          if (
+            shippingAddress.country === "US" ||
+            shippingAddress.country === "United States"
+          ) {
+            detectedCurrency = "USD";
+          } else if (
+            shippingAddress.country === "GB" ||
+            shippingAddress.country === "United Kingdom"
+          ) {
+            detectedCurrency = "GBP";
+          } else if (
+            [
+              "DE",
+              "FR",
+              "IT",
+              "ES",
+              "Germany",
+              "France",
+              "Italy",
+              "Spain",
+            ].includes(shippingAddress.country)
+          ) {
+            detectedCurrency = "EUR";
+          } else {
+            detectedCurrency = "USD";
+          }
+        }
+        setCurrency(detectedCurrency);
+
+        // Fetch available gateways from API
+        const params = new URLSearchParams({
+          country: shippingAddress.country,
+          currency: detectedCurrency,
+          amount: grandTotal.toString(),
+        });
+
+        const response = await fetch(
+          `/api/payments/available-gateways?${params}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch payment gateways");
+        }
+
+        const data = await response.json();
+        const gatewayIds = data.gateways.map((g: any) => g.id);
+
+        // Always add COD as fallback
+        if (!gatewayIds.includes("cod")) {
+          gatewayIds.push("cod");
+        }
+
+        setAvailableGateways(gatewayIds);
+
+        // Update payment method if current is not available
+        if (!gatewayIds.includes(paymentMethod)) {
+          setPaymentMethod(gatewayIds[0] || "cod");
+        }
+      } catch (error) {
+        logError(error as Error, {
+          component: "CheckoutPage.fetchAvailableGateways",
+          metadata: { address: shippingAddress },
+        });
+        // Fallback to basic gateway selection
+        if (isInternational) {
+          setAvailableGateways(["paypal", "cod"]);
+          if (paymentMethod === "razorpay") {
+            setPaymentMethod("paypal");
+          }
+        } else {
+          setAvailableGateways(["razorpay", "cod"]);
+          if (paymentMethod === "paypal") {
+            setPaymentMethod("razorpay");
+          }
+        }
+      } finally {
+        setLoadingGateways(false);
+      }
+    };
+
+    fetchAvailableGateways();
+  }, [shippingAddress, grandTotal]);
 
   useEffect(() => {
     if (!user) {
@@ -171,7 +301,7 @@ export default function CheckoutPage() {
 
       const subtotal = shop.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
-        0,
+        0
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
@@ -237,7 +367,7 @@ export default function CheckoutPage() {
         // Check if Razorpay is loaded
         if (!window.Razorpay) {
           throw new Error(
-            "Payment gateway not available. Please try Cash on Delivery or refresh the page.",
+            "Payment gateway not available. Please try Cash on Delivery or refresh the page."
           );
         }
 
@@ -261,7 +391,7 @@ export default function CheckoutPage() {
 
               // Redirect to first order (or create a multi-order success page)
               router.push(
-                `/user/orders/${orderIds[0]}?success=true&multi=true`,
+                `/user/orders/${orderIds[0]}?success=true&multi=true`
               );
             } catch (error: any) {
               logError(error as Error, {
@@ -288,7 +418,7 @@ export default function CheckoutPage() {
           modal: {
             ondismiss: function () {
               setError(
-                "Payment was cancelled. Your order has not been placed.",
+                "Payment was cancelled. Your order has not been placed."
               );
               setProcessing(false);
             },
@@ -303,7 +433,7 @@ export default function CheckoutPage() {
           });
           setError(
             response.error.description ||
-              "Payment failed. Please try again or use a different payment method.",
+              "Payment failed. Please try again or use a different payment method."
           );
           setProcessing(false);
         });
@@ -399,8 +529,8 @@ export default function CheckoutPage() {
                             isCompleted
                               ? "bg-green-500 text-white"
                               : isCurrent
-                                ? "bg-primary text-white"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                              ? "bg-primary text-white"
+                              : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                           }`}
                         >
                           {isCompleted ? (
@@ -443,7 +573,10 @@ export default function CheckoutPage() {
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
                     <AddressSelectorWithCreate
                       value={shippingAddressId}
-                      onChange={(id) => setShippingAddressId(id)}
+                      onChange={(id, address) => {
+                        setShippingAddressId(id);
+                        setShippingAddress(address);
+                      }}
                       label="Shipping Address"
                       required
                       error={validationErrors.shipping}
@@ -478,11 +611,73 @@ export default function CheckoutPage() {
 
                 {/* Payment Step */}
                 {currentStep === "payment" && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <PaymentMethod
-                      selected={paymentMethod}
-                      onSelect={setPaymentMethod}
-                    />
+                  <div className="space-y-6">
+                    {isInternational && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <Globe className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">
+                              International Order
+                            </h4>
+                            <p className="text-sm text-blue-700 dark:text-blue-400">
+                              This order will be shipped internationally.
+                              Available payment methods are shown below.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <FormField
+                            label="Select Currency"
+                            hint="Choose your preferred currency"
+                          >
+                            <FormSelect
+                              id="currency-select"
+                              value={currency}
+                              onChange={(e) =>
+                                setCurrency(
+                                  e.target.value as
+                                    | "INR"
+                                    | "USD"
+                                    | "EUR"
+                                    | "GBP"
+                                )
+                              }
+                              options={[
+                                { value: "USD", label: "🇺🇸 USD - US Dollar" },
+                                { value: "EUR", label: "🇪🇺 EUR - Euro" },
+                                {
+                                  value: "GBP",
+                                  label: "🇬🇧 GBP - British Pound",
+                                },
+                                {
+                                  value: "INR",
+                                  label: "🇮🇳 INR - Indian Rupee",
+                                },
+                              ]}
+                              className="bg-white dark:bg-gray-800"
+                            />
+                          </FormField>
+                        </div>
+                      </div>
+                    )}
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+                      {loadingGateways ? (
+                        <div className="flex items-center justify-center py-8">
+                          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                          <span className="ml-2 text-gray-600 dark:text-gray-400">
+                            Loading payment methods...
+                          </span>
+                        </div>
+                      ) : (
+                        <PaymentMethod
+                          selected={paymentMethod}
+                          onSelect={setPaymentMethod}
+                          availableGateways={availableGateways}
+                          isInternational={isInternational}
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -556,16 +751,25 @@ export default function CheckoutPage() {
 
               {/* Order Summary Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-6">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
                     Order Summary
                   </h3>
+
+                  {isInternational && currency !== "INR" && (
+                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-400">
+                        <Globe className="w-4 h-4" />
+                        <span>Prices shown in {currency}</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-4 mb-4">
                     {shopGroups.map((shop) => {
                       const subtotal = shop.items.reduce(
                         (sum, item) => sum + item.price * item.quantity,
-                        0,
+                        0
                       );
                       const discount =
                         shopCoupons[shop.shopId]?.discountAmount || 0;
@@ -573,26 +777,52 @@ export default function CheckoutPage() {
                       const tax = Math.round(subtotal * 0.18);
                       const shopTotal = subtotal + shipping + tax - discount;
 
+                      // Convert to selected currency if international
+                      const conversionRates: Record<string, number> = {
+                        USD: 0.012,
+                        EUR: 0.011,
+                        GBP: 0.0095,
+                        INR: 1,
+                      };
+                      const rate = conversionRates[currency];
+                      const convertAmount = (amount: number) =>
+                        Math.round(amount * rate * 100) / 100;
+
                       return (
                         <div
                           key={shop.shopId}
-                          className="pb-4 border-b last:border-b-0"
+                          className="pb-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                         >
-                          <p className="text-sm font-medium text-gray-900 mb-2">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
                             {shop.shopName}
                           </p>
-                          <div className="space-y-1 text-xs text-gray-600">
+                          <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                             <div className="flex justify-between">
                               <span>{shop.items.length} items</span>
                               <span>
-                                <Price amount={subtotal} />
+                                {isInternational && currency !== "INR" ? (
+                                  <span>
+                                    {currency}{" "}
+                                    {convertAmount(subtotal).toFixed(2)}
+                                  </span>
+                                ) : (
+                                  <Price amount={subtotal} />
+                                )}
                               </span>
                             </div>
                             {discount > 0 && (
-                              <div className="flex justify-between text-green-600">
+                              <div className="flex justify-between text-green-600 dark:text-green-400">
                                 <span>Discount</span>
                                 <span>
-                                  -<Price amount={discount} />
+                                  -
+                                  {isInternational && currency !== "INR" ? (
+                                    <span>
+                                      {currency}{" "}
+                                      {convertAmount(discount).toFixed(2)}
+                                    </span>
+                                  ) : (
+                                    <Price amount={discount} />
+                                  )}
                                 </span>
                               </div>
                             )}
@@ -601,6 +831,11 @@ export default function CheckoutPage() {
                               <span>
                                 {shipping === 0 ? (
                                   "FREE"
+                                ) : isInternational && currency !== "INR" ? (
+                                  <span>
+                                    {currency}{" "}
+                                    {convertAmount(shipping).toFixed(2)}
+                                  </span>
                                 ) : (
                                   <Price amount={shipping} />
                                 )}
@@ -609,13 +844,26 @@ export default function CheckoutPage() {
                             <div className="flex justify-between">
                               <span>Tax</span>
                               <span>
-                                <Price amount={tax} />
+                                {isInternational && currency !== "INR" ? (
+                                  <span>
+                                    {currency} {convertAmount(tax).toFixed(2)}
+                                  </span>
+                                ) : (
+                                  <Price amount={tax} />
+                                )}
                               </span>
                             </div>
-                            <div className="flex justify-between font-semibold text-gray-900 pt-1">
+                            <div className="flex justify-between font-semibold text-gray-900 dark:text-white pt-1">
                               <span>Shop Total</span>
                               <span>
-                                <Price amount={shopTotal} />
+                                {isInternational && currency !== "INR" ? (
+                                  <span>
+                                    {currency}{" "}
+                                    {convertAmount(shopTotal).toFixed(2)}
+                                  </span>
+                                ) : (
+                                  <Price amount={shopTotal} />
+                                )}
                               </span>
                             </div>
                           </div>
@@ -624,14 +872,22 @@ export default function CheckoutPage() {
                     })}
                   </div>
 
-                  <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
-                    <span>Grand Total</span>
+                  <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-900 dark:text-white">
+                      Grand Total
+                    </span>
                     <span className="text-primary">
-                      <Price amount={grandTotal} />
+                      {isInternational && currency !== "INR" ? (
+                        <span>
+                          {currency} {grandTotal.toFixed(2)}
+                        </span>
+                      ) : (
+                        <Price amount={grandTotal} />
+                      )}
                     </span>
                   </div>
 
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                     <p>✓ Safe and secure payments</p>
                     <p>✓ Easy returns and refunds</p>
                     <p>✓ 100% authentic products</p>

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface FilterOption {
   label: string;
@@ -23,6 +22,8 @@ interface CollapsibleFilterProps {
   activeFilters: Record<string, any>;
   onChange: (filterId: string, value: any) => void;
   onClear: (filterId?: string) => void;
+  search?: boolean; // Enable search for each section
+  searchThreshold?: number; // Minimum options to show search (default: 5)
 }
 
 export function CollapsibleFilter({
@@ -30,19 +31,68 @@ export function CollapsibleFilter({
   activeFilters,
   onChange,
   onClear,
+  search = false,
+  searchThreshold = 5,
 }: CollapsibleFilterProps) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({
-    // First 3 sections expanded by default
-    [sections[0]?.id]: true,
-    [sections[1]?.id]: true,
-    [sections[2]?.id]: true,
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
+    // Load from localStorage or default to first 3 sections expanded
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("collapsible-filter-expanded-state");
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          return {
+            [sections[0]?.id]: true,
+            [sections[1]?.id]: true,
+            [sections[2]?.id]: true,
+          };
+        }
+      }
+    }
+    return {
+      [sections[0]?.id]: true,
+      [sections[1]?.id]: true,
+      [sections[2]?.id]: true,
+    };
   });
   const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
-    {},
+    {}
   );
 
   const toggleSection = (sectionId: string) => {
-    setExpanded((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
+    setExpanded((prev) => {
+      const newState = { ...prev, [sectionId]: !prev[sectionId] };
+      localStorage.setItem(
+        "collapsible-filter-expanded-state",
+        JSON.stringify(newState)
+      );
+      return newState;
+    });
+  };
+
+  const expandAll = () => {
+    const allExpanded: Record<string, boolean> = {};
+    sections.forEach((section) => {
+      allExpanded[section.id] = true;
+    });
+    setExpanded(allExpanded);
+    localStorage.setItem(
+      "collapsible-filter-expanded-state",
+      JSON.stringify(allExpanded)
+    );
+  };
+
+  const collapseAll = () => {
+    const allCollapsed: Record<string, boolean> = {};
+    sections.forEach((section) => {
+      allCollapsed[section.id] = false;
+    });
+    setExpanded(allCollapsed);
+    localStorage.setItem(
+      "collapsible-filter-expanded-state",
+      JSON.stringify(allCollapsed)
+    );
   };
 
   const getActiveCount = (sectionId: string) => {
@@ -64,29 +114,49 @@ export function CollapsibleFilter({
     const query = searchQueries[section.id]?.toLowerCase() || "";
     if (!query) return section.options;
     return section.options.filter((opt) =>
-      opt.label.toLowerCase().includes(query),
+      opt.label.toLowerCase().includes(query)
     );
   };
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Filters
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Filters
+            {getTotalActiveCount() > 0 && (
+              <span className="ml-2 rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
+                {getTotalActiveCount()}
+              </span>
+            )}
+          </h3>
           {getTotalActiveCount() > 0 && (
-            <span className="ml-2 rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-              {getTotalActiveCount()}
-            </span>
+            <button
+              onClick={() => onClear()}
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Clear All
+            </button>
           )}
-        </h3>
-        {getTotalActiveCount() > 0 && (
-          <button
-            onClick={() => onClear()}
-            className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            Clear All
-          </button>
+        </div>
+
+        {/* Expand/Collapse All Buttons */}
+        {sections.length > 1 && (
+          <div className="flex gap-2">
+            <button
+              onClick={expandAll}
+              className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+            >
+              Expand All
+            </button>
+            <button
+              onClick={collapseAll}
+              className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+            >
+              Collapse All
+            </button>
+          </div>
         )}
       </div>
 
@@ -95,7 +165,9 @@ export function CollapsibleFilter({
         const isExpanded = expanded[section.id];
         const activeCount = getActiveCount(section.id);
         const filteredOptions = filterOptions(section);
-        const needsSearch = section.searchable && section.options.length > 200;
+        const needsSearch =
+          (search || section.searchable) &&
+          section.options.length >= searchThreshold;
 
         return (
           <div
@@ -180,7 +252,7 @@ export function CollapsibleFilter({
                             section.type === "radio"
                               ? activeFilters[section.id] === option.value
                               : activeFilters[section.id]?.includes(
-                                  option.value,
+                                  option.value
                                 )
                           }
                           onChange={(e) => {
@@ -191,7 +263,7 @@ export function CollapsibleFilter({
                               const updated = e.target.checked
                                 ? [...current, option.value]
                                 : current.filter(
-                                    (v: string) => v !== option.value,
+                                    (v: string) => v !== option.value
                                   );
                               onChange(section.id, updated);
                             }

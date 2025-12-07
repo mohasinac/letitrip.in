@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Media {
   url: string;
@@ -18,6 +18,18 @@ interface ProductGalleryProps {
 export function ProductGallery({ media, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Auto slideshow cycling
+  useEffect(() => {
+    if (!isAutoPlaying || media.length <= 1 || isLightboxOpen) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
+    }, 3000); // Change image every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, media.length, isLightboxOpen]);
 
   // Handle ESC key and body scroll lock
   useEffect(() => {
@@ -49,10 +61,12 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
   const activeMedia = media[activeIndex];
 
   const handlePrevious = () => {
+    setIsAutoPlaying(false); // Pause auto-play when user manually navigates
     setActiveIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
+    setIsAutoPlaying(false); // Pause auto-play when user manually navigates
     setActiveIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
   };
 
@@ -158,7 +172,10 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
             {media.map((item, index) => (
               <button
                 key={`thumb-${item.url}-${index}`}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => {
+                  setIsAutoPlaying(false); // Pause auto-play when user selects thumbnail
+                  setActiveIndex(index);
+                }}
                 className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                   index === activeIndex
                     ? "border-primary ring-2 ring-primary/20"

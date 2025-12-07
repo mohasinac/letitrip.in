@@ -12,9 +12,11 @@ export interface FilterSectionProps {
   pendingValues: Record<string, any>;
   onFieldChange: (key: string, value: any) => void;
   renderField: (
-    field: FilterField & { _highlighted?: boolean },
+    field: FilterField & { _highlighted?: boolean }
   ) => React.ReactNode;
   highlightText: (text: string) => React.ReactNode;
+  externalCollapsedState?: Record<string, boolean>;
+  onCollapseChange?: (title: string, collapsed: boolean) => void;
 }
 
 export function FilterSectionComponent({
@@ -27,12 +29,25 @@ export function FilterSectionComponent({
   onFieldChange,
   renderField,
   highlightText,
+  externalCollapsedState,
+  onCollapseChange,
 }: FilterSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
+
+  // Use external state if provided, otherwise use internal state
+  const isCollapsed =
+    externalCollapsedState !== undefined
+      ? externalCollapsedState[title] ?? defaultCollapsed
+      : internalCollapsed;
 
   const toggleCollapse = () => {
     if (collapsible) {
-      setIsCollapsed(!isCollapsed);
+      const newState = !isCollapsed;
+      if (onCollapseChange) {
+        onCollapseChange(title, newState);
+      } else {
+        setInternalCollapsed(newState);
+      }
     }
   };
 

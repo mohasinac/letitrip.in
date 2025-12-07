@@ -54,6 +54,11 @@ export default function AdminShippingSettingsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [newPincode, setNewPincode] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
 
   const {
     isLoading: loading,
@@ -126,6 +131,35 @@ export default function AdminShippingSettingsPage() {
         (p) => p !== pincode
       ),
     });
+  };
+
+  const handleTestConnection = async () => {
+    if (!settings?.shiprocket?.email || !settings?.shiprocket?.password) {
+      setTestResult({
+        success: false,
+        message: "Please enter both email and password",
+      });
+      return;
+    }
+
+    try {
+      setTesting(true);
+      setTestResult(null);
+      const result = await settingsService.testShiprocketConnection(
+        settings.shiprocket.email,
+        settings.shiprocket.password
+      );
+      setTestResult(result);
+    } catch (err) {
+      console.error("Error testing connection:", err);
+      setTestResult({
+        success: false,
+        message:
+          err instanceof Error ? err.message : "Failed to test connection",
+      });
+    } finally {
+      setTesting(false);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -204,6 +238,188 @@ export default function AdminShippingSettingsPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Shiprocket Integration */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <Truck className="w-5 h-5 text-orange-500" />
+                Shiprocket Integration
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Connect with Shiprocket for automated shipping and tracking
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings?.shiprocket?.enabled || false}
+                onChange={(e) => {
+                  if (settings) {
+                    setSettings({
+                      ...settings,
+                      shiprocket: {
+                        enabled: e.target.checked,
+                        email: settings.shiprocket?.email || "",
+                        password: settings.shiprocket?.password || "",
+                      },
+                    });
+                  }
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500" />
+            </label>
+          </div>
+
+          {settings?.shiprocket?.enabled && (
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+                <p className="text-sm text-orange-800 dark:text-orange-200">
+                  Get your Shiprocket API credentials from the{" "}
+                  <a
+                    href="https://app.shiprocket.in/account/api-user"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    Shiprocket Dashboard
+                  </a>
+                </p>
+              </div>
+
+              <div>
+                <FormLabel htmlFor="shiprocket-email">
+                  Shiprocket Email
+                </FormLabel>
+                <input
+                  id="shiprocket-email"
+                  type="email"
+                  value={settings?.shiprocket?.email || ""}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        shiprocket: {
+                          enabled: settings.shiprocket?.enabled || false,
+                          email: e.target.value,
+                          password: settings.shiprocket?.password || "",
+                        },
+                      });
+                    }
+                  }}
+                  placeholder="your-email@example.com"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+
+              <div>
+                <FormLabel htmlFor="shiprocket-password">
+                  Shiprocket Password
+                </FormLabel>
+                <input
+                  id="shiprocket-password"
+                  type="password"
+                  value={settings?.shiprocket?.password || ""}
+                  onChange={(e) => {
+                    if (settings) {
+                      setSettings({
+                        ...settings,
+                        shiprocket: {
+                          enabled: settings.shiprocket?.enabled || false,
+                          email: settings.shiprocket?.email || "",
+                          password: e.target.value,
+                        },
+                      });
+                    }
+                  }}
+                  placeholder="Enter password"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Password is stored securely and never exposed
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleTestConnection}
+                    disabled={testing}
+                    className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {testing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Testing...
+                      </>
+                    ) : (
+                      "Test Connection"
+                    )}
+                  </button>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Click to verify your credentials
+                  </span>
+                </div>
+
+                {testResult && (
+                  <div
+                    className={`p-3 rounded-lg flex items-start gap-2 ${
+                      testResult.success
+                        ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                        : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+                    }`}
+                  >
+                    {testResult.success ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    )}
+                    <p
+                      className={`text-sm ${
+                        testResult.success
+                          ? "text-green-800 dark:text-green-200"
+                          : "text-red-800 dark:text-red-200"
+                      }`}
+                    >
+                      {testResult.message}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Features Enabled
+                </h4>
+                <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Automatic AWB generation
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Courier selection & rate calculation
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Automated pickup scheduling
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Real-time tracking updates
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Label & manifest generation
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Free Shipping */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">

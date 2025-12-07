@@ -44,6 +44,12 @@ export interface PaymentSettings {
     merchantSalt?: string;
     testMode: boolean;
   };
+  paypal?: {
+    enabled: boolean;
+    clientId: string;
+    clientSecret?: string;
+    testMode: boolean;
+  };
   cod: {
     enabled: boolean;
     maxOrderValue: number;
@@ -63,6 +69,11 @@ export interface ShippingSettings {
     express: { min: number; max: number };
   };
   restrictedPincodes: string[];
+  shiprocket?: {
+    enabled: boolean;
+    email: string;
+    password: string;
+  };
 }
 
 export interface FeatureSettings {
@@ -100,7 +111,7 @@ class SettingsService {
    */
   async getAll(): Promise<AllSettings> {
     const response = await apiService.get<SettingsResponse<AllSettings>>(
-      this.baseUrl,
+      this.baseUrl
     );
     if (!response.success) {
       throw new Error(response.error || "Failed to fetch settings");
@@ -113,7 +124,7 @@ class SettingsService {
    */
   async getCategory<T>(category: SettingsCategory): Promise<T> {
     const response = await apiService.get<SettingsResponse<T>>(
-      `${this.baseUrl}?category=${category}`,
+      `${this.baseUrl}?category=${category}`
     );
     if (!response.success) {
       throw new Error(response.error || `Failed to fetch ${category} settings`);
@@ -154,7 +165,7 @@ class SettingsService {
    */
   async updateCategory<T>(
     category: SettingsCategory,
-    settings: Partial<T>,
+    settings: Partial<T>
   ): Promise<T> {
     const response = await apiService.put<SettingsResponse<T>>(this.baseUrl, {
       category,
@@ -162,7 +173,7 @@ class SettingsService {
     });
     if (!response.success) {
       throw new Error(
-        response.error || `Failed to update ${category} settings`,
+        response.error || `Failed to update ${category} settings`
       );
     }
     return response.settings;
@@ -172,7 +183,7 @@ class SettingsService {
    * Update general settings
    */
   async updateGeneral(
-    settings: Partial<GeneralSettings>,
+    settings: Partial<GeneralSettings>
   ): Promise<GeneralSettings> {
     return this.updateCategory<GeneralSettings>("general", settings);
   }
@@ -181,7 +192,7 @@ class SettingsService {
    * Update payment settings
    */
   async updatePayment(
-    settings: Partial<PaymentSettings>,
+    settings: Partial<PaymentSettings>
   ): Promise<PaymentSettings> {
     return this.updateCategory<PaymentSettings>("payment", settings);
   }
@@ -190,7 +201,7 @@ class SettingsService {
    * Update shipping settings
    */
   async updateShipping(
-    settings: Partial<ShippingSettings>,
+    settings: Partial<ShippingSettings>
   ): Promise<ShippingSettings> {
     return this.updateCategory<ShippingSettings>("shipping", settings);
   }
@@ -199,7 +210,7 @@ class SettingsService {
    * Update feature settings
    */
   async updateFeatures(
-    settings: Partial<FeatureSettings>,
+    settings: Partial<FeatureSettings>
   ): Promise<FeatureSettings> {
     return this.updateCategory<FeatureSettings>("features", settings);
   }
@@ -222,7 +233,7 @@ class SettingsService {
    */
   async toggleMaintenanceMode(
     enabled: boolean,
-    message?: string,
+    message?: string
   ): Promise<void> {
     const updates: Partial<GeneralSettings> = { maintenanceMode: enabled };
     if (message !== undefined) {
@@ -236,7 +247,7 @@ class SettingsService {
    */
   async toggleFeature(
     feature: keyof FeatureSettings,
-    enabled: boolean,
+    enabled: boolean
   ): Promise<void> {
     await this.updateSetting(`features.${feature}`, enabled);
   }
@@ -245,7 +256,7 @@ class SettingsService {
    * Update social links
    */
   async updateSocialLinks(
-    links: Partial<GeneralSettings["socialLinks"]>,
+    links: Partial<GeneralSettings["socialLinks"]>
   ): Promise<void> {
     const current = await this.getGeneral();
     await this.updateGeneral({
@@ -254,6 +265,38 @@ class SettingsService {
         ...links,
       },
     });
+  }
+
+  /**
+   * Test Shiprocket connection
+   */
+  async testShiprocketConnection(
+    email: string,
+    password: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data?: { name: string; email: string; companyId: number };
+  }> {
+    const response = await apiService.post<{
+      success: boolean;
+      message?: string;
+      error?: string;
+      data?: { name: string; email: string; companyId: number };
+    }>("/api/admin/settings/shipping/test-shiprocket", { email, password });
+
+    if (!response.success) {
+      return {
+        success: false,
+        message: response.error || "Failed to test connection",
+      };
+    }
+
+    return {
+      success: true,
+      message: response.message || "Connection successful",
+      data: response.data,
+    };
   }
 }
 

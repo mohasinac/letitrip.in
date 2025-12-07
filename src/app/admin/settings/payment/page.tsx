@@ -31,12 +31,13 @@ export default function AdminPaymentSettingsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
-    "razorpay" | "payu" | "cod" | "currency"
+    "razorpay" | "payu" | "paypal" | "cod" | "currency"
   >("razorpay");
 
   // Track if secrets have been modified
   const [razorpaySecretModified, setRazorpaySecretModified] = useState(false);
   const [payuSaltModified, setPayuSaltModified] = useState(false);
+  const [paypalSecretModified, setPaypalSecretModified] = useState(false);
 
   const {
     isLoading: loading,
@@ -140,6 +141,26 @@ export default function AdminPaymentSettingsPage() {
     }
   };
 
+  const updatePaypal = (
+    field: keyof NonNullable<PaymentSettings["paypal"]>,
+    value: string | boolean
+  ) => {
+    if (!settings) return;
+    setSettings({
+      ...settings,
+      paypal: {
+        enabled: settings.paypal?.enabled || false,
+        clientId: settings.paypal?.clientId || "",
+        testMode: settings.paypal?.testMode || false,
+        ...settings.paypal,
+        [field]: value,
+      },
+    });
+    if (field === "clientSecret") {
+      setPaypalSecretModified(true);
+    }
+  };
+
   const updateCod = (
     field: keyof PaymentSettings["cod"],
     value: boolean | number
@@ -213,6 +234,12 @@ export default function AdminPaymentSettingsPage() {
       enabled: settings.payu.enabled,
     },
     {
+      id: "paypal" as const,
+      label: "PayPal",
+      icon: "🌐",
+      enabled: settings.paypal?.enabled || false,
+    },
+    {
       id: "cod" as const,
       label: "Cash on Delivery",
       icon: "💵",
@@ -224,7 +251,7 @@ export default function AdminPaymentSettingsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
             <Link
@@ -247,12 +274,20 @@ export default function AdminPaymentSettingsPage() {
             Payment Settings
           </h1>
         </div>
-        <button
-          onClick={() => router.push("/admin/settings")}
-          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-        >
-          ← Back to Settings
-        </button>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/settings/payment-gateways"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Manage All Gateways
+          </Link>
+          <button
+            onClick={() => router.push("/admin/settings")}
+            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          >
+            ← Back
+          </button>
+        </div>
       </div>
 
       {/* Alerts */}
@@ -457,6 +492,113 @@ export default function AdminPaymentSettingsPage() {
           </div>
         )}
 
+        {/* PayPal Tab */}
+        {activeTab === "paypal" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                PayPal Configuration
+              </h2>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {settings.paypal?.enabled ? "Enabled" : "Disabled"}
+                </span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.paypal?.enabled || false}
+                    onChange={(e) => updatePaypal("enabled", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                </label>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+                Get your PayPal API credentials from the{" "}
+                <a
+                  href="https://developer.paypal.com/dashboard/applications"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium"
+                >
+                  PayPal Developer Dashboard
+                </a>
+              </p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                💡 PayPal is recommended for international payments and supports
+                multiple currencies.
+              </p>
+            </div>
+
+            <FormInput
+              label="Client ID"
+              value={settings.paypal?.clientId || ""}
+              onChange={(e) => updatePaypal("clientId", e.target.value)}
+              className="font-mono"
+              placeholder="Your PayPal client ID"
+            />
+
+            <FormInput
+              label="Client Secret"
+              type="password"
+              value={settings.paypal?.clientSecret || ""}
+              onChange={(e) => updatePaypal("clientSecret", e.target.value)}
+              className="font-mono"
+              placeholder="Enter new secret to update"
+              helperText="Leave empty to keep existing secret. Secret is stored securely and never exposed."
+            />
+
+            <div className="flex items-center gap-4">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.paypal?.testMode || false}
+                  onChange={(e) => updatePaypal("testMode", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500" />
+              </label>
+              <span className="text-gray-700 dark:text-gray-300">
+                Sandbox Mode{" "}
+                {settings.paypal?.testMode ? "(Active)" : "(Inactive)"}
+              </span>
+            </div>
+            {settings.paypal?.testMode && (
+              <p className="text-sm text-orange-600 dark:text-orange-400">
+                ⚠️ Sandbox mode is enabled. Use test credentials from PayPal
+                sandbox.
+              </p>
+            )}
+
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Supported Features
+              </h3>
+              <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  International payments (200+ countries)
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  Multiple currencies (USD, EUR, GBP, etc.)
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  Credit/Debit cards & PayPal balance
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  Buyer & seller protection
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* COD Tab */}
         {activeTab === "cod" && (
           <div className="space-y-6">
@@ -606,7 +748,7 @@ export default function AdminPaymentSettingsPage() {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Active Payment Methods
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <PaymentMethodStatus
             name="Razorpay"
             enabled={settings.razorpay.enabled}
@@ -618,6 +760,12 @@ export default function AdminPaymentSettingsPage() {
             enabled={settings.payu.enabled}
             testMode={settings.payu.testMode}
             configured={!!settings.payu.merchantKey}
+          />
+          <PaymentMethodStatus
+            name="PayPal"
+            enabled={settings.paypal?.enabled || false}
+            testMode={settings.paypal?.testMode}
+            configured={!!settings.paypal?.clientId}
           />
           <PaymentMethodStatus
             name="Cash on Delivery"

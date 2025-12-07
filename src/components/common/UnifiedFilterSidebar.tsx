@@ -46,6 +46,22 @@ export function UnifiedFilterSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const [pendingValues, setPendingValues] =
     useState<Record<string, any>>(values);
+  const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>(
+    () => {
+      // Load from localStorage on mount
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("filter-expanded-state");
+        if (stored) {
+          try {
+            return JSON.parse(stored);
+          } catch (e) {
+            return {};
+          }
+        }
+      }
+      return {};
+    }
+  );
 
   useEffect(() => {
     setPendingValues(values);
@@ -112,10 +128,10 @@ export function UnifiedFilterSidebar({
           </mark>
         ) : (
           part
-        ),
+        )
       );
     },
-    [searchQuery, searchable],
+    [searchQuery, searchable]
   );
 
   const handleCheckboxChange = useCallback(
@@ -126,7 +142,7 @@ export function UnifiedFilterSidebar({
         : currentValues.filter((v: any) => v !== optionValue);
       handlePendingChange(key, newValues);
     },
-    [pendingValues, handlePendingChange],
+    [pendingValues, handlePendingChange]
   );
 
   const renderField = useCallback(
@@ -204,7 +220,7 @@ export function UnifiedFilterSidebar({
                       handleCheckboxChange(
                         field.key,
                         option.value,
-                        e.target.checked,
+                        e.target.checked
                       )
                     }
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
@@ -336,7 +352,7 @@ export function UnifiedFilterSidebar({
           return null;
       }
     },
-    [pendingValues, handlePendingChange, handleCheckboxChange, highlightText],
+    [pendingValues, handlePendingChange, handleCheckboxChange, highlightText]
   );
 
   const filteredSections = useMemo(() => {
@@ -352,7 +368,7 @@ export function UnifiedFilterSidebar({
             const fieldMatches = field.label.toLowerCase().includes(query);
             if (field.options) {
               const filteredOptions = field.options.filter((option) =>
-                option.label.toLowerCase().includes(query),
+                option.label.toLowerCase().includes(query)
               );
               if (filteredOptions.length > 0) {
                 return {
@@ -400,8 +416,8 @@ export function UnifiedFilterSidebar({
           mobile
             ? "fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300"
             : isOpen
-              ? "w-72 shrink-0"
-              : "w-0 overflow-hidden"
+            ? "w-72 shrink-0"
+            : "w-0 overflow-hidden"
         } ${
           mobile && !isOpen ? "-translate-x-full" : "translate-x-0"
         } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${className}`}
@@ -429,6 +445,45 @@ export function UnifiedFilterSidebar({
               </button>
             )}
           </div>
+
+          {/* Expand/Collapse All Buttons */}
+          {!mobile && filteredSections.length > 0 && (
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => {
+                  const allExpanded: Record<string, boolean> = {};
+                  filteredSections.forEach((section: any) => {
+                    allExpanded[section.title] = false; // false = not collapsed = expanded
+                  });
+                  setCollapsedState(allExpanded);
+                  localStorage.setItem(
+                    "filter-expanded-state",
+                    JSON.stringify(allExpanded)
+                  );
+                }}
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+              >
+                Expand All
+              </button>
+              <button
+                onClick={() => {
+                  const allCollapsed: Record<string, boolean> = {};
+                  filteredSections.forEach((section: any) => {
+                    allCollapsed[section.title] = true; // true = collapsed
+                  });
+                  setCollapsedState(allCollapsed);
+                  localStorage.setItem(
+                    "filter-expanded-state",
+                    JSON.stringify(allCollapsed)
+                  );
+                }}
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+              >
+                Collapse All
+              </button>
+            </div>
+          )}
+
           {!mobile && (
             <div className="space-y-2">
               <button
@@ -443,8 +498,8 @@ export function UnifiedFilterSidebar({
                 {isLoading
                   ? "Applying..."
                   : hasPendingChanges
-                    ? "Apply Filters"
-                    : "Filters Applied"}
+                  ? "Apply Filters"
+                  : "Filters Applied"}
               </button>
               {hasActiveFilters && (
                 <button
@@ -533,6 +588,15 @@ export function UnifiedFilterSidebar({
                 onFieldChange={handlePendingChange}
                 renderField={renderField}
                 highlightText={highlightText}
+                externalCollapsedState={collapsedState}
+                onCollapseChange={(title, collapsed) => {
+                  const newState = { ...collapsedState, [title]: collapsed };
+                  setCollapsedState(newState);
+                  localStorage.setItem(
+                    "filter-expanded-state",
+                    JSON.stringify(newState)
+                  );
+                }}
               />
             ))
           )}
@@ -556,8 +620,8 @@ export function UnifiedFilterSidebar({
               {isLoading
                 ? "Applying..."
                 : hasPendingChanges
-                  ? "Apply Filters"
-                  : "Filters Applied"}
+                ? "Apply Filters"
+                : "Filters Applied"}
             </button>
             {hasActiveFilters && (
               <button

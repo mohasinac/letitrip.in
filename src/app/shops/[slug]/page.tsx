@@ -9,6 +9,7 @@ import { ShopPolicies } from "@/components/shop/ShopPolicies";
 import { ShopProducts } from "@/components/shop/ShopProducts";
 import { ShopReviews } from "@/components/shop/ShopReviews";
 import { ShopStats } from "@/components/shop/ShopStats";
+import { ShopTabs, type ShopTabType } from "@/components/shop/ShopTabs";
 import { useCart } from "@/hooks/useCart";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { notFound } from "@/lib/error-redirects";
@@ -19,7 +20,7 @@ import { shopsService } from "@/services/shops.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
-import { Gavel, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -29,8 +30,6 @@ interface ShopPageProps {
     slug: string;
   }>;
 }
-
-type TabType = "products" | "auctions" | "reviews" | "about";
 
 export default function ShopPage({ params }: ShopPageProps) {
   const router = useRouter();
@@ -57,7 +56,7 @@ export default function ShopPage({ params }: ShopPageProps) {
   });
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>("products");
+  const [activeTab, setActiveTab] = useState<ShopTabType>("products");
 
   // Filters and sort state
   const [sortBy, setSortBy] = useState<string>("createdAt");
@@ -124,8 +123,8 @@ export default function ShopPage({ params }: ShopPageProps) {
           productFilters.stock === "in_stock"
             ? true
             : productFilters.stock === "out_of_stock"
-              ? false
-              : undefined,
+            ? false
+            : undefined,
         featured: productFilters.featured,
         rating: productFilters.rating,
       });
@@ -137,7 +136,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         ...new Set(
           productsData
             .map((p) => p.brand)
-            .filter((brand): brand is string => Boolean(brand)),
+            .filter((brand): brand is string => Boolean(brand))
         ),
       ];
       setAvailableBrands(brands);
@@ -187,7 +186,7 @@ export default function ShopPage({ params }: ShopPageProps) {
 
   const handleProductSort = (
     newSortBy: string,
-    newSortOrder: "asc" | "desc",
+    newSortOrder: "asc" | "desc"
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -200,7 +199,7 @@ export default function ShopPage({ params }: ShopPageProps) {
 
   const handleAuctionSort = (
     newSortBy: string,
-    newSortOrder: "asc" | "desc",
+    newSortOrder: "asc" | "desc"
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -219,7 +218,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    },
+    }
   ) => {
     try {
       if (!productDetails) {
@@ -258,53 +257,19 @@ export default function ShopPage({ params }: ShopPageProps) {
       <ShopHeader shop={shop} />
 
       {/* Tabs Navigation */}
-      <div className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-8 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab("products")}
-              className={`py-4 px-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === "products"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Products
-            </button>
-            <button
-              onClick={() => setActiveTab("auctions")}
-              className={`py-4 px-2 font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
-                activeTab === "auctions"
-                  ? "border-purple-600 text-purple-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Gavel className="w-4 h-4" />
-              Auctions
-            </button>
-            <button
-              onClick={() => setActiveTab("reviews")}
-              className={`py-4 px-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === "reviews"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Reviews ({shop.reviewCount || 0})
-            </button>
-            <button
-              onClick={() => setActiveTab("about")}
-              className={`py-4 px-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === "about"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              About
-            </button>
-          </div>
-        </div>
-      </div>
+      <ShopTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        reviewCount={shop.reviewCount}
+        productCount={products.length}
+        auctionCount={auctions.length}
+        tabs={[
+          { id: "products", label: "Products" },
+          { id: "auctions", label: "Auctions" },
+          { id: "about", label: "About" },
+          { id: "reviews", label: "Reviews" },
+        ]}
+      />
 
       {/* Shop Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
