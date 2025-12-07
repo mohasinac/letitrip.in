@@ -10,7 +10,7 @@
 import { FormLabel } from "@/components/forms/FormLabel";
 import { formatTimeRemaining } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
-import { getNextMinimumBid, getTimeRemaining } from "@/lib/validation/auction";
+import { getNextMinimumBid, getTimeRemaining } from "@/lib/utils/auction.utils";
 import {
   AlertCircle,
   ChevronLeft,

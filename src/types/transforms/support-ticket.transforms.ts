@@ -4,29 +4,30 @@
  * Convert between backend and frontend support ticket types
  */
 
+import { formatDate } from "@/lib/formatters";
 import type {
+  AssignTicketRequestBE,
+  CreateSupportTicketRequestBE,
+  EscalateTicketRequestBE,
+  ReplyToTicketRequestBE,
   SupportTicketBE,
   SupportTicketMessageBE,
-  CreateSupportTicketRequestBE,
   UpdateSupportTicketRequestBE,
-  ReplyToTicketRequestBE,
-  AssignTicketRequestBE,
-  EscalateTicketRequestBE,
 } from "../backend/support-ticket.types";
 import type {
-  SupportTicketFE,
-  SupportTicketCardFE,
-  SupportTicketMessageFE,
-  SupportTicketFormFE,
-  UpdateTicketFormFE,
-  ReplyToTicketFormFE,
   AssignTicketFormFE,
   EscalateTicketFormFE,
+  ReplyToTicketFormFE,
+  SupportTicketCardFE,
+  SupportTicketFE,
+  SupportTicketFormFE,
+  SupportTicketMessageFE,
+  UpdateTicketFormFE,
 } from "../frontend/support-ticket.types";
 import {
-  TicketStatus,
   TicketCategory,
   TicketPriority,
+  TicketStatus,
   UserRole,
 } from "../shared/common.types";
 
@@ -40,17 +41,6 @@ const formatDateTime = (date: Date): string => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  });
-};
-
-/**
- * Format date only
- */
-const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
   });
 };
 
@@ -105,7 +95,7 @@ const getPriorityLabel = (priority: TicketPriority): string => {
  * Get status badge
  */
 const getStatusBadge = (
-  status: TicketStatus,
+  status: TicketStatus
 ): {
   text: string;
   variant: "success" | "warning" | "error" | "info" | "default";
@@ -130,7 +120,7 @@ const getStatusBadge = (
  * Get priority badge
  */
 const getPriorityBadge = (
-  priority: TicketPriority,
+  priority: TicketPriority
 ): { text: string; variant: "success" | "warning" | "error" | "info" } => {
   const badges: Record<
     TicketPriority,
@@ -173,7 +163,7 @@ const getRoleLabel = (role: UserRole): string => {
  * Transform Support Ticket BE to FE
  */
 export const toFESupportTicket = (
-  ticketBE: SupportTicketBE,
+  ticketBE: SupportTicketBE
 ): SupportTicketFE => {
   const createdAt = ticketBE.createdAt.toDate();
   const updatedAt = ticketBE.updatedAt.toDate();
@@ -234,7 +224,7 @@ export const toFESupportTicket = (
  * Transform array of Support Ticket BE to FE
  */
 export const toFESupportTickets = (
-  ticketsBE: SupportTicketBE[],
+  ticketsBE: SupportTicketBE[]
 ): SupportTicketFE[] => {
   return ticketsBE.map(toFESupportTicket);
 };
@@ -243,7 +233,7 @@ export const toFESupportTickets = (
  * Transform Support Ticket BE to Card FE (for list views)
  */
 export const toFESupportTicketCard = (
-  ticketBE: SupportTicketBE,
+  ticketBE: SupportTicketBE
 ): SupportTicketCardFE => {
   const createdAt = ticketBE.createdAt.toDate();
   const updatedAt = ticketBE.updatedAt.toDate();
@@ -269,7 +259,7 @@ export const toFESupportTicketCard = (
  * Transform array of Support Ticket BE to Card FE
  */
 export const toFESupportTicketCards = (
-  ticketsBE: SupportTicketBE[],
+  ticketsBE: SupportTicketBE[]
 ): SupportTicketCardFE[] => {
   return ticketsBE.map(toFESupportTicketCard);
 };
@@ -278,7 +268,7 @@ export const toFESupportTicketCards = (
  * Transform Support Ticket Message BE to FE
  */
 export const toFESupportTicketMessage = (
-  messageBE: SupportTicketMessageBE,
+  messageBE: SupportTicketMessageBE
 ): SupportTicketMessageFE => {
   const createdAt = messageBE.createdAt.toDate();
   const isStaff = messageBE.senderRole === UserRole.ADMIN;
@@ -307,7 +297,7 @@ export const toFESupportTicketMessage = (
  * Transform array of Support Ticket Message BE to FE
  */
 export const toFESupportTicketMessages = (
-  messagesBE: SupportTicketMessageBE[],
+  messagesBE: SupportTicketMessageBE[]
 ): SupportTicketMessageFE[] => {
   return messagesBE.map(toFESupportTicketMessage);
 };
@@ -316,7 +306,7 @@ export const toFESupportTicketMessages = (
  * Transform Support Ticket Form FE to Create Request BE
  */
 export const toBECreateSupportTicketRequest = (
-  formData: SupportTicketFormFE,
+  formData: SupportTicketFormFE
 ): CreateSupportTicketRequestBE => {
   return {
     category: formData.category,
@@ -333,7 +323,7 @@ export const toBECreateSupportTicketRequest = (
  * Transform Update Ticket Form FE to Update Request BE
  */
 export const toBEUpdateSupportTicketRequest = (
-  formData: UpdateTicketFormFE,
+  formData: UpdateTicketFormFE
 ): UpdateSupportTicketRequestBE => {
   return {
     status: formData.status,
@@ -346,7 +336,7 @@ export const toBEUpdateSupportTicketRequest = (
  * Transform Reply Form FE to Request BE
  */
 export const toBEReplyToTicketRequest = (
-  formData: ReplyToTicketFormFE,
+  formData: ReplyToTicketFormFE
 ): ReplyToTicketRequestBE => {
   return {
     message: formData.message,
@@ -359,7 +349,7 @@ export const toBEReplyToTicketRequest = (
  * Transform Assign Form FE to Request BE
  */
 export const toBEAssignTicketRequest = (
-  formData: AssignTicketFormFE,
+  formData: AssignTicketFormFE
 ): AssignTicketRequestBE => {
   return {
     assignedTo: formData.assignedTo,
@@ -371,7 +361,7 @@ export const toBEAssignTicketRequest = (
  * Transform Escalate Form FE to Request BE
  */
 export const toBEEscalateTicketRequest = (
-  formData: EscalateTicketFormFE,
+  formData: EscalateTicketFormFE
 ): EscalateTicketRequestBE => {
   return {
     reason: formData.reason,

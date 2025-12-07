@@ -6,7 +6,7 @@
  *
  * Usage:
  * ```ts
- * import { isInternationalAddress, isPayPalEligibleCountry } from '@/lib/validators/address.validator';
+ * import { isInternationalAddress, isPayPalEligibleCountry } from '@/lib/validations/validators/address.validator';
  *
  * const isIntl = isInternationalAddress(address);
  * const canUsePayPal = isPayPalEligibleCountry('US');

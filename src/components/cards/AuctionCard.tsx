@@ -18,7 +18,7 @@ import OptimizedImage from "@/components/common/OptimizedImage";
 import { formatTimeRemaining } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { cn } from "@/lib/utils";
-import { getTimeRemaining } from "@/lib/validation/auction";
+import { getTimeRemaining } from "@/lib/utils/auction.utils";
 import {
   CheckCircle,
   Clock,

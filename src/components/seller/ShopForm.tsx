@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Save } from "lucide-react";
-import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { useShopSlugValidation } from "@/lib/validation/slug";
-import type { ShopFE } from "@/types/frontend/shop.types";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { FormActions } from "@/components/ui/FormActions";
+import SlugInput from "@/components/common/SlugInput";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { FormActions } from "@/components/ui/FormActions";
+import { useShopSlugValidation } from "@/lib/validations/schemas/slug.schema";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import { Save } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -218,8 +218,8 @@ export default function ShopForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-                ? "Create Shop"
-                : "Save Changes"}
+              ? "Create Shop"
+              : "Save Changes"}
           </Button>
         }
       />

@@ -1,0 +1,2692 @@
+﻿{
+    "src/app/api/user/profile":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/api/payments/razorpay/refund":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/app/fees/payment":  {
+                                 "patterns":  {
+
+                                              },
+                                 "files":  "page.tsx",
+                                 "depth":  3,
+                                 "fileCount":  1
+                             },
+    "src/app/api/whatsapp/send-media":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/admin/settings/features":  {
+                                            "patterns":  {
+
+                                                         },
+                                            "files":  "page.tsx",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/checkout/create-order":  {
+                                              "patterns":  [
+                                                               "functions",
+                                                               "async",
+                                                               "zod-validation"
+                                                           ],
+                                              "files":  "route.ts",
+                                              "depth":  4,
+                                              "fileCount":  1
+                                          },
+    "src/app/api/admin/demo/generate/categories":  {
+                                                       "patterns":  "async",
+                                                       "files":  "route.ts",
+                                                       "depth":  6,
+                                                       "fileCount":  1
+                                                   },
+    "src/app/api/admin/settings/payment-gateways/config":  {
+                                                               "patterns":  "async",
+                                                               "files":  "route.ts",
+                                                               "depth":  6,
+                                                               "fileCount":  1
+                                                           },
+    "src/app/seller/support-tickets":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  3,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/auctions/batch":  {
+                                       "patterns":  "async",
+                                       "files":  "route.ts",
+                                       "depth":  4,
+                                       "fileCount":  1
+                                   },
+    "src/app/admin/demo-credentials":  {
+                                           "patterns":  "react-hooks",
+                                           "files":  "page.tsx",
+                                           "depth":  3,
+                                           "fileCount":  1
+                                       },
+    "src/app/user/addresses":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/payments/paypal/refund":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  5,
+                                               "fileCount":  1
+                                           },
+    "src/app/fees/structure":  {
+                                   "patterns":  {
+
+                                                },
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/login":  {
+                          "patterns":  [
+                                           "react-hooks",
+                                           "async"
+                                       ],
+                          "files":  "page.tsx",
+                          "depth":  2,
+                          "fileCount":  1
+                      },
+    "src/components/user":  {
+                                "patterns":  "react-hooks",
+                                "files":  "UserSidebar.tsx",
+                                "depth":  2,
+                                "fileCount":  1
+                            },
+    "src/app/admin/returns":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async"
+                                               ],
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/admin/settings/notifications":  {
+                                                 "patterns":  [
+                                                                  "react-hooks",
+                                                                  "async"
+                                                              ],
+                                                 "files":  "page.tsx",
+                                                 "depth":  4,
+                                                 "fileCount":  1
+                                             },
+    "src/components/admin/dashboard":  {
+                                           "patterns":  {
+
+                                                        },
+                                           "files":  [
+                                                         "ActivityItem.tsx",
+                                                         "PendingActionCard.tsx",
+                                                         "QuickLink.tsx",
+                                                         "StatCard.tsx"
+                                                     ],
+                                           "depth":  3,
+                                           "fileCount":  4
+                                       },
+    "src/types/transforms":  {
+                                 "patterns":  "functions",
+                                 "files":  [
+                                               "address.transforms.ts",
+                                               "auction.transforms.ts",
+                                               "cart.transforms.ts",
+                                               "category.transforms.ts",
+                                               "coupon.transforms.ts",
+                                               "order.transforms.ts",
+                                               "product.transforms.ts",
+                                               "return.transforms.ts",
+                                               "review.transforms.ts",
+                                               "riplimit.transforms.ts",
+                                               "shop.transforms.ts",
+                                               "support-ticket.transforms.ts",
+                                               "user.transforms.ts"
+                                           ],
+                                 "depth":  2,
+                                 "fileCount":  13
+                             },
+    "src/app/api/cart/count":  {
+                                   "patterns":  "async",
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/api/riplimit/purchase/verify":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/lib/validation":  {
+                               "patterns":  [
+                                                "functions",
+                                                "types",
+                                                "zod-validation",
+                                                "interfaces",
+                                                "react-hooks",
+                                                "async"
+                                            ],
+                               "files":  [
+                                             "auction.ts",
+                                             "category.ts",
+                                             "coupon.ts",
+                                             "inline-edit-schemas.ts",
+                                             "product.ts",
+                                             "shop.ts",
+                                             "slug.ts"
+                                         ],
+                               "depth":  2,
+                               "fileCount":  7
+                           },
+    "src/app/api/categories/validate-slug":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  4,
+                                                 "fileCount":  1
+                                             },
+    "src/app/faq":  {
+                        "patterns":  {
+
+                                     },
+                        "files":  "page.tsx",
+                        "depth":  2,
+                        "fileCount":  1
+                    },
+    "src/components/filters":  {
+                                   "patterns":  [
+                                                    "interfaces",
+                                                    "functions",
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  [
+                                                 "AuctionFilters.tsx",
+                                                 "CategoryFilters.tsx",
+                                                 "CouponFilters.tsx",
+                                                 "OrderFilters.tsx",
+                                                 "ProductFilters.tsx",
+                                                 "ReturnFilters.tsx",
+                                                 "ReviewFilters.tsx",
+                                                 "ShopFilters.tsx",
+                                                 "UserFilters.tsx"
+                                             ],
+                                   "depth":  2,
+                                   "fileCount":  9
+                               },
+    "src/app/api/admin/debug/products-by-category":  {
+                                                         "patterns":  "async",
+                                                         "files":  "route.ts",
+                                                         "depth":  5,
+                                                         "fileCount":  1
+                                                     },
+    "src/app/api/riplimit/refund":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/test-data/generate-complete":  {
+                                                    "patterns":  "async",
+                                                    "files":  "route.ts",
+                                                    "depth":  4,
+                                                    "fileCount":  1
+                                                },
+    "src/app/admin/blog/categories":  {
+                                          "patterns":  [
+                                                           "react-hooks",
+                                                           "async"
+                                                       ],
+                                          "files":  "page.tsx",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/api/notifications/unread-count":  {
+                                                   "patterns":  "async",
+                                                   "files":  "route.ts",
+                                                   "depth":  4,
+                                                   "fileCount":  1
+                                               },
+    "src/app/api/auctions/validate-slug":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/components/seller/product-edit-wizard":  {
+                                                      "patterns":  "interfaces",
+                                                      "files":  [
+                                                                    "BasicInfoStep.tsx",
+                                                                    "DetailsStep.tsx",
+                                                                    "InventoryStep.tsx",
+                                                                    "ReviewStep.tsx",
+                                                                    "types.ts"
+                                                                ],
+                                                      "depth":  3,
+                                                      "fileCount":  5
+                                                  },
+    "src/app/api/admin/demo/generate/auctions":  {
+                                                     "patterns":  "async",
+                                                     "files":  "route.ts",
+                                                     "depth":  6,
+                                                     "fileCount":  1
+                                                 },
+    "src/app/seller/auctions/create":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/components/legal":  {
+                                 "patterns":  {
+
+                                              },
+                                 "files":  "LegalPageLayout.tsx",
+                                 "depth":  2,
+                                 "fileCount":  1
+                             },
+    "src/app/user/won-auctions":  {
+                                      "patterns":  [
+                                                       "react-hooks",
+                                                       "async"
+                                                   ],
+                                      "files":  "page.tsx",
+                                      "depth":  3,
+                                      "fileCount":  1
+                                  },
+    "src/app/seller/analytics":  {
+                                     "patterns":  [
+                                                      "react-hooks",
+                                                      "async"
+                                                  ],
+                                     "files":  "page.tsx",
+                                     "depth":  3,
+                                     "fileCount":  1
+                                 },
+    "src/types/frontend":  {
+                               "patterns":  [
+                                                "interfaces",
+                                                "types"
+                                            ],
+                               "files":  [
+                                             "address.types.ts",
+                                             "analytics.types.ts",
+                                             "auction.types.ts",
+                                             "cart.types.ts",
+                                             "category.types.ts",
+                                             "coupon.types.ts",
+                                             "message.types.ts",
+                                             "order.types.ts",
+                                             "product.types.ts",
+                                             "return.types.ts",
+                                             "review.types.ts",
+                                             "riplimit.types.ts",
+                                             "search.types.ts",
+                                             "shop.types.ts",
+                                             "support-ticket.types.ts",
+                                             "user.types.ts"
+                                         ],
+                               "depth":  2,
+                               "fileCount":  16
+                           },
+    "src/lib/media":  {
+                          "patterns":  "async",
+                          "files":  [
+                                        "image-processor.ts",
+                                        "media-validator.ts",
+                                        "video-processor.ts"
+                                    ],
+                          "depth":  2,
+                          "fileCount":  3
+                      },
+    "src/app/api/hero-slides/bulk":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/test-data/generate-addresses":  {
+                                                     "patterns":  "async",
+                                                     "files":  "route.ts",
+                                                     "depth":  4,
+                                                     "fileCount":  1
+                                                 },
+    "src/app/api/coupons/validate-code":  {
+                                              "patterns":  "async",
+                                              "files":  "route.ts",
+                                              "depth":  4,
+                                              "fileCount":  1
+                                          },
+    "src/app/user/favorites":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/admin/demo/generate/extras":  {
+                                                   "patterns":  "async",
+                                                   "files":  "route.ts",
+                                                   "depth":  6,
+                                                   "fileCount":  1
+                                               },
+    "src/app/api/users/bulk":  {
+                                   "patterns":  "async",
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/api/shops/bulk":  {
+                                   "patterns":  "async",
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/api/test-data/context":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/seller/coupons/create":  {
+                                          "patterns":  [
+                                                           "react-hooks",
+                                                           "async"
+                                                       ],
+                                          "files":  "page.tsx",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/compare":  {
+                            "patterns":  {
+
+                                         },
+                            "files":  "page.tsx",
+                            "depth":  2,
+                            "fileCount":  1
+                        },
+    "src/emails":  {
+                       "patterns":  [
+                                        "interfaces",
+                                        "functions"
+                                    ],
+                       "files":  [
+                                     "Newsletter.tsx",
+                                     "OrderConfirmation.tsx",
+                                     "PasswordReset.tsx",
+                                     "ShippingUpdate.tsx",
+                                     "Welcome.tsx"
+                                 ],
+                       "depth":  1,
+                       "fileCount":  5
+                   },
+    "src/app/forbidden":  {
+                              "patterns":  {
+
+                                           },
+                              "files":  "page.tsx",
+                              "depth":  2,
+                              "fileCount":  1
+                          },
+    "src/app/api/email/newsletter/confirm":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/app/api/cart/merge":  {
+                                   "patterns":  "async",
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/api/shops/validate-slug":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/auctions/bulk":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/seller/my-shops/create":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/components/events":  {
+                                  "patterns":  [
+                                                   "interfaces",
+                                                   "react-hooks",
+                                                   "async"
+                                               ],
+                                  "files":  [
+                                                "EventBanner.tsx",
+                                                "EventCard.tsx",
+                                                "EventCountdown.tsx",
+                                                "PollVoting.tsx",
+                                                "WinnersSection.tsx"
+                                            ],
+                                  "depth":  2,
+                                  "fileCount":  5
+                              },
+    "src/app/admin/settings/whatsapp":  {
+                                            "patterns":  [
+                                                             "react-hooks",
+                                                             "async"
+                                                         ],
+                                            "files":  "page.tsx",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/support/ticket":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/whatsapp/send-template":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/admin/static-assets/upload-url":  {
+                                                       "patterns":  "async",
+                                                       "files":  "route.ts",
+                                                       "depth":  5,
+                                                       "fileCount":  1
+                                                   },
+    "src/app/admin/riplimit":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/components/products":  {
+                                    "patterns":  {
+
+                                                 },
+                                    "files":  [
+                                                  "CompareButton.tsx",
+                                                  "ComparisonBar.tsx",
+                                                  "RecentlyViewedWidget.tsx"
+                                              ],
+                                    "depth":  2,
+                                    "fileCount":  3
+                                },
+    "src/app/cart":  {
+                         "patterns":  [
+                                          "react-hooks",
+                                          "async"
+                                      ],
+                         "files":  "page.tsx",
+                         "depth":  2,
+                         "fileCount":  1
+                     },
+    "src/components/homepage":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  [
+                                                  "AuctionsSection.tsx",
+                                                  "FeaturedAuctionsSection.tsx",
+                                                  "FeaturedBlogsSection.tsx",
+                                                  "FeaturedCategoriesSection.tsx",
+                                                  "FeaturedProductsSection.tsx",
+                                                  "FeaturedShopsSection.tsx",
+                                                  "HeroSection.tsx",
+                                                  "HotAuctionsSection.tsx",
+                                                  "LatestProductsSection.tsx",
+                                                  "ProductsSection.tsx",
+                                                  "RecentReviewsSection.tsx",
+                                                  "ValueProposition.tsx",
+                                                  "WelcomeHero.tsx"
+                                              ],
+                                    "depth":  2,
+                                    "fileCount":  13
+                                },
+    "src/app/api/test-data/debug":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/auth/verify-email/send":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  5,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/admin/demo/generate/orders":  {
+                                                   "patterns":  "async",
+                                                   "files":  "route.ts",
+                                                   "depth":  6,
+                                                   "fileCount":  1
+                                               },
+    "src/app/company/overview":  {
+                                     "patterns":  {
+
+                                                  },
+                                     "files":  "page.tsx",
+                                     "depth":  3,
+                                     "fileCount":  1
+                                 },
+    "src/app/admin/emails":  {
+                                 "patterns":  [
+                                                  "react-hooks",
+                                                  "async"
+                                              ],
+                                 "files":  "page.tsx",
+                                 "depth":  3,
+                                 "fileCount":  1
+                             },
+    "src/app/api/admin/settings/payment-gateways/toggle":  {
+                                                               "patterns":  "async",
+                                                               "files":  "route.ts",
+                                                               "depth":  6,
+                                                               "fileCount":  1
+                                                           },
+    "src/app/api/middleware":  {
+                                   "patterns":  [
+                                                    "interfaces",
+                                                    "async",
+                                                    "functions",
+                                                    "types"
+                                                ],
+                                   "files":  [
+                                                 "auth.ts",
+                                                 "cache.ts",
+                                                 "index.ts",
+                                                 "ip-tracker.ts",
+                                                 "logger.ts",
+                                                 "ratelimiter.ts",
+                                                 "rbac-auth.ts",
+                                                 "withRouteRateLimit.ts"
+                                             ],
+                                   "depth":  3,
+                                   "fileCount":  8
+                               },
+    "src/contexts":  {
+                         "patterns":  [
+                                          "functions",
+                                          "react-hooks",
+                                          "async",
+                                          "types",
+                                          "interfaces"
+                                      ],
+                         "files":  [
+                                       "AuthContext.tsx",
+                                       "ComparisonContext.tsx",
+                                       "ThemeContext.tsx",
+                                       "UploadContext.tsx",
+                                       "ViewingHistoryContext.tsx"
+                                   ],
+                         "depth":  1,
+                         "fileCount":  5
+                     },
+    "src/app/api/admin/categories/rebuild-counts":  {
+                                                        "patterns":  "async",
+                                                        "files":  "route.ts",
+                                                        "depth":  5,
+                                                        "fileCount":  1
+                                                    },
+    "src/app/user/messages/__snapshots__":  {
+                                                "patterns":  {
+
+                                                             },
+                                                "files":  "page.test.tsx.snap",
+                                                "depth":  4,
+                                                "fileCount":  1
+                                            },
+    "src/lib/seo":  {
+                        "patterns":  {
+
+                                     },
+                        "files":  [
+                                      "metadata.ts",
+                                      "schema.ts"
+                                  ],
+                        "depth":  2,
+                        "fileCount":  2
+                    },
+    "src/components/faq":  {
+                               "patterns":  "react-hooks",
+                               "files":  [
+                                             "FAQItem.tsx",
+                                             "FAQSection.tsx"
+                                         ],
+                               "depth":  2,
+                               "fileCount":  2
+                           },
+    "src/app/api/homepage/shops/featured":  {
+                                                "patterns":  "async",
+                                                "files":  "route.ts",
+                                                "depth":  5,
+                                                "fileCount":  1
+                                            },
+    "src/app/about":  {
+                          "patterns":  "functions",
+                          "files":  "page.tsx",
+                          "depth":  2,
+                          "fileCount":  1
+                      },
+    "src/app/admin/settings/address-api":  {
+                                               "patterns":  [
+                                                                "react-hooks",
+                                                                "async"
+                                                            ],
+                                               "files":  "page.tsx",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/seller/settings":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/reviews/summary":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/admin/featured-sections":  {
+                                            "patterns":  [
+                                                             "react-hooks",
+                                                             "async"
+                                                         ],
+                                            "files":  [
+                                                          "layout.tsx",
+                                                          "page.tsx"
+                                                      ],
+                                            "depth":  3,
+                                            "fileCount":  2
+                                        },
+    "src/app/admin/demo/components":  {
+                                          "patterns":  [
+                                                           "functions",
+                                                           "interfaces",
+                                                           "types"
+                                                       ],
+                                          "files":  [
+                                                        "config.ts",
+                                                        "DemoActionButtons.tsx",
+                                                        "DemoCredentials.tsx",
+                                                        "DemoDeletionResult.tsx",
+                                                        "DemoProgressBar.tsx",
+                                                        "DemoScaleControl.tsx",
+                                                        "DemoStats.tsx",
+                                                        "DemoStepCard.tsx",
+                                                        "types.ts"
+                                                    ],
+                                          "depth":  4,
+                                          "fileCount":  9
+                                      },
+    "src/app/admin/settings/shipping":  {
+                                            "patterns":  [
+                                                             "react-hooks",
+                                                             "async"
+                                                         ],
+                                            "files":  "page.tsx",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/payments/razorpay/order":  {
+                                                "patterns":  "async",
+                                                "files":  "route.ts",
+                                                "depth":  5,
+                                                "fileCount":  1
+                                            },
+    "src/app/api/admin/demo/generate/shops":  {
+                                                  "patterns":  "async",
+                                                  "files":  "route.ts",
+                                                  "depth":  6,
+                                                  "fileCount":  1
+                                              },
+    "src/app/seller/settings":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  3,
+                                    "fileCount":  1
+                                },
+    "src/app/api/auctions/watchlist":  {
+                                           "patterns":  "async",
+                                           "files":  "route.ts",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/auth/register":  {
+                                      "patterns":  [
+                                                       "functions",
+                                                       "async"
+                                                   ],
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/api/media/upload":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/actions":  {
+                            "patterns":  [
+                                             "async",
+                                             "zod-validation"
+                                         ],
+                            "files":  "payment.ts",
+                            "depth":  2,
+                            "fileCount":  1
+                        },
+    "src/app/admin/settings/email":  {
+                                         "patterns":  [
+                                                          "react-hooks",
+                                                          "async"
+                                                      ],
+                                         "files":  "page.tsx",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/shipping/shiprocket/calculate-rates":  {
+                                                            "patterns":  "async",
+                                                            "files":  "route.ts",
+                                                            "depth":  5,
+                                                            "fileCount":  1
+                                                        },
+    "src/app/admin/coupons/create":  {
+                                         "patterns":  [
+                                                          "react-hooks",
+                                                          "async"
+                                                      ],
+                                         "files":  "page.tsx",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/tickets/bulk":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/api/admin/demo/generate/reviews":  {
+                                                    "patterns":  "async",
+                                                    "files":  "route.ts",
+                                                    "depth":  6,
+                                                    "fileCount":  1
+                                                },
+    "src/app/reset-password":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  2,
+                                   "fileCount":  1
+                               },
+    "src/app/admin/homepage":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  [
+                                                 "layout.tsx",
+                                                 "page.tsx"
+                                             ],
+                                   "depth":  3,
+                                   "fileCount":  2
+                               },
+    "src/app/admin/component-demo":  {
+                                         "patterns":  "react-hooks",
+                                         "files":  "page.tsx",
+                                         "depth":  3,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/shops/following":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/lib/validations":  {
+                                "patterns":  [
+                                                 "functions",
+                                                 "types",
+                                                 "zod-validation",
+                                                 "react-hooks",
+                                                 "async"
+                                             ],
+                                "files":  [
+                                              "address.schema.ts",
+                                              "auction.schema.ts",
+                                              "category.schema.ts",
+                                              "helpers.ts",
+                                              "product.schema.ts",
+                                              "review.schema.ts",
+                                              "shop.schema.ts",
+                                              "user.schema.ts"
+                                          ],
+                                "depth":  2,
+                                "fileCount":  8
+                            },
+    "src/app/api/cart/coupon":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/api/products/validate-slug":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/shipping/shiprocket/create-order":  {
+                                                         "patterns":  "async",
+                                                         "files":  "route.ts",
+                                                         "depth":  5,
+                                                         "fileCount":  1
+                                                     },
+    "src/app/api/test-data/generate-hero-slides":  {
+                                                       "patterns":  "async",
+                                                       "files":  "route.ts",
+                                                       "depth":  4,
+                                                       "fileCount":  1
+                                                   },
+    "src/app/search":  {
+                           "patterns":  [
+                                            "react-hooks",
+                                            "async"
+                                        ],
+                           "files":  "page.tsx",
+                           "depth":  2,
+                           "fileCount":  1
+                       },
+    "src/app/api/payments/paypal/order":  {
+                                              "patterns":  "async",
+                                              "files":  "route.ts",
+                                              "depth":  5,
+                                              "fileCount":  1
+                                          },
+    "src/app/admin/analytics/users":  {
+                                          "patterns":  [
+                                                           "react-hooks",
+                                                           "async"
+                                                       ],
+                                          "files":  "page.tsx",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/guide/new-user":  {
+                                   "patterns":  {
+
+                                                },
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/admin/demo/generate/settings":  {
+                                                     "patterns":  "async",
+                                                     "files":  "route.ts",
+                                                     "depth":  6,
+                                                     "fileCount":  1
+                                                 },
+    "src/app/api/auctions/won":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/api/seller/dashboard":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/homepage/categories/featured":  {
+                                                     "patterns":  "async",
+                                                     "files":  "route.ts",
+                                                     "depth":  5,
+                                                     "fileCount":  1
+                                                 },
+    "src/config":  {
+                       "patterns":  [
+                                        "interfaces",
+                                        "types",
+                                        "async"
+                                    ],
+                       "files":  [
+                                     "address-api.config.ts",
+                                     "cache.config.ts",
+                                     "payment-gateways.config.ts",
+                                     "shiprocket.config.ts",
+                                     "whatsapp.config.ts"
+                                 ],
+                       "depth":  1,
+                       "fileCount":  5
+                   },
+    "src/app/api/coupons/bulk":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/forgot-password":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  2,
+                                    "fileCount":  1
+                                },
+    "src/app/api/email/unsubscribe":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/api/admin/demo/stats":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  5,
+                                         "fileCount":  1
+                                     },
+    "src/app/products/create":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  3,
+                                    "fileCount":  1
+                                },
+    "src/app/api/whatsapp/opt-out":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/lib/sieve":  {
+                                  "patterns":  [
+                                                   "async",
+                                                   "interfaces",
+                                                   "types"
+                                               ],
+                                  "files":  [
+                                                "config.ts",
+                                                "firestore.ts",
+                                                "operators.ts",
+                                                "parser.ts",
+                                                "types.ts"
+                                            ],
+                                  "depth":  4,
+                                  "fileCount":  5
+                              },
+    "src/components/media":  {
+                                 "patterns":  [
+                                                  "react-hooks",
+                                                  "async"
+                                              ],
+                                 "files":  [
+                                               "CameraCapture.tsx",
+                                               "ImageEditor.tsx",
+                                               "MediaEditorModal.tsx",
+                                               "MediaGallery.tsx",
+                                               "MediaMetadataForm.tsx",
+                                               "MediaPreviewCard.tsx",
+                                               "MediaUploader.tsx",
+                                               "VideoRecorder.tsx",
+                                               "VideoThumbnailGenerator.tsx"
+                                           ],
+                                 "depth":  2,
+                                 "fileCount":  9
+                             },
+    "src/app/terms-of-service":  {
+                                     "patterns":  {
+
+                                                  },
+                                     "files":  "page.tsx",
+                                     "depth":  2,
+                                     "fileCount":  1
+                                 },
+    "src/app/user/history/__snapshots__":  {
+                                               "patterns":  {
+
+                                                            },
+                                               "files":  "page.test.tsx.snap",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/email/newsletter/subscribe":  {
+                                                   "patterns":  "async",
+                                                   "files":  "route.ts",
+                                                   "depth":  5,
+                                                   "fileCount":  1
+                                               },
+    "src/constants":  {
+                          "patterns":  [
+                                           "types",
+                                           "interfaces",
+                                           "functions",
+                                           "zod-validation"
+                                       ],
+                          "files":  [
+                                        "api-routes.ts",
+                                        "bulk-actions.ts",
+                                        "categories.ts",
+                                        "colors.ts",
+                                        "comparison.ts",
+                                        "database.ts",
+                                        "faq.ts",
+                                        "filters.ts",
+                                        "footer.ts",
+                                        "form-fields.ts",
+                                        "i18n.ts",
+                                        "limits.ts",
+                                        "location.ts",
+                                        "media.ts",
+                                        "navigation.ts",
+                                        "routes.ts",
+                                        "searchable-routes.ts",
+                                        "site.ts",
+                                        "statuses.ts",
+                                        "storage.ts",
+                                        "tabs.ts",
+                                        "validation-messages.ts",
+                                        "whatsapp-templates.ts"
+                                    ],
+                          "depth":  1,
+                          "fileCount":  23
+                      },
+    "src/app/api/messages/unread-count":  {
+                                              "patterns":  "async",
+                                              "files":  "route.ts",
+                                              "depth":  4,
+                                              "fileCount":  1
+                                          },
+    "src/app/api/address/countries":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/api/analytics":  {
+                                  "patterns":  "async",
+                                  "files":  "route.ts",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/email/templates":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/user/bids":  {
+                              "patterns":  [
+                                               "react-hooks",
+                                               "async"
+                                           ],
+                              "files":  "page.tsx",
+                              "depth":  3,
+                              "fileCount":  1
+                          },
+    "src/app/api/auth/me":  {
+                                "patterns":  "async",
+                                "files":  "route.ts",
+                                "depth":  4,
+                                "fileCount":  1
+                            },
+    "src/app/api/lib/firebase":  {
+                                     "patterns":  [
+                                                      "functions",
+                                                      "async",
+                                                      "interfaces"
+                                                  ],
+                                     "files":  [
+                                                   "admin.ts",
+                                                   "app.ts",
+                                                   "collections.ts",
+                                                   "config.ts",
+                                                   "queries.ts",
+                                                   "transactions.ts"
+                                               ],
+                                     "depth":  4,
+                                     "fileCount":  6
+                                 },
+    "src/components/navigation":  {
+                                      "patterns":  {
+
+                                                   },
+                                      "files":  [
+                                                    "TabbedLayout.tsx",
+                                                    "TabNav.tsx"
+                                                ],
+                                      "depth":  2,
+                                      "fileCount":  2
+                                  },
+    "src/app/api/admin/static-assets/confirm-upload":  {
+                                                           "patterns":  "async",
+                                                           "files":  "route.ts",
+                                                           "depth":  5,
+                                                           "fileCount":  1
+                                                       },
+    "src/app/unauthorized":  {
+                                 "patterns":  {
+
+                                              },
+                                 "files":  "page.tsx",
+                                 "depth":  2,
+                                 "fileCount":  1
+                             },
+    "src/app/api/admin/demo/generate/products":  {
+                                                     "patterns":  "async",
+                                                     "files":  "route.ts",
+                                                     "depth":  6,
+                                                     "fileCount":  1
+                                                 },
+    "src/app/api/admin/demo/cleanup-all":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  5,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/header-stats":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  3,
+                                     "fileCount":  1
+                                 },
+    "src/components/forms":  {
+                                 "patterns":  [
+                                                  "interfaces",
+                                                  "functions",
+                                                  "react-hooks",
+                                                  "async"
+                                              ],
+                                 "files":  [
+                                               "FormCheckbox.tsx",
+                                               "FormField.tsx",
+                                               "FormFieldset.tsx",
+                                               "FormInput.tsx",
+                                               "FormKeyValueInput.tsx",
+                                               "FormLabel.tsx",
+                                               "FormListInput.tsx",
+                                               "FormNumberInput.tsx",
+                                               "FormRadio.tsx",
+                                               "FormSection.tsx",
+                                               "FormSelect.tsx",
+                                               "FormTextarea.tsx",
+                                               "WizardActionBar.tsx",
+                                               "WizardForm.tsx",
+                                               "WizardSteps.tsx"
+                                           ],
+                                 "depth":  2,
+                                 "fileCount":  15
+                             },
+    "src/app/api/auth/sessions":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/api/reviews/bulk":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/admin/payments":  {
+                                   "patterns":  {
+
+                                                },
+                                   "files":  [
+                                                 "layout.tsx",
+                                                 "page.tsx"
+                                             ],
+                                   "depth":  3,
+                                   "fileCount":  2
+                               },
+    "src/app/user/notifications":  {
+                                       "patterns":  [
+                                                        "react-hooks",
+                                                        "async"
+                                                    ],
+                                       "files":  "page.tsx",
+                                       "depth":  3,
+                                       "fileCount":  1
+                                   },
+    "src/app/user/watchlist":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/components/admin/homepage":  {
+                                          "patterns":  {
+
+                                                       },
+                                          "files":  [
+                                                        "BannerEditor.tsx",
+                                                        "SectionCard.tsx",
+                                                        "SliderControl.tsx"
+                                                    ],
+                                          "depth":  3,
+                                          "fileCount":  3
+                                      },
+    "src/components/layout":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async",
+                                                   "interfaces"
+                                               ],
+                                  "files":  [
+                                                "BottomNav.tsx",
+                                                "Breadcrumb.tsx",
+                                                "FeaturedAuctionsSection.tsx",
+                                                "FeaturedBlogsSection.tsx",
+                                                "FeaturedCategories.tsx",
+                                                "FeaturedCategoriesSection.tsx",
+                                                "FeaturedProductsSection.tsx",
+                                                "FeaturedReviewsSection.tsx",
+                                                "FeaturedShopsSection.tsx",
+                                                "Footer.tsx",
+                                                "Header.tsx",
+                                                "HeroCarousel.tsx",
+                                                "MainNavBar.tsx",
+                                                "MobileNavRow.tsx",
+                                                "MobileSidebar.tsx",
+                                                "SearchBar.tsx",
+                                                "ShopsNav.tsx",
+                                                "SpecialEventBanner.tsx",
+                                                "SubNavbar.tsx"
+                                            ],
+                                  "depth":  2,
+                                  "fileCount":  19
+                              },
+    "src/app/api/categories/bulk":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/user/notification-preferences":  {
+                                                      "patterns":  "async",
+                                                      "files":  "route.ts",
+                                                      "depth":  4,
+                                                      "fileCount":  1
+                                                  },
+    "src/app/api/checkout/verify-payment":  {
+                                                "patterns":  [
+                                                                 "async",
+                                                                 "zod-validation"
+                                                             ],
+                                                "files":  "route.ts",
+                                                "depth":  4,
+                                                "fileCount":  1
+                                            },
+    "src/app/contact":  {
+                            "patterns":  [
+                                             "react-hooks",
+                                             "async"
+                                         ],
+                            "files":  "page.tsx",
+                            "depth":  2,
+                            "fileCount":  1
+                        },
+    "src/app/admin/auctions/moderation":  {
+                                              "patterns":  [
+                                                               "react-hooks",
+                                                               "async"
+                                                           ],
+                                              "files":  "page.tsx",
+                                              "depth":  4,
+                                              "fileCount":  1
+                                          },
+    "src/app/api/test-data/generate-blog-posts":  {
+                                                      "patterns":  "async",
+                                                      "files":  "route.ts",
+                                                      "depth":  4,
+                                                      "fileCount":  1
+                                                  },
+    "src/app/admin/analytics/sales":  {
+                                          "patterns":  [
+                                                           "react-hooks",
+                                                           "async"
+                                                       ],
+                                          "files":  "page.tsx",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/components/common/skeletons":  {
+                                            "patterns":  {
+
+                                                         },
+                                            "files":  [
+                                                          "AuctionCardSkeleton.tsx",
+                                                          "ProductCardSkeleton.tsx"
+                                                      ],
+                                            "depth":  3,
+                                            "fileCount":  2
+                                        },
+    "src/templates/email":  {
+                                "patterns":  [
+                                                 "interfaces",
+                                                 "functions"
+                                             ],
+                                "files":  [
+                                              "AuctionBidNotification.tsx",
+                                              "Newsletter.tsx",
+                                              "OrderConfirmation.tsx",
+                                              "PasswordReset.tsx",
+                                              "ShippingUpdate.tsx",
+                                              "WelcomeEmail.tsx"
+                                          ],
+                                "depth":  2,
+                                "fileCount":  6
+                            },
+    "src/app/api/auctions/live":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/api/lib/riplimit":  {
+                                     "patterns":  "async",
+                                     "files":  [
+                                                   "account.ts",
+                                                   "admin.ts",
+                                                   "bids.ts",
+                                                   "transactions.ts"
+                                               ],
+                                     "depth":  4,
+                                     "fileCount":  4
+                                 },
+    "src/app/api/health":  {
+                               "patterns":  "async",
+                               "files":  "route.ts",
+                               "depth":  3,
+                               "fileCount":  1
+                           },
+    "src/app/api/header/stats":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/api/riplimit/transactions":  {
+                                              "patterns":  "async",
+                                              "files":  "route.ts",
+                                              "depth":  4,
+                                              "fileCount":  1
+                                          },
+    "src/types/shared":  {
+                             "patterns":  [
+                                              "interfaces",
+                                              "types"
+                                          ],
+                             "files":  [
+                                           "api.types.ts",
+                                           "common.types.ts",
+                                           "location.types.ts",
+                                           "pagination.types.ts"
+                                       ],
+                             "depth":  2,
+                             "fileCount":  4
+                         },
+    "src/app/api/categories/leaves":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/api/admin/demo/sessions":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  5,
+                                            "fileCount":  1
+                                        },
+    "src/app/auctions/create":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  3,
+                                    "fileCount":  1
+                                },
+    "src/app/admin/categories/create":  {
+                                            "patterns":  [
+                                                             "react-hooks",
+                                                             "async"
+                                                         ],
+                                            "files":  "page.tsx",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/lib/location":  {
+                                     "patterns":  "async",
+                                     "files":  "pincode.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/admin/settings/payment-gateways":  {
+                                                    "patterns":  [
+                                                                     "react-hooks",
+                                                                     "async"
+                                                                 ],
+                                                    "files":  "page.tsx",
+                                                    "depth":  4,
+                                                    "fileCount":  1
+                                                },
+    "src/app/checkout/success":  {
+                                     "patterns":  {
+
+                                                  },
+                                     "files":  "page.tsx",
+                                     "depth":  3,
+                                     "fileCount":  1
+                                 },
+    "src/app/api/payments/razorpay/verify":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/app/logout":  {
+                           "patterns":  [
+                                            "react-hooks",
+                                            "async"
+                                        ],
+                           "files":  "page.tsx",
+                           "depth":  2,
+                           "fileCount":  1
+                       },
+    "src/app/api/admin/emails/logs":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  5,
+                                          "fileCount":  1
+                                      },
+    "src/components/checkout":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async",
+                                                     "interfaces",
+                                                     "zod-validation"
+                                                 ],
+                                    "files":  [
+                                                  "AddressForm.tsx",
+                                                  "AddressSelector.tsx",
+                                                  "CouponSelector.tsx",
+                                                  "PaymentMethod.tsx",
+                                                  "PaymentMethodSelectorWithCreate.tsx",
+                                                  "ShippingMethodSelector.tsx",
+                                                  "ShopOrderSummary.tsx"
+                                              ],
+                                    "depth":  2,
+                                    "fileCount":  7
+                                },
+    "src/app/api/auctions/featured":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/hooks":  {
+                      "patterns":  [
+                                       "interfaces",
+                                       "react-hooks",
+                                       "async",
+                                       "functions",
+                                       "types"
+                                   ],
+                      "files":  [
+                                    "useBulkSelection.ts",
+                                    "useCart.ts",
+                                    "useDebounce.ts",
+                                    "useFilters.ts",
+                                    "useHeaderStats.ts",
+                                    "useLoadingState.ts",
+                                    "useMediaUpload.ts",
+                                    "useMediaUploadWithCleanup.ts",
+                                    "useMobile.ts",
+                                    "useNavigationGuard.ts",
+                                    "useResourceList.ts",
+                                    "useSafeLoad.ts",
+                                    "useSlugValidation.ts",
+                                    "useUrlFilters.ts",
+                                    "useUrlPagination.ts",
+                                    "useWindowResize.ts"
+                                ],
+                      "depth":  1,
+                      "fileCount":  16
+                  },
+    "src/app/api/admin/demo/summary":  {
+                                           "patterns":  "async",
+                                           "files":  "route.ts",
+                                           "depth":  5,
+                                           "fileCount":  1
+                                       },
+    "src/components/admin/category-wizard":  {
+                                                 "patterns":  [
+                                                                  "interfaces",
+                                                                  "types"
+                                                              ],
+                                                 "files":  [
+                                                               "BasicInfoStep.tsx",
+                                                               "DisplayStep.tsx",
+                                                               "MediaStep.tsx",
+                                                               "SeoStep.tsx",
+                                                               "types.ts"
+                                                           ],
+                                                 "depth":  3,
+                                                 "fileCount":  5
+                                             },
+    "src/lib/utils":  {
+                          "patterns":  "interfaces",
+                          "files":  "category-utils.ts",
+                          "depth":  2,
+                          "fileCount":  1
+                      },
+    "src/types/backend":  {
+                              "patterns":  [
+                                               "interfaces",
+                                               "types"
+                                           ],
+                              "files":  [
+                                            "address.types.ts",
+                                            "auction.types.ts",
+                                            "cart.types.ts",
+                                            "category.types.ts",
+                                            "coupon.types.ts",
+                                            "message.types.ts",
+                                            "order.types.ts",
+                                            "product.types.ts",
+                                            "return.types.ts",
+                                            "review.types.ts",
+                                            "riplimit.types.ts",
+                                            "shop.types.ts",
+                                            "support-ticket.types.ts",
+                                            "user.types.ts"
+                                        ],
+                              "depth":  2,
+                              "fileCount":  14
+                          },
+    "src/app/api/lib/utils":  {
+                                  "patterns":  [
+                                                   "functions",
+                                                   "interfaces",
+                                                   "async"
+                                               ],
+                                  "files":  [
+                                                "memory-cache.ts",
+                                                "pagination.ts",
+                                                "rate-limiter.ts",
+                                                "shop-slug-resolver.ts"
+                                            ],
+                                  "depth":  4,
+                                  "fileCount":  4
+                              },
+    "src/app/api/admin/demo/generate/bids":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  6,
+                                                 "fileCount":  1
+                                             },
+    "src/lib/validators":  {
+                               "patterns":  "interfaces",
+                               "files":  "address.validator.ts",
+                               "depth":  2,
+                               "fileCount":  1
+                           },
+    "src/app/api/auth/google":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/reviews":  {
+                            "patterns":  [
+                                             "react-hooks",
+                                             "async"
+                                         ],
+                            "files":  [
+                                          "page.tsx",
+                                          "ReviewsListClient.tsx"
+                                      ],
+                            "depth":  2,
+                            "fileCount":  2
+                        },
+    "src/app/api/protected":  {
+                                  "patterns":  "async",
+                                  "files":  "route.ts",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/products/batch":  {
+                                       "patterns":  "async",
+                                       "files":  "route.ts",
+                                       "depth":  4,
+                                       "fileCount":  1
+                                   },
+    "src/app/seller/help":  {
+                                "patterns":  "react-hooks",
+                                "files":  "page.tsx",
+                                "depth":  3,
+                                "fileCount":  1
+                            },
+    "src/app/admin/settings/payment":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/test-data/generate-messages":  {
+                                                    "patterns":  "async",
+                                                    "files":  "route.ts",
+                                                    "depth":  4,
+                                                    "fileCount":  1
+                                                },
+    "src/components/mobile":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async",
+                                                   "functions"
+                                               ],
+                                  "files":  [
+                                                "MobileActionSheet.tsx",
+                                                "MobileAdminSidebar.tsx",
+                                                "MobileBottomSheet.tsx",
+                                                "MobileDataTable.tsx",
+                                                "MobileInstallPrompt.tsx",
+                                                "MobileOfflineIndicator.tsx",
+                                                "MobilePullToRefresh.tsx",
+                                                "MobileQuickActions.tsx",
+                                                "MobileSellerSidebar.tsx",
+                                                "MobileSkeleton.tsx",
+                                                "MobileSwipeActions.tsx"
+                                            ],
+                                  "depth":  2,
+                                  "fileCount":  11
+                              },
+    "src/app/api/test-data/generate-notifications":  {
+                                                         "patterns":  "async",
+                                                         "files":  "route.ts",
+                                                         "depth":  4,
+                                                         "fileCount":  1
+                                                     },
+    "src/app/seller/products/create":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/orders/bulk":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/admin/analytics/payments":  {
+                                             "patterns":  {
+
+                                                          },
+                                             "files":  "page.tsx",
+                                             "depth":  4,
+                                             "fileCount":  1
+                                         },
+    "src/components/auction":  {
+                                   "patterns":  [
+                                                    "interfaces",
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  [
+                                                 "AuctionDescription.tsx",
+                                                 "AuctionGallery.tsx",
+                                                 "AuctionInfo.tsx",
+                                                 "AuctionSellerInfo.tsx",
+                                                 "AutoBidSetup.tsx",
+                                                 "LiveBidHistory.tsx",
+                                                 "LiveCountdown.tsx",
+                                                 "SimilarAuctions.tsx"
+                                             ],
+                                   "depth":  2,
+                                   "fileCount":  8
+                               },
+    "src/app/admin/hero-slides/create":  {
+                                             "patterns":  [
+                                                              "react-hooks",
+                                                              "async"
+                                                          ],
+                                             "files":  "page.tsx",
+                                             "depth":  4,
+                                             "fileCount":  1
+                                         },
+    "src/app/admin/blog/tags":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/api/email/webhook":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/guide/returns":  {
+                                  "patterns":  {
+
+                                               },
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/test-data/generate-users":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  4,
+                                                 "fileCount":  1
+                                             },
+    "src/app/admin/static-assets":  {
+                                        "patterns":  [
+                                                         "react-hooks",
+                                                         "async"
+                                                     ],
+                                        "files":  "page.tsx",
+                                        "depth":  3,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/payments/paypal/capture":  {
+                                                "patterns":  "async",
+                                                "files":  "route.ts",
+                                                "depth":  5,
+                                                "fileCount":  1
+                                            },
+    "src/app/admin/dashboard":  {
+                                    "patterns":  [
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  "page.tsx",
+                                    "depth":  3,
+                                    "fileCount":  1
+                                },
+    "src/app/api/categories/batch":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/lib/services":  {
+                                     "patterns":  [
+                                                      "interfaces",
+                                                      "functions",
+                                                      "async"
+                                                  ],
+                                     "files":  "otp.service.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/components/common/filters":  {
+                                          "patterns":  [
+                                                           "interfaces",
+                                                           "react-hooks"
+                                                       ],
+                                          "files":  [
+                                                        "CategoryFilter.tsx",
+                                                        "FilterSectionComponent.tsx",
+                                                        "PriceRangeFilter.tsx"
+                                                    ],
+                                          "depth":  3,
+                                          "fileCount":  3
+                                      },
+    "src/app/admin/blog/create":  {
+                                      "patterns":  [
+                                                       "react-hooks",
+                                                       "async"
+                                                   ],
+                                      "files":  "page.tsx",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/components/product":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  [
+                                                 "ProductDescription.tsx",
+                                                 "ProductGallery.tsx",
+                                                 "ProductInfo.tsx",
+                                                 "ProductReviews.tsx",
+                                                 "ProductVariants.tsx",
+                                                 "ReviewForm.tsx",
+                                                 "ReviewList.tsx",
+                                                 "SellerProducts.tsx",
+                                                 "SimilarProducts.tsx"
+                                             ],
+                                   "depth":  2,
+                                   "fileCount":  9
+                               },
+    "src/app/api/homepage/banner":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/admin/settings/email/test":  {
+                                                  "patterns":  "async",
+                                                  "files":  "route.ts",
+                                                  "depth":  6,
+                                                  "fileCount":  1
+                                              },
+    "src/app/api/payouts/bulk":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/app/user/settings/notifications":  {
+                                                "patterns":  {
+
+                                                             },
+                                                "files":  "page.tsx",
+                                                "depth":  4,
+                                                "fileCount":  1
+                                            },
+    "src/app/api/media/delete":  {
+                                     "patterns":  "async",
+                                     "files":  "route.ts",
+                                     "depth":  4,
+                                     "fileCount":  1
+                                 },
+    "src/components/wizards":  {
+                                   "patterns":  [
+                                                    "interfaces",
+                                                    "react-hooks"
+                                                ],
+                                   "files":  [
+                                                 "BusinessAddressStep.tsx",
+                                                 "CategorySelectionStep.tsx",
+                                                 "ContactInfoStep.tsx",
+                                                 "ShopSelectionStep.tsx"
+                                             ],
+                                   "depth":  2,
+                                   "fileCount":  4
+                               },
+    "src/app/admin/auctions/live":  {
+                                        "patterns":  [
+                                                         "react-hooks",
+                                                         "async"
+                                                     ],
+                                        "files":  "page.tsx",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/admin/settings/general":  {
+                                           "patterns":  [
+                                                            "react-hooks",
+                                                            "async"
+                                                        ],
+                                           "files":  "page.tsx",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/address/lookup":  {
+                                       "patterns":  "async",
+                                       "files":  "route.ts",
+                                       "depth":  4,
+                                       "fileCount":  1
+                                   },
+    "src/app/fees/shipping":  {
+                                  "patterns":  {
+
+                                               },
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/payments/available-gateways":  {
+                                                    "patterns":  "async",
+                                                    "files":  "route.ts",
+                                                    "depth":  4,
+                                                    "fileCount":  1
+                                                },
+    "src/app/api/auth/verify-phone/verify":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/app/api/shipping/shiprocket/generate-awb":  {
+                                                         "patterns":  "async",
+                                                         "files":  "route.ts",
+                                                         "depth":  5,
+                                                         "fileCount":  1
+                                                     },
+    "src/app/api/test-data/generate-categories":  {
+                                                      "patterns":  "async",
+                                                      "files":  "route.ts",
+                                                      "depth":  4,
+                                                      "fileCount":  1
+                                                  },
+    "src/app/api/categories/search":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/components/common/values":  {
+                                         "patterns":  [
+                                                          "react-hooks",
+                                                          "async"
+                                                      ],
+                                         "files":  [
+                                                       "Address.tsx",
+                                                       "AuctionStatus.tsx",
+                                                       "BidCount.tsx",
+                                                       "Currency.tsx",
+                                                       "DateDisplay.tsx",
+                                                       "Dimensions.tsx",
+                                                       "Email.tsx",
+                                                       "OrderId.tsx",
+                                                       "PaymentStatus.tsx",
+                                                       "Percentage.tsx",
+                                                       "PhoneNumber.tsx",
+                                                       "Price.tsx",
+                                                       "Quantity.tsx",
+                                                       "Rating.tsx",
+                                                       "ShippingStatus.tsx",
+                                                       "SKU.tsx",
+                                                       "StockStatus.tsx",
+                                                       "TimeRemaining.tsx",
+                                                       "TruncatedText.tsx",
+                                                       "Weight.tsx"
+                                                   ],
+                                         "depth":  3,
+                                         "fileCount":  20
+                                     },
+    "src/app/user/returns":  {
+                                 "patterns":  [
+                                                  "react-hooks",
+                                                  "async"
+                                              ],
+                                 "files":  "page.tsx",
+                                 "depth":  3,
+                                 "fileCount":  1
+                             },
+    "src/app/fees/optional":  {
+                                  "patterns":  {
+
+                                               },
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/user/reviews":  {
+                                 "patterns":  [
+                                                  "react-hooks",
+                                                  "async"
+                                              ],
+                                 "files":  "page.tsx",
+                                 "depth":  3,
+                                 "fileCount":  1
+                             },
+    "src/app/api/admin/emails/stats":  {
+                                           "patterns":  "async",
+                                           "files":  "route.ts",
+                                           "depth":  5,
+                                           "fileCount":  1
+                                       },
+    "src/app/seller/revenue":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/categories/homepage":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/auth/logout":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/api/test-data/status":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/test-data/cleanup":  {
+                                          "patterns":  "async",
+                                          "files":  "route.ts",
+                                          "depth":  4,
+                                          "fileCount":  1
+                                      },
+    "src/app/api/categories/tree":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/api/auctions/my-bids":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/email/send":  {
+                                   "patterns":  "async",
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/cookie-policy":  {
+                                  "patterns":  {
+
+                                               },
+                                  "files":  "page.tsx",
+                                  "depth":  2,
+                                  "fileCount":  1
+                              },
+    "src/app/api/email/inbox":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/components/cart":  {
+                                "patterns":  [
+                                                 "react-hooks",
+                                                 "async"
+                                             ],
+                                "files":  [
+                                              "CartItem.tsx",
+                                              "CartSummary.tsx"
+                                          ],
+                                "depth":  2,
+                                "fileCount":  2
+                            },
+    "src/components/seller/auction-wizard":  {
+                                                 "patterns":  [
+                                                                  "async",
+                                                                  "interfaces"
+                                                              ],
+                                                 "files":  [
+                                                               "OptionalDetailsStep.tsx",
+                                                               "PickupStep.tsx",
+                                                               "RequiredInfoStep.tsx",
+                                                               "types.ts"
+                                                           ],
+                                                 "depth":  3,
+                                                 "fileCount":  4
+                                             },
+    "src/app/seller/reviews":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/address/autocomplete":  {
+                                             "patterns":  "async",
+                                             "files":  "route.ts",
+                                             "depth":  4,
+                                             "fileCount":  1
+                                         },
+    "src/app/api/admin/email/test":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  5,
+                                         "fileCount":  1
+                                     },
+    "src/app/admin/analytics/auctions":  {
+                                             "patterns":  [
+                                                              "react-hooks",
+                                                              "async"
+                                                          ],
+                                             "files":  "page.tsx",
+                                             "depth":  4,
+                                             "fileCount":  1
+                                         },
+    "src/app/guide/prohibited":  {
+                                     "patterns":  {
+
+                                                  },
+                                     "files":  "page.tsx",
+                                     "depth":  3,
+                                     "fileCount":  1
+                                 },
+    "src/components/admin/riplimit":  {
+                                          "patterns":  [
+                                                           "react-hooks",
+                                                           "async"
+                                                       ],
+                                          "files":  [
+                                                        "AdjustBalanceModal.tsx",
+                                                        "RipLimitStats.tsx",
+                                                        "UsersTable.tsx"
+                                                    ],
+                                          "depth":  3,
+                                          "fileCount":  3
+                                      },
+    "src/lib/firebase":  {
+                             "patterns":  "interfaces",
+                             "files":  [
+                                           "query-helpers.ts",
+                                           "timestamp-helpers.ts"
+                                       ],
+                             "depth":  2,
+                             "fileCount":  2
+                         },
+    "src/app/admin/payouts":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async"
+                                               ],
+                                  "files":  [
+                                                "layout.tsx",
+                                                "page.tsx"
+                                            ],
+                                  "depth":  3,
+                                  "fileCount":  2
+                              },
+    "src/components/cards":  {
+                                 "patterns":  [
+                                                  "interfaces",
+                                                  "types",
+                                                  "react-hooks",
+                                                  "async",
+                                                  "functions"
+                                              ],
+                                 "files":  [
+                                               "AuctionCard.tsx",
+                                               "AuctionCardSkeleton.tsx",
+                                               "AuctionQuickView.tsx",
+                                               "BlogCard.tsx",
+                                               "CardGrid.tsx",
+                                               "CategoryCard.tsx",
+                                               "CategoryCardSkeleton.tsx",
+                                               "ProductCard.tsx",
+                                               "ProductCardSkeleton.tsx",
+                                               "ProductQuickView.tsx",
+                                               "ReviewCard.tsx",
+                                               "ShopCard.tsx",
+                                               "ShopCardSkeleton.tsx"
+                                           ],
+                                 "depth":  2,
+                                 "fileCount":  13
+                             },
+    "src/app/api/auth/reset-password":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/app/api/categories/reorder":  {
+                                           "patterns":  "async",
+                                           "files":  "route.ts",
+                                           "depth":  4,
+                                           "fileCount":  1
+                                       },
+    "src/app/api/admin/settings/payment-gateways/test":  {
+                                                             "patterns":  "async",
+                                                             "files":  "route.ts",
+                                                             "depth":  6,
+                                                             "fileCount":  1
+                                                         },
+    "src/app/api/homepage/faqs":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/services":  {
+                         "patterns":  [
+                                          "interfaces",
+                                          "functions",
+                                          "async",
+                                          "types"
+                                      ],
+                         "files":  [
+                                       "address.service.ts",
+                                       "analytics.service.ts",
+                                       "api.service.ts",
+                                       "auctions.service.ts",
+                                       "auth.service.ts",
+                                       "blog.service.ts",
+                                       "cart.service.ts",
+                                       "categories.service.ts",
+                                       "checkout.service.ts",
+                                       "comparison.service.ts",
+                                       "coupons.service.ts",
+                                       "demo-data.service.ts",
+                                       "email.service.ts",
+                                       "error-tracking.service.ts",
+                                       "events.service.ts",
+                                       "favorites.service.ts",
+                                       "google-forms.service.ts",
+                                       "hero-slides.service.ts",
+                                       "homepage-settings.service.ts",
+                                       "homepage.service.ts",
+                                       "ip-tracker.service.ts",
+                                       "location.service.ts",
+                                       "media.service.ts",
+                                       "messages.service.ts",
+                                       "notification.service.ts",
+                                       "orders.service.ts",
+                                       "otp.service.ts",
+                                       "payment-gateway.service.ts",
+                                       "payment.service.ts",
+                                       "payouts.service.ts",
+                                       "products.service.ts",
+                                       "returns.service.ts",
+                                       "reviews.service.ts",
+                                       "riplimit.service.ts",
+                                       "search.service.ts",
+                                       "seller-settings.service.ts",
+                                       "settings.service.ts",
+                                       "shiprocket.service.ts",
+                                       "shops.service.ts",
+                                       "sms.service.ts",
+                                       "static-assets-client.service.ts",
+                                       "support.service.ts",
+                                       "test-data.service.ts",
+                                       "users.service.ts",
+                                       "viewing-history.service.ts",
+                                       "whatsapp.service.ts"
+                                   ],
+                         "depth":  1,
+                         "fileCount":  46
+                     },
+    "src/app/api/products/bulk":  {
+                                      "patterns":  "async",
+                                      "files":  "route.ts",
+                                      "depth":  4,
+                                      "fileCount":  1
+                                  },
+    "src/app/seller/returns":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/app/api/shops/batch":  {
+                                    "patterns":  "async",
+                                    "files":  "route.ts",
+                                    "depth":  4,
+                                    "fileCount":  1
+                                },
+    "src/app/admin/settings/maintenance":  {
+                                               "patterns":  {
+
+                                                            },
+                                               "files":  "page.tsx",
+                                               "depth":  4,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/categories/featured":  {
+                                            "patterns":  "async",
+                                            "files":  "route.ts",
+                                            "depth":  4,
+                                            "fileCount":  1
+                                        },
+    "src/components/auth":  {
+                                "patterns":  [
+                                                 "react-hooks",
+                                                 "async"
+                                             ],
+                                "files":  [
+                                              "AuthGuard.tsx",
+                                              "EmailVerificationModal.tsx",
+                                              "GoogleSignInButton.tsx",
+                                              "OTPInput.tsx",
+                                              "PhoneVerificationModal.tsx",
+                                              "VerificationGate.tsx"
+                                          ],
+                                "depth":  2,
+                                "fileCount":  6
+                            },
+    "src/app/api/whatsapp/opt-in":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/components/seller/product-wizard":  {
+                                                 "patterns":  [
+                                                                  "async",
+                                                                  "interfaces"
+                                                              ],
+                                                 "files":  [
+                                                               "OptionalDetailsStep.tsx",
+                                                               "RequiredInfoStep.tsx",
+                                                               "ShippingStep.tsx",
+                                                               "types.ts"
+                                                           ],
+                                                 "depth":  3,
+                                                 "fileCount":  4
+                                             },
+    "src/app/api/lib/email/templates":  {
+                                            "patterns":  {
+
+                                                         },
+                                            "files":  [
+                                                          "auction.templates.ts",
+                                                          "order.templates.ts",
+                                                          "password-reset.template.ts",
+                                                          "verification.template.ts",
+                                                          "welcome.template.ts"
+                                                      ],
+                                            "depth":  5,
+                                            "fileCount":  5
+                                        },
+    "src/components/admin/blog-wizard":  {
+                                             "patterns":  [
+                                                              "react-hooks",
+                                                              "interfaces",
+                                                              "types"
+                                                          ],
+                                             "files":  [
+                                                           "BasicInfoStep.tsx",
+                                                           "CategoryTagsStep.tsx",
+                                                           "ContentStep.tsx",
+                                                           "MediaStep.tsx",
+                                                           "types.ts"
+                                                       ],
+                                             "depth":  3,
+                                             "fileCount":  5
+                                         },
+    "src/app/api/search":  {
+                               "patterns":  "async",
+                               "files":  "route.ts",
+                               "depth":  3,
+                               "fileCount":  1
+                           },
+    "src/app/api/address/validate":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/components/shop":  {
+                                "patterns":  [
+                                                 "interfaces",
+                                                 "react-hooks",
+                                                 "async"
+                                             ],
+                                "files":  [
+                                              "ShopAbout.tsx",
+                                              "ShopAuctions.tsx",
+                                              "ShopHeader.tsx",
+                                              "ShopPolicies.tsx",
+                                              "ShopProducts.tsx",
+                                              "ShopReviews.tsx",
+                                              "ShopStats.tsx"
+                                          ],
+                                "depth":  2,
+                                "fileCount":  7
+                            },
+    "src/app/admin/users":  {
+                                "patterns":  "async",
+                                "files":  "page.tsx",
+                                "depth":  3,
+                                "fileCount":  1
+                            },
+    "src/app/api/admin/riplimit/stats":  {
+                                             "patterns":  "async",
+                                             "files":  "route.ts",
+                                             "depth":  5,
+                                             "fileCount":  1
+                                         },
+    "src/app/api/favorites/count":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/shipping-policy":  {
+                                    "patterns":  {
+
+                                                 },
+                                    "files":  "page.tsx",
+                                    "depth":  2,
+                                    "fileCount":  1
+                                },
+    "src/app/admin/reviews":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async"
+                                               ],
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/homepage/reviews":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/payments/razorpay/capture":  {
+                                                  "patterns":  "async",
+                                                  "files":  "route.ts",
+                                                  "depth":  5,
+                                                  "fileCount":  1
+                                              },
+    "src/components/ui":  {
+                              "patterns":  [
+                                               "interfaces",
+                                               "functions"
+                                           ],
+                              "files":  [
+                                            "BaseCard.tsx",
+                                            "BaseTable.tsx",
+                                            "Button.tsx",
+                                            "Card.tsx",
+                                            "Checkbox.tsx",
+                                            "FormActions.tsx",
+                                            "FormLayout.tsx",
+                                            "Heading.tsx",
+                                            "Text.tsx",
+                                            "Textarea.tsx"
+                                        ],
+                              "depth":  2,
+                              "fileCount":  10
+                          },
+    "src/app/user/riplimit":  {
+                                  "patterns":  [
+                                                   "react-hooks",
+                                                   "async"
+                                               ],
+                                  "files":  "page.tsx",
+                                  "depth":  3,
+                                  "fileCount":  1
+                              },
+    "src/app/api/admin/settings/address-api":  {
+                                                   "patterns":  "async",
+                                                   "files":  "route.ts",
+                                                   "depth":  5,
+                                                   "fileCount":  1
+                                               },
+    "src/app/api/riplimit/balance":  {
+                                         "patterns":  "async",
+                                         "files":  "route.ts",
+                                         "depth":  4,
+                                         "fileCount":  1
+                                     },
+    "src/app/api/auth/login":  {
+                                   "patterns":  [
+                                                    "functions",
+                                                    "async"
+                                                ],
+                                   "files":  "route.ts",
+                                   "depth":  4,
+                                   "fileCount":  1
+                               },
+    "src/app/register":  {
+                             "patterns":  [
+                                              "react-hooks",
+                                              "async"
+                                          ],
+                             "files":  "page.tsx",
+                             "depth":  2,
+                             "fileCount":  1
+                         },
+    "src/app/api/admin/demo/generate/users":  {
+                                                  "patterns":  "async",
+                                                  "files":  "route.ts",
+                                                  "depth":  6,
+                                                  "fileCount":  1
+                                              },
+    "src/app/refund-policy":  {
+                                  "patterns":  {
+
+                                               },
+                                  "files":  "page.tsx",
+                                  "depth":  2,
+                                  "fileCount":  1
+                              },
+    "src/components/seller/shop-wizard":  {
+                                              "patterns":  [
+                                                               "interfaces",
+                                                               "types"
+                                                           ],
+                                              "files":  [
+                                                            "BankingStep.tsx",
+                                                            "BasicInfoStep.tsx",
+                                                            "BrandingStep.tsx",
+                                                            "ContactLegalStep.tsx",
+                                                            "PoliciesStep.tsx",
+                                                            "SettingsStep.tsx",
+                                                            "types.ts"
+                                                        ],
+                                              "depth":  3,
+                                              "fileCount":  7
+                                          },
+    "src/app/api/auth/verify-email/verify":  {
+                                                 "patterns":  "async",
+                                                 "files":  "route.ts",
+                                                 "depth":  5,
+                                                 "fileCount":  1
+                                             },
+    "src/app/privacy-policy":  {
+                                   "patterns":  {
+
+                                                },
+                                   "files":  "page.tsx",
+                                   "depth":  2,
+                                   "fileCount":  1
+                               },
+    "src/app/api/auth/verify-phone/send":  {
+                                               "patterns":  "async",
+                                               "files":  "route.ts",
+                                               "depth":  5,
+                                               "fileCount":  1
+                                           },
+    "src/app/api/admin/dashboard":  {
+                                        "patterns":  "async",
+                                        "files":  "route.ts",
+                                        "depth":  4,
+                                        "fileCount":  1
+                                    },
+    "src/app/user/following":  {
+                                   "patterns":  [
+                                                    "react-hooks",
+                                                    "async"
+                                                ],
+                                   "files":  "page.tsx",
+                                   "depth":  3,
+                                   "fileCount":  1
+                               },
+    "src/components/category":  {
+                                    "patterns":  [
+                                                     "interfaces",
+                                                     "react-hooks",
+                                                     "async"
+                                                 ],
+                                    "files":  [
+                                                  "CategoryFeaturedSellers.tsx",
+                                                  "CategoryHeader.tsx",
+                                                  "CategoryProducts.tsx",
+                                                  "CategoryStats.tsx",
+                                                  "CategoryTree.tsx",
+                                                  "SimilarCategories.tsx",
+                                                  "SubcategoryGrid.tsx"
+                                              ],
+                                    "depth":  2,
+                                    "fileCount":  7
+                                }
+}

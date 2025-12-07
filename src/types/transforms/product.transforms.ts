@@ -3,6 +3,8 @@
  * Convert between Backend (BE) and Frontend (FE) product types
  */
 
+import { parseDateOrDefault } from "@/lib/date-utils";
+import { formatPrice } from "@/lib/price.utils";
 import { ProductBE, ProductListItemBE } from "../backend/product.types";
 import {
   ProductBadge,
@@ -13,32 +15,6 @@ import {
 import { ProductStatus } from "../shared/common.types";
 
 // ==================== HELPERS ====================
-
-/**
- * Parse ISO timestamp or Firestore timestamp to Date
- */
-function parseDate(timestamp: any): Date {
-  if (!timestamp) return new Date();
-
-  // Firestore Timestamp
-  if (timestamp._seconds) {
-    return new Date(timestamp._seconds * 1000);
-  }
-
-  // ISO string
-  if (typeof timestamp === "string") {
-    return new Date(timestamp);
-  }
-
-  // Already a Date
-  if (timestamp instanceof Date) {
-    return timestamp;
-  }
-
-  return new Date();
-}
-
-import { formatPrice } from "@/lib/price.utils";
 
 /**
  * Calculate discount
@@ -144,8 +120,12 @@ function roundRating(rating: number): number {
  * Transform Backend Product to Frontend Product
  */
 export function toFEProduct(productBE: ProductBE): ProductFE {
-  const createdAt = parseDate(productBE.createdAt || productBE.created_at);
-  const updatedAt = parseDate(productBE.updatedAt || productBE.updated_at);
+  const createdAt = parseDateOrDefault(
+    productBE.createdAt || productBE.created_at
+  );
+  const updatedAt = parseDateOrDefault(
+    productBE.updatedAt || productBE.updated_at
+  );
 
   const { discount, discountPercentage } = calculateDiscount(
     productBE.price,
@@ -281,7 +261,7 @@ export function toFEProductCard(productBE: ProductListItemBE): ProductCardFE {
 
   const { stockStatus } = getStockStatus(productBE.stockCount);
   const ratingStars = roundRating(productBE.averageRating);
-  const createdAt = parseDate(productBE.createdAt);
+  const createdAt = parseDateOrDefault(productBE.createdAt);
   const daysSinceCreation = Math.floor(
     (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
   );

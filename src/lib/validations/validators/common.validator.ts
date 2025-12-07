@@ -1,8 +1,6 @@
 /**
- * Validation Utilities
- *
+ * Common Validation Utilities
  * Centralized validation functions for common data types
- * Use these instead of inline validation logic
  */
 
 /**

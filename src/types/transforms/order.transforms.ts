@@ -4,27 +4,29 @@
  * Functions to convert between Backend (BE) and Frontend (FE) order types.
  */
 
-import { Timestamp } from "firebase/firestore";
 import { safeToISOString } from "@/lib/date-utils";
+import { formatDate } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
+import { Timestamp } from "firebase/firestore";
 import {
-  OrderBE,
-  OrderListItemBE,
-  OrderItemBE as OrderItemBE_BE,
-  ShippingAddressBE,
   CreateOrderRequestBE,
+  OrderBE,
+  OrderItemBE as OrderItemBE_BE,
+  OrderListItemBE,
+  ShippingAddressBE,
 } from "../backend/order.types";
 import {
-  OrderFE,
-  OrderCardFE,
-  OrderItemFE,
-  ShippingAddressFE,
-  OrderProgressStep,
   CreateOrderFormFE,
+  OrderCardFE,
+  OrderFE,
+  OrderItemFE,
+  OrderProgressStep,
+  ShippingAddressFE,
 } from "../frontend/order.types";
 import {
   OrderStatus,
-  PaymentStatus,
   PaymentMethod,
+  PaymentStatus,
   ShippingMethod,
 } from "../shared/common.types";
 
@@ -37,28 +39,6 @@ function parseDate(date: Timestamp | string | null): Date | null {
     return date.toDate();
   }
   return new Date(date);
-}
-
-/**
- * Format price as Indian Rupees
- */
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
-/**
- * Format date
- */
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 /**
@@ -150,8 +130,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status >= OrderStatus.CONFIRMED
           ? "completed"
           : orderBE.status === OrderStatus.CONFIRMED
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.CONFIRMED ? createdAt : null,
       description: "Order confirmed by seller",
     },
@@ -161,8 +141,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status > OrderStatus.PROCESSING
           ? "completed"
           : orderBE.status === OrderStatus.PROCESSING
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.PROCESSING ? createdAt : null,
       description: "Preparing your order",
     },
@@ -172,8 +152,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status > OrderStatus.SHIPPED
           ? "completed"
           : orderBE.status === OrderStatus.SHIPPED
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.SHIPPED ? createdAt : null,
       description: orderBE.trackingNumber
         ? `Tracking: ${orderBE.trackingNumber}`
@@ -244,7 +224,7 @@ function generateOrderBadges(orderBE: OrderBE): string[] {
  */
 function formatEstimatedDelivery(
   date: Date | null,
-  status: OrderStatus,
+  status: OrderStatus
 ): string {
   if (!date) return "Not available";
   if (status === OrderStatus.DELIVERED) return "Delivered";
@@ -256,7 +236,9 @@ function formatEstimatedDelivery(
  */
 function getDeliveryStatus(orderBE: OrderBE): string {
   if (orderBE.status === OrderStatus.DELIVERED && orderBE.deliveredAt) {
-    return `Delivered on ${formatDate(parseDate(orderBE.deliveredAt) || new Date())}`;
+    return `Delivered on ${formatDate(
+      parseDate(orderBE.deliveredAt) || new Date()
+    )}`;
   }
   if (orderBE.status === OrderStatus.SHIPPED) {
     return "In transit";
@@ -397,7 +379,7 @@ export function toFEOrder(orderBE: OrderBE): OrderFE {
     orderTime: formatTime(createdAt),
     estimatedDeliveryDisplay: formatEstimatedDelivery(
       estimatedDelivery,
-      orderBE.status,
+      orderBE.status
     ),
     deliveryStatus: getDeliveryStatus(orderBE),
 
@@ -459,7 +441,7 @@ export function toFEOrderCard(orderBE: OrderListItemBE): OrderCardFE {
  * Transform Frontend Create Order Form to Backend Request
  */
 export function toBECreateOrderRequest(
-  formData: CreateOrderFormFE,
+  formData: CreateOrderFormFE
 ): CreateOrderRequestBE {
   return {
     userId: "", // Will be set by service layer
@@ -502,7 +484,7 @@ export function toBEUpdateOrderStatusRequest(status: string, notes?: string) {
 export function toBECreateShipmentRequest(
   trackingNumber: string,
   carrier: string,
-  estimatedDelivery?: Date,
+  estimatedDelivery?: Date
 ) {
   return {
     trackingNumber,

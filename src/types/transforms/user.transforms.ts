@@ -5,7 +5,9 @@
  * All transformations happen in the service layer.
  */
 
-import { Timestamp } from "firebase/firestore";
+import { parseDate } from "@/lib/date-utils";
+import { formatRelativeTime } from "@/lib/formatters";
+import { formatPrice } from "@/lib/price.utils";
 import {
   UpdateUserPreferencesBE,
   UpdateUserProfileBE,
@@ -20,28 +22,6 @@ import {
 } from "../frontend/user.types";
 
 /**
- * Parse Firestore Timestamp or ISO string to Date
- */
-function parseDate(date: Timestamp | string | null): Date | null {
-  if (!date) return null;
-  if (date instanceof Timestamp) {
-    return date.toDate();
-  }
-  return new Date(date);
-}
-
-/**
- * Format price as Indian Rupees
- */
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
-/**
  * Round rating to nearest 0.5
  */
 function roundRating(rating: number): number {
@@ -54,7 +34,7 @@ function roundRating(rating: number): number {
 function getInitials(
   displayName: string | null,
   firstName: string | null,
-  lastName: string | null,
+  lastName: string | null
 ): string {
   if (firstName && lastName) {
     return `${firstName[0]}${lastName[0]}`.toUpperCase();
@@ -76,7 +56,7 @@ function getFullName(
   displayName: string | null,
   firstName: string | null,
   lastName: string | null,
-  email: string,
+  email: string
 ): string {
   if (firstName && lastName) {
     return `${firstName} ${lastName}`;
@@ -88,32 +68,11 @@ function getFullName(
 }
 
 /**
- * Format relative time
+ * Format relative time wrapper for user context
  */
-function formatRelativeTime(date: Date | null): string {
+function formatUserRelativeTime(date: Date | null): string {
   if (!date) return "Never";
-
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  if (diffDays < 30)
-    return `${Math.floor(diffDays / 7)} week${
-      Math.floor(diffDays / 7) > 1 ? "s" : ""
-    } ago`;
-  if (diffDays < 365)
-    return `${Math.floor(diffDays / 30)} month${
-      Math.floor(diffDays / 30) > 1 ? "s" : ""
-    } ago`;
-  return `${Math.floor(diffDays / 365)} year${
-    Math.floor(diffDays / 365) > 1 ? "s" : ""
-  } ago`;
+  return formatRelativeTime(date, { style: "long" });
 }
 
 /**
@@ -171,7 +130,7 @@ function generateUserBadges(user: UserBE, createdAt: Date): string[] {
 
   // New user badge (within 30 days)
   const daysSinceCreation = Math.floor(
-    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24),
+    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
   );
   if (daysSinceCreation <= 30) {
     badges.push("New");
@@ -197,12 +156,12 @@ export function toFEUser(userBE: UserBE): UserFE {
     userBE.displayName,
     userBE.firstName,
     userBE.lastName,
-    userBE.email,
+    userBE.email
   );
   const initials = getInitials(
     userBE.displayName,
     userBE.firstName,
-    userBE.lastName,
+    userBE.lastName
   );
 
   return {
@@ -257,7 +216,7 @@ export function toFEUser(userBE: UserBE): UserFE {
     lastLoginAt,
 
     memberSince: formatMemberSince(createdAt),
-    lastLoginDisplay: formatRelativeTime(lastLoginAt),
+    lastLoginDisplay: formatUserRelativeTime(lastLoginAt),
     accountAge: calculateAccountAge(createdAt),
 
     isActive: userBE.status === "active",
@@ -303,7 +262,7 @@ export function toFEUserCard(userBE: UserListItemBE): UserCardFE {
  * Transform Frontend User Profile Form to Backend Update Request
  */
 export function toBEUserProfileUpdate(
-  formData: UserProfileFormFE,
+  formData: UserProfileFormFE
 ): UpdateUserProfileBE {
   return {
     displayName: formData.displayName || undefined,
@@ -320,7 +279,7 @@ export function toBEUserProfileUpdate(
  * Transform Frontend User Preferences Form to Backend Update Request
  */
 export function toBEUserPreferencesUpdate(
-  formData: UserPreferencesFormFE,
+  formData: UserPreferencesFormFE
 ): UpdateUserPreferencesBE {
   return {
     notifications: formData.notifications,

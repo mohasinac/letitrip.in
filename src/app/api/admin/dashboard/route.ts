@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { createSuccessResponse, withAuth } from "@/app/api/lib/route-helpers";
 import { COLLECTIONS } from "@/constants/database";
-import { getCurrentUser } from "@/app/api/lib/session";
+import { NextRequest } from "next/server";
 
 /**
  * GET /admin/dashboard
@@ -9,25 +9,9 @@ import { getCurrentUser } from "@/app/api/lib/session";
  *
  * Admin only endpoint
  */
-export async function GET(req: NextRequest) {
-  try {
+export const GET = withAuth(
+  async (req: NextRequest, user) => {
     const db = getFirestoreAdmin();
-
-    // Verify admin role from session
-    const user = await getCurrentUser(req);
-    if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized. Please log in." },
-        { status: 401 },
-      );
-    }
-
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Forbidden. Admin access required." },
-        { status: 403 },
-      );
-    }
 
     // Get all users
     const usersSnapshot = await db.collection(COLLECTIONS.USERS).get();
@@ -38,14 +22,14 @@ export async function GET(req: NextRequest) {
 
     const totalUsers = allUsers.length;
     const totalSellers = allUsers.filter(
-      (u: any) => u.role === "seller",
+      (u: any) => u.role === "seller"
     ).length;
     const totalAdmins = allUsers.filter((u: any) => u.role === "admin").length;
     const activeUsers = allUsers.filter(
-      (u: any) => u.status === "active",
+      (u: any) => u.status === "active"
     ).length;
     const bannedUsers = allUsers.filter(
-      (u: any) => u.status === "banned",
+      (u: any) => u.status === "banned"
     ).length;
 
     // Get all shops
@@ -56,7 +40,7 @@ export async function GET(req: NextRequest) {
     }));
     const totalShops = allShops.length;
     const activeShops = allShops.filter(
-      (s: any) => s.status === "active",
+      (s: any) => s.status === "active"
     ).length;
     const verifiedShops = allShops.filter((s: any) => s.is_verified).length;
 
@@ -74,10 +58,10 @@ export async function GET(req: NextRequest) {
     }));
     const totalProducts = allProducts.length;
     const activeProducts = allProducts.filter(
-      (p: any) => p.status === "active",
+      (p: any) => p.status === "active"
     ).length;
     const outOfStockProducts = allProducts.filter(
-      (p: any) => p.stock_quantity !== undefined && p.stock_quantity === 0,
+      (p: any) => p.stock_quantity !== undefined && p.stock_quantity === 0
     ).length;
 
     // Get all orders
@@ -88,13 +72,13 @@ export async function GET(req: NextRequest) {
     }));
     const totalOrders = allOrders.length;
     const pendingOrders = allOrders.filter(
-      (o: any) => o.status === "pending",
+      (o: any) => o.status === "pending"
     ).length;
     const completedOrders = allOrders.filter(
-      (o: any) => o.status === "delivered",
+      (o: any) => o.status === "delivered"
     ).length;
     const cancelledOrders = allOrders.filter(
-      (o: any) => o.status === "cancelled",
+      (o: any) => o.status === "cancelled"
     ).length;
 
     // Calculate total revenue
@@ -246,12 +230,7 @@ export async function GET(req: NextRequest) {
       recentActivities,
     };
 
-    return NextResponse.json(response);
-  } catch (error) {
-    console.error("Error fetching admin dashboard stats:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard stats" },
-      { status: 500 },
-    );
-  }
-}
+    return createSuccessResponse(response);
+  },
+  { requiredRole: "admin" }
+);

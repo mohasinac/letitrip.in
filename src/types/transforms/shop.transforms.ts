@@ -2,22 +2,15 @@
  * SHOP TYPE TRANSFORMATIONS
  */
 
-import { Timestamp } from "firebase/firestore";
-import { ShopBE, CreateShopRequestBE } from "../backend/shop.types";
-import { ShopFE, ShopFormFE, ShopCardFE } from "../frontend/shop.types";
-import { Status } from "../shared/common.types";
 import { safeToISOString } from "@/lib/date-utils";
+import { formatPrice } from "@/lib/price.utils";
+import { Timestamp } from "firebase/firestore";
+import { CreateShopRequestBE, ShopBE } from "../backend/shop.types";
+import { ShopCardFE, ShopFE, ShopFormFE } from "../frontend/shop.types";
+import { Status } from "../shared/common.types";
 
 function parseDate(date: Timestamp | string): Date {
   return date instanceof Timestamp ? date.toDate() : new Date(date);
-}
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(price);
 }
 
 export function toFEShop(shopBE: ShopBE): ShopFE {
@@ -61,7 +54,7 @@ export function toFEShop(shopBE: ShopBE): ShopFE {
 }
 
 export function toBECreateShopRequest(
-  formData: ShopFormFE,
+  formData: ShopFormFE
 ): CreateShopRequestBE {
   return {
     name: formData.name,

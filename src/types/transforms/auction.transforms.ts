@@ -2,10 +2,9 @@
  * AUCTION TYPE TRANSFORMATIONS
  */
 
-import { safeToISOString } from "@/lib/date-utils";
+import { parseDate, safeToISOString } from "@/lib/date-utils";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
-import { Timestamp } from "firebase/firestore";
 import {
   AuctionBE,
   AuctionListItemBE,
@@ -20,11 +19,6 @@ import {
   PlaceBidFormFE,
 } from "../frontend/auction.types";
 import { AuctionStatus, AuctionType } from "../shared/common.types";
-
-function parseDate(date: Timestamp | string | null): Date | null {
-  if (!date) return null;
-  return date instanceof Timestamp ? date.toDate() : new Date(date);
-}
 
 function formatTimeRemaining(endTime: Date | null): {
   display: string;

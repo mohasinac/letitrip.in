@@ -2,27 +2,20 @@
  * CATEGORY TYPE TRANSFORMATIONS
  */
 
-import { Timestamp } from "firebase/firestore";
-import { Status } from "../shared/common.types";
+import { parseDateOrDefault as parseDate } from "@/lib/date-utils";
 import {
   CategoryBE,
-  CategoryTreeNodeBE,
   CategoryBreadcrumbBE,
+  CategoryTreeNodeBE,
   CreateCategoryRequestBE,
 } from "../backend/category.types";
 import {
-  CategoryFE,
-  CategoryTreeNodeFE,
   CategoryBreadcrumbFE,
+  CategoryFE,
   CategoryFormFE,
+  CategoryTreeNodeFE,
 } from "../frontend/category.types";
-
-function parseDate(date: Timestamp | string | Date | undefined | null): Date {
-  if (!date) return new Date();
-  if (date instanceof Date) return date;
-  if (date instanceof Timestamp) return date.toDate();
-  return new Date(date);
-}
+import { Status } from "../shared/common.types";
 
 /**
  * Transform API response to CategoryFE
@@ -96,7 +89,7 @@ export function toFECategory(data: CategoryBE | any): CategoryFE {
 }
 
 export function toFECategoryTreeNode(
-  nodeBE: CategoryTreeNodeBE,
+  nodeBE: CategoryTreeNodeBE
 ): CategoryTreeNodeFE {
   return {
     category: toFECategory(nodeBE.category),
@@ -108,7 +101,7 @@ export function toFECategoryTreeNode(
 }
 
 export function toFECategoryBreadcrumb(
-  breadcrumbBE: CategoryBreadcrumbBE,
+  breadcrumbBE: CategoryBreadcrumbBE
 ): CategoryBreadcrumbFE {
   return {
     ...breadcrumbBE,
@@ -117,7 +110,7 @@ export function toFECategoryBreadcrumb(
 }
 
 export function toBECreateCategoryRequest(
-  formData: CategoryFormFE,
+  formData: CategoryFormFE
 ): CreateCategoryRequestBE {
   return {
     name: formData.name,

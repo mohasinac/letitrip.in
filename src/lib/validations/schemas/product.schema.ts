@@ -5,12 +5,10 @@
  * Used in product creation, update, and API routes
  */
 
+import { VALIDATION_RULES } from "@/constants/validation-messages";
 import { z } from "zod";
 
-/**
- * Slug validation regex
- */
-const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const slugRegex = VALIDATION_RULES.SLUG.PATTERN;
 
 /**
  * Product Condition enum
@@ -75,7 +73,7 @@ export const createProductSchema = z.object({
     .max(200, "Slug must not exceed 200 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 

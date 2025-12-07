@@ -4,8 +4,9 @@
  * Functions to convert between Backend (BE) and Frontend (FE) cart types.
  */
 
+import { parseDate } from "@/lib/date-utils";
+import { formatRelativeTime } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
-import { Timestamp } from "firebase/firestore";
 import { AddToCartRequestBE, CartBE, CartItemBE } from "../backend/cart.types";
 import {
   AddToCartFormFE,
@@ -15,32 +16,13 @@ import {
 } from "../frontend/cart.types";
 
 /**
- * Parse Firestore Timestamp or ISO string to Date
+ * Format relative time for cart items
  */
-function parseDate(date: Timestamp | string | null): Date | null {
-  if (!date) return null;
-  if (date instanceof Timestamp) {
-    return date.toDate();
-  }
-  return new Date(date);
-}
-
-/**
- * Format relative time
- */
-function formatRelativeTime(date: Date): string {
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return "Just added";
-  if (diffMins < 60)
-    return `Added ${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-  if (diffHours < 24)
-    return `Added ${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-  return `Added ${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+function formatCartRelativeTime(date: Date): string {
+  const relative = formatRelativeTime(date, { style: "long" });
+  // Convert "2 hours ago" to "Added 2 hours ago"
+  if (relative === "just now") return "Just added";
+  return `Added ${relative}`;
 }
 
 /**
@@ -97,7 +79,7 @@ function toFECartItem(itemBE: CartItemBE): CartItemFE {
     canDecrement: itemBE.quantity > 1,
     hasDiscount: itemBE.discount > 0,
 
-    addedTimeAgo: formatRelativeTime(addedAt),
+    addedTimeAgo: formatCartRelativeTime(addedAt),
   };
 }
 

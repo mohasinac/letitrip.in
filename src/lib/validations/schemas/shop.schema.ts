@@ -5,13 +5,10 @@
  * Used in shop creation, update, and API routes
  */
 
+import { VALIDATION_RULES } from "@/constants/validation-messages";
 import { z } from "zod";
 
-/**
- * Slug validation regex
- * Lowercase letters, numbers, and hyphens only
- */
-const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const slugRegex = VALIDATION_RULES.SLUG.PATTERN;
 
 /**
  * URL validation regex (optional http/https)
@@ -40,7 +37,7 @@ export const createShopSchema = z.object({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 
@@ -62,7 +59,7 @@ export const createShopSchema = z.object({
     .string()
     .regex(
       phoneRegex,
-      "Invalid phone number. Must be a valid Indian mobile number",
+      "Invalid phone number. Must be a valid Indian mobile number"
     )
     .optional(),
 
@@ -125,7 +122,7 @@ export const createShopSchema = z.object({
     .string()
     .regex(
       /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/,
-      "Invalid GST number",
+      "Invalid GST number"
     )
     .optional()
     .nullable(),
@@ -181,7 +178,7 @@ export const updateShopSchema = createShopSchema.partial().extend({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim()
     .optional(),

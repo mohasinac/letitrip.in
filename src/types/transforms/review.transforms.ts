@@ -2,10 +2,11 @@
  * REVIEW TYPE TRANSFORMATIONS
  */
 
-import { Timestamp } from "firebase/firestore";
+import { parseDate } from "@/lib/date-utils";
+import { formatRelativeTime } from "@/lib/formatters";
 import {
-  ReviewBE,
   CreateReviewRequestBE,
+  ReviewBE,
   ReviewStatsResponseBE,
 } from "../backend/review.types";
 import {
@@ -14,29 +15,14 @@ import {
   ReviewStatsFE,
 } from "../frontend/review.types";
 
-function parseDate(date: Timestamp | string | null): Date | null {
-  if (!date) return null;
-  return date instanceof Timestamp ? date.toDate() : new Date(date);
-}
-
 function formatTimeAgo(date: Date | null): string {
   if (!date) return "Unknown";
-
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-  return `${Math.floor(diffDays / 365)} years ago`;
+  return formatRelativeTime(date, { style: "long" });
 }
 
 export function toFEReview(
   reviewBE: ReviewBE,
-  currentUserId?: string,
+  currentUserId?: string
 ): ReviewFE {
   const createdAt = parseDate(reviewBE.createdAt) || new Date();
   const updatedAt = parseDate(reviewBE.updatedAt) || new Date();
@@ -61,7 +47,7 @@ export function toFEReview(
 }
 
 export function toBECreateReviewRequest(
-  formData: ReviewFormFE,
+  formData: ReviewFormFE
 ): CreateReviewRequestBE {
   return {
     productId: formData.productId,
@@ -113,7 +99,7 @@ export function toFEReviewStats(statsBE: ReviewStatsResponseBE): ReviewStatsFE {
 
 export function toFEReviews(
   reviewsBE: ReviewBE[] | undefined,
-  currentUserId?: string,
+  currentUserId?: string
 ): ReviewFE[] {
   if (!reviewsBE) return [];
   return reviewsBE.map((r) => toFEReview(r, currentUserId));

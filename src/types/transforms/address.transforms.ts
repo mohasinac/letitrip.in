@@ -2,17 +2,13 @@
  * ADDRESS TYPE TRANSFORMATIONS
  */
 
-import { Timestamp } from "firebase/firestore";
+import { parseDateOrDefault as parseDate } from "@/lib/date-utils";
 import { AddressBE, CreateAddressRequestBE } from "../backend/address.types";
 import {
+  ADDRESS_TYPE_LABELS,
   AddressFE,
   AddressFormFE,
-  ADDRESS_TYPE_LABELS,
 } from "../frontend/address.types";
-
-function parseDate(date: Timestamp | string): Date {
-  return date instanceof Timestamp ? date.toDate() : new Date(date);
-}
 
 export function toFEAddress(addressBE: AddressBE): AddressFE {
   const parts = [
@@ -35,7 +31,7 @@ export function toFEAddress(addressBE: AddressBE): AddressFE {
 }
 
 export function toBECreateAddressRequest(
-  formData: AddressFormFE,
+  formData: AddressFormFE
 ): CreateAddressRequestBE {
   return {
     fullName: formData.fullName,

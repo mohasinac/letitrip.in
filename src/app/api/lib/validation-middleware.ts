@@ -3,16 +3,12 @@
  * Provides server-side validation for API endpoints
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import {
-  validateFormData,
   getValidationSchema,
   validateBulkAction,
-} from "@/lib/validation/inline-edit-schemas";
-import {
-  VALIDATION_RULES,
-  VALIDATION_MESSAGES,
-} from "@/constants/validation-messages";
+  validateFormData,
+} from "@/lib/validations/schemas/inline-edit.schema";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface ValidationError {
   field: string;
@@ -30,7 +26,7 @@ export interface ValidationResult {
  */
 export async function validateRequest(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
@@ -55,7 +51,7 @@ export async function validateRequest(
         ([field, message]) => ({
           field,
           message,
-        }),
+        })
       );
 
       return {
@@ -81,7 +77,7 @@ export async function validateRequest(
  */
 export async function validateBulkRequest(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
@@ -137,21 +133,18 @@ export async function validateBulkRequest(
  * Create validation error response
  */
 export function createValidationErrorResponse(
-  errors: ValidationError[],
+  errors: ValidationError[]
 ): NextResponse {
   return NextResponse.json(
     {
       success: false,
       message: "Validation failed",
-      errors: errors.reduce(
-        (acc, err) => {
-          acc[err.field] = err.message;
-          return acc;
-        },
-        {} as Record<string, string>,
-      ),
+      errors: errors.reduce((acc, err) => {
+        acc[err.field] = err.message;
+        return acc;
+      }, {} as Record<string, string>),
     },
-    { status: 400 },
+    { status: 400 }
   );
 }
 
@@ -160,7 +153,7 @@ export function createValidationErrorResponse(
  */
 export function withValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateRequest(req, resourceType);
@@ -178,7 +171,7 @@ export function withValidation(
  */
 export function withBulkValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateBulkRequest(req, resourceType);
@@ -224,7 +217,7 @@ export function sanitizeInput(input: any): any {
  */
 export async function validateAndSanitize(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   const validation = await validateRequest(req, resourceType);
 

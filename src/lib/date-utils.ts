@@ -2,6 +2,49 @@
  * Date utility functions for safe ISO string conversion
  */
 import { logError } from "@/lib/firebase-error-logger";
+import { Timestamp } from "firebase/firestore";
+
+/**
+ * Parse Firestore Timestamp or ISO string to Date
+ * Universal helper for all transform files
+ * @param date - Timestamp, string, Date, or null/undefined
+ * @returns Date object or null if invalid
+ */
+export function parseDate(
+  date: Timestamp | string | Date | null | undefined | any
+): Date | null {
+  if (!date) return null;
+  if (date instanceof Date) return date;
+  if (date instanceof Timestamp) return date.toDate();
+  if (typeof date === "string") {
+    const parsed = new Date(date);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+  // Handle Firestore-like objects with toDate() or _seconds
+  if (typeof date === "object") {
+    if ("toDate" in date && typeof date.toDate === "function") {
+      return date.toDate();
+    }
+    if ("_seconds" in date || "seconds" in date) {
+      const seconds = date._seconds || date.seconds;
+      return new Date(seconds * 1000);
+    }
+  }
+  return null;
+}
+
+/**
+ * Parse date with non-null fallback
+ * @param date - Timestamp, string, Date, or null/undefined
+ * @param fallback - Fallback date (default: new Date())
+ * @returns Date object (never null)
+ */
+export function parseDateOrDefault(
+  date: Timestamp | string | Date | null | undefined | any,
+  fallback: Date = new Date()
+): Date {
+  return parseDate(date) ?? fallback;
+}
 
 /**
  * Safely converts a date to ISO string, handling invalid dates
@@ -40,7 +83,7 @@ export function safeToISOString(date: any): string | null {
  */
 export function toISOStringOrDefault(
   date: any,
-  fallback: Date = new Date(),
+  fallback: Date = new Date()
 ): string {
   return safeToISOString(date) ?? fallback.toISOString();
 }

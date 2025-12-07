@@ -5,12 +5,10 @@
  * Used in category creation, update, and tree management
  */
 
+import { VALIDATION_RULES } from "@/constants/validation-messages";
 import { z } from "zod";
 
-/**
- * Slug validation regex
- */
-const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const slugRegex = VALIDATION_RULES.SLUG.PATTERN;
 
 /**
  * Create Category Schema
@@ -30,7 +28,7 @@ export const createCategorySchema = z.object({
     .max(100, "Slug must not exceed 100 characters")
     .regex(
       slugRegex,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     )
     .trim(),
 
@@ -109,7 +107,7 @@ export const moveCategorySchema = z
     {
       message:
         "Either newParentIds, newParentId, or sortOrder must be provided",
-    },
+    }
   );
 
 /**
@@ -122,7 +120,7 @@ export const reorderCategoriesSchema = z.object({
       z.object({
         categoryId: z.string(),
         sortOrder: z.number().int().min(0),
-      }),
+      })
     )
     .min(1),
 });
@@ -254,7 +252,7 @@ export function getCategoryLevel(path: string): number {
  */
 export function buildCategoryPath(
   parentPath: string | null,
-  categoryId: string,
+  categoryId: string
 ): string {
   return parentPath ? `${parentPath}/${categoryId}` : categoryId;
 }
