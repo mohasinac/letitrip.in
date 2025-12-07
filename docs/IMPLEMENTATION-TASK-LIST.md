@@ -196,18 +196,16 @@
   - [x] Add caching mechanism (24-hour cache)
   - [x] Add helper methods for state codes
 
-- [x] **Task 1.2.3**: Create `src/components/forms/AddressInput.tsx` ✅ (321 lines)
+- [x] **Task 1.2.3**: Create `src/components/common/AddressDropdown.tsx` ✅
 
-  - [x] Build address input component
-  - [x] Add country dropdown
-  - [x] Add postal code input with auto-lookup
-  - [x] Add state dropdown (dynamic loading)
-  - [x] Add city input
-  - [x] Add address line 1 & 2 inputs
-  - [x] Implement debounced postal code lookup (500ms)
-  - [x] Add loading indicators
-  - [x] ✅ Mobile responsive (stacked fields)
-  - [x] ✅ Dark mode support (all inputs)
+  - [x] Build address dropdown/selector component
+  - [x] Display list of saved user addresses
+  - [x] Add "+ Add New Address" option
+  - [x] Integrate with SmartAddressForm for creation/editing
+  - [x] Show address preview in dropdown items
+  - [x] Support address selection callback
+  - [x] ✅ Mobile responsive (bottom sheet on mobile)
+  - [x] ✅ Dark mode support
 
 - [x] **Task 1.2.4**: Create `src/app/admin/settings/address-api/page.tsx` ✅ (526 lines)
   - [x] Build address API settings UI
@@ -559,7 +557,7 @@
 
 - [ ] **Task 2.1.1**: Update `src/app/checkout/page.tsx`
 
-  - [ ] Replace manual address fields with `<AddressInput />`
+  - [ ] Replace manual address fields with `<AddressDropdown />`
   - [ ] Add dynamic gateway loading based on address
   - [ ] Add PayPal option for international addresses
   - [ ] Add Razorpay/PayU for Indian addresses

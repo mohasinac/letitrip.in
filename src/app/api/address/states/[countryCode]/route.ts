@@ -156,10 +156,11 @@ const STATE_MAP: Record<string, State[]> = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { countryCode: string } }
+  { params }: { params: Promise<{ countryCode: string }> }
 ) {
   try {
-    const countryCode = params.countryCode.toUpperCase();
+    const { countryCode: countryCodeParam } = await params;
+    const countryCode = countryCodeParam.toUpperCase();
 
     // Get states for the country
     const states = STATE_MAP[countryCode];
