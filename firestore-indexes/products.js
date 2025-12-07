@@ -153,6 +153,112 @@ module.exports = {
         { fieldPath: "status", order: "ASCENDING" },
         { fieldPath: "created_at", order: "DESCENDING" }
       ]
+    },
+
+    // Query: Get products excluding specific slug
+    // Use Case: Similar products, variants, related items
+    // Routes: /api/products/[slug]/variants, /api/products/[slug]/similar
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "category_id", order: "ASCENDING" },
+        { fieldPath: "slug", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Get non-deleted products with stock check
+    // Use Case: Available inventory, stock management
+    // Routes: Product availability checks, inventory APIs
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "stock_count", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Shop products with slug check
+    // Use Case: Duplicate slug detection, product validation
+    // Routes: Product creation/update APIs
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "slug", order: "ASCENDING" },
+        { fieldPath: "shop_id", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Non-deleted shop products with ordering
+    // Use Case: Shop inventory management
+    // Routes: /api/shops/[id]/products (with filters)
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "shop_id", order: "ASCENDING" },
+        { fieldPath: "created_at", order: "DESCENDING" }
+      ]
+    },
+
+    // Query: Non-deleted shop products sorted by price
+    // Use Case: Shop product filtering with price sort
+    // Routes: /api/shops/[id]/products?sort=price
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "shop_id", order: "ASCENDING" },
+        { fieldPath: "price", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Non-deleted category products with ordering
+    // Use Case: Category page with deletion filter
+    // Routes: /api/categories/[id]/products (with filters)
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "category_id", order: "ASCENDING" },
+        { fieldPath: "created_at", order: "DESCENDING" }
+      ]
+    },
+
+    // Query: Non-deleted category products sorted by price
+    // Use Case: Category filtering with price sort
+    // Routes: /api/categories/[id]/products?sort=price
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "category_id", order: "ASCENDING" },
+        { fieldPath: "price", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Non-deleted products with price range
+    // Use Case: Price filtering across platform
+    // Routes: /api/products?minPrice=x&maxPrice=y
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_deleted", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "price", order: "ASCENDING" }
+      ]
     }
   ],
 

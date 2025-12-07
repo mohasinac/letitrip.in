@@ -125,6 +125,58 @@ module.exports = {
         { fieldPath: "status", order: "ASCENDING" },
         { fieldPath: "current_bid", order: "DESCENDING" }
       ]
+    },
+
+    // Query: Shop auctions sorted by current bid (low to high)
+    // Use Case: Shop auction management with bid sorting
+    // Routes: /api/shops/[id]/auctions?sort=bid:asc
+    {
+      collectionGroup: "auctions",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "shop_id", order: "ASCENDING" },
+        { fieldPath: "current_bid", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Shop auctions sorted by current bid (high to low)
+    // Use Case: Shop high-value auction tracking
+    // Routes: /api/shops/[id]/auctions?sort=bid:desc
+    {
+      collectionGroup: "auctions",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "shop_id", order: "ASCENDING" },
+        { fieldPath: "current_bid", order: "DESCENDING" }
+      ]
+    },
+
+    // Query: Category auctions sorted by current bid (low to high)
+    // Use Case: Category auction filtering with bid sorting
+    // Routes: /api/categories/[id]/auctions?sort=bid:asc
+    {
+      collectionGroup: "auctions",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "category_id", order: "ASCENDING" },
+        { fieldPath: "current_bid", order: "ASCENDING" }
+      ]
+    },
+
+    // Query: Category auctions sorted by current bid (high to low)
+    // Use Case: Category high-value auction discovery
+    // Routes: /api/categories/[id]/auctions?sort=bid:desc
+    {
+      collectionGroup: "auctions",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "category_id", order: "ASCENDING" },
+        { fieldPath: "current_bid", order: "DESCENDING" }
+      ]
     }
   ],
 
