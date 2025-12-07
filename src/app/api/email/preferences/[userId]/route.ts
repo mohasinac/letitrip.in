@@ -22,15 +22,14 @@ interface EmailPreferences {
 // GET - Retrieve user email preferences
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authResult = await getAuthFromRequest(req);
     if (!authResult.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const { userId } = params;
 
     // Users can only access their own preferences (unless admin)
     if (authResult.user.uid !== userId && authResult.role !== "admin") {
@@ -54,9 +53,10 @@ export async function GET(
 
     return NextResponse.json({ preferences });
   } catch (error) {
+    const { userId } = await params;
     logError(error as Error, {
       component: "EmailPreferencesAPI.GET",
-      userId: params.userId,
+      userId,
     });
     return NextResponse.json(
       { error: "Failed to load preferences" },
@@ -68,15 +68,14 @@ export async function GET(
 // PUT - Update user email preferences
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const authResult = await getAuthFromRequest(req);
     if (!authResult.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const { userId } = params;
 
     // Users can only update their own preferences (unless admin)
     if (authResult.user.uid !== userId && authResult.role !== "admin") {
@@ -108,9 +107,10 @@ export async function PUT(
       preferences: updatedPreferences,
     });
   } catch (error) {
+    const { userId } = await params;
     logError(error as Error, {
       component: "EmailPreferencesAPI.PUT",
-      userId: params.userId,
+      userId,
     });
     return NextResponse.json(
       { error: "Failed to update preferences" },
