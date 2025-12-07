@@ -33,7 +33,7 @@ export type Action = "read" | "create" | "update" | "delete" | "bulk";
 export function canReadResource(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data?: any,
+  data?: any
 ): boolean {
   // Public resources - anyone can read active/published items
   if (
@@ -41,8 +41,7 @@ export function canReadResource(
     resourceType === "categories" ||
     resourceType === "products" ||
     resourceType === "auctions" ||
-    resourceType === "shops" ||
-    resourceType === "reviews"
+    resourceType === "shops"
   ) {
     // Admin can read everything
     if (user?.role === "admin") {
@@ -66,6 +65,55 @@ export function canReadResource(
     return false;
   }
 
+  // Reviews - special handling
+  if (resourceType === "reviews") {
+    // Admin can read everything
+    if (user?.role === "admin") {
+      return true;
+    }
+
+    // Sellers can read reviews for their products
+    if (user?.role === "seller" && data?.shopId === user.shopId) {
+      return true;
+    }
+
+    // Everyone can read approved reviews
+    if (data?.status === "approved") {
+      return true;
+    }
+
+    // Users can read own reviews
+    if (user && (data?.userId === user.uid || data?.createdBy === user.uid)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Coupons - special handling
+  if (resourceType === "coupons") {
+    // Admin can read everything
+    if (user?.role === "admin") {
+      return true;
+    }
+
+    // Sellers can read own coupons
+    if (
+      user?.role === "seller" &&
+      (data?.shopId === user.shopId || data?.createdBy === user.uid)
+    ) {
+      return true;
+    }
+
+    // Authenticated users (not guests) can read active coupons
+    if (user && user.role !== "guest" && data?.status === "active") {
+      return true;
+    }
+
+    // Guests cannot view coupons
+    return false;
+  }
+
   // Private resources - authentication required
   if (!user) {
     return false;
@@ -81,11 +129,12 @@ export function canReadResource(
     if (resourceType === "orders" || resourceType === "payouts") {
       return data?.shopId === user.shopId;
     }
-    if (resourceType === "coupons") {
-      return data?.createdBy === user.uid || data?.shopId === user.shopId;
-    }
     if (resourceType === "tickets") {
-      return data?.shopId === user.shopId || data?.createdBy === user.uid;
+      return (
+        data?.shopId === user.shopId ||
+        data?.createdBy === user.uid ||
+        data?.userId === user.uid
+      );
     }
   }
 
@@ -94,7 +143,11 @@ export function canReadResource(
     if (resourceType === "orders" || resourceType === "tickets") {
       return data?.userId === user.uid || data?.createdBy === user.uid;
     }
-    // Reviews are handled at the component level
+  }
+
+  // Users resource - special handling
+  if (resourceType === "users") {
+    return data?.uid === user.uid || data?.id === user.uid;
   }
 
   return false;
@@ -107,7 +160,7 @@ export function canWriteResource(
   user: AuthUser | null,
   resourceType: ResourceType,
   action: "create" | "update" = "create",
-  data?: any,
+  data?: any
 ): boolean {
   if (!user) {
     return false;
@@ -144,18 +197,35 @@ export function canWriteResource(
       }
     }
 
-    // Can update orders for their shop
-    if (resourceType === "orders" && action === "update") {
-      return data?.shopId === user.shopId;
+    // Can create orders (as a buyer) and update orders for their shop (status changes only)
+    if (resourceType === "orders") {
+      if (action === "create") {
+        return true; // Sellers can also buy
+      }
+      if (action === "update") {
+        return data?.shopId === user.shopId;
+      }
     }
 
-    // Can request payouts
+    // Can request payouts but NOT approve them
     if (resourceType === "payouts") {
-      return action === "create" || data?.shopId === user.shopId;
+      if (action === "create") {
+        return true;
+      }
+      if (action === "update") {
+        // Cannot approve/reject payouts (admin only)
+        if (data?.status === "approved" || data?.status === "rejected") {
+          return false;
+        }
+        return data?.shopId === user.shopId;
+      }
     }
 
-    // Can reply to tickets
+    // Can create and reply to tickets
     if (resourceType === "tickets") {
+      if (action === "create") {
+        return true;
+      }
       return data?.shopId === user.shopId || data?.createdBy === user.uid;
     }
 
@@ -165,17 +235,31 @@ export function canWriteResource(
   // User permissions
   if (user.role === "user") {
     // Can create tickets and reviews
-    if (
-      resourceType === "tickets" ||
-      resourceType === "reviews" ||
-      resourceType === "orders"
-    ) {
+    if (resourceType === "tickets" || resourceType === "reviews") {
       if (action === "create") {
         return true;
       }
       if (action === "update") {
         return data?.userId === user.uid || data?.createdBy === user.uid;
       }
+    }
+
+    // Can create orders but not update status (only cancel via delete)
+    if (resourceType === "orders") {
+      if (action === "create") {
+        return true;
+      }
+      // Users cannot update order status (seller/admin only)
+      if (action === "update") {
+        return false;
+      }
+    }
+
+    // Can update own profile
+    if (resourceType === "users") {
+      return (
+        action === "update" && (data?.uid === user.uid || data?.id === user.uid)
+      );
     }
 
     return false;
@@ -190,7 +274,7 @@ export function canWriteResource(
 export function canDeleteResource(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data?: any,
+  data?: any
 ): boolean {
   if (!user) {
     return false;
@@ -211,6 +295,11 @@ export function canDeleteResource(
       return data?.shopId === user.shopId || data?.createdBy === user.uid;
     }
 
+    // Sellers can cancel orders for their own shop
+    if (resourceType === "orders") {
+      return data?.shopId === user.shopId;
+    }
+
     return false;
   }
 
@@ -218,6 +307,11 @@ export function canDeleteResource(
   if (user.role === "user") {
     if (resourceType === "tickets" || resourceType === "reviews") {
       return data?.userId === user.uid;
+    }
+
+    // Users can cancel (delete) own pending orders
+    if (resourceType === "orders") {
+      return data?.userId === user.uid && data?.status === "pending";
     }
 
     return false;
@@ -232,7 +326,7 @@ export function canDeleteResource(
 export function filterDataByRole<T extends Record<string, any>>(
   user: AuthUser | null,
   resourceType: ResourceType,
-  data: T[],
+  data: T[]
 ): T[] {
   // Admin sees everything
   if (user?.role === "admin") {
@@ -245,7 +339,7 @@ export function filterDataByRole<T extends Record<string, any>>(
       (item) =>
         item.status === "active" ||
         item.status === "published" ||
-        item.isActive === true,
+        item.isActive === true
     );
   }
 
@@ -329,7 +423,7 @@ export function getRoleLevel(role: UserRole): number {
  */
 export function hasRole(
   user: AuthUser | null,
-  requiredRole: UserRole,
+  requiredRole: UserRole
 ): boolean {
   if (!user) {
     return requiredRole === "guest";
@@ -345,4 +439,27 @@ export function hasAnyRole(user: AuthUser | null, roles: UserRole[]): boolean {
     return roles.includes("guest");
   }
   return roles.includes(user.role);
+}
+
+/**
+ * Alias for canWriteResource with action="create"
+ * Check if user can create a resource
+ */
+export function canCreateResource(
+  user: AuthUser | null,
+  resourceType: ResourceType
+): boolean {
+  return canWriteResource(user, resourceType, "create");
+}
+
+/**
+ * Alias for canWriteResource with action="update"
+ * Check if user can update a resource
+ */
+export function canUpdateResource(
+  user: AuthUser | null,
+  resourceType: ResourceType,
+  data?: any
+): boolean {
+  return canWriteResource(user, resourceType, "update", data);
 }
