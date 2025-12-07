@@ -1,8 +1,8 @@
 # Role-Based Access Control (RBAC) - Consolidated
 
-> **Last Updated**: December 6, 2025  
-> **Purpose**: Complete RBAC system documentation with Phase 1 backend implementations  
-> **Related**: E039 Backend Infrastructure, API Implementation Roadmap
+> **Last Updated**: December 7, 2025  
+> **Purpose**: Complete RBAC system documentation with Phase 1 & Phase 2 implementations  
+> **Related**: E039 Backend Infrastructure, API Implementation Roadmap, Phase 2 Integration Summary
 
 ---
 
@@ -43,17 +43,24 @@ JustForView.in implements a 4-tier role system with granular permissions:
 | **Blog Management**     | ✅ Full CRUD       | ❌                 | ❌                  | ❌      |
 | **Media Management**    | ✅ All media       | ✅ Shop media      | ✅ Own media        | ❌      |
 
-### Phase 1 Backend Features by Role
+### Phase 1 & Phase 2 Backend Features by Role
 
-| Feature                    | Admin                  | Seller            | User               | Guest |
-| -------------------------- | ---------------------- | ----------------- | ------------------ | ----- |
-| **Payment Gateway Config** | ✅ Configure           | ❌                | ❌                 | ❌    |
-| **Payment Webhooks**       | ✅ View logs           | ❌                | ❌                 | ❌    |
-| **Address APIs**           | ✅ All addresses       | ❌                | ✅ Own addresses   | ❌    |
-| **Shipping Automation**    | ✅ All shipments       | ✅ Shop shipments | ✅ Own shipments   | ❌    |
-| **WhatsApp Notifications** | ✅ Configure/test      | ✅ Shop templates | ✅ Receive         | ❌    |
-| **Email System**           | ✅ Configure/templates | ✅ Shop emails    | ✅ Receive         | ❌    |
-| **Newsletter Management**  | ✅ Full control        | ❌                | ✅ Subscribe/unsub | ❌    |
+| Feature                       | Admin                  | Seller               | User               | Guest |
+| ----------------------------- | ---------------------- | -------------------- | ------------------ | ----- |
+| **Payment Gateway Config**    | ✅ Configure           | ❌                   | ❌                 | ❌    |
+| **Payment Webhooks**          | ✅ View logs           | ❌                   | ❌                 | ❌    |
+| **Payment Analytics**         | ✅ Platform-wide       | ✅ Shop revenue      | ❌                 | ❌    |
+| **Multi-Currency Checkout**   | ✅ Configure           | ✅ Receive payments  | ✅ Pay in currency | ❌    |
+| **Address APIs**              | ✅ All addresses       | ❌                   | ✅ Own addresses   | ❌    |
+| **Shipping Automation**       | ✅ All shipments       | ✅ Shop shipments    | ✅ Own shipments   | ❌    |
+| **Shiprocket Integration**    | ✅ Configure           | ✅ Generate AWB      | 👁️ Track           | ❌    |
+| **WhatsApp Notifications**    | ✅ Configure/test      | ✅ Shop templates    | ✅ Receive         | ❌    |
+| **Email System**              | ✅ Configure/templates | ✅ Shop emails       | ✅ Receive         | ❌    |
+| **Newsletter Management**     | ✅ Full control        | ❌                   | ✅ Subscribe/unsub | ❌    |
+| **Notification Preferences**  | ✅ View all            | ✅ Own preferences   | ✅ Own preferences | ❌    |
+| **Shop Display Enhancements** | ✅ Moderate all        | ✅ Own shop settings | 👁️ View            | 👁️    |
+| **Homepage Sections**         | ✅ Full control        | ❌                   | 👁️ View            | 👁️    |
+| **Static Assets Management**  | ✅ Upload/manage       | ❌                   | ❌                 | ❌    |
 
 ---
 
@@ -209,6 +216,41 @@ JustForView.in implements a 4-tier role system with granular permissions:
 
 - ✅ View all user addresses (for support)
 - ✅ Manual address verification override
+
+##### Phase 2 Integration Features (NEW)
+
+###### Payment System
+
+- ✅ Multi-gateway configuration (Razorpay, PayPal, PayU)
+- ✅ Gateway testing interface
+- ✅ Payment analytics dashboard (gateway breakdown, currency tracking)
+- ✅ Transaction fee analysis
+- ✅ International vs domestic revenue split
+- ✅ Currency-wise revenue tracking (INR/USD/EUR/GBP)
+
+###### Shipping Management
+
+- ✅ Shiprocket integration configuration
+- ✅ Test Shiprocket connection
+- ✅ View all shipments across platform
+- ✅ Cancel any shipment
+- ✅ Shipping analytics
+
+###### Static Assets
+
+- ✅ Upload static assets to Firebase Storage
+- ✅ Generate signed URLs
+- ✅ Manage asset library
+- ✅ Delete assets
+- ✅ View asset usage statistics
+
+###### Homepage Management
+
+- ✅ Configure featured products sections
+- ✅ Configure featured categories sections
+- ✅ Configure featured shops sections
+- ✅ Set product limits per section
+- ✅ Preview homepage layouts
 
 ### API Access Pattern
 
@@ -394,14 +436,38 @@ POST /api/admin/payments/:id/refund
 - ❌ Cannot process refunds
 - ❌ Cannot view platform revenue
 
-#### Phase 1 Backend Features (NEW)
+#### Phase 1 & Phase 2 Backend Features (NEW)
 
 ##### Shipping Integration
 
-- ✅ Schedule pickups for own orders
-- ✅ Generate shipping labels (Shiprocket)
-- ✅ View shipping status (own orders)
+- ✅ Generate Airway Bill (AWB) with Shiprocket
+- ✅ Select courier service from available options
+- ✅ Schedule pickup with Shiprocket
+- ✅ Track shipments in real-time
+- ✅ Print shipping labels
+- ✅ Auto-generate labels on order confirmation
+- ✅ View shipment history
 - ✅ Receive shipping notifications (WhatsApp/Email)
+- ❌ Cannot cancel other sellers' shipments
+
+##### Payment & Revenue (Phase 2)
+
+- ✅ Receive payments via multiple gateways (Razorpay/PayPal/PayU)
+- ✅ Support international payments (USD/EUR/GBP)
+- ✅ View shop revenue analytics
+- ✅ Currency breakdown for international sales
+- ✅ Track transaction fees by gateway
+- ❌ Cannot configure payment gateways (admin only)
+- ❌ Cannot process refunds directly (admin only)
+
+##### Shop Display (Phase 2)
+
+- ✅ Update shop About section with description, location, contact
+- ✅ Configure return policy (accordion display)
+- ✅ Configure shipping policy (accordion display)
+- ✅ Manage shop tabs (Products/Auctions/About/Reviews/Contact)
+- ✅ Upload shop media (logo, banner)
+- ❌ Cannot feature own shop (admin only)
 
 ##### WhatsApp Notifications (Receive)
 
@@ -622,7 +688,7 @@ GET /api/products?shopId=other_shop_id
 - ✅ View shop products
 - ✅ View shop analytics (public)
 
-#### Phase 1 Backend Features (NEW)
+#### Phase 1 & Phase 2 Backend Features (NEW)
 
 ##### Address Management (Enhanced)
 
@@ -630,21 +696,38 @@ GET /api/products?shopId=other_shop_id
 - ✅ Set default address for shipping/billing
 - ✅ Validate Indian addresses (Pincode API)
 - ✅ Save multiple addresses
+- ✅ AddressSelectorWithCreate component in checkout
 
-##### Notifications (Receive)
+##### Notifications (Receive & Manage)
 
-- ✅ Order status updates (WhatsApp/Email)
-- ✅ Shipment tracking updates (WhatsApp/Email)
-- ✅ Auction outbid alerts (WhatsApp/Email)
-- ✅ Auction won notifications (WhatsApp/Email)
+- ✅ Order status updates (WhatsApp/Email/SMS/Push)
+- ✅ Shipment tracking updates (WhatsApp/Email/SMS)
+- ✅ Auction outbid alerts (WhatsApp/Email/Push)
+- ✅ Auction won notifications (WhatsApp/Email/Push)
 - ✅ Newsletter subscriptions (Email)
-- ✅ Manage notification preferences per channel
+- ✅ Marketing notifications opt-in/out (Email)
+- ✅ Manage notification preferences per channel (Email/SMS/WhatsApp/Push)
+- ✅ Granular control per category (orders/auctions/bids/messages/marketing)
 
-##### Payments
+##### Payments & Checkout (Phase 2)
 
-- ✅ Pay via 6 payment gateways (UPI, Card, Wallet, etc.)
+- ✅ Pay via multiple gateways (Razorpay, PayPal, PayU)
+- ✅ Multi-currency checkout (INR/USD/EUR/GBP)
+- ✅ Dynamic gateway selection based on location
+- ✅ Currency selector in checkout
+- ✅ Converted amount display for international orders
 - ✅ View payment history
 - ✅ Request refunds (via returns)
+- ✅ COD option with charges
+
+##### Shop Experience (Phase 2)
+
+- ✅ View shop About section with policies
+- ✅ Browse products/auctions via shop tabs
+- ✅ View shop reviews
+- ✅ Contact seller via shop contact tab
+- ✅ See return policy before purchase
+- ✅ See shipping policy before purchase
 
 ### User Cannot
 
