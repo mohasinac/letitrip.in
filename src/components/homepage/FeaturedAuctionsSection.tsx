@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { logError } from "@/lib/error-logger";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { homepageService } from "@/services/homepage.service";
+import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { logError } from "@/lib/error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
+import { homepageService } from "@/services/homepage.service";
+import { useEffect, useState } from "react";
 
 interface FeaturedAuctionsSectionProps {
   limit?: number;
@@ -68,62 +68,39 @@ export function FeaturedAuctionsSection({
   }
 
   return (
-    <section className={`py-8 ${className}`}>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Featured Auctions
-      </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {auctions.slice(0, 10).map((auction) => (
-          <AuctionCard
-            key={auction.id}
-            auction={{
-              id: auction.id,
-              name: auction.name,
-              slug: auction.slug,
-              images: auction.images,
-              currentBid: auction.currentBid,
-              startingBid: auction.startingBid,
-              bidCount: auction.bidCount,
-              endTime: auction.endTime,
-              status:
-                auction.status === "upcoming"
-                  ? "pending"
-                  : auction.status === "live"
-                    ? "active"
-                    : auction.status,
-              featured: true,
-              shop: {
-                id: auction.shopId,
-                name: auction.shopName,
-              },
-            }}
-            variant="compact"
-          />
-        ))}
-      </div>
-
-      {/* View All Featured Auctions Button - Centered */}
-      <div className="flex justify-center mt-8">
-        <Link
-          href="/auctions?featured=true"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-        >
-          View All Featured Auctions
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M14 5l7 7m0 0l-7 7m7-7H3"
-            />
-          </svg>
-        </Link>
-      </div>
-    </section>
+    <HorizontalScrollContainer
+      title="Featured Auctions"
+      viewAllLink="/auctions?featured=true"
+      viewAllText="View All"
+      className={className}
+    >
+      {auctions.map((auction) => (
+        <AuctionCard
+          key={auction.id}
+          auction={{
+            id: auction.id,
+            name: auction.name,
+            slug: auction.slug,
+            images: auction.images,
+            currentBid: auction.currentBid,
+            startingBid: auction.startingBid,
+            bidCount: auction.bidCount,
+            endTime: auction.endTime,
+            status:
+              auction.status === "upcoming"
+                ? "pending"
+                : auction.status === "live"
+                ? "active"
+                : auction.status,
+            featured: true,
+            shop: {
+              id: auction.shopId,
+              name: auction.shopName,
+            },
+          }}
+          variant="compact"
+        />
+      ))}
+    </HorizontalScrollContainer>
   );
 }

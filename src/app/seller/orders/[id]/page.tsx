@@ -11,15 +11,23 @@ import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
 import { ordersService } from "@/services/orders.service";
 import {
+  shippingService,
+  type CourierOption,
+  type TrackingUpdate,
+} from "@/services/shipping.service";
+import {
+  AlertCircle,
   ArrowLeft,
   CheckCircle,
   CreditCard,
   Download,
   FileText,
+  Loader2,
   Mail,
   MapPin,
   Package,
   Phone,
+  Printer,
   Truck,
   XCircle,
 } from "lucide-react";
@@ -45,6 +53,17 @@ export default function SellerOrderDetailPage() {
     shippingProvider: "",
     estimatedDelivery: "",
   });
+
+  // Shiprocket states
+  const [courierOptions, setCourierOptions] = useState<CourierOption[]>([]);
+  const [selectedCourier, setSelectedCourier] = useState<number | null>(null);
+  const [loadingCouriers, setLoadingCouriers] = useState(false);
+  const [generatingAWB, setGeneratingAWB] = useState(false);
+  const [schedulingPickup, setSchedulingPickup] = useState(false);
+  const [trackingInfo, setTrackingInfo] = useState<TrackingUpdate | null>(null);
+  const [loadingTracking, setLoadingTracking] = useState(false);
+  const [shiprocketError, setShiprocketError] = useState<string | null>(null);
+  const [showShiprocketSection, setShowShiprocketSection] = useState(false);
 
   const loadOrder = useCallback(async () => {
     try {
@@ -89,7 +108,7 @@ export default function SellerOrderDetailPage() {
         shippingData.shippingProvider,
         shippingData.estimatedDelivery
           ? new Date(shippingData.estimatedDelivery)
-          : undefined,
+          : undefined
       );
       setShowShippingForm(false);
       setShippingData({
@@ -122,6 +141,116 @@ export default function SellerOrderDetailPage() {
     } catch (error: any) {
       logError(error as Error, {
         component: "SellerOrderDetail.handleDownloadInvoice",
+        metadata: { orderId },
+      });
+    }
+  };
+
+  const loadCourierOptions = async () => {
+    try {
+      setLoadingCouriers(true);
+      setShiprocketError(null);
+      const options = await shippingService.getCourierOptions(orderId);
+      setCourierOptions(options);
+      setShowShiprocketSection(true);
+    } catch (error: any) {
+      setShiprocketError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load courier options"
+      );
+      logError(error as Error, {
+        component: "SellerOrderDetail.loadCourierOptions",
+        metadata: { orderId },
+      });
+    } finally {
+      setLoadingCouriers(false);
+    }
+  };
+
+  const handleGenerateAWB = async () => {
+    if (!selectedCourier) return;
+
+    try {
+      setGeneratingAWB(true);
+      setShiprocketError(null);
+      const awbData = await shippingService.generateAWB(
+        orderId,
+        selectedCourier
+      );
+      // Update order data with AWB
+      await execute(loadOrder);
+      setShowShiprocketSection(false);
+    } catch (error: any) {
+      setShiprocketError(
+        error instanceof Error ? error.message : "Failed to generate AWB"
+      );
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleGenerateAWB",
+        metadata: { orderId, selectedCourier },
+      });
+    } finally {
+      setGeneratingAWB(false);
+    }
+  };
+
+  const handleSchedulePickup = async () => {
+    try {
+      setSchedulingPickup(true);
+      setShiprocketError(null);
+      await shippingService.schedulePickup(orderId);
+      await execute(loadOrder);
+    } catch (error: any) {
+      setShiprocketError(
+        error instanceof Error ? error.message : "Failed to schedule pickup"
+      );
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleSchedulePickup",
+        metadata: { orderId },
+      });
+    } finally {
+      setSchedulingPickup(false);
+    }
+  };
+
+  const handleTrackShipment = async () => {
+    if (!order?.awbCode) return;
+
+    try {
+      setLoadingTracking(true);
+      setShiprocketError(null);
+      const tracking = await shippingService.getTracking(order.awbCode);
+      setTrackingInfo(tracking);
+    } catch (error: any) {
+      setShiprocketError(
+        error instanceof Error ? error.message : "Failed to fetch tracking info"
+      );
+      logError(error as Error, {
+        component: "SellerOrderDetail.handleTrackShipment",
+        metadata: { orderId, awbCode: order.awbCode },
+      });
+    } finally {
+      setLoadingTracking(false);
+    }
+  };
+
+  const handlePrintLabel = async () => {
+    try {
+      const blob = await shippingService.generateLabel(orderId);
+      const url = globalThis.URL?.createObjectURL(blob) || "";
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `shipping-label-${order?.orderNumber || orderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      globalThis.URL?.revokeObjectURL(url);
+    } catch (error: any) {
+      setShiprocketError(
+        error instanceof Error ? error.message : "Failed to print label"
+      );
+      logError(error as Error, {
+        component: "SellerOrderDetail.handlePrintLabel",
         metadata: { orderId },
       });
     }
@@ -200,7 +329,7 @@ export default function SellerOrderDetailPage() {
               </div>
               <span
                 className={`px-4 py-2 text-sm font-semibold rounded-full ${getStatusColor(
-                  order.status,
+                  order.status
                 )}`}
               >
                 {order.status}
@@ -461,8 +590,8 @@ export default function SellerOrderDetailPage() {
                         order.paymentStatus === "paid"
                           ? "text-green-600 dark:text-green-400"
                           : order.paymentStatus === "failed"
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-yellow-600 dark:text-yellow-400"
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-yellow-600 dark:text-yellow-400"
                       }`}
                     >
                       {order.paymentStatus}
@@ -498,14 +627,85 @@ export default function SellerOrderDetailPage() {
                     </button>
                   )}
 
-                  {order.status === "processing" && !order.trackingNumber && (
+                  {order.status === "processing" && !order.awbCode && (
                     <button
-                      onClick={() => setShowShippingForm(!showShippingForm)}
-                      className="w-full flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                      onClick={loadCourierOptions}
+                      disabled={loadingCouriers}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
                     >
-                      <Truck className="w-5 h-5 mr-2" />
-                      Add Shipping Info
+                      {loadingCouriers ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          <Package className="w-5 h-5 mr-2" />
+                          Generate AWB (Shiprocket)
+                        </>
+                      )}
                     </button>
+                  )}
+
+                  {order.status === "processing" &&
+                    !order.trackingNumber &&
+                    !order.awbCode && (
+                      <button
+                        onClick={() => setShowShippingForm(!showShippingForm)}
+                        className="w-full flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                      >
+                        <Truck className="w-5 h-5 mr-2" />
+                        Add Manual Shipping Info
+                      </button>
+                    )}
+
+                  {order.awbCode && !order.pickupScheduled && (
+                    <button
+                      onClick={handleSchedulePickup}
+                      disabled={schedulingPickup}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {schedulingPickup ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Scheduling...
+                        </>
+                      ) : (
+                        <>
+                          <Truck className="w-5 h-5 mr-2" />
+                          Schedule Pickup
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {order.awbCode && (
+                    <>
+                      <button
+                        onClick={handlePrintLabel}
+                        className="w-full flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                      >
+                        <Printer className="w-5 h-5 mr-2" />
+                        Print Shipping Label
+                      </button>
+                      <button
+                        onClick={handleTrackShipment}
+                        disabled={loadingTracking}
+                        className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                      >
+                        {loadingTracking ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <Package className="w-5 h-5 mr-2" />
+                            Track Shipment
+                          </>
+                        )}
+                      </button>
+                    </>
                   )}
 
                   {order.status === "shipped" && (
@@ -540,11 +740,147 @@ export default function SellerOrderDetailPage() {
                 </div>
               </div>
 
+              {/* Shiprocket Courier Selection */}
+              {showShiprocketSection && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Select Courier Partner
+                  </h2>
+
+                  {shiprocketError && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-800 dark:text-red-200">
+                        {shiprocketError}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {courierOptions.map((courier) => (
+                      <label
+                        key={courier.courier_company_id}
+                        className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                          selectedCourier === courier.courier_company_id
+                            ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
+                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="courier"
+                            value={courier.courier_company_id}
+                            checked={
+                              selectedCourier === courier.courier_company_id
+                            }
+                            onChange={() =>
+                              setSelectedCourier(courier.courier_company_id)
+                            }
+                            className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {courier.courier_name}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Delivery: {courier.estimated_delivery_days} days
+                              {courier.is_surface && " • Surface"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            ₹{courier.rate.toFixed(2)}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2 mt-6">
+                    <button
+                      onClick={handleGenerateAWB}
+                      disabled={!selectedCourier || generatingAWB}
+                      className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {generatingAWB ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        "Generate AWB"
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowShiprocketSection(false)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Tracking Information */}
+              {trackingInfo && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Shipment Tracking
+                  </h2>
+
+                  <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      Current Status
+                    </p>
+                    <p className="text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">
+                      {trackingInfo.current_status}
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {trackingInfo.shipment_track.map((track, index) => (
+                      <div
+                        key={index}
+                        className="flex gap-3 pb-3 border-b border-gray-200 dark:border-gray-700 last:border-0"
+                      >
+                        <div className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-blue-500" />
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {track.activity}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {track.location}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            {new Date(track.date).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {trackingInfo.track_url && (
+                    <a
+                      href={trackingInfo.track_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      View Full Tracking
+                      <ArrowLeft className="w-4 h-4 rotate-180" />
+                    </a>
+                  )}
+                </div>
+              )}
+
               {/* Shipping Form */}
               {showShippingForm && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                    Add Shipping Information
+                    Add Manual Shipping Information
                   </h2>
                   <form onSubmit={handleAddShipping} className="space-y-4">
                     <FormInput
