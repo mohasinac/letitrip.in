@@ -20,6 +20,11 @@ firestore-indexes/
 ├── support-tickets.js  # Customer support tickets (6 indexes)
 ├── payments.js         # Payment tracking, history (5 indexes)
 ├── riplimit-refunds.js # Refund management (2 indexes)
+├── notifications.js    # User notifications (4 indexes)
+├── conversations.js    # Messaging, chat (3 indexes)
+├── inbox-emails.js     # Email inbox (3 indexes)
+├── returns.js          # Product returns (6 indexes)
+├── payouts.js          # Seller payouts (3 indexes)
 ├── deploy-indexes.js   # Deployment script
 └── README.md           # This file
 ```
