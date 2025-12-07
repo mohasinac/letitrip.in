@@ -33,7 +33,12 @@ const INDEX_MODULES = [
   'reviews.js',
   'bids.js',
   'favorites.js',
-  'users.js'
+  'users.js',
+  'user-activities.js',
+  'addresses.js',
+  'support-tickets.js',
+  'payments.js',
+  'riplimit-refunds.js'
 ];
 
 console.log('🔥 Firestore Index Deployment Script\n');
