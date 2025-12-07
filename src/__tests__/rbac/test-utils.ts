@@ -1,14 +1,15 @@
 /**
  * RBAC Test Utilities
  * Helper functions for testing RBAC functionality
+ * Simplified for Jest environment without Next.js server dependencies
  */
 
 import { AuthUser } from "@/lib/rbac-permissions";
-import { NextRequest, NextResponse } from "next/server";
 import { mockFirestoreData, mockTokens } from "./fixtures";
 
 /**
- * Create a mock Next.js request with authentication
+ * Create a mock request object with authentication
+ * Note: Simplified for Jest environment (no Next.js dependencies)
  */
 export function createAuthRequest(
   user: AuthUser | null,
@@ -18,7 +19,7 @@ export function createAuthRequest(
     body?: any;
     searchParams?: Record<string, string>;
   } = {}
-): NextRequest {
+) {
   const {
     method = "GET",
     url = "https://justforview.in/api/test",
@@ -32,31 +33,34 @@ export function createAuthRequest(
     fullUrl = `${url}?${params.toString()}`;
   }
 
-  const headers = new Headers();
-  headers.set("Content-Type", "application/json");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
 
   if (user) {
     const token =
       mockTokens[user.role as keyof typeof mockTokens] || "mock-token";
-    headers.set("Authorization", `Bearer ${token}`);
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const request = new NextRequest(fullUrl, {
+  return {
     method,
+    url: fullUrl,
     headers,
     body: body ? JSON.stringify(body) : undefined,
-  });
-
-  return request;
+    user,
+  };
 }
 
 /**
- * Parse JSON response
+ * Parse JSON response (mock)
  */
-export async function parseResponse(response: NextResponse): Promise<any> {
+export async function parseResponse(response: any): Promise<any> {
   try {
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
+    if (typeof response === "string") {
+      return JSON.parse(response);
+    }
+    return response;
   } catch (error) {
     return null;
   }
