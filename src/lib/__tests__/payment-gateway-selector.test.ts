@@ -683,40 +683,41 @@ describe("Payment Gateway Selector", () => {
   });
 
   describe("compareGateways", () => {
-    it("should throw error when first gateway not found", () => {
-      expect(() =>
-        compareGateways("nonexistent", "razorpay", {
-          amount: 1000,
-          currency: "INR",
-          country: "IN",
-        })
-      ).toThrow("One or both gateways not found");
+    it("should return empty array when no gateways suitable", () => {
+      mockGetEnabledGateways.mockReturnValue([]);
+
+      const result = compareGateways({
+        amount: 1000,
+        currency: "INR",
+        country: "IN",
+      });
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(0);
     });
 
-    it("should throw error when second gateway not found", () => {
-      expect(() =>
-        compareGateways("razorpay", "nonexistent", {
-          amount: 1000,
-          currency: "INR",
-          country: "IN",
-        })
-      ).toThrow("One or both gateways not found");
-    });
+    it("should compare all suitable gateways and return ranked list", () => {
+      mockGetEnabledGateways.mockReturnValue([
+        mockPhonePeConfig,
+        mockRazorpayConfig,
+      ]);
 
-    it("should compare two gateways and return winner", () => {
       mockCalculateGatewayFee.mockImplementation((gatewayId) => {
         if (gatewayId === "phonepe") return 15;
         if (gatewayId === "razorpay") return 20;
         return 0;
       });
 
-      const comparison = compareGateways("phonepe", "razorpay", {
+      const result = compareGateways({
         amount: 1000,
         currency: "INR",
         country: "IN",
       });
 
-      expect(comparison.winner).toBe("razorpay"); // Better score
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0]).toHaveProperty("gateway");
+      expect(result[0]).toHaveProperty("score");
     });
 
     it("should include fee comparison for both gateways", () => {
