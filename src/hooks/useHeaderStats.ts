@@ -6,9 +6,9 @@
  * Uses polling for real-time updates.
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiService } from "@/services/api.service";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface HeaderStats {
   cartCount: number;
@@ -37,44 +37,43 @@ export function useHeaderStats() {
   const [error, setError] = useState<Error | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
+  const isAuthenticatedRef = useRef(isAuthenticated);
 
-  const fetchStats = useCallback(
-    async (force = false) => {
-      // Debounce: don't fetch if less than 2 seconds since last fetch
-      const now = Date.now();
-      if (!force && now - lastFetchRef.current < 2000) {
-        return;
+  // Update ref when auth state changes
+  isAuthenticatedRef.current = isAuthenticated;
+
+  const fetchStats = useCallback(async (force = false) => {
+    // Debounce: don't fetch if less than 2 seconds since last fetch
+    const now = Date.now();
+    if (!force && now - lastFetchRef.current < 2000) {
+      return;
+    }
+    lastFetchRef.current = now;
+
+    if (!isAuthenticatedRef.current) {
+      setStats(defaultStats);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await apiService.get<{
+        success: boolean;
+        data: HeaderStats;
+      }>("/header/stats");
+
+      if (response.success) {
+        setStats(response.data);
       }
-      lastFetchRef.current = now;
-
-      if (!isAuthenticated) {
-        setStats(defaultStats);
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await apiService.get<{
-          success: boolean;
-          data: HeaderStats;
-        }>("/header/stats");
-
-        if (response.success) {
-          setStats(response.data);
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch stats"),
-        );
-        // Keep previous stats on error
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isAuthenticated],
-  );
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch stats"));
+      // Keep previous stats on error
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Initial fetch and setup polling
   useEffect(() => {
@@ -99,14 +98,14 @@ export function useHeaderStats() {
   // Refresh on focus
   useEffect(() => {
     const handleFocus = () => {
-      if (isAuthenticated) {
+      if (isAuthenticatedRef.current) {
         fetchStats();
       }
     };
 
     globalThis.addEventListener?.("focus", handleFocus);
     return () => globalThis.removeEventListener?.("focus", handleFocus);
-  }, [isAuthenticated, fetchStats]);
+  }, [fetchStats]);
 
   // Optimistic update functions
   const updateCartCount = useCallback((count: number) => {

@@ -121,7 +121,7 @@ class BlogService {
       status: BLOG_STATUS.PUBLISHED,
       limit: 100,
     });
-    return Array.isArray(response) ? response : (response as any).data || [];
+    return response.data;
   }
 
   // Get homepage blog posts
@@ -131,7 +131,7 @@ class BlogService {
       status: BLOG_STATUS.PUBLISHED,
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
-    return Array.isArray(response) ? response : (response as any).data || [];
+    return response.data;
   }
 
   // Like/unlike blog post

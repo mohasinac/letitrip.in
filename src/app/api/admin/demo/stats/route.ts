@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { safeToISOString } from "@/lib/date-utils";
 import { COLLECTIONS } from "@/constants/database";
+import { safeToISOString } from "@/lib/date-utils";
+import { NextResponse } from "next/server";
 
 // Disable caching for live stats
 export const dynamic = "force-dynamic";
@@ -18,103 +18,125 @@ export async function GET() {
     const db = getFirestoreAdmin();
 
     // Count documents with DEMO_ prefix in each collection
+    // Use count queries instead of fetching all documents to reduce payload
     const [
-      categoriesSnapshot,
-      usersSnapshot,
-      shopsSnapshot,
-      productsSnapshot,
-      auctionsSnapshot,
-      bidsSnapshot,
-      ordersSnapshot,
-      paymentsSnapshot,
-      shipmentsSnapshot,
-      reviewsSnapshot,
-      heroSlidesSnapshot,
-      favoritesSnapshot,
-      cartsSnapshot,
-      notificationsSnapshot,
+      categoriesCount,
+      usersCount,
+      shopsCount,
+      productsCount,
+      auctionsCount,
+      bidsCount,
+      ordersCount,
+      paymentsCount,
+      shipmentsCount,
+      reviewsCount,
+      heroSlidesCount,
+      favoritesCount,
+      cartsCount,
+      notificationsCount,
     ] = await Promise.all([
       db
         .collection(COLLECTIONS.CATEGORIES)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.USERS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.SHOPS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.PRODUCTS)
         .where("name", ">=", DEMO_PREFIX)
         .where("name", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.AUCTIONS)
         .where("title", ">=", DEMO_PREFIX)
         .where("title", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.BIDS)
         .where("bidderName", ">=", DEMO_PREFIX)
         .where("bidderName", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.ORDERS)
         .where("buyerName", ">=", DEMO_PREFIX)
         .where("buyerName", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.PAYMENTS)
         .where("transactionId", ">=", DEMO_PREFIX)
         .where("transactionId", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.SHIPMENTS)
         .where("trackingNumber", ">=", DEMO_PREFIX)
         .where("trackingNumber", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.REVIEWS)
         .where("user_name", ">=", DEMO_PREFIX)
         .where("user_name", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
       db
         .collection(COLLECTIONS.HERO_SLIDES)
         .where("title", ">=", DEMO_PREFIX)
         .where("title", "<", DEMO_PREFIX + "\uf8ff")
+        .count()
         .get(),
-      db.collection(COLLECTIONS.FAVORITES).get(), // Favorites don't have DEMO_ prefix, count all for demo users
-      db.collection(COLLECTIONS.CARTS).get(), // Carts don't have DEMO_ prefix, count all for demo users
-      db.collection(COLLECTIONS.NOTIFICATIONS).get(), // Notifications don't have DEMO_ prefix
+      db.collection(COLLECTIONS.FAVORITES).count().get(),
+      db.collection(COLLECTIONS.CARTS).count().get(),
+      db.collection(COLLECTIONS.NOTIFICATIONS).count().get(),
     ]);
 
-    const categories = categoriesSnapshot.size;
-    const users = usersSnapshot.size;
-    const shops = shopsSnapshot.size;
-    const products = productsSnapshot.size;
-    const auctions = auctionsSnapshot.size;
-    const bids = bidsSnapshot.size;
-    const orders = ordersSnapshot.size;
-    const payments = paymentsSnapshot.size;
-    const shipments = shipmentsSnapshot.size;
-    const reviews = reviewsSnapshot.size;
-    const heroSlides = heroSlidesSnapshot.size;
-    const favorites = favoritesSnapshot.size;
-    const carts = cartsSnapshot.size;
-    const notifications = notificationsSnapshot.size;
+    const categories = categoriesCount.data().count;
+    const users = usersCount.data().count;
+    const shops = shopsCount.data().count;
+    const products = productsCount.data().count;
+    const auctions = auctionsCount.data().count;
+    const bids = bidsCount.data().count;
+    const orders = ordersCount.data().count;
+    const payments = paymentsCount.data().count;
+    const shipments = shipmentsCount.data().count;
+    const reviews = reviewsCount.data().count;
+    const heroSlides = heroSlidesCount.data().count;
+    const favorites = favoritesCount.data().count;
+    const carts = cartsCount.data().count;
+    const notifications = notificationsCount.data().count;
 
-    // Get the latest creation timestamp
+    // Get the latest creation timestamp (fetch only 1 document for timestamp)
     let latestCreatedAt = null;
-    if (!categoriesSnapshot.empty) {
-      const firstDoc = categoriesSnapshot.docs[0].data();
-      latestCreatedAt =
-        firstDoc.created_at?.toDate() || firstDoc.createdAt?.toDate();
+    if (categories > 0) {
+      const latestDoc = await db
+        .collection(COLLECTIONS.CATEGORIES)
+        .where("name", ">=", DEMO_PREFIX)
+        .where("name", "<", DEMO_PREFIX + "\uf8ff")
+        .orderBy("name")
+        .limit(1)
+        .get();
+
+      if (!latestDoc.empty) {
+        const firstDoc = latestDoc.docs[0].data();
+        latestCreatedAt =
+          firstDoc.created_at?.toDate() || firstDoc.createdAt?.toDate();
+      }
     }
 
     // Check if any demo data exists
@@ -128,30 +150,30 @@ export async function GET() {
       });
     }
 
-    // Count settings collections
+    // Count settings collections using count queries
     const [
-      siteSettings,
-      paymentSettings,
-      shippingZones,
-      emailTemplates,
-      featureFlags,
-      homepageSettings,
+      siteSettingsCount,
+      paymentSettingsCount,
+      shippingZonesCount,
+      emailTemplatesCount,
+      featureFlagsCount,
+      homepageSettingsCount,
     ] = await Promise.all([
-      db.collection(COLLECTIONS.SITE_SETTINGS).get(),
-      db.collection(COLLECTIONS.PAYMENT_SETTINGS).get(),
-      db.collection(COLLECTIONS.SHIPPING_ZONES).get(),
-      db.collection(COLLECTIONS.EMAIL_TEMPLATES).get(),
-      db.collection(COLLECTIONS.FEATURE_FLAGS).get(),
-      db.collection(COLLECTIONS.HOMEPAGE_SETTINGS).get(),
+      db.collection(COLLECTIONS.SITE_SETTINGS).count().get(),
+      db.collection(COLLECTIONS.PAYMENT_SETTINGS).count().get(),
+      db.collection(COLLECTIONS.SHIPPING_ZONES).count().get(),
+      db.collection(COLLECTIONS.EMAIL_TEMPLATES).count().get(),
+      db.collection(COLLECTIONS.FEATURE_FLAGS).count().get(),
+      db.collection(COLLECTIONS.HOMEPAGE_SETTINGS).count().get(),
     ]);
 
     const settings =
-      siteSettings.size +
-      paymentSettings.size +
-      shippingZones.size +
-      emailTemplates.size +
-      featureFlags.size +
-      homepageSettings.size;
+      siteSettingsCount.data().count +
+      paymentSettingsCount.data().count +
+      shippingZonesCount.data().count +
+      emailTemplatesCount.data().count +
+      featureFlagsCount.data().count +
+      homepageSettingsCount.data().count;
 
     return NextResponse.json({
       exists: true,
@@ -173,7 +195,7 @@ export async function GET() {
         notifications,
         settings,
         createdAt: latestCreatedAt
-          ? (safeToISOString(latestCreatedAt) ?? new Date().toISOString())
+          ? safeToISOString(latestCreatedAt) ?? new Date().toISOString()
           : new Date().toISOString(),
       },
     });
@@ -185,7 +207,7 @@ export async function GET() {
         summary: null,
         error: error.message,
       },
-      { status: 200 },
+      { status: 200 }
     );
   }
 }

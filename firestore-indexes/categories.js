@@ -32,6 +32,20 @@ module.exports = {
       ]
     },
 
+    // Query: Get featured active categories sorted by featured order
+    // Use Case: Homepage featured categories with custom ordering
+    // Routes: /api/homepage/categories/featured, homepage category widgets
+    // Marketing: Custom order for promotional category displays
+    {
+      collectionGroup: "categories",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "featured", order: "ASCENDING" },
+        { fieldPath: "isActive", order: "ASCENDING" },
+        { fieldPath: "featured_order", order: "ASCENDING" }
+      ]
+    },
+
     // Query: Get active child categories for a parent, sorted by display order
     // Use Case: Multi-level category navigation, subcategory dropdowns
     // Routes: /api/categories/[id]/children, hierarchical menus

@@ -118,7 +118,7 @@ class SMSService {
             From: fromNumber,
             Body: request.message,
           }),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -147,13 +147,18 @@ class SMSService {
    * Send SMS with automatic provider selection
    */
   async send(
-    request: SendSMSRequest,
+    request: SendSMSRequest
   ): Promise<{ success: boolean; message: string }> {
     try {
+      // Validate message content
+      if (!request.message || request.message.trim().length === 0) {
+        throw new Error("Message content is required");
+      }
+
       // Validate phone number format (basic validation)
       if (!request.to.match(/^\+[1-9]\d{1,14}$/)) {
         throw new Error(
-          "Invalid phone number format. Must include country code (e.g., +919876543210)",
+          "Invalid phone number format. Must include country code (e.g., +919876543210)"
         );
       }
 
@@ -191,7 +196,7 @@ class SMSService {
    */
   async sendOTP(
     phoneNumber: string,
-    otp: string,
+    otp: string
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your JustForView verification code is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
 
@@ -207,7 +212,7 @@ class SMSService {
   async sendOrderConfirmation(
     phoneNumber: string,
     orderId: string,
-    amount: number,
+    amount: number
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your order #${orderId} has been confirmed! Total: ₹${amount}. Track at justforview.in/orders/${orderId}`;
 
@@ -223,7 +228,7 @@ class SMSService {
   async sendOrderShipped(
     phoneNumber: string,
     orderId: string,
-    trackingId?: string,
+    trackingId?: string
   ): Promise<{ success: boolean; message: string }> {
     const trackingInfo = trackingId ? ` Tracking: ${trackingId}` : "";
     const message = `Your order #${orderId} has been shipped!${trackingInfo} Track at justforview.in/orders/${orderId}`;
@@ -239,7 +244,7 @@ class SMSService {
    */
   async sendOrderDelivered(
     phoneNumber: string,
-    orderId: string,
+    orderId: string
   ): Promise<{ success: boolean; message: string }> {
     const message = `Your order #${orderId} has been delivered! Thank you for shopping with JustForView.`;
 
@@ -254,7 +259,7 @@ class SMSService {
    */
   async sendPromotion(
     phoneNumber: string,
-    message: string,
+    message: string
   ): Promise<{ success: boolean; message: string }> {
     // Add unsubscribe option as per TRAI regulations
     const fullMessage = `${message}\n\nTo opt-out, reply STOP to ${this.senderId}`;

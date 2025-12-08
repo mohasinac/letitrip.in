@@ -57,6 +57,20 @@ module.exports = {
         { fieldPath: "user_id", order: "ASCENDING" },
         { fieldPath: "created_at", order: "DESCENDING" }
       ]
+    },
+
+    // Query: Get approved high-rated reviews sorted by date
+    // Use Case: Homepage "Recent Reviews" section, testimonials display
+    // Routes: /api/homepage/reviews?minRating=4&limit=10
+    // Marketing: Showcases positive customer feedback on homepage
+    {
+      collectionGroup: "reviews",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "isApproved", order: "ASCENDING" },
+        { fieldPath: "rating", order: "DESCENDING" },
+        { fieldPath: "created_at", order: "DESCENDING" }
+      ]
     }
   ],
 

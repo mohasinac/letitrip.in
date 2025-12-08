@@ -45,6 +45,25 @@ jest.mock("firebase/auth", () => ({
   onAuthStateChanged: jest.fn(),
 }));
 
+// Mock Timestamp class for Firestore
+class MockTimestamp {
+  constructor(seconds, nanoseconds) {
+    this.seconds = seconds;
+    this.nanoseconds = nanoseconds;
+  }
+  toDate() {
+    return new Date(this.seconds * 1000);
+  }
+  static now() {
+    const now = Date.now();
+    return new MockTimestamp(Math.floor(now / 1000), (now % 1000) * 1000000);
+  }
+  static fromDate(date) {
+    const ms = date.getTime();
+    return new MockTimestamp(Math.floor(ms / 1000), (ms % 1000) * 1000000);
+  }
+}
+
 jest.mock("firebase/firestore", () => ({
   getFirestore: jest.fn(),
   collection: jest.fn(),
@@ -62,6 +81,7 @@ jest.mock("firebase/firestore", () => ({
   startAfter: jest.fn(),
   endBefore: jest.fn(),
   onSnapshot: jest.fn(),
+  Timestamp: MockTimestamp,
 }));
 
 jest.mock("firebase/storage", () => ({

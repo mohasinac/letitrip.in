@@ -43,7 +43,9 @@ const INDEX_MODULES = [
   'conversations.js',
   'inbox-emails.js',
   'returns.js',
-  'payouts.js'
+  'payouts.js',
+  'blog-posts.js',
+  'carts.js'
 ];
 
 console.log('🔥 Firestore Index Deployment Script\n');
