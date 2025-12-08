@@ -39,8 +39,8 @@ export function formatPrice(
 ): string {
   const { currency = "INR", showSymbol = true, showDecimals = true } = options;
 
-  // Handle null, undefined, NaN
-  if (value == null || isNaN(value)) {
+  // Handle null, undefined, NaN, Infinity
+  if (value == null || isNaN(value) || !isFinite(value)) {
     return "N/A";
   }
 
