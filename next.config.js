@@ -46,10 +46,28 @@ const nextConfig = {
     ],
     // Enable CSS optimization
     optimizeCss: true,
+    // Increase WebSocket payload size limit for HMR (fix WS_ERR_UNSUPPORTED_MESSAGE_LENGTH)
+    webpackBuildWorker: true,
   },
 
+  // Dev server configuration
+  ...(process.env.NODE_ENV === "development" && {
+    devIndicators: {
+      buildActivityPosition: "bottom-right",
+    },
+  }),
+
   // Webpack configuration for optimized chunking
-  webpack: (config, { isServer, webpack }) => {
+  webpack: (config, { isServer, webpack, dev }) => {
+    // Reduce HMR payload in development
+    if (dev && !isServer) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: ['**/node_modules/**', '**/.git/**', '**/logs/**', '**/.next/**'],
+      };
+    }
+
+    // Production optimizations
     if (!isServer) {
       // BUNDLE-2: Optimize chunk splitting
       config.optimization = {

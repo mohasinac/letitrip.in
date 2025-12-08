@@ -71,6 +71,19 @@ module.exports = {
         { fieldPath: "is_featured", order: "ASCENDING" },
         { fieldPath: "rating", order: "DESCENDING" }
       ]
+    },
+
+    // Query: Get featured shops sorted by custom featured order
+    // Use Case: Homepage featured shops section with manual ordering
+    // Routes: /api/homepage/shops/featured, homepage shop carousels
+    // Marketing: Custom order for promotional shop displays
+    {
+      collectionGroup: "shops",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "featured", order: "ASCENDING" },
+        { fieldPath: "featured_order", order: "ASCENDING" }
+      ]
     }
   ],
 

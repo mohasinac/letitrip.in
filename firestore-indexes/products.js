@@ -127,6 +127,35 @@ module.exports = {
       ]
     },
 
+    // Query: Get featured products with in-stock filtering sorted by creation date
+    // Use Case: Homepage featured products, promotional displays with stock check
+    // Routes: /api/products?featured=true&status=published&inStock=true
+    // Homepage: Critical for featured product carousels with availability
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "is_featured", order: "ASCENDING" },
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "created_at", order: "DESCENDING" },
+        { fieldPath: "stock_count", order: "DESCENDING" }
+      ]
+    },
+
+    // Query: Get active products with in-stock filtering sorted by creation date
+    // Use Case: Product listings with stock availability, "New In Stock" sections
+    // Routes: /api/products?status=published&inStock=true&sorts=-created_at
+    // Performance: Critical for product discovery pages with stock filters
+    {
+      collectionGroup: "products",
+      queryScope: "COLLECTION",
+      fields: [
+        { fieldPath: "status", order: "ASCENDING" },
+        { fieldPath: "created_at", order: "DESCENDING" },
+        { fieldPath: "stock_count", order: "DESCENDING" }
+      ]
+    },
+
     // Query: Get category products sorted by price (low to high)
     // Use Case: Category page with price sorting, price range filters
     // Routes: /api/categories/[id]/products?sort=price:asc
