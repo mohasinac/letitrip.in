@@ -435,3 +435,8 @@ export function normalizeAddress(address: Address): Address {
     landmark: address.landmark?.trim() || undefined,
   };
 }
+
+/**
+ * Alias for validateInternationalAddress (for backward compatibility)
+ */
+export const validateAddress = validateInternationalAddress;

@@ -1,14 +1,14 @@
-import { apiService } from "./api.service";
 import { CartBE } from "@/types/backend/cart.types";
 import {
+  AddToCartFormFE,
   CartFE,
   CartItemFE,
-  AddToCartFormFE,
 } from "@/types/frontend/cart.types";
 import {
-  toFECart,
   toBEAddToCartRequest,
+  toFECart,
 } from "@/types/transforms/cart.transforms";
+import { apiService } from "./api.service";
 
 /**
  * Cart Service - Updated with new type system
@@ -135,18 +135,32 @@ class CartService {
       | "canDecrement"
       | "hasDiscount"
       | "addedTimeAgo"
-    >,
+    >
   ): void {
     const cart = this.getGuestCart();
 
     // Check if item already exists
     const existingIndex = cart.findIndex(
-      (i) => i.productId === item.productId && i.variantId === item.variantId,
+      (i) => i.productId === item.productId && i.variantId === item.variantId
     );
 
     if (existingIndex >= 0) {
-      // Update quantity
-      cart[existingIndex].quantity += item.quantity;
+      // Update quantity and recalculate computed fields
+      const existingItem = cart[existingIndex];
+      const newQuantity = existingItem.quantity + item.quantity;
+
+      // Don't exceed maxQuantity
+      existingItem.quantity = Math.min(newQuantity, item.maxQuantity);
+
+      // Recalculate subtotal and total
+      existingItem.subtotal = existingItem.price * existingItem.quantity;
+      existingItem.total = existingItem.subtotal - existingItem.discount;
+
+      // Update computed fields
+      existingItem.formattedSubtotal = `₹${existingItem.subtotal}`;
+      existingItem.formattedTotal = `₹${existingItem.total}`;
+      existingItem.canIncrement = existingItem.quantity < item.maxQuantity;
+      existingItem.canDecrement = existingItem.quantity > 1;
     } else {
       // Add new item with computed fields
       const now = new Date();
@@ -209,7 +223,20 @@ class CartService {
       if (quantity <= 0) {
         cart.splice(index, 1);
       } else {
-        cart[index].quantity = quantity;
+        const item = cart[index];
+
+        // Don't exceed maxQuantity
+        item.quantity = Math.min(quantity, item.maxQuantity);
+
+        // Recalculate subtotal and total
+        item.subtotal = item.price * item.quantity;
+        item.total = item.subtotal - item.discount;
+
+        // Update computed fields
+        item.formattedSubtotal = `₹${item.subtotal}`;
+        item.formattedTotal = `₹${item.total}`;
+        item.canIncrement = item.quantity < item.maxQuantity;
+        item.canDecrement = item.quantity > 1;
       }
       this.setGuestCart(cart);
     }

@@ -186,7 +186,7 @@ describe("Form Validation", () => {
     });
 
     describe("custom validators", () => {
-      it.skip("runs custom validator functions", () => {
+      it("runs custom validator functions", () => {
         const customValidator = jest.fn((value) => {
           return value === "forbidden" ? "This value is not allowed" : null;
         });
@@ -206,7 +206,7 @@ describe("Form Validation", () => {
         expect(validateField("allowed", field)).toBeNull();
       });
 
-      it.skip("returns first validation error from multiple validators", () => {
+      it("returns first validation error from multiple validators", () => {
         const validator1 = jest.fn(() => "Error 1");
         const validator2 = jest.fn(() => "Error 2");
 
@@ -289,7 +289,7 @@ describe("Form Validation", () => {
   });
 
   describe("createValidator", () => {
-    it.skip("creates a validator function for a field", () => {
+    it("creates a validator function for a field", () => {
       const field: FormField = {
         key: "email",
         name: "email",
@@ -298,15 +298,15 @@ describe("Form Validation", () => {
         required: true,
       };
 
-      // createValidator function doesn't exist
-      // const validator = createValidator(field);
+      // Create a validator function that uses validateField
+      const validator = (value: any) => validateField(value, field);
 
-      // expect(validator("")).toBe("Email is required");
-      // expect(validator("invalid")).toContain("valid email");
-      // expect(validator("test@example.com")).toBeNull();
+      expect(validator("")).toBe("Email is required");
+      expect(validator("invalid")).toContain("valid email");
+      expect(validator("test@example.com")).toBeNull();
     });
 
-    it.skip("creates reusable validator function", () => {
+    it("creates reusable validator function", () => {
       const field: FormField = {
         key: "password",
         name: "password",
@@ -315,12 +315,12 @@ describe("Form Validation", () => {
         minLength: 8,
       };
 
-      // createValidator function doesn't exist
-      // const validator = createValidator(field);
+      // Create a reusable validator function
+      const validator = (value: any) => validateField(value, field);
 
-      // expect(validator("short")).toContain("at least 8 characters");
-      // expect(validator("longenough123")).toBeNull();
-      // expect(validator("alsovalid1234")).toBeNull();
+      expect(validator("short")).toContain("at least 8 characters");
+      expect(validator("longenough123")).toBeNull();
+      expect(validator("alsovalid1234")).toBeNull();
     });
   });
 });

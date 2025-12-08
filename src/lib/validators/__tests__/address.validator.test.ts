@@ -160,7 +160,7 @@ describe("Address Validator", () => {
   });
 
   describe("validateAddress", () => {
-    it.skip("validates complete valid address", () => {
+    it("validates complete valid address", () => {
       const address: Address = {
         line1: "123 Main Street",
         line2: "Apt 4B",
@@ -176,7 +176,7 @@ describe("Address Validator", () => {
       expect(result.errors).toHaveLength(0);
     });
 
-    it.skip("requires line1", () => {
+    it("requires line1", () => {
       const address: Address = {
         line1: "",
         city: "Mumbai",
@@ -191,7 +191,7 @@ describe("Address Validator", () => {
       expect(result.errors.some((e) => e.field === "line1")).toBe(true);
     });
 
-    it.skip("requires city", () => {
+    it("requires city", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "",
@@ -206,7 +206,7 @@ describe("Address Validator", () => {
       expect(result.errors.some((e) => e.field === "city")).toBe(true);
     });
 
-    it.skip("requires state", () => {
+    it("requires state", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "Mumbai",
@@ -221,7 +221,7 @@ describe("Address Validator", () => {
       expect(result.errors.some((e) => e.field === "state")).toBe(true);
     });
 
-    it.skip("requires country", () => {
+    it("requires country", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "Mumbai",
@@ -236,7 +236,7 @@ describe("Address Validator", () => {
       expect(result.errors.some((e) => e.field === "country")).toBe(true);
     });
 
-    it.skip("validates postal code format", () => {
+    it("validates postal code format", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "Mumbai",
@@ -251,7 +251,7 @@ describe("Address Validator", () => {
       expect(result.errors.some((e) => e.field === "postalCode")).toBe(true);
     });
 
-    it.skip("allows optional line2", () => {
+    it("allows optional line2", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "Mumbai",
@@ -265,7 +265,7 @@ describe("Address Validator", () => {
       expect(result.isValid).toBe(true);
     });
 
-    it.skip("allows optional landmark", () => {
+    it("allows optional landmark", () => {
       const address: Address = {
         line1: "123 Main St",
         city: "Mumbai",
@@ -280,7 +280,7 @@ describe("Address Validator", () => {
       expect(result.isValid).toBe(true);
     });
 
-    it.skip("collects multiple errors", () => {
+    it("collects multiple errors", () => {
       const address: Address = {
         line1: "",
         city: "",
