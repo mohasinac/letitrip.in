@@ -357,55 +357,46 @@ export function getGatewayRecommendations(params: GatewaySelectionParams): {
 }
 
 /**
- * Compare two gateways for a transaction
+ * Calculate total amount with fee
  */
-export function compareGateways(
-  gatewayId1: string,
-  gatewayId2: string,
-  params: {
-    amount: number;
-    currency: CurrencyCode;
-    country: CountryCode;
-  }
+export function calculateTotalWithFee(
+  amount: number,
+  gatewayId: string,
+  isInternational: boolean
 ): {
-  winner: string;
-  comparison: {
-    [key: string]: {
-      fee: number;
-      totalAmount: number;
-      score: number;
-    };
-  };
+  amount: number;
+  fee: number;
+  total: number;
+  feePercentage: number;
 } {
-  const gateways = getEnabledGateways();
-  const gateway1 = gateways.find((g) => g.id === gatewayId1);
-  const gateway2 = gateways.find((g) => g.id === gatewayId2);
-
-  if (!gateway1 || !gateway2) {
-    throw new Error("One or both gateways not found");
-  }
-
-  const scored = scoreGateways(
-    [gateway1, gateway2],
-    params.amount,
-    params.country
-  );
+  const fee = calculateGatewayFee(gatewayId, amount, isInternational);
+  const total = amount + fee;
+  const feePercentage = amount > 0 ? (fee / amount) * 100 : 0;
 
   return {
-    winner: scored[0].gateway.id,
-    comparison: {
-      [gatewayId1]: {
-        fee: scored.find((s) => s.gateway.id === gatewayId1)?.fee || 0,
-        totalAmount:
-          scored.find((s) => s.gateway.id === gatewayId1)?.totalAmount || 0,
-        score: scored.find((s) => s.gateway.id === gatewayId1)?.score || 0,
-      },
-      [gatewayId2]: {
-        fee: scored.find((s) => s.gateway.id === gatewayId2)?.fee || 0,
-        totalAmount:
-          scored.find((s) => s.gateway.id === gatewayId2)?.totalAmount || 0,
-        score: scored.find((s) => s.gateway.id === gatewayId2)?.score || 0,
-      },
-    },
+    amount,
+    fee,
+    total,
+    feePercentage,
   };
+}
+
+/**
+ * Compare all suitable gateways for a transaction
+ * Returns ranked list with scores
+ */
+export function compareGateways(
+  params: GatewaySelectionParams
+): GatewayWithScore[] {
+  return getRankedGateways(params);
+}
+
+/**
+ * Get gateway recommendation with detailed reasoning
+ */
+export function getGatewayRecommendation(
+  params: GatewaySelectionParams
+): GatewayWithScore | null {
+  const ranked = getRankedGateways(params);
+  return ranked.length > 0 ? ranked[0] : null;
 }

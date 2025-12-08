@@ -286,9 +286,12 @@ export function formatReviewCount(count: number): string {
 
 /**
  * Format stock status
+ *
+ * BUG FIX: Added check for negative stock (data integrity issue)
+ * Negative stock should never happen, but if it does, treat as out of stock
  */
 export function formatStockStatus(stock: number): string {
-  if (stock === 0) return "Out of Stock";
+  if (stock <= 0) return "Out of Stock"; // Fixed: was stock === 0, now handles negatives
   if (stock <= 5) return `Only ${stock} left`;
   return "In Stock";
 }

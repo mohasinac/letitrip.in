@@ -195,6 +195,18 @@ export function getLinkType(href: string): LinkType {
 
   const trimmed = href.trim().toLowerCase();
 
+  // Security: Block dangerous protocols
+  const dangerousProtocols = [
+    "javascript:",
+    "vbscript:",
+    "data:",
+    "blob:",
+    "file:",
+  ];
+  if (dangerousProtocols.some((proto) => trimmed.startsWith(proto))) {
+    return "invalid";
+  }
+
   // Email links
   if (trimmed.startsWith("mailto:")) {
     return "email";
@@ -222,8 +234,12 @@ export function getLinkType(href: string): LinkType {
 
   // Check if it's a valid URL format
   try {
-    new URL(href);
-    return "external";
+    const url = new URL(href);
+    // Only allow http and https for external URLs
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return "external";
+    }
+    return "invalid";
   } catch {
     // Might be a malformed URL
     return "invalid";
@@ -296,7 +312,7 @@ export function resolveUrl(href: string, baseUrl?: string): string {
  */
 export function validateLink(
   value: string,
-  options: LinkValidationOptions = {},
+  options: LinkValidationOptions = {}
 ): LinkValidationResult {
   const opts = { ...defaultValidationOptions, ...options };
 
@@ -407,33 +423,63 @@ export function validateLink(
 }
 
 /**
+ * Options for link rel attribute
+ */
+export interface LinkRelOptions {
+  nofollow?: boolean;
+  sponsored?: boolean;
+  ugc?: boolean;
+}
+
+/**
  * Get the appropriate rel attribute for a link
  *
  * @param href - The link URL
+ * @param options - Additional rel options
  * @returns The rel attribute value
  */
-export function getLinkRel(href: string): string | undefined {
+export function getLinkRel(href: string, options?: LinkRelOptions): string {
+  const relValues: string[] = [];
+
   if (isExternalLink(href)) {
-    return "noopener noreferrer";
+    relValues.push("noopener", "noreferrer");
   }
-  return undefined;
+
+  if (options?.nofollow) {
+    relValues.push("nofollow");
+  }
+
+  if (options?.sponsored) {
+    relValues.push("sponsored");
+  }
+
+  if (options?.ugc) {
+    relValues.push("ugc");
+  }
+
+  return relValues.join(" ");
 }
 
 /**
  * Get the appropriate target attribute for a link
  *
  * @param href - The link URL
- * @param forceNewTab - Force opening in new tab
+ * @param explicitTarget - Explicit target value
  * @returns The target attribute value
  */
-export function getLinkTarget(
-  href: string,
-  forceNewTab = false,
-): string | undefined {
-  if (forceNewTab || isExternalLink(href)) {
+export function getLinkTarget(href: string, explicitTarget?: string): string {
+  // Use explicit target if provided
+  if (explicitTarget) {
+    return explicitTarget;
+  }
+
+  // External links open in new tab
+  if (isExternalLink(href)) {
     return "_blank";
   }
-  return undefined;
+
+  // Internal, anchor, email, phone links open in same tab
+  return "_self";
 }
 
 /**
@@ -510,4 +556,96 @@ export function isDownloadableLink(href: string): boolean {
 
   const lowercaseHref = href.toLowerCase();
   return downloadExtensions.some((ext) => lowercaseHref.endsWith(ext));
+}
+
+/**
+ * Sanitize a link for display (prevent XSS)
+ *
+ * @param href - The link URL
+ * @param maxLength - Maximum display length
+ * @returns Sanitized display string
+ */
+export function sanitizeLinkForDisplay(href: string, maxLength = 100): string {
+  if (!href) return "";
+
+  // Remove dangerous protocols
+  let sanitized = href.replace(/^(javascript|vbscript|data):/i, "");
+
+  // Remove HTML tags and special characters
+  sanitized = sanitized
+    .replace(/<[^>]*>/g, "")
+    .replace(/[<>"']/g, "")
+    .trim();
+
+  // Truncate if too long
+  if (sanitized.length > maxLength) {
+    return sanitized.substring(0, maxLength) + "...";
+  }
+
+  return sanitized;
+}
+
+/**
+ * Check if a string is a valid URL
+ *
+ * @param value - The string to validate
+ * @returns true if valid URL
+ */
+export function isValidUrl(value: string): boolean {
+  if (!value || typeof value !== "string") {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+    // Only allow http and https protocols
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Normalize a URL for comparison
+ *
+ * @param href - The URL to normalize
+ * @returns Normalized URL
+ */
+export function normalizeUrl(href: string): string {
+  if (!href) return href;
+
+  // Handle relative URLs
+  if (href.startsWith("/")) {
+    return href.replace(/\/+/g, "/"); // Remove duplicate slashes
+  }
+
+  try {
+    const url = new URL(href);
+
+    // Lowercase protocol and hostname
+    url.protocol = url.protocol.toLowerCase();
+    url.hostname = url.hostname.toLowerCase();
+
+    // Remove default ports
+    if (
+      (url.protocol === "https:" && url.port === "443") ||
+      (url.protocol === "http:" && url.port === "80")
+    ) {
+      url.port = "";
+    }
+
+    // Remove trailing slash from domain (but not from paths)
+    let normalized = url.toString();
+    if (normalized.endsWith("/") && url.pathname === "/") {
+      normalized = normalized.slice(0, -1);
+    }
+
+    // Remove duplicate slashes in path
+    normalized = normalized.replace(/([^:])\/+/g, "$1/");
+
+    return normalized;
+  } catch {
+    // If not a valid URL, just clean up slashes
+    return href.replace(/\/+/g, "/");
+  }
 }
