@@ -152,7 +152,7 @@ class ErrorTrackingService {
     const end = endDate || now;
 
     const relevantTrends = this.errorTrends.filter(
-      (t) => t.timestamp >= start && t.timestamp <= end,
+      (t) => t.timestamp >= start && t.timestamp <= end
     );
 
     const errorsBySeverity: Record<ErrorSeverity, number> = {
@@ -216,7 +216,7 @@ class ErrorTrackingService {
 
     if (filter.component && filter.component.length > 0) {
       errors = errors.filter((e) =>
-        e.affectedComponents.some((c) => filter.component!.includes(c)),
+        e.affectedComponents.some((c) => filter.component!.includes(c))
       );
     }
 
@@ -248,7 +248,7 @@ class ErrorTrackingService {
    */
   getTrends(
     interval: "minute" | "hour" | "day" = "hour",
-    limit = 24,
+    limit = 24
   ): ErrorTrend[] {
     const intervalMsMap = {
       minute: 60000,
@@ -284,7 +284,7 @@ class ErrorTrackingService {
    */
   getAlerts(): ErrorAlert[] {
     return [...this.alerts].sort(
-      (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
     );
   }
 
@@ -340,7 +340,7 @@ class ErrorTrackingService {
         stats: this.getStats(),
       },
       null,
-      2,
+      2
     );
   }
 
@@ -357,9 +357,8 @@ class ErrorTrackingService {
    * Get a deduplication key for an error
    */
   private getErrorKey(error: LoggedError): string {
-    // Use message + component for deduplication
-    const component = error.context.component || "unknown";
-    return `${component}:${error.message}`;
+    // Use message only for deduplication, track components separately
+    return error.message;
   }
 
   /**
@@ -369,7 +368,7 @@ class ErrorTrackingService {
     const now = new Date();
     const recentWindow = 60000; // 1 minute
     const recentErrors = this.errorTrends.filter(
-      (t) => now.getTime() - t.timestamp.getTime() < recentWindow,
+      (t) => now.getTime() - t.timestamp.getTime() < recentWindow
     );
 
     // Check error rate
@@ -387,7 +386,7 @@ class ErrorTrackingService {
 
     // Check critical errors
     const criticalErrors = recentErrors.filter(
-      (t) => t.severity === ErrorSeverity.CRITICAL,
+      (t) => t.severity === ErrorSeverity.CRITICAL
     );
     if (criticalErrors.length >= this.CRITICAL_ERROR_THRESHOLD) {
       this.addAlert({
@@ -428,7 +427,7 @@ class ErrorTrackingService {
     // Check if similar alert exists in last 5 minutes
     const similarAlert = this.alerts.find(
       (a) =>
-        a.type === alert.type && Date.now() - a.timestamp.getTime() < 300000, // 5 minutes
+        a.type === alert.type && Date.now() - a.timestamp.getTime() < 300000 // 5 minutes
     );
 
     if (!similarAlert) {
@@ -516,7 +515,7 @@ export function getErrorSummaryText(stats: ErrorStats): string {
 
   stats.topErrors.slice(0, 5).forEach((error, i) => {
     lines.push(
-      `  ${i + 1}. [${error.severity}] ${error.message} (${error.count}x)`,
+      `  ${i + 1}. [${error.severity}] ${error.message} (${error.count}x)`
     );
   });
 
@@ -534,7 +533,7 @@ export function isErrorTrackingHealthy(): boolean {
   // - Error rate is below threshold
   // - No critical alerts in last 5 minutes
   const recentCriticalAlerts = alerts.filter(
-    (a) => a.type === "severity" && Date.now() - a.timestamp.getTime() < 300000,
+    (a) => a.type === "severity" && Date.now() - a.timestamp.getTime() < 300000
   );
 
   return stats.errorRate < 10 && recentCriticalAlerts.length === 0;

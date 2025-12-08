@@ -156,12 +156,15 @@ describe("ComparisonService", () => {
 
     it("should return false in SSR environment", () => {
       const originalWindow = global.window;
+      const originalLocalStorage = global.localStorage;
       delete (global as any).window;
+      delete (global as any).localStorage;
 
       const result = comparisonService.addToComparison(mockProduct);
 
       expect(result).toBe(false);
       global.window = originalWindow as any;
+      global.localStorage = originalLocalStorage as any;
     });
   });
 
