@@ -580,19 +580,466 @@ it("handles errors", async () => {
 });
 ```
 
+## Advanced Patterns (Session 4)
+
+### 1. API Service Caching
+
+**Pattern**: Response caching with TTL and stale-while-revalidate
+
+```typescript
+describe("Caching", () => {
+  beforeEach(() => {
+    apiService.clearCache();
+    jest.clearAllMocks();
+  });
+
+  it("returns fresh cached response", async () => {
+    // Configure cache
+    apiService.configureCacheFor("/test", {
+      ttl: 5000, // fresh for 5 seconds
+      staleWhileRevalidate: 10000, // serve stale for 10s while revalidating
+    });
+
+    // First call - cache miss
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "first" }),
+    });
+
+    const first = await apiService.get("/test");
+    expect(first.data).toBe("first");
+
+    // Second call - cache hit (no fetch)
+    const second = await apiService.get("/test");
+    expect(second.data).toBe("first");
+    expect(global.fetch).toHaveBeenCalledTimes(1); // Only called once
+  });
+
+  it("handles stale-while-revalidate", async () => {
+    apiService.configureCacheFor("/test", {
+      ttl: 100, // fresh for 100ms
+      staleWhileRevalidate: 5000,
+    });
+
+    // First call
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "first" }),
+    });
+
+    await apiService.get("/test");
+
+    // Wait for cache to become stale
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    // Mock revalidation
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "fresh" }),
+    });
+
+    // Returns stale data immediately, revalidates in background
+    const stale = await apiService.get("/test");
+    expect(stale.data).toBe("first"); // Returns stale immediately
+    expect(global.fetch).toHaveBeenCalledTimes(2); // Revalidation triggered
+  });
+
+  it("invalidates cache by pattern", async () => {
+    apiService.configureCacheFor("/test", { ttl: 10000 });
+
+    // Cache some data
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "cached" }),
+    });
+
+    await apiService.get("/test/item1");
+
+    // Invalidate by pattern
+    apiService.invalidateCache("/test");
+
+    // Next call should be a cache miss
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "fresh" }),
+    });
+
+    await apiService.get("/test/item1");
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+});
+```
+
+### 2. Request Deduplication
+
+**Pattern**: Prevent duplicate simultaneous requests
+
+```typescript
+describe("Request Deduplication", () => {
+  it("deduplicates identical simultaneous requests", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "result" }),
+    });
+
+    // Make 3 identical requests simultaneously
+    const [result1, result2, result3] = await Promise.all([
+      apiService.get("/test"),
+      apiService.get("/test"),
+      apiService.get("/test"),
+    ]);
+
+    // All return same result
+    expect(result1).toEqual(result2);
+    expect(result2).toEqual(result3);
+
+    // But only one fetch was made
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not deduplicate different requests", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ data: "result" }),
+    });
+
+    await Promise.all([apiService.get("/test/1"), apiService.get("/test/2")]);
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+});
+```
+
+### 3. Exponential Backoff Retry
+
+**Pattern**: Retry with exponential backoff on retryable errors
+
+```typescript
+describe("Retry Logic", () => {
+  it("retries on retryable errors", async () => {
+    // First 2 calls fail with 503, third succeeds
+    (global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({ error: "Service Unavailable" }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({ error: "Service Unavailable" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({ data: "success" }),
+      });
+
+    const result = await apiService.get("/test");
+    expect(result.data).toBe("success");
+    expect(global.fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not retry non-retryable errors", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      status: 404,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ error: "Not Found" }),
+    });
+
+    await expect(apiService.get("/test")).rejects.toThrow();
+    expect(global.fetch).toHaveBeenCalledTimes(1); // No retry
+  });
+
+  it("configures retry settings", () => {
+    apiService.configureRetry({
+      maxRetries: 5,
+      retryDelay: 2000,
+      retryableStatuses: [408, 429, 500, 502, 503, 504],
+    });
+
+    // Configuration applied
+    expect(apiService.getRetryConfig()).toMatchObject({
+      maxRetries: 5,
+      retryDelay: 2000,
+    });
+  });
+});
+```
+
+### 4. Request Abortion
+
+**Pattern**: Cancel in-flight requests
+
+```typescript
+describe("Request Abortion", () => {
+  it("aborts individual request", async () => {
+    (global.fetch as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve({ ok: true }), 1000);
+        })
+    );
+
+    const promise = apiService.get("/test");
+    apiService.abortRequest("GET:/api/test");
+
+    await expect(promise).rejects.toThrow("Request aborted");
+  });
+
+  it("aborts requests matching pattern", async () => {
+    (global.fetch as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve({ ok: true }), 1000);
+        })
+    );
+
+    const promises = [
+      apiService.get("/products/1"),
+      apiService.get("/products/2"),
+      apiService.get("/shops/1"),
+    ];
+
+    apiService.abortRequestsMatching("/products");
+
+    await expect(promises[0]).rejects.toThrow();
+    await expect(promises[1]).rejects.toThrow();
+    // shops request not aborted
+  });
+
+  it("aborts all pending requests", async () => {
+    (global.fetch as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve({ ok: true }), 1000);
+        })
+    );
+
+    const promises = [apiService.get("/test/1"), apiService.get("/test/2")];
+
+    apiService.abortAllRequests();
+
+    await expect(promises[0]).rejects.toThrow();
+    await expect(promises[1]).rejects.toThrow();
+  });
+});
+```
+
+### 5. Firebase Storage Upload
+
+**Pattern**: 3-step upload workflow (request URL → upload → confirm)
+
+```typescript
+describe("uploadAsset", () => {
+  it("completes 3-step upload successfully", async () => {
+    const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
+
+    // Step 1: Request upload URL
+    (apiService.post as jest.Mock).mockResolvedValueOnce({
+      uploadUrl: "https://storage.googleapis.com/bucket/test.jpg?token=abc",
+      metadata: {
+        id: "asset123",
+        name: "test.jpg",
+        type: "image",
+      },
+    });
+
+    // Step 2: Upload to storage
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+    });
+
+    // Step 3: Confirm upload
+    (apiService.post as jest.Mock).mockResolvedValueOnce({
+      id: "asset123",
+      url: "https://storage.googleapis.com/bucket/test.jpg",
+      createdAt: "2024-12-01T00:00:00Z",
+    });
+
+    const result = await staticAssetsClient.uploadAsset(file, "category");
+
+    expect(result.id).toBe("asset123");
+    expect(apiService.post).toHaveBeenCalledWith(
+      "/api/assets/request-upload-url",
+      { fileName: "test.jpg", fileType: "image/jpeg", category: "category" }
+    );
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://storage.googleapis.com/bucket/test.jpg?token=abc",
+      { method: "PUT", body: file }
+    );
+    expect(apiService.post).toHaveBeenCalledWith("/api/assets/confirm-upload", {
+      id: "asset123",
+      name: "test.jpg",
+      type: "image",
+    });
+  });
+
+  it("handles storage upload failure", async () => {
+    const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
+
+    (apiService.post as jest.Mock).mockResolvedValueOnce({
+      uploadUrl: "https://storage.googleapis.com/...",
+      metadata: { id: "asset123" },
+    });
+
+    // Storage upload fails
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      statusText: "Forbidden",
+    });
+
+    await expect(
+      staticAssetsClient.uploadAsset(file, "category")
+    ).rejects.toThrow("Upload to storage failed: Forbidden");
+  });
+});
+```
+
+### 6. Test Data Generation
+
+**Pattern**: Generate realistic test data with TEST\_ prefix
+
+```typescript
+describe("generateTestProducts", () => {
+  it("generates products with TEST_ prefix", async () => {
+    (apiService.post as jest.Mock).mockResolvedValue({
+      products: [
+        { id: "1", name: "TEST_Product 1" },
+        { id: "2", name: "TEST_Product 2" },
+      ],
+    });
+
+    const result = await testDataService.generateTestProducts(2);
+
+    expect(result.products).toHaveLength(2);
+    expect(result.products[0].name).toMatch(/^TEST_/);
+    expect(apiService.post).toHaveBeenCalledWith(
+      "/api/test-data/products",
+      expect.objectContaining({ count: 2 })
+    );
+  });
+
+  it("validates product pricing logic", async () => {
+    (apiService.post as jest.Mock).mockResolvedValue({
+      products: [{ id: "1", price: 100, mrp: 120, discount: 16.67 }],
+    });
+
+    const result = await testDataService.generateTestProducts(1);
+
+    const product = result.products[0];
+    expect(product.price).toBeLessThanOrEqual(product.mrp);
+    expect(product.discount).toBeGreaterThanOrEqual(0);
+    expect(product.discount).toBeLessThan(100);
+  });
+
+  it("generates products with random attributes", async () => {
+    (apiService.post as jest.Mock).mockResolvedValue({
+      products: [
+        {
+          id: "1",
+          name: "TEST_Product 1",
+          category: "Electronics",
+          tags: ["new", "featured"],
+          stock: 50,
+        },
+        {
+          id: "2",
+          name: "TEST_Product 2",
+          category: "Clothing",
+          tags: ["sale"],
+          stock: 20,
+        },
+      ],
+    });
+
+    const result = await testDataService.generateTestProducts(2);
+
+    // Verify each product has required attributes
+    result.products.forEach((product) => {
+      expect(product).toHaveProperty("id");
+      expect(product).toHaveProperty("name");
+      expect(product).toHaveProperty("category");
+      expect(product).toHaveProperty("tags");
+      expect(product).toHaveProperty("stock");
+      expect(product.stock).toBeGreaterThanOrEqual(0);
+      expect(product.stock).toBeLessThanOrEqual(100);
+    });
+  });
+});
+
+describe("cleanupTestData", () => {
+  it("removes all TEST_ prefixed data", async () => {
+    (apiService.post as jest.Mock).mockResolvedValue({
+      deleted: {
+        products: 10,
+        auctions: 5,
+        orders: 3,
+      },
+    });
+
+    const result = await testDataService.cleanupTestData();
+
+    expect(result.deleted.products).toBe(10);
+    expect(apiService.post).toHaveBeenCalledWith("/api/test-data/cleanup");
+  });
+});
+
+describe("executeWorkflow", () => {
+  it("orchestrates multi-step data generation", async () => {
+    (apiService.post as jest.Mock).mockResolvedValue({
+      success: true,
+      generated: {
+        products: 10,
+        auctions: 5,
+        orders: 3,
+      },
+    });
+
+    const params = {
+      products: 10,
+      auctions: 5,
+      orders: 3,
+    };
+
+    const result = await testDataService.executeWorkflow(params);
+
+    expect(result.success).toBe(true);
+    expect(result.generated.products).toBe(10);
+    expect(apiService.post).toHaveBeenCalledWith(
+      "/api/test-data/workflow",
+      params
+    );
+  });
+});
+```
+
 ## Files Following These Patterns
 
-- ✅ `analytics.service.test.ts` - 22 tests
-- ✅ `notification.service.test.ts` - 25 tests
-- ✅ `payment.service.test.ts` - 24 tests
-- ✅ `address.service.test.ts` - 30 tests
-- ✅ `blog.service.test.ts` - 31 tests
-- ✅ `auth.service.test.ts` - 19 tests (0 skipped)
-- ✅ `categories.service.test.ts` - 42 tests
-- ✅ `checkout.service.test.ts` - 14 tests
+### Session 1-3 Services (44 services)
 
-**Total**: 188 comprehensive service tests, 0 skipped tests in service layer
+- ✅ All previous services: analytics, notification, payment, address, blog, auth, categories, checkout, etc.
+- ✅ hero-slides, payouts, riplimit, shipping, settings, homepage-settings
+- ✅ seller-settings, shiprocket, support
+
+### Session 4 Services (3 services)
+
+- ✅ `api.service.test.ts` - 58 tests (HTTP, caching, retry, deduplication, abortion)
+- ✅ `static-assets-client.service.test.ts` - 30+ tests (CRUD, upload, filters)
+- ✅ `test-data.service.test.ts` - 30+ tests (generators, validation, workflow)
+
+**Total**: 47/47 services tested (100% coverage), 1928 passing tests, 0 failures
 
 ---
 
-_Last Updated: December 8, 2024 - Added transform patterns and fetch mocking_
+_Last Updated: December 2024 - Session 4 Complete - Added API caching, Firebase Storage, test data generation patterns_
