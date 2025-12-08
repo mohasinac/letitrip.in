@@ -5,11 +5,10 @@
  * field configuration system from @/constants/form-fields.ts
  */
 
-import type { FormField, FieldValidator } from "@/constants/form-fields";
+import type { FieldValidator, FormField } from "@/constants/form-fields";
 import {
   isValidEmail,
   isValidPhone,
-  VALIDATION_RULES,
   VALIDATION_MESSAGES,
 } from "@/constants/validation-messages";
 
@@ -27,6 +26,9 @@ export interface ValidationResult {
  * Validate a single field value against its field configuration
  */
 export function validateField(value: any, field: FormField): string | null {
+  // Support both 'key' and 'name' properties for backward compatibility
+  const fieldKey = field.key || field.name || "field";
+
   // Required validation
   if (
     field.required &&
@@ -96,12 +98,21 @@ export function validateField(value: any, field: FormField): string | null {
     }
   }
 
-  // Custom validators
+  // Custom validators (FieldValidator objects)
   if (field.validators && field.validators.length > 0) {
     for (const validator of field.validators) {
-      const error = validateWithValidator(value, validator, field.label);
-      if (error) {
-        return error;
+      if (typeof validator === "function") {
+        // Support direct function validators
+        const error = validator(value);
+        if (error) {
+          return error;
+        }
+      } else {
+        // Support FieldValidator objects
+        const error = validateWithValidator(value, validator, field.label);
+        if (error) {
+          return error;
+        }
       }
     }
   }
@@ -115,7 +126,7 @@ export function validateField(value: any, field: FormField): string | null {
 function validateWithValidator(
   value: any,
   validator: FieldValidator,
-  fieldLabel: string,
+  fieldLabel: string
 ): string | null {
   switch (validator.type) {
     case "required":
@@ -208,15 +219,19 @@ function validateWithValidator(
  */
 export function validateForm(
   values: Record<string, any>,
-  fields: FormField[],
+  fields: FormField[]
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
   for (const field of fields) {
-    const value = values[field.key];
+    // Support both 'key' and 'name' properties for backward compatibility
+    const fieldKey = field.key || field.name || "";
+    if (!fieldKey) continue;
+
+    const value = values[fieldKey];
     const error = validateField(value, field);
     if (error) {
-      errors[field.key] = error;
+      errors[fieldKey] = error;
     }
   }
 
@@ -232,7 +247,7 @@ export function validateForm(
 export function validateFields(
   values: Record<string, any>,
   fields: FormField[],
-  fieldKeys: string[],
+  fieldKeys: string[]
 ): ValidationResult {
   const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
   return validateForm(values, fieldsToValidate);
@@ -250,7 +265,7 @@ export function getFirstError(errors: Record<string, string>): string | null {
  * Format validation errors for display
  */
 export function formatErrors(
-  errors: Record<string, string>,
+  errors: Record<string, string>
 ): ValidationError[] {
   return Object.entries(errors).map(([field, message]) => ({
     field,
@@ -282,7 +297,7 @@ export function sanitizeInput(value: string): string {
  */
 export function validateAndSanitize(
   value: string,
-  field: FormField,
+  field: FormField
 ): { value: string; error: string | null } {
   const error = validateField(value, field);
   const sanitized = error ? value : sanitizeInput(value);

@@ -737,4 +737,304 @@ describe("AuctionsService", () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe("edge cases", () => {
+    describe("placeBid edge cases", () => {
+      it("should handle zero bid amount", async () => {
+        const mockBid = { id: "bid1", amount: 0 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: 0,
+          isAutoBid: false,
+        });
+
+        expect(apiService.post).toHaveBeenCalledWith("/auctions/auc1/bid", {
+          amount: 0,
+          isAutoBid: false,
+          maxAutoBidAmount: undefined,
+        });
+        expect(result._bidTransformed).toBe(true);
+      });
+
+      it("should handle negative bid amount", async () => {
+        const mockBid = { id: "bid1", amount: -100 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: -100,
+          isAutoBid: false,
+        });
+
+        expect(result._bidTransformed).toBe(true);
+      });
+
+      it("should handle very large bid amount", async () => {
+        const mockBid = { id: "bid1", amount: 999999999999 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: 999999999999,
+          isAutoBid: false,
+        });
+
+        expect(result._bidTransformed).toBe(true);
+      });
+
+      it("should handle decimal bid amounts", async () => {
+        const mockBid = { id: "bid1", amount: 100.55 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: 100.55,
+          isAutoBid: false,
+        });
+
+        expect(apiService.post).toHaveBeenCalledWith("/auctions/auc1/bid", {
+          amount: 100.55,
+          isAutoBid: false,
+          maxAutoBidAmount: undefined,
+        });
+      });
+
+      it("should handle autobid with max amount", async () => {
+        const mockBid = { id: "bid1", amount: 100 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: 100,
+          isAutoBid: true,
+          maxAutoBidAmount: 1000,
+        });
+
+        expect(apiService.post).toHaveBeenCalledWith("/auctions/auc1/bid", {
+          amount: 100,
+          isAutoBid: true,
+          maxAutoBidAmount: 1000,
+        });
+      });
+
+      it("should handle autobid with max less than current", async () => {
+        const mockBid = { id: "bid1", amount: 100 };
+        (apiService.post as jest.Mock).mockResolvedValue(mockBid);
+
+        const result = await auctionsService.placeBid("auc1", {
+          amount: 100,
+          isAutoBid: true,
+          maxAutoBidAmount: 50,
+        });
+
+        expect(result._bidTransformed).toBe(true);
+      });
+    });
+
+    describe("setFeatured edge cases", () => {
+      it("should handle priority zero", async () => {
+        const mockAuction = { id: "auc1" } as AuctionBE;
+        (apiService.patch as jest.Mock).mockResolvedValue(mockAuction);
+
+        const result = await auctionsService.setFeatured("auc1", true, 0);
+
+        expect(apiService.patch).toHaveBeenCalledWith(
+          "/auctions/auc1/feature",
+          {
+            featured: true,
+            featuredPriority: 0,
+          }
+        );
+      });
+
+      it("should handle negative priority", async () => {
+        const mockAuction = { id: "auc1" } as AuctionBE;
+        (apiService.patch as jest.Mock).mockResolvedValue(mockAuction);
+
+        const result = await auctionsService.setFeatured("auc1", true, -1);
+
+        expect(apiService.patch).toHaveBeenCalledWith(
+          "/auctions/auc1/feature",
+          {
+            featured: true,
+            featuredPriority: -1,
+          }
+        );
+      });
+
+      it("should handle very high priority", async () => {
+        const mockAuction = { id: "auc1" } as AuctionBE;
+        (apiService.patch as jest.Mock).mockResolvedValue(mockAuction);
+
+        const result = await auctionsService.setFeatured("auc1", true, 999999);
+
+        expect(apiService.patch).toHaveBeenCalledWith(
+          "/auctions/auc1/feature",
+          {
+            featured: true,
+            featuredPriority: 999999,
+          }
+        );
+      });
+
+      it("should handle unfeatured with priority", async () => {
+        const mockAuction = { id: "auc1" } as AuctionBE;
+        (apiService.patch as jest.Mock).mockResolvedValue(mockAuction);
+
+        const result = await auctionsService.setFeatured("auc1", false, 10);
+
+        expect(apiService.patch).toHaveBeenCalledWith(
+          "/auctions/auc1/feature",
+          {
+            featured: false,
+            featuredPriority: 10,
+          }
+        );
+      });
+    });
+
+    describe("getBids edge cases", () => {
+      it("should handle very large page numbers", async () => {
+        const mockResponse: PaginatedResponseBE<any> = {
+          data: [],
+          count: 0,
+          pagination: { page: 99999, limit: 10, total: 0, hasMore: false },
+        };
+
+        (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await auctionsService.getBids("auc1", { page: 99999 });
+
+        expect(result.data).toEqual([]);
+      });
+
+      it("should handle zero limit", async () => {
+        const mockResponse: PaginatedResponseBE<any> = {
+          data: [],
+          count: 0,
+          pagination: { page: 1, limit: 0, total: 0, hasMore: false },
+        };
+
+        (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await auctionsService.getBids("auc1", { limit: 0 });
+
+        expect(result.data).toEqual([]);
+      });
+
+      it("should handle negative page", async () => {
+        const mockResponse: PaginatedResponseBE<any> = {
+          data: [],
+          count: 0,
+          pagination: { page: -1, limit: 10, total: 0, hasMore: false },
+        };
+
+        (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await auctionsService.getBids("auc1", { page: -1 });
+
+        expect(result.data).toEqual([]);
+      });
+    });
+
+    describe("getSimilar edge cases", () => {
+      it("should handle limit zero", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue([]);
+
+        const result = await auctionsService.getSimilar("auc1", 0);
+
+        expect(apiService.get).toHaveBeenCalledWith("/auctions/auc1/similar");
+        expect(result).toEqual([]);
+      });
+
+      it("should handle very large limit", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue([]);
+
+        const result = await auctionsService.getSimilar("auc1", 999999);
+
+        expect(apiService.get).toHaveBeenCalledWith(
+          "/auctions/auc1/similar?limit=999999"
+        );
+      });
+
+      it("should handle negative limit", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue([]);
+
+        const result = await auctionsService.getSimilar("auc1", -1);
+
+        expect(apiService.get).toHaveBeenCalledWith(
+          "/auctions/auc1/similar?limit=-1"
+        );
+      });
+    });
+
+    describe("validateSlug edge cases", () => {
+      it("should handle empty slug", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue({ isAvailable: false });
+
+        const result = await auctionsService.validateSlug("");
+
+        expect(result).toEqual({ isAvailable: false });
+      });
+
+      it("should handle slug with special characters", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue({ isAvailable: true });
+
+        const result = await auctionsService.validateSlug("test-@#$%");
+
+        expect(result).toEqual({ isAvailable: true });
+      });
+
+      it("should handle very long slug", async () => {
+        const longSlug = "a".repeat(1000);
+        (apiService.get as jest.Mock).mockResolvedValue({ isAvailable: true });
+
+        const result = await auctionsService.validateSlug(longSlug);
+
+        expect(result).toEqual({ isAvailable: true });
+      });
+
+      it("should handle slug with unicode characters", async () => {
+        (apiService.get as jest.Mock).mockResolvedValue({ isAvailable: true });
+
+        const result = await auctionsService.validateSlug("test-商品");
+
+        expect(result).toEqual({ isAvailable: true });
+      });
+    });
+
+    describe("list filters edge cases", () => {
+      it("should handle empty status filter", async () => {
+        const mockResponse: PaginatedResponseBE<any> = {
+          data: [],
+          count: 0,
+          pagination: { page: 1, limit: 10, total: 0, hasMore: false },
+        };
+
+        (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await auctionsService.list({ status: "" as any });
+
+        expect(result.data).toEqual([]);
+      });
+
+      it("should handle multiple filter combinations", async () => {
+        const mockResponse: PaginatedResponseBE<any> = {
+          data: [],
+          count: 0,
+          pagination: { page: 1, limit: 10, total: 0, hasMore: false },
+        };
+
+        (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await auctionsService.list({
+          status: "active" as any,
+          categoryId: "cat1",
+          minPrice: 100,
+          maxPrice: 1000,
+          page: 2,
+          limit: 50,
+        });
+
+        expect(result.data).toEqual([]);
+      });
+    });
+  });
 });

@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { logError } from "@/lib/firebase-error-logger";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 
 /**
  * Hook for managing filter state with URL synchronization
@@ -23,7 +23,7 @@ export function useFilters<T extends Record<string, any>>(
     syncWithUrl?: boolean;
     /** Callback when filters change */
     onChange?: (filters: T) => void;
-  } = {},
+  } = {}
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -94,7 +94,7 @@ export function useFilters<T extends Record<string, any>>(
         : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [syncWithUrl, pathname, router],
+    [syncWithUrl, pathname, router]
   );
 
   // Persist filters to localStorage
@@ -103,7 +103,7 @@ export function useFilters<T extends Record<string, any>>(
       if (!persist || typeof window === "undefined") return;
 
       try {
-        localStorage.setItem(storageKey, JSON.stringify(filters));
+        localStorage.setItem(storageKey, JSON.stringify(newFilters));
       } catch (error) {
         logError(error as Error, {
           component: "useFilters.useEffect",
@@ -111,7 +111,7 @@ export function useFilters<T extends Record<string, any>>(
         });
       }
     },
-    [persist, storageKey],
+    [persist, storageKey]
   );
 
   // Update filters (without applying)
@@ -143,7 +143,7 @@ export function useFilters<T extends Record<string, any>>(
       delete newFilters[key];
       setFilters(newFilters);
     },
-    [filters],
+    [filters]
   );
 
   // Check if filters are active

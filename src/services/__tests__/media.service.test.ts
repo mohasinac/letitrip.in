@@ -231,6 +231,108 @@ describe("MediaService", () => {
     });
   });
 
+  describe("validateFile", () => {
+    it("should validate file within size limit", () => {
+      const file = new File(["a".repeat(1024)], "test.jpg", {
+        type: "image/jpeg",
+      });
+
+      const result = mediaService.validateFile(file, 1, ["image/jpeg"]);
+
+      expect(result.valid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+
+    it("should reject file exceeding size limit", () => {
+      const file = new File(["a".repeat(2 * 1024 * 1024)], "large.jpg", {
+        type: "image/jpeg",
+      });
+
+      const result = mediaService.validateFile(file, 1, ["image/jpeg"]);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain("exceeds 1MB limit");
+    });
+
+    it("should reject file with invalid type", () => {
+      const file = new File(["content"], "test.pdf", {
+        type: "application/pdf",
+      });
+
+      const result = mediaService.validateFile(file, 5, ["image/jpeg"]);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain("not allowed");
+    });
+
+    it("should accept file with valid type from multiple allowed types", () => {
+      const file = new File(["content"], "test.png", { type: "image/png" });
+
+      const result = mediaService.validateFile(file, 5, [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ]);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it("should handle zero-size files", () => {
+      const file = new File([], "empty.jpg", { type: "image/jpeg" });
+
+      const result = mediaService.validateFile(file, 1, ["image/jpeg"]);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it("should handle exactly at size limit", () => {
+      const oneMB = 1024 * 1024;
+      const file = new File(["a".repeat(oneMB)], "exact.jpg", {
+        type: "image/jpeg",
+      });
+
+      const result = mediaService.validateFile(file, 1, ["image/jpeg"]);
+
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  describe("getConstraints", () => {
+    it("should return product constraints", () => {
+      const constraints = mediaService.getConstraints("product");
+
+      expect(constraints.maxSizeMB).toBe(5);
+      expect(constraints.maxFiles).toBe(10);
+      expect(constraints.allowedTypes).toContain("image/jpeg");
+    });
+
+    it("should return avatar constraints with lower limits", () => {
+      const constraints = mediaService.getConstraints("avatar");
+
+      expect(constraints.maxSizeMB).toBe(1);
+      expect(constraints.maxFiles).toBe(1);
+    });
+
+    it("should return default (product) constraints for unknown context", () => {
+      const constraints = mediaService.getConstraints("unknown-context");
+
+      expect(constraints.maxSizeMB).toBe(5);
+      expect(constraints.maxFiles).toBe(10);
+    });
+
+    it("should have video support for product context", () => {
+      const constraints = mediaService.getConstraints("product");
+
+      expect(constraints.allowedTypes).toContain("video/mp4");
+    });
+
+    it("should not have video support for shop context", () => {
+      const constraints = mediaService.getConstraints("shop");
+
+      expect(constraints.allowedTypes).not.toContain("video/mp4");
+    });
+  });
+
   describe("getById", () => {
     it("should fetch media by ID", async () => {
       const mockMedia: MediaItem = {

@@ -296,5 +296,175 @@ describe("LocationService", () => {
 
       expect(link).toBe("tel:+11234567890");
     });
+
+    it("should handle phone with spaces and dashes", () => {
+      const link = locationService.getTelLink("987-654-3210");
+
+      expect(link).toBe("tel:+919876543210");
+    });
+
+    it("should handle phone with parentheses", () => {
+      const link = locationService.getTelLink("(987) 654-3210");
+
+      expect(link).toBe("tel:+919876543210");
+    });
+  });
+
+  describe("edge cases", () => {
+    describe("calculateDistance edge cases", () => {
+      it("should handle negative coordinates", () => {
+        const distance = locationService.calculateDistance(
+          { latitude: -33.8688, longitude: 151.2093, accuracy: 10 }, // Sydney
+          { latitude: -37.8136, longitude: 144.9631, accuracy: 10 } // Melbourne
+        );
+
+        expect(distance).toBeGreaterThan(700);
+        expect(distance).toBeLessThan(800);
+      });
+
+      it("should handle coordinates at equator", () => {
+        const distance = locationService.calculateDistance(
+          { latitude: 0, longitude: 0, accuracy: 10 },
+          { latitude: 0, longitude: 1, accuracy: 10 }
+        );
+
+        expect(distance).toBeGreaterThan(0);
+      });
+
+      it("should handle coordinates at poles", () => {
+        const distance = locationService.calculateDistance(
+          { latitude: 90, longitude: 0, accuracy: 10 },
+          { latitude: 89, longitude: 0, accuracy: 10 }
+        );
+
+        expect(distance).toBeGreaterThan(0);
+      });
+
+      it("should handle very close coordinates", () => {
+        const distance = locationService.calculateDistance(
+          { latitude: 28.6139, longitude: 77.209, accuracy: 10 },
+          { latitude: 28.614, longitude: 77.209, accuracy: 10 }
+        );
+
+        expect(distance).toBeLessThan(0.2);
+      });
+
+      it("should handle maximum distance (antipodal points)", () => {
+        const distance = locationService.calculateDistance(
+          { latitude: 0, longitude: 0, accuracy: 10 },
+          { latitude: 0, longitude: 180, accuracy: 10 }
+        );
+
+        // Half Earth's circumference at equator
+        expect(distance).toBeGreaterThan(19000);
+        expect(distance).toBeLessThan(21000);
+      });
+    });
+
+    describe("pincode edge cases", () => {
+      it("should handle pincode with leading zeros after first digit", () => {
+        expect(locationService.isValidPincode("400001")).toBe(true);
+      });
+
+      it("should reject empty string", () => {
+        expect(locationService.isValidPincode("")).toBe(false);
+      });
+
+      it("should reject only spaces", () => {
+        expect(locationService.isValidPincode("      ")).toBe(false);
+      });
+
+      it("should handle pincode with special characters", () => {
+        expect(locationService.isValidPincode("11@00#01")).toBe(true);
+      });
+
+      it("should handle very long pincode", () => {
+        expect(locationService.isValidPincode("1234567890123")).toBe(false);
+      });
+    });
+
+    describe("phone formatting edge cases", () => {
+      it("should handle empty phone number", () => {
+        const formatted = locationService.formatPhoneWithCode("");
+
+        expect(formatted).toBe("");
+      });
+
+      it("should handle phone with only special characters", () => {
+        const formatted = locationService.formatPhoneWithCode("----()()");
+
+        expect(formatted).toBe("----()()");
+      });
+
+      it("should handle 11-digit phone number", () => {
+        const formatted = locationService.formatPhoneWithCode("19876543210");
+
+        expect(formatted).toBe("19876543210");
+      });
+
+      it("should handle single digit", () => {
+        const formatted = locationService.formatPhoneWithCode("1");
+
+        expect(formatted).toBe("1");
+      });
+    });
+
+    describe("formatCoordinates precision", () => {
+      it("should format with 6 decimal places", () => {
+        const formatted = locationService.formatCoordinates({
+          latitude: 28.123456789,
+          longitude: 77.987654321,
+          accuracy: 10,
+        });
+
+        expect(formatted).toBe("28.123457, 77.987654");
+      });
+
+      it("should handle zero coordinates", () => {
+        const formatted = locationService.formatCoordinates({
+          latitude: 0,
+          longitude: 0,
+          accuracy: 10,
+        });
+
+        expect(formatted).toBe("0.000000, 0.000000");
+      });
+
+      it("should handle negative coordinates", () => {
+        const formatted = locationService.formatCoordinates({
+          latitude: -33.8688,
+          longitude: -151.2093,
+          accuracy: 10,
+        });
+
+        expect(formatted).toBe("-33.868800, -151.209300");
+      });
+    });
+
+    describe("WhatsApp link edge cases", () => {
+      it("should handle phone with country code already", () => {
+        const link = locationService.getWhatsAppLink("+919876543210");
+
+        expect(link).toBe("https://wa.me/91919876543210");
+      });
+
+      it("should handle empty phone", () => {
+        const link = locationService.getWhatsAppLink("");
+
+        expect(link).toBe("https://wa.me/91");
+      });
+
+      it("should handle country code with plus", () => {
+        const link = locationService.getWhatsAppLink("1234567890", "+44");
+
+        expect(link).toBe("https://wa.me/441234567890");
+      });
+
+      it("should handle country code without plus", () => {
+        const link = locationService.getWhatsAppLink("1234567890", "44");
+
+        expect(link).toBe("https://wa.me/441234567890");
+      });
+    });
   });
 });
