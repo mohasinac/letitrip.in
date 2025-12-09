@@ -69,7 +69,10 @@ export function toBECreateReviewRequest(
     rating: formData.rating,
     title: formData.title || undefined,
     comment: formData.comment,
-    images: formData.images.length > 0 ? formData.images : undefined,
+    images:
+      formData.images && formData.images.length > 0
+        ? formData.images
+        : undefined,
   };
 }
 

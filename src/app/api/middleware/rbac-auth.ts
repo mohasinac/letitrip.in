@@ -87,9 +87,17 @@ export async function requireAuth(
   const user = await getUserFromRequest(request);
 
   if (!user) {
+    const requestContext = {
+      path: request.nextUrl.pathname,
+      method: request.method,
+    };
+    
     return {
       error: NextResponse.json(
-        errorToJson(new UnauthorizedError("Authentication required")),
+        errorToJson(
+          new UnauthorizedError("Authentication required"),
+          requestContext,
+        ),
         { status: 401 },
       ),
     };
@@ -116,6 +124,13 @@ export async function requireRole(
   const { user } = authResult;
 
   if (!hasAnyRole(user, roles)) {
+    const requestContext = {
+      path: request.nextUrl.pathname,
+      method: request.method,
+      requiredRoles: roles,
+      userRole: user.role,
+    };
+    
     return {
       error: NextResponse.json(
         errorToJson(
@@ -124,6 +139,7 @@ export async function requireRole(
               ", ",
             )}`,
           ),
+          requestContext,
         ),
         { status: 403 },
       ),
@@ -180,12 +196,20 @@ export async function requireOwnership(
 
   // Check ownership
   if (user.uid !== resourceOwnerId) {
+    const requestContext = {
+      path: request.nextUrl.pathname,
+      method: request.method,
+      resourceOwnerId,
+      userId: user.uid,
+    };
+    
     return {
       error: NextResponse.json(
         errorToJson(
           new ForbiddenError(
             "You don't have permission to access this resource",
           ),
+          requestContext,
         ),
         { status: 403 },
       ),
@@ -222,13 +246,22 @@ export async function requireShopOwnership(
   if (user.role === "seller" && user.shopId === resourceShopId) {
     return { user };
   }
-
+  
+  const requestContext = {
+    path: request.nextUrl.pathname,
+    method: request.method,
+    resourceShopId,
+    userShopId: user.shopId,
+    userRole: user.role,
+  };
+  
   return {
     error: NextResponse.json(
       errorToJson(
         new ForbiddenError(
           "You don't have permission to access this shop's resources",
         ),
+        requestContext,
       ),
       { status: 403 },
     ),

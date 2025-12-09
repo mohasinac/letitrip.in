@@ -1,7 +1,8 @@
+import * as fs from "fs";
 import { NextRequest, NextResponse } from "next/server";
-import winston from "winston";
-import path from "path";
-import fs from "fs";
+import * as path from "path";
+import * as winston from "winston";
+import { getClientIp } from "../lib/utils/ip-utils";
 
 // Ensure logs directory exists
 const logsDir = path.join(process.cwd(), "logs");
@@ -15,7 +16,7 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     winston.format.errors({ stack: true }),
-    winston.format.json(),
+    winston.format.json()
   ),
   transports: [
     // Error logs
@@ -47,9 +48,9 @@ if (process.env.NODE_ENV !== "production") {
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple(),
+        winston.format.simple()
       ),
-    }),
+    })
   );
 }
 
@@ -76,18 +77,8 @@ class ApiLogger {
     this.logger.info(message, context);
   }
 
-  error(message: string, error?: Error | any, context?: LogContext) {
-    this.logger.error(message, {
-      ...context,
-      error:
-        error instanceof Error
-          ? {
-              message: error.message,
-              stack: error.stack,
-              name: error.name,
-            }
-          : error,
-    });
+  error(message: string, context?: LogContext) {
+    this.logger.error(message, context || {});
   }
 
   warn(message: string, context?: LogContext) {
@@ -100,10 +91,7 @@ class ApiLogger {
 
   // Log API request/response
   logRequest(req: NextRequest, context?: LogContext) {
-    const forwarded = req.headers.get("x-forwarded-for");
-    const ip = forwarded
-      ? forwarded.split(",")[0]
-      : req.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(req);
 
     this.info("API Request", {
       method: req.method,
@@ -118,12 +106,9 @@ class ApiLogger {
     req: NextRequest,
     response: NextResponse,
     duration: number,
-    context?: LogContext,
+    context?: LogContext
   ) {
-    const forwarded = req.headers.get("x-forwarded-for");
-    const ip = forwarded
-      ? forwarded.split(",")[0]
-      : req.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(req);
 
     const logData: LogContext = {
       method: req.method,
@@ -137,7 +122,7 @@ class ApiLogger {
     };
 
     if (response.status >= 500) {
-      this.error("API Error", null, logData);
+      this.error("API Error", logData);
     } else if (response.status >= 400) {
       this.warn("API Client Error", logData);
     } else {
@@ -148,13 +133,18 @@ class ApiLogger {
   logError(error: Error, req?: NextRequest, context?: LogContext) {
     const errorContext: LogContext = {
       ...context,
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+            }
+          : error,
     };
 
     if (req) {
-      const forwarded = req.headers.get("x-forwarded-for");
-      const ip = forwarded
-        ? forwarded.split(",")[0]
-        : req.headers.get("x-real-ip") || "unknown";
+      const ip = getClientIp(req);
 
       errorContext.method = req.method;
       errorContext.url = req.url;
@@ -162,7 +152,7 @@ class ApiLogger {
       errorContext.userAgent = req.headers.get("user-agent") || "unknown";
     }
 
-    this.error("Unhandled Error", error, errorContext);
+    this.error("Unhandled Error", errorContext);
   }
 }
 
@@ -172,7 +162,7 @@ export const apiLogger = new ApiLogger();
 export async function withLogger(
   req: NextRequest,
   handler: (req: NextRequest) => Promise<NextResponse>,
-  context?: LogContext,
+  context?: LogContext
 ) {
   const startTime = Date.now();
 
@@ -191,7 +181,7 @@ export async function withLogger(
     apiLogger.logError(
       error instanceof Error ? error : new Error(String(error)),
       req,
-      { ...context, duration: duration, durationMs: `${duration}ms` },
+      { ...context, duration: duration, durationMs: `${duration}ms` }
     );
 
     // Return error response
@@ -202,10 +192,10 @@ export async function withLogger(
           process.env.NODE_ENV === "production"
             ? "An unexpected error occurred"
             : error instanceof Error
-              ? error.message
-              : String(error),
+            ? error.message
+            : String(error),
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

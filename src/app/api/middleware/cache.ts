@@ -83,13 +83,22 @@ export async function withCache(
   handler: (req: NextRequest) => Promise<NextResponse>,
   config?: CacheConfig,
 ) {
+  const ttl = config?.ttl || 300; // Default 5 minutes in seconds
+  
   // Only cache GET requests
   if (req.method !== "GET") {
     return handler(req);
   }
 
   const cacheManager = cache(config);
-  const cached = cacheManager.get(req);
+  
+  let cached: CacheEntry | null = null;
+  try {
+    cached = cacheManager.get(req);
+  } catch (error) {
+    console.error("[Cache] Get failed:", error);
+    // Continue without cache on error
+  }
 
   if (cached) {
     if (cached.data === null) {
@@ -98,7 +107,7 @@ export async function withCache(
         status: 304,
         headers: {
           ETag: cached.etag,
-          "Cache-Control": `public, max-age=${Math.floor((config?.ttl || 300000) / 1000)}`,
+          "Cache-Control": `public, max-age=${config?.ttl || ttl}`,
         },
       });
     }
@@ -107,7 +116,7 @@ export async function withCache(
     return NextResponse.json(cached.data, {
       headers: {
         ETag: cached.etag,
-        "Cache-Control": `public, max-age=${Math.floor((config?.ttl || 300000) / 1000)}`,
+        "Cache-Control": `public, max-age=${config?.ttl || ttl}`,
         "X-Cache": "HIT",
       },
     });
@@ -121,7 +130,13 @@ export async function withCache(
     try {
       const clonedResponse = response.clone();
       const data = await clonedResponse.json();
-      cacheManager.set(req, data);
+      
+      try {
+        cacheManager.set(req, data);
+      } catch (cacheError) {
+        console.error("[Cache] Set failed:", cacheError);
+        // Continue even if caching fails
+      }
 
       // Add cache headers
       const newResponse = NextResponse.json(data, {
@@ -131,7 +146,7 @@ export async function withCache(
       newResponse.headers.set("X-Cache", "MISS");
       newResponse.headers.set(
         "Cache-Control",
-        `public, max-age=${Math.floor((config?.ttl || 300000) / 1000)}`,
+        `public, max-age=${config?.ttl || ttl}`,
       );
 
       return newResponse;

@@ -490,14 +490,27 @@ export interface TrackingDetails {
 
 /**
  * Calculate volumetric weight
+ * Accepts either PackageDimensions object or individual parameters
  */
 export function calculateVolumetricWeight(
-  length: number,
-  width: number,
-  height: number
+  dimensionsOrLength: PackageDimensions | number,
+  width?: number,
+  height?: number
 ): number {
+  let l: number, w: number, h: number;
+
+  if (typeof dimensionsOrLength === "object") {
+    l = dimensionsOrLength.length;
+    w = dimensionsOrLength.width;
+    h = dimensionsOrLength.height;
+  } else {
+    l = dimensionsOrLength;
+    w = width || 0;
+    h = height || 0;
+  }
+
   // Volumetric weight = (L x W x H) / 5000
-  return (length * width * height) / 5000;
+  return (l * w * h) / 5000;
 }
 
 /**
@@ -561,16 +574,23 @@ export function getCourierPartnerById(id: CourierPartnerId) {
  * Get available couriers for weight and type
  */
 export function getAvailableCouriers(
-  weight: number,
-  type: CourierPartnerType | "all" = "all",
-  codRequired = false,
-  hyperlocalRequired = false
+  options: {
+    weight?: number;
+    type?: CourierPartnerType;
+    codRequired?: boolean;
+    hyperlocal?: boolean;
+    domesticOnly?: boolean;
+  } = {}
 ) {
   return COURIER_PARTNERS.filter((cp) => {
-    if (type !== "all" && cp.type !== type) return false;
-    if (weight < cp.minWeight || weight > cp.maxWeight) return false;
-    if (codRequired && !cp.codAvailable) return false;
-    if (hyperlocalRequired && !cp.hyperlocalAvailable) return false;
+    if (options.weight !== undefined) {
+      if (options.weight < cp.minWeight || options.weight > cp.maxWeight)
+        return false;
+    }
+    if (options.type && cp.type !== options.type) return false;
+    if (options.codRequired && !cp.codAvailable) return false;
+    if (options.hyperlocal && !cp.hyperlocalAvailable) return false;
+    if (options.domesticOnly && !cp.domesticOnly) return false;
     return true;
   }).sort((a, b) => a.priority - b.priority);
 }
@@ -637,4 +657,84 @@ export function validateDimensions(dimensions: PackageDimensions): {
     isValid: errors.length === 0,
     errors,
   };
+}
+
+/**
+ * Get courier by ID (alias for getCourierPartnerById)
+ */
+export function getCourierById(id: string) {
+  return COURIER_PARTNERS.find((cp) => cp.id === id);
+}
+
+/**
+ * Calculate chargeable weight (max of actual and volumetric weight)
+ */
+export function calculateChargeableWeight(
+  dimensions: PackageDimensions
+): number {
+  return getEffectiveWeight(dimensions);
+}
+
+/**
+ * Get zone between two pincodes
+ */
+export function getZoneByPincodes(
+  fromPincode: string,
+  toPincode: string
+): string {
+  // Simple logic: same first 3 digits = within city
+  if (fromPincode.substring(0, 3) === toPincode.substring(0, 3)) {
+    return "local";
+  }
+  // Same first digit = within state
+  if (fromPincode[0] === toPincode[0]) {
+    return "within-state";
+  }
+  // Otherwise rest of india
+  return "rest-of-india";
+}
+
+/**
+ * Estimate delivery date
+ */
+export function estimateDeliveryDate(
+  pickupDate: Date,
+  zone: string,
+  serviceType: string
+): Date {
+  const deliveryDate = new Date(pickupDate);
+
+  // Get zone data
+  const zoneKey = Object.keys(DELIVERY_ZONES).find(
+    (key) => DELIVERY_ZONES[key as keyof typeof DELIVERY_ZONES].id === zone
+  );
+
+  const zoneData = zoneKey
+    ? DELIVERY_ZONES[zoneKey as keyof typeof DELIVERY_ZONES]
+    : DELIVERY_ZONES.REST_OF_INDIA;
+
+  // Parse delivery days (e.g., "2-4" -> min: 2)
+  const days = zoneData.deliveryDays.split("-");
+  const minDays = parseInt(days[0]);
+
+  // Add days based on service type
+  let additionalDays = minDays;
+  if (serviceType === "express") {
+    additionalDays = minDays;
+  } else if (serviceType === "surface") {
+    additionalDays = days.length > 1 ? parseInt(days[1]) : minDays + 2;
+  }
+
+  deliveryDate.setDate(deliveryDate.getDate() + additionalDays);
+  return deliveryDate;
+}
+
+/**
+ * Get service type by ID
+ */
+export function getServiceTypeById(id: string) {
+  const key = Object.keys(SERVICE_TYPES).find(
+    (k) => SERVICE_TYPES[k as keyof typeof SERVICE_TYPES].id === id
+  );
+  return key ? SERVICE_TYPES[key as keyof typeof SERVICE_TYPES] : undefined;
 }
