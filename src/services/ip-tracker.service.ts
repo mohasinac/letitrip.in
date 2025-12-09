@@ -14,13 +14,15 @@
  * - Max 5 login attempts per IP per 15 minutes
  * - Track multiple accounts from same IP
  * - Monitor high-frequency actions
+ *
+ * BUG FIX #23: Removed direct adminDb access from frontend
+ * - Now uses apiService to call backend API endpoints
+ * - Admin credentials no longer exposed in client bundle
+ * - Proper security rules enforcement
  */
 
-import { adminDb as db } from "@/app/api/lib/firebase/config";
-import { COLLECTIONS } from "@/constants/database";
 import { logError } from "@/lib/firebase-error-logger";
-
-const { USER_ACTIVITIES } = COLLECTIONS;
+import { apiService } from "./api.service";
 
 export interface ActivityData {
   userId?: string;
@@ -54,103 +56,69 @@ export interface RateLimitResult {
 class IPTrackerService {
   /**
    * Log user activity with IP address
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
-  async logActivity(data: ActivityData): Promise<void> {
+  async logActivity(data: ActivityData): Promise<any> {
     try {
-      const activityRef = db.collection(USER_ACTIVITIES).doc();
-      const timestamp = new Date();
-
-      await activityRef.set({
-        id: activityRef.id,
-        userId: data.userId || null,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent || null,
-        action: data.action,
-        metadata: data.metadata || {},
-        timestamp,
-        createdAt: timestamp,
-      });
+      return await apiService.post("/user-activities/log", data);
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.logActivity",
-        action: "log_activity",
-        metadata: {
-          userId: data.userId,
-          action: data.action,
-        },
+        service: "IPTrackerService.logActivity",
+        action: data.action,
       });
       // Don't throw - logging failure shouldn't block the main action
+      return null;
     }
   }
 
   /**
    * Check rate limit for specific action by IP
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
-  async checkRateLimit(
-    ipAddress: string,
-    action: ActivityAction,
-    maxAttempts: number = 5,
-    windowMinutes: number = 15,
-  ): Promise<RateLimitResult> {
+  async checkRateLimit(params: {
+    ipAddress: string;
+    action: ActivityAction;
+    maxAttempts?: number;
+    windowMs?: number;
+  }): Promise<RateLimitResult> {
+    const { ipAddress, action, maxAttempts = 5, windowMs = 900000 } = params;
+    const windowMinutes = Math.floor(windowMs / 60000);
+
     try {
-      const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000);
-
-      const activitiesSnapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .where("action", "==", action)
-        .where("timestamp", ">=", windowStart)
-        .get();
-
-      const attemptCount = activitiesSnapshot.size;
-      const allowed = attemptCount < maxAttempts;
-      const remainingAttempts = Math.max(0, maxAttempts - attemptCount);
-      const resetAt = new Date(Date.now() + windowMinutes * 60 * 1000);
-
-      return {
-        allowed,
-        remainingAttempts,
-        resetAt,
-      };
+      return await apiService.get<RateLimitResult>(
+        `/user-activities/rate-limit?ip=${ipAddress}&action=${action}&max=${maxAttempts}&window=${windowMinutes}`
+      );
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.checkRateLimit",
-        action: "check_rate_limit",
-        metadata: {
-          ipAddress,
-          action,
-        },
+        service: "IPTrackerService.checkRateLimit",
+        ipAddress,
+        action,
       });
-      // On error, allow the action
+      // On error, allow the action (fail open for availability)
       return {
         allowed: true,
         remainingAttempts: maxAttempts,
-        resetAt: new Date(Date.now() + windowMinutes * 60 * 1000),
+        resetAt: new Date(Date.now() + windowMs),
       };
     }
   }
 
   /**
    * Get recent activities for an IP address
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
   async getActivitiesByIP(
     ipAddress: string,
-    limit: number = 50,
+    limit: number = 50
   ): Promise<any[]> {
     try {
-      const snapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .orderBy("timestamp", "desc")
-        .limit(limit)
-        .get();
-
-      return snapshot.docs.map((doc: any) => doc.data());
+      return await apiService.get<any[]>(
+        `/user-activities/by-ip/${ipAddress}?limit=${limit}`
+      );
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.getActivitiesByIP",
-        action: "get_activities_by_ip",
-        metadata: { ipAddress },
+        service: "IPTrackerService.getActivitiesByIP",
+        ipAddress,
       });
       return [];
     }
@@ -158,25 +126,20 @@ class IPTrackerService {
 
   /**
    * Get recent activities for a user
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
   async getActivitiesByUser(
     userId: string,
-    limit: number = 50,
+    limit: number = 50
   ): Promise<any[]> {
     try {
-      const snapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("userId", "==", userId)
-        .orderBy("timestamp", "desc")
-        .limit(limit)
-        .get();
-
-      return snapshot.docs.map((doc: any) => doc.data());
+      return await apiService.get<any[]>(
+        `/user-activities/by-user/${userId}?limit=${limit}`
+      );
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.getActivitiesByUser",
-        action: "get_activities_by_user",
-        metadata: { userId },
+        service: "IPTrackerService.getActivitiesByUser",
+        userId,
       });
       return [];
     }
@@ -184,27 +147,17 @@ class IPTrackerService {
 
   /**
    * Get unique users from same IP (detect multiple accounts)
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
   async getUsersFromIP(ipAddress: string): Promise<string[]> {
     try {
-      const snapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .where("userId", "!=", null)
-        .get();
-
-      const userIds = new Set<string>();
-      snapshot.docs.forEach((doc: any) => {
-        const userId = doc.data().userId;
-        if (userId) userIds.add(userId);
-      });
-
-      return Array.from(userIds);
+      return await apiService.get<string[]>(
+        `/user-activities/users-from-ip/${ipAddress}`
+      );
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.getUsersFromIP",
-        action: "get_users_from_ip",
-        metadata: { ipAddress },
+        service: "IPTrackerService.getUsersFromIP",
+        ipAddress,
       });
       return [];
     }
@@ -212,75 +165,20 @@ class IPTrackerService {
 
   /**
    * Get suspicious activity indicators for an IP
+   * BUG FIX #23: Now uses backend API instead of direct DB access
    */
   async getSuspiciousActivityScore(ipAddress: string): Promise<{
     score: number;
     reasons: string[];
   }> {
     try {
-      let score = 0;
-      const reasons: string[] = [];
-
-      // Check failed login attempts in last hour
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-      const failedLoginsSnapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .where("action", "==", "login_failed")
-        .where("timestamp", ">=", oneHourAgo)
-        .get();
-
-      if (failedLoginsSnapshot.size >= 3) {
-        score += 30;
-        reasons.push(
-          `${failedLoginsSnapshot.size} failed login attempts in last hour`,
-        );
-      }
-
-      // Check multiple user accounts from same IP
-      const userIds = await this.getUsersFromIP(ipAddress);
-      if (userIds.length >= 5) {
-        score += 20;
-        reasons.push(`${userIds.length} different accounts from same IP`);
-      }
-
-      // Check high-frequency actions in last 5 minutes
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-      const recentActivitiesSnapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .where("timestamp", ">=", fiveMinutesAgo)
-        .get();
-
-      if (recentActivitiesSnapshot.size >= 50) {
-        score += 40;
-        reasons.push(
-          `${recentActivitiesSnapshot.size} actions in last 5 minutes (potential bot)`,
-        );
-      }
-
-      // Check rapid account creation
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const registrationsSnapshot = await db
-        .collection(USER_ACTIVITIES)
-        .where("ipAddress", "==", ipAddress)
-        .where("action", "==", "register")
-        .where("timestamp", ">=", oneDayAgo)
-        .get();
-
-      if (registrationsSnapshot.size >= 3) {
-        score += 50;
-        reasons.push(
-          `${registrationsSnapshot.size} registrations in last 24 hours`,
-        );
-      }
-
-      return { score, reasons };
+      return await apiService.get(
+        `/user-activities/suspicious-activity/${ipAddress}`
+      );
     } catch (error) {
       logError(error as Error, {
-        component: "IPTrackerService.getSuspiciousActivityScore",
-        action: "get_suspicious_activity_score",
-        metadata: { ipAddress },
+        service: "IPTrackerService.getSuspiciousActivityScore",
+        ipAddress,
       });
       return { score: 0, reasons: [] };
     }

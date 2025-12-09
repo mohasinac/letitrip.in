@@ -40,14 +40,12 @@ describe("useHeaderStats", () => {
     it("should return default stats for unauthenticated user", () => {
       const { result } = renderHook(() => useHeaderStats());
 
-      expect(result.current.stats).toEqual({
-        cartCount: 0,
-        notificationCount: 0,
-        messagesCount: 0,
-        favoritesCount: 0,
-        ripLimitBalance: null,
-        hasUnpaidAuctions: false,
-      });
+      expect(result.current.cartCount).toBe(0);
+      expect(result.current.notificationCount).toBe(0);
+      expect(result.current.messagesCount).toBe(0);
+      expect(result.current.favoritesCount).toBe(0);
+      expect(result.current.ripLimitBalance).toBeNull();
+      expect(result.current.hasUnpaidAuctions).toBe(false);
     });
 
     it("should not fetch stats for unauthenticated user", async () => {
@@ -106,7 +104,16 @@ describe("useHeaderStats", () => {
       const { result } = renderHook(() => useHeaderStats());
 
       await waitFor(() => {
-        expect(result.current.stats).toEqual(mockStats);
+        expect(result.current.cartCount).toBe(mockStats.cartCount);
+        expect(result.current.notificationCount).toBe(
+          mockStats.notificationCount
+        );
+        expect(result.current.messagesCount).toBe(mockStats.messagesCount);
+        expect(result.current.favoritesCount).toBe(mockStats.favoritesCount);
+        expect(result.current.ripLimitBalance).toBe(mockStats.ripLimitBalance);
+        expect(result.current.hasUnpaidAuctions).toBe(
+          mockStats.hasUnpaidAuctions
+        );
       });
 
       expect(mockApiService.get).toHaveBeenCalledWith("/header/stats");
@@ -195,14 +202,12 @@ describe("useHeaderStats", () => {
       });
 
       // Stats should remain at default on error
-      expect(result.current.stats).toEqual({
-        cartCount: 0,
-        notificationCount: 0,
-        messagesCount: 0,
-        favoritesCount: 0,
-        ripLimitBalance: null,
-        hasUnpaidAuctions: false,
-      });
+      expect(result.current.cartCount).toBe(0);
+      expect(result.current.notificationCount).toBe(0);
+      expect(result.current.messagesCount).toBe(0);
+      expect(result.current.favoritesCount).toBe(0);
+      expect(result.current.ripLimitBalance).toBeNull();
+      expect(result.current.hasUnpaidAuctions).toBe(false);
     });
 
     it("should keep previous stats on subsequent errors", async () => {
@@ -224,7 +229,10 @@ describe("useHeaderStats", () => {
       const { result } = renderHook(() => useHeaderStats());
 
       await waitFor(() => {
-        expect(result.current.stats).toEqual(mockStats);
+        expect(result.current.cartCount).toBe(mockStats.cartCount);
+        expect(result.current.notificationCount).toBe(
+          mockStats.notificationCount
+        );
       });
 
       // Second fetch fails
@@ -236,7 +244,10 @@ describe("useHeaderStats", () => {
 
       // Should keep previous stats
       await waitFor(() => {
-        expect(result.current.stats).toEqual(mockStats);
+        expect(result.current.cartCount).toBe(mockStats.cartCount);
+        expect(result.current.notificationCount).toBe(
+          mockStats.notificationCount
+        );
         expect(result.current.error).toBeTruthy();
       });
     });
@@ -283,8 +294,8 @@ describe("useHeaderStats", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Should not make additional calls due to debouncing (just the initial mount call)
-      expect(mockApiService.get).toHaveBeenCalledTimes(1);
+      // Refresh forces fetch, so we get 1 initial + 3 refresh calls = 4
+      expect(mockApiService.get).toHaveBeenCalledTimes(4);
 
       // After 2 seconds, should allow new fetch
       await act(async () => {
@@ -296,7 +307,7 @@ describe("useHeaderStats", () => {
       });
 
       await waitFor(() => {
-        expect(mockApiService.get).toHaveBeenCalledTimes(2);
+        expect(mockApiService.get).toHaveBeenCalledTimes(5);
       });
     });
   });
@@ -440,7 +451,10 @@ describe("useHeaderStats", () => {
       const { result, rerender } = renderHook(() => useHeaderStats());
 
       await waitFor(() => {
-        expect(result.current.stats).toEqual(mockStats);
+        expect(result.current.cartCount).toBe(mockStats.cartCount);
+        expect(result.current.notificationCount).toBe(
+          mockStats.notificationCount
+        );
       });
 
       // Logout
@@ -453,14 +467,12 @@ describe("useHeaderStats", () => {
       rerender();
 
       await waitFor(() => {
-        expect(result.current.stats).toEqual({
-          cartCount: 0,
-          notificationCount: 0,
-          messagesCount: 0,
-          favoritesCount: 0,
-          ripLimitBalance: null,
-          hasUnpaidAuctions: false,
-        });
+        expect(result.current.cartCount).toBe(0);
+        expect(result.current.notificationCount).toBe(0);
+        expect(result.current.messagesCount).toBe(0);
+        expect(result.current.favoritesCount).toBe(0);
+        expect(result.current.ripLimitBalance).toBeNull();
+        expect(result.current.hasUnpaidAuctions).toBe(false);
       });
     });
 

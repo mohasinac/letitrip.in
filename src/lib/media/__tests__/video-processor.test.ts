@@ -184,16 +184,69 @@ describe("Video Processor", () => {
   });
 
   describe("extractMultipleThumbnails", () => {
-    it.skip("should extract multiple thumbnails", async () => {
-      // Skip: requires complex internal function mocking that causes spy errors
+    it("should create video element and set up handlers", async () => {
+      const file = new File(["mock"], "video.mp4", { type: "video/mp4" });
+      const count = 3;
+
+      const { extractMultipleThumbnails } = await import("../video-processor");
+
+      // Start the promise but don't await it - we just want to verify setup
+      const promise = extractMultipleThumbnails(file, count);
+
+      // Verify video element was created
+      const createElement = document.createElement as jest.Mock;
+      const video = createElement.mock.results.find(
+        (r: any) => r.value.onloadedmetadata
+      )?.value;
+
+      expect(video).toBeDefined();
+      expect(video.onloadedmetadata).toBeDefined();
+      expect(video.onerror).toBeDefined();
+      expect(URL.createObjectURL).toHaveBeenCalledWith(file);
+
+      // Clean up by triggering error to reject promise
+      if (video?.onerror) video.onerror();
+      await expect(promise).rejects.toThrow();
     });
 
-    it.skip("should use default count of 5", async () => {
-      // Skip: requires complex internal function mocking that causes spy errors
+    it("should use default count of 5", async () => {
+      const file = new File(["mock"], "video.mp4", { type: "video/mp4" });
+
+      const { extractMultipleThumbnails } = await import("../video-processor");
+
+      // The default count is specified in the function signature
+      // This is more of a type/API test than a runtime test
+      const promise = extractMultipleThumbnails(file);
+
+      const createElement = document.createElement as jest.Mock;
+      const video = createElement.mock.results.find(
+        (r: any) => r.value.onloadedmetadata
+      )?.value;
+
+      expect(video).toBeDefined();
+
+      // Clean up
+      if (video?.onerror) video.onerror();
+      await expect(promise).rejects.toThrow();
     });
 
-    it.skip("should handle extraction errors", async () => {
-      // Skip: requires complex internal function mocking that causes spy errors
+    it("should handle extraction errors", async () => {
+      const file = new File(["mock"], "video.mp4", { type: "video/mp4" });
+      const { extractMultipleThumbnails } = await import("../video-processor");
+
+      const promise = extractMultipleThumbnails(file, 2);
+
+      const createElement = document.createElement as jest.Mock;
+      const video = createElement.mock.results.find(
+        (r: any) => r.value.onerror
+      )?.value;
+
+      if (video?.onerror) {
+        video.onerror();
+      }
+
+      await expect(promise).rejects.toThrow("Failed to load video");
+      expect(URL.revokeObjectURL).toHaveBeenCalled();
     });
   });
 

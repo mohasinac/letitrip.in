@@ -73,6 +73,7 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
       // Create preview variable before try block so it's accessible in catch
       let preview: string | undefined;
+      let id: string | undefined;
 
       try {
         // Validate file
@@ -88,7 +89,7 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
         }
 
         // Add to upload context
-        const id = addUpload(file, preview);
+        id = addUpload(file, preview);
         setUploadId(id);
 
         // Create form data
@@ -175,8 +176,8 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
           URL.revokeObjectURL(preview);
         }
 
-        if (uploadId) {
-          updateUpload(uploadId, {
+        if (id) {
+          updateUpload(id, {
             status: "error",
             error: errorMessage,
             progress: 0,

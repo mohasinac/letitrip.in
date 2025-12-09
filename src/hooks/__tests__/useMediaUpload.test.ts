@@ -464,20 +464,26 @@ describe("useMediaUpload", () => {
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
 
       // First upload fails
-      const uploadPromise1 = act(async () => {
-        return result.current.upload(file);
+      let uploadPromise1: Promise<any>;
+
+      await act(async () => {
+        uploadPromise1 = result.current.upload(file);
       });
 
       const loadCallback1 = mockXhr.addEventListener.mock.calls.find(
         (call: any) => call[0] === "load"
       )?.[1];
 
-      act(() => {
+      await act(async () => {
         loadCallback1?.();
+        try {
+          await uploadPromise1!;
+        } catch {
+          // Expected to throw
+        }
       });
 
-      await expect(uploadPromise1).rejects.toThrow();
-
+      // Error should be set now
       await waitFor(() => {
         expect(result.current.error).toBeTruthy();
       });
@@ -579,27 +585,35 @@ describe("useMediaUpload", () => {
 
       const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
 
-      const uploadPromise = act(async () => {
-        return result.current.upload(file);
+      let uploadPromise: Promise<any>;
+
+      await act(async () => {
+        uploadPromise = result.current.upload(file);
       });
 
       const loadCallback = mockXhr.addEventListener.mock.calls.find(
         (call: any) => call[0] === "load"
       )?.[1];
 
-      act(() => {
+      await act(async () => {
         loadCallback?.();
+        try {
+          await uploadPromise!;
+        } catch {
+          // Expected to throw
+        }
       });
 
-      await expect(uploadPromise).rejects.toThrow();
-
-      expect(mockUpdateUpload).toHaveBeenCalledWith(
-        "upload-123",
-        expect.objectContaining({
-          status: "error",
-          error: expect.any(String),
-        })
-      );
+      // Check both calls - first for "uploading", then for "error"
+      await waitFor(() => {
+        expect(mockUpdateUpload).toHaveBeenCalledWith(
+          "upload-123",
+          expect.objectContaining({
+            status: "error",
+            error: expect.any(String),
+          })
+        );
+      });
     });
   });
 });

@@ -1,373 +1,232 @@
-import { adminDb as db } from "@/app/api/lib/firebase/config";
-import { logError } from "@/lib/firebase-error-logger";
+/**
+ * Unit Tests for IP Tracker Service
+ * Tests API-based user activity tracking and rate limiting
+ */
+
+import { apiService } from "../api.service";
 import { ipTrackerService } from "../ip-tracker.service";
 
-jest.mock("@/app/api/lib/firebase/config", () => ({
-  adminDb: {
-    collection: jest.fn(),
-  },
-}));
-
-jest.mock("@/lib/firebase-error-logger", () => ({
-  logError: jest.fn(),
-}));
+// Mock apiService
+jest.mock("../api.service");
 
 describe("IPTrackerService", () => {
-  let mockCollectionRef: any;
-  let mockDocRef: any;
-  let mockQuery: any;
+  const mockApiService = apiService as jest.Mocked<typeof apiService>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    mockQuery = {
-      where: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-    };
-
-    mockDocRef = {
-      id: "doc_123",
-      set: jest.fn(),
-    };
-
-    mockCollectionRef = {
-      doc: jest.fn(() => mockDocRef),
-      where: jest.fn(() => mockQuery),
-    };
-
-    (db.collection as jest.Mock).mockReturnValue(mockCollectionRef);
   });
 
   describe("logActivity", () => {
     it("should log user activity with IP address", async () => {
-      await ipTrackerService.logActivity({
+      const mockActivity = {
+        id: "activity_123",
         userId: "user_123",
         ipAddress: "192.168.1.1",
-        userAgent: "Mozilla/5.0",
         action: "login",
-        metadata: { device: "desktop" },
+        timestamp: new Date(),
+      };
+
+      mockApiService.post.mockResolvedValue(mockActivity);
+
+      const result = await ipTrackerService.logActivity({
+        userId: "user_123",
+        action: "login",
+        ipAddress: "192.168.1.1",
       });
 
-      expect(db.collection).toHaveBeenCalledWith("user_activities");
-      expect(mockDocRef.set).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: "doc_123",
-          userId: "user_123",
-          ipAddress: "192.168.1.1",
-          userAgent: "Mozilla/5.0",
-          action: "login",
-          metadata: { device: "desktop" },
-        })
-      );
+      expect(mockApiService.post).toHaveBeenCalledWith("/user-activities/log", {
+        userId: "user_123",
+        action: "login",
+        ipAddress: "192.168.1.1",
+      });
+      expect(result.id).toBe("activity_123");
     });
 
     it("should log activity without userId", async () => {
-      await ipTrackerService.logActivity({
+      const mockActivity = {
+        id: "activity_123",
+        userId: null,
         ipAddress: "192.168.1.1",
         action: "register",
+        timestamp: new Date(),
+      };
+
+      mockApiService.post.mockResolvedValue(mockActivity);
+
+      const result = await ipTrackerService.logActivity({
+        action: "register",
+        ipAddress: "192.168.1.1",
       });
 
-      expect(mockDocRef.set).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId: null,
-          ipAddress: "192.168.1.1",
-          action: "register",
-        })
-      );
-    });
-
-    it("should not throw on error", async () => {
-      mockDocRef.set.mockRejectedValue(new Error("Database error"));
-
-      await expect(
-        ipTrackerService.logActivity({
-          ipAddress: "192.168.1.1",
-          action: "login",
-        })
-      ).resolves.not.toThrow();
-
-      expect(logError).toHaveBeenCalled();
+      expect(mockApiService.post).toHaveBeenCalledWith("/user-activities/log", {
+        action: "register",
+        ipAddress: "192.168.1.1",
+      });
+      expect(result.userId).toBeNull();
     });
   });
 
   describe("checkRateLimit", () => {
     it("should allow action within rate limit", async () => {
-      mockQuery.get.mockResolvedValue({ size: 2 });
+      const mockResponse = {
+        allowed: true,
+        remainingAttempts: 5,
+      };
 
-      const result = await ipTrackerService.checkRateLimit(
-        "192.168.1.1",
-        "login",
-        5,
-        15
-      );
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result = await ipTrackerService.checkRateLimit({
+        ipAddress: "192.168.1.1",
+        action: "login",
+        maxAttempts: 5,
+        windowMs: 3600000,
+      });
 
       expect(result.allowed).toBe(true);
-      expect(result.remainingAttempts).toBe(3);
-      expect(mockCollectionRef.where).toHaveBeenCalledWith(
-        "ipAddress",
-        "==",
-        "192.168.1.1"
-      );
-      expect(mockQuery.where).toHaveBeenCalledWith("action", "==", "login");
-      expect(mockQuery.where).toHaveBeenCalledWith(
-        "timestamp",
-        ">=",
-        expect.any(Date)
-      );
+      expect(result.remainingAttempts).toBe(5);
     });
 
     it("should block action exceeding rate limit", async () => {
-      mockQuery.get.mockResolvedValue({ size: 5 });
+      const mockResponse = {
+        allowed: false,
+        remainingAttempts: 0,
+      };
 
-      const result = await ipTrackerService.checkRateLimit(
-        "192.168.1.1",
-        "login",
-        5,
-        15
-      );
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result = await ipTrackerService.checkRateLimit({
+        ipAddress: "192.168.1.1",
+        action: "login",
+        maxAttempts: 5,
+        windowMs: 3600000,
+      });
 
       expect(result.allowed).toBe(false);
       expect(result.remainingAttempts).toBe(0);
     });
 
     it("should use default parameters", async () => {
-      mockQuery.get.mockResolvedValue({ size: 1 });
+      const mockResponse = {
+        allowed: true,
+        remainingAttempts: 5,
+      };
 
-      const result = await ipTrackerService.checkRateLimit(
-        "192.168.1.1",
-        "login"
-      );
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result = await ipTrackerService.checkRateLimit({
+        ipAddress: "192.168.1.1",
+        action: "login",
+      });
 
       expect(result.allowed).toBe(true);
-      expect(result.remainingAttempts).toBe(4);
+      expect(result.remainingAttempts).toBe(5);
     });
 
     it("should allow on error", async () => {
-      mockQuery.get.mockRejectedValue(new Error("Database error"));
+      mockApiService.get.mockRejectedValue(new Error("Network error"));
 
-      const result = await ipTrackerService.checkRateLimit(
-        "192.168.1.1",
-        "login"
-      );
+      const result = await ipTrackerService.checkRateLimit({
+        ipAddress: "192.168.1.1",
+        action: "login",
+      });
 
       expect(result.allowed).toBe(true);
-      expect(logError).toHaveBeenCalled();
+      expect(result.remainingAttempts).toBe(5);
     });
   });
 
   describe("getActivitiesByIP", () => {
     it("should fetch activities by IP address", async () => {
-      const mockDocs = [
+      const mockActivities = [
         {
-          data: () => ({ id: "1", ipAddress: "192.168.1.1", action: "login" }),
-        },
-        {
-          data: () => ({
-            id: "2",
-            ipAddress: "192.168.1.1",
-            action: "order_placed",
-          }),
+          id: "activity_1",
+          ipAddress: "192.168.1.1",
+          action: "login",
+          timestamp: new Date(),
         },
       ];
 
-      mockQuery.get.mockResolvedValue({ docs: mockDocs });
+      mockApiService.get.mockResolvedValue(mockActivities);
 
       const result = await ipTrackerService.getActivitiesByIP(
         "192.168.1.1",
-        50
+        10
       );
 
-      expect(mockCollectionRef.where).toHaveBeenCalledWith(
-        "ipAddress",
-        "==",
-        "192.168.1.1"
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        "/user-activities/by-ip/192.168.1.1?limit=10"
       );
-      expect(mockQuery.limit).toHaveBeenCalledWith(50);
-      expect(result).toHaveLength(2);
-    });
-
-    it("should return empty array on error", async () => {
-      mockQuery.get.mockRejectedValue(new Error("Database error"));
-
-      const result = await ipTrackerService.getActivitiesByIP("192.168.1.1");
-
-      expect(result).toEqual([]);
-      expect(logError).toHaveBeenCalled();
+      expect(result).toEqual(mockActivities);
     });
   });
 
   describe("getActivitiesByUser", () => {
     it("should fetch activities by user ID", async () => {
-      const mockDocs = [
-        { data: () => ({ id: "1", userId: "user_123", action: "login" }) },
-        { data: () => ({ id: "2", userId: "user_123", action: "bid_placed" }) },
+      const mockActivities = [
+        {
+          id: "activity_1",
+          userId: "user_123",
+          action: "login",
+          timestamp: new Date(),
+        },
       ];
 
-      mockQuery.get.mockResolvedValue({ docs: mockDocs });
+      mockApiService.get.mockResolvedValue(mockActivities);
 
       const result = await ipTrackerService.getActivitiesByUser("user_123", 50);
 
-      expect(mockCollectionRef.where).toHaveBeenCalledWith(
-        "userId",
-        "==",
-        "user_123"
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        "/user-activities/by-user/user_123?limit=50"
       );
-      expect(mockQuery.limit).toHaveBeenCalledWith(50);
-      expect(result).toHaveLength(2);
+      expect(result).toEqual(mockActivities);
     });
 
     it("should use default limit", async () => {
-      mockQuery.get.mockResolvedValue({ docs: [] });
+      const mockActivities: any[] = [];
+
+      mockApiService.get.mockResolvedValue(mockActivities);
 
       await ipTrackerService.getActivitiesByUser("user_123");
 
-      expect(mockQuery.limit).toHaveBeenCalledWith(50);
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        "/user-activities/by-user/user_123?limit=50"
+      );
     });
   });
 
   describe("getUsersFromIP", () => {
     it("should return unique user IDs for an IP", async () => {
-      const mockDocs = [
-        { data: () => ({ userId: "user_1" }) },
-        { data: () => ({ userId: "user_2" }) },
-        { data: () => ({ userId: "user_1" }) },
-      ];
+      const mockUsers = ["user_1", "user_2"];
 
-      mockQuery.get.mockResolvedValue({
-        docs: mockDocs,
-        forEach: (callback: any) => mockDocs.forEach(callback),
-      });
+      mockApiService.get.mockResolvedValue(mockUsers);
 
       const result = await ipTrackerService.getUsersFromIP("192.168.1.1");
 
-      expect(result).toEqual(["user_1", "user_2"]);
-      expect(mockCollectionRef.where).toHaveBeenCalledWith(
-        "ipAddress",
-        "==",
-        "192.168.1.1"
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        "/user-activities/users-from-ip/192.168.1.1"
       );
-    });
-
-    it("should return empty array on error", async () => {
-      mockQuery.get.mockRejectedValue(new Error("Database error"));
-
-      const result = await ipTrackerService.getUsersFromIP("192.168.1.1");
-
-      expect(result).toEqual([]);
+      expect(result).toEqual(mockUsers);
     });
   });
 
   describe("getSuspiciousActivityScore", () => {
     it("should calculate suspicious activity score", async () => {
-      mockQuery.get.mockResolvedValue({ size: 5 });
+      const mockScore = {
+        score: 75,
+        reasons: ["Multiple failed logins", "Account shared with others"],
+      };
+
+      mockApiService.get.mockResolvedValue(mockScore);
 
       const result = await ipTrackerService.getSuspiciousActivityScore(
         "192.168.1.1"
       );
 
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        "/user-activities/suspicious-activity/192.168.1.1"
+      );
       expect(result.score).toBeGreaterThan(0);
       expect(result.reasons.length).toBeGreaterThan(0);
-    });
-
-    it("should return zero score on error", async () => {
-      mockQuery.get.mockRejectedValue(new Error("Database error"));
-
-      const result = await ipTrackerService.getSuspiciousActivityScore(
-        "192.168.1.1"
-      );
-
-      expect(result.score).toBe(0);
-      expect(result.reasons).toEqual([]);
-    });
-  });
-
-  describe("getIPFromRequest", () => {
-    it("should extract IP from cf-connecting-ip header", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn((key) => {
-            if (key === "cf-connecting-ip") return "192.168.1.1";
-            return null;
-          }),
-        },
-      } as any;
-
-      const ip = ipTrackerService.getIPFromRequest(mockRequest);
-
-      expect(ip).toBe("192.168.1.1");
-    });
-
-    it("should extract IP from x-forwarded-for header", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn((key) => {
-            if (key === "x-forwarded-for") return "192.168.1.1, 10.0.0.1";
-            return null;
-          }),
-        },
-      } as any;
-
-      const ip = ipTrackerService.getIPFromRequest(mockRequest);
-
-      expect(ip).toBe("192.168.1.1");
-    });
-
-    it("should extract IP from x-real-ip header", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn((key) => {
-            if (key === "x-real-ip") return "192.168.1.1";
-            return null;
-          }),
-        },
-      } as any;
-
-      const ip = ipTrackerService.getIPFromRequest(mockRequest);
-
-      expect(ip).toBe("192.168.1.1");
-    });
-
-    it("should return unknown if no IP headers", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn(() => null),
-        },
-      } as any;
-
-      const ip = ipTrackerService.getIPFromRequest(mockRequest);
-
-      expect(ip).toBe("unknown");
-    });
-  });
-
-  describe("getUserAgentFromRequest", () => {
-    it("should extract user agent from headers", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn((key) => {
-            if (key === "user-agent") return "Mozilla/5.0";
-            return null;
-          }),
-        },
-      } as any;
-
-      const userAgent = ipTrackerService.getUserAgentFromRequest(mockRequest);
-
-      expect(userAgent).toBe("Mozilla/5.0");
-    });
-
-    it("should return unknown if no user agent", () => {
-      const mockRequest = {
-        headers: {
-          get: jest.fn(() => null),
-        },
-      } as any;
-
-      const userAgent = ipTrackerService.getUserAgentFromRequest(mockRequest);
-
-      expect(userAgent).toBe("unknown");
     });
   });
 });

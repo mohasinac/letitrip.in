@@ -728,11 +728,16 @@ describe("useResourceList", () => {
         })
       );
 
-      await waitFor(() => {
-        expect(result.current.error).toBeTruthy();
-      });
+      // Wait for loading to complete first
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 5000 }
+      );
 
-      expect(result.current.isLoading).toBe(false);
+      // Then check error was set
+      expect(result.current.error).toBeTruthy();
       expect(mockLogError).toHaveBeenCalled();
     });
 

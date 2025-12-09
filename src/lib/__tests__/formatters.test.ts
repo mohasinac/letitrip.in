@@ -37,7 +37,8 @@ describe("formatCompactCurrency", () => {
   });
 
   it("handles negative amounts", () => {
-    expect(formatCompactCurrency(-5000)).toBe("₹-5,000");
+    // After fix, negative amounts are formatted compactly too
+    expect(formatCompactCurrency(-5000)).toBe("₹-5.0K");
   });
 });
 

@@ -206,8 +206,7 @@ describe("useThrottle", () => {
     expect(result.current).toBe("initial");
   });
 
-  it.skip("throttles value changes", () => {
-    // Throttle implementation may vary - skipping for now
+  it("throttles value changes", () => {
     const { result, rerender } = renderHook(
       ({ value }) => useThrottle(value, 500),
       { initialProps: { value: "initial" } }
@@ -215,26 +214,62 @@ describe("useThrottle", () => {
 
     expect(result.current).toBe("initial");
 
+    // Immediately change value - should update because first execution
     rerender({ value: "changed" });
-    expect(result.current).toBeDefined();
-  });
 
-  it.skip("handles rapid changes correctly", () => {
-    // Throttle implementation may vary - skipping for now
-    const { result } = renderHook(({ value }) => useThrottle(value, 500), {
-      initialProps: { value: 0 },
+    // Advance timers to process the change
+    act(() => {
+      jest.advanceTimersByTime(500);
     });
 
-    expect(result.current).toBe(0);
+    expect(result.current).toBe("changed");
   });
 
-  it.skip("uses custom interval", () => {
-    // Throttle implementation may vary - skipping for now
-    const { result } = renderHook(
+  it("handles rapid changes correctly", () => {
+    const { result, rerender } = renderHook(
+      ({ value }) => useThrottle(value, 500),
+      {
+        initialProps: { value: 0 },
+      }
+    );
+
+    expect(result.current).toBe(0);
+
+    // First change - should update immediately
+    rerender({ value: 1 });
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(result.current).toBe(1);
+
+    // Rapid changes within interval
+    rerender({ value: 2 });
+    rerender({ value: 3 });
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    // Should have the last value after interval
+    expect(result.current).toBe(3);
+  });
+
+  it("uses custom interval", () => {
+    const { result, rerender } = renderHook(
       ({ value, interval }) => useThrottle(value, interval),
       { initialProps: { value: "initial", interval: 1000 } }
     );
 
     expect(result.current).toBe("initial");
+
+    rerender({ value: "changed", interval: 1000 });
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(result.current).toBe("changed");
   });
 });

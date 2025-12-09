@@ -1,73 +1,100 @@
-export const checkoutService = {
-  async createOrder(data: {
-    shippingAddressId: string;
-    billingAddressId?: string;
-    paymentMethod: "razorpay" | "paypal" | "cod";
-    currency?: "INR" | "USD" | "EUR" | "GBP";
-    couponCode?: string;
-    notes?: string;
-  }) {
-    const response = await fetch("/api/checkout/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+/**
+ * Checkout Service
+ *
+ * BUG FIX #24: Refactored to use apiService instead of raw fetch
+ * Benefits:
+ * - Automatic retry with exponential backoff
+ * - Request deduplication (prevents duplicate orders)
+ * - Stale-while-revalidate caching for order details
+ * - Centralized error handling and logging
+ * - Analytics tracking for checkout performance
+ * - Request cancellation support
+ */
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to create order");
+import { logError } from "@/lib/firebase-error-logger";
+import { apiService } from "./api.service";
+
+interface CreateOrderData {
+  shippingAddressId: string;
+  billingAddressId?: string;
+  paymentMethod: "razorpay" | "paypal" | "cod";
+  currency?: "INR" | "USD" | "EUR" | "GBP";
+  couponCode?: string;
+  notes?: string;
+}
+
+interface VerifyPaymentData {
+  order_id?: string;
+  order_ids?: string[];
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+class CheckoutService {
+  /**
+   * Create checkout order
+   * Uses apiService for retry, deduplication, and error tracking
+   */
+  async createOrder(data: CreateOrderData) {
+    try {
+      return await apiService.post("/checkout/create-order", data);
+    } catch (error) {
+      logError(error as Error, {
+        service: "CheckoutService.createOrder",
+        paymentMethod: data.paymentMethod,
+      });
+      throw error;
     }
+  }
 
-    return response.json();
-  },
-
-  async verifyPayment(data: {
-    order_id?: string;
-    order_ids?: string[];
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-  }) {
-    const response = await fetch("/api/checkout/verify-payment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to verify payment");
+  /**
+   * Verify payment
+   * Critical operation with automatic retry
+   */
+  async verifyPayment(data: VerifyPaymentData) {
+    try {
+      return await apiService.post("/checkout/verify-payment", data);
+    } catch (error) {
+      logError(error as Error, {
+        service: "CheckoutService.verifyPayment",
+        orderId: data.order_id,
+      });
+      throw error;
     }
+  }
 
-    return response.json();
-  },
-
+  /**
+   * Capture PayPal payment
+   * Deduplication prevents double-capture
+   */
   async capturePayPalPayment(data: { orderId: string; payerId: string }) {
-    const response = await fetch("/api/payments/paypal/capture", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to capture PayPal payment");
+    try {
+      return await apiService.post("/payments/paypal/capture", data);
+    } catch (error) {
+      logError(error as Error, {
+        service: "CheckoutService.capturePayPalPayment",
+        orderId: data.orderId,
+      });
+      throw error;
     }
+  }
 
-    return response.json();
-  },
-
+  /**
+   * Get order details
+   * Cached with stale-while-revalidate (reduces server load)
+   */
   async getOrderDetails(orderId: string) {
-    const response = await fetch(`/api/orders/${orderId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to fetch order details");
+    try {
+      return await apiService.get(`/orders/${orderId}`);
+    } catch (error) {
+      logError(error as Error, {
+        service: "CheckoutService.getOrderDetails",
+        orderId,
+      });
+      throw error;
     }
+  }
+}
 
-    return response.json();
-  },
-};
+export const checkoutService = new CheckoutService();

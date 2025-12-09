@@ -110,12 +110,14 @@ export function useUrlFilters(
 
   const [page, setPage] = useState<number>(() => {
     const urlPage = searchParams.get("page");
-    return urlPage ? parseInt(urlPage, 10) : initialPage;
+    const parsed = urlPage ? parseInt(urlPage, 10) : initialPage;
+    return isNaN(parsed) ? initialPage : parsed;
   });
 
   const [limit, setLimit] = useState<number>(() => {
     const urlLimit = searchParams.get("limit");
-    return urlLimit ? parseInt(urlLimit, 10) : initialLimit;
+    const parsed = urlLimit ? parseInt(urlLimit, 10) : initialLimit;
+    return isNaN(parsed) ? initialLimit : parsed;
   });
 
   // Debounce timer

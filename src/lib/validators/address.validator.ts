@@ -116,6 +116,7 @@ export const SPECIAL_HANDLING_COUNTRIES = {
  */
 export function isInternationalAddress(address: Address | string): boolean {
   const country = typeof address === "string" ? address : address.country;
+  if (!country) return false;
   return country.toUpperCase() !== "IN" && country.toUpperCase() !== "INDIA";
 }
 

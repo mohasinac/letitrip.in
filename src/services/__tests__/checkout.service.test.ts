@@ -1,9 +1,12 @@
+import { apiService } from "../api.service";
 import { checkoutService } from "../checkout.service";
 
-// Mock global fetch
-global.fetch = jest.fn();
+// Mock apiService instead of global fetch
+jest.mock("../api.service");
 
 describe("CheckoutService", () => {
+  const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -17,10 +20,7 @@ describe("CheckoutService", () => {
         razorpay_order_id: "rzp_123",
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockOrder,
-      });
+      mockApiService.post.mockResolvedValue(mockOrder);
 
       const data = {
         shippingAddressId: "addr1",
@@ -31,11 +31,10 @@ describe("CheckoutService", () => {
 
       const result = await checkoutService.createOrder(data);
 
-      expect(global.fetch).toHaveBeenCalledWith("/api/checkout/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        "/checkout/create-order",
+        data
+      );
       expect(result.id).toBe("order123");
     });
 
@@ -45,10 +44,7 @@ describe("CheckoutService", () => {
         amount: 10000,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockOrder,
-      });
+      mockApiService.post.mockResolvedValue(mockOrder);
 
       const data = {
         shippingAddressId: "addr1",
@@ -59,19 +55,14 @@ describe("CheckoutService", () => {
 
       await checkoutService.createOrder(data);
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/checkout/create-order",
-        expect.objectContaining({
-          body: JSON.stringify(data),
-        })
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        "/checkout/create-order",
+        data
       );
     });
 
     it("handles create order errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: "Cart is empty" }),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Cart is empty"));
 
       await expect(
         checkoutService.createOrder({
@@ -82,17 +73,14 @@ describe("CheckoutService", () => {
     });
 
     it("handles create order network errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({}),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Request failed"));
 
       await expect(
         checkoutService.createOrder({
           shippingAddressId: "addr1",
           paymentMethod: "razorpay",
         })
-      ).rejects.toThrow("Failed to create order");
+      ).rejects.toThrow();
     });
   });
 
@@ -104,10 +92,7 @@ describe("CheckoutService", () => {
         paymentId: "pay_123",
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockResponse,
-      });
+      mockApiService.post.mockResolvedValue(mockResponse);
 
       const data = {
         order_id: "order123",
@@ -118,13 +103,9 @@ describe("CheckoutService", () => {
 
       const result = await checkoutService.verifyPayment(data);
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/checkout/verify-payment",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        "/checkout/verify-payment",
+        data
       );
       expect(result.success).toBe(true);
     });
@@ -135,10 +116,7 @@ describe("CheckoutService", () => {
         orders: ["order1", "order2"],
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockResponse,
-      });
+      mockApiService.post.mockResolvedValue(mockResponse);
 
       const data = {
         order_ids: ["order1", "order2"],
@@ -149,19 +127,14 @@ describe("CheckoutService", () => {
 
       await checkoutService.verifyPayment(data);
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/checkout/verify-payment",
-        expect.objectContaining({
-          body: JSON.stringify(data),
-        })
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        "/checkout/verify-payment",
+        data
       );
     });
 
     it("handles verification errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: "Invalid signature" }),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Invalid signature"));
 
       await expect(
         checkoutService.verifyPayment({
@@ -174,10 +147,7 @@ describe("CheckoutService", () => {
     });
 
     it("handles verification network errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({}),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Request failed"));
 
       await expect(
         checkoutService.verifyPayment({
@@ -186,7 +156,7 @@ describe("CheckoutService", () => {
           razorpay_payment_id: "pay_123",
           razorpay_signature: "sig_123",
         })
-      ).rejects.toThrow("Failed to verify payment");
+      ).rejects.toThrow();
     });
   });
 
@@ -198,10 +168,7 @@ describe("CheckoutService", () => {
         paypalOrderId: "PAYPAL123",
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockResponse,
-      });
+      mockApiService.post.mockResolvedValue(mockResponse);
 
       const data = {
         orderId: "order123",
@@ -210,22 +177,15 @@ describe("CheckoutService", () => {
 
       const result = await checkoutService.capturePayPalPayment(data);
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/payments/paypal/capture",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        "/payments/paypal/capture",
+        data
       );
       expect(result.success).toBe(true);
     });
 
     it("handles PayPal capture errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: "Payment declined" }),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Payment declined"));
 
       await expect(
         checkoutService.capturePayPalPayment({
@@ -236,17 +196,14 @@ describe("CheckoutService", () => {
     });
 
     it("handles PayPal capture network errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({}),
-      });
+      mockApiService.post.mockRejectedValue(new Error("Request failed"));
 
       await expect(
         checkoutService.capturePayPalPayment({
           orderId: "order123",
           payerId: "payer123",
         })
-      ).rejects.toThrow("Failed to capture PayPal payment");
+      ).rejects.toThrow();
     });
   });
 
@@ -259,25 +216,16 @@ describe("CheckoutService", () => {
         items: [],
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockOrder,
-      });
+      mockApiService.get.mockResolvedValue(mockOrder);
 
       const result = await checkoutService.getOrderDetails("order123");
 
-      expect(global.fetch).toHaveBeenCalledWith("/api/orders/order123", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      expect(mockApiService.get).toHaveBeenCalledWith("/orders/order123");
       expect(result.id).toBe("order123");
     });
 
     it("handles get order details errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: "Order not found" }),
-      });
+      mockApiService.get.mockRejectedValue(new Error("Order not found"));
 
       await expect(checkoutService.getOrderDetails("invalid")).rejects.toThrow(
         "Order not found"
@@ -285,14 +233,11 @@ describe("CheckoutService", () => {
     });
 
     it("handles get order details network errors", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        json: async () => ({}),
-      });
+      mockApiService.get.mockRejectedValue(new Error("Request failed"));
 
-      await expect(checkoutService.getOrderDetails("order123")).rejects.toThrow(
-        "Failed to fetch order details"
-      );
+      await expect(
+        checkoutService.getOrderDetails("order123")
+      ).rejects.toThrow();
     });
   });
 });
