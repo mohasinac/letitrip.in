@@ -516,12 +516,11 @@ export const VIEWING_HISTORY_CONFIG = {
 // Recently Viewed Items Interface
 export interface ViewingHistoryItem {
   id: string;
-  type: "product" | "auction";
-  title: string;
+  name: string; // Product/Auction name
   slug: string;
   image: string;
   price: number;
-  shop_id: string;
-  shop_name: string;
+  shopName: string; // Shop name (camelCase for consistency)
+  inStock: boolean;
   viewed_at: number; // Timestamp
 }

@@ -1,18 +1,49 @@
-import { apiService } from "./api.service";
+import { logServiceError } from "@/lib/error-logger";
 import type {
-  SearchResultFE,
   SearchFiltersFE,
+  SearchResultFE,
 } from "@/types/frontend/search.types";
+import { apiService } from "./api.service";
 
 class SearchService {
   // Global search across products, shops, and categories
   async search(filters: SearchFiltersFE): Promise<SearchResultFE> {
-    const params = new URLSearchParams();
-    params.append("q", filters.q);
-    if (filters.type) params.append("type", filters.type);
-    if (filters.limit) params.append("limit", filters.limit.toString());
+    try {
+      // BUG FIX: Validate query parameter
+      if (!filters.q || filters.q.trim() === "") {
+        return {
+          products: [],
+          shops: [],
+          categories: [],
+        };
+      }
 
-    return apiService.get<SearchResultFE>(`/search?${params.toString()}`);
+      const params = new URLSearchParams();
+      params.append("q", filters.q.trim());
+      if (filters.type) params.append("type", filters.type);
+      if (filters.limit && filters.limit > 0) {
+        params.append("limit", filters.limit.toString());
+      }
+
+      const result = await apiService.get<SearchResultFE>(
+        `/search?${params.toString()}`
+      );
+
+      // BUG FIX: Handle null/undefined results
+      return {
+        products: result?.products || [],
+        shops: result?.shops || [],
+        categories: result?.categories || [],
+      };
+    } catch (error) {
+      logServiceError("SearchService", "search", error as Error);
+      // Return empty results on error instead of throwing
+      return {
+        products: [],
+        shops: [],
+        categories: [],
+      };
+    }
   }
 
   // Quick search for autocomplete (limited results)
