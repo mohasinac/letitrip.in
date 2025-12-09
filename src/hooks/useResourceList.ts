@@ -330,6 +330,9 @@ export function useResourceList<T = any>(
         if (onLoadError) {
           onLoadError(error);
         }
+
+        // Re-throw so execute() can handle it
+        throw error;
       }
     },
     [

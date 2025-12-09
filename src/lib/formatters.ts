@@ -7,19 +7,28 @@
 
 /**
  * Format compact currency (1K, 1L, 1Cr for Indian numbering)
+ * BUG FIX: Added proper handling for negative amounts
  */
 export function formatCompactCurrency(amount: number): string {
-  if (amount >= 10000000) {
+  const isNegative = amount < 0;
+  const absAmount = Math.abs(amount);
+
+  let formatted: string;
+
+  if (absAmount >= 10000000) {
     // 1 Crore or more
-    return `₹${(amount / 10000000).toFixed(1)}Cr`;
-  } else if (amount >= 100000) {
+    formatted = `₹${(absAmount / 10000000).toFixed(1)}Cr`;
+  } else if (absAmount >= 100000) {
     // 1 Lakh or more
-    return `₹${(amount / 100000).toFixed(1)}L`;
-  } else if (amount >= 1000) {
+    formatted = `₹${(absAmount / 100000).toFixed(1)}L`;
+  } else if (absAmount >= 1000) {
     // 1 Thousand or more
-    return `₹${(amount / 1000).toFixed(1)}K`;
+    formatted = `₹${(absAmount / 1000).toFixed(1)}K`;
+  } else {
+    formatted = `₹${Math.round(absAmount).toLocaleString("en-IN")}`;
   }
-  return `₹${Math.round(amount).toLocaleString("en-IN")}`;
+
+  return isNegative ? `₹-${formatted.slice(1)}` : formatted;
 }
 
 /**
@@ -240,9 +249,11 @@ export function formatSKU(sku: string): string {
 
 /**
  * Truncate text with ellipsis
+ * BUG FIX: Handle edge case where maxLength < 3
  */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
+  if (maxLength < 3) return "...";
   return text.slice(0, maxLength - 3) + "...";
 }
 
@@ -258,6 +269,7 @@ export function slugToTitle(slug: string): string {
 
 /**
  * Format discount percentage
+ * Returns positive percentage (e.g., "25%" not "-25%")
  */
 export function formatDiscount(
   originalPrice: number,
@@ -265,7 +277,7 @@ export function formatDiscount(
 ): string {
   if (originalPrice <= currentPrice) return "0%";
   const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
-  return formatPercentage(discount, { decimals: 0 });
+  return `${Math.round(discount)}%`;
 }
 
 /**

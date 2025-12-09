@@ -337,9 +337,9 @@ describe("truncateText - Comprehensive", () => {
   });
 
   it("should handle maxLength less than 3", () => {
-    // Edge case: if maxLength is very small, still applies formula (maxLength - 3)
-    // "Hello" (5 chars) > 2, so truncate to (2-3)=-1, but slice gives "Hell..."
-    expect(truncateText("Hello", 2)).toBe("Hell...");
+    // Edge case: if maxLength < 3, return just "..."
+    // After fix, function properly handles this case
+    expect(truncateText("Hello", 2)).toBe("...");
   });
 
   it("should handle empty string", () => {

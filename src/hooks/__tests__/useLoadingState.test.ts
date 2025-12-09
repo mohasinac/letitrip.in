@@ -95,18 +95,38 @@ describe("useLoadingState", () => {
       expect(result.current.data).toBeNull();
     });
 
-    it.skip("sets isRefreshing when isRefresh option is true", async () => {
-      // This test may have timing issues with state updates - skipping for now
+    it("sets isRefreshing when isRefresh option is true", async () => {
       const mockData = { id: 1, name: "Test" };
       const asyncFn = jest.fn().mockResolvedValue(mockData);
 
       const { result } = renderHook(() => useLoadingState());
 
+      // First execute to initialize
       await act(async () => {
-        await result.current.execute(asyncFn, { isRefresh: true });
+        await result.current.execute(asyncFn);
       });
 
-      expect(asyncFn).toHaveBeenCalled();
+      expect(result.current.isInitialized).toBe(true);
+      expect(result.current.isRefreshing).toBe(false);
+
+      // Second execute with isRefresh should set isRefreshing
+      let promise: Promise<any>;
+      act(() => {
+        promise = result.current.execute(asyncFn, { isRefresh: true });
+      });
+
+      // During loading, isRefreshing should be true
+      expect(result.current.isRefreshing).toBe(true);
+      expect(result.current.isLoading).toBe(true);
+
+      await act(async () => {
+        await promise;
+      });
+
+      // After loading completes, isRefreshing should be false
+      expect(result.current.isRefreshing).toBe(false);
+      expect(result.current.isLoading).toBe(false);
+      expect(asyncFn).toHaveBeenCalledTimes(2);
     });
   });
 

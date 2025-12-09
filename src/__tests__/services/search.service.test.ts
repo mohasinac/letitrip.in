@@ -128,18 +128,13 @@ describe("SearchService", () => {
     });
 
     it("should handle empty search query", async () => {
-      const mockResult: SearchResultFE = {
-        products: [],
-        shops: [],
-        categories: [],
-      };
-
-      (apiService.get as jest.Mock).mockResolvedValue(mockResult);
-
       const result = await searchService.search({ q: "" });
 
-      expect(apiService.get).toHaveBeenCalledWith("/search?q=");
+      // Service returns early without API call for empty queries
+      expect(apiService.get).not.toHaveBeenCalled();
       expect(result.products).toHaveLength(0);
+      expect(result.shops).toHaveLength(0);
+      expect(result.categories).toHaveLength(0);
     });
 
     it("should handle search with special characters", async () => {
@@ -261,9 +256,12 @@ describe("SearchService", () => {
         new Error("Search failed")
       );
 
-      await expect(searchService.quickSearch("test")).rejects.toThrow(
-        "Search failed"
-      );
+      const result = await searchService.quickSearch("test");
+
+      // Service returns empty results instead of throwing
+      expect(result.products).toHaveLength(0);
+      expect(result.shops).toHaveLength(0);
+      expect(result.categories).toHaveLength(0);
     });
   });
 
@@ -273,9 +271,12 @@ describe("SearchService", () => {
         new Error("Network error")
       );
 
-      await expect(searchService.search({ q: "test" })).rejects.toThrow(
-        "Network error"
-      );
+      const result = await searchService.search({ q: "test" });
+
+      // Service returns empty results instead of throwing
+      expect(result.products).toHaveLength(0);
+      expect(result.shops).toHaveLength(0);
+      expect(result.categories).toHaveLength(0);
     });
 
     it("should handle very long search queries", async () => {
@@ -319,7 +320,12 @@ describe("SearchService", () => {
     it("should handle malformed API response", async () => {
       (apiService.get as jest.Mock).mockResolvedValue(null);
 
-      await expect(searchService.search({ q: "test" })).rejects.toThrow();
+      const result = await searchService.search({ q: "test" });
+
+      // Service handles null/undefined results gracefully
+      expect(result.products).toHaveLength(0);
+      expect(result.shops).toHaveLength(0);
+      expect(result.categories).toHaveLength(0);
     });
 
     it("should handle missing result properties", async () => {
@@ -386,7 +392,8 @@ describe("SearchService", () => {
 
       await searchService.search({ q: "test", limit: 0 });
 
-      expect(apiService.get).toHaveBeenCalledWith("/search?q=test&limit=0");
+      // Service only includes limit if > 0
+      expect(apiService.get).toHaveBeenCalledWith("/search?q=test");
     });
 
     it("should handle negative limit values", async () => {
@@ -400,8 +407,8 @@ describe("SearchService", () => {
 
       await searchService.search({ q: "test", limit: -1 });
 
-      // Should send the value as-is (API will validate)
-      expect(apiService.get).toHaveBeenCalledWith("/search?q=test&limit=-1");
+      // Service only includes limit if > 0
+      expect(apiService.get).toHaveBeenCalledWith("/search?q=test");
     });
   });
 

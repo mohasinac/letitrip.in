@@ -10,6 +10,35 @@ const mockApiService = apiService as jest.Mocked<typeof apiService>;
 
 const mockTimestamp = () => ({ toDate: () => new Date("2024-01-01") });
 
+const createMockCoupon = (overrides: Record<string, unknown> = {}) => ({
+  id: "coupon-1",
+  shopId: "shop-1",
+  code: "SAVE10",
+  name: "Save 10%",
+  description: "Save 10% on all items",
+  type: "percentage",
+  discountValue: 10,
+  maxDiscountAmount: 100,
+  minPurchaseAmount: 0,
+  minQuantity: 1,
+  applicability: "all",
+  usageLimit: 100,
+  usageLimitPerUser: 1,
+  usageCount: 0,
+  status: "active",
+  firstOrderOnly: false,
+  newUsersOnly: false,
+  canCombineWithOtherCoupons: true,
+  autoApply: false,
+  isPublic: true,
+  featured: false,
+  startDate: mockTimestamp(),
+  endDate: mockTimestamp(),
+  createdAt: mockTimestamp(),
+  updatedAt: mockTimestamp(),
+  ...overrides,
+});
+
 describe("CouponsService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -24,19 +53,7 @@ describe("CouponsService", () => {
   describe("list", () => {
     it("should list coupons with default params", async () => {
       const mockResponse = {
-        data: [
-          {
-            id: "coupon-1",
-            code: "SAVE10",
-            type: "percentage",
-            value: 10,
-            active: true,
-            startDate: mockTimestamp(),
-            endDate: mockTimestamp(),
-            createdAt: mockTimestamp(),
-            updatedAt: mockTimestamp(),
-          },
-        ],
+        data: [createMockCoupon()],
         count: 1,
         pagination: {
           page: 1,
@@ -77,16 +94,10 @@ describe("CouponsService", () => {
 
   describe("getById", () => {
     it("should get coupon by ID", async () => {
-      const mockCoupon = {
-        id: "coupon-1",
+      const mockCoupon = createMockCoupon({
         code: "SAVE20",
-        type: "percentage",
-        value: 20,
-        startDate: mockTimestamp(),
-        endDate: mockTimestamp(),
-        createdAt: mockTimestamp(),
-        updatedAt: mockTimestamp(),
-      };
+        discountValue: 20,
+      });
 
       (apiService.get as jest.Mock).mockResolvedValue(mockCoupon);
 
@@ -99,16 +110,10 @@ describe("CouponsService", () => {
 
   describe("getByCode", () => {
     it("should get coupon by code", async () => {
-      const mockCoupon = {
-        id: "coupon-1",
+      const mockCoupon = createMockCoupon({
         code: "SAVE20",
-        type: "percentage",
-        value: 20,
-        startDate: mockTimestamp(),
-        endDate: mockTimestamp(),
-        createdAt: mockTimestamp(),
-        updatedAt: mockTimestamp(),
-      };
+        discountValue: 20,
+      });
 
       (apiService.get as jest.Mock).mockResolvedValue(mockCoupon);
 
@@ -121,16 +126,12 @@ describe("CouponsService", () => {
 
   describe("create", () => {
     it("should create new coupon", async () => {
-      const mockCoupon = {
+      const mockCoupon = createMockCoupon({
         id: "coupon-new",
         code: "NEWCODE",
-        type: "fixed",
-        value: 500,
-        startDate: mockTimestamp(),
-        endDate: mockTimestamp(),
-        createdAt: mockTimestamp(),
-        updatedAt: mockTimestamp(),
-      };
+        type: "flat",
+        discountValue: 500,
+      });
 
       (apiService.post as jest.Mock).mockResolvedValue(mockCoupon);
 
@@ -150,16 +151,10 @@ describe("CouponsService", () => {
 
   describe("update", () => {
     it("should update coupon", async () => {
-      const mockCoupon = {
-        id: "coupon-1",
+      const mockCoupon = createMockCoupon({
         code: "SAVE20",
-        type: "percentage",
-        value: 25,
-        startDate: mockTimestamp(),
-        endDate: mockTimestamp(),
-        createdAt: mockTimestamp(),
-        updatedAt: mockTimestamp(),
-      };
+        discountValue: 25,
+      });
 
       (apiService.patch as jest.Mock).mockResolvedValue(mockCoupon);
 
@@ -271,16 +266,10 @@ describe("CouponsService", () => {
   describe("getPublic", () => {
     it("should get public coupons", async () => {
       const mockCoupons = [
-        {
-          id: "coupon-1",
+        createMockCoupon({
           code: "PUBLIC10",
-          type: "percentage",
-          value: 10,
-          startDate: mockTimestamp(),
-          endDate: mockTimestamp(),
-          createdAt: mockTimestamp(),
-          updatedAt: mockTimestamp(),
-        },
+          discountValue: 10,
+        }),
       ];
 
       (apiService.get as jest.Mock).mockResolvedValue(mockCoupons);
@@ -293,16 +282,10 @@ describe("CouponsService", () => {
 
     it("should get public coupons for specific shop", async () => {
       const mockCoupons = [
-        {
-          id: "coupon-1",
+        createMockCoupon({
           code: "SHOP10",
-          type: "percentage",
-          value: 10,
-          startDate: mockTimestamp(),
-          endDate: mockTimestamp(),
-          createdAt: mockTimestamp(),
-          updatedAt: mockTimestamp(),
-        },
+          discountValue: 10,
+        }),
       ];
 
       (apiService.get as jest.Mock).mockResolvedValue(mockCoupons);
@@ -500,13 +483,18 @@ describe("CouponsService", () => {
     });
 
     it("should handle concurrent operations", async () => {
-      const mockResponse = {
+      const mockListResponse = {
         data: [],
         count: 0,
         pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
       };
 
-      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+      const mockArrayResponse: unknown[] = [];
+
+      (apiService.get as jest.Mock)
+        .mockResolvedValueOnce(mockListResponse)
+        .mockResolvedValueOnce(mockListResponse)
+        .mockResolvedValueOnce(mockArrayResponse);
 
       const promises = [
         couponsService.list(),

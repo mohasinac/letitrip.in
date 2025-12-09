@@ -508,8 +508,9 @@ describe("LocationService", () => {
     it("should handle phone with country code already", () => {
       const formatted = locationService.formatPhoneWithCode("+919876543210");
 
-      // Function only formats 10-digit numbers, returns input as-is for other lengths
-      expect(formatted).toBe("+919876543210");
+      // Function only formats 10-digit numbers, returns cleaned digits for other lengths
+      // After fix: "+919876543210" has 12 digits after cleaning, so returns cleaned string
+      expect(formatted).toBe("919876543210");
     });
   });
 

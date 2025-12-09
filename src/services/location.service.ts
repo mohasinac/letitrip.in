@@ -5,14 +5,14 @@
  * Uses apiService to call API routes - NEVER accesses database directly.
  */
 
-import { apiService } from "./api.service";
 import { logError } from "@/lib/firebase-error-logger";
 import type {
-  PincodeLookupResult,
   GeoCoordinates,
   GeolocationError,
+  PincodeLookupResult,
   ReverseGeocodeResult,
 } from "@/types/shared/location.types";
+import { apiService } from "./api.service";
 
 class LocationService {
   // ============================================================================
@@ -25,7 +25,7 @@ class LocationService {
   async lookupPincode(pincode: string): Promise<PincodeLookupResult> {
     const cleaned = pincode.replace(/\D/g, "");
 
-    if (cleaned.length !== 6) {
+    if (cleaned.length !== 6 || cleaned === "000000") {
       return {
         pincode: cleaned,
         areas: [],
@@ -43,6 +43,19 @@ class LocationService {
       data: PincodeLookupResult;
     }>(`/location/pincode/${cleaned}`);
 
+    if (!response || !response.data) {
+      return {
+        pincode: cleaned,
+        areas: [],
+        city: "",
+        district: "",
+        state: "",
+        country: "India",
+        isValid: false,
+        hasMultipleAreas: false,
+      };
+    }
+
     return response.data;
   }
 
@@ -50,6 +63,9 @@ class LocationService {
    * Validate pincode format
    */
   isValidPincode(pincode: string): boolean {
+    if (!pincode || typeof pincode !== "string") {
+      return false;
+    }
     const cleaned = pincode.replace(/\D/g, "");
     return cleaned.length === 6 && /^[1-9]/.test(cleaned);
   }
@@ -108,7 +124,7 @@ class LocationService {
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 30000,
-        },
+        }
       );
     });
   }
@@ -135,7 +151,7 @@ class LocationService {
    * Note: Requires Google Maps API integration
    */
   async reverseGeocode(
-    coords: GeoCoordinates,
+    coords: GeoCoordinates
   ): Promise<ReverseGeocodeResult | null> {
     try {
       const response = await apiService.get<{
@@ -189,11 +205,14 @@ class LocationService {
    * Format phone number with country code
    */
   formatPhoneWithCode(phone: string, countryCode: string = "+91"): string {
+    if (!phone || typeof phone !== "string") {
+      return phone || "";
+    }
     const cleaned = phone.replace(/\D/g, "");
     if (cleaned.length === 10) {
       return `${countryCode} ${cleaned.slice(0, 5)}-${cleaned.slice(5)}`;
     }
-    return phone;
+    return cleaned || phone;
   }
 
   /**

@@ -5,18 +5,18 @@
  * Frontend service for interacting with the messages API
  */
 
-import { apiService } from "./api.service";
 import {
   ConversationFE,
-  MessageFE,
   ConversationListResponse,
-  MessageListResponse,
-  CreateConversationInputFE,
-  SendMessageInputFE,
   ConversationType,
+  CreateConversationInputFE,
+  MessageFE,
+  MessageListResponse,
   ParticipantType,
+  SendMessageInputFE,
 } from "@/types/frontend/message.types";
-import { formatDistanceToNow, format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
+import { apiService } from "./api.service";
 
 interface ConversationBEResponse {
   id: string;
@@ -91,13 +91,14 @@ class MessagesService {
    */
   private transformConversation(
     conv: ConversationBEResponse,
-    userId: string,
+    userId: string
   ): ConversationFE {
     const isFromSender = conv.participants.sender.id === userId;
     const otherParticipant = isFromSender
       ? conv.participants.recipient
       : conv.participants.sender;
-    const unreadCount = conv.unreadCount?.[userId] || 0;
+    // BUG FIX #25: Use nullish coalescing for safer default value
+    const unreadCount = conv.unreadCount?.[userId] ?? 0;
 
     return {
       id: conv.id,
@@ -133,7 +134,8 @@ class MessagesService {
   private transformMessage(msg: MessageBEResponse, userId: string): MessageFE {
     const createdAt = new Date(msg.createdAt);
     const isFromMe = msg.senderId === userId;
-    const isRead = !!msg.readBy?.[userId] || isFromMe;
+    // BUG FIX #25: More explicit null check for readBy status
+    const isRead = msg.readBy?.[userId] != null || isFromMe;
 
     return {
       id: msg.id,
@@ -163,7 +165,7 @@ class MessagesService {
       page?: number;
       pageSize?: number;
       status?: "active" | "archived" | "all";
-    } = {},
+    } = {}
   ): Promise<ConversationListResponse> {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
@@ -183,7 +185,7 @@ class MessagesService {
 
     const userId = this.currentUserId || "";
     const conversations = response.data.conversations.map((c) =>
-      this.transformConversation(c, userId),
+      this.transformConversation(c, userId)
     );
 
     return {
@@ -200,7 +202,7 @@ class MessagesService {
     params: {
       page?: number;
       pageSize?: number;
-    } = {},
+    } = {}
   ): Promise<MessageListResponse> {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
@@ -208,7 +210,9 @@ class MessagesService {
       searchParams.set("pageSize", params.pageSize.toString());
 
     const queryString = searchParams.toString();
-    const url = `/messages/${conversationId}${queryString ? `?${queryString}` : ""}`;
+    const url = `/messages/${conversationId}${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     const response = await apiService.get<{
       data: {
@@ -223,10 +227,10 @@ class MessagesService {
     return {
       conversation: this.transformConversation(
         response.data.conversation,
-        userId,
+        userId
       ),
       messages: response.data.messages.map((m) =>
-        this.transformMessage(m, userId),
+        this.transformMessage(m, userId)
       ),
       pagination: response.data.pagination,
     };
@@ -237,7 +241,7 @@ class MessagesService {
    */
   async getUnreadCount(): Promise<number> {
     const response = await apiService.get<{ data: { count: number } }>(
-      "/messages/unread-count",
+      "/messages/unread-count"
     );
     return response.data.count;
   }
@@ -272,7 +276,7 @@ class MessagesService {
    */
   async sendMessage(
     conversationId: string,
-    input: SendMessageInputFE,
+    input: SendMessageInputFE
   ): Promise<{
     messageId: string;
     conversationId: string;

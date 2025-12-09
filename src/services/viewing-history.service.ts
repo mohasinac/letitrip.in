@@ -57,8 +57,15 @@ class ViewingHistoryService {
   addToHistory(item: Omit<ViewingHistoryItem, "viewed_at">): void {
     if (typeof window === "undefined") return;
 
-    // Validate item has an ID
-    if (!item.id || item.id.trim() === "") {
+    // Validate item has required fields
+    // BUG FIX #20: Check 'name' not 'title' (correct field per interface)
+    if (
+      !item.id ||
+      item.id.trim() === "" ||
+      !item.name ||
+      !item.slug ||
+      typeof item.price !== "number"
+    ) {
       return;
     }
 
