@@ -143,7 +143,7 @@ export interface TemplateButton {
 export const ORDER_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
   id: "order_confirmation_v1",
   name: "order_confirmation",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -195,7 +195,7 @@ export const ORDER_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
 export const SHIPPING_UPDATE_TEMPLATE: WhatsAppTemplate = {
   id: "shipping_update_v1",
   name: "shipping_update",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -245,7 +245,7 @@ export const SHIPPING_UPDATE_TEMPLATE: WhatsAppTemplate = {
 export const OUT_FOR_DELIVERY_TEMPLATE: WhatsAppTemplate = {
   id: "out_for_delivery_v1",
   name: "out_for_delivery",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -282,7 +282,7 @@ export const OUT_FOR_DELIVERY_TEMPLATE: WhatsAppTemplate = {
 export const DELIVERY_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
   id: "delivery_confirmation_v1",
   name: "delivery_confirmation",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -323,7 +323,7 @@ export const DELIVERY_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
 export const PAYMENT_REMINDER_TEMPLATE: WhatsAppTemplate = {
   id: "payment_reminder_v1",
   name: "payment_reminder",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -364,7 +364,7 @@ export const PAYMENT_REMINDER_TEMPLATE: WhatsAppTemplate = {
 export const ABANDONED_CART_TEMPLATE: WhatsAppTemplate = {
   id: "abandoned_cart_v1",
   name: "abandoned_cart",
-  category: "MARKETING",
+  category: "marketing",
   language: "en",
   status: "approved",
   components: [
@@ -405,7 +405,7 @@ export const ABANDONED_CART_TEMPLATE: WhatsAppTemplate = {
 export const RETURN_REQUEST_TEMPLATE: WhatsAppTemplate = {
   id: "return_request_v1",
   name: "return_request",
-  category: "SERVICE",
+  category: "service",
   language: "en",
   status: "approved",
   components: [
@@ -443,7 +443,7 @@ export const RETURN_REQUEST_TEMPLATE: WhatsAppTemplate = {
 export const REFUND_PROCESSED_TEMPLATE: WhatsAppTemplate = {
   id: "refund_processed_v1",
   name: "refund_processed",
-  category: "UTILITY",
+  category: "utility",
   language: "en",
   status: "approved",
   components: [
@@ -472,7 +472,7 @@ export const REFUND_PROCESSED_TEMPLATE: WhatsAppTemplate = {
 export const OTP_TEMPLATE: WhatsAppTemplate = {
   id: "otp_v1",
   name: "otp_verification",
-  category: "AUTHENTICATION",
+  category: "authentication",
   language: "en",
   status: "approved",
   components: [
@@ -493,7 +493,7 @@ export const OTP_TEMPLATE: WhatsAppTemplate = {
 export const PRICE_DROP_TEMPLATE: WhatsAppTemplate = {
   id: "price_drop_v1",
   name: "price_drop_alert",
-  category: "MARKETING",
+  category: "marketing",
   language: "en",
   status: "approved",
   components: [
@@ -558,8 +558,10 @@ export type TemplateId = keyof typeof TEMPLATES;
 /**
  * Get template by ID
  */
-export function getTemplateById(id: TemplateId): WhatsAppTemplate {
-  return TEMPLATES[id];
+export function getTemplateById(id: string): any {
+  // Find by template ID (not TemplateId key)
+  const template = MESSAGE_TEMPLATES.find((t) => t.id === id);
+  return template;
 }
 
 /**
@@ -647,3 +649,111 @@ export function getAvailableProviders() {
     (a, b) => a.priority - b.priority
   );
 }
+
+/**
+ * Helper to get body text from template
+ */
+function getTemplateBody(template: WhatsAppTemplate): string {
+  const bodyComponent = template.components.find((c) => c.type === "body");
+  return bodyComponent?.text || "";
+}
+
+/**
+ * Helper to get variables from template
+ */
+function getTemplateVariables(template: WhatsAppTemplate): string[] {
+  const bodyComponent = template.components.find((c) => c.type === "body");
+  return bodyComponent?.variables || [];
+}
+
+/**
+ * Enrich template with convenience properties
+ */
+function enrichTemplate(template: WhatsAppTemplate) {
+  return {
+    ...template,
+    body: getTemplateBody(template),
+    variables: getTemplateVariables(template),
+  };
+}
+
+/**
+ * Get all message templates as array with convenience properties
+ */
+export const MESSAGE_TEMPLATES = Object.values(TEMPLATES).map(enrichTemplate);
+
+/**
+ * Get templates by category
+ */
+export function getTemplatesByCategory(category: string): any[] {
+  // Normalize category to lowercase
+  const normalizedCategory = category.toLowerCase();
+  return MESSAGE_TEMPLATES.filter(
+    (template) => template.category.toLowerCase() === normalizedCategory
+  );
+}
+
+/**
+ * Get rate limit for provider
+ */
+export function getRateLimitForProvider(providerId: WhatsAppProviderId) {
+  const provider = getProviderById(providerId);
+  return provider?.rateLimit;
+}
+
+/**
+ * Check if message can be sent
+ */
+export function canSendMessage(params: {
+  category: string;
+  hasOptIn: boolean;
+  lastUserMessageAt?: Date;
+}): { canSend: boolean; reason?: string } {
+  const { category, hasOptIn, lastUserMessageAt } = params;
+
+  // Get category config
+  const categoryKey = Object.keys(MESSAGE_CATEGORIES).find(
+    (key) =>
+      MESSAGE_CATEGORIES[key as keyof typeof MESSAGE_CATEGORIES].id === category
+  );
+
+  if (!categoryKey) {
+    return { canSend: false, reason: "Invalid category" };
+  }
+
+  const categoryConfig =
+    MESSAGE_CATEGORIES[categoryKey as keyof typeof MESSAGE_CATEGORIES];
+
+  // Check opt-in requirement
+  if (categoryConfig.requiresOptIn && !hasOptIn) {
+    return { canSend: false, reason: "User opt-in required" };
+  }
+
+  // Check messaging window
+  if (categoryConfig.window !== null) {
+    if (!isWithinMessagingWindow(lastUserMessageAt, categoryConfig.window)) {
+      return { canSend: false, reason: "Outside messaging window" };
+    }
+  }
+
+  return { canSend: true };
+}
+
+/**
+ * Rate limits configuration
+ */
+export const RATE_LIMITS = {
+  TWILIO: WHATSAPP_PROVIDERS.TWILIO.rateLimit,
+  GUPSHUP: WHATSAPP_PROVIDERS.GUPSHUP.rateLimit,
+};
+
+/**
+ * Phone number format constants
+ */
+export const PHONE_NUMBER_FORMAT = {
+  INDIA_LENGTH: 10,
+  INDIA_WITH_CODE_LENGTH: 12,
+  INDIA_CODE: "91",
+  MIN_LENGTH: 10,
+  MAX_LENGTH: 15,
+};

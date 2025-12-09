@@ -57,12 +57,12 @@ export function withIPTracking(
 
       // Check rate limit if enabled
       if (checkRateLimit) {
-        const rateLimitResult = await ipTrackerService.checkRateLimit(
+        const rateLimitResult = await ipTrackerService.checkRateLimit({
           ipAddress,
           action,
           maxAttempts,
-          windowMinutes,
-        );
+          windowMs: windowMinutes * 60000, // Convert minutes to milliseconds
+        });
 
         if (!rateLimitResult.allowed) {
           // Log failed attempt
@@ -127,11 +127,18 @@ export function withIPTracking(
 
       return response;
     } catch (error) {
+      const ipAddress = ipTrackerService.getIPFromRequest(request);
+      const userAgent = ipTrackerService.getUserAgentFromRequest(request);
+      
       logError(error as Error, {
         component: "IPTrackerMiddleware.withIPTracking",
         action: "ip_tracking_middleware",
         metadata: {
           action: typeof options === "string" ? options : options.action,
+          ipAddress,
+          userAgent,
+          url: request.url,
+          method: request.method,
         },
       });
 

@@ -1100,6 +1100,9 @@ export function calculateGatewayFee(
   amount: number,
   isInternational: boolean = false
 ): number {
+  // Validate input amount
+  if (amount < 0) return 0;
+
   const gateway = getGatewayById(gatewayId);
   if (!gateway) return 0;
 
@@ -1200,4 +1203,102 @@ export function getBestGateway(params: {
   });
 
   return candidates[0];
+}
+
+/**
+ * Get all supported currencies across all gateways
+ */
+export function getSupportedCurrencies(): CurrencyCode[] {
+  const currencies = new Set<CurrencyCode>();
+  PAYMENT_GATEWAYS.forEach((gateway) => {
+    gateway.supportedCurrencies.forEach((currency) => currencies.add(currency));
+  });
+  return Array.from(currencies);
+}
+
+/**
+ * Get all supported countries across all gateways
+ */
+export function getSupportedCountries(): CountryCode[] {
+  const countries = new Set<CountryCode>();
+  PAYMENT_GATEWAYS.forEach((gateway) => {
+    gateway.supportedCountries.forEach((country) => countries.add(country));
+  });
+  return Array.from(countries);
+}
+
+/**
+ * Validate complete gateway configuration
+ */
+export function validateGatewayConfig(
+  gatewayId: string,
+  config: Record<string, string>,
+  mode: PaymentMode
+): { isValid: boolean; errors: string[] } {
+  const gateway = getGatewayById(gatewayId);
+  if (!gateway) {
+    return { isValid: false, errors: ["Gateway not found"] };
+  }
+
+  const errors: string[] = [];
+  const fields = gateway.config[mode];
+
+  fields.forEach((field) => {
+    const value = config[field.key];
+    // Don't validate if value exists (truthy check is wrong for empty strings)
+    if (value !== undefined && value !== null) {
+      const validation = validateGatewayField(
+        gatewayId,
+        mode,
+        field.key,
+        value
+      );
+      if (!validation.isValid && validation.error) {
+        errors.push(validation.error);
+      }
+    } else if (field.required) {
+      // Field is required but missing
+      errors.push(`${field.label} is required`);
+    }
+  });
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Compare fees between two gateways
+ */
+export function compareGatewayFees(
+  gateway1Id: string,
+  gateway2Id: string,
+  amount: number,
+  isInternational: boolean = false
+): {
+  gateway1: { id: string; fee: number };
+  gateway2: { id: string; fee: number };
+  cheaper: string;
+  savings?: number;
+} {
+  const fee1 = calculateGatewayFee(gateway1Id, amount, isInternational);
+  const fee2 = calculateGatewayFee(gateway2Id, amount, isInternational);
+
+  const result = {
+    gateway1: { id: gateway1Id, fee: fee1 },
+    gateway2: { id: gateway2Id, fee: fee2 },
+    cheaper: "equal" as string,
+    savings: undefined as number | undefined,
+  };
+
+  if (fee1 < fee2) {
+    result.cheaper = gateway1Id;
+    result.savings = fee2 - fee1;
+  } else if (fee2 < fee1) {
+    result.cheaper = gateway2Id;
+    result.savings = fee1 - fee2;
+  }
+
+  return result;
 }
