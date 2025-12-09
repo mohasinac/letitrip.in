@@ -1,28 +1,28 @@
-import { apiService } from "./api.service";
 import { USER_ROUTES } from "@/constants/api-routes";
 import { UserBE, UserFiltersBE } from "@/types/backend/user.types";
 import {
-  UserFE,
-  UserProfileFormFE,
   ChangePasswordFormFE,
   OTPVerificationFormFE,
+  UserFE,
+  UserProfileFormFE,
 } from "@/types/frontend/user.types";
-import {
-  toFEUser,
-  toFEUsers,
-  toBEUpdateUserRequest,
-  toBEBanUserRequest,
-  toBEChangeRoleRequest,
-} from "@/types/transforms/user.transforms";
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
+import {
+  toBEBanUserRequest,
+  toBEChangeRoleRequest,
+  toBEUpdateUserRequest,
+  toFEUser,
+  toFEUsers,
+} from "@/types/transforms/user.transforms";
+import { apiService } from "./api.service";
 
 class UsersService {
   // List users (admin only)
   async list(
-    filters?: Partial<UserFiltersBE>,
+    filters?: Partial<UserFiltersBE>
   ): Promise<PaginatedResponseFE<UserFE>> {
     const params = new URLSearchParams();
 
@@ -39,8 +39,9 @@ class UsersService {
       ? `${USER_ROUTES.LIST}?${queryString}`
       : USER_ROUTES.LIST;
 
-    const response =
-      await apiService.get<PaginatedResponseBE<UserBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<UserBE>>(
+      endpoint
+    );
 
     return {
       data: toFEUsers(response.data),
@@ -68,7 +69,7 @@ class UsersService {
   async ban(
     id: string,
     isBanned: boolean,
-    banReason?: string,
+    banReason?: string
   ): Promise<UserFE> {
     const request = toBEBanUserRequest(isBanned, banReason);
     const response: any = await apiService.patch(USER_ROUTES.BAN(id), request);
@@ -85,7 +86,7 @@ class UsersService {
   // Get current user profile
   async getMe(): Promise<UserFE> {
     const response = await apiService.get<{ user: UserBE }>(
-      USER_ROUTES.PROFILE,
+      USER_ROUTES.PROFILE
     );
     return toFEUser(response.user);
   }
@@ -95,14 +96,14 @@ class UsersService {
     const request = toBEUpdateUserRequest(formData);
     const response = await apiService.patch<{ user: UserBE; message: string }>(
       USER_ROUTES.UPDATE_PROFILE,
-      request,
+      request
     );
     return toFEUser(response.user);
   }
 
   // Change password
   async changePassword(
-    formData: ChangePasswordFormFE,
+    formData: ChangePasswordFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>(USER_ROUTES.CHANGE_PASSWORD, {
       currentPassword: formData.currentPassword,
@@ -117,7 +118,7 @@ class UsersService {
 
   // Verify email with OTP
   async verifyEmail(
-    formData: OTPVerificationFormFE,
+    formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-email/confirm", {
       otp: formData.otp,
@@ -131,7 +132,7 @@ class UsersService {
 
   // Verify mobile with OTP
   async verifyMobile(
-    formData: OTPVerificationFormFE,
+    formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
       otp: formData.otp,
@@ -139,21 +140,15 @@ class UsersService {
   }
 
   // Upload avatar
+  // BUG FIX: Use apiService.postFormData for consistency and proper error handling
   async uploadAvatar(file: File): Promise<{ url: string }> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`/api${USER_ROUTES.AVATAR}`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to upload avatar");
-    }
-
-    return response.json();
+    return apiService.postFormData<{ url: string }>(
+      USER_ROUTES.AVATAR,
+      formData
+    );
   }
 
   // Delete avatar

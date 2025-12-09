@@ -123,6 +123,15 @@ export function useUrlFilters(
     null
   );
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
+  }, [debounceTimer]);
+
   // Build query string from current state
   const buildQueryString = useCallback((): string => {
     const params = new URLSearchParams();

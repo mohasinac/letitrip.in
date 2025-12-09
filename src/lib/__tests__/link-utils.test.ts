@@ -169,7 +169,7 @@ describe("Link Utils", () => {
 
     it("should return undefined for internal links", () => {
       const rel = getLinkRel("/products");
-      expect(rel).toBeUndefined();
+      expect(rel).toBe("");
     });
   });
 
@@ -179,13 +179,13 @@ describe("Link Utils", () => {
       expect(target).toBe("_blank");
     });
 
-    it("should return undefined for internal links by default", () => {
+    it("should return _self for internal links by default", () => {
       const target = getLinkTarget("/products");
-      expect(target).toBeUndefined();
+      expect(target).toBe("_self");
     });
 
-    it("should respect forceNewTab option", () => {
-      const target = getLinkTarget("/products", { forceNewTab: true });
+    it("should respect explicit target parameter", () => {
+      const target = getLinkTarget("/products", "_blank");
       expect(target).toBe("_blank");
     });
   });

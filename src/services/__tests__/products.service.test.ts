@@ -299,4 +299,469 @@ describe("ProductsService", () => {
       expect(result.failedIds).toContain("prod-3");
     });
   });
+
+  describe("getReviews", () => {
+    it("gets product reviews with pagination", async () => {
+      const mockResponse = {
+        data: [
+          { id: "rev1", rating: 5, comment: "Great product!" },
+          { id: "rev2", rating: 4, comment: "Good quality" },
+        ],
+        count: 2,
+        pagination: { page: 1, limit: 10 },
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getReviews("prod-1", 1, 10);
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1/reviews")
+      );
+      expect(result.data).toHaveLength(2);
+    });
+  });
+
+  describe("getVariants", () => {
+    it("gets product variants", async () => {
+      const mockResponse = {
+        data: [
+          { id: "var1", name: "Variant 1", price: 1000 },
+          { id: "var2", name: "Variant 2", price: 1200 },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getVariants("prod-1");
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1/variants")
+      );
+      expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("getSimilar", () => {
+    it("gets similar products with limit", async () => {
+      const mockResponse = {
+        data: [
+          { id: "sim1", name: "Similar 1", price: 950 },
+          { id: "sim2", name: "Similar 2", price: 1050 },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getSimilar("prod-1", 2);
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1/similar")
+      );
+      expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("getSellerProducts", () => {
+    it("gets other products from same seller", async () => {
+      const mockResponse = {
+        data: [
+          { id: "seller-prod1", name: "Product 1", price: 800 },
+          { id: "seller-prod2", name: "Product 2", price: 900 },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getSellerProducts("prod-1", 10);
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1/seller-items")
+      );
+      expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("updateStock", () => {
+    it("updates product stock count", async () => {
+      const mockResponse = {
+        data: { id: "prod1", stockCount: 50 },
+      };
+
+      (apiService.patch as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.updateStock("prod-1", 50);
+
+      expect(apiService.patch).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1"),
+        expect.objectContaining({ stockCount: 50 })
+      );
+      expect(result.stockCount).toBe(50);
+    });
+  });
+
+  describe("updateStatus", () => {
+    it("updates product status", async () => {
+      const mockResponse = {
+        data: { id: "prod1", status: "published" },
+      };
+
+      (apiService.patch as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.updateStatus("prod-1", "published");
+
+      expect(apiService.patch).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1"),
+        expect.objectContaining({ status: "published" })
+      );
+      expect(result.status).toBe("published");
+    });
+  });
+
+  describe("incrementView", () => {
+    it("increments product view count", async () => {
+      (apiService.post as jest.Mock).mockResolvedValue({});
+
+      await productsService.incrementView("prod-1");
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1/view"),
+        {}
+      );
+    });
+  });
+
+  describe("getFeatured", () => {
+    it("gets featured products", async () => {
+      const mockResponse = {
+        data: [
+          { id: "feat1", name: "Featured 1", featured: true },
+          { id: "feat2", name: "Featured 2", featured: true },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getFeatured();
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("featured=true")
+      );
+      expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("getHomepage", () => {
+    it("gets homepage products", async () => {
+      const mockResponse = {
+        data: [
+          { id: "home1", name: "Homepage 1" },
+          { id: "home2", name: "Homepage 2" },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getHomepage();
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("featured=true")
+      );
+      expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("bulk operations", () => {
+    it("bulk publishes products", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1", "prod2"], failed: [] },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkPublish(["prod1", "prod2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "publish" })
+      );
+    });
+
+    it("bulk unpublishes products", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkUnpublish(["prod1"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "unpublish" })
+      );
+    });
+
+    it("bulk archives products", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1", "prod2"], failed: [] },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkArchive(["prod1", "prod2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "archive" })
+      );
+    });
+
+    it("bulk features products", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkFeature(["prod1"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "feature" })
+      );
+    });
+
+    it("bulk unfeatures products", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkUnfeature(["prod1"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "unfeature" })
+      );
+    });
+
+    it("bulk updates stock", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1", "prod2"], failed: [] },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkUpdateStock(["prod1", "prod2"], 100);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({
+          action: "update-stock",
+          updates: { stockCount: 100 },
+        })
+      );
+    });
+
+    it("bulk updates products with custom data", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.bulkUpdate(["prod1"], {
+        price: 999,
+        discount: 10,
+      } as any);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products/bulk",
+        expect.objectContaining({ action: "update" })
+      );
+    });
+
+    it("handles partial failures in bulk operations", async () => {
+      const mockResponse = {
+        success: false,
+        results: {
+          success: ["prod1"],
+          failed: [{ id: "prod2", error: "Product not found" }],
+        },
+        summary: { total: 2, succeeded: 1, failed: 1 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.bulkPublish(["prod1", "prod2"]);
+
+      expect(result.summary.succeeded).toBe(1);
+      expect(result.summary.failed).toBe(1);
+    });
+  });
+
+  describe("quickCreate", () => {
+    it("creates product with minimal data", async () => {
+      const mockProduct = {
+        id: "prod1",
+        name: "Quick Product",
+        price: 500,
+        stockCount: 10,
+        categoryId: "cat1",
+        slug: "quick-product",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockProduct);
+
+      const result = await productsService.quickCreate({
+        name: "Quick Product",
+        price: 500,
+        stockCount: 10,
+        categoryId: "cat1",
+      });
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/products",
+        expect.objectContaining({
+          name: "Quick Product",
+          price: 500,
+          description: "",
+        })
+      );
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe("quickUpdate", () => {
+    it("updates product inline", async () => {
+      const mockProduct = {
+        id: "prod1",
+        name: "Updated Product",
+        price: 750,
+      };
+
+      (apiService.patch as jest.Mock).mockResolvedValue(mockProduct);
+
+      const result = await productsService.quickUpdate("prod-1", {
+        price: 750,
+      });
+
+      expect(apiService.patch).toHaveBeenCalledWith(
+        expect.stringContaining("prod-1"),
+        expect.objectContaining({ price: 750 })
+      );
+      expect(result.price).toBe(750);
+    });
+  });
+
+  describe("getByIds", () => {
+    it("fetches products by batch IDs", async () => {
+      const mockResponse = {
+        data: [
+          { id: "prod1", name: "Product 1" },
+          { id: "prod2", name: "Product 2" },
+        ],
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await productsService.getByIds(["prod1", "prod2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith("/products/batch", {
+        ids: ["prod1", "prod2"],
+      });
+      expect(result).toHaveLength(2);
+    });
+
+    it("returns empty array for empty IDs", async () => {
+      const result = await productsService.getByIds([]);
+
+      expect(result).toEqual([]);
+      expect(apiService.post).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles products with special characters in name", async () => {
+      const mockFormData = {
+        name: "Special @#$% & Product 😊",
+        price: 1000,
+        description: "Unicode: नमस्ते مرحبا 你好",
+        categoryId: "cat1",
+      };
+
+      const mockProduct = {
+        id: "prod1",
+        name: mockFormData.name,
+        slug: "special-product",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue({
+        data: mockProduct,
+      });
+
+      const result = await productsService.create(mockFormData as any);
+
+      expect(result).toBeDefined();
+    });
+
+    it("handles concurrent bulk operations", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["prod1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const promises = [
+        productsService.bulkPublish(["prod1"]),
+        productsService.bulkFeature(["prod2"]),
+        productsService.bulkUpdateStock(["prod3"], 50),
+      ];
+
+      const results = await Promise.all(promises);
+
+      expect(results).toHaveLength(3);
+      expect(apiService.post).toHaveBeenCalledTimes(3);
+    });
+
+    it("handles filters with multiple values", async () => {
+      const mockResponse = {
+        data: [{ id: "prod1", name: "Filtered Product" }],
+        count: 1,
+        pagination: { page: 1, limit: 20 },
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      await productsService.list({
+        categoryId: "cat1",
+        search: "test",
+        priceRange: { min: 100, max: 1000 },
+        inStock: true,
+        featured: true,
+      });
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("categoryId=cat1")
+      );
+    });
+  });
 });

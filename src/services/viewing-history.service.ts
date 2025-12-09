@@ -29,7 +29,7 @@ class ViewingHistoryService {
       const now = Date.now();
       const expiryMs = VIEWING_HISTORY_CONFIG.EXPIRY_DAYS * 24 * 60 * 60 * 1000;
       const validItems = items.filter(
-        (item) => now - item.viewed_at < expiryMs,
+        (item) => now - item.viewed_at < expiryMs
       );
 
       // If any items were filtered, update storage
@@ -56,6 +56,11 @@ class ViewingHistoryService {
    */
   addToHistory(item: Omit<ViewingHistoryItem, "viewed_at">): void {
     if (typeof window === "undefined") return;
+
+    // Validate item has an ID
+    if (!item.id || item.id.trim() === "") {
+      return;
+    }
 
     try {
       let history = this.getHistory();

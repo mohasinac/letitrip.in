@@ -1,34 +1,34 @@
-import { apiService } from "./api.service";
 import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
+import { logServiceError } from "@/lib/error-logger";
 import {
   OrderBE,
   OrderFiltersBE,
   UpdateOrderStatusRequestBE,
 } from "@/types/backend/order.types";
 import {
-  OrderFE,
-  OrderCardFE,
   CreateOrderFormFE,
+  OrderCardFE,
+  OrderFE,
   OrderStatsFE,
 } from "@/types/frontend/order.types";
-import {
-  toFEOrder,
-  toFEOrderCard,
-  toBECreateOrderRequest,
-  toBEUpdateOrderStatusRequest,
-  toBECreateShipmentRequest,
-} from "@/types/transforms/order.transforms";
 import type {
+  BulkActionResponse,
   PaginatedResponseBE,
   PaginatedResponseFE,
-  BulkActionResponse,
 } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
+import {
+  toBECreateOrderRequest,
+  toBECreateShipmentRequest,
+  toBEUpdateOrderStatusRequest,
+  toFEOrder,
+  toFEOrderCard,
+} from "@/types/transforms/order.transforms";
+import { apiService } from "./api.service";
 
 class OrdersService {
   // List orders (role-filtered)
   async list(
-    filters?: Partial<OrderFiltersBE>,
+    filters?: Partial<OrderFiltersBE>
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const endpoint = buildUrl(ORDER_ROUTES.LIST, filters);
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
@@ -42,7 +42,7 @@ class OrdersService {
 
   // Get seller's orders specifically (uses unified route with automatic filtering)
   async getSellerOrders(
-    filters?: Partial<OrderFiltersBE>,
+    filters?: Partial<OrderFiltersBE>
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     // The unified route automatically filters by seller's shop
     return this.list(filters);
@@ -59,7 +59,7 @@ class OrdersService {
     const request = toBECreateOrderRequest(formData);
     const orderBE = await apiService.post<OrderBE>(
       ORDER_ROUTES.CREATE,
-      request,
+      request
     );
     return toFEOrder(orderBE);
   }
@@ -68,12 +68,12 @@ class OrdersService {
   async updateStatus(
     id: string,
     status: string,
-    internalNotes?: string,
+    internalNotes?: string
   ): Promise<OrderFE> {
     const request = toBEUpdateOrderStatusRequest(status, internalNotes);
     const orderBE = await apiService.patch<OrderBE>(
       ORDER_ROUTES.BY_ID(id),
-      request,
+      request
     );
     return toFEOrder(orderBE);
   }
@@ -83,16 +83,16 @@ class OrdersService {
     id: string,
     trackingNumber: string,
     shippingProvider: string,
-    estimatedDelivery?: Date,
+    estimatedDelivery?: Date
   ): Promise<OrderFE> {
     const request = toBECreateShipmentRequest(
       trackingNumber,
       shippingProvider,
-      estimatedDelivery,
+      estimatedDelivery
     );
     const orderBE = await apiService.post<OrderBE>(
       `/orders/${id}/shipment`,
-      request,
+      request
     );
     return toFEOrder(orderBE);
   }
@@ -123,19 +123,9 @@ class OrdersService {
   }
 
   // Download invoice
+  // BUG FIX: Use apiService.getBlob for consistency and proper error handling
   async downloadInvoice(id: string): Promise<Blob> {
-    const response = await fetch(`/api${ORDER_ROUTES.INVOICE(id)}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/pdf",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to download invoice");
-    }
-
-    return response.blob();
+    return apiService.getBlob(ORDER_ROUTES.INVOICE(id));
   }
 
   // Get order statistics
@@ -168,7 +158,7 @@ class OrdersService {
   async bulkAction(
     action: string,
     orderIds: string[],
-    data?: any,
+    data?: any
   ): Promise<BulkActionResponse> {
     try {
       const response = await apiService.post<BulkActionResponse>(
@@ -177,7 +167,7 @@ class OrdersService {
           action,
           orderIds,
           data,
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -205,7 +195,7 @@ class OrdersService {
    */
   async bulkShip(
     orderIds: string[],
-    trackingNumber?: string,
+    trackingNumber?: string
   ): Promise<BulkActionResponse> {
     return this.bulkAction("ship", orderIds, { trackingNumber });
   }
@@ -222,7 +212,7 @@ class OrdersService {
    */
   async bulkCancel(
     orderIds: string[],
-    reason?: string,
+    reason?: string
   ): Promise<BulkActionResponse> {
     return this.bulkAction("cancel", orderIds, { reason });
   }
@@ -233,7 +223,7 @@ class OrdersService {
   async bulkRefund(
     orderIds: string[],
     refundAmount?: number,
-    reason?: string,
+    reason?: string
   ): Promise<BulkActionResponse> {
     return this.bulkAction("refund", orderIds, { refundAmount, reason });
   }
@@ -250,7 +240,7 @@ class OrdersService {
    */
   async bulkUpdate(
     orderIds: string[],
-    updates: Partial<UpdateOrderStatusRequestBE>,
+    updates: Partial<UpdateOrderStatusRequestBE>
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", orderIds, updates);
   }
