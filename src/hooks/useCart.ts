@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { cartService } from "@/services/cart.service";
-import { useAuth } from "@/contexts/AuthContext";
-import type { CartItemFE, CartFE } from "@/types/frontend/cart.types";
+import type { CartFE, CartItemFE } from "@/types/frontend/cart.types";
+import { useCallback, useEffect, useState } from "react";
 
 export function useCart() {
   const { user } = useAuth();
@@ -52,7 +52,7 @@ export function useCart() {
         };
       });
     },
-    [],
+    []
   );
 
   // Load cart data
@@ -73,7 +73,7 @@ export function useCart() {
         // For guest cart, create a minimal CartFE-like structure
         const subtotal = transformedItems.reduce(
           (sum, item) => sum + item.total,
-          0,
+          0
         );
         const tax = subtotal * 0.18;
         const total = subtotal + tax;
@@ -85,7 +85,7 @@ export function useCart() {
           items: transformedItems,
           itemCount: transformedItems.reduce(
             (sum, item) => sum + item.quantity,
-            0,
+            0
           ),
           subtotal,
           discount: 0,
@@ -132,7 +132,7 @@ export function useCart() {
         image: string;
         shopId: string;
         shopName: string;
-      },
+      }
     ) => {
       try {
         if (user) {
@@ -149,11 +149,18 @@ export function useCart() {
             throw new Error("Product details required for guest cart");
           }
 
-          cartService.addToGuestCartWithDetails({
+          cartService.addGuestItem({
+            id: `guest_${Date.now()}_${Math.random()}`,
             productId,
+            productName: productDetails.name,
+            productSlug: productDetails.name.toLowerCase().replace(/\s+/g, "-"),
             quantity,
-            variantId: variant,
-            ...productDetails,
+            variantId: variant || null,
+            price: productDetails.price,
+            image: productDetails.image,
+            shopId: productDetails.shopId,
+            shopName: productDetails.shopName,
+            isAvailable: true,
           });
 
           await loadCart();
@@ -166,31 +173,31 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Update item quantity
-  const updateItem = useCallback(
+  const updateQuantity = useCallback(
     async (itemId: string, quantity: number) => {
       try {
         if (user) {
           // Authenticated user
-          await cartService.updateItem(itemId, quantity);
+          await cartService.updateQuantity(itemId, quantity);
           await loadCart();
         } else {
           // Guest user
-          cartService.updateGuestCartItem(itemId, quantity);
+          cartService.updateGuestItem(itemId, quantity);
           await loadCart();
         }
       } catch (err: any) {
         logError(err, {
-          component: "useCart.updateItem",
+          component: "useCart.updateQuantity",
           metadata: { itemId, quantity },
         });
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Remove item
@@ -199,11 +206,11 @@ export function useCart() {
       try {
         if (user) {
           // Authenticated user
-          await cartService.removeItem(itemId);
+          await cartService.removeCartItem(itemId);
           await loadCart();
         } else {
           // Guest user
-          cartService.removeFromGuestCart(itemId);
+          cartService.removeGuestItem(itemId);
           await loadCart();
         }
       } catch (err: any) {
@@ -214,7 +221,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, loadCart],
+    [user, loadCart]
   );
 
   // Clear cart
@@ -222,7 +229,7 @@ export function useCart() {
     try {
       if (user) {
         // Authenticated user
-        await cartService.clear();
+        await cartService.clearCart();
         await loadCart();
       } else {
         // Guest user
@@ -265,7 +272,7 @@ export function useCart() {
         throw err;
       }
     },
-    [user, cart],
+    [user, cart]
   );
 
   // Remove coupon
@@ -311,7 +318,7 @@ export function useCart() {
           productId: item.productId,
           quantity: item.quantity,
           variantId: item.variantId,
-        })) as any as CartItemFE[],
+        })) as any as CartItemFE[]
       );
 
       // Clear guest cart after merge
@@ -352,7 +359,7 @@ export function useCart() {
     isMerging,
     mergeSuccess,
     addItem,
-    updateItem,
+    updateQuantity,
     removeItem,
     clearCart,
     applyCoupon,

@@ -2,11 +2,11 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
-  useState,
-  useCallback,
   useMemo,
+  useState,
 } from "react";
 
 // Theme types - Only light and dark (no system)
@@ -77,7 +77,7 @@ function applyTheme(theme: Theme): void {
   if (metaThemeColor) {
     metaThemeColor.setAttribute(
       "content",
-      theme === "dark" ? "#111827" : "#ffffff",
+      theme === "dark" ? "#111827" : "#ffffff"
     );
   }
 }
@@ -96,7 +96,7 @@ export function ThemeProvider({
   enableStorage = true,
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize theme from storage or default
   useEffect(() => {
@@ -105,8 +105,6 @@ export function ThemeProvider({
 
     setThemeState(initialTheme);
     applyTheme(initialTheme);
-
-    setIsLoading(false);
   }, [defaultTheme, enableStorage]);
 
   // Set theme function
@@ -120,7 +118,7 @@ export function ThemeProvider({
 
       applyTheme(newTheme);
     },
-    [enableStorage],
+    [enableStorage]
   );
 
   // Toggle between light and dark
@@ -137,7 +135,7 @@ export function ThemeProvider({
       isLoading,
       toggleTheme,
     }),
-    [theme, setTheme, isLoading, toggleTheme],
+    [theme, setTheme, isLoading, toggleTheme]
   );
 
   return (

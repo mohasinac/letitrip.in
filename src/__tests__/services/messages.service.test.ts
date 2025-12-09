@@ -9,6 +9,8 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 // Mock dependencies
 jest.mock("@/services/api.service");
 
+const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
 // Mock date-fns functions
 jest.mock("date-fns", () => ({
   formatDistanceToNow: jest.fn((date) => "2 hours ago"),
@@ -21,6 +23,12 @@ describe("MessagesService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     messagesService.setCurrentUserId(mockUserId);
+
+    // Setup default mocks
+    mockApiService.get = jest.fn();
+    mockApiService.post = jest.fn();
+    mockApiService.patch = jest.fn();
+    mockApiService.delete = jest.fn();
   });
 
   describe("setCurrentUserId", () => {

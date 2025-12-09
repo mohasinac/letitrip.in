@@ -272,7 +272,339 @@ describe("UsersService", () => {
     });
   });
 
-  // Note: sendOTP and verifyOTP methods don't exist in users.service - using sendMobileVerification/verifyMobile instead
+  describe("sendEmailVerification", () => {
+    it("sends email verification OTP", async () => {
+      const mockResponse = {
+        message: "Verification email sent",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.sendEmailVerification();
+
+      expect(apiService.post).toHaveBeenCalledWith("/user/verify-email", {});
+      expect(result.message).toBe("Verification email sent");
+    });
+  });
+
+  describe("verifyEmail", () => {
+    it("verifies email with OTP", async () => {
+      const mockFormData = {
+        otp: "123456",
+      };
+
+      const mockResponse = {
+        message: "Email verified successfully",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.verifyEmail(mockFormData as any);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/user/verify-email/confirm",
+        expect.objectContaining({ otp: "123456" })
+      );
+      expect(result.message).toBe("Email verified successfully");
+    });
+  });
+
+  describe("sendMobileVerification", () => {
+    it("sends mobile verification OTP", async () => {
+      const mockResponse = {
+        message: "Verification SMS sent",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.sendMobileVerification();
+
+      expect(apiService.post).toHaveBeenCalledWith("/user/verify-mobile", {});
+      expect(result.message).toBe("Verification SMS sent");
+    });
+  });
+
+  describe("verifyMobile", () => {
+    it("verifies mobile with OTP", async () => {
+      const mockFormData = {
+        otp: "654321",
+      };
+
+      const mockResponse = {
+        message: "Mobile verified successfully",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.verifyMobile(mockFormData as any);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/user/verify-mobile/confirm",
+        expect.objectContaining({ otp: "654321" })
+      );
+      expect(result.message).toBe("Mobile verified successfully");
+    });
+  });
+
+  describe("uploadAvatar", () => {
+    it("uploads avatar using apiService.postFormData", async () => {
+      const mockFile = new File(["avatar"], "avatar.jpg", {
+        type: "image/jpeg",
+      });
+      const mockResponse = {
+        url: "https://example.com/avatars/avatar.jpg",
+      };
+
+      (apiService.postFormData as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.uploadAvatar(mockFile);
+
+      expect(apiService.postFormData).toHaveBeenCalledWith(
+        "/users/me/avatar",
+        expect.any(FormData)
+      );
+      expect(result.url).toBe("https://example.com/avatars/avatar.jpg");
+    });
+
+    it("handles upload errors", async () => {
+      const mockFile = new File(["avatar"], "avatar.jpg", {
+        type: "image/jpeg",
+      });
+
+      (apiService.postFormData as jest.Mock).mockRejectedValue(
+        new Error("File too large")
+      );
+
+      await expect(usersService.uploadAvatar(mockFile)).rejects.toThrow(
+        "File too large"
+      );
+    });
+  });
+
+  describe("deleteAvatar", () => {
+    it("deletes user avatar", async () => {
+      const mockResponse = {
+        message: "Avatar deleted successfully",
+      };
+
+      (apiService.delete as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.deleteAvatar();
+
+      expect(apiService.delete).toHaveBeenCalledWith("/users/me/avatar");
+      expect(result.message).toBe("Avatar deleted successfully");
+    });
+  });
+
+  describe("deleteAccount", () => {
+    it("deletes user account with password confirmation", async () => {
+      const mockResponse = {
+        message: "Account deleted successfully",
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.deleteAccount("password123");
+
+      expect(apiService.post).toHaveBeenCalledWith("/users/me/delete", {
+        password: "password123",
+      });
+      expect(result.message).toBe("Account deleted successfully");
+    });
+  });
+
+  describe("getStats", () => {
+    it("gets user statistics", async () => {
+      const mockStats = {
+        totalUsers: 1000,
+        activeUsers: 750,
+        newUsersThisMonth: 50,
+        usersByRole: {
+          user: 800,
+          seller: 150,
+          admin: 50,
+        },
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockStats);
+
+      const result = await usersService.getStats();
+
+      expect(apiService.get).toHaveBeenCalledWith("/users/stats");
+      expect(result.totalUsers).toBe(1000);
+      expect(result.usersByRole.user).toBe(800);
+    });
+  });
+
+  describe("bulk operations", () => {
+    describe("bulkMakeSeller", () => {
+      it("promotes users to seller role in bulk", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        const result = await usersService.bulkMakeSeller(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "make-seller",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+        expect(result.success).toBe(true);
+      });
+    });
+
+    describe("bulkMakeUser", () => {
+      it("demotes sellers to user role in bulk", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkMakeUser(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "make-user",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+      });
+    });
+
+    describe("bulkBan", () => {
+      it("bans multiple users with reason", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkBan(["user1", "user2"], "Spam accounts");
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "ban",
+          ids: ["user1", "user2"],
+          data: { banReason: "Spam accounts" },
+        });
+      });
+
+      it("bans multiple users without reason", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkBan(["user1"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "ban",
+          ids: ["user1"],
+          data: { banReason: undefined },
+        });
+      });
+    });
+
+    describe("bulkUnban", () => {
+      it("unbans multiple users", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkUnban(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "unban",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+      });
+    });
+
+    describe("bulkVerifyEmail", () => {
+      it("verifies emails in bulk", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkVerifyEmail(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "verify-email",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+      });
+    });
+
+    describe("bulkVerifyPhone", () => {
+      it("verifies phones in bulk", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkVerifyPhone(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "verify-phone",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+      });
+    });
+
+    describe("bulkDelete", () => {
+      it("deletes multiple users", async () => {
+        const mockResponse = {
+          success: true,
+          results: { success: ["user1", "user2"], failed: [] },
+        };
+
+        (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+        await usersService.bulkDelete(["user1", "user2"]);
+
+        expect(apiService.post).toHaveBeenCalledWith("/users/bulk", {
+          action: "delete",
+          ids: ["user1", "user2"],
+          data: undefined,
+        });
+      });
+    });
+
+    it("handles partial failures in bulk operations", async () => {
+      const mockResponse = {
+        success: false,
+        results: {
+          success: ["user1"],
+          failed: [{ id: "user2", error: "User not found" }],
+        },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.bulkBan(["user1", "user2"]);
+
+      expect(result.results.success).toHaveLength(1);
+      expect(result.results.failed).toHaveLength(1);
+    });
+  });
 
   describe("error handling", () => {
     it("handles API errors in list", async () => {
@@ -304,6 +636,96 @@ describe("UsersService", () => {
           newPassword: "new",
         } as any)
       ).rejects.toThrow("Invalid password");
+    });
+
+    it("handles validation errors in uploadAvatar", async () => {
+      const mockFile = new File([""], "empty.jpg", { type: "image/jpeg" });
+
+      (apiService.postFormData as jest.Mock).mockRejectedValue(
+        new Error("File cannot be empty")
+      );
+
+      await expect(usersService.uploadAvatar(mockFile)).rejects.toThrow(
+        "File cannot be empty"
+      );
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles empty filter object in list", async () => {
+      const mockResponse = {
+        data: [],
+        count: 0,
+        pagination: { page: 1, limit: 10 },
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.list({});
+
+      expect(apiService.get).toHaveBeenCalledWith("/users");
+      expect(result.data).toEqual([]);
+    });
+
+    it("handles large file uploads", async () => {
+      const largeFile = new File(
+        [new ArrayBuffer(10 * 1024 * 1024)],
+        "large.jpg",
+        {
+          type: "image/jpeg",
+        }
+      );
+      const mockResponse = {
+        url: "https://example.com/avatars/large.jpg",
+      };
+
+      (apiService.postFormData as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await usersService.uploadAvatar(largeFile);
+
+      expect(result.url).toBeDefined();
+    });
+
+    it("handles concurrent bulk operations", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["user1", "user2"], failed: [] },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const promises = [
+        usersService.bulkMakeSeller(["user1"]),
+        usersService.bulkVerifyEmail(["user2"]),
+        usersService.bulkUnban(["user3"]),
+      ];
+
+      const results = await Promise.all(promises);
+
+      expect(results).toHaveLength(3);
+      expect(apiService.post).toHaveBeenCalledTimes(3);
+    });
+
+    it("handles special characters in user data", async () => {
+      const mockFormData = {
+        name: "Test O'Brien-Smith",
+        phone: "+91-9876-543-210",
+      };
+
+      const mockUser = {
+        data: {
+          id: "user1",
+          ...mockFormData,
+          email: "test@example.com",
+          displayName: "Test O'Brien-Smith",
+        },
+      };
+
+      (apiService.patch as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await usersService.update("user1", mockFormData as any);
+
+      expect(result).toBeDefined();
     });
   });
 });

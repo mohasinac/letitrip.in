@@ -241,31 +241,21 @@ describe("ShippingService", () => {
     it("should generate and download shipping label", async () => {
       const mockBlob = new Blob(["PDF content"], { type: "application/pdf" });
 
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        blob: () => Promise.resolve(mockBlob),
-      });
+      (apiService.getBlob as jest.Mock).mockResolvedValue(mockBlob);
 
       const result = await shippingService.generateLabel("order1");
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/seller/shipping/label/order1",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/pdf",
-          },
-        }
+      expect(apiService.getBlob).toHaveBeenCalledWith(
+        "/api/seller/shipping/label/order1"
       );
       expect(result).toBeInstanceOf(Blob);
       expect(result.type).toBe("application/pdf");
     });
 
     it("should throw error if label generation fails", async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: false,
-        status: 404,
-      });
+      (apiService.getBlob as jest.Mock).mockRejectedValue(
+        new Error("Failed to generate label")
+      );
 
       await expect(shippingService.generateLabel("invalid")).rejects.toThrow(
         "Failed to generate label"

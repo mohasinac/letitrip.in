@@ -4,8 +4,8 @@
 
 import { Timestamp } from "firebase/firestore";
 import {
-  ReviewBE,
   CreateReviewRequestBE,
+  ReviewBE,
   ReviewStatsResponseBE,
 } from "../backend/review.types";
 import {
@@ -36,7 +36,7 @@ function formatTimeAgo(date: Date | null): string {
 
 export function toFEReview(
   reviewBE: ReviewBE,
-  currentUserId?: string,
+  currentUserId?: string
 ): ReviewFE {
   const createdAt = parseDate(reviewBE.createdAt) || new Date();
   const updatedAt = parseDate(reviewBE.updatedAt) || new Date();
@@ -50,7 +50,7 @@ export function toFEReview(
     ratingStars: Math.round(reviewBE.rating),
     timeAgo: formatTimeAgo(createdAt),
     hasReply: !!reviewBE.replyText,
-    hasImages: reviewBE.images.length > 0,
+    hasImages: (reviewBE.images || []).length > 0,
     helpfulnessScore: reviewBE.helpful - reviewBE.notHelpful,
     isYourReview: reviewBE.userId === currentUserId,
     // Backwards compatibility
@@ -61,7 +61,7 @@ export function toFEReview(
 }
 
 export function toBECreateReviewRequest(
-  formData: ReviewFormFE,
+  formData: ReviewFormFE
 ): CreateReviewRequestBE {
   return {
     productId: formData.productId,
@@ -113,7 +113,7 @@ export function toFEReviewStats(statsBE: ReviewStatsResponseBE): ReviewStatsFE {
 
 export function toFEReviews(
   reviewsBE: ReviewBE[] | undefined,
-  currentUserId?: string,
+  currentUserId?: string
 ): ReviewFE[] {
   if (!reviewsBE) return [];
   return reviewsBE.map((r) => toFEReview(r, currentUserId));

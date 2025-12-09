@@ -4,8 +4,8 @@
  * Hook for media uploads with retry logic and validation
  */
 
-import { useState, useCallback } from "react";
 import { useUploadContext } from "@/contexts/UploadContext";
+import { useCallback, useState } from "react";
 
 export interface MediaUploadOptions {
   maxSize?: number; // Max file size in bytes
@@ -20,7 +20,7 @@ export interface MediaUploadOptions {
 function validateFile(
   file: File,
   maxSize?: number,
-  allowedTypes?: string[],
+  allowedTypes?: string[]
 ): { isValid: boolean; error?: string } {
   // Check file size
   if (maxSize && file.size > maxSize) {
@@ -71,6 +71,9 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
       setUploadedUrl(null);
       setIsUploading(true);
 
+      // Create preview variable before try block so it's accessible in catch
+      let preview: string | undefined;
+
       try {
         // Validate file
         const validation = validateFile(file, maxSize, allowedTypes);
@@ -80,7 +83,6 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
         }
 
         // Create preview if it's an image
-        let preview: string | undefined;
         if (file.type.startsWith("image/")) {
           preview = URL.createObjectURL(file);
         }
@@ -144,6 +146,11 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         const url = await uploadPromise;
 
+        // Cleanup preview blob URL to prevent memory leak
+        if (preview) {
+          URL.revokeObjectURL(preview);
+        }
+
         // Update context as successful
         updateUpload(id, {
           status: "success",
@@ -162,6 +169,11 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
           err instanceof Error ? err.message : "Upload failed";
         setError(errorMessage);
         onError?.(errorMessage);
+
+        // Cleanup preview blob URL on error to prevent memory leak
+        if (preview) {
+          URL.revokeObjectURL(preview);
+        }
 
         if (uploadId) {
           updateUpload(uploadId, {
@@ -185,7 +197,7 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
       onSuccess,
       onError,
       uploadId,
-    ],
+    ]
   );
 
   // Retry failed upload

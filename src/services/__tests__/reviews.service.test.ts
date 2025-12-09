@@ -230,9 +230,414 @@ describe("ReviewsService", () => {
     });
   });
 
-  // Note: reply method doesn't exist in reviews.service - skipping test
+  describe("markHelpful", () => {
+    it("marks review as helpful", async () => {
+      const mockResponse = { helpfulCount: 5 };
 
-  // Note: getStats method doesn't exist in reviews.service - skipping test
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.markHelpful("review1");
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/review1/helpful",
+        {}
+      );
+      expect(result.helpfulCount).toBe(5);
+    });
+  });
+
+  describe("uploadMedia", () => {
+    it("uploads media files using apiService.postFormData", async () => {
+      const mockFiles = [
+        new File(["image1"], "image1.jpg", { type: "image/jpeg" }),
+        new File(["image2"], "image2.jpg", { type: "image/jpeg" }),
+      ];
+
+      const mockResponse = {
+        urls: [
+          "https://example.com/reviews/image1.jpg",
+          "https://example.com/reviews/image2.jpg",
+        ],
+      };
+
+      (apiService.postFormData as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.uploadMedia(mockFiles);
+
+      expect(apiService.postFormData).toHaveBeenCalledWith(
+        "/reviews/media",
+        expect.any(FormData)
+      );
+      expect(result.urls).toHaveLength(2);
+    });
+
+    it("handles upload errors", async () => {
+      const mockFiles = [
+        new File(["image"], "image.jpg", { type: "image/jpeg" }),
+      ];
+
+      (apiService.postFormData as jest.Mock).mockRejectedValue(
+        new Error("Upload failed")
+      );
+
+      await expect(reviewsService.uploadMedia(mockFiles)).rejects.toThrow(
+        "Upload failed"
+      );
+    });
+  });
+
+  describe("getSummary", () => {
+    it("gets review summary for product", async () => {
+      const mockSummary = {
+        averageRating: 4.5,
+        totalReviews: 100,
+        ratingDistribution: [
+          { rating: 5, count: 60 },
+          { rating: 4, count: 20 },
+          { rating: 3, count: 10 },
+          { rating: 2, count: 5 },
+          { rating: 1, count: 5 },
+        ],
+        verifiedPurchasePercentage: 80,
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockSummary);
+
+      const result = await reviewsService.getSummary({ productId: "prod1" });
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("/reviews/summary")
+      );
+      expect(result.averageRating).toBe(4.5);
+      expect(result.totalReviews).toBe(100);
+    });
+
+    it("gets review summary for shop", async () => {
+      const mockSummary = {
+        averageRating: 4.2,
+        totalReviews: 50,
+        ratingDistribution: [],
+        verifiedPurchasePercentage: 75,
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockSummary);
+
+      await reviewsService.getSummary({ shopId: "shop1" });
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("shopId=shop1")
+      );
+    });
+
+    it("gets review summary for auction", async () => {
+      const mockSummary = {
+        averageRating: 4.8,
+        totalReviews: 25,
+        ratingDistribution: [],
+        verifiedPurchasePercentage: 90,
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockSummary);
+
+      await reviewsService.getSummary({ auctionId: "auction1" });
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("auctionId=auction1")
+      );
+    });
+  });
+
+  describe("canReview", () => {
+    it("checks if user can review product", async () => {
+      const mockResponse = { canReview: true };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.canReview("prod1");
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("productId=prod1")
+      );
+      expect(result.canReview).toBe(true);
+    });
+
+    it("checks if user can review auction", async () => {
+      const mockResponse = {
+        canReview: false,
+        reason: "You haven't purchased from this auction",
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.canReview(undefined, "auction1");
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("auctionId=auction1")
+      );
+      expect(result.canReview).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+  });
+
+  describe("getFeatured", () => {
+    it("gets featured reviews", async () => {
+      const mockResponse = {
+        data: [
+          {
+            id: "rev1",
+            rating: 5,
+            comment: "Featured review",
+            featured: true,
+            isApproved: true,
+          },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.getFeatured();
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("featured=true")
+      );
+      expect(result).toHaveLength(1);
+    });
+  });
+
+  describe("getHomepage", () => {
+    it("gets homepage reviews", async () => {
+      const mockResponse = {
+        data: [
+          {
+            id: "rev1",
+            rating: 5,
+            verifiedPurchase: true,
+            featured: true,
+          },
+        ],
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.getHomepage();
+
+      expect(apiService.get).toHaveBeenCalledWith(
+        expect.stringContaining("verifiedPurchase=true")
+      );
+      expect(result).toHaveLength(1);
+    });
+  });
+
+  describe("bulk operations", () => {
+    it("bulk approves reviews", async () => {
+      const mockResponse = {
+        success: true,
+        results: {
+          success: ["rev1", "rev2"],
+          failed: [],
+        },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkApprove(["rev1", "rev2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({ action: "approve" })
+      );
+    });
+
+    it("bulk rejects reviews", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkReject(["rev1"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({ action: "reject" })
+      );
+    });
+
+    it("bulk flags reviews", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1", "rev2"], failed: [] },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkFlag(["rev1", "rev2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({ action: "flag" })
+      );
+    });
+
+    it("bulk unflags reviews", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkUnflag(["rev1"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({ action: "unflag" })
+      );
+    });
+
+    it("bulk deletes reviews", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1", "rev2"], failed: [] },
+        summary: { total: 2, succeeded: 2, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkDelete(["rev1", "rev2"]);
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({ action: "delete" })
+      );
+    });
+
+    it("bulk updates reviews with custom data", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      await reviewsService.bulkUpdate(["rev1"], {
+        featured: true,
+        moderationNotes: "High quality review",
+      });
+
+      expect(apiService.post).toHaveBeenCalledWith(
+        "/reviews/bulk",
+        expect.objectContaining({
+          action: "update",
+          data: expect.objectContaining({ featured: true }),
+        })
+      );
+    });
+
+    it("handles partial failures in bulk operations", async () => {
+      const mockResponse = {
+        success: false,
+        results: {
+          success: ["rev1"],
+          failed: [{ id: "rev2", error: "Review already deleted" }],
+        },
+        summary: { total: 2, succeeded: 1, failed: 1 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.bulkApprove(["rev1", "rev2"]);
+
+      expect(result.summary.succeeded).toBe(1);
+      expect(result.summary.failed).toBe(1);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles reviews with special characters", async () => {
+      const mockFormData = {
+        productId: "prod1",
+        rating: 5,
+        comment: "Special chars: @#$%^&*() and unicode: 😊 नमस्ते",
+        images: [],
+      };
+
+      const mockReview = {
+        data: {
+          id: "rev1",
+          comment: mockFormData.comment,
+          rating: 5,
+        },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockReview);
+
+      const result = await reviewsService.create(mockFormData as any);
+
+      expect(result).toBeDefined();
+    });
+
+    it("handles multiple media uploads", async () => {
+      const mockFiles = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new File([`image${i}`], `image${i}.jpg`, { type: "image/jpeg" })
+      );
+
+      const mockResponse = {
+        urls: mockFiles.map((_, i) => `https://example.com/image${i}.jpg`),
+      };
+
+      (apiService.postFormData as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await reviewsService.uploadMedia(mockFiles);
+
+      expect(result.urls).toHaveLength(5);
+    });
+
+    it("handles concurrent bulk operations", async () => {
+      const mockResponse = {
+        success: true,
+        results: { success: ["rev1"], failed: [] },
+        summary: { total: 1, succeeded: 1, failed: 0 },
+      };
+
+      (apiService.post as jest.Mock).mockResolvedValue(mockResponse);
+
+      const promises = [
+        reviewsService.bulkApprove(["rev1"]),
+        reviewsService.bulkFlag(["rev2"]),
+        reviewsService.bulkDelete(["rev3"]),
+      ];
+
+      const results = await Promise.all(promises);
+
+      expect(results).toHaveLength(3);
+      expect(apiService.post).toHaveBeenCalledTimes(3);
+    });
+
+    it("handles review summary with no ratings", async () => {
+      const mockSummary = {
+        averageRating: 0,
+        totalReviews: 0,
+        ratingDistribution: [],
+        verifiedPurchasePercentage: 0,
+      };
+
+      (apiService.get as jest.Mock).mockResolvedValue(mockSummary);
+
+      const result = await reviewsService.getSummary({ productId: "new-prod" });
+
+      expect(result.totalReviews).toBe(0);
+      expect(result.averageRating).toBe(0);
+    });
+  });
 
   describe("error handling", () => {
     it("handles API errors in list", async () => {

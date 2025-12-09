@@ -13,9 +13,15 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 jest.mock("@/services/api.service");
 jest.mock("@/lib/firebase-error-logger");
 
+const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
 describe("WhatsAppService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Setup default mocks
+    mockApiService.get = jest.fn();
+    mockApiService.post = jest.fn();
   });
 
   describe("sendTemplate", () => {

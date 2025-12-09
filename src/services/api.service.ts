@@ -67,7 +67,7 @@ class ApiService {
     }
 
     console.log(
-      `[API Cache] Initialized ${this.cacheConfig.size} cache configurations`,
+      `[API Cache] Initialized ${this.cacheConfig.size} cache configurations`
     );
   }
 
@@ -96,7 +96,7 @@ class ApiService {
    */
   private isStaleButUsable(
     entry: CacheEntry<any>,
-    config: CacheConfig,
+    config: CacheConfig
   ): boolean {
     const staleUntil = entry.expiresAt + (config.staleWhileRevalidate || 0);
     return Date.now() < staleUntil;
@@ -107,7 +107,7 @@ class ApiService {
    */
   private getCachedData<T>(
     cacheKey: string,
-    config: CacheConfig | null,
+    config: CacheConfig | null
   ): {
     data: T | null;
     status: "fresh" | "stale" | "miss";
@@ -221,7 +221,7 @@ class ApiService {
    */
   private async deduplicateRequest<T>(
     cacheKey: string,
-    requestFn: () => Promise<T>,
+    requestFn: () => Promise<T>
   ): Promise<T> {
     // Check if there's already a pending request
     if (this.pendingRequests.has(cacheKey)) {
@@ -254,7 +254,7 @@ class ApiService {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    attempt: number = 1,
+    attempt: number = 1
   ): Promise<T> {
     // Handle server-side requests (when baseUrl is relative)
     let url = `${this.baseUrl}${endpoint}`;
@@ -269,7 +269,7 @@ class ApiService {
     const cacheKey = this.getCacheKey(
       url,
       options.method || "GET",
-      typeof options.body === "string" ? options.body : undefined,
+      typeof options.body === "string" ? options.body : undefined
     );
     const controller = new AbortController();
     this.abortControllers.set(cacheKey, controller);
@@ -297,7 +297,7 @@ class ApiService {
       if (response.status === 429) {
         const retryAfter = response.headers.get("Retry-After");
         const error = new Error(
-          `Too many requests. Please try again in ${retryAfter} seconds.`,
+          `Too many requests. Please try again in ${retryAfter} seconds.`
         ) as any;
         error.status = 429;
         throw error;
@@ -321,7 +321,7 @@ class ApiService {
       // Handle forbidden
       if (response.status === 403) {
         const error = new Error(
-          "Access forbidden. You do not have permission.",
+          "Access forbidden. You do not have permission."
         ) as any;
         error.status = 403;
         throw error;
@@ -338,7 +338,7 @@ class ApiService {
 
       if (!response.ok) {
         const error = new Error(
-          data.error || data.message || "Request failed",
+          data.error || data.message || "Request failed"
         ) as any;
         error.status = response.status;
         throw error;
@@ -368,7 +368,7 @@ class ApiService {
       ) {
         const delay = this.getRetryDelay(attempt);
         console.log(
-          `[API] Retry ${attempt}/${this.retryConfig.maxRetries} after ${delay}ms: ${endpoint}`,
+          `[API] Retry ${attempt}/${this.retryConfig.maxRetries} after ${delay}ms: ${endpoint}`
         );
 
         await this.sleep(delay);
@@ -394,7 +394,7 @@ class ApiService {
       }
     }
     console.log(
-      `[API Cache] Invalidated ${count} entries matching: ${pattern}`,
+      `[API Cache] Invalidated ${count} entries matching: ${pattern}`
     );
   }
 
@@ -422,11 +422,11 @@ class ApiService {
 
     const totalHits = Array.from(this.cacheHits.values()).reduce(
       (a, b) => a + b,
-      0,
+      0
     );
     const totalMisses = Array.from(this.cacheMisses.values()).reduce(
       (a, b) => a + b,
-      0,
+      0
     );
     const hitRate =
       totalHits + totalMisses > 0 ? totalHits / (totalHits + totalMisses) : 0;
@@ -480,7 +480,7 @@ class ApiService {
         this.request<T>(endpoint, {
           ...options,
           method: "GET",
-        }),
+        })
       )
         .then((freshData) => {
           // Update cache with fresh data
@@ -509,7 +509,7 @@ class ApiService {
       this.request<T>(endpoint, {
         ...options,
         method: "GET",
-      }),
+      })
     );
 
     // Store in cache if config exists
@@ -523,7 +523,7 @@ class ApiService {
   async post<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     // For POST requests, include body in cache key for idempotent operations
     // This allows deduplication of identical POST requests (e.g., search queries)
@@ -538,14 +538,14 @@ class ApiService {
         ...options,
         method: "POST",
         body,
-      }),
+      })
     );
   }
 
   async put<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -557,7 +557,7 @@ class ApiService {
   async patch<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -569,13 +569,146 @@ class ApiService {
   async delete<T>(
     endpoint: string,
     data?: any,
-    options?: RequestInit,
+    options?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: "DELETE",
       body: data ? JSON.stringify(data) : undefined,
     });
+  }
+
+  /**
+   * POST request with FormData (for file uploads)
+   * Automatically handles multipart/form-data content type
+   *
+   * @example
+   * ```typescript
+   * const formData = new FormData();
+   * formData.append('file', fileBlob);
+   * formData.append('name', 'avatar.jpg');
+   * const result = await apiService.postFormData('/upload', formData);
+   * ```
+   */
+  async postFormData<T>(
+    endpoint: string,
+    formData: FormData,
+    options?: RequestInit
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const startTime = Date.now();
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        method: "POST",
+        body: formData,
+        // Don't set Content-Type - browser sets it with boundary
+        headers: {
+          ...options?.headers,
+        },
+      });
+
+      const duration = Date.now() - startTime;
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Upload failed",
+        }));
+        const error = new Error(errorData.message || `HTTP ${response.status}`);
+
+        trackAPIError(endpoint, response.status, duration);
+        logError(error, {
+          component: "ApiService.postFormData",
+          metadata: {
+            endpoint,
+            status: response.status,
+            statusText: response.statusText,
+          },
+        });
+
+        throw error;
+      }
+
+      // Track slow API calls (> 3 seconds)
+      if (duration > 3000) {
+        trackSlowAPI(endpoint, duration);
+      }
+
+      return await response.json();
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      trackAPIError(endpoint, 0, duration);
+
+      logError(error as Error, {
+        component: "ApiService.postFormData",
+        metadata: { endpoint },
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * GET request that returns a Blob (for binary data like PDFs, images)
+   * Used for downloading files, generating labels, etc.
+   *
+   * @example
+   * ```typescript
+   * const pdfBlob = await apiService.getBlob('/reports/invoice.pdf');
+   * const url = URL.createObjectURL(pdfBlob);
+   * window.open(url);
+   * ```
+   */
+  async getBlob(endpoint: string, options?: RequestInit): Promise<Blob> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const startTime = Date.now();
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        method: "GET",
+        headers: {
+          ...options?.headers,
+        },
+      });
+
+      const duration = Date.now() - startTime;
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        const error = new Error(`HTTP ${response.status}: ${errorText}`);
+
+        trackAPIError(endpoint, response.status, duration);
+        logError(error, {
+          component: "ApiService.getBlob",
+          metadata: {
+            endpoint,
+            status: response.status,
+            statusText: response.statusText,
+          },
+        });
+
+        throw error;
+      }
+
+      // Track slow API calls (> 3 seconds)
+      if (duration > 3000) {
+        trackSlowAPI(endpoint, duration);
+      }
+
+      return await response.blob();
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      trackAPIError(endpoint, 0, duration);
+
+      logError(error as Error, {
+        component: "ApiService.getBlob",
+        metadata: { endpoint },
+      });
+
+      throw error;
+    }
   }
 
   /**
@@ -641,7 +774,7 @@ class ApiService {
       this.cacheConfig.set(pattern, config);
     }
     console.log(
-      `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`,
+      `[API Cache] Batch configured ${Object.keys(configs).length} endpoints`
     );
   }
 

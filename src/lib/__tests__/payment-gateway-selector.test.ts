@@ -697,10 +697,7 @@ describe("Payment Gateway Selector", () => {
     });
 
     it("should compare all suitable gateways and return ranked list", () => {
-      mockGetEnabledGateways.mockReturnValue([
-        mockPhonePeConfig,
-        mockRazorpayConfig,
-      ]);
+      mockGetEnabledGateways.mockReturnValue([mockGateway3, mockGateway1]);
 
       mockCalculateGatewayFee.mockImplementation((gatewayId) => {
         if (gatewayId === "phonepe") return 15;
@@ -721,66 +718,77 @@ describe("Payment Gateway Selector", () => {
     });
 
     it("should include fee comparison for both gateways", () => {
+      mockGetEnabledGateways.mockReturnValue([mockGateway3, mockGateway1]);
       mockCalculateGatewayFee.mockImplementation((gatewayId) => {
         if (gatewayId === "phonepe") return 15;
         if (gatewayId === "razorpay") return 20;
         return 0;
       });
 
-      const comparison = compareGateways("phonepe", "razorpay", {
+      const comparison = compareGateways({
         amount: 1000,
         currency: "INR",
         country: "IN",
       });
 
-      expect(comparison.comparison.phonepe.fee).toBe(15);
-      expect(comparison.comparison.razorpay.fee).toBe(20);
+      const phonepe = comparison.find((g) => g.gateway.id === "phonepe");
+      const razorpay = comparison.find((g) => g.gateway.id === "razorpay");
+      expect(phonepe?.fee).toBe(15);
+      expect(razorpay?.fee).toBe(20);
     });
 
     it("should include total amount comparison", () => {
+      mockGetEnabledGateways.mockReturnValue([mockGateway3, mockGateway1]);
       mockCalculateGatewayFee.mockImplementation((gatewayId) => {
         if (gatewayId === "phonepe") return 15;
         if (gatewayId === "razorpay") return 20;
         return 0;
       });
 
-      const comparison = compareGateways("phonepe", "razorpay", {
+      const comparison = compareGateways({
         amount: 1000,
         currency: "INR",
         country: "IN",
       });
 
-      expect(comparison.comparison.phonepe.totalAmount).toBe(1015);
-      expect(comparison.comparison.razorpay.totalAmount).toBe(1020);
+      const phonepe = comparison.find((g) => g.gateway.id === "phonepe");
+      const razorpay = comparison.find((g) => g.gateway.id === "razorpay");
+      expect(phonepe?.totalAmount).toBe(1015);
+      expect(razorpay?.totalAmount).toBe(1020);
     });
 
     it("should include score comparison", () => {
+      mockGetEnabledGateways.mockReturnValue([mockGateway1, mockGateway2]);
       mockCalculateGatewayFee.mockReturnValue(20);
 
-      const comparison = compareGateways("razorpay", "stripe", {
+      const comparison = compareGateways({
         amount: 1000,
         currency: "INR",
         country: "IN",
       });
 
-      expect(comparison.comparison.razorpay.score).toBeGreaterThan(0);
-      expect(comparison.comparison.stripe.score).toBeGreaterThan(0);
+      const razorpay = comparison.find((g) => g.gateway.id === "razorpay");
+      const stripe = comparison.find((g) => g.gateway.id === "stripe");
+      expect(razorpay?.score).toBeGreaterThan(0);
+      expect(stripe?.score).toBeGreaterThan(0);
     });
 
     it("should handle international transactions", () => {
+      mockGetEnabledGateways.mockReturnValue([mockGateway1, mockGateway2]);
       mockCalculateGatewayFee.mockImplementation((gatewayId) => {
         if (gatewayId === "razorpay") return 30;
         if (gatewayId === "stripe") return 35;
         return 0;
       });
 
-      const comparison = compareGateways("razorpay", "stripe", {
+      const comparison = compareGateways({
         amount: 1000,
         currency: "USD",
         country: "US",
       });
 
-      expect(comparison.winner).toBeTruthy();
+      expect(comparison.length).toBeGreaterThan(0);
+      expect(comparison[0].gateway).toBeTruthy();
     });
   });
 

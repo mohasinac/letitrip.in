@@ -8,8 +8,14 @@ jest.mock("../api.service");
 jest.mock("@/lib/firebase-error-logger");
 
 describe("AddressService", () => {
+  const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockApiService.get = jest.fn();
+    mockApiService.post = jest.fn();
+    mockApiService.patch = jest.fn();
+    mockApiService.delete = jest.fn();
   });
 
   describe("getAll", () => {

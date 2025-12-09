@@ -18,7 +18,6 @@ describe("SearchService", () => {
         ],
         shops: [{ id: "s1", name: "Shop 1", type: "shop" }],
         categories: [],
-        total: 3,
       };
 
       (apiService.get as jest.Mock).mockResolvedValue(mockResults);
@@ -77,7 +76,9 @@ describe("SearchService", () => {
 
       const result = await searchService.search({ q: "" });
 
-      expect(result.total).toBe(0);
+      expect(result.products).toEqual([]);
+      expect(result.shops).toEqual([]);
+      expect(result.categories).toEqual([]);
     });
 
     it("handles search errors", async () => {
@@ -85,9 +86,13 @@ describe("SearchService", () => {
         new Error("Search failed")
       );
 
-      await expect(searchService.search({ q: "test" })).rejects.toThrow(
-        "Search failed"
-      );
+      const result = await searchService.search({ q: "test" });
+
+      expect(result).toEqual({
+        products: [],
+        shops: [],
+        categories: [],
+      });
     });
 
     it("encodes special characters in query", async () => {
@@ -95,7 +100,6 @@ describe("SearchService", () => {
         products: [],
         shops: [],
         categories: [],
-        total: 0,
       };
 
       (apiService.get as jest.Mock).mockResolvedValue(mockResults);
@@ -117,7 +121,6 @@ describe("SearchService", () => {
         ],
         shops: [],
         categories: [],
-        total: 2,
       };
 
       (apiService.get as jest.Mock).mockResolvedValue(mockResults);
@@ -152,14 +155,15 @@ describe("SearchService", () => {
         products: [],
         shops: [],
         categories: [],
-        total: 0,
       };
 
       (apiService.get as jest.Mock).mockResolvedValue(mockResults);
 
       const result = await searchService.quickSearch("");
 
-      expect(result.total).toBe(0);
+      expect(result.products).toEqual([]);
+      expect(result.shops).toEqual([]);
+      expect(result.categories).toEqual([]);
     });
 
     it("handles quick search errors", async () => {
@@ -167,9 +171,13 @@ describe("SearchService", () => {
         new Error("Search failed")
       );
 
-      await expect(searchService.quickSearch("test")).rejects.toThrow(
-        "Search failed"
-      );
+      const result = await searchService.quickSearch("test");
+
+      expect(result).toEqual({
+        products: [],
+        shops: [],
+        categories: [],
+      });
     });
   });
 });

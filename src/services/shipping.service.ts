@@ -139,20 +139,10 @@ class ShippingService {
 
   /**
    * Generate shipping label for an order
+   * Uses apiService.getBlob for consistent error handling and analytics
    */
   async generateLabel(orderId: string): Promise<Blob> {
-    const response = await fetch(`${this.baseUrl}/label/${orderId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/pdf",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to generate label");
-    }
-
-    return response.blob();
+    return await apiService.getBlob(`${this.baseUrl}/label/${orderId}`);
   }
 
   /**
