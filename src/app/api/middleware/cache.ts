@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { memoryCache } from "@/app/api/lib/utils/memory-cache";
+import { NextRequest, NextResponse } from "next/server";
 
 interface CacheEntry {
   data: any;
@@ -70,7 +70,7 @@ export function cache(config: CacheConfig = {}) {
       // Pattern-based invalidation not supported in FREE cache
       // Clear all cache instead
       console.warn(
-        "[Cache] Pattern-based invalidation not supported, clearing all cache",
+        "[Cache] Pattern-based invalidation not supported, clearing all cache"
       );
       memoryCache.clear();
     },
@@ -81,17 +81,17 @@ export function cache(config: CacheConfig = {}) {
 export async function withCache(
   req: NextRequest,
   handler: (req: NextRequest) => Promise<NextResponse>,
-  config?: CacheConfig,
+  config?: CacheConfig
 ) {
   const ttl = config?.ttl || 300; // Default 5 minutes in seconds
-  
+
   // Only cache GET requests
   if (req.method !== "GET") {
     return handler(req);
   }
 
   const cacheManager = cache(config);
-  
+
   let cached: CacheEntry | null = null;
   try {
     cached = cacheManager.get(req);
@@ -130,7 +130,7 @@ export async function withCache(
     try {
       const clonedResponse = response.clone();
       const data = await clonedResponse.json();
-      
+
       try {
         cacheManager.set(req, data);
       } catch (cacheError) {
@@ -146,7 +146,7 @@ export async function withCache(
       newResponse.headers.set("X-Cache", "MISS");
       newResponse.headers.set(
         "Cache-Control",
-        `public, max-age=${config?.ttl || ttl}`,
+        `public, max-age=${config?.ttl || ttl}`
       );
 
       return newResponse;
