@@ -16,6 +16,7 @@
 **Impact**: Cache headers show incorrect max-age values (1000x too long or too short)
 
 **Issue**:
+
 ```typescript
 // Line 28: TTL default is 300 (seconds)
 ttl = 300, // 5 minutes default (in seconds)
@@ -25,6 +26,7 @@ ttl = 300, // 5 minutes default (in seconds)
 ```
 
 **Problems**:
+
 1. Config defines TTL in **seconds** (300 = 5 minutes)
 2. Fallback uses **300000** (5 minutes in milliseconds)
 3. Mixed units cause incorrect cache headers
@@ -34,6 +36,7 @@ ttl = 300, // 5 minutes default (in seconds)
 **Root Cause**: Confusion between seconds and milliseconds throughout the code.
 
 **Fix**:
+
 ```typescript
 // Keep ttl in seconds consistently
 "Cache-Control": `public, max-age=${config?.ttl || ttl}`,
@@ -49,16 +52,18 @@ ttl = 300, // 5 minutes default (in seconds)
 **Impact**: TypeScript compilation fails, code cannot run
 
 **Issue**:
+
 ```typescript
 const rateLimitResult = await ipTrackerService.checkRateLimit(
   ipAddress,
   action,
-  maxAttempts,    // Extra parameter
-  windowMinutes,  // Extra parameter
+  maxAttempts, // Extra parameter
+  windowMinutes // Extra parameter
 );
 ```
 
 **Build Error**:
+
 ```
 Type error: Expected 1 arguments, but got 4.
 ```
@@ -77,17 +82,18 @@ Type error: Expected 1 arguments, but got 4.
 **Impact**: Inconsistent default values
 
 **Issue**:
+
 ```typescript
 // Line 28: Default is 300 (seconds)
-ttl = 300,
-
-// Lines 102, 111: Fallback is 300000 (milliseconds)
-config?.ttl || 300000
+(ttl = 300),
+  // Lines 102, 111: Fallback is 300000 (milliseconds)
+  config?.ttl || 300000;
 ```
 
 **Pattern**: Three different places use `config?.ttl || 300000` but the config default is 300.
 
 **Fix**: Use consistent default:
+
 ```typescript
 const ttlSeconds = config?.ttl || ttl; // Use the declared default
 "Cache-Control": `public, max-age=${ttlSeconds}`,
@@ -105,6 +111,7 @@ const ttlSeconds = config?.ttl || ttl; // Use the declared default
 **Impact**: Hash collisions possible, weak ETag generation
 
 **Issue**:
+
 ```typescript
 function generateETag(data: any): string {
   const str = typeof data === "string" ? data : JSON.stringify(data);
@@ -119,17 +126,19 @@ function generateETag(data: any): string {
 ```
 
 **Problems**:
+
 1. Simple hash function prone to collisions
 2. Not cryptographically secure
 3. Base-36 encoding reduces uniqueness
 
 **Recommendation**: Use Node.js crypto module for better hashing:
+
 ```typescript
-import crypto from 'crypto';
+import crypto from "crypto";
 
 function generateETag(data: any): string {
   const str = typeof data === "string" ? data : JSON.stringify(data);
-  return `"${crypto.createHash('md5').update(str).digest('hex')}"`;
+  return `"${crypto.createHash("md5").update(str).digest("hex")}"`;
 }
 ```
 
@@ -143,6 +152,7 @@ function generateETag(data: any): string {
 **Impact**: Cannot invalidate specific cache entries by pattern
 
 **Issue**:
+
 ```typescript
 invalidate: (pattern?: string): void => {
   if (!pattern) {
@@ -151,9 +161,11 @@ invalidate: (pattern?: string): void => {
   }
 
   // Pattern-based invalidation not supported in FREE cache
-  console.warn("[Cache] Pattern-based invalidation not supported, clearing all cache");
+  console.warn(
+    "[Cache] Pattern-based invalidation not supported, clearing all cache"
+  );
   memoryCache.clear();
-}
+};
 ```
 
 **Problem**: Passing a pattern still clears entire cache. Should either implement or error.
@@ -172,6 +184,7 @@ invalidate: (pattern?: string): void => {
 **Issue**: No try-catch around cache operations. If cache fails, entire request fails.
 
 **Recommendation**: Wrap cache operations in try-catch, fail gracefully:
+
 ```typescript
 try {
   const cached = cacheManager.get(req);
@@ -179,7 +192,7 @@ try {
     // Return cached response
   }
 } catch (error) {
-  console.error('[Cache] Get failed:', error);
+  console.error("[Cache] Get failed:", error);
   // Continue without cache
 }
 ```
@@ -194,6 +207,7 @@ try {
 **Impact**: Error logs missing request context
 
 **Issue**:
+
 ```typescript
 } catch (error) {
   logError(error as Error, {
@@ -212,6 +226,7 @@ try {
 **Problem**: Doesn't log IP address, user agent, or request details in error.
 
 **Recommendation**: Add more context:
+
 ```typescript
 metadata: {
   action: typeof options === "string" ? options : options.action,
@@ -229,7 +244,7 @@ metadata: {
 ### Good Pattern: Cache Manager Singleton Export
 
 **File**: `src/app/api/middleware/cache.ts`  
-**Line**: 148  
+**Line**: 148
 
 ```typescript
 export const cacheManager = cache();
@@ -242,7 +257,7 @@ export const cacheManager = cache();
 ### Good Pattern: Specialized Tracking Wrappers
 
 **File**: `src/app/api/middleware/ip-tracker.ts`  
-**Lines**: 151-170  
+**Lines**: 151-170
 
 ```typescript
 export function withLoginTracking(handler) {
@@ -262,7 +277,7 @@ export function withLoginTracking(handler) {
 ### Confusing Pattern: Mixed Options Types
 
 **File**: `src/app/api/middleware/ip-tracker.ts`  
-**Lines**: 35-45  
+**Lines**: 35-45
 
 ```typescript
 export function withIPTracking(
@@ -284,12 +299,14 @@ export function withIPTracking(
 ## Files Status
 
 ### ✅ index.ts - No Issues Found
+
 - Clean export file
 - Well-organized exports
 - Proper TypeScript types
 - Generic middleware wrapper (placeholder implementation)
 
 ### 🔧 cache.ts - 3 Bugs + 3 Quality Issues
+
 1. **Bug**: TTL conversion error (Critical)
 2. **Bug**: TTL default inconsistency (Medium)
 3. **Bug**: Mixed seconds/milliseconds units (High)
@@ -298,6 +315,7 @@ export function withIPTracking(
 6. **Quality**: Missing error handling
 
 ### 🔧 ip-tracker.ts - 1 Critical Bug + 1 Quality Issue
+
 1. **Bug**: Rate limit method signature mismatch (Critical - Build Breaking)
 2. **Quality**: Missing error context
 

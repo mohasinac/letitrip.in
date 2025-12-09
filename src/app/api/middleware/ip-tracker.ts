@@ -35,7 +35,7 @@ export interface IPTrackingOptions {
  */
 export function withIPTracking(
   handler: (request: Request, context?: any) => Promise<Response>,
-  options: IPTrackingOptions | ActivityAction,
+  options: IPTrackingOptions | ActivityAction
 ) {
   return async (request: Request, context?: any): Promise<Response> => {
     try {
@@ -83,7 +83,7 @@ export function withIPTracking(
               message: `Too many attempts. Please try again after ${rateLimitResult.resetAt.toLocaleTimeString()}.`,
               resetAt: rateLimitResult.resetAt.toISOString(),
             },
-            { status: 429 },
+            { status: 429 }
           );
         }
       }
@@ -129,7 +129,7 @@ export function withIPTracking(
     } catch (error) {
       const ipAddress = ipTrackerService.getIPFromRequest(request);
       const userAgent = ipTrackerService.getUserAgentFromRequest(request);
-      
+
       logError(error as Error, {
         component: "IPTrackerMiddleware.withIPTracking",
         action: "ip_tracking_middleware",
@@ -152,7 +152,7 @@ export function withIPTracking(
  * Simplified wrapper for login endpoint with rate limiting
  */
 export function withLoginTracking(
-  handler: (request: Request, context?: any) => Promise<Response>,
+  handler: (request: Request, context?: any) => Promise<Response>
 ) {
   return withIPTracking(handler, {
     action: "login",
@@ -166,7 +166,7 @@ export function withLoginTracking(
  * Simplified wrapper for registration endpoint
  */
 export function withRegistrationTracking(
-  handler: (request: Request, context?: any) => Promise<Response>,
+  handler: (request: Request, context?: any) => Promise<Response>
 ) {
   return withIPTracking(handler, {
     action: "register",
@@ -183,7 +183,7 @@ export async function trackActivity(
   request: Request,
   action: ActivityAction,
   userId?: string,
-  metadata?: Record<string, any>,
+  metadata?: Record<string, any>
 ): Promise<void> {
   const ipAddress = ipTrackerService.getIPFromRequest(request);
   const userAgent = ipTrackerService.getUserAgentFromRequest(request);
