@@ -1,38 +1,38 @@
-import React from 'react';
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { AuthProvider, useAuth } from '../AuthContext';
-import { authService } from '@/services/auth.service';
-import { logError } from '@/lib/firebase-error-logger';
+import { logError } from "@/lib/firebase-error-logger";
+import { authService } from "@/services/auth.service";
+import { act, renderHook, waitFor } from "@testing-library/react";
+import React from "react";
+import { AuthProvider, useAuth } from "../AuthContext";
 
 // Mock dependencies
-jest.mock('@/services/auth.service');
-jest.mock('@/lib/firebase-error-logger');
+jest.mock("@/services/auth.service");
+jest.mock("@/lib/firebase-error-logger");
 
 const mockAuthService = authService as jest.Mocked<typeof authService>;
 const mockLogError = logError as jest.MockedFunction<typeof logError>;
 
-describe('AuthContext', () => {
+describe("AuthContext", () => {
   const mockUser = {
-    id: 'user123',
-    uid: 'user123',
-    email: 'test@example.com',
-    displayName: 'Test User',
-    role: 'buyer',
+    id: "user123",
+    uid: "user123",
+    email: "test@example.com",
+    displayName: "Test User",
+    role: "buyer",
     isAdmin: false,
     isSeller: false,
     isVerified: true,
-    createdAt: '2024-01-01',
+    createdAt: "2024-01-01",
   };
 
   const mockAdminUser = {
     ...mockUser,
-    role: 'admin',
+    role: "admin",
     isAdmin: true,
   };
 
   const mockSellerUser = {
     ...mockUser,
-    role: 'seller',
+    role: "seller",
     isSeller: true,
   };
 
@@ -44,8 +44,8 @@ describe('AuthContext', () => {
     <AuthProvider>{children}</AuthProvider>
   );
 
-  describe('Initialization', () => {
-    it('should initialize with loading state', () => {
+  describe("Initialization", () => {
+    it("should initialize with loading state", () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
 
@@ -56,7 +56,7 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('should load cached user immediately and then validate with server', async () => {
+    it("should load cached user immediately and then validate with server", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -74,7 +74,7 @@ describe('AuthContext', () => {
       });
     });
 
-    it('should handle case where cached user exists but server validation fails', async () => {
+    it("should handle case where cached user exists but server validation fails", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
 
@@ -86,8 +86,8 @@ describe('AuthContext', () => {
       });
     });
 
-    it('should handle initialization errors', async () => {
-      const error = new Error('Init failed');
+    it("should handle initialization errors", async () => {
+      const error = new Error("Init failed");
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockRejectedValue(error);
 
@@ -97,19 +97,19 @@ describe('AuthContext', () => {
         expect(result.current.user).toBe(null);
         expect(result.current.loading).toBe(false);
         expect(mockLogError).toHaveBeenCalledWith(error, {
-          component: 'AuthContext.initializeAuth',
+          component: "AuthContext.initializeAuth",
         });
       });
     });
   });
 
-  describe('Login', () => {
-    it('should login successfully', async () => {
+  describe("Login", () => {
+    it("should login successfully", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.login.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -120,21 +120,24 @@ describe('AuthContext', () => {
 
       let loginResponse;
       await act(async () => {
-        loginResponse = await result.current.login('test@example.com', 'password123');
+        loginResponse = await result.current.login(
+          "test@example.com",
+          "password123"
+        );
       });
 
       expect(loginResponse).toEqual({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
     });
 
-    it('should handle login failure', async () => {
+    it("should handle login failure", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
-      const error = new Error('Invalid credentials');
+      const error = new Error("Invalid credentials");
       mockAuthService.login.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -145,18 +148,18 @@ describe('AuthContext', () => {
 
       await expect(
         act(async () => {
-          await result.current.login('test@example.com', 'wrong');
+          await result.current.login("test@example.com", "wrong");
         })
-      ).rejects.toThrow('Invalid credentials');
+      ).rejects.toThrow("Invalid credentials");
 
       expect(result.current.user).toBe(null);
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('should set loading to false after login error', async () => {
+    it("should set loading to false after login error", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
-      mockAuthService.login.mockRejectedValue(new Error('Login failed'));
+      mockAuthService.login.mockRejectedValue(new Error("Login failed"));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -166,7 +169,7 @@ describe('AuthContext', () => {
 
       await expect(
         act(async () => {
-          await result.current.login('test@example.com', 'password');
+          await result.current.login("test@example.com", "password");
         })
       ).rejects.toThrow();
 
@@ -174,13 +177,13 @@ describe('AuthContext', () => {
     });
   });
 
-  describe('Login with Google', () => {
-    it('should login with Google successfully', async () => {
+  describe("Login with Google", () => {
+    it("should login with Google successfully", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.loginWithGoogle.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
         isNewUser: false,
       });
 
@@ -192,28 +195,28 @@ describe('AuthContext', () => {
 
       let loginResponse;
       await act(async () => {
-        loginResponse = await result.current.loginWithGoogle('idToken123', {
-          displayName: 'Test User',
-          email: 'test@example.com',
-          photoURL: 'https://example.com/photo.jpg',
+        loginResponse = await result.current.loginWithGoogle("idToken123", {
+          displayName: "Test User",
+          email: "test@example.com",
+          photoURL: "https://example.com/photo.jpg",
         });
       });
 
       expect(loginResponse).toEqual({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
         isNewUser: false,
       });
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
     });
 
-    it('should handle Google login with new user', async () => {
+    it("should handle Google login with new user", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.loginWithGoogle.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
         isNewUser: true,
       });
 
@@ -225,17 +228,17 @@ describe('AuthContext', () => {
 
       let loginResponse;
       await act(async () => {
-        loginResponse = await result.current.loginWithGoogle('idToken123');
+        loginResponse = await result.current.loginWithGoogle("idToken123");
       });
 
       expect(loginResponse?.isNewUser).toBe(true);
       expect(result.current.user).toEqual(mockUser);
     });
 
-    it('should handle Google login failure', async () => {
+    it("should handle Google login failure", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
-      const error = new Error('Google auth failed');
+      const error = new Error("Google auth failed");
       mockAuthService.loginWithGoogle.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -246,22 +249,22 @@ describe('AuthContext', () => {
 
       await expect(
         act(async () => {
-          await result.current.loginWithGoogle('idToken123');
+          await result.current.loginWithGoogle("idToken123");
         })
-      ).rejects.toThrow('Google auth failed');
+      ).rejects.toThrow("Google auth failed");
 
       expect(result.current.user).toBe(null);
       expect(result.current.loading).toBe(false);
     });
   });
 
-  describe('Register', () => {
-    it('should register successfully', async () => {
+  describe("Register", () => {
+    it("should register successfully", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.register.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -273,26 +276,26 @@ describe('AuthContext', () => {
       let registerResponse;
       await act(async () => {
         registerResponse = await result.current.register({
-          email: 'test@example.com',
-          password: 'password123',
-          name: 'Test User',
+          email: "test@example.com",
+          password: "password123",
+          name: "Test User",
         });
       });
 
       expect(registerResponse).toEqual({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
     });
 
-    it('should register with custom role', async () => {
+    it("should register with custom role", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.register.mockResolvedValue({
         user: mockSellerUser,
-        token: 'token123',
+        token: "token123",
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -303,10 +306,10 @@ describe('AuthContext', () => {
 
       await act(async () => {
         await result.current.register({
-          email: 'seller@example.com',
-          password: 'password123',
-          name: 'Test Seller',
-          role: 'seller',
+          email: "seller@example.com",
+          password: "password123",
+          name: "Test Seller",
+          role: "seller",
         });
       });
 
@@ -314,10 +317,10 @@ describe('AuthContext', () => {
       expect(result.current.isSeller).toBe(true);
     });
 
-    it('should handle registration failure', async () => {
+    it("should handle registration failure", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
-      const error = new Error('Email already exists');
+      const error = new Error("Email already exists");
       mockAuthService.register.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -329,20 +332,20 @@ describe('AuthContext', () => {
       await expect(
         act(async () => {
           await result.current.register({
-            email: 'test@example.com',
-            password: 'password123',
-            name: 'Test User',
+            email: "test@example.com",
+            password: "password123",
+            name: "Test User",
           });
         })
-      ).rejects.toThrow('Email already exists');
+      ).rejects.toThrow("Email already exists");
 
       expect(result.current.user).toBe(null);
       expect(result.current.loading).toBe(false);
     });
   });
 
-  describe('Logout', () => {
-    it('should logout successfully', async () => {
+  describe("Logout", () => {
+    it("should logout successfully", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
       mockAuthService.logout.mockResolvedValue();
@@ -361,10 +364,10 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('should handle logout errors gracefully', async () => {
+    it("should handle logout errors gracefully", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
-      const error = new Error('Logout failed');
+      const error = new Error("Logout failed");
       mockAuthService.logout.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -379,14 +382,14 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toBe(null);
       expect(mockLogError).toHaveBeenCalledWith(error, {
-        component: 'AuthContext.logout',
+        component: "AuthContext.logout",
       });
     });
 
-    it('should clear user even if logout API fails', async () => {
+    it("should clear user even if logout API fails", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
-      mockAuthService.logout.mockRejectedValue(new Error('Network error'));
+      mockAuthService.logout.mockRejectedValue(new Error("Network error"));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -402,8 +405,8 @@ describe('AuthContext', () => {
     });
   });
 
-  describe('Refresh User', () => {
-    it('should refresh user data', async () => {
+  describe("Refresh User", () => {
+    it("should refresh user data", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -413,7 +416,7 @@ describe('AuthContext', () => {
         expect(result.current.user).toEqual(mockUser);
       });
 
-      const updatedUser = { ...mockUser, displayName: 'Updated Name' };
+      const updatedUser = { ...mockUser, displayName: "Updated Name" };
       mockAuthService.getCurrentUser.mockResolvedValue(updatedUser);
 
       await act(async () => {
@@ -423,7 +426,7 @@ describe('AuthContext', () => {
       expect(result.current.user).toEqual(updatedUser);
     });
 
-    it('should handle refresh failure', async () => {
+    it("should handle refresh failure", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -433,7 +436,7 @@ describe('AuthContext', () => {
         expect(result.current.user).toEqual(mockUser);
       });
 
-      const error = new Error('Refresh failed');
+      const error = new Error("Refresh failed");
       mockAuthService.getCurrentUser.mockRejectedValue(error);
 
       await act(async () => {
@@ -442,11 +445,11 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toBe(null);
       expect(mockLogError).toHaveBeenCalledWith(error, {
-        component: 'AuthContext.refreshUser',
+        component: "AuthContext.refreshUser",
       });
     });
 
-    it('should clear user if refresh returns null', async () => {
+    it("should clear user if refresh returns null", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -466,8 +469,8 @@ describe('AuthContext', () => {
     });
   });
 
-  describe('Computed Properties', () => {
-    it('should compute isAdmin correctly', async () => {
+  describe("Computed Properties", () => {
+    it("should compute isAdmin correctly", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockAdminUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockAdminUser);
 
@@ -480,7 +483,7 @@ describe('AuthContext', () => {
       });
     });
 
-    it('should compute isSeller correctly', async () => {
+    it("should compute isSeller correctly", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockSellerUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockSellerUser);
 
@@ -493,7 +496,7 @@ describe('AuthContext', () => {
       });
     });
 
-    it('should compute properties for regular user', async () => {
+    it("should compute properties for regular user", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -506,7 +509,7 @@ describe('AuthContext', () => {
       });
     });
 
-    it('should handle null user for computed properties', async () => {
+    it("should handle null user for computed properties", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
 
@@ -521,26 +524,26 @@ describe('AuthContext', () => {
     });
   });
 
-  describe('Hook Error Handling', () => {
-    it('should throw error when useAuth is used outside provider', () => {
+  describe("Hook Error Handling", () => {
+    it("should throw error when useAuth is used outside provider", () => {
       // Temporarily suppress console.error for this test
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
       expect(() => {
         renderHook(() => useAuth());
-      }).toThrow('useAuth must be used within an AuthProvider');
+      }).toThrow("useAuth must be used within an AuthProvider");
 
       consoleSpy.mockRestore();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle rapid login/logout cycles', async () => {
+  describe("Edge Cases", () => {
+    it("should handle rapid login/logout cycles", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.login.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
       mockAuthService.logout.mockResolvedValue();
 
@@ -552,7 +555,7 @@ describe('AuthContext', () => {
 
       // Login
       await act(async () => {
-        await result.current.login('test@example.com', 'password123');
+        await result.current.login("test@example.com", "password123");
       });
       expect(result.current.user).toEqual(mockUser);
 
@@ -564,17 +567,17 @@ describe('AuthContext', () => {
 
       // Login again
       await act(async () => {
-        await result.current.login('test@example.com', 'password123');
+        await result.current.login("test@example.com", "password123");
       });
       expect(result.current.user).toEqual(mockUser);
     });
 
-    it('should handle concurrent operations', async () => {
+    it("should handle concurrent operations", async () => {
       mockAuthService.getCachedUser.mockReturnValue(null);
       mockAuthService.getCurrentUser.mockResolvedValue(null);
       mockAuthService.login.mockResolvedValue({
         user: mockUser,
-        token: 'token123',
+        token: "token123",
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -586,15 +589,15 @@ describe('AuthContext', () => {
       // Attempt multiple logins concurrently
       await act(async () => {
         await Promise.all([
-          result.current.login('test@example.com', 'password123'),
-          result.current.login('test@example.com', 'password123'),
+          result.current.login("test@example.com", "password123"),
+          result.current.login("test@example.com", "password123"),
         ]);
       });
 
       expect(result.current.user).toEqual(mockUser);
     });
 
-    it('should maintain state consistency after multiple refresh calls', async () => {
+    it("should maintain state consistency after multiple refresh calls", async () => {
       mockAuthService.getCachedUser.mockReturnValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -604,8 +607,8 @@ describe('AuthContext', () => {
         expect(result.current.user).toEqual(mockUser);
       });
 
-      const updatedUser1 = { ...mockUser, displayName: 'Name 1' };
-      const updatedUser2 = { ...mockUser, displayName: 'Name 2' };
+      const updatedUser1 = { ...mockUser, displayName: "Name 1" };
+      const updatedUser2 = { ...mockUser, displayName: "Name 2" };
 
       mockAuthService.getCurrentUser
         .mockResolvedValueOnce(updatedUser1)
