@@ -410,8 +410,10 @@ export function formatTemplate(
   // Replace variables ({{1}}, {{2}}, etc.)
   template.variables.forEach((varName, index) => {
     const placeholder = `{{${index + 1}}}`;
+    // Escape special regex characters in placeholder
+    const escapedPlaceholder = placeholder.replace(/[{}]/g, "\\$&");
     message = message.replace(
-      new RegExp(placeholder, "g"),
+      new RegExp(escapedPlaceholder, "g"),
       variables[varName] || ""
     );
   });

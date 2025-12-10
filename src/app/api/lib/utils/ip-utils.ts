@@ -57,16 +57,16 @@ export function isPrivateIp(ip: string): boolean {
     return false;
   }
 
-  // Private IP ranges (IPv4)
+  // Private IP ranges with proper anchoring to prevent partial matches
   const privateRanges = [
-    /^10\./, // 10.0.0.0/8
-    /^172\.(1[6-9]|2\d|3[01])\./, // 172.16.0.0/12
-    /^192\.168\./, // 192.168.0.0/16
-    /^127\./, // 127.0.0.0/8 (localhost)
-    /^169\.254\./, // 169.254.0.0/16 (link-local)
+    /^10\.\d+\.\d+\.\d+$/, // 10.0.0.0/8
+    /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/, // 172.16.0.0/12
+    /^192\.168\.\d+\.\d+$/, // 192.168.0.0/16
+    /^127\.\d+\.\d+\.\d+$/, // 127.0.0.0/8 (localhost)
+    /^169\.254\.\d+\.\d+$/, // 169.254.0.0/16 (link-local)
     /^::1$/, // ::1 (IPv6 localhost)
-    /^fc00:/, // fc00::/7 (IPv6 unique local)
-    /^fe80:/, // fe80::/10 (IPv6 link-local)
+    /^f[cd][0-9a-f]{2}:[0-9a-f:]+$/i, // fc00::/7 and fd00::/8 (IPv6 unique local)
+    /^fe80:[0-9a-f:]+$/i, // fe80::/10 (IPv6 link-local)
   ];
 
   return privateRanges.some((range) => range.test(ip));

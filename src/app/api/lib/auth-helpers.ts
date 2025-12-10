@@ -144,7 +144,7 @@ export async function verifyShopOwnership(
  * Use in catch blocks of API routes
  */
 export function handleAuthError(error: any): NextResponse {
-  if (error.statusCode) {
+  if (error && error.statusCode) {
     return NextResponse.json(
       {
         error: error.message,
