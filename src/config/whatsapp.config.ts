@@ -610,6 +610,9 @@ export function formatWhatsAppPhone(phone: string): string {
   // Remove all non-digit characters
   let cleaned = phone.replace(/\D/g, "");
 
+  // Remove leading zeros
+  cleaned = cleaned.replace(/^0+/, "");
+
   // Add India country code if not present
   if (cleaned.length === 10) {
     cleaned = "91" + cleaned;

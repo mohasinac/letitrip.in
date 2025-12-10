@@ -33,58 +33,91 @@ export async function fetchPincodeData(
   }
 
   try {
-    const response = await fetch(`${INDIA_POST_API}/${cleaned}`, {
-      headers: {
-        Accept: "application/json",
-      },
-      next: { revalidate: 86400 }, // Cache for 24 hours
-    });
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    try {
+      const response = await fetch(`${INDIA_POST_API}/${cleaned}`, {
+        headers: {
+          Accept: "application/json",
+        },
+        signal: controller.signal,
+        next: { revalidate: 86400 }, // Cache for 24 hours
+      });
 
-    const data = (await response.json()) as IndiaPostPincodeResponse[];
+      clearTimeout(timeoutId);
 
-    // India Post API returns an array with one item
-    const result = data[0];
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error(`Pincode not found: ${cleaned}`);
+        }
+        throw new Error(`India Post API error: ${response.status}`);
+      }
 
-    if (
-      result.Status !== "Success" ||
-      !result.PostOffice ||
-      result.PostOffice.length === 0
-    ) {
+      const data = (await response.json()) as IndiaPostPincodeResponse[];
+
+      // India Post API returns an array with one item
+      const result = data[0];
+
+      if (
+        result.Status !== "Success" ||
+        !result.PostOffice ||
+        result.PostOffice.length === 0
+      ) {
+        return {
+          pincode: cleaned,
+          areas: [],
+          city: "",
+          district: "",
+          state: "",
+          country: "India",
+          isValid: false,
+          hasMultipleAreas: false,
+        };
+      }
+
+      // Extract unique areas
+      const areas = [...new Set(result.PostOffice.map((po) => po.Name))];
+
+      // Use first post office for common data
+      const firstPO = result.PostOffice[0];
+
       return {
         pincode: cleaned,
-        areas: [],
-        city: "",
-        district: "",
-        state: "",
+        areas,
+        city: firstPO.Division || firstPO.District,
+        district: firstPO.District,
+        state: firstPO.State,
         country: "India",
-        isValid: false,
-        hasMultipleAreas: false,
+        isValid: true,
+        hasMultipleAreas: areas.length > 1,
       };
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === "AbortError") {
+        throw new Error("Pincode lookup timed out. Please try again.");
+      }
+      throw fetchError;
+    }
+  } catch (error: any) {
+    console.error("Pincode lookup error:", error);
+
+    // Preserve specific error messages
+    if (error.message?.includes("timed out")) {
+      throw error;
+    }
+    if (error.message?.includes("not found")) {
+      throw error;
+    }
+    if (error.message?.includes("API error")) {
+      throw error;
     }
 
-    // Extract unique areas
-    const areas = [...new Set(result.PostOffice.map((po) => po.Name))];
-
-    // Use first post office for common data
-    const firstPO = result.PostOffice[0];
-
-    return {
-      pincode: cleaned,
-      areas,
-      city: firstPO.Division || firstPO.District,
-      district: firstPO.District,
-      state: firstPO.State,
-      country: "India",
-      isValid: true,
-      hasMultipleAreas: areas.length > 1,
-    };
-  } catch (error) {
-    console.error("Pincode lookup error:", error);
-    throw new Error("Failed to lookup pincode. Please try again.");
+    // Generic network error
+    throw new Error(
+      "Failed to lookup pincode. Please check your connection and try again."
+    );
   }
 }
 
@@ -96,7 +129,11 @@ export function transformPincodeResponse(
 ): PincodeData | null {
   const result = response[0];
 
-  if (result.Status !== "Success" || !result.PostOffice) {
+  if (
+    result.Status !== "Success" ||
+    !result.PostOffice ||
+    result.PostOffice.length === 0
+  ) {
     return null;
   }
 

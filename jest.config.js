@@ -11,6 +11,8 @@ const customJestConfig = {
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
     "^@/(.*)$": "<rootDir>/src/$1",
+    // Force jose to use node dist instead of browser
+    "^jose$": "<rootDir>/node_modules/jose/dist/node/cjs/index.js",
   },
   testEnvironment: "jest-environment-jsdom",
   collectCoverageFrom: [
@@ -32,6 +34,10 @@ const customJestConfig = {
     "/__tests__/.*/(fixtures|test-utils)\\.(js|ts)$",
   ],
   testTimeout: 10000,
+  transformIgnorePatterns: [
+    "node_modules/(?!(jose|jwks-rsa|@panva)/)",
+  ],
+  modulePathIgnorePatterns: ["<rootDir>/.next/"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

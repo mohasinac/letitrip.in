@@ -28,14 +28,14 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  SieveConfig,
-  SieveQuery,
-  FilterCondition,
-  SievePaginatedResponse,
-} from "./sieve/types";
-import { parseSieveQuery } from "./sieve/parser";
 import { executeSieveQuery } from "./sieve/firestore";
+import { parseSieveQuery } from "./sieve/parser";
+import type {
+  FilterCondition,
+  SieveConfig,
+  SievePaginatedResponse,
+  SieveQuery,
+} from "./sieve/types";
 
 export interface SieveMiddlewareOptions<T = unknown> {
   /**
@@ -61,7 +61,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
   handler?: (
     request: NextRequest,
     sieveQuery: SieveQuery,
-    config: SieveConfig,
+    config: SieveConfig
   ) => Promise<SievePaginatedResponse<any>>;
 
   /**
@@ -70,7 +70,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
    */
   beforeQuery?: (
     request: NextRequest,
-    sieveQuery: SieveQuery,
+    sieveQuery: SieveQuery
   ) => Promise<SieveQuery> | SieveQuery;
 
   /**
@@ -78,7 +78,7 @@ export interface SieveMiddlewareOptions<T = unknown> {
    */
   afterQuery?: (
     result: SievePaginatedResponse<any>,
-    request: NextRequest,
+    request: NextRequest
   ) => Promise<SievePaginatedResponse<any>> | SievePaginatedResponse<any>;
 
   /**
@@ -97,18 +97,52 @@ export interface SieveMiddlewareOptions<T = unknown> {
  */
 export function withSieve<T = unknown>(
   config: SieveConfig,
-  options: SieveMiddlewareOptions<T>,
+  options: SieveMiddlewareOptions<T>
 ) {
   return async function handler(request: NextRequest): Promise<NextResponse> {
     try {
+      // Check authentication if required
+      if (options.requireAuth) {
+        const { requireAuth } = await import("@/app/api/middleware/rbac-auth");
+        const authResult = await requireAuth(request);
+        if (authResult.error) {
+          return authResult.error;
+        }
+
+        // Check roles if specified
+        if (options.requiredRoles && options.requiredRoles.length > 0) {
+          const { requireRole } = await import(
+            "@/app/api/middleware/rbac-auth"
+          );
+          const roleResult = await requireRole(
+            request,
+            options.requiredRoles as any
+          );
+          if (roleResult.error) {
+            return roleResult.error;
+          }
+        }
+      }
+
       const searchParams = request.nextUrl.searchParams;
 
       // Parse the sieve query from URL parameters
       const parseResult = parseSieveQuery(searchParams, config);
       let sieveQuery = parseResult.query;
 
-      // Add mandatory filters
+      // Add mandatory filters - these cannot be overridden
       if (options.mandatoryFilters && options.mandatoryFilters.length > 0) {
+        // Store mandatory filter fields
+        const mandatoryFields = new Set(
+          options.mandatoryFilters.map((f) => f.field)
+        );
+
+        // Remove any client-provided filters on mandatory fields (prevent bypass)
+        sieveQuery.filters = sieveQuery.filters.filter(
+          (f) => !mandatoryFields.has(f.field)
+        );
+
+        // Add mandatory filters first (highest priority)
         sieveQuery.filters = [
           ...options.mandatoryFilters,
           ...sieveQuery.filters,
@@ -129,7 +163,7 @@ export function withSieve<T = unknown>(
         result = await executeSieveQuery(
           options.collection,
           sieveQuery,
-          config,
+          config
         );
       }
 
@@ -157,7 +191,7 @@ export function withSieve<T = unknown>(
           success: false,
           error: message,
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
   };
@@ -265,7 +299,7 @@ export function withProtectedSieve<T = unknown>(
   config: SieveConfig,
   options: SieveMiddlewareOptions<T> & {
     getAuthFilter: (userId: string) => FilterCondition | FilterCondition[];
-  },
+  }
 ) {
   return async function handler(request: NextRequest): Promise<NextResponse> {
     try {
@@ -281,22 +315,22 @@ export function withProtectedSieve<T = unknown>(
           success: false,
           error: "Protected Sieve not fully implemented",
         },
-        { status: 501 },
+        { status: 501 }
       );
     } catch (error) {
       console.error(
         `Protected Sieve middleware error for ${options.collection}:`,
-        error,
+        error
       );
       return NextResponse.json(
         {
           success: false,
           error: "Internal server error",
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
   };
 }
 
-export type { SieveQuery, FilterCondition, SieveConfig };
+export type { FilterCondition, SieveConfig, SieveQuery };

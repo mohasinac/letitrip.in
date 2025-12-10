@@ -226,7 +226,7 @@ describe("Payment Gateway Configuration", () => {
   describe("validateGatewayConfig", () => {
     it("should validate valid Razorpay test config", () => {
       const config = {
-        keyId: "rzp_test_12345678901234", // Exactly 19 chars: rzp_test_ (9) + 14 alphanumeric
+        keyId: "rzp_test_1234567890", // Exactly 19 chars: rzp_test_ (9) + 1234567890 (10) = 19
         keySecret: "abcdefghij1234567890",
         webhookSecret: "whsec_12345678901234567890123456789012",
       };
@@ -237,7 +237,7 @@ describe("Payment Gateway Configuration", () => {
 
     it("should validate valid Razorpay live config", () => {
       const config = {
-        keyId: "rzp_live_12345678901234", // Exactly 19 chars: rzp_live_ (9) + 14 alphanumeric
+        keyId: "rzp_live_1234567890", // Exactly 19 chars: rzp_live_ (9) + 1234567890 (10) = 19
         keySecret: "abcdefghij1234567890",
         webhookSecret: "whsec_12345678901234567890123456789012",
       };

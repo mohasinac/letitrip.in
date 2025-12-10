@@ -22,9 +22,9 @@
  * IMPORTANT: ESLint rules enforce this policy
  */
 
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getDatabase, Database } from "firebase/database";
-import { getAnalytics, Analytics } from "firebase/analytics";
+import { Analytics, getAnalytics } from "firebase/analytics";
+import { FirebaseApp, getApps, initializeApp } from "firebase/app";
+import { Database, getDatabase } from "firebase/database";
 
 // Minimal config - only what's needed for Realtime DB and Analytics
 const firebaseConfig = {
@@ -42,7 +42,11 @@ let database: Database;
 let analytics: Analytics | null = null;
 
 // Only initialize on client-side
-if (typeof window !== "undefined" && getApps().length === 0) {
+const existingApps = getApps();
+if (
+  typeof window !== "undefined" &&
+  (!existingApps || existingApps.length === 0)
+) {
   app = initializeApp(firebaseConfig);
 
   // Realtime Database for auction bidding (WebSocket alternative)
@@ -54,4 +58,4 @@ if (typeof window !== "undefined" && getApps().length === 0) {
 
 // NOTE: Do NOT export Firestore or Storage from this file
 // Use server-side firebase-admin instead (see src/app/api/lib/firebase/admin.ts)
-export { app, database, analytics };
+export { analytics, app, database };

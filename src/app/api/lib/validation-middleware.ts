@@ -3,16 +3,12 @@
  * Provides server-side validation for API endpoints
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import {
-  validateFormData,
   getValidationSchema,
   validateBulkAction,
+  validateFormData,
 } from "@/lib/validation/inline-edit-schemas";
-import {
-  VALIDATION_RULES,
-  VALIDATION_MESSAGES,
-} from "@/constants/validation-messages";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface ValidationError {
   field: string;
@@ -30,7 +26,7 @@ export interface ValidationResult {
  */
 export async function validateRequest(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
@@ -55,7 +51,7 @@ export async function validateRequest(
         ([field, message]) => ({
           field,
           message,
-        }),
+        })
       );
 
       return {
@@ -81,7 +77,7 @@ export async function validateRequest(
  */
 export async function validateBulkRequest(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   try {
     const body = await req.json();
@@ -137,21 +133,18 @@ export async function validateBulkRequest(
  * Create validation error response
  */
 export function createValidationErrorResponse(
-  errors: ValidationError[],
+  errors: ValidationError[]
 ): NextResponse {
   return NextResponse.json(
     {
       success: false,
       message: "Validation failed",
-      errors: errors.reduce(
-        (acc, err) => {
-          acc[err.field] = err.message;
-          return acc;
-        },
-        {} as Record<string, string>,
-      ),
+      errors: errors.reduce((acc, err) => {
+        acc[err.field] = err.message;
+        return acc;
+      }, {} as Record<string, string>),
     },
-    { status: 400 },
+    { status: 400 }
   );
 }
 
@@ -160,7 +153,7 @@ export function createValidationErrorResponse(
  */
 export function withValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateRequest(req, resourceType);
@@ -178,7 +171,7 @@ export function withValidation(
  */
 export function withBulkValidation(
   resourceType: string,
-  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>,
+  handler: (req: NextRequest, validatedData: any) => Promise<NextResponse>
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const validation = await validateBulkRequest(req, resourceType);
@@ -193,25 +186,45 @@ export function withBulkValidation(
 
 /**
  * Sanitize input to prevent XSS and injection attacks
+ *
+ * NOTE: This provides basic XSS protection for API inputs.
+ * For comprehensive XSS protection in user-facing content,
+ * consider using a dedicated library like DOMPurify on the client side,
+ * or a Node.js sanitization library like sanitize-html for server-side.
  */
-export function sanitizeInput(input: any): any {
+export function sanitizeInput(input: any, visited = new WeakSet()): any {
   if (typeof input === "string") {
-    // Remove script tags and dangerous attributes
+    // Remove script tags, event handlers, and javascript: URIs
+    // This is basic protection - not comprehensive
     return input
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-      .replace(/on\w+="[^"]*"/gi, "")
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
+      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, "")
+      .replace(/on\w+\s*=\s*[^\s>]*/gi, "")
       .replace(/javascript:/gi, "")
+      .replace(/data:text\/html/gi, "")
       .trim();
   }
 
   if (Array.isArray(input)) {
-    return input.map(sanitizeInput);
+    // Prevent circular reference in arrays
+    if (visited.has(input)) {
+      return input;
+    }
+    visited.add(input);
+    return input.map((item) => sanitizeInput(item, visited));
   }
 
   if (typeof input === "object" && input !== null) {
+    // Prevent circular reference in objects
+    if (visited.has(input)) {
+      return input;
+    }
+    visited.add(input);
+
     const sanitized: any = {};
     for (const key in input) {
-      sanitized[key] = sanitizeInput(input[key]);
+      sanitized[key] = sanitizeInput(input[key], visited);
     }
     return sanitized;
   }
@@ -224,7 +237,7 @@ export function sanitizeInput(input: any): any {
  */
 export async function validateAndSanitize(
   req: NextRequest,
-  resourceType: string,
+  resourceType: string
 ): Promise<ValidationResult> {
   const validation = await validateRequest(req, resourceType);
 

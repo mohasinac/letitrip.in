@@ -16,7 +16,7 @@ import { COLLECTIONS } from "@/constants/database";
  */
 export async function batchFetchDocuments<T = any>(
   collectionName: string,
-  ids: string[],
+  ids: string[]
 ): Promise<Map<string, T>> {
   const resultMap = new Map<string, T>();
 
@@ -24,30 +24,43 @@ export async function batchFetchDocuments<T = any>(
     return resultMap;
   }
 
-  const db = getFirestoreAdmin();
-  const batchSize = 10; // Firestore 'in' query limit
+  try {
+    const db = getFirestoreAdmin();
+    const batchSize = 10; // Firestore 'in' query limit
 
-  // Remove duplicates
-  const uniqueIds = [...new Set(ids)];
+    // Remove duplicates
+    const uniqueIds = [...new Set(ids)];
 
-  // Fetch in batches
-  for (let i = 0; i < uniqueIds.length; i += batchSize) {
-    const batch = uniqueIds.slice(i, i + batchSize);
+    // Fetch in batches
+    for (let i = 0; i < uniqueIds.length; i += batchSize) {
+      const batch = uniqueIds.slice(i, i + batchSize);
 
-    const snapshot = await db
-      .collection(collectionName)
-      .where("__name__", "in", batch)
-      .get();
+      try {
+        const snapshot = await db
+          .collection(collectionName)
+          .where("__name__", "in", batch)
+          .get();
 
-    snapshot.docs.forEach((doc) => {
-      resultMap.set(doc.id, {
-        id: doc.id,
-        ...doc.data(),
-      } as T);
-    });
+        snapshot.docs.forEach((doc) => {
+          resultMap.set(doc.id, {
+            ...doc.data(),
+            id: doc.id,
+          } as T);
+        });
+      } catch (batchError) {
+        console.error(
+          `Error fetching batch ${i / batchSize + 1} from ${collectionName}:`,
+          batchError
+        );
+        // Continue with remaining batches even if one fails
+      }
+    }
+
+    return resultMap;
+  } catch (error) {
+    console.error(`Error in batchFetchDocuments for ${collectionName}:`, error);
+    return resultMap; // Return partial results if available
   }
-
-  return resultMap;
 }
 
 /**
@@ -61,7 +74,7 @@ export async function batchFetchDocuments<T = any>(
  * ```
  */
 export async function batchGetProducts(
-  productIds: string[],
+  productIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.PRODUCTS, productIds);
 }
@@ -76,7 +89,7 @@ export async function batchGetProducts(
  * ```
  */
 export async function batchGetShops(
-  shopIds: string[],
+  shopIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.SHOPS, shopIds);
 }
@@ -91,7 +104,7 @@ export async function batchGetShops(
  * ```
  */
 export async function batchGetCategories(
-  categoryIds: string[],
+  categoryIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.CATEGORIES, categoryIds);
 }
@@ -106,7 +119,7 @@ export async function batchGetCategories(
  * ```
  */
 export async function batchGetUsers(
-  userIds: string[],
+  userIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.USERS, userIds);
 }
@@ -121,7 +134,7 @@ export async function batchGetUsers(
  * ```
  */
 export async function batchGetOrders(
-  orderIds: string[],
+  orderIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.ORDERS, orderIds);
 }
@@ -136,7 +149,7 @@ export async function batchGetOrders(
  * ```
  */
 export async function batchGetAuctions(
-  auctionIds: string[],
+  auctionIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.AUCTIONS, auctionIds);
 }
@@ -151,7 +164,7 @@ export async function batchGetAuctions(
  * ```
  */
 export async function batchGetCoupons(
-  couponIds: string[],
+  couponIds: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(COLLECTIONS.COUPONS, couponIds);
 }
@@ -168,7 +181,7 @@ export async function batchGetCoupons(
  */
 export async function batchGetByCollection(
   collectionName: string,
-  ids: string[],
+  ids: string[]
 ): Promise<Map<string, any>> {
   return batchFetchDocuments(collectionName, ids);
 }
@@ -186,7 +199,7 @@ export async function batchGetByCollection(
  */
 export function mapToOrderedArray<T>(
   map: Map<string, T>,
-  orderedIds: string[],
+  orderedIds: string[]
 ): (T | null)[] {
   return orderedIds.map((id) => map.get(id) || null);
 }
