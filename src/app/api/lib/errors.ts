@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 
 export class ApiError extends Error {
-  constructor(
-    public statusCode: number,
-    message: string,
-    public errors?: any,
-  ) {
+  constructor(public statusCode: number, message: string, public errors?: any) {
     super(message);
     this.name = "ApiError";
   }
@@ -81,8 +77,8 @@ export function handleApiError(error: any): NextResponse {
       message:
         process.env.NODE_ENV === "production"
           ? "An unexpected error occurred"
-          : error.message || "Unknown error",
+          : error?.message || "Unknown error",
     },
-    { status: 500 },
+    { status: 500 }
   );
 }

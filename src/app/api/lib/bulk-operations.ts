@@ -3,9 +3,9 @@
  * Provides reusable functions for handling bulk operations across all resources
  */
 
+import { COLLECTIONS } from "@/constants/database";
 import { NextRequest } from "next/server";
 import { getFirestoreAdmin } from "./firebase/admin";
-import { COLLECTIONS } from "@/constants/database";
 
 export interface BulkOperationResult {
   success: boolean;
@@ -24,20 +24,23 @@ export interface BulkOperationConfig {
   validatePermission?: (userId: string, action: string) => Promise<boolean>;
   validateItem?: (
     item: any,
-    action: string,
+    action: string
   ) => Promise<{ valid: boolean; error?: string }>;
   customHandler?: (
     db: FirebaseFirestore.Firestore,
     id: string,
-    data?: any,
+    data?: any
   ) => Promise<void>;
 }
 
 /**
  * Execute a bulk operation with transaction support
  */
+// Maximum items allowed in a single bulk operation (prevent overwhelming Firestore)
+export const MAX_BULK_OPERATION_ITEMS = 500;
+
 export async function executeBulkOperation(
-  config: BulkOperationConfig,
+  config: BulkOperationConfig
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data, validateItem, customHandler } = config;
 
@@ -47,6 +50,15 @@ export async function executeBulkOperation(
       successCount: 0,
       failedCount: 0,
       message: "No items selected",
+    };
+  }
+
+  if (ids.length > MAX_BULK_OPERATION_ITEMS) {
+    return {
+      success: false,
+      successCount: 0,
+      failedCount: 0,
+      message: `Too many items. Maximum ${MAX_BULK_OPERATION_ITEMS} items allowed per bulk operation.`,
     };
   }
 
@@ -114,39 +126,45 @@ export async function executeBulkOperation(
  */
 export async function validateBulkPermission(
   userId: string,
-  requiredRole: "admin" | "seller" | "user",
+  requiredRole: "admin" | "seller" | "user"
 ): Promise<{ valid: boolean; error?: string }> {
   if (!userId) {
     return { valid: false, error: "Authentication required" };
   }
 
-  const db = getFirestoreAdmin();
-  const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
+  try {
+    const db = getFirestoreAdmin();
+    const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
 
-  if (!userDoc.exists) {
-    return { valid: false, error: "User not found" };
-  }
+    if (!userDoc.exists) {
+      return { valid: false, error: "User not found" };
+    }
 
-  const userData = userDoc.data();
-  const userRole = userData?.role || "user";
+    const userData = userDoc.data();
+    const userRole = userData?.role || "user";
 
-  // Role hierarchy: admin > seller > user
-  const roleHierarchy: Record<string, number> = {
-    admin: 3,
-    seller: 2,
-    user: 1,
-  };
-
-  const hasPermission = roleHierarchy[userRole] >= roleHierarchy[requiredRole];
-
-  if (!hasPermission) {
-    return {
-      valid: false,
-      error: `Insufficient permissions. Required: ${requiredRole}, Current: ${userRole}`,
+    // Role hierarchy: admin > seller > user
+    const roleHierarchy: Record<string, number> = {
+      admin: 3,
+      seller: 2,
+      user: 1,
     };
-  }
 
-  return { valid: true };
+    const hasPermission =
+      roleHierarchy[userRole] >= roleHierarchy[requiredRole];
+
+    if (!hasPermission) {
+      return {
+        valid: false,
+        error: `Insufficient permissions. Required: ${requiredRole}, Current: ${userRole}`,
+      };
+    }
+
+    return { valid: true };
+  } catch (error) {
+    console.error("Error validating bulk permission:", error);
+    return { valid: false, error: "Permission validation failed" };
+  }
 }
 
 /**
@@ -182,9 +200,18 @@ export async function parseBulkRequest(req: NextRequest): Promise<{
 export const commonBulkHandlers = {
   /**
    * Activate items (set is_active or status to true/active)
+   * Note: This is a template handler. Pass collection via customHandler in executeBulkOperation.
+   * @deprecated Use custom handler with collection parameter instead
    */
-  activate: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db.collection("temp").doc(id).update({
+  activate: async (
+    db: FirebaseFirestore.Firestore,
+    id: string,
+    collection: string
+  ) => {
+    if (!collection) {
+      throw new Error("Collection name is required for bulk activate");
+    }
+    await db.collection(collection).doc(id).update({
       is_active: true,
       status: "active",
       updated_at: new Date().toISOString(),
@@ -193,9 +220,18 @@ export const commonBulkHandlers = {
 
   /**
    * Deactivate items (set is_active or status to false/inactive)
+   * Note: This is a template handler. Pass collection via customHandler in executeBulkOperation.
+   * @deprecated Use custom handler with collection parameter instead
    */
-  deactivate: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db.collection("temp").doc(id).update({
+  deactivate: async (
+    db: FirebaseFirestore.Firestore,
+    id: string,
+    collection: string
+  ) => {
+    if (!collection) {
+      throw new Error("Collection name is required for bulk deactivate");
+    }
+    await db.collection(collection).doc(id).update({
       is_active: false,
       status: "inactive",
       updated_at: new Date().toISOString(),
@@ -204,9 +240,18 @@ export const commonBulkHandlers = {
 
   /**
    * Delete items (soft delete with deleted_at timestamp)
+   * Note: This is a template handler. Pass collection via customHandler in executeBulkOperation.
+   * @deprecated Use custom handler with collection parameter instead
    */
-  softDelete: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db.collection("temp").doc(id).update({
+  softDelete: async (
+    db: FirebaseFirestore.Firestore,
+    id: string,
+    collection: string
+  ) => {
+    if (!collection) {
+      throw new Error("Collection name is required for bulk soft delete");
+    }
+    await db.collection(collection).doc(id).update({
       is_deleted: true,
       deleted_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -215,18 +260,32 @@ export const commonBulkHandlers = {
 
   /**
    * Hard delete items (permanent deletion)
+   * Note: This is a template handler. Pass collection via customHandler in executeBulkOperation.
+   * @deprecated Use custom handler with collection parameter instead
    */
-  hardDelete: async (db: FirebaseFirestore.Firestore, id: string) => {
-    await db.collection("temp").doc(id).delete();
+  hardDelete: async (
+    db: FirebaseFirestore.Firestore,
+    id: string,
+    collection: string
+  ) => {
+    if (!collection) {
+      throw new Error("Collection name is required for bulk hard delete");
+    }
+    await db.collection(collection).doc(id).delete();
   },
 
   /**
    * Update field value
+   * Note: This is a template handler. Pass collection via customHandler in executeBulkOperation.
+   * @deprecated Use custom handler with collection parameter instead
    */
-  updateField: (field: string, value: any) => {
+  updateField: (field: string, value: any, collection: string) => {
     return async (db: FirebaseFirestore.Firestore, id: string) => {
+      if (!collection) {
+        throw new Error("Collection name is required for bulk update field");
+      }
       await db
-        .collection("temp")
+        .collection(collection)
         .doc(id)
         .update({
           [field]: value,
@@ -253,7 +312,7 @@ export function createBulkErrorResponse(error: any) {
  * Transaction-based bulk operation (for operations that need atomicity)
  */
 export async function executeBulkOperationWithTransaction(
-  config: BulkOperationConfig,
+  config: BulkOperationConfig
 ): Promise<BulkOperationResult> {
   const { collection, action, ids, data } = config;
 
@@ -274,7 +333,7 @@ export async function executeBulkOperationWithTransaction(
       // Get all documents
       const docRefs = ids.map((id) => db.collection(collection).doc(id));
       const docs = await Promise.all(
-        docRefs.map((ref) => transaction.get(ref)),
+        docRefs.map((ref) => transaction.get(ref))
       );
 
       // Validate all exist

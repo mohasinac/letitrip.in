@@ -154,7 +154,7 @@ export const PAYMENT_GATEWAYS: PaymentGatewayConfig[] = [
           placeholder: "rzp_test_xxxxx",
           helpText: "Get from Razorpay Dashboard > Settings > API Keys",
           validation: {
-            pattern: /^rzp_test_[a-zA-Z0-9]{14}$/,
+            pattern: /^rzp_test_[a-zA-Z0-9]{10}$/,
             minLength: 19,
             maxLength: 19,
           },
@@ -192,7 +192,7 @@ export const PAYMENT_GATEWAYS: PaymentGatewayConfig[] = [
           placeholder: "rzp_live_xxxxx",
           helpText: "Get from Razorpay Dashboard > Settings > API Keys",
           validation: {
-            pattern: /^rzp_live_[a-zA-Z0-9]{14}$/,
+            pattern: /^rzp_live_[a-zA-Z0-9]{10}$/,
             minLength: 19,
             maxLength: 19,
           },

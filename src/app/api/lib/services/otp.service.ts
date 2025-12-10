@@ -47,10 +47,12 @@ class OTPService {
   private readonly MAX_OTP_PER_HOUR = 5;
 
   /**
-   * Generate a random 6-digit OTP
+   * Generate a random 6-digit OTP using cryptographically secure random
    */
   private generateOTP(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    // Use crypto for secure random numbers
+    const crypto = require("crypto");
+    return crypto.randomInt(100000, 1000000).toString();
   }
 
   /**
@@ -76,7 +78,10 @@ class OTPService {
         component: "OTPService.checkRateLimit",
         metadata: { userId, type },
       });
-      throw new Error("Failed to check rate limit");
+      // Fail open - allow OTP generation on rate limit check error
+      // This prevents DB issues from blocking all OTPs
+      console.warn("Rate limit check failed, allowing OTP generation");
+      return true;
     }
   }
 
@@ -119,7 +124,7 @@ class OTPService {
         component: "OTPService.getActiveOTP",
         metadata: { userId, type, destination },
       });
-      return null;
+      throw new Error("Failed to check for active OTP");
     }
   }
 
@@ -236,17 +241,20 @@ class OTPService {
         };
       }
 
-      // Increment attempts
+      // Verify OTP FIRST (before incrementing attempts)
+      const isValid = request.otp === otpDoc.otp;
+
+      // Now increment attempts
+      const newAttempts = otpDoc.attempts + 1;
       await adminDb
         .collection(COLLECTIONS.OTP_VERIFICATIONS)
         .doc(otpDoc.id!)
         .update({
-          attempts: otpDoc.attempts + 1,
+          attempts: newAttempts,
         });
 
-      // Verify OTP
-      if (request.otp !== otpDoc.otp) {
-        const remainingAttempts = otpDoc.maxAttempts - (otpDoc.attempts + 1);
+      if (!isValid) {
+        const remainingAttempts = otpDoc.maxAttempts - newAttempts;
         return {
           success: false,
           message: `Invalid OTP. ${remainingAttempts} attempts remaining.`,
@@ -325,7 +333,8 @@ class OTPService {
           .collection(COLLECTIONS.OTP_VERIFICATIONS)
           .doc(existingOTP.id)
           .update({
-            verified: true, // Mark as used to prevent reuse
+            // Set expiry to past to invalidate (semantically correct)
+            expiresAt: new Date(0),
           });
       }
 

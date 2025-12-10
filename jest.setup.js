@@ -1,4 +1,62 @@
 import "@testing-library/jest-dom";
+import { TextDecoder, TextEncoder } from "util";
+
+// Polyfill TextEncoder/TextDecoder for jose library
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+// Mock Next.js server globals (Request, Response, Headers, etc.)
+// Using native Request from Node.js 18+
+if (typeof Request === "undefined") {
+  // Fallback mock for older Node versions
+  global.Request = class Request {
+    constructor(input, init = {}) {
+      // Store as internal property to avoid getter conflicts
+      Object.defineProperty(this, "_url", { value: input, writable: false });
+      Object.defineProperty(this, "_method", {
+        value: init.method || "GET",
+        writable: false,
+      });
+      this.headers = new Map(Object.entries(init.headers || {}));
+      this.body = init.body;
+    }
+    get url() {
+      return this._url;
+    }
+    get method() {
+      return this._method;
+    }
+  };
+}
+
+if (typeof Response === "undefined") {
+  global.Response = class Response {
+    constructor(body, init) {
+      this.body = body;
+      this.status = init?.status || 200;
+      this.statusText = init?.statusText || "";
+      this.headers = new Map(Object.entries(init?.headers || {}));
+    }
+
+    static json(data, init) {
+      return new Response(JSON.stringify(data), {
+        ...init,
+        headers: {
+          "Content-Type": "application/json",
+          ...(init?.headers || {}),
+        },
+      });
+    }
+
+    async json() {
+      return JSON.parse(this.body);
+    }
+  };
+}
+
+if (typeof Headers === "undefined") {
+  global.Headers = Map;
+}
 
 // Mock Next.js router
 jest.mock("next/navigation", () => ({

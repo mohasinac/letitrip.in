@@ -51,9 +51,15 @@ class EmailService {
     this.isConfigured = !!this.apiKey;
 
     if (!this.isConfigured) {
-      console.warn(
-        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables."
-      );
+      const message =
+        "⚠️ Email service not configured. Set RESEND_API_KEY in environment variables.";
+
+      // In production, throw error to prevent deployment without email config
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(message);
+      }
+
+      console.warn(message);
     }
   }
 
@@ -188,5 +194,8 @@ class EmailService {
   }
 }
 
-// Export singleton instance
+// Export class for testing and extensions
+export { EmailService };
+
+// Export singleton instance for application use
 export const emailService = new EmailService();
