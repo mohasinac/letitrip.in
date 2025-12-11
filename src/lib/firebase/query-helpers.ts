@@ -7,21 +7,20 @@
  * @module firebase/query-helpers
  */
 
+import { logError } from "@/lib/firebase-error-logger";
 import {
-  Query,
-  QueryConstraint,
-  QueryDocumentSnapshot,
   DocumentData,
-  limit,
-  startAfter,
   endBefore,
+  limit,
   limitToLast,
   orderBy,
+  OrderByDirection,
+  QueryConstraint,
+  QueryDocumentSnapshot,
+  startAfter,
   where,
   WhereFilterOp,
-  OrderByDirection,
 } from "firebase/firestore";
-import { logError } from "@/lib/firebase-error-logger";
 
 // ============================================================================
 // Types
@@ -118,8 +117,13 @@ export interface QueryConfig {
  * ```
  */
 export function buildPaginationConstraints(
-  config: PaginationConfig,
+  config: PaginationConfig
 ): QueryConstraint[] {
+  // BUG FIX #31: Validate pageSize is positive
+  if (config.pageSize <= 0) {
+    throw new Error("Page size must be a positive number");
+  }
+
   const constraints: QueryConstraint[] = [];
 
   // Add sort order if specified
@@ -159,10 +163,10 @@ export function buildPaginationConstraints(
  * ```
  */
 export function buildFilterConstraints(
-  filters: QueryFilter[],
+  filters: QueryFilter[]
 ): QueryConstraint[] {
   return filters.map((filter) =>
-    where(filter.field, filter.operator, filter.value),
+    where(filter.field, filter.operator, filter.value)
   );
 }
 
@@ -244,14 +248,14 @@ export function buildQueryConstraints(config: QueryConfig): QueryConstraint[] {
 export function processPaginatedResults<T>(
   docs: QueryDocumentSnapshot<DocumentData>[],
   pageSize: number,
-  hasPrevCursor: boolean = false,
+  hasPrevCursor: boolean = false
 ): PaginatedResult<T> {
-  const data = docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T);
+  const data = docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
 
   const hasNextPage = docs.length === pageSize;
   const hasPrevPage = hasPrevCursor || docs.length > 0;
 
-  const nextCursor = hasNextPage ? (docs.at(-1) ?? null) : null;
+  const nextCursor = hasNextPage ? docs.at(-1) ?? null : null;
 
   const prevCursor = docs.at(0) ?? null;
 
@@ -285,8 +289,13 @@ export function processPaginatedResults<T>(
 export function firstPage(
   pageSize: number = 20,
   sortField?: string,
-  sortDirection?: OrderByDirection,
+  sortDirection?: OrderByDirection
 ): PaginationConfig {
+  // BUG FIX #31: Validate pageSize is positive
+  if (pageSize <= 0) {
+    throw new Error("Page size must be a positive number");
+  }
+
   return {
     pageSize,
     sortField,
@@ -312,8 +321,16 @@ export function nextPage(
   pageSize: number,
   cursor: QueryDocumentSnapshot<DocumentData>,
   sortField?: string,
-  sortDirection?: OrderByDirection,
+  sortDirection?: OrderByDirection
 ): PaginationConfig {
+  // BUG FIX #31: Validate inputs
+  if (pageSize <= 0) {
+    throw new Error("Page size must be a positive number");
+  }
+  if (!cursor) {
+    throw new Error("Cursor is required for next page");
+  }
+
   return {
     pageSize,
     afterCursor: cursor,
@@ -340,8 +357,16 @@ export function prevPage(
   pageSize: number,
   cursor: QueryDocumentSnapshot<DocumentData>,
   sortField?: string,
-  sortDirection?: OrderByDirection,
+  sortDirection?: OrderByDirection
 ): PaginationConfig {
+  // BUG FIX #31: Validate inputs
+  if (pageSize <= 0) {
+    throw new Error("Page size must be a positive number");
+  }
+  if (!cursor) {
+    throw new Error("Cursor is required for previous page");
+  }
+
   return {
     pageSize,
     beforeCursor: cursor,
@@ -405,8 +430,19 @@ export function categoryFilter(categoryId: string): QueryFilter {
 export function dateRangeFilter(
   field: string,
   startDate: Date,
-  endDate: Date,
+  endDate: Date
 ): QueryFilter[] {
+  // BUG FIX #31: Validate date range
+  if (startDate > endDate) {
+    throw new Error("Start date must be before or equal to end date");
+  }
+  if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+    throw new Error("Start and end must be valid Date objects");
+  }
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    throw new Error("Invalid date values");
+  }
+
   return [
     { field, operator: ">=", value: startDate },
     { field, operator: "<=", value: endDate },
@@ -478,7 +514,7 @@ export function sortByPopularity(): QuerySort {
  * @returns Base64 encoded cursor string
  */
 export function encodeCursor(
-  cursor: QueryDocumentSnapshot<DocumentData>,
+  cursor: QueryDocumentSnapshot<DocumentData>
 ): string {
   try {
     const cursorData = {
@@ -525,5 +561,13 @@ export function getPageInfo<T>(result: PaginatedResult<T>): string {
  * @returns Estimated number of pages
  */
 export function estimatePages(totalCount: number, pageSize: number): number {
+  // BUG FIX #31: Validate inputs
+  if (pageSize <= 0) {
+    throw new Error("Page size must be a positive number");
+  }
+  if (totalCount < 0) {
+    throw new Error("Total count must be non-negative");
+  }
+
   return Math.ceil(totalCount / pageSize);
 }

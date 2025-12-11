@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`LoadingSpinner Snapshot Tests should match snapshot with all props 1`] = `
+<div
+  class="flex items-center justify-center min-h-[400px]"
+>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="flex flex-col items-center gap-3"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="animate-spin rounded-full border-b-2 h-16 w-16 border-gray-900"
+    />
+    <p
+      class="text-sm text-gray-600 dark:text-gray-400 animate-pulse"
+    >
+      Please wait...
+    </p>
+  </div>
+</div>
+`;
+
+exports[`LoadingSpinner Snapshot Tests should match snapshot with default props 1`] = `
+<div
+  aria-busy="true"
+  aria-live="polite"
+  class="flex flex-col items-center gap-3"
+  role="status"
+>
+  <div
+    aria-hidden="true"
+    class="animate-spin rounded-full border-b-2 h-8 w-8 border-blue-600"
+  />
+  <span
+    class="sr-only"
+  >
+    Loading...
+  </span>
+</div>
+`;
+
+exports[`LoadingSpinner Snapshot Tests should match snapshot with fullScreen 1`] = `
+<div
+  class="flex items-center justify-center min-h-[400px]"
+>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="flex flex-col items-center gap-3"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="animate-spin rounded-full border-b-2 h-8 w-8 border-blue-600"
+    />
+    <span
+      class="sr-only"
+    >
+      Loading...
+    </span>
+  </div>
+</div>
+`;
+
+exports[`LoadingSpinner Snapshot Tests should match snapshot with message 1`] = `
+<div
+  aria-busy="true"
+  aria-live="polite"
+  class="flex flex-col items-center gap-3"
+  role="status"
+>
+  <div
+    aria-hidden="true"
+    class="animate-spin rounded-full border-b-2 h-8 w-8 border-blue-600"
+  />
+  <p
+    class="text-sm text-gray-600 dark:text-gray-400 animate-pulse"
+  >
+    Loading data...
+  </p>
+</div>
+`;

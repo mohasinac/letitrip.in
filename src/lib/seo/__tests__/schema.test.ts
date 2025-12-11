@@ -317,10 +317,8 @@ describe("SEO Schema", () => {
       expect(schema.mainEntity[0].acceptedAnswer.text).toBe(faqs[0].answer);
     });
 
-    it("should handle empty FAQ list", () => {
-      const schema = generateFAQSchema([]);
-
-      expect(schema.mainEntity).toHaveLength(0);
+    it("should throw error for empty FAQ list", () => {
+      expect(() => generateFAQSchema([])).toThrow("FAQs array cannot be empty");
     });
 
     it("should handle single FAQ", () => {
@@ -632,6 +630,602 @@ describe("SEO Schema", () => {
 
       expect(jsonld.__html).toContain("Q1");
       expect(jsonld.__html).toContain("Q2");
+    });
+  });
+
+  describe("BUG FIX #34: Input Validation Edge Cases", () => {
+    describe("generateProductSchema validation", () => {
+      it("should throw error for missing name", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+          })
+        ).toThrow("Product name is required and must be a string");
+      });
+
+      it("should throw error for non-string name", () => {
+        expect(() =>
+          generateProductSchema({
+            name: 123 as any,
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+          })
+        ).toThrow("Product name is required and must be a string");
+      });
+
+      it("should throw error for missing description", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+          })
+        ).toThrow("Product description is required and must be a string");
+      });
+
+      it("should throw error for missing image", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+          })
+        ).toThrow("Product image is required and must be a string");
+      });
+
+      it("should throw error for missing SKU", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "",
+            price: 100,
+            url: "https://example.com",
+          })
+        ).toThrow("Product SKU is required and must be a string");
+      });
+
+      it("should throw error for negative price", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: -10,
+            url: "https://example.com",
+          })
+        ).toThrow("Product price must be a non-negative number");
+      });
+
+      it("should throw error for non-number price", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: "100" as any,
+            url: "https://example.com",
+          })
+        ).toThrow("Product price must be a non-negative number");
+      });
+
+      it("should throw error for missing URL", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "",
+          })
+        ).toThrow("Product URL is required and must be a string");
+      });
+
+      it("should throw error for invalid rating", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+            rating: 6,
+            reviewCount: 10,
+          })
+        ).toThrow("Rating must be a number between 0 and 5");
+      });
+
+      it("should throw error for negative rating", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+            rating: -1,
+            reviewCount: 10,
+          })
+        ).toThrow("Rating must be a number between 0 and 5");
+      });
+
+      it("should throw error for negative review count", () => {
+        expect(() =>
+          generateProductSchema({
+            name: "Test Product",
+            description: "Test",
+            image: "image.jpg",
+            sku: "SKU123",
+            price: 100,
+            url: "https://example.com",
+            rating: 4.5,
+            reviewCount: -5,
+          })
+        ).toThrow("Review count must be a non-negative number");
+      });
+    });
+
+    describe("generateFAQSchema validation", () => {
+      it("should throw error for null faqs", () => {
+        expect(() => generateFAQSchema(null as any)).toThrow(
+          "FAQs must be an array"
+        );
+      });
+
+      it("should throw error for undefined faqs", () => {
+        expect(() => generateFAQSchema(undefined as any)).toThrow(
+          "FAQs must be an array"
+        );
+      });
+
+      it("should throw error for non-array faqs", () => {
+        expect(() => generateFAQSchema({} as any)).toThrow(
+          "FAQs must be an array"
+        );
+      });
+
+      it("should throw error for empty faqs array", () => {
+        expect(() => generateFAQSchema([])).toThrow(
+          "FAQs array cannot be empty"
+        );
+      });
+
+      it("should throw error for non-object FAQ item", () => {
+        expect(() =>
+          generateFAQSchema([
+            { question: "Q1", answer: "A1" },
+            "invalid" as any,
+          ])
+        ).toThrow("FAQ at index 1 must be an object");
+      });
+
+      it("should throw error for missing question", () => {
+        expect(() =>
+          generateFAQSchema([
+            { question: "Q1", answer: "A1" },
+            { question: "", answer: "A2" },
+          ])
+        ).toThrow("FAQ at index 1 must have a question string");
+      });
+
+      it("should throw error for missing answer", () => {
+        expect(() =>
+          generateFAQSchema([
+            { question: "Q1", answer: "A1" },
+            { question: "Q2", answer: "" },
+          ])
+        ).toThrow("FAQ at index 1 must have an answer string");
+      });
+
+      it("should throw error for non-string question", () => {
+        expect(() =>
+          generateFAQSchema([{ question: 123 as any, answer: "A1" }])
+        ).toThrow("FAQ at index 0 must have a question string");
+      });
+    });
+
+    describe("generateBreadcrumbSchema validation", () => {
+      it("should throw error for null items", () => {
+        expect(() => generateBreadcrumbSchema(null as any)).toThrow(
+          "Breadcrumb items must be an array"
+        );
+      });
+
+      it("should throw error for undefined items", () => {
+        expect(() => generateBreadcrumbSchema(undefined as any)).toThrow(
+          "Breadcrumb items must be an array"
+        );
+      });
+
+      it("should throw error for non-array items", () => {
+        expect(() => generateBreadcrumbSchema({} as any)).toThrow(
+          "Breadcrumb items must be an array"
+        );
+      });
+
+      it("should throw error for empty items array", () => {
+        expect(() => generateBreadcrumbSchema([])).toThrow(
+          "Breadcrumb items array cannot be empty"
+        );
+      });
+
+      it("should throw error for non-object item", () => {
+        expect(() =>
+          generateBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            "invalid" as any,
+          ])
+        ).toThrow("Breadcrumb item at index 1 must be an object");
+      });
+
+      it("should throw error for missing name", () => {
+        expect(() =>
+          generateBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "", url: "/products" },
+          ])
+        ).toThrow("Breadcrumb item at index 1 must have a name string");
+      });
+
+      it("should throw error for missing url", () => {
+        expect(() =>
+          generateBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Products", url: "" },
+          ])
+        ).toThrow("Breadcrumb item at index 1 must have a url string");
+      });
+    });
+
+    describe("generateItemListSchema validation", () => {
+      it("should throw error for null items", () => {
+        expect(() => generateItemListSchema(null as any)).toThrow(
+          "Items must be an array"
+        );
+      });
+
+      it("should throw error for undefined items", () => {
+        expect(() => generateItemListSchema(undefined as any)).toThrow(
+          "Items must be an array"
+        );
+      });
+
+      it("should throw error for empty items array", () => {
+        expect(() => generateItemListSchema([])).toThrow(
+          "Items array cannot be empty"
+        );
+      });
+
+      it("should throw error for non-object item", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "Product 1",
+              url: "/product1",
+              image: "image1.jpg",
+              price: 100,
+            },
+            "invalid" as any,
+          ])
+        ).toThrow("Item at index 1 must be an object");
+      });
+
+      it("should throw error for missing name", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "",
+              url: "/product1",
+              image: "image1.jpg",
+              price: 100,
+            },
+          ])
+        ).toThrow("Item at index 0 must have a name string");
+      });
+
+      it("should throw error for missing url", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "Product 1",
+              url: "",
+              image: "image1.jpg",
+              price: 100,
+            },
+          ])
+        ).toThrow("Item at index 0 must have a url string");
+      });
+
+      it("should throw error for missing image", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "Product 1",
+              url: "/product1",
+              image: "",
+              price: 100,
+            },
+          ])
+        ).toThrow("Item at index 0 must have an image string");
+      });
+
+      it("should throw error for negative price", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "Product 1",
+              url: "/product1",
+              image: "image1.jpg",
+              price: -10,
+            },
+          ])
+        ).toThrow("Item at index 0 must have a non-negative price number");
+      });
+
+      it("should throw error for non-number price", () => {
+        expect(() =>
+          generateItemListSchema([
+            {
+              name: "Product 1",
+              url: "/product1",
+              image: "image1.jpg",
+              price: "100" as any,
+            },
+          ])
+        ).toThrow("Item at index 0 must have a non-negative price number");
+      });
+    });
+
+    describe("generateReviewSchema validation", () => {
+      it("should throw error for missing product name", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "",
+            reviewBody: "Great product",
+            rating: 5,
+            authorName: "John Doe",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Product name is required and must be a string");
+      });
+
+      it("should throw error for missing review body", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "",
+            rating: 5,
+            authorName: "John Doe",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Review body is required and must be a string");
+      });
+
+      it("should throw error for rating below 1", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "Great product",
+            rating: 0,
+            authorName: "John Doe",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Rating must be a number between 1 and 5");
+      });
+
+      it("should throw error for rating above 5", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "Great product",
+            rating: 6,
+            authorName: "John Doe",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Rating must be a number between 1 and 5");
+      });
+
+      it("should throw error for non-number rating", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "Great product",
+            rating: "5" as any,
+            authorName: "John Doe",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Rating must be a number between 1 and 5");
+      });
+
+      it("should throw error for missing author name", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "Great product",
+            rating: 5,
+            authorName: "",
+            datePublished: "2024-01-01",
+          })
+        ).toThrow("Author name is required and must be a string");
+      });
+
+      it("should throw error for missing date published", () => {
+        expect(() =>
+          generateReviewSchema({
+            productName: "Test Product",
+            reviewBody: "Great product",
+            rating: 5,
+            authorName: "John Doe",
+            datePublished: "",
+          })
+        ).toThrow("Date published is required and must be a string");
+      });
+    });
+
+    describe("generateOfferSchema validation", () => {
+      it("should throw error for missing name", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: 10,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Offer name is required and must be a string");
+      });
+
+      it("should throw error for missing description", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: 10,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Offer description is required and must be a string");
+      });
+
+      it("should throw error for missing code", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "",
+            discountType: "percentage",
+            discountValue: 10,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Offer code is required and must be a string");
+      });
+
+      it("should throw error for invalid discount type", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "invalid" as any,
+            discountValue: 10,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Discount type must be 'percentage' or 'fixed'");
+      });
+
+      it("should throw error for zero discount value", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: 0,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Discount value must be a positive number");
+      });
+
+      it("should throw error for negative discount value", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: -10,
+            validFrom: "2024-01-01",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Discount value must be a positive number");
+      });
+
+      it("should throw error for missing validFrom", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: 10,
+            validFrom: "",
+            validThrough: "2024-12-31",
+          })
+        ).toThrow("Valid from date is required and must be a string");
+      });
+
+      it("should throw error for missing validThrough", () => {
+        expect(() =>
+          generateOfferSchema({
+            name: "Sale",
+            description: "10% off",
+            code: "SAVE10",
+            discountType: "percentage",
+            discountValue: 10,
+            validFrom: "2024-01-01",
+            validThrough: "",
+          })
+        ).toThrow("Valid through date is required and must be a string");
+      });
+    });
+
+    describe("generateJSONLD validation", () => {
+      it("should throw error for null schema", () => {
+        expect(() => generateJSONLD(null as any)).toThrow(
+          "Schema must be a valid object"
+        );
+      });
+
+      it("should throw error for undefined schema", () => {
+        expect(() => generateJSONLD(undefined as any)).toThrow(
+          "Schema must be a valid object"
+        );
+      });
+
+      it("should throw error for array schema", () => {
+        expect(() => generateJSONLD([] as any)).toThrow(
+          "Schema must be a valid object"
+        );
+      });
+
+      it("should throw error for non-object schema", () => {
+        expect(() => generateJSONLD("schema" as any)).toThrow(
+          "Schema must be a valid object"
+        );
+      });
+
+      it("should accept valid schema object", () => {
+        const schema = { "@context": "https://schema.org", "@type": "Thing" };
+        const result = generateJSONLD(schema);
+        expect(result.__html).toBe(JSON.stringify(schema));
+      });
     });
   });
 });

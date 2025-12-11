@@ -616,4 +616,441 @@ describe("useMediaUpload", () => {
       });
     });
   });
+
+  describe("BUG FIX #35: Input Validation Edge Cases", () => {
+    describe("Options validation", () => {
+      it("should throw error for negative maxSize", () => {
+        expect(() => {
+          renderHook(() => useMediaUpload({ maxSize: -100 }));
+        }).toThrow("maxSize must be a positive number");
+      });
+
+      it("should throw error for zero maxSize", () => {
+        expect(() => {
+          renderHook(() => useMediaUpload({ maxSize: 0 }));
+        }).toThrow("maxSize must be a positive number");
+      });
+
+      it("should throw error for non-number maxSize", () => {
+        expect(() => {
+          renderHook(() => useMediaUpload({ maxSize: "1024" as any }));
+        }).toThrow("maxSize must be a positive number");
+      });
+
+      it("should throw error for negative maxRetries", () => {
+        expect(() => {
+          renderHook(() => useMediaUpload({ maxRetries: -1 }));
+        }).toThrow("maxRetries must be a non-negative number");
+      });
+
+      it("should throw error for non-number maxRetries", () => {
+        expect(() => {
+          renderHook(() => useMediaUpload({ maxRetries: "3" as any }));
+        }).toThrow("maxRetries must be a non-negative number");
+      });
+
+      it("should accept zero maxRetries", () => {
+        const { result } = renderHook(() => useMediaUpload({ maxRetries: 0 }));
+        expect(result.current).toBeDefined();
+      });
+
+      it("should throw error for non-array allowedTypes", () => {
+        expect(() => {
+          renderHook(() =>
+            useMediaUpload({ allowedTypes: "image/jpeg" as any })
+          );
+        }).toThrow("allowedTypes must be an array");
+      });
+
+      it("should accept empty allowedTypes array", () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ allowedTypes: [] })
+        );
+        expect(result.current).toBeDefined();
+      });
+
+      it("should accept valid options", () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({
+            maxSize: 1024 * 1024,
+            maxRetries: 3,
+            allowedTypes: ["image/jpeg", "image/png"],
+          })
+        );
+        expect(result.current).toBeDefined();
+      });
+    });
+
+    describe("File parameter validation", () => {
+      it("should reject null file in upload", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        await expect(result.current.upload(null as any)).rejects.toThrow(
+          "File is required for upload"
+        );
+
+        await waitFor(() => {
+          expect(result.current.error).toBe("File is required for upload");
+        });
+      });
+
+      it("should reject undefined file in upload", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        await expect(result.current.upload(undefined as any)).rejects.toThrow(
+          "File is required for upload"
+        );
+
+        await waitFor(() => {
+          expect(result.current.error).toBe("File is required for upload");
+        });
+      });
+
+      it("should reject non-File object", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        const fakeFile = { name: "test.jpg", size: 1000 };
+
+        await expect(result.current.upload(fakeFile as any)).rejects.toThrow(
+          "Invalid file object"
+        );
+      });
+
+      it("should call onError callback for null file", async () => {
+        const onError = jest.fn();
+        const { result } = renderHook(() => useMediaUpload({ onError }));
+
+        await expect(result.current.upload(null as any)).rejects.toThrow();
+
+        expect(onError).toHaveBeenCalledWith("File is required for upload");
+      });
+
+      it("should set error state for invalid file", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        await expect(result.current.upload(null as any)).rejects.toThrow();
+
+        await waitFor(() => {
+          expect(result.current.error).toBe("File is required for upload");
+          expect(result.current.isUploading).toBe(false);
+        });
+      });
+    });
+
+    describe("File size validation", () => {
+      it("should reject file exceeding maxSize", async () => {
+        const { result } = renderHook(() => useMediaUpload({ maxSize: 1024 })); // 1KB
+
+        const file = new File(["x".repeat(2048)], "large.jpg", {
+          type: "image/jpeg",
+        });
+
+        await expect(result.current.upload(file)).rejects.toThrow(
+          /File size.*exceeds maximum/
+        );
+      });
+
+      it("should accept file within size limit", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ maxSize: 1024 * 1024 })
+        ); // 1MB
+
+        const file = new File(["small content"], "small.jpg", {
+          type: "image/jpeg",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        // Simulate success
+        act(() => {
+          const loadHandler = mockXhr.addEventListener.mock.calls.find(
+            (call: any[]) => call[0] === "load"
+          )?.[1];
+          if (loadHandler) {
+            loadHandler();
+          }
+        });
+
+        await waitFor(() => {
+          expect(result.current.isUploading).toBe(false);
+        });
+      });
+
+      it("should include file sizes in error message", async () => {
+        const { result } = renderHook(() => useMediaUpload({ maxSize: 1000 }));
+
+        const file = new File(["x".repeat(2000)], "large.jpg", {
+          type: "image/jpeg",
+        });
+
+        await expect(result.current.upload(file)).rejects.toThrow(/MB/);
+      });
+    });
+
+    describe("File type validation", () => {
+      it("should reject file with disallowed type", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ allowedTypes: ["image/jpeg", "image/png"] })
+        );
+
+        const file = new File(["content"], "doc.pdf", {
+          type: "application/pdf",
+        });
+
+        await expect(result.current.upload(file)).rejects.toThrow(
+          "File type application/pdf is not allowed"
+        );
+      });
+
+      it("should accept file with allowed type", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ allowedTypes: ["image/jpeg"] })
+        );
+
+        const file = new File(["content"], "photo.jpg", {
+          type: "image/jpeg",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        expect(result.current.error).toBe(null);
+      });
+
+      it("should allow all types when allowedTypes is empty", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ allowedTypes: [] })
+        );
+
+        const file = new File(["content"], "doc.pdf", {
+          type: "application/pdf",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        expect(result.current.error).toBe(null);
+      });
+
+      it("should allow all types when allowedTypes is undefined", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        const file = new File(["content"], "doc.pdf", {
+          type: "application/pdf",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        expect(result.current.error).toBe(null);
+      });
+    });
+
+    describe("Retry function validation", () => {
+      it("should return null when no uploadId exists", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        let retryResult: any;
+        await act(async () => {
+          retryResult = await result.current.retry();
+        });
+
+        expect(retryResult).toBe(null);
+        await waitFor(() => {
+          expect(result.current.error).toBe("No upload ID to retry");
+        });
+      });
+
+      it("should set error when retrying without uploadId", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        await act(async () => {
+          await result.current.retry();
+        });
+
+        await waitFor(() => {
+          expect(result.current.error).toBe("No upload ID to retry");
+        });
+      });
+
+      it("should handle missing file input in DOM", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        // Mock file upload to set uploadId
+        const file = new File(["content"], "test.jpg", {
+          type: "image/jpeg",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        // Mock querySelector to return null (no file input)
+        const originalQuerySelector = document.querySelector;
+        document.querySelector = jest.fn(() => null);
+
+        let retryResult: any;
+        await act(async () => {
+          retryResult = await result.current.retry();
+        });
+
+        expect(retryResult).toBe(null);
+        await waitFor(() => {
+          expect(result.current.error).toBe(
+            "No file available to retry upload"
+          );
+        });
+
+        // Restore
+        document.querySelector = originalQuerySelector;
+      });
+
+      it("should handle file input with no files", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        // Mock upload to set uploadId
+        const file = new File(["content"], "test.jpg", {
+          type: "image/jpeg",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        // Mock file input with no files
+        const mockInput = { files: [] };
+        const originalQuerySelector = document.querySelector;
+        document.querySelector = jest.fn(() => mockInput as any);
+
+        let retryResult: any;
+        await act(async () => {
+          retryResult = await result.current.retry();
+        });
+
+        expect(retryResult).toBe(null);
+        await waitFor(() => {
+          expect(result.current.error).toBe(
+            "No file available to retry upload"
+          );
+        });
+
+        // Restore
+        document.querySelector = originalQuerySelector;
+      });
+    });
+
+    describe("Upload ID validation", () => {
+      it("should handle missing upload ID from context", async () => {
+        // Mock addUpload to return empty string
+        mockUseUploadContext.mockReturnValue({
+          addUpload: jest.fn().mockReturnValue(""),
+          updateUpload: jest.fn(),
+          removeUpload: jest.fn(),
+          retryUpload: jest.fn(),
+          uploads: [],
+        } as any);
+
+        const { result } = renderHook(() => useMediaUpload());
+
+        const file = new File(["content"], "test.jpg", {
+          type: "image/jpeg",
+        });
+
+        await expect(result.current.upload(file)).rejects.toThrow(
+          "Failed to create upload tracking ID"
+        );
+      });
+
+      it("should handle null upload ID from context", async () => {
+        mockUseUploadContext.mockReturnValue({
+          addUpload: jest.fn().mockReturnValue(null),
+          updateUpload: jest.fn(),
+          removeUpload: jest.fn(),
+          retryUpload: jest.fn(),
+          uploads: [],
+        } as any);
+
+        const { result } = renderHook(() => useMediaUpload());
+
+        const file = new File(["content"], "test.jpg", {
+          type: "image/jpeg",
+        });
+
+        await expect(result.current.upload(file)).rejects.toThrow(
+          "Failed to create upload tracking ID"
+        );
+      });
+    });
+
+    describe("Edge cases and boundary testing", () => {
+      it("should handle very large maxSize values", () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({ maxSize: Number.MAX_SAFE_INTEGER })
+        );
+
+        expect(result.current).toBeDefined();
+      });
+
+      it("should handle multiple allowed types", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({
+            allowedTypes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+            ],
+          })
+        );
+
+        const file = new File(["content"], "photo.webp", {
+          type: "image/webp",
+        });
+
+        act(() => {
+          result.current.upload(file);
+        });
+
+        expect(result.current.error).toBe(null);
+      });
+
+      it("should handle callbacks being undefined", async () => {
+        const { result } = renderHook(() =>
+          useMediaUpload({
+            onProgress: undefined,
+            onSuccess: undefined,
+            onError: undefined,
+          })
+        );
+
+        const file = new File(["content"], "test.jpg", {
+          type: "image/jpeg",
+        });
+
+        // Should not throw
+        expect(() => {
+          result.current.upload(file);
+        }).not.toThrow();
+      });
+
+      it("should validate file immediately on upload call", async () => {
+        const { result } = renderHook(() => useMediaUpload());
+
+        const startTime = Date.now();
+
+        try {
+          await result.current.upload(null as any);
+        } catch (error) {
+          const endTime = Date.now();
+          // Validation should be nearly instant
+          expect(endTime - startTime).toBeLessThan(10);
+        }
+      });
+    });
+  });
 });

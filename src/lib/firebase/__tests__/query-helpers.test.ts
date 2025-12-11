@@ -590,5 +590,304 @@ describe("Firebase Query Helpers", () => {
         expect(estimatePages(61, 20)).toBe(4);
       });
     });
+
+    // BUG FIX #31: Comprehensive validation edge case tests
+    describe("BUG FIX #31: Input Validation Edge Cases", () => {
+      describe("buildPaginationConstraints validation", () => {
+        it("should throw error for zero pageSize", () => {
+          const config: PaginationConfig = {
+            pageSize: 0,
+          };
+          expect(() => buildPaginationConstraints(config)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative pageSize", () => {
+          const config: PaginationConfig = {
+            pageSize: -10,
+          };
+          expect(() => buildPaginationConstraints(config)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for very small pageSize", () => {
+          const config: PaginationConfig = {
+            pageSize: -0.001,
+          };
+          expect(() => buildPaginationConstraints(config)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should accept minimum valid pageSize", () => {
+          const config: PaginationConfig = {
+            pageSize: 1,
+          };
+          expect(() => buildPaginationConstraints(config)).not.toThrow();
+        });
+
+        it("should accept large pageSize", () => {
+          const config: PaginationConfig = {
+            pageSize: 1000,
+          };
+          expect(() => buildPaginationConstraints(config)).not.toThrow();
+        });
+      });
+
+      describe("firstPage validation", () => {
+        it("should throw error for zero pageSize", () => {
+          expect(() => firstPage(0)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative pageSize", () => {
+          expect(() => firstPage(-20)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should accept minimum valid pageSize", () => {
+          expect(() => firstPage(1)).not.toThrow();
+        });
+
+        it("should use default pageSize of 20 when not provided", () => {
+          const config = firstPage();
+          expect(config.pageSize).toBe(20);
+        });
+      });
+
+      describe("nextPage validation", () => {
+        it("should throw error for zero pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => nextPage(0, mockDoc)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => nextPage(-5, mockDoc)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for null cursor", () => {
+          expect(() => nextPage(20, null as any)).toThrow(
+            "Cursor is required for next page"
+          );
+        });
+
+        it("should throw error for undefined cursor", () => {
+          expect(() => nextPage(20, undefined as any)).toThrow(
+            "Cursor is required for next page"
+          );
+        });
+
+        it("should accept valid cursor and pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => nextPage(20, mockDoc)).not.toThrow();
+        });
+      });
+
+      describe("prevPage validation", () => {
+        it("should throw error for zero pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => prevPage(0, mockDoc)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => prevPage(-10, mockDoc)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for null cursor", () => {
+          expect(() => prevPage(20, null as any)).toThrow(
+            "Cursor is required for previous page"
+          );
+        });
+
+        it("should throw error for undefined cursor", () => {
+          expect(() => prevPage(20, undefined as any)).toThrow(
+            "Cursor is required for previous page"
+          );
+        });
+
+        it("should accept valid cursor and pageSize", () => {
+          const mockDoc = createMockDoc("doc1");
+          expect(() => prevPage(20, mockDoc)).not.toThrow();
+        });
+      });
+
+      describe("dateRangeFilter validation", () => {
+        it("should throw error when startDate is after endDate", () => {
+          const start = new Date("2024-12-31");
+          const end = new Date("2024-01-01");
+          expect(() => dateRangeFilter("created_at", start, end)).toThrow(
+            "Start date must be before or equal to end date"
+          );
+        });
+
+        it("should accept when startDate equals endDate", () => {
+          const date = new Date("2024-01-01");
+          expect(() => dateRangeFilter("created_at", date, date)).not.toThrow();
+        });
+
+        it("should throw error for invalid Date objects (NaN)", () => {
+          const invalidDate = new Date("invalid");
+          const validDate = new Date("2024-12-31");
+          expect(() =>
+            dateRangeFilter("created_at", invalidDate, validDate)
+          ).toThrow("Invalid date values");
+          expect(() =>
+            dateRangeFilter("created_at", validDate, invalidDate)
+          ).toThrow("Invalid date values");
+        });
+
+        it("should throw error for non-Date objects", () => {
+          expect(() =>
+            dateRangeFilter("created_at", "2024-01-01" as any, new Date())
+          ).toThrow("Start and end must be valid Date objects");
+          expect(() =>
+            dateRangeFilter("created_at", new Date(), "2024-12-31" as any)
+          ).toThrow("Start and end must be valid Date objects");
+        });
+
+        it("should accept valid date range", () => {
+          const start = new Date("2024-01-01");
+          const end = new Date("2024-12-31");
+          const filters = dateRangeFilter("created_at", start, end);
+          expect(filters).toHaveLength(2);
+          expect(filters[0].operator).toBe(">=");
+          expect(filters[1].operator).toBe("<=");
+        });
+      });
+
+      describe("estimatePages validation", () => {
+        it("should throw error for zero pageSize", () => {
+          expect(() => estimatePages(100, 0)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative pageSize", () => {
+          expect(() => estimatePages(100, -5)).toThrow(
+            "Page size must be a positive number"
+          );
+        });
+
+        it("should throw error for negative totalCount", () => {
+          expect(() => estimatePages(-10, 20)).toThrow(
+            "Total count must be non-negative"
+          );
+        });
+
+        it("should accept zero totalCount", () => {
+          expect(estimatePages(0, 20)).toBe(0);
+        });
+
+        it("should accept minimum valid inputs", () => {
+          expect(estimatePages(1, 1)).toBe(1);
+        });
+
+        it("should handle large numbers correctly", () => {
+          expect(estimatePages(1000000, 100)).toBe(10000);
+        });
+
+        it("should round up correctly", () => {
+          expect(estimatePages(101, 100)).toBe(2);
+          expect(estimatePages(199, 100)).toBe(2);
+          expect(estimatePages(200, 100)).toBe(2);
+          expect(estimatePages(201, 100)).toBe(3);
+        });
+      });
+
+      describe("Cursor edge cases", () => {
+        it("should handle cursor with minimal data", () => {
+          const mockDoc = createMockDoc("doc1", { id: "doc1" });
+          const config = nextPage(20, mockDoc);
+          expect(config.afterCursor).toBe(mockDoc);
+        });
+
+        it("should handle cursor with complex data", () => {
+          const mockDoc = createMockDoc("doc1", {
+            id: "doc1",
+            nested: { field: "value" },
+            array: [1, 2, 3],
+          });
+          const config = prevPage(20, mockDoc);
+          expect(config.beforeCursor).toBe(mockDoc);
+        });
+      });
+
+      describe("Boundary value testing", () => {
+        it("should handle pageSize of 1", () => {
+          const config = firstPage(1);
+          expect(config.pageSize).toBe(1);
+        });
+
+        it("should handle very large pageSize", () => {
+          const config = firstPage(10000);
+          expect(config.pageSize).toBe(10000);
+        });
+
+        it("should handle exact page boundary in estimatePages", () => {
+          expect(estimatePages(20, 20)).toBe(1);
+          expect(estimatePages(40, 20)).toBe(2);
+          expect(estimatePages(60, 20)).toBe(3);
+        });
+
+        it("should handle fractional results in estimatePages", () => {
+          expect(estimatePages(1, 20)).toBe(1);
+          expect(estimatePages(10, 20)).toBe(1);
+          expect(estimatePages(19, 20)).toBe(1);
+          expect(estimatePages(21, 20)).toBe(2);
+        });
+      });
+
+      describe("Combined validation scenarios", () => {
+        it("should validate all inputs in complex pagination", () => {
+          const mockDoc = createMockDoc("doc1");
+
+          // Should fail on pageSize
+          expect(() => nextPage(0, mockDoc, "created_at", "desc")).toThrow();
+
+          // Should fail on cursor
+          expect(() =>
+            nextPage(20, null as any, "created_at", "desc")
+          ).toThrow();
+
+          // Should succeed with valid inputs
+          expect(() =>
+            nextPage(20, mockDoc, "created_at", "desc")
+          ).not.toThrow();
+        });
+
+        it("should validate date filters in combination with other filters", () => {
+          const start = new Date("2024-12-31");
+          const end = new Date("2024-01-01");
+          const statusFilters = [statusFilter("active")];
+
+          // Invalid date range should throw
+          expect(() => dateRangeFilter("created_at", start, end)).toThrow();
+
+          // Valid filters should work
+          const validStart = new Date("2024-01-01");
+          const validEnd = new Date("2024-12-31");
+          const dateFilters = dateRangeFilter(
+            "created_at",
+            validStart,
+            validEnd
+          );
+          expect([...statusFilters, ...dateFilters]).toHaveLength(3);
+        });
+      });
+    });
   });
 });
