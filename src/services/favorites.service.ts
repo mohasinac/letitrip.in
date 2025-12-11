@@ -91,8 +91,33 @@ class FavoritesService {
 
     try {
       const favorites = localStorage.getItem(this.GUEST_FAVORITES_KEY);
-      return favorites ? JSON.parse(favorites) : [];
-    } catch {
+      const parsed = favorites ? JSON.parse(favorites) : [];
+
+      // Validate that parsed data is an array
+      if (!Array.isArray(parsed)) {
+        console.error(
+          "[Favorites] Invalid favorites data in localStorage, resetting"
+        );
+        this.clearGuestFavorites();
+        return [];
+      }
+
+      // Validate all items are strings
+      const validFavorites = parsed.filter(
+        (item) => typeof item === "string" && item.length > 0
+      );
+      if (validFavorites.length !== parsed.length) {
+        console.warn("[Favorites] Removed invalid product IDs from favorites");
+        this.setGuestFavorites(validFavorites);
+      }
+
+      return validFavorites;
+    } catch (error) {
+      console.error(
+        "[Favorites] Failed to parse favorites from localStorage:",
+        error
+      );
+      this.clearGuestFavorites();
       return [];
     }
   }
@@ -104,23 +129,41 @@ class FavoritesService {
   }
 
   addToGuestFavorites(productId: string): void {
+    // Validate input - check type first
+    if (typeof productId !== "string") {
+      throw new Error("[Favorites] Invalid product ID");
+    }
+
+    const cleanProductId = productId.trim();
+    if (cleanProductId.length === 0) {
+      throw new Error("[Favorites] Product ID cannot be empty");
+    }
+
     const favorites = this.getGuestFavorites();
 
-    if (!favorites.includes(productId)) {
-      favorites.push(productId);
+    if (!favorites.includes(cleanProductId)) {
+      favorites.push(cleanProductId);
       this.setGuestFavorites(favorites);
     }
   }
 
   removeFromGuestFavorites(productId: string): void {
+    // Validate input
+    if (!productId || typeof productId !== "string") {
+      throw new Error("[Favorites] Invalid product ID");
+    }
+
+    const cleanProductId = productId.trim();
+
     const favorites = this.getGuestFavorites();
-    const filtered = favorites.filter((id) => id !== productId);
+    const filtered = favorites.filter((id) => id !== cleanProductId);
     this.setGuestFavorites(filtered);
   }
 
   isGuestFavorited(productId: string): boolean {
+    const cleanProductId = productId.trim();
     const favorites = this.getGuestFavorites();
-    return favorites.includes(productId);
+    return favorites.includes(cleanProductId);
   }
 
   clearGuestFavorites(): void {

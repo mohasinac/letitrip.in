@@ -279,20 +279,16 @@ describe("SearchService", () => {
       expect(result.categories).toHaveLength(0);
     });
 
-    it("should handle very long search queries", async () => {
+    it("should reject very long search queries (DoS protection)", async () => {
       const longQuery = "a".repeat(1000);
-      const mockResult: SearchResultFE = {
-        products: [],
-        shops: [],
-        categories: [],
-      };
 
-      (apiService.get as jest.Mock).mockResolvedValue(mockResult);
+      // Should throw validation error instead of making API call
+      await expect(searchService.search({ q: longQuery })).rejects.toThrow(
+        "[Search] Query too long"
+      );
 
-      const result = await searchService.search({ q: longQuery });
-
-      expect(apiService.get).toHaveBeenCalled();
-      expect(result).toBeDefined();
+      // API should not be called
+      expect(apiService.get).not.toHaveBeenCalled();
     });
 
     it("should handle Unicode characters in search", async () => {

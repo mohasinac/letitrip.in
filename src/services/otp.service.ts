@@ -118,7 +118,9 @@ class OTPClientService {
         "/api/auth/verify-email/status"
       );
       return response.verified;
-    } catch {
+    } catch (error) {
+      // BUG FIX #28: Log verification check error for debugging
+      console.error("[OTP] Failed to check email verification status:", error);
       return false;
     }
   }
@@ -132,7 +134,9 @@ class OTPClientService {
         "/api/auth/verify-phone/status"
       );
       return response.verified;
-    } catch {
+    } catch (error) {
+      // BUG FIX #28: Log verification check error for debugging
+      console.error("[OTP] Failed to check phone verification status:", error);
       return false;
     }
   }

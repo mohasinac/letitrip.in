@@ -38,7 +38,9 @@ class ViewingHistoryService {
       }
 
       return validItems;
-    } catch {
+    } catch (error) {
+      // BUG FIX #28: Log error for debugging instead of silent failure
+      console.error("[ViewingHistory] Failed to get history:", error);
       return [];
     }
   }

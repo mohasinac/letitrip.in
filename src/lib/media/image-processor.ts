@@ -4,9 +4,9 @@
  */
 
 import type {
+  CropArea,
   EditorState,
   ImageProcessingOptions,
-  CropArea,
 } from "@/types/media";
 
 /**
@@ -14,7 +14,7 @@ import type {
  */
 export async function resizeImage(
   file: File,
-  options: ImageProcessingOptions,
+  options: ImageProcessingOptions
 ): Promise<Blob> {
   const {
     maxWidth,
@@ -72,7 +72,7 @@ export async function resizeImage(
           }
         },
         `image/${format}`,
-        quality,
+        quality
       );
     };
 
@@ -92,7 +92,7 @@ export async function cropImage(
   file: File,
   cropArea: CropArea,
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
-  quality = 0.9,
+  quality = 0.9
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -121,7 +121,7 @@ export async function cropImage(
         0,
         0,
         cropArea.width,
-        cropArea.height,
+        cropArea.height
       );
 
       canvas.toBlob(
@@ -133,7 +133,7 @@ export async function cropImage(
           }
         },
         `image/${outputFormat}`,
-        quality,
+        quality
       );
     };
 
@@ -153,7 +153,7 @@ export async function rotateImage(
   file: File,
   degrees: number,
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
-  quality = 0.9,
+  quality = 0.9
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -192,7 +192,7 @@ export async function rotateImage(
           }
         },
         `image/${outputFormat}`,
-        quality,
+        quality
       );
     };
 
@@ -213,7 +213,7 @@ export async function flipImage(
   horizontal: boolean,
   vertical: boolean,
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
-  quality = 0.9,
+  quality = 0.9
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -235,7 +235,7 @@ export async function flipImage(
       // Apply flip transformations
       ctx.translate(
         horizontal ? canvas.width : 0,
-        vertical ? canvas.height : 0,
+        vertical ? canvas.height : 0
       );
       ctx.scale(horizontal ? -1 : 1, vertical ? -1 : 1);
       ctx.drawImage(img, 0, 0);
@@ -249,7 +249,7 @@ export async function flipImage(
           }
         },
         `image/${outputFormat}`,
-        quality,
+        quality
       );
     };
 
@@ -269,7 +269,7 @@ export async function applyImageEdits(
   file: File,
   editorState: EditorState,
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
-  quality = 0.9,
+  quality = 0.9
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -295,11 +295,11 @@ export async function applyImageEdits(
       if (editorState.flip.horizontal || editorState.flip.vertical) {
         ctx.translate(
           editorState.flip.horizontal ? canvas.width : 0,
-          editorState.flip.vertical ? canvas.height : 0,
+          editorState.flip.vertical ? canvas.height : 0
         );
         ctx.scale(
           editorState.flip.horizontal ? -1 : 1,
-          editorState.flip.vertical ? -1 : 1,
+          editorState.flip.vertical ? -1 : 1
         );
       }
 
@@ -338,7 +338,7 @@ export async function applyImageEdits(
           }
         },
         `image/${outputFormat}`,
-        quality,
+        quality
       );
     };
 
@@ -358,7 +358,7 @@ function applyFilter(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  filter: NonNullable<EditorState["filter"]>,
+  filter: NonNullable<EditorState["filter"]>
 ) {
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
@@ -386,24 +386,27 @@ function applyFilter(
 
     case "vintage":
       for (let i = 0; i < data.length; i += 4) {
-        data[i] = data[i] + 30;
-        data[i + 1] = data[i + 1] - 10;
-        data[i + 2] = data[i + 2] - 20;
+        // BUG FIX #27: Clamp RGB values to 0-255 range to prevent artifacts
+        data[i] = Math.min(255, Math.max(0, data[i] + 30));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] - 10));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] - 20));
       }
       break;
 
     case "cold":
       for (let i = 0; i < data.length; i += 4) {
-        data[i] = data[i] - 20;
-        data[i + 2] = data[i + 2] + 20;
+        // BUG FIX #27: Clamp RGB values to 0-255 range to prevent artifacts
+        data[i] = Math.min(255, Math.max(0, data[i] - 20));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + 20));
       }
       break;
 
     case "warm":
       for (let i = 0; i < data.length; i += 4) {
-        data[i] = data[i] + 20;
-        data[i + 1] = data[i + 1] + 10;
-        data[i + 2] = data[i + 2] - 20;
+        // BUG FIX #27: Clamp RGB values to 0-255 range to prevent artifacts
+        data[i] = Math.min(255, Math.max(0, data[i] + 20));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + 10));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] - 20));
       }
       break;
   }
@@ -418,7 +421,7 @@ function applyAdjustments(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  editorState: EditorState,
+  editorState: EditorState
 ) {
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
