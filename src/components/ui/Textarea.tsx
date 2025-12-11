@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
 import { cn } from "@/lib/utils";
+import React from "react";
 
-export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -31,7 +32,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       rows = 3,
       ...props
     },
-    ref,
+    ref
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const charCount = value?.toString().length || 0;
@@ -59,6 +60,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           maxLength={maxLength}
           value={value}
           rows={rows}
+          required={required}
           className={cn(
             // Base styles
             "w-full border rounded-lg resize-y",
@@ -75,15 +77,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               : "border-gray-300 dark:border-gray-600",
             // Size styles
             sizeClasses[size],
-            className,
+            className
           )}
           aria-invalid={!!error}
           aria-describedby={
             error
               ? `${inputId}-error`
               : helperText
-                ? `${inputId}-helper`
-                : undefined
+              ? `${inputId}-helper`
+              : undefined
           }
           {...props}
         />
@@ -127,7 +129,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 Textarea.displayName = "Textarea";

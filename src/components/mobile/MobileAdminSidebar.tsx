@@ -1,36 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
-  X,
-  LayoutDashboard,
-  Users,
-  FolderTree,
-  Store,
-  Package,
-  ShoppingCart,
+  Banknote,
   BarChart3,
-  Settings,
-  Image,
-  Shield,
   ChevronDown,
   ChevronRight,
-  Home,
   CreditCard,
+  DollarSign,
+  FolderTree,
   Gavel,
-  Ticket,
-  RotateCcw,
+  Home,
+  Image,
+  LayoutDashboard,
+  Layout as LayoutIcon,
   LifeBuoy,
   Newspaper,
-  TrendingUp,
-  DollarSign,
+  Package,
+  RotateCcw,
+  Settings,
+  Shield,
+  ShoppingCart,
   Star,
-  Banknote,
-  Layout as LayoutIcon,
+  Store,
+  Ticket,
+  TrendingUp,
+  Users,
+  X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 interface NavItem {
   title: string;
@@ -144,16 +144,17 @@ export function MobileAdminSidebar({
 
   // Auto-expand active section
   useEffect(() => {
+    if (!pathname) return;
     const activeSection = navigation.find((item) =>
       item.children?.some(
-        (child) => child.href && pathname.startsWith(child.href),
-      ),
+        (child) => child.href && pathname.startsWith(child.href)
+      )
     );
     if (activeSection) {
       setExpandedItems((prev) =>
         prev.includes(activeSection.title)
           ? prev
-          : [...prev, activeSection.title],
+          : [...prev, activeSection.title]
       );
     }
   }, [pathname]);
@@ -162,11 +163,12 @@ export function MobileAdminSidebar({
     setExpandedItems((prev) =>
       prev.includes(title)
         ? prev.filter((item) => item !== title)
-        : [...prev, title],
+        : [...prev, title]
     );
   };
 
   const isActive = (href: string) => {
+    if (!pathname) return false;
     return pathname === href || pathname.startsWith(href + "/");
   };
 
@@ -216,7 +218,7 @@ export function MobileAdminSidebar({
             const active = item.href ? isActive(item.href) : false;
             const expanded = expandedItems.includes(item.title);
             const hasActiveChild = item.children?.some(
-              (child) => child.href && isActive(child.href),
+              (child) => child.href && isActive(child.href)
             );
 
             return (
@@ -229,7 +231,7 @@ export function MobileAdminSidebar({
                       "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors touch-target",
                       active
                         ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700",
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
                     )}
                   >
                     <Icon
@@ -237,7 +239,7 @@ export function MobileAdminSidebar({
                         "h-5 w-5 flex-shrink-0",
                         active
                           ? "text-yellow-600 dark:text-yellow-500"
-                          : "text-gray-400 dark:text-gray-500",
+                          : "text-gray-400 dark:text-gray-500"
                       )}
                     />
                     <span className="flex-1">{item.title}</span>
@@ -254,7 +256,7 @@ export function MobileAdminSidebar({
                       "w-full flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors touch-target",
                       hasActiveChild
                         ? "text-yellow-700 dark:text-yellow-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700",
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
                     )}
                   >
                     <Icon
@@ -262,7 +264,7 @@ export function MobileAdminSidebar({
                         "h-5 w-5 flex-shrink-0",
                         hasActiveChild
                           ? "text-yellow-600 dark:text-yellow-500"
-                          : "text-gray-400 dark:text-gray-500",
+                          : "text-gray-400 dark:text-gray-500"
                       )}
                     />
                     <span className="flex-1 text-left">{item.title}</span>
@@ -292,7 +294,7 @@ export function MobileAdminSidebar({
                             "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors touch-target",
                             childActive
                               ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700",
+                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
                           )}
                         >
                           <ChildIcon
@@ -300,7 +302,7 @@ export function MobileAdminSidebar({
                               "h-4 w-4 flex-shrink-0",
                               childActive
                                 ? "text-yellow-600 dark:text-yellow-500"
-                                : "text-gray-400 dark:text-gray-500",
+                                : "text-gray-400 dark:text-gray-500"
                             )}
                           />
                           <span>{child.title}</span>
