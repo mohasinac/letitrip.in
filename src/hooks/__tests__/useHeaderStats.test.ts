@@ -172,9 +172,10 @@ describe("useHeaderStats", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Advance 30 seconds
+      // Advance 30 seconds - wrap in act to handle state updates
       await act(async () => {
         jest.advanceTimersByTime(30000);
+        await Promise.resolve(); // Let promises resolve
       });
 
       await waitFor(() => {
@@ -184,6 +185,7 @@ describe("useHeaderStats", () => {
       // Advance another 30 seconds
       await act(async () => {
         jest.advanceTimersByTime(30000);
+        await Promise.resolve(); // Let promises resolve
       });
 
       await waitFor(() => {

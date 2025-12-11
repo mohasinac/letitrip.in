@@ -141,7 +141,9 @@ class LocationService {
     try {
       const result = await navigator.permissions.query({ name: "geolocation" });
       return result.state as "granted" | "denied" | "prompt";
-    } catch {
+    } catch (error) {
+      // BUG FIX #28: Log permission query error (expected in some browsers)
+      console.warn("[Location] Failed to query geolocation permission:", error);
       return "prompt";
     }
   }

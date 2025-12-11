@@ -109,8 +109,17 @@ class CartService {
 
     try {
       const cart = localStorage.getItem(this.GUEST_CART_KEY);
-      return cart ? JSON.parse(cart) : [];
-    } catch {
+      const parsed = cart ? JSON.parse(cart) : [];
+      // Validate that parsed data is an array
+      if (!Array.isArray(parsed)) {
+        console.error("[Cart] Invalid cart data in localStorage, resetting");
+        this.clearGuestCart();
+        return [];
+      }
+      return parsed;
+    } catch (error) {
+      console.error("[Cart] Failed to parse cart from localStorage:", error);
+      this.clearGuestCart();
       return [];
     }
   }
@@ -137,6 +146,28 @@ class CartService {
       | "addedTimeAgo"
     >
   ): void {
+    // Validate inputs
+    if (!item.productId || typeof item.productId !== "string") {
+      throw new Error("[Cart] Invalid product ID");
+    }
+    if (
+      typeof item.quantity !== "number" ||
+      isNaN(item.quantity) ||
+      item.quantity < 1
+    ) {
+      throw new Error("[Cart] Invalid quantity");
+    }
+    if (
+      typeof item.maxQuantity !== "number" ||
+      isNaN(item.maxQuantity) ||
+      item.maxQuantity < 1
+    ) {
+      throw new Error("[Cart] Invalid max quantity");
+    }
+    if (typeof item.price !== "number" || isNaN(item.price) || item.price < 0) {
+      throw new Error("[Cart] Invalid price");
+    }
+
     const cart = this.getGuestCart();
 
     // Check if item already exists
@@ -149,7 +180,7 @@ class CartService {
       const existingItem = cart[existingIndex];
       const newQuantity = existingItem.quantity + item.quantity;
 
-      // Don't exceed maxQuantity
+      // Don't exceed maxQuantity (validated above)
       existingItem.quantity = Math.min(newQuantity, item.maxQuantity);
 
       // Recalculate subtotal and total
@@ -216,6 +247,14 @@ class CartService {
   }
 
   updateGuestCartItem(itemId: string, quantity: number): void {
+    // Validate inputs
+    if (!itemId || typeof itemId !== "string") {
+      throw new Error("[Cart] Invalid item ID");
+    }
+    if (typeof quantity !== "number" || isNaN(quantity)) {
+      throw new Error("[Cart] Invalid quantity");
+    }
+
     const cart = this.getGuestCart();
     const index = cart.findIndex((i) => i.id === itemId);
 
@@ -224,6 +263,12 @@ class CartService {
         cart.splice(index, 1);
       } else {
         const item = cart[index];
+
+        // Validate maxQuantity exists
+        if (typeof item.maxQuantity !== "number" || item.maxQuantity < 1) {
+          console.error("[Cart] Invalid maxQuantity for item", itemId);
+          item.maxQuantity = 100; // Default fallback
+        }
 
         // Don't exceed maxQuantity
         item.quantity = Math.min(quantity, item.maxQuantity);

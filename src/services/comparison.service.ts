@@ -3,8 +3,8 @@
  * Client-side localStorage service for managing product comparison
  */
 
-import { COMPARISON_CONFIG } from "@/constants/comparison";
 import type { ProductCardProps } from "@/components/cards/ProductCard";
+import { COMPARISON_CONFIG } from "@/constants/comparison";
 
 export type ComparisonProduct = Pick<
   ProductCardProps,
@@ -36,8 +36,15 @@ class ComparisonService {
     try {
       const stored = localStorage.getItem(this.getStorageKey());
       if (!stored) return [];
-      return JSON.parse(stored) as ComparisonProduct[];
-    } catch {
+
+      const parsed = JSON.parse(stored);
+      // BUG FIX #28: Handle null from JSON.parse (when stored value is "null")
+      if (!parsed || !Array.isArray(parsed)) return [];
+
+      return parsed as ComparisonProduct[];
+    } catch (error) {
+      // BUG FIX #28: Log parsing error for debugging
+      console.error("[Comparison] Failed to parse comparison products:", error);
       return [];
     }
   }
@@ -72,7 +79,9 @@ class ComparisonService {
       products.push(product);
       localStorage.setItem(this.getStorageKey(), JSON.stringify(products));
       return true;
-    } catch {
+    } catch (error) {
+      // BUG FIX #28: Log error when adding to comparison fails
+      console.error("[Comparison] Failed to add product to comparison:", error);
       return false;
     }
   }

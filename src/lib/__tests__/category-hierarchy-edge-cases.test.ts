@@ -33,19 +33,25 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
     });
 
     it("should detect direct cycle (A -> B -> A)", async () => {
-      // Mock setup would go here in real implementation
-      // This documents the expected behavior
+      // Mock setup for cycle detection
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
-      const mockDb = {
-        collection: jest.fn().mockReturnValue({
-          doc: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              exists: true,
+
+      // Mock getAllDescendantIds to return cat-002's descendants
+      const mockWhere = {
+        get: jest.fn().mockResolvedValue({
+          empty: false,
+          docs: [
+            {
               id: "cat-002",
               data: () => ({ parentIds: ["cat-001"] }),
-            }),
-          }),
+            },
+          ],
+        }),
+      };
+      const mockDb = {
+        collection: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -57,31 +63,61 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
 
     it("should detect indirect cycle (A -> B -> C -> A)", async () => {
       // Documents complex cycle detection
+      const mockGetFirestoreAdmin =
+        require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
+
+      // Mock the chain: A -> B -> C
+      const mockWhere = {
+        get: jest.fn().mockResolvedValue({
+          empty: false,
+          docs: [
+            {
+              id: "cat-B",
+              data: () => ({ parentIds: ["cat-A"] }),
+            },
+            {
+              id: "cat-C",
+              data: () => ({ parentIds: ["cat-B"] }),
+            },
+          ],
+        }),
+      };
+      const mockDb = {
+        collection: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue(mockWhere),
+        }),
+      };
+      mockGetFirestoreAdmin.mockReturnValue(mockDb);
+
       const categoryId = "cat-A";
       const newParentId = "cat-C";
       // In real scenario: A -> B -> C
       // Adding C as parent of A would create: A -> B -> C -> A
-      expect(typeof (await wouldCreateCycle(categoryId, newParentId))).toBe(
-        "boolean"
-      );
+      const result = await wouldCreateCycle(categoryId, newParentId);
+      expect(typeof result).toBe("boolean");
     });
 
     it("should handle missing category gracefully", async () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
+
+      // Mock empty descendants (no children found)
+      const mockWhere = {
+        get: jest.fn().mockResolvedValue({
+          empty: true,
+          docs: [],
+        }),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          doc: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              exists: false,
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
 
       const result = await wouldCreateCycle("nonexistent", "cat-001");
       expect(typeof result).toBe("boolean");
+      expect(result).toBe(false); // No cycle if category doesn't exist
     });
   });
 
@@ -91,14 +127,15 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
       // Mock 10 levels: Root -> L1 -> L2 -> ... -> L10
+      const mockWhere = {
+        get: jest.fn().mockResolvedValue({
+          empty: true,
+          docs: [],
+        }),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: true,
-              docs: [],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -116,21 +153,33 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
         data: () => ({ name: `Child ${i}` }),
       }));
 
-      const mockDb = {
-        collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
+      // First call returns 100 children, subsequent calls return empty (no grandchildren)
+      let callCount = 0;
+      const mockWhere = {
+        get: jest.fn().mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
               empty: false,
               docs: mockChildren,
-            }),
-          }),
+            });
+          }
+          return Promise.resolve({
+            empty: true,
+            docs: [],
+          });
+        }),
+      };
+      const mockDb = {
+        collection: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
 
       const descendants = await getAllDescendantIds("parent-with-many");
       expect(Array.isArray(descendants)).toBe(true);
-      expect(descendants.length).toBeLessThanOrEqual(100);
+      expect(descendants.length).toBe(100); // Exactly 100 direct children, no grandchildren
     });
 
     it("should detect and stop on circular reference in data", async () => {
@@ -138,23 +187,24 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
+      const mockWhere = {
+        get: jest.fn().mockResolvedValue({
+          empty: false,
+          docs: [
+            {
+              id: "cat-A",
+              data: () => ({ parentIds: ["cat-B"] }),
+            },
+            {
+              id: "cat-B",
+              data: () => ({ parentIds: ["cat-A"] }), // Circular!
+            },
+          ],
+        }),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: false,
-              docs: [
-                {
-                  id: "cat-A",
-                  data: () => ({ parentIds: ["cat-B"] }),
-                },
-                {
-                  id: "cat-B",
-                  data: () => ({ parentIds: ["cat-A"] }), // Circular!
-                },
-              ],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -215,14 +265,18 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
+      const mockLimit = {
+        get: jest.fn().mockResolvedValue({
+          empty: true,
+          docs: [],
+        }),
+      };
+      const mockWhere = {
+        limit: jest.fn().mockReturnValue(mockLimit),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: true,
-              docs: [],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -235,14 +289,18 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
+      const mockLimit = {
+        get: jest.fn().mockResolvedValue({
+          empty: false,
+          docs: [{ id: "child-1" }],
+        }),
+      };
+      const mockWhere = {
+        limit: jest.fn().mockReturnValue(mockLimit),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: false,
-              docs: [{ id: "child-1" }],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -255,14 +313,18 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
+      const mockLimit = {
+        get: jest.fn().mockResolvedValue({
+          empty: true,
+          docs: [],
+        }),
+      };
+      const mockWhere = {
+        limit: jest.fn().mockReturnValue(mockLimit),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: true,
-              docs: [],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -328,14 +390,18 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
       const mockGetFirestoreAdmin =
         require("@/app/api/lib/firebase/admin").getFirestoreAdmin;
 
+      const mockWhere2 = {
+        get: jest.fn().mockResolvedValue({
+          empty: true,
+          docs: [],
+        }),
+      };
+      const mockWhere1 = {
+        where: jest.fn().mockReturnValue(mockWhere2),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: true,
-              docs: [],
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere1),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);
@@ -363,14 +429,18 @@ describe("Category Hierarchy - Advanced Edge Cases", () => {
         }, // Already filtered by where clause
       ];
 
+      const mockWhere2 = {
+        get: jest.fn().mockResolvedValue({
+          empty: false,
+          docs: mockProducts.slice(0, 1), // Only published
+        }),
+      };
+      const mockWhere1 = {
+        where: jest.fn().mockReturnValue(mockWhere2),
+      };
       const mockDb = {
         collection: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            get: jest.fn().mockResolvedValue({
-              empty: false,
-              docs: mockProducts.slice(0, 1), // Only published
-            }),
-          }),
+          where: jest.fn().mockReturnValue(mockWhere1),
         }),
       };
       mockGetFirestoreAdmin.mockReturnValue(mockDb);

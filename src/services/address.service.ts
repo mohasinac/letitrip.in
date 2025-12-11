@@ -96,15 +96,27 @@ class AddressService {
    * Uses Postal Pincode API
    */
   async lookupPincode(pincode: string): Promise<PincodeDetails | null> {
+    // Validate Indian PIN code format (6 digits)
+    if (!pincode || typeof pincode !== "string") {
+      throw new Error("[Address] PIN code is required");
+    }
+
+    const cleanPincode = pincode.trim();
+    if (!/^\d{6}$/.test(cleanPincode)) {
+      throw new Error(
+        "[Address] Invalid Indian PIN code format. Must be 6 digits."
+      );
+    }
+
     try {
       const response = await apiService.get<PincodeDetails>(
-        `/address/pincode/${pincode}`
+        `/address/pincode/${cleanPincode}`
       );
       return response;
     } catch (error) {
       logError(error as Error, {
         component: "AddressService.lookupPincode",
-        pincode,
+        pincode: cleanPincode,
       });
       return null;
     }
@@ -118,16 +130,32 @@ class AddressService {
     countryCode: string,
     postalCode: string
   ): Promise<PostalCodeDetails | null> {
+    // Validate inputs
+    if (!countryCode || typeof countryCode !== "string") {
+      throw new Error("[Address] Country code is required");
+    }
+    if (!postalCode || typeof postalCode !== "string") {
+      throw new Error("[Address] Postal code is required");
+    }
+
+    const cleanCountryCode = countryCode.trim().toUpperCase();
+    const cleanPostalCode = postalCode.trim();
+
+    // Validate country code format (2 or 3 letters)
+    if (!/^[A-Z]{2,3}$/.test(cleanCountryCode)) {
+      throw new Error("[Address] Invalid country code format");
+    }
+
     try {
       const response = await apiService.get<PostalCodeDetails>(
-        `/address/postal-code/${countryCode}/${postalCode}`
+        `/address/postal-code/${cleanCountryCode}/${cleanPostalCode}`
       );
       return response;
     } catch (error) {
       logError(error as Error, {
         component: "AddressService.lookupPostalCode",
-        countryCode,
-        postalCode,
+        countryCode: cleanCountryCode,
+        postalCode: cleanPostalCode,
       });
       return null;
     }

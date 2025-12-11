@@ -273,12 +273,23 @@ describe("AddressService", () => {
       expect(result).toEqual(mockDetails);
     });
 
-    it("returns null for invalid pincode", async () => {
-      (apiService.get as jest.Mock).mockRejectedValue(new Error("Not found"));
+    it("throws error for invalid pincode format", async () => {
+      // Now we validate pincode format before making API call
+      await expect(addressService.lookupPincode("invalid")).rejects.toThrow(
+        "[Address] Invalid Indian PIN code format"
+      );
 
-      const result = await addressService.lookupPincode("invalid");
+      // API should not be called for invalid format
+      expect(apiService.get).not.toHaveBeenCalled();
+    });
 
-      expect(result).toBeNull();
+    it("throws error for non-6-digit pincode", async () => {
+      await expect(addressService.lookupPincode("12345")).rejects.toThrow(
+        "[Address] Invalid Indian PIN code format"
+      );
+      await expect(addressService.lookupPincode("1234567")).rejects.toThrow(
+        "[Address] Invalid Indian PIN code format"
+      );
     });
 
     it("returns null on API error", async () => {

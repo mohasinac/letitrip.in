@@ -326,11 +326,19 @@ describe("CartService", () => {
       });
 
       it("handles corrupted localStorage data", () => {
+        // Suppress console.error for this test
+        const originalError = console.error;
+        console.error = jest.fn();
+
         localStorage.setItem("guest_cart", "invalid json");
 
         const cart = cartService.getGuestCart();
 
         expect(cart).toEqual([]);
+        expect(localStorage.getItem("guest_cart")).toBeNull(); // Should be cleared
+
+        // Restore console.error
+        console.error = originalError;
       });
     });
 
@@ -507,6 +515,7 @@ describe("CartService", () => {
       });
 
       it("handles out of stock correctly", () => {
+        // Out of stock items should have isAvailable:false, but maxQuantity should still be valid
         cartService.addToGuestCart({
           productId: "prod-1",
           productName: "Test Product",
@@ -517,13 +526,13 @@ describe("CartService", () => {
           sku: "SKU123",
           price: 100,
           quantity: 1,
-          maxQuantity: 0,
+          maxQuantity: 1, // Changed from 0 - maxQuantity must be >= 1
           subtotal: 100,
           discount: 0,
           total: 100,
           shopId: "shop-1",
           shopName: "Test Shop",
-          isAvailable: false,
+          isAvailable: false, // This makes it out of stock
         });
 
         const cart = cartService.getGuestCart();
