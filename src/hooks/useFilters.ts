@@ -25,6 +25,16 @@ export function useFilters<T extends Record<string, any>>(
     onChange?: (filters: T) => void;
   } = {}
 ) {
+  // BUG FIX #36.1: Validate initialFilters parameter
+  if (!initialFilters || typeof initialFilters !== "object") {
+    throw new Error("initialFilters must be a valid object");
+  }
+
+  // BUG FIX #36.2: Validate options parameter
+  if (options !== null && typeof options !== "object") {
+    throw new Error("options must be an object or undefined");
+  }
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -35,6 +45,16 @@ export function useFilters<T extends Record<string, any>>(
     syncWithUrl = true,
     onChange,
   } = options;
+
+  // BUG FIX #36.3: Validate storageKey is non-empty string
+  if (
+    persist &&
+    (!storageKey || typeof storageKey !== "string" || storageKey.trim() === "")
+  ) {
+    throw new Error(
+      "storageKey must be a non-empty string when persist is enabled"
+    );
+  }
 
   // Load initial filters from URL or localStorage
   const loadInitialFilters = useCallback((): T => {
@@ -81,6 +101,16 @@ export function useFilters<T extends Record<string, any>>(
     (newFilters: T) => {
       if (!syncWithUrl) return;
 
+      // BUG FIX #36.4: Validate pathname exists
+      if (!pathname || typeof pathname !== "string") {
+        return;
+      }
+
+      // BUG FIX #36.5: Validate newFilters parameter
+      if (!newFilters || typeof newFilters !== "object") {
+        return;
+      }
+
       const params = new URLSearchParams();
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {
@@ -102,6 +132,11 @@ export function useFilters<T extends Record<string, any>>(
     (newFilters: T) => {
       if (!persist || typeof window === "undefined") return;
 
+      // BUG FIX #36.6: Validate newFilters parameter
+      if (!newFilters || typeof newFilters !== "object") {
+        return;
+      }
+
       try {
         localStorage.setItem(storageKey, JSON.stringify(newFilters));
       } catch (error) {
@@ -116,6 +151,10 @@ export function useFilters<T extends Record<string, any>>(
 
   // Update filters (without applying)
   const updateFilters = useCallback((newFilters: T) => {
+    // BUG FIX #36.7: Validate newFilters parameter
+    if (!newFilters || typeof newFilters !== "object") {
+      throw new Error("newFilters must be a valid object");
+    }
     setFilters(newFilters);
   }, []);
 
@@ -139,6 +178,10 @@ export function useFilters<T extends Record<string, any>>(
   // Clear a specific filter
   const clearFilter = useCallback(
     (key: keyof T) => {
+      // BUG FIX #36.8: Validate key exists before clearing
+      if (!key || !(key in filters)) {
+        return;
+      }
       const newFilters = { ...filters };
       delete newFilters[key];
       setFilters(newFilters);

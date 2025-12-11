@@ -1,5 +1,5 @@
+import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
   title: string;
@@ -31,7 +31,7 @@ export function StatCard({
         <div className={`p-3 bg-${color}-100 rounded-lg`}>
           <Icon className={`h-6 w-6 text-${color}-600`} />
         </div>
-        {change !== undefined && change > 0 && (
+        {change !== undefined && change !== 0 && change > 0 && (
           <div className="flex items-center gap-1 text-sm">
             <TrendIcon
               className={`h-4 w-4 ${

@@ -22,6 +22,21 @@ function validateFile(
   maxSize?: number,
   allowedTypes?: string[]
 ): { isValid: boolean; error?: string } {
+  // BUG FIX #35: Validate file parameter
+  if (!file) {
+    return {
+      isValid: false,
+      error: "File is required",
+    };
+  }
+
+  if (typeof file !== "object" || !(file instanceof File)) {
+    return {
+      isValid: false,
+      error: "Invalid file object",
+    };
+  }
+
   // Check file size
   if (maxSize && file.size > maxSize) {
     const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(2);
@@ -46,6 +61,28 @@ function validateFile(
 }
 
 export function useMediaUpload(options: MediaUploadOptions = {}) {
+  // BUG FIX #35: Validate options
+  if (
+    options.maxSize !== undefined &&
+    (typeof options.maxSize !== "number" || options.maxSize <= 0)
+  ) {
+    throw new Error("maxSize must be a positive number");
+  }
+
+  if (
+    options.maxRetries !== undefined &&
+    (typeof options.maxRetries !== "number" || options.maxRetries < 0)
+  ) {
+    throw new Error("maxRetries must be a non-negative number");
+  }
+
+  if (
+    options.allowedTypes !== undefined &&
+    !Array.isArray(options.allowedTypes)
+  ) {
+    throw new Error("allowedTypes must be an array");
+  }
+
   const {
     maxSize,
     allowedTypes,
@@ -66,6 +103,14 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
   // Validate and upload file
   const upload = useCallback(
     async (file: File): Promise<string> => {
+      // BUG FIX #35: Validate file parameter
+      if (!file) {
+        const error = "File is required for upload";
+        setError(error);
+        onError?.(error);
+        throw new Error(error);
+      }
+
       setError(null);
       setProgress(0);
       setUploadedUrl(null);
@@ -90,6 +135,12 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         // Add to upload context
         id = addUpload(file, preview);
+
+        // BUG FIX #35: Ensure id is valid before use
+        if (!id) {
+          throw new Error("Failed to create upload tracking ID");
+        }
+
         setUploadId(id);
 
         // Create form data
@@ -203,13 +254,21 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
   // Retry failed upload
   const retry = useCallback(async (): Promise<string | null> => {
-    if (!uploadId) return null;
+    // BUG FIX #35: Validate uploadId exists
+    if (!uploadId) {
+      const error = "No upload ID to retry";
+      setError(error);
+      return null;
+    }
 
-    const uploadFile =
-      document.querySelector<HTMLInputElement>('input[type="file"]')
-        ?.files?.[0];
+    // BUG FIX #35: Better file retrieval with error handling
+    const fileInput =
+      document.querySelector<HTMLInputElement>('input[type="file"]');
+    const uploadFile = fileInput?.files?.[0];
+
     if (!uploadFile) {
-      setError("No file to retry");
+      const error = "No file available to retry upload";
+      setError(error);
       return null;
     }
 

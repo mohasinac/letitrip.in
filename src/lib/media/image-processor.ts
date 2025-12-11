@@ -94,6 +94,14 @@ export async function cropImage(
   outputFormat: "jpeg" | "png" | "webp" = "jpeg",
   quality = 0.9
 ): Promise<Blob> {
+  // BUG FIX #30: Validate crop area dimensions and coordinates
+  if (cropArea.width <= 0 || cropArea.height <= 0) {
+    return Promise.reject(new Error("Crop dimensions must be positive"));
+  }
+  if (cropArea.x < 0 || cropArea.y < 0) {
+    return Promise.reject(new Error("Crop coordinates must be non-negative"));
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);

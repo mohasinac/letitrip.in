@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AuctionCardSkeleton should match snapshot 1`] = `
+<div
+  class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse"
+>
+  <div
+    class="aspect-square bg-gray-200 dark:bg-gray-700"
+  />
+  <div
+    class="p-4"
+  >
+    <div
+      class="flex items-center gap-2 mb-2"
+    >
+      <div
+        class="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded-full"
+      />
+      <div
+        class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24"
+      />
+    </div>
+    <div
+      class="space-y-2 mb-3"
+    >
+      <div
+        class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"
+      />
+      <div
+        class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"
+      />
+    </div>
+    <div
+      class="mb-2"
+    >
+      <div
+        class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-1"
+      />
+      <div
+        class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"
+      />
+    </div>
+    <div
+      class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-28 mb-3"
+    />
+    <div
+      class="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-full"
+    />
+  </div>
+</div>
+`;

@@ -89,6 +89,37 @@ export function generateProductSchema({
   rating?: number;
   reviewCount?: number;
 }) {
+  // BUG FIX #34: Validate required parameters
+  if (!name || typeof name !== "string") {
+    throw new Error("Product name is required and must be a string");
+  }
+  if (!description || typeof description !== "string") {
+    throw new Error("Product description is required and must be a string");
+  }
+  if (!image || typeof image !== "string") {
+    throw new Error("Product image is required and must be a string");
+  }
+  if (!sku || typeof sku !== "string") {
+    throw new Error("Product SKU is required and must be a string");
+  }
+  if (typeof price !== "number" || price < 0) {
+    throw new Error("Product price must be a non-negative number");
+  }
+  if (!url || typeof url !== "string") {
+    throw new Error("Product URL is required and must be a string");
+  }
+  if (
+    rating !== undefined &&
+    (typeof rating !== "number" || rating < 0 || rating > 5)
+  ) {
+    throw new Error("Rating must be a number between 0 and 5");
+  }
+  if (
+    reviewCount !== undefined &&
+    (typeof reviewCount !== "number" || reviewCount < 0)
+  ) {
+    throw new Error("Review count must be a non-negative number");
+  }
   const schema: any = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -156,8 +187,27 @@ export function generateProductSchema({
  * FAQ schema for FAQ pages
  */
 export function generateFAQSchema(
-  faqs: Array<{ question: string; answer: string }>,
+  faqs: Array<{ question: string; answer: string }>
 ) {
+  // BUG FIX #34: Validate faqs parameter
+  if (!faqs || !Array.isArray(faqs)) {
+    throw new Error("FAQs must be an array");
+  }
+  if (faqs.length === 0) {
+    throw new Error("FAQs array cannot be empty");
+  }
+  faqs.forEach((faq, index) => {
+    if (!faq || typeof faq !== "object") {
+      throw new Error(`FAQ at index ${index} must be an object`);
+    }
+    if (!faq.question || typeof faq.question !== "string") {
+      throw new Error(`FAQ at index ${index} must have a question string`);
+    }
+    if (!faq.answer || typeof faq.answer !== "string") {
+      throw new Error(`FAQ at index ${index} must have an answer string`);
+    }
+  });
+
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -176,8 +226,31 @@ export function generateFAQSchema(
  * Breadcrumb schema
  */
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>,
+  items: Array<{ name: string; url: string }>
 ) {
+  // BUG FIX #34: Validate items parameter
+  if (!items || !Array.isArray(items)) {
+    throw new Error("Breadcrumb items must be an array");
+  }
+  if (items.length === 0) {
+    throw new Error("Breadcrumb items array cannot be empty");
+  }
+  items.forEach((item, index) => {
+    if (!item || typeof item !== "object") {
+      throw new Error(`Breadcrumb item at index ${index} must be an object`);
+    }
+    if (!item.name || typeof item.name !== "string") {
+      throw new Error(
+        `Breadcrumb item at index ${index} must have a name string`
+      );
+    }
+    if (!item.url || typeof item.url !== "string") {
+      throw new Error(
+        `Breadcrumb item at index ${index} must have a url string`
+      );
+    }
+  });
+
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -247,8 +320,35 @@ export function generateItemListSchema(
     url: string;
     image: string;
     price: number;
-  }>,
+  }>
 ) {
+  // BUG FIX #34: Validate items parameter
+  if (!items || !Array.isArray(items)) {
+    throw new Error("Items must be an array");
+  }
+  if (items.length === 0) {
+    throw new Error("Items array cannot be empty");
+  }
+  items.forEach((item, index) => {
+    if (!item || typeof item !== "object") {
+      throw new Error(`Item at index ${index} must be an object`);
+    }
+    if (!item.name || typeof item.name !== "string") {
+      throw new Error(`Item at index ${index} must have a name string`);
+    }
+    if (!item.url || typeof item.url !== "string") {
+      throw new Error(`Item at index ${index} must have a url string`);
+    }
+    if (!item.image || typeof item.image !== "string") {
+      throw new Error(`Item at index ${index} must have an image string`);
+    }
+    if (typeof item.price !== "number" || item.price < 0) {
+      throw new Error(
+        `Item at index ${index} must have a non-negative price number`
+      );
+    }
+  });
+
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -286,6 +386,23 @@ export function generateReviewSchema({
   authorName: string;
   datePublished: string;
 }) {
+  // BUG FIX #34: Validate required parameters
+  if (!productName || typeof productName !== "string") {
+    throw new Error("Product name is required and must be a string");
+  }
+  if (!reviewBody || typeof reviewBody !== "string") {
+    throw new Error("Review body is required and must be a string");
+  }
+  if (typeof rating !== "number" || rating < 1 || rating > 5) {
+    throw new Error("Rating must be a number between 1 and 5");
+  }
+  if (!authorName || typeof authorName !== "string") {
+    throw new Error("Author name is required and must be a string");
+  }
+  if (!datePublished || typeof datePublished !== "string") {
+    throw new Error("Date published is required and must be a string");
+  }
+
   return {
     "@context": "https://schema.org",
     "@type": "Review",
@@ -328,6 +445,29 @@ export function generateOfferSchema({
   validFrom: string;
   validThrough: string;
 }) {
+  // BUG FIX #34: Validate required parameters
+  if (!name || typeof name !== "string") {
+    throw new Error("Offer name is required and must be a string");
+  }
+  if (!description || typeof description !== "string") {
+    throw new Error("Offer description is required and must be a string");
+  }
+  if (!code || typeof code !== "string") {
+    throw new Error("Offer code is required and must be a string");
+  }
+  if (discountType !== "percentage" && discountType !== "fixed") {
+    throw new Error("Discount type must be 'percentage' or 'fixed'");
+  }
+  if (typeof discountValue !== "number" || discountValue <= 0) {
+    throw new Error("Discount value must be a positive number");
+  }
+  if (!validFrom || typeof validFrom !== "string") {
+    throw new Error("Valid from date is required and must be a string");
+  }
+  if (!validThrough || typeof validThrough !== "string") {
+    throw new Error("Valid through date is required and must be a string");
+  }
+
   return {
     "@context": "https://schema.org",
     "@type": "Offer",
@@ -356,6 +496,11 @@ export function generateOfferSchema({
  * Helper function to inject JSON-LD script into page
  */
 export function generateJSONLD(schema: object) {
+  // BUG FIX #34: Validate schema parameter
+  if (!schema || typeof schema !== "object" || Array.isArray(schema)) {
+    throw new Error("Schema must be a valid object");
+  }
+
   return {
     __html: JSON.stringify(schema),
   };

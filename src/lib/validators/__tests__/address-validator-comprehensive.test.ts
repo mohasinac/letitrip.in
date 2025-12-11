@@ -120,8 +120,10 @@ describe("address.validator - isPayPalEligibleCountry", () => {
     expect(isPayPalEligibleCountry("gb")).toBe(true);
   });
 
-  it("should handle empty string", () => {
-    expect(isPayPalEligibleCountry("")).toBe(false);
+  it("should throw error for empty string", () => {
+    expect(() => isPayPalEligibleCountry("")).toThrow(
+      "Country code is required and must be a string"
+    );
   });
 
   it("should handle invalid codes", () => {

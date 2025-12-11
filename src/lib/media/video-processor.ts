@@ -3,7 +3,7 @@
  * Handles video thumbnail extraction and metadata
  */
 
-import type { VideoThumbnail, ThumbnailGenerationOptions } from "@/types/media";
+import type { ThumbnailGenerationOptions, VideoThumbnail } from "@/types/media";
 
 /**
  * Extract video thumbnail at specific timestamp
@@ -11,7 +11,7 @@ import type { VideoThumbnail, ThumbnailGenerationOptions } from "@/types/media";
 export async function extractVideoThumbnail(
   file: File,
   timestamp: number = 0,
-  options?: Partial<ThumbnailGenerationOptions>,
+  options?: Partial<ThumbnailGenerationOptions>
 ): Promise<string> {
   const {
     width = 320,
@@ -19,6 +19,11 @@ export async function extractVideoThumbnail(
     quality = 0.8,
     format = "jpeg",
   } = options || {};
+
+  // BUG FIX #29: Validate timestamp is non-negative
+  if (timestamp < 0) {
+    return Promise.reject(new Error("Timestamp must be non-negative"));
+  }
 
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -71,8 +76,13 @@ export async function extractVideoThumbnail(
 export async function extractMultipleThumbnails(
   file: File,
   count: number = 5,
-  options?: Partial<ThumbnailGenerationOptions>,
+  options?: Partial<ThumbnailGenerationOptions>
 ): Promise<VideoThumbnail[]> {
+  // BUG FIX #29: Validate count is positive
+  if (count <= 0) {
+    return Promise.reject(new Error("Count must be a positive number"));
+  }
+
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     const objectUrl = URL.createObjectURL(file);
@@ -125,11 +135,15 @@ export async function getVideoMetadata(file: File): Promise<{
     const objectUrl = URL.createObjectURL(file);
 
     video.onloadedmetadata = () => {
+      // BUG FIX #29: Prevent division by zero when video height is 0
+      const aspectRatio =
+        video.videoHeight > 0 ? video.videoWidth / video.videoHeight : 0;
+
       const metadata = {
         duration: video.duration,
         width: video.videoWidth,
         height: video.videoHeight,
-        aspectRatio: video.videoWidth / video.videoHeight,
+        aspectRatio,
         size: file.size,
       };
 
@@ -152,7 +166,7 @@ export async function getVideoMetadata(file: File): Promise<{
 export async function generateVideoPreview(
   file: File,
   width: number = 640,
-  height: number = 360,
+  height: number = 360
 ): Promise<string> {
   return extractVideoThumbnail(file, 0, { width, height });
 }
@@ -164,7 +178,7 @@ export function createThumbnailFromBlob(
   blobUrl: string,
   timestamp: number = 0,
   width: number = 320,
-  height: number = 180,
+  height: number = 180
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");

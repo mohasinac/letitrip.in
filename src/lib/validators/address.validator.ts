@@ -115,6 +115,11 @@ export const SPECIAL_HANDLING_COUNTRIES = {
  * Check if address is international (non-India)
  */
 export function isInternationalAddress(address: Address | string): boolean {
+  // BUG FIX #33: Validate input
+  if (!address) {
+    throw new Error("Address is required");
+  }
+
   const country = typeof address === "string" ? address : address.country;
   if (!country) return false;
   return country.toUpperCase() !== "IN" && country.toUpperCase() !== "INDIA";
@@ -124,6 +129,11 @@ export function isInternationalAddress(address: Address | string): boolean {
  * Check if country is eligible for PayPal
  */
 export function isPayPalEligibleCountry(countryCode: string): boolean {
+  // BUG FIX #33: Validate input
+  if (!countryCode || typeof countryCode !== "string") {
+    throw new Error("Country code is required and must be a string");
+  }
+
   return PAYPAL_SUPPORTED_COUNTRIES.includes(
     countryCode.toUpperCase() as (typeof PAYPAL_SUPPORTED_COUNTRIES)[number]
   );
@@ -135,6 +145,14 @@ export function isPayPalEligibleCountry(countryCode: string): boolean {
 export function validateInternationalAddress(
   address: Address
 ): AddressValidationResult {
+  // BUG FIX #33: Validate input
+  if (!address) {
+    throw new Error("Address is required");
+  }
+  if (typeof address !== "object") {
+    throw new Error("Address must be an object");
+  }
+
   const errors: AddressValidationResult["errors"] = [];
 
   // Validate line1
@@ -262,6 +280,11 @@ export function validateInternationalAddress(
  * Validate Indian PIN code
  */
 export function isValidIndianPincode(pincode: string): boolean {
+  // BUG FIX #33: Validate input
+  if (!pincode || typeof pincode !== "string") {
+    return false;
+  }
+
   return VALIDATION_RULES.ADDRESS.PINCODE.PATTERN.test(pincode);
 }
 
@@ -269,6 +292,11 @@ export function isValidIndianPincode(pincode: string): boolean {
  * Validate US ZIP code
  */
 export function isValidUSZipCode(zipCode: string): boolean {
+  // BUG FIX #33: Validate input
+  if (!zipCode || typeof zipCode !== "string") {
+    return false;
+  }
+
   return /^\d{5}(-\d{4})?$/.test(zipCode);
 }
 
@@ -276,6 +304,11 @@ export function isValidUSZipCode(zipCode: string): boolean {
  * Validate Canadian postal code
  */
 export function isValidCanadianPostalCode(postalCode: string): boolean {
+  // BUG FIX #33: Validate input
+  if (!postalCode || typeof postalCode !== "string") {
+    return false;
+  }
+
   return /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(postalCode.toUpperCase());
 }
 
@@ -283,6 +316,11 @@ export function isValidCanadianPostalCode(postalCode: string): boolean {
  * Validate UK postcode
  */
 export function isValidUKPostcode(postcode: string): boolean {
+  // BUG FIX #33: Validate input
+  if (!postcode || typeof postcode !== "string") {
+    return false;
+  }
+
   return /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i.test(postcode);
 }
 
@@ -290,6 +328,14 @@ export function isValidUKPostcode(postcode: string): boolean {
  * Format postal code based on country
  */
 export function formatPostalCode(postalCode: string, country: string): string {
+  // BUG FIX #33: Validate inputs
+  if (!postalCode || typeof postalCode !== "string") {
+    throw new Error("Postal code is required and must be a string");
+  }
+  if (!country || typeof country !== "string") {
+    throw new Error("Country is required and must be a string");
+  }
+
   const cleaned = postalCode.trim().toUpperCase();
 
   switch (country.toUpperCase()) {
@@ -326,6 +372,11 @@ export function formatPostalCode(postalCode: string, country: string): string {
  * Get postal code name for country
  */
 export function getPostalCodeName(country: string): string {
+  // BUG FIX #33: Validate input
+  if (!country || typeof country !== "string") {
+    throw new Error("Country is required and must be a string");
+  }
+
   const countryRules =
     SPECIAL_HANDLING_COUNTRIES[
       country.toUpperCase() as keyof typeof SPECIAL_HANDLING_COUNTRIES
@@ -426,6 +477,14 @@ export function isValidPayPalAddress(address: Address): {
  * Normalize address for API submission
  */
 export function normalizeAddress(address: Address): Address {
+  // BUG FIX #33: Validate input
+  if (!address) {
+    throw new Error("Address is required");
+  }
+  if (typeof address !== "object") {
+    throw new Error("Address must be an object");
+  }
+
   return {
     line1: address.line1.trim(),
     line2: address.line2?.trim() || undefined,
