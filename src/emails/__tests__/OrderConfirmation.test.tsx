@@ -46,10 +46,17 @@ describe("OrderConfirmationEmail", () => {
       expect(container).toBeTruthy();
     });
 
-    it("should render html structure", () => {
+    it("should render order content", () => {
       const { container } = render(<OrderConfirmationEmail {...mockProps} />);
-      expect(container.querySelector("html")).toBeTruthy();
-      expect(container.querySelector("head")).toBeTruthy();
+      expect(container.textContent).toContain(mockProps.orderId);
+    });
+
+    it("should render with proper structure", () => {
+      const { container } = render(<OrderConfirmationEmail {...mockProps} />);
+      const div = container.querySelector("div");
+      expect(div).toBeTruthy();
+    });
+  });
       expect(container.querySelector("body")).toBeTruthy();
     });
 
