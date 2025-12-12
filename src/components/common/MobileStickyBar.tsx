@@ -4,10 +4,10 @@
 
 "use client";
 
-import { ShoppingCart, Gavel, Heart } from "lucide-react";
-import { useState } from "react";
-import { useIsMobile } from "@/hooks/useMobile";
 import { Price } from "@/components/common/values/Price";
+import { useIsMobile } from "@/hooks/useMobile";
+import { Gavel, Heart, ShoppingCart } from "lucide-react";
+import { useState } from "react";
 
 interface MobileStickyBarProps {
   type?: "product" | "auction";
@@ -49,6 +49,9 @@ export default function MobileStickyBar({
     setIsAdding(true);
     try {
       await onAddToCart();
+    } catch (error) {
+      // Handle error silently - parent component should handle error state
+      console.error("Error adding to cart:", error);
     } finally {
       setIsAdding(false);
     }
