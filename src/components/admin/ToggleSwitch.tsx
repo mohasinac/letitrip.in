@@ -37,7 +37,8 @@ export function ToggleSwitch({
     },
   };
 
-  const sizeConfig = sizes[size];
+  // Default to md if size is invalid
+  const sizeConfig = sizes[size] || sizes.md;
 
   const switchId =
     id ||

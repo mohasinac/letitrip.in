@@ -105,6 +105,7 @@ export function toFEAuction(
 
   return {
     id: auctionBE.id,
+    slug: auctionBE.slug || auctionBE.productSlug,
     productId: auctionBE.productId,
     productName: auctionBE.productName,
     productSlug: auctionBE.productSlug,

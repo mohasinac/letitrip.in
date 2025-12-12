@@ -129,8 +129,9 @@ describe("InlineFormModal", () => {
   describe("Close Functionality", () => {
     it("renders close button", () => {
       render(<InlineFormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      expect(closeButton).toBeInTheDocument();
+      const closeButtons = screen.getAllByLabelText("Close modal");
+      const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
+      expect(buttonElement).toBeInTheDocument();
     });
 
     it("close button has X icon", () => {

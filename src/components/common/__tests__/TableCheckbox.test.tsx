@@ -273,7 +273,8 @@ describe("TableCheckbox", () => {
         );
       }
 
-      expect(checkbox.indeterminate).toBe(true);
+      // Last iteration is i=9, 9 % 2 === 0 is false, so indeterminate should be false
+      expect(checkbox.indeterminate).toBe(false);
     });
 
     it("maintains checked state during indeterminate changes", () => {

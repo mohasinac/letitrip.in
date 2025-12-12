@@ -46,18 +46,16 @@ describe("DynamicIcon Component", () => {
 
     it("should pass size prop to icon", () => {
       render(<DynamicIcon name="home" size={24} />);
-      expect(LucideIcons.Home).toHaveBeenCalledWith(
-        expect.objectContaining({ size: 24 }),
-        expect.anything()
-      );
+      const calls = (LucideIcons.Home as jest.Mock).mock.calls;
+      const lastCall = calls[calls.length - 1][0];
+      expect(lastCall.size).toBe(24);
     });
 
     it("should pass color prop to icon", () => {
       render(<DynamicIcon name="home" color="red" />);
-      expect(LucideIcons.Home).toHaveBeenCalledWith(
-        expect.objectContaining({ color: "red" }),
-        expect.anything()
-      );
+      const calls = (LucideIcons.Home as jest.Mock).mock.calls;
+      const lastCall = calls[calls.length - 1][0];
+      expect(lastCall.color).toBe("red");
     });
   });
 
@@ -136,10 +134,9 @@ describe("DynamicIcon Component", () => {
   describe("Props Spreading", () => {
     it("should spread additional lucide props", () => {
       render(<DynamicIcon name="home" strokeWidth={2} />);
-      expect(LucideIcons.Home).toHaveBeenCalledWith(
-        expect.objectContaining({ strokeWidth: 2 }),
-        expect.anything()
-      );
+      const calls = (LucideIcons.Home as jest.Mock).mock.calls;
+      const lastCall = calls[calls.length - 1][0];
+      expect(lastCall.strokeWidth).toBe(2);
     });
 
     it("should spread multiple props", () => {
@@ -152,15 +149,12 @@ describe("DynamicIcon Component", () => {
           className="test-class"
         />
       );
-      expect(LucideIcons.Home).toHaveBeenCalledWith(
-        expect.objectContaining({
-          size: 24,
-          color: "red",
-          strokeWidth: 2,
-          className: "test-class",
-        }),
-        expect.anything()
-      );
+      const calls = (LucideIcons.Home as jest.Mock).mock.calls;
+      const lastCall = calls[calls.length - 1][0];
+      expect(lastCall.size).toBe(24);
+      expect(lastCall.color).toBe("red");
+      expect(lastCall.strokeWidth).toBe(2);
+      expect(lastCall.className).toBe("test-class");
     });
   });
 });
@@ -249,16 +243,13 @@ describe("DynamicIcon Integration", () => {
         className="custom-class"
       />
     );
-    expect(LucideIcons.Home).toHaveBeenCalledWith(
-      expect.objectContaining({
-        size: 32,
-        color: "blue",
-        strokeWidth: 3,
-        absoluteStrokeWidth: true,
-        className: "custom-class",
-      }),
-      expect.anything()
-    );
+    const calls = (LucideIcons.Home as jest.Mock).mock.calls;
+    const lastCall = calls[calls.length - 1][0];
+    expect(lastCall.size).toBe(32);
+    expect(lastCall.color).toBe("blue");
+    expect(lastCall.strokeWidth).toBe(3);
+    expect(lastCall.absoluteStrokeWidth).toBe(true);
+    expect(lastCall.className).toBe("custom-class");
   });
 });
 

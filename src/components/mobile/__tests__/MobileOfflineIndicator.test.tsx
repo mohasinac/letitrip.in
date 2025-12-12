@@ -28,7 +28,9 @@ describe("MobileOfflineIndicator - Network Status Component", () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     jest.useRealTimers();
     (globalThis as any).navigator = originalNavigator;
     jest.restoreAllMocks();

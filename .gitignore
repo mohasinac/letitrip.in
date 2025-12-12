@@ -68,3 +68,5 @@ logs/
 .github/copilot-instructions.md
 .env.example
 .env.local.example
+test-*-output.txt
+test-results*.txt

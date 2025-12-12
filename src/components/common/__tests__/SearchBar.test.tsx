@@ -6,8 +6,13 @@
  */
 
 import { searchService } from "@/services/search.service";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import SearchBar from "../SearchBar";
 
 // Mock dependencies
@@ -44,8 +49,12 @@ describe("SearchBar Component", () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
+  afterEach(async () => {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+      // Flush all pending promises
+      await Promise.resolve();
+    });
     jest.useRealTimers();
   });
 
@@ -147,7 +156,7 @@ describe("SearchBar Component", () => {
       await act(async () => {
         fireEvent.change(input, { target: { value: "laptop" } });
       });
-      
+
       const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThan(0);
     });
@@ -163,7 +172,7 @@ describe("SearchBar Component", () => {
       await act(async () => {
         fireEvent.change(input, { target: { value: "a" } });
       });
-      
+
       await act(async () => {
         jest.advanceTimersByTime(400);
       });

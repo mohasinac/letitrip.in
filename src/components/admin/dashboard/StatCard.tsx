@@ -51,7 +51,7 @@ export function StatCard({
       <div className="mt-4">
         <h3 className="text-sm font-medium text-gray-600">{title}</h3>
         <p className="mt-1 text-2xl font-bold text-gray-900">
-          {typeof value === "number" ? value.toLocaleString() : value}
+          {typeof value === "number" ? value.toLocaleString("en-US") : value}
         </p>
       </div>
     </Link>

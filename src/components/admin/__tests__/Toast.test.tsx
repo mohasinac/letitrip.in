@@ -10,10 +10,16 @@ import { toast, ToastContainer } from "../Toast";
 describe("Toast System", () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    // Clear all toasts before each test
+    (toast as any).__clearAll();
   });
 
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
+  afterEach(async () => {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+      // Flush all pending promises
+      await Promise.resolve();
+    });
     jest.useRealTimers();
   });
 

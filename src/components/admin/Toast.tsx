@@ -1,7 +1,7 @@
 "use client";
 
+import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
@@ -44,6 +44,11 @@ export const toast = {
     notify("info", message, duration),
   warning: (message: string, duration?: number) =>
     notify("warning", message, duration),
+  // For testing: clear all toasts
+  __clearAll: () => {
+    toasts = [];
+    listeners.forEach((listener) => listener(toasts));
+  },
 };
 
 export function ToastContainer() {

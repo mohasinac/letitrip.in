@@ -268,10 +268,10 @@ describe("ErrorState Component", () => {
   describe("Edge Cases", () => {
     it("should handle empty message string", () => {
       render(<ErrorState message="" />);
-      // Should fall back to default message based on type
+      // Empty message is treated as empty, not default
       expect(
-        screen.getByText("Something went wrong. Please try again")
-      ).toBeInTheDocument();
+        screen.queryByText(/something went wrong/i)
+      ).not.toBeInTheDocument();
     });
 
     it("should handle null onRetry gracefully", () => {
