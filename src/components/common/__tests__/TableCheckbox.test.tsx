@@ -260,7 +260,7 @@ describe("TableCheckbox", () => {
       }
 
       const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
-      expect(checkbox.checked).toBe(true); // Last iteration (99 is odd, so false, but 0-indexed means 100th is even)
+      expect(checkbox.checked).toBe(false); // Last iteration i=99, 99 % 2 = 1 (odd), so checked=false
     });
 
     it("handles indeterminate toggling rapidly", () => {

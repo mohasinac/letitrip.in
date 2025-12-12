@@ -132,7 +132,7 @@ describe("ApiService", () => {
       mockFetch.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve(mockSuccessResponse(mockData)), 100)
+            setTimeout(() => resolve(mockSuccessResponse(mockData)), 1)
           )
       );
 
@@ -636,7 +636,7 @@ describe("ApiService", () => {
       mockFetch.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve(mockSuccessResponse({})), 100)
+            setTimeout(() => resolve(mockSuccessResponse({})), 1)
           )
       );
 
