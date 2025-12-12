@@ -70,7 +70,7 @@ describe("Pagination Component", () => {
           onPageChange={mockOnPageChange}
         />
       );
-      expect(screen.getByText("2")).toBeInTheDocument();
+      expect(screen.getByText(/Page 2/i)).toBeInTheDocument();
       expect(screen.getByText(/of 10/)).toBeInTheDocument();
     });
   });

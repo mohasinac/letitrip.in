@@ -133,7 +133,7 @@ describe("MobileFilterSidebar Component", () => {
 
     it("should render Apply button", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
-      expect(screen.getByText("Apply")).toBeInTheDocument();
+      expect(screen.getByText("Apply Filters")).toBeInTheDocument();
     });
 
     it("should call onReset when Reset button clicked", () => {

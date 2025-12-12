@@ -84,8 +84,9 @@ describe("FormModal Component", () => {
   describe("Close Button", () => {
     it("should render close button by default", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      expect(closeButton).toBeInTheDocument();
+      const closeButtons = screen.getAllByLabelText("Close modal");
+      const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
+      expect(buttonElement).toBeInTheDocument();
     });
 
     it("should hide close button when showCloseButton is false", () => {
@@ -96,8 +97,9 @@ describe("FormModal Component", () => {
 
     it("should call onClose when close button clicked", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      fireEvent.click(closeButton);
+      const closeButtons = screen.getAllByLabelText("Close modal");
+      const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
+      fireEvent.click(buttonElement!);
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 

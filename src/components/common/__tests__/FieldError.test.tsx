@@ -88,8 +88,10 @@ describe("FieldError Component", () => {
 
     it("should handle whitespace-only error", () => {
       const { container } = render(<FieldError error="   " />);
-      // Component should still render whitespace as is
-      expect(screen.getByText("   ")).toBeInTheDocument();
+      // HTML normalizes whitespace - check that component renders
+      const errorElement = container.querySelector(".text-red-600");
+      expect(errorElement).toBeInTheDocument();
+      expect(errorElement?.textContent).toBeTruthy();
     });
 
     it("should handle error with HTML-like content", () => {

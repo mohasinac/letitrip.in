@@ -177,7 +177,18 @@ describe("FavoriteButton Component", () => {
       });
 
       delete (global as any).location;
-      (global as any).location = { href: "", pathname: "/products/test" };
+      (global as any).location = {
+        href: "",
+        pathname: "/products/test",
+        assign: jest.fn(),
+        replace: jest.fn(),
+        reload: jest.fn(),
+      };
+      // Prevent actual navigation
+      Object.defineProperty((global as any).location, "href", {
+        writable: true,
+        value: "",
+      });
 
       render(<FavoriteButton itemId="product1" itemType="product" />);
       const button = screen.getByRole("button");

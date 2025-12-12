@@ -66,7 +66,7 @@ describe("InlineImageUpload Component", () => {
     it("should render with default size 64", () => {
       const { container } = render(<InlineImageUpload {...defaultProps} />);
       const wrapper = container.querySelector("[style*='width']");
-      expect(wrapper).toHaveStyle({ width: 64, height: 64 });
+      expect(wrapper).toHaveStyle({ width: "64px", height: "64px" });
     });
 
     it("should render with custom size", () => {
@@ -74,7 +74,7 @@ describe("InlineImageUpload Component", () => {
         <InlineImageUpload {...defaultProps} size={128} />
       );
       const wrapper = container.querySelector("[style*='width']");
-      expect(wrapper).toHaveStyle({ width: 128, height: 128 });
+      expect(wrapper).toHaveStyle({ width: "128px", height: "128px" });
     });
 
     it("should apply default accept image/*", () => {

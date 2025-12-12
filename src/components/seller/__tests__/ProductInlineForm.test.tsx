@@ -143,9 +143,9 @@ describe("ProductInlineForm", () => {
         />
       );
 
-      const nameInput = screen.getByLabelText(
-        "Product Name"
-      ) as HTMLInputElement;
+      const nameInput = screen.getByRole("textbox", {
+        name: /Product Name/i,
+      }) as HTMLInputElement;
       fireEvent.change(nameInput, { target: { value: "Gaming Laptop" } });
 
       expect(nameInput.value).toBe("Gaming Laptop");
@@ -243,9 +243,9 @@ describe("ProductInlineForm", () => {
         />
       );
 
-      const stockInput = screen.getByLabelText(
-        "Stock Count"
-      ) as HTMLInputElement;
+      const stockInput = screen.getByRole("spinbutton", {
+        name: /Stock Count/i,
+      }) as HTMLInputElement;
       fireEvent.change(stockInput, { target: { value: "50" } });
 
       expect(stockInput.value).toBe("50");
@@ -262,9 +262,9 @@ describe("ProductInlineForm", () => {
         />
       );
 
-      const categoryInput = screen.getByLabelText(
-        "Category ID"
-      ) as HTMLInputElement;
+      const categoryInput = screen.getByRole("textbox", {
+        name: /Category ID/i,
+      }) as HTMLInputElement;
       fireEvent.change(categoryInput, { target: { value: "electronics" } });
 
       expect(categoryInput.value).toBe("electronics");
@@ -310,9 +310,9 @@ describe("ProductInlineForm", () => {
         />
       );
 
-      const descInput = screen.getByLabelText(
-        "Description"
-      ) as HTMLTextAreaElement;
+      const descInput = screen.getByRole("textbox", {
+        name: /Description/i,
+      }) as HTMLTextAreaElement;
       fireEvent.change(descInput, {
         target: { value: "High-performance gaming laptop" },
       });

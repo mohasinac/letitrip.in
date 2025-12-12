@@ -1,6 +1,15 @@
-import { LANGUAGES } from "@/lib/i18n/config";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { LanguageSelector } from "../LanguageSelector";
+
+// Mock i18n config module to prevent initialization errors
+jest.mock("@/lib/i18n/config", () => ({
+  LANGUAGES: {
+    "en-IN": { name: "English", nativeName: "English" },
+    hi: { name: "Hindi", nativeName: "हिन्दी" },
+    ta: { name: "Tamil", nativeName: "தமிழ்" },
+    te: { name: "Telugu", nativeName: "తెలుగు" },
+  },
+}));
 
 // Mock lucide-react icons
 jest.mock("lucide-react", () => ({
@@ -12,19 +21,23 @@ jest.mock("lucide-react", () => ({
 const mockChangeLanguage = jest.fn();
 const mockUseTranslation = {
   i18n: {
-    language: "en",
+    language: "en-IN",
     changeLanguage: mockChangeLanguage,
   },
 };
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => mockUseTranslation,
+  initReactI18next: {
+    type: "3rdParty",
+    init: jest.fn(),
+  },
 }));
 
 describe("LanguageSelector Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseTranslation.i18n.language = "en";
+    mockUseTranslation.i18n.language = "en-IN";
   });
 
   describe("Basic Rendering", () => {
@@ -112,7 +125,8 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const englishOption = screen.getByText("English").closest("button");
+      const englishTexts = screen.getAllByText("English");
+      const englishOption = englishTexts[0].closest("button");
       expect(englishOption).toHaveClass("text-yellow-600");
     });
 
@@ -369,7 +383,8 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const englishOption = screen.getByText("English").closest("button");
+      const englishTexts = screen.getAllByText("English");
+      const englishOption = englishTexts[0].closest("button");
       expect(englishOption).toHaveClass("dark:text-yellow-500");
     });
   });
@@ -391,10 +406,12 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const englishOption = screen.getByText("English").closest("button");
+      // Use getAllByText since "English" appears in both nativeName and name
+      const englishTexts = screen.getAllByText("English");
+      const englishOption = englishTexts[0].closest("button");
       fireEvent.click(englishOption!);
 
-      expect(mockChangeLanguage).toHaveBeenCalledWith("en");
+      expect(mockChangeLanguage).toHaveBeenCalledWith("en-IN");
     });
 
     it("should handle multiple language changes", () => {

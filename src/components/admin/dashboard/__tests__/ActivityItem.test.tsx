@@ -5,7 +5,7 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Package } from "lucide-react";
-import { ActivityItem } from "../dashboard/ActivityItem";
+import { ActivityItem } from "../ActivityItem";
 
 describe("ActivityItem", () => {
   const defaultProps = {

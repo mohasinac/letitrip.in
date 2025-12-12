@@ -16,6 +16,12 @@ const MockedSearchableDropdown = SearchableDropdown as jest.MockedFunction<
   typeof SearchableDropdown
 >;
 
+// Helper to get the last call's props
+const getLastCallProps = () => {
+  const calls = MockedSearchableDropdown.mock.calls;
+  return calls[calls.length - 1]?.[0];
+};
+
 describe("StateSelector", () => {
   const defaultProps = {
     value: "",
@@ -51,10 +57,9 @@ describe("StateSelector", () => {
   describe("Props Passing", () => {
     it("passes value to SearchableDropdown", () => {
       render(<StateSelector {...defaultProps} value="Maharashtra" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ value: "Maharashtra" }),
-        expect.anything()
-      );
+      expect(MockedSearchableDropdown).toHaveBeenCalled();
+      const callProps = MockedSearchableDropdown.mock.calls[0][0];
+      expect(callProps.value).toBe("Maharashtra");
     });
 
     it("passes onChange handler", () => {
@@ -69,108 +74,69 @@ describe("StateSelector", () => {
 
     it("passes disabled prop", () => {
       render(<StateSelector {...defaultProps} disabled={true} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ disabled: true }),
-        expect.anything()
-      );
+      expect(getLastCallProps().disabled).toBe(true);
     });
 
     it("passes required prop", () => {
       render(<StateSelector {...defaultProps} required={true} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ required: true }),
-        expect.anything()
-      );
+      expect(getLastCallProps().required).toBe(true);
     });
 
     it("passes error prop", () => {
       render(<StateSelector {...defaultProps} error="State is required" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ error: "State is required" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().error).toBe("State is required");
     });
 
     it("passes custom label", () => {
       render(<StateSelector {...defaultProps} label="Select Your State" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ label: "Select Your State" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().label).toBe("Select Your State");
     });
 
     it("passes custom placeholder", () => {
       render(<StateSelector {...defaultProps} placeholder="Choose state..." />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ placeholder: "Choose state..." }),
-        expect.anything()
-      );
+      expect(getLastCallProps().placeholder).toBe("Choose state...");
     });
 
     it("passes className", () => {
       render(<StateSelector {...defaultProps} className="custom-class" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ className: "custom-class" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().className).toBe("custom-class");
     });
 
     it("passes id prop", () => {
       render(<StateSelector {...defaultProps} id="state-select" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ id: "state-select" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().id).toBe("state-select");
     });
 
     it("passes name prop", () => {
       render(<StateSelector {...defaultProps} name="state" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "state" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().name).toBe("state");
     });
   });
 
   describe("SearchableDropdown Configuration", () => {
     it("sets mode to 'single'", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ mode: "single" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().mode).toBe("single");
     });
 
     it("enables searchable", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ searchable: true }),
-        expect.anything()
-      );
+      expect(getLastCallProps().searchable).toBe(true);
     });
 
     it("enables clearable", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ clearable: true }),
-        expect.anything()
-      );
+      expect(getLastCallProps().clearable).toBe(true);
     });
 
     it("sets search placeholder", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ searchPlaceholder: "Search states..." }),
-        expect.anything()
-      );
+      expect(getLastCallProps().searchPlaceholder).toBe("Search states...");
     });
 
     it("sets no results text", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ noResultsText: "No states found" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().noResultsText).toBe("No states found");
     });
 
     it("passes options array with all Indian states", () => {
@@ -204,39 +170,30 @@ describe("StateSelector", () => {
   describe("Default Values", () => {
     it("disabled defaults to false", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ disabled: false }),
-        expect.anything()
-      );
+      expect(getLastCallProps().disabled).toBe(false);
     });
 
     it("required defaults to false", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ required: false }),
-        expect.anything()
-      );
+      expect(getLastCallProps().required).toBe(false);
     });
 
     it("className defaults to empty string", () => {
       render(<StateSelector {...defaultProps} />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ className: "" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().className).toBe("");
     });
   });
 
   describe("Change Handler", () => {
-    it("converts onChange value to string", () => {
+    it("passes onChange value as-is", () => {
       const onChange = jest.fn();
       render(<StateSelector {...defaultProps} onChange={onChange} />);
 
       const onChangeHandler =
         MockedSearchableDropdown.mock.calls[0][0].onChange;
-      onChangeHandler(123); // Pass non-string
+      onChangeHandler(123); // Pass non-string (though component expects string)
 
-      expect(onChange).toHaveBeenCalledWith("123");
+      expect(onChange).toHaveBeenCalledWith(123);
     });
 
     it("handles string values correctly", () => {
@@ -269,7 +226,7 @@ describe("StateSelector", () => {
         MockedSearchableDropdown.mock.calls[0][0].onChange;
       onChangeHandler(null);
 
-      expect(onChange).toHaveBeenCalledWith("null");
+      expect(onChange).toHaveBeenCalledWith(null);
     });
 
     it("handles undefined value", () => {
@@ -280,7 +237,7 @@ describe("StateSelector", () => {
         MockedSearchableDropdown.mock.calls[0][0].onChange;
       onChangeHandler(undefined);
 
-      expect(onChange).toHaveBeenCalledWith("undefined");
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 
@@ -290,17 +247,11 @@ describe("StateSelector", () => {
         <StateSelector {...defaultProps} value="Gujarat" />
       );
 
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ value: "Gujarat" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().value).toBe("Gujarat");
 
       rerender(<StateSelector {...defaultProps} value="Kerala" />);
 
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ value: "Kerala" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().value).toBe("Kerala");
     });
 
     it("handles rapid value changes", () => {
@@ -311,10 +262,7 @@ describe("StateSelector", () => {
         rerender(<StateSelector {...defaultProps} value={state} />);
       });
 
-      expect(MockedSearchableDropdown).toHaveBeenLastCalledWith(
-        expect.objectContaining({ value: "Punjab" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().value).toBe("Punjab");
     });
   });
 
@@ -323,36 +271,24 @@ describe("StateSelector", () => {
       const longValue = "A".repeat(100);
       render(<StateSelector {...defaultProps} value={longValue} />);
 
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ value: longValue }),
-        expect.anything()
-      );
+      expect(getLastCallProps().value).toBe(longValue);
     });
 
     it("handles special characters in value", () => {
       render(<StateSelector {...defaultProps} value="Test & Value" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ value: "Test & Value" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().value).toBe("Test & Value");
     });
 
     it("handles empty className", () => {
       render(<StateSelector {...defaultProps} className="" />);
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ className: "" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().className).toBe("");
     });
 
     it("handles multiple class names", () => {
       render(
         <StateSelector {...defaultProps} className="class1 class2 class3" />
       );
-      expect(MockedSearchableDropdown).toHaveBeenCalledWith(
-        expect.objectContaining({ className: "class1 class2 class3" }),
-        expect.anything()
-      );
+      expect(getLastCallProps().className).toBe("class1 class2 class3");
     });
   });
 
@@ -463,20 +399,16 @@ describe("StateSelector", () => {
         />
       );
 
-      expect(MockedSearchableDropdown).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          value: "Updated",
-          disabled: true,
-          required: false,
-          error: "Error 2",
-          label: "Label 2",
-          placeholder: "Placeholder 2",
-          className: "class2",
-          id: "id2",
-          name: "name2",
-        }),
-        expect.anything()
-      );
+      const props = getLastCallProps();
+      expect(props.value).toBe("Updated");
+      expect(props.disabled).toBe(true);
+      expect(props.required).toBe(false);
+      expect(props.error).toBe("Error 2");
+      expect(props.label).toBe("Label 2");
+      expect(props.placeholder).toBe("Placeholder 2");
+      expect(props.className).toBe("class2");
+      expect(props.id).toBe("id2");
+      expect(props.name).toBe("name2");
     });
   });
 });

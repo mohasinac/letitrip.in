@@ -86,15 +86,17 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should have aria-label on close button", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close filters");
-      expect(closeButton).toBeInTheDocument();
+      const closeButtons = screen.getAllByLabelText("Close filters");
+      const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
+      expect(buttonElement).toBeInTheDocument();
     });
 
     it("should call onClose after animation when close button clicked", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close filters");
+      const closeButtons = screen.getAllByLabelText("Close filters");
+      const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
 
-      fireEvent.click(closeButton);
+      fireEvent.click(buttonElement!);
 
       expect(mockOnClose).not.toHaveBeenCalled();
       jest.advanceTimersByTime(300);
