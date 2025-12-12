@@ -2,9 +2,8 @@
  * ActivityItem Component - Comprehensive Tests
  */
 
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Package } from "lucide-react";
 import { ActivityItem } from "../dashboard/ActivityItem";
 
@@ -53,14 +52,22 @@ describe("ActivityItem", () => {
 
   it("should call onAction when warning button clicked", () => {
     const mockOnAction = jest.fn();
-    render(<ActivityItem {...defaultProps} status="warning" onAction={mockOnAction} />);
+    render(
+      <ActivityItem
+        {...defaultProps}
+        status="warning"
+        onAction={mockOnAction}
+      />
+    );
     fireEvent.click(screen.getByText("Review"));
-    expect(mockOnAction).toHaveBeenCalled Times(1);
+    expect(mockOnAction).toHaveBeenCalledTimes(1);
   });
 
   it("should call onAction when error button clicked", () => {
     const mockOnAction = jest.fn();
-    render(<ActivityItem {...defaultProps} status="error" onAction={mockOnAction} />);
+    render(
+      <ActivityItem {...defaultProps} status="error" onAction={mockOnAction} />
+    );
     fireEvent.click(screen.getByText("View"));
     expect(mockOnAction).toHaveBeenCalledTimes(1);
   });
@@ -78,12 +85,18 @@ describe("ActivityItem", () => {
   });
 
   it("should handle special characters in message", () => {
-    render(<ActivityItem {...defaultProps} message="<script>alert('xss')</script>" />);
-    expect(screen.getByText("<script>alert('xss')</script>")).toBeInTheDocument();
+    render(
+      <ActivityItem {...defaultProps} message="<script>alert('xss')</script>" />
+    );
+    expect(
+      screen.getByText("<script>alert('xss')</script>")
+    ).toBeInTheDocument();
   });
 
   it("should match snapshot", () => {
-    const { container } = render(<ActivityItem {...defaultProps} status="warning" onAction={() => {}} />);
+    const { container } = render(
+      <ActivityItem {...defaultProps} status="warning" onAction={() => {}} />
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 });

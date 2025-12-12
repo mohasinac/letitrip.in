@@ -231,19 +231,19 @@ describe("EmptyState Component", () => {
       expect(screen.getByText(/Start adding products/)).toBeInTheDocument();
     });
 
-    it("should render EmptyWishlist empty state", () => {
-      render(<EmptyStates.EmptyWishlist />);
-      expect(screen.getByText("No items in wishlist")).toBeInTheDocument();
+    it("should render NoFavorites empty state", () => {
+      render(<EmptyStates.NoFavorites />);
+      expect(screen.getByText("No favorites yet")).toBeInTheDocument();
     });
 
-    it("should render NoBids empty state", () => {
-      render(<EmptyStates.NoBids />);
-      expect(screen.getByText("No bids yet")).toBeInTheDocument();
+    it("should render NoAuctions empty state", () => {
+      render(<EmptyStates.NoAuctions />);
+      expect(screen.getByText("No active auctions")).toBeInTheDocument();
     });
 
     it("should render NoOrders empty state", () => {
       render(<EmptyStates.NoOrders />);
-      expect(screen.getByText("No orders found")).toBeInTheDocument();
+      expect(screen.getByText("No orders yet")).toBeInTheDocument();
     });
 
     it("should render NoSearchResults empty state", () => {
@@ -251,14 +251,14 @@ describe("EmptyState Component", () => {
       expect(screen.getByText("No results found")).toBeInTheDocument();
     });
 
-    it("should render NoShops empty state", () => {
-      render(<EmptyStates.NoShops />);
-      expect(screen.getByText("No shops found")).toBeInTheDocument();
+    it("should render NoUsers empty state", () => {
+      render(<EmptyStates.NoUsers />);
+      expect(screen.getByText("No users found")).toBeInTheDocument();
     });
 
-    it("should render NoNotifications empty state", () => {
-      render(<EmptyStates.NoNotifications />);
-      expect(screen.getByText("No notifications")).toBeInTheDocument();
+    it("should render NoData empty state", () => {
+      render(<EmptyStates.NoData />);
+      expect(screen.getByText("No data available")).toBeInTheDocument();
     });
 
     it("should allow overriding predefined state props", () => {

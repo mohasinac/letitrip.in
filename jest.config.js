@@ -38,6 +38,11 @@ const customJestConfig = {
     "node_modules/(?!(jose|jwks-rsa|@panva)/)",
   ],
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
+  // Loop detection
+  maxWorkers: 1,
+  detectOpenHandles: true,
+  // Per test timeout (individual test)
+  slowTestThreshold: 5,
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
