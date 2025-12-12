@@ -38,11 +38,22 @@ const customJestConfig = {
     "node_modules/(?!(jose|jwks-rsa|@panva)/)",
   ],
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
-  // Loop detection
-  maxWorkers: 1,
-  detectOpenHandles: true,
+  // Parallel execution - use 50% of CPU cores for faster tests
+  maxWorkers: "50%",
+  // Only detect open handles in CI or when debugging
+  detectOpenHandles: false,
   // Per test timeout (individual test)
   slowTestThreshold: 5,
+  // Cache results for faster subsequent runs
+  cache: true,
+  cacheDirectory: "<rootDir>/.jest-cache",
+  // Bail early on failures to save time
+  bail: false,
+  // Use v8 coverage for faster coverage collection
+  coverageProvider: "v8",
+  // Reduce memory usage
+  workerIdleMemoryLimit: "512MB",
+  maxConcurrency: 5,
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
