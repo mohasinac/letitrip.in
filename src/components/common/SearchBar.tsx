@@ -91,9 +91,10 @@ export default function SearchBar() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      saveRecentSearch(query);
-      router.push(`/search?q=${encodeURIComponent(query)}`);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      saveRecentSearch(trimmedQuery);
+      router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
       setShowResults(false);
     }
   };

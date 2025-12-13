@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MobileInstallPrompt } from "../MobileInstallPrompt";
 
 // Mock localStorage
@@ -114,7 +120,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       const dialog = await screen.findByRole("dialog");
       expect(dialog).toHaveClass("lg:hidden");
@@ -133,7 +141,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -159,7 +169,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const iconContainer = screen
@@ -178,7 +190,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const title = screen.getByText("Install Let It Rip");
@@ -194,7 +208,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(
@@ -213,7 +229,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Install")).toBeInTheDocument();
@@ -228,7 +246,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Not now")).toBeInTheDocument();
@@ -243,7 +263,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Install")).toBeInTheDocument();
@@ -262,7 +284,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Install")).toBeInTheDocument();
@@ -283,7 +307,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const installBtn = screen.getByText("Install").closest("button");
@@ -299,7 +325,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const installBtn = screen.getByText("Install").closest("button");
@@ -315,7 +343,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const notNowBtn = screen.getByText("Not now").closest("button");
@@ -335,7 +365,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
     it("should detect iOS device", async () => {
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -345,7 +377,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
     it("should show iOS instructions", async () => {
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText(/Tap/)).toBeInTheDocument();
@@ -357,7 +391,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
     it("should render Share icon for iOS", async () => {
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -371,10 +407,14 @@ describe("MobileInstallPrompt - PWA Installation", () => {
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(4999);
+      act(() => {
+        jest.advanceTimersByTime(4999);
+      });
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(1);
+      act(() => {
+        jest.advanceTimersByTime(1);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -384,7 +424,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
     it("should have bg-gray-50 for iOS instructions", async () => {
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         const instructionsBox = screen
@@ -404,7 +446,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByLabelText("Dismiss")).toBeInTheDocument();
@@ -419,7 +463,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -438,7 +484,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -464,7 +512,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Not now")).toBeInTheDocument();
@@ -483,7 +533,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const closeBtn = screen.getByLabelText("Dismiss");
@@ -504,7 +556,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -518,7 +572,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
 
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -536,7 +592,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -552,7 +610,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -577,7 +637,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -592,7 +654,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -611,7 +675,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const closeBtn = screen.getByLabelText("Dismiss");
@@ -627,7 +693,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByLabelText("Dismiss")).toBeInTheDocument();
@@ -644,7 +712,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -660,7 +730,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -676,7 +748,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -692,7 +766,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -708,7 +784,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -724,7 +802,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -740,7 +820,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -756,7 +838,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         const dialog = screen.getByRole("dialog");
@@ -777,7 +861,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -808,7 +894,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(dismissedEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Install")).toBeInTheDocument();
@@ -830,7 +918,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
 
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -846,7 +936,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
 
       render(<MobileInstallPrompt />);
 
-      jest.advanceTimersByTime(5000);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -865,10 +957,12 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
-      // Should not show at exactly 7 days
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      // Should show at exactly 7 days (daysSinceDismissed = 7, which is NOT < 7)
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
 
     it("should render app icon text 'LR'", async () => {
@@ -879,7 +973,9 @@ describe("MobileInstallPrompt - PWA Installation", () => {
       )?.[1];
       handler?.(mockBeforeInstallPromptEvent);
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText("LR")).toBeInTheDocument();

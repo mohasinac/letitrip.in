@@ -66,6 +66,7 @@ export function LanguageSelector({ className = "" }: LanguageSelectorProps) {
             ).map(([code, { name, nativeName }]) => (
               <button
                 key={code}
+                type="button"
                 onClick={() => changeLanguage(code)}
                 className={`w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                   currentLanguage === code

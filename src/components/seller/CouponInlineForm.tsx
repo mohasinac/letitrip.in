@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { logError } from "@/lib/firebase-error-logger";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormSelect } from "@/components/forms/FormSelect";
+import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
+import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
-import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface CouponInlineFormProps {
   coupon?: CouponFE;
@@ -118,7 +117,7 @@ export function CouponInlineForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       {/* Form-level error */}
       {errors.form && (
         <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">

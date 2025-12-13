@@ -4,9 +4,9 @@
 
 "use client";
 
-import { X, SlidersHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
+import { SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface MobileFilterDrawerProps {
   isOpen: boolean;
@@ -65,10 +65,9 @@ export default function MobileFilterDrawer({
           isOpen && isAnimating ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
-        onKeyDown={(e) => e.key === "Escape" && handleClose()}
         role="button"
         tabIndex={-1}
-        aria-label="Close filters"
+        aria-label="Backdrop"
       />
 
       {/* Drawer */}

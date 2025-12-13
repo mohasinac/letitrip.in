@@ -65,7 +65,7 @@ export function Pagination({
   showFirstLast = false,
   className = "",
 }: PaginationProps) {
-  if (totalPages <= 1 && !totalItems) return null;
+  if (totalPages <= 1 && totalItems === undefined) return null;
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -130,7 +130,7 @@ export function Pagination({
           {showFirstLast && (
             <button
               onClick={handleFirst}
-              disabled={currentPage === 1}
+              disabled={currentPage <= 1}
               className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title="First page"
             >
@@ -141,7 +141,7 @@ export function Pagination({
           {/* Previous button */}
           <button
             onClick={handlePrevious}
-            disabled={currentPage === 1}
+            disabled={currentPage <= 1}
             className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             title="Previous page"
           >
@@ -156,7 +156,7 @@ export function Pagination({
           {/* Next button */}
           <button
             onClick={handleNext}
-            disabled={currentPage === totalPages}
+            disabled={currentPage >= totalPages}
             className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             title="Next page"
           >
@@ -167,7 +167,7 @@ export function Pagination({
           {showFirstLast && (
             <button
               onClick={handleLast}
-              disabled={currentPage === totalPages}
+              disabled={currentPage >= totalPages}
               className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title="Last page"
             >

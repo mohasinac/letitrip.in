@@ -8,8 +8,12 @@ jest.mock("@/lib/i18n/config", () => ({
     hi: { name: "Hindi", nativeName: "हिन्दी" },
     ta: { name: "Tamil", nativeName: "தமிழ்" },
     te: { name: "Telugu", nativeName: "తెలుగు" },
+    bn: { name: "Bengali", nativeName: "বাংলা" },
   },
 }));
+
+// Get the mocked LANGUAGES for use in tests
+const { LANGUAGES } = jest.requireMock("@/lib/i18n/config");
 
 // Mock lucide-react icons
 jest.mock("lucide-react", () => ({
@@ -107,7 +111,8 @@ describe("LanguageSelector Component", () => {
       fireEvent.click(button);
 
       Object.entries(LANGUAGES).forEach(([, { nativeName }]) => {
-        expect(screen.getByText(nativeName)).toBeInTheDocument();
+        const elements = screen.getAllByText(nativeName);
+        expect(elements.length).toBeGreaterThan(0);
       });
     });
 
@@ -126,8 +131,13 @@ describe("LanguageSelector Component", () => {
       fireEvent.click(button);
 
       const englishTexts = screen.getAllByText("English");
-      const englishOption = englishTexts[0].closest("button");
-      expect(englishOption).toHaveClass("text-yellow-600");
+      const englishOption = englishTexts
+        .find((el) => {
+          const btn = el.closest("button");
+          return btn && btn !== button && btn.className.includes("w-full");
+        })
+        ?.closest("button");
+      expect(englishOption?.className).toContain("text-yellow-600");
     });
 
     it("should show check icon for current language", () => {
@@ -285,8 +295,11 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const dropdown = screen.getByText("हिन्दी").closest("div");
-      expect(dropdown).toHaveClass("absolute", "right-0");
+      // The dropdown is the parent of py-2 div containing buttons
+      const dropdown = screen.getByText("हिन्दी").closest("button")
+        ?.parentElement?.parentElement;
+      expect(dropdown?.className).toContain("absolute");
+      expect(dropdown?.className).toContain("right-0");
     });
 
     it("should apply hover styles to language button", () => {
@@ -313,8 +326,10 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const dropdown = screen.getByText("हिन्दी").closest("div");
-      expect(dropdown).toHaveClass("z-50");
+      // The dropdown is the parent of py-2 div containing buttons
+      const dropdown = screen.getByText("हिन्दी").closest("button")
+        ?.parentElement?.parentElement;
+      expect(dropdown?.className).toContain("z-50");
     });
   });
 
@@ -362,7 +377,8 @@ describe("LanguageSelector Component", () => {
       const button = screen.getByRole("button", { name: /select language/i });
       fireEvent.click(button);
 
-      const dropdown = screen.getByText("हिन्दी").closest("div");
+      const dropdown = screen.getByText("हिन्दी").closest("button")
+        ?.parentElement?.parentElement;
       expect(dropdown).toHaveClass("dark:bg-gray-800", "dark:border-gray-700");
     });
 
@@ -384,8 +400,13 @@ describe("LanguageSelector Component", () => {
       fireEvent.click(button);
 
       const englishTexts = screen.getAllByText("English");
-      const englishOption = englishTexts[0].closest("button");
-      expect(englishOption).toHaveClass("dark:text-yellow-500");
+      const englishOption = englishTexts
+        .find((el) => {
+          const btn = el.closest("button");
+          return btn && btn !== button && btn.className.includes("w-full");
+        })
+        ?.closest("button");
+      expect(englishOption?.className).toContain("dark:text-yellow-500");
     });
   });
 
@@ -408,7 +429,13 @@ describe("LanguageSelector Component", () => {
 
       // Use getAllByText since "English" appears in both nativeName and name
       const englishTexts = screen.getAllByText("English");
-      const englishOption = englishTexts[0].closest("button");
+      const englishOption = englishTexts
+        .find((el) => el.closest("button") !== button)
+        ?.closest("button");
+
+      // Clear any previous calls from setup
+      mockChangeLanguage.mockClear();
+
       fireEvent.click(englishOption!);
 
       expect(mockChangeLanguage).toHaveBeenCalledWith("en-IN");

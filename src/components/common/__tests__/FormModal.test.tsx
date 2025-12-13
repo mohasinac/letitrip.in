@@ -105,8 +105,9 @@ describe("FormModal Component", () => {
 
     it("should render SVG icon in close button", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      const svg = closeButton.querySelector("svg");
+      const closeButtons = screen.getAllByLabelText("Close modal");
+      const closeButton = closeButtons.find((el) => el.tagName === "BUTTON");
+      const svg = closeButton!.querySelector("svg");
       expect(svg).toBeInTheDocument();
     });
   });
@@ -140,14 +141,7 @@ describe("FormModal Component", () => {
     it("should have aria-label on backdrop", () => {
       const { container } = render(<FormModal {...defaultProps} />);
       const backdrop = container.querySelector(".bg-black.bg-opacity-50");
-      expect(backdrop).toHaveAttribute("aria-label", "Close modal");
-    });
-
-    it("should call onClose when Escape pressed on backdrop", () => {
-      const { container } = render(<FormModal {...defaultProps} />);
-      const backdrop = container.querySelector(".bg-black.bg-opacity-50");
-      fireEvent.keyDown(backdrop!, { key: "Escape" });
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
+      expect(backdrop).toHaveAttribute("aria-label", "Backdrop");
     });
   });
 
@@ -267,7 +261,7 @@ describe("FormModal Component", () => {
 
     it("should have aria-label on close button", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
+      const closeButton = screen.getByRole("button", { name: "Close modal" });
       expect(closeButton).toHaveAttribute("aria-label", "Close modal");
     });
   });
@@ -345,7 +339,7 @@ describe("FormModal Component", () => {
 
     it("should apply dark mode classes to close button", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
+      const closeButton = screen.getByRole("button", { name: "Close modal" });
       expect(closeButton).toHaveClass(
         "dark:text-gray-500",
         "dark:hover:text-gray-300"
@@ -356,8 +350,9 @@ describe("FormModal Component", () => {
   describe("Edge Cases", () => {
     it("should handle empty title", () => {
       render(<FormModal {...defaultProps} title="" />);
-      const title = screen.getByText("");
+      const title = screen.getByRole("heading", { name: "" });
       expect(title).toBeInTheDocument();
+      expect(title).toHaveTextContent("");
     });
 
     it("should handle null children", () => {
@@ -388,7 +383,7 @@ describe("FormModal Component", () => {
 
     it("should handle multiple close attempts", () => {
       render(<FormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
+      const closeButton = screen.getByRole("button", { name: "Close modal" });
 
       fireEvent.click(closeButton);
       fireEvent.click(closeButton);
@@ -485,10 +480,14 @@ describe("FormModal Component", () => {
       const { rerender } = render(
         <FormModal {...defaultProps} showCloseButton={true} />
       );
-      expect(screen.getByLabelText("Close modal")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Close modal" })
+      ).toBeInTheDocument();
 
       rerender(<FormModal {...defaultProps} showCloseButton={false} />);
-      expect(screen.queryByLabelText("Close modal")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Close modal" })
+      ).not.toBeInTheDocument();
     });
   });
 });

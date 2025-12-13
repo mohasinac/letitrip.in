@@ -190,11 +190,13 @@ describe("SearchInput Component", () => {
       const onChange = jest.fn();
       const user = userEvent.setup({ delay: null });
       const { unmount } = render(
-        <SearchInput {...defaultProps} onChange={onChange} />
+        <SearchInput {...defaultProps} onChange={onChange} debounceMs={500} />
       );
       const input = screen.getByPlaceholderText("Search...");
 
       await user.type(input, "test");
+      // Clear any onChange calls that occurred during typing (if debounceMs=0 was used)
+      onChange.mockClear();
       unmount();
       jest.runAllTimers();
 
