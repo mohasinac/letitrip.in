@@ -145,14 +145,14 @@ describe("MobileFilterSidebar Component", () => {
 
     it("should call onApply when Apply button clicked", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
       fireEvent.click(applyButton);
       expect(mockOnApply).toHaveBeenCalledTimes(1);
     });
 
     it("should close sidebar after Apply clicked", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
       fireEvent.click(applyButton);
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -355,7 +355,7 @@ describe("MobileFilterSidebar Component", () => {
 
     it("should handle multiple Apply clicks", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
 
       fireEvent.click(applyButton);
       fireEvent.click(applyButton);
@@ -397,14 +397,14 @@ describe("MobileFilterSidebar Component", () => {
 
     it("should style Apply button with background color", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
       expect(applyButton).toHaveClass("bg-blue-600", "hover:bg-blue-700");
     });
 
     it("should make both buttons flex-1 for equal width", () => {
       render(<MobileFilterSidebar {...defaultProps} />);
       const resetButton = screen.getByText("Reset");
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
 
       expect(resetButton).toHaveClass("flex-1");
       expect(applyButton).toHaveClass("flex-1");

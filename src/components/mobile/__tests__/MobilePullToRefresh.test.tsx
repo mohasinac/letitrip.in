@@ -6,7 +6,13 @@
  * @status NEW
  */
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MobilePullToRefresh } from "../MobilePullToRefresh";
 
 describe("MobilePullToRefresh - Pull Gesture Component", () => {
@@ -125,7 +131,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 100 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       expect(element).toBeInTheDocument();
     });
@@ -169,7 +177,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }], // Pull 150px (exceeds threshold * 0.5 = 75)
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         expect(mockOnRefresh).toHaveBeenCalledTimes(1);
@@ -195,7 +205,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 120 }], // Only 20px pull
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         expect(mockOnRefresh).not.toHaveBeenCalled();
@@ -221,7 +233,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         expect(mockOnRefresh).not.toHaveBeenCalled();
@@ -251,7 +265,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         expect(asyncRefresh).toHaveBeenCalled();
@@ -287,7 +303,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         const spinner = container.querySelector(".animate-spin");
@@ -324,7 +342,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         const spinner = container.querySelector(".animate-spin");
@@ -360,7 +380,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
       fireEvent.touchMove(element, {
         touches: [{ clientY: 250 }],
       });
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       // Try second pull while first is in progress
       fireEvent.touchStart(element, {
@@ -369,7 +391,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
       fireEvent.touchMove(element, {
         touches: [{ clientY: 250 }],
       });
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       await waitFor(() => {
         expect(onRefresh).toHaveBeenCalledTimes(1); // Only once
@@ -506,7 +530,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 50 }], // Upward pull
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       expect(mockOnRefresh).not.toHaveBeenCalled();
     });
@@ -524,7 +550,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 100 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       expect(mockOnRefresh).not.toHaveBeenCalled();
     });
@@ -546,7 +574,9 @@ describe("MobilePullToRefresh - Pull Gesture Component", () => {
         touches: [{ clientY: 250 }],
       });
 
-      fireEvent.touchEnd(element);
+      act(() => {
+        fireEvent.touchEnd(element);
+      });
 
       expect(mockOnRefresh).not.toHaveBeenCalled();
     });

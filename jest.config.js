@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.js"],
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
     "^@/(.*)$": "<rootDir>/src/$1",
@@ -26,8 +26,8 @@ const customJestConfig = {
     "!src/app/**/not-found.tsx",
   ],
   testMatch: [
-    "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-    "<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}",
+    "<rootDir>/tests/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+    "<rootDir>/tests/src/**/*.{test,spec}.{js,jsx,ts,tsx}",
   ],
   testPathIgnorePatterns: [
     "/node_modules/",

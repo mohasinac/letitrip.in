@@ -332,7 +332,7 @@ describe("CouponInlineForm", () => {
   });
 
   describe("Form Validation", () => {
-    it.skip("validates required coupon code", async () => {
+    it("validates required coupon code", async () => {
       render(
         <CouponInlineForm
           shopId="shop-123"
@@ -367,7 +367,7 @@ describe("CouponInlineForm", () => {
       expect(couponsService.create).not.toHaveBeenCalled();
     });
 
-    it.skip("validates required display name", async () => {
+    it("validates required display name", async () => {
       render(
         <CouponInlineForm
           shopId="shop-123"
@@ -909,7 +909,7 @@ describe("CouponInlineForm", () => {
   });
 
   describe("Error Clearing", () => {
-    it.skip("clears code error when user types", async () => {
+    it("clears code error when user types", async () => {
       render(
         <CouponInlineForm
           shopId="shop-123"
@@ -949,7 +949,7 @@ describe("CouponInlineForm", () => {
       });
     });
 
-    it.skip("clears name error when user types", async () => {
+    it("clears name error when user types", async () => {
       render(
         <CouponInlineForm
           shopId="shop-123"

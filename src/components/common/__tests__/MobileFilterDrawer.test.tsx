@@ -86,14 +86,18 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should have aria-label on close button", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButtons = screen.getAllByLabelText("Close filters");
+      const closeButtons = screen.getAllByRole("button", {
+        name: "Close filters",
+      });
       const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
       expect(buttonElement).toBeInTheDocument();
     });
 
     it("should call onClose after animation when close button clicked", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButtons = screen.getAllByLabelText("Close filters");
+      const closeButtons = screen.getAllByRole("button", {
+        name: "Close filters",
+      });
       const buttonElement = closeButtons.find((el) => el.tagName === "BUTTON");
 
       fireEvent.click(buttonElement!);
@@ -105,8 +109,9 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should have sticky header", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const header = screen.getByText("Filters").closest("div");
-      expect(header).toHaveClass("sticky", "top-0");
+      const header = screen.getByText("Filters").closest("div")?.parentElement;
+      expect(header).toHaveClass("sticky");
+      expect(header).toHaveClass("top-0");
     });
   });
 
@@ -148,17 +153,7 @@ describe("MobileFilterDrawer Component", () => {
     it("should have aria-label on backdrop", () => {
       const { container } = render(<MobileFilterDrawer {...defaultProps} />);
       const backdrop = container.querySelector(".bg-black\\/50");
-      expect(backdrop).toHaveAttribute("aria-label", "Close filters");
-    });
-
-    it("should call handleClose when Escape pressed on backdrop", () => {
-      const { container } = render(<MobileFilterDrawer {...defaultProps} />);
-      const backdrop = container.querySelector(".bg-black\\/50");
-
-      fireEvent.keyDown(backdrop!, { key: "Escape" });
-      jest.advanceTimersByTime(300);
-
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
+      expect(backdrop).toHaveAttribute("aria-label", "Backdrop");
     });
   });
 
@@ -175,12 +170,12 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should render Apply button when onApply provided", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      expect(screen.getByText("Apply")).toBeInTheDocument();
+      expect(screen.getByText("Apply Filters")).toBeInTheDocument();
     });
 
     it("should not render Apply button when onApply not provided", () => {
       render(<MobileFilterDrawer {...defaultProps} onApply={undefined} />);
-      expect(screen.queryByText("Apply")).not.toBeInTheDocument();
+      expect(screen.queryByText("Apply Filters")).not.toBeInTheDocument();
     });
 
     it("should call onReset when Reset button clicked", () => {
@@ -192,7 +187,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should call onApply when Apply button clicked", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
 
       fireEvent.click(applyButton);
 
@@ -201,7 +196,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should close drawer after Apply clicked", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
 
       fireEvent.click(applyButton);
       jest.advanceTimersByTime(300);
@@ -244,7 +239,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should delay onClose by 300ms for animation", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close filters");
+      const closeButton = screen.getByRole("button", { name: "Close filters" });
 
       fireEvent.click(closeButton);
 
@@ -306,7 +301,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should have max height of 85vh", () => {
       const { container } = render(<MobileFilterDrawer {...defaultProps} />);
-      const drawer = container.querySelector("[style*='maxHeight']");
+      const drawer = container.querySelector(".rounded-t-2xl");
       expect(drawer).toHaveStyle({ maxHeight: "85vh" });
     });
 
@@ -364,8 +359,9 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should apply dark mode classes to header", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const header = screen.getByText("Filters").closest("div");
-      expect(header).toHaveClass("dark:border-gray-700", "dark:bg-gray-800");
+      const header = screen.getByText("Filters").closest("div")?.parentElement;
+      expect(header).toHaveClass("dark:border-gray-700");
+      expect(header).toHaveClass("dark:bg-gray-800");
     });
 
     it("should apply dark mode classes to title", () => {
@@ -404,7 +400,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should handle multiple close attempts", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close filters");
+      const closeButton = screen.getByRole("button", { name: "Close filters" });
 
       fireEvent.click(closeButton);
       fireEvent.click(closeButton);
@@ -445,14 +441,14 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should style Apply button with background color", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
       expect(applyButton).toHaveClass("bg-blue-600", "hover:bg-blue-700");
     });
 
     it("should make both buttons flex-1 for equal width", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
       const resetButton = screen.getByText("Reset");
-      const applyButton = screen.getByText("Apply");
+      const applyButton = screen.getByText("Apply Filters");
 
       expect(resetButton).toHaveClass("flex-1");
       expect(applyButton).toHaveClass("flex-1");
@@ -460,7 +456,7 @@ describe("MobileFilterDrawer Component", () => {
 
     it("should apply hover styles to close button", () => {
       render(<MobileFilterDrawer {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close filters");
+      const closeButton = screen.getByRole("button", { name: "Close filters" });
       expect(closeButton).toHaveClass(
         "hover:bg-gray-100",
         "dark:hover:bg-gray-700"

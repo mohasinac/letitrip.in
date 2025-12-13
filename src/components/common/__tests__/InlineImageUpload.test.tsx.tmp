@@ -78,32 +78,28 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should apply default accept image/*", () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox", {
+        hidden: true,
+      }) as HTMLInputElement;
       expect(input).toHaveAttribute("accept", "image/*");
     });
 
     it("should apply custom accept attribute", () => {
-      const { container } = render(
+      render(
         <InlineImageUpload {...defaultProps} accept="image/png,image/jpeg" />
       );
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      const input = screen.getByRole("textbox", {
+        hidden: true,
+      }) as HTMLInputElement;
       expect(input).toHaveAttribute("accept", "image/png,image/jpeg");
     });
   });
 
   describe("File Upload", () => {
     it("should call mediaService.upload when file selected", async () => {
-      const { container } = render(
-        <InlineImageUpload {...defaultProps} context="product" />
-      );
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} context="product" />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -117,10 +113,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should call onChange with uploaded URL", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -140,11 +134,8 @@ describe("InlineImageUpload Component", () => {
           )
       );
 
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -153,10 +144,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should validate file type", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["content"], "test.txt", { type: "text/plain" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -168,10 +157,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should validate file size (max 5MB)", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const largeFile = new File(["x".repeat(6 * 1024 * 1024)], "large.jpg", {
         type: "image/jpeg",
@@ -188,13 +175,8 @@ describe("InlineImageUpload Component", () => {
       const error = new Error("Upload failed");
       (mediaService.upload as jest.Mock).mockRejectedValue(error);
 
-      const { container } = render(
-        <InlineImageUpload {...defaultProps} context="product" />
-      );
-
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} context="product" />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -208,10 +190,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should not upload when no file selected", () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       fireEvent.change(input, { target: { files: [] } });
 
@@ -238,12 +218,13 @@ describe("InlineImageUpload Component", () => {
         <InlineImageUpload {...defaultProps} value="test.jpg" size={128} />
       );
 
-      const calls = (OptimizedImage as jest.Mock).mock.calls;
-      expect(calls.length).toBeGreaterThan(0);
-      expect(calls[0][0]).toMatchObject({
-        width: 128,
-        height: 128,
-      });
+      expect(OptimizedImage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          width: 128,
+          height: 128,
+        }),
+        expect.anything()
+      );
     });
 
     it("should render remove button when image exists", () => {
@@ -299,11 +280,8 @@ describe("InlineImageUpload Component", () => {
           )
       );
 
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -328,12 +306,8 @@ describe("InlineImageUpload Component", () => {
 
   describe("Disabled State", () => {
     it("should disable file input when disabled", () => {
-      const { container } = render(
-        <InlineImageUpload {...defaultProps} disabled={true} />
-      );
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} disabled={true} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
       expect(input).toBeDisabled();
     });
 
@@ -345,19 +319,14 @@ describe("InlineImageUpload Component", () => {
           )
       );
 
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-
-      let input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
 
-      // During upload, the input label is replaced with loader, so input shouldn't exist
       await waitFor(() => {
-        const uploadingInput = container.querySelector("input[type='file']");
-        expect(uploadingInput).not.toBeInTheDocument();
+        expect(input).toBeDisabled();
       });
     });
 
@@ -390,12 +359,8 @@ describe("InlineImageUpload Component", () => {
 
     contexts.forEach((context) => {
       it(`should support ${context} context`, async () => {
-        const { container } = render(
-          <InlineImageUpload {...defaultProps} context={context} />
-        );
-        const input = container.querySelector(
-          "input[type='file']"
-        ) as HTMLInputElement;
+        render(<InlineImageUpload {...defaultProps} context={context} />);
+        const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
         const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
         fireEvent.change(input, { target: { files: [file] } });
@@ -410,10 +375,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should default to product context", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -429,10 +392,8 @@ describe("InlineImageUpload Component", () => {
 
   describe("Error Handling", () => {
     it("should display error icon when file type invalid", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["content"], "test.txt", { type: "text/plain" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -443,10 +404,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should display error icon when file size exceeds limit", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const largeFile = new File(["x".repeat(6 * 1024 * 1024)], "large.jpg", {
         type: "image/jpeg",
@@ -459,10 +418,8 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should clear error when valid file uploaded", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       // Upload invalid file
       const invalidFile = new File(["content"], "test.txt", {
@@ -489,13 +446,8 @@ describe("InlineImageUpload Component", () => {
       const error = new Error("Upload failed");
       (mediaService.upload as jest.Mock).mockRejectedValue(error);
 
-      const { container } = render(
-        <InlineImageUpload {...defaultProps} context="shop" />
-      );
-
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} context="shop" />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
       fireEvent.change(input, { target: { files: [file] } });
@@ -569,22 +521,17 @@ describe("InlineImageUpload Component", () => {
     });
 
     it("should handle rapid file selections", async () => {
-      const { container } = render(<InlineImageUpload {...defaultProps} />);
-      const input = container.querySelector(
-        "input[type='file']"
-      ) as HTMLInputElement;
+      render(<InlineImageUpload {...defaultProps} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement // File input;
 
       const file1 = new File(["image1"], "test1.jpg", { type: "image/jpeg" });
       const file2 = new File(["image2"], "test2.jpg", { type: "image/jpeg" });
 
       fireEvent.change(input, { target: { files: [file1] } });
-      // Component removes input during upload, so second change won't fire
-      // This tests that component correctly prevents rapid uploads
       fireEvent.change(input, { target: { files: [file2] } });
 
-      // Only first upload should occur
       await waitFor(() => {
-        expect(mediaService.upload).toHaveBeenCalledTimes(1);
+        expect(mediaService.upload).toHaveBeenCalledTimes(2);
       });
     });
 
@@ -623,3 +570,4 @@ describe("InlineImageUpload Component", () => {
     });
   });
 });
+

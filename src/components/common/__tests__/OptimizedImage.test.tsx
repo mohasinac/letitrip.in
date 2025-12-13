@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import OptimizedImage from "../OptimizedImage";
 
 // Mock Next.js Image component
@@ -63,7 +63,9 @@ describe("OptimizedImage Component", () => {
       render(<OptimizedImage {...defaultProps} onLoad={onLoad} />);
       const img = screen.getByAltText("Test image");
 
-      img.dispatchEvent(new Event("load", { bubbles: true }));
+      act(() => {
+        img.dispatchEvent(new Event("load", { bubbles: true }));
+      });
 
       await waitFor(() => {
         expect(onLoad).toHaveBeenCalled();
@@ -77,7 +79,9 @@ describe("OptimizedImage Component", () => {
       render(<OptimizedImage {...defaultProps} onError={onError} />);
       const img = screen.getByAltText("Test image");
 
-      img.dispatchEvent(new Event("error", { bubbles: true }));
+      act(() => {
+        img.dispatchEvent(new Event("error", { bubbles: true }));
+      });
 
       await waitFor(() => {
         expect(onError).toHaveBeenCalled();
@@ -409,7 +413,9 @@ describe("OptimizedImage Component", () => {
       );
 
       const loadedImg = screen.getByAltText("Loaded");
-      loadedImg.dispatchEvent(new Event("load", { bubbles: true }));
+      act(() => {
+        loadedImg.dispatchEvent(new Event("load", { bubbles: true }));
+      });
 
       await waitFor(() => {
         expect(screen.getByText("No image")).toBeInTheDocument();

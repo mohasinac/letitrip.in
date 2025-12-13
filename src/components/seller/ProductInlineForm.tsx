@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { logError } from "@/lib/firebase-error-logger";
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
+import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
-import type { ProductFE, ProductCardFE } from "@/types/frontend/product.types";
+import type { ProductCardFE, ProductFE } from "@/types/frontend/product.types";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface ProductInlineFormProps {
   product?: ProductFE | ProductCardFE;
@@ -101,7 +100,7 @@ export function ProductInlineForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {/* Form-level error */}
       {errors.form && (
         <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">

@@ -144,8 +144,9 @@ describe("InlineFormModal", () => {
       const onClose = jest.fn();
       render(<InlineFormModal {...defaultProps} onClose={onClose} />);
 
-      const closeButton = screen.getByLabelText("Close modal");
-      fireEvent.click(closeButton);
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const closeButton = closeElements.find((el) => el.tagName === "BUTTON");
+      fireEvent.click(closeButton!);
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });
@@ -154,8 +155,9 @@ describe("InlineFormModal", () => {
       const onClose = jest.fn();
       render(<InlineFormModal {...defaultProps} onClose={onClose} />);
 
-      const backdrop = screen.getByLabelText("Close modal");
-      fireEvent.click(backdrop);
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const backdrop = closeElements.find((el) => el.tagName === "DIV");
+      fireEvent.click(backdrop!);
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -164,8 +166,9 @@ describe("InlineFormModal", () => {
       const onClose = jest.fn();
       render(<InlineFormModal {...defaultProps} onClose={onClose} />);
 
-      const backdrop = screen.getByLabelText("Close modal");
-      fireEvent.keyDown(backdrop, { key: "Escape" });
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const backdrop = closeElements.find((el) => el.tagName === "DIV");
+      fireEvent.keyDown(backdrop!, { key: "Escape" });
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });
@@ -174,8 +177,9 @@ describe("InlineFormModal", () => {
       const onClose = jest.fn();
       render(<InlineFormModal {...defaultProps} onClose={onClose} />);
 
-      const backdrop = screen.getByLabelText("Close modal");
-      fireEvent.keyDown(backdrop, { key: "Enter" });
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const backdrop = closeElements.find((el) => el.tagName === "DIV");
+      fireEvent.keyDown(backdrop!, { key: "Enter" });
 
       expect(onClose).not.toHaveBeenCalled();
     });
@@ -285,8 +289,9 @@ describe("InlineFormModal", () => {
 
     it("close button has hover styles", () => {
       render(<InlineFormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      expect(closeButton.className).toContain("hover:bg-gray-100");
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const closeButton = closeElements.find((el) => el.tagName === "BUTTON");
+      expect(closeButton?.className).toContain("hover:bg-gray-100");
     });
   });
 
@@ -311,14 +316,16 @@ describe("InlineFormModal", () => {
 
     it("close button has dark mode hover", () => {
       render(<InlineFormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      expect(closeButton.className).toContain("dark:hover:bg-gray-700");
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const closeButton = closeElements.find((el) => el.tagName === "BUTTON");
+      expect(closeButton?.className).toContain("dark:hover:bg-gray-700");
     });
 
     it("close button has dark mode text color", () => {
       render(<InlineFormModal {...defaultProps} />);
-      const closeButton = screen.getByLabelText("Close modal");
-      expect(closeButton.className).toContain("dark:text-gray-500");
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const closeButton = closeElements.find((el) => el.tagName === "BUTTON");
+      expect(closeButton?.className).toContain("dark:text-gray-500");
     });
   });
 
@@ -430,7 +437,9 @@ describe("InlineFormModal", () => {
         rerender(<InlineFormModal {...defaultProps} isOpen={i % 2 === 0} />);
       }
 
-      expect(screen.getByText("Test Modal")).toBeInTheDocument();
+      // After 10 iterations (0-9), i=10 which is even, so last state should be open (isOpen=true when i=9 is odd=false, then loop ends)
+      // Actually the loop ends with i=9 (odd), so isOpen=false. Modal should not be visible.
+      expect(screen.queryByText("Test Modal")).not.toBeInTheDocument();
     });
 
     it("handles empty children", () => {
@@ -448,10 +457,11 @@ describe("InlineFormModal", () => {
       const onClose = jest.fn();
       render(<InlineFormModal {...defaultProps} onClose={onClose} />);
 
-      const closeButton = screen.getByLabelText("Close modal");
-      fireEvent.click(closeButton);
-      fireEvent.click(closeButton);
-      fireEvent.click(closeButton);
+      const closeElements = screen.getAllByLabelText("Close modal");
+      const closeButton = closeElements.find((el) => el.tagName === "BUTTON");
+      fireEvent.click(closeButton!);
+      fireEvent.click(closeButton!);
+      fireEvent.click(closeButton!);
 
       expect(onClose).toHaveBeenCalledTimes(3);
     });

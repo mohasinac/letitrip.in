@@ -1,9 +1,9 @@
-﻿import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+﻿import { productsService } from "@/services/products.service";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ProductInlineForm } from "../ProductInlineForm";
 
 // Mock dependencies
 jest.mock("@/services/products.service");
-const productsService = require("@/services/products.service");
 
 jest.mock("@/lib/firebase-error-logger", () => ({
   logError: jest.fn(),
@@ -902,10 +902,10 @@ describe("ProductInlineForm", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        const errorDiv = screen
-          .getByText("Product name is required")
-          .closest("div");
-        expect(errorDiv).toHaveClass("dark:text-red-400");
+        const errorMessage = screen.getByText("Product name is required");
+        expect(errorMessage).toHaveClass("text-sm");
+        expect(errorMessage).toHaveClass("text-red-600");
+        expect(errorMessage).toHaveClass("dark:text-red-400");
       });
     });
 
