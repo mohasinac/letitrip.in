@@ -13,10 +13,12 @@ All test files have been successfully migrated from the main repository to a sep
 ## Commits
 
 ### Main Repository
-- Initial move: `bc284ca` - Moved top-level test directories (src/__tests__, TDD/)
+
+- Initial move: `bc284ca` - Moved top-level test directories (src/**tests**, TDD/)
 - Final move: `10da277` - Removed remaining 341 test files from nested subdirectories
 
 ### Tests Submodule (d:/proj/letitrip-tests)
+
 - Contains all 400 test files in mirrored src/ structure
 - Tracked as independent git repository
 
@@ -54,8 +56,8 @@ Jest is configured to find tests in the submodule:
 ```javascript
 testMatch: [
   "<rootDir>/tests/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-  "<rootDir>/tests/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
-]
+  "<rootDir>/tests/src/**/*.{spec,test}.{js,jsx,ts,tsx}",
+];
 ```
 
 ## Verification
@@ -79,16 +81,19 @@ Get-ChildItem -Path .\tests\src -Include *.test.ts,*.test.tsx -Recurse
 ## Working with the Submodule
 
 ### Clone with submodule
+
 ```bash
 git clone --recurse-submodules <repo-url>
 ```
 
 ### Update submodule
+
 ```bash
 git submodule update --remote tests
 ```
 
 ### Work in submodule
+
 ```bash
 cd tests
 git checkout -b feature/new-tests
@@ -99,6 +104,7 @@ git push origin feature/new-tests
 ```
 
 ### Update main repo reference
+
 ```bash
 cd ..
 git add tests
