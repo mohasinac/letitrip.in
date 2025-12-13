@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"name": "letitrip.in (Main)",
+			"path": "."
+		},
+		{
+			"name": "tests",
+			"path": "./tests"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": false
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/bower_components": true,
+			"**/.next": true
+		}
+	}
+}
