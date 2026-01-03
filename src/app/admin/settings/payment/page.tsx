@@ -15,6 +15,7 @@
 
 import { FormInput } from "@/components/forms/FormInput";
 import { FormSelect } from "@/components/forms/FormSelect";
+import { useFormState } from "@/hooks/useFormState";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
@@ -25,19 +26,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface PaymentFormState {
+  saving: boolean;
+  formError: string | null;
+  success: string | null;
+  razorpaySecretModified: boolean;
+  payuSaltModified: boolean;
+  paypalSecretModified: boolean;
+}
+
 export default function AdminPaymentSettingsPage() {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "razorpay" | "payu" | "paypal" | "cod" | "currency"
   >("razorpay");
 
-  // Track if secrets have been modified
-  const [razorpaySecretModified, setRazorpaySecretModified] = useState(false);
-  const [payuSaltModified, setPayuSaltModified] = useState(false);
-  const [paypalSecretModified, setPaypalSecretModified] = useState(false);
+  const { formData: formState, setField: setFormState } =
+    useFormState<PaymentFormState>({
+      saving: false,
+      formError: null,
+      success: null,
+      razorpaySecretModified: false,
+      payuSaltModified: false,
+      paypalSecretModified: false,
+    });
 
   const {
     isLoading: loading,
@@ -70,8 +82,8 @@ export default function AdminPaymentSettingsPage() {
     if (!settings) return;
 
     try {
-      setSaving(true);
-      setSuccess(null);
+      setFormState("saving", true);
+      setFormState("success", null);
 
       // Prepare settings - only include secrets if modified
       const updatePayload: Partial<PaymentSettings> = {
@@ -80,30 +92,31 @@ export default function AdminPaymentSettingsPage() {
 
       // Remove masked secrets if not modified
       if (
-        !razorpaySecretModified &&
+        !formState.razorpaySecretModified &&
         updatePayload.razorpay?.keySecret === "••••••••"
       ) {
         delete updatePayload.razorpay?.keySecret;
       }
       if (
-        !payuSaltModified &&
+        !formState.payuSaltModified &&
         updatePayload.payu?.merchantSalt === "••••••••"
       ) {
         delete updatePayload.payu?.merchantSalt;
       }
 
       await settingsService.updatePayment(updatePayload);
-      setSuccess("Payment settings saved successfully!");
-      setRazorpaySecretModified(false);
-      setPayuSaltModified(false);
-      setTimeout(() => setSuccess(null), 3000);
+      setFormState("success", "Payment settings saved successfully!");
+      setFormState("razorpaySecretModified", false);
+      setFormState("payuSaltModified", false);
+      setTimeout(() => setFormState("success", null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setFormError(
+      setFormState(
+        "formError",
         err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
-      setSaving(false);
+      setFormState("saving", false);
     }
   };
 
@@ -120,7 +133,7 @@ export default function AdminPaymentSettingsPage() {
       },
     });
     if (field === "keySecret") {
-      setRazorpaySecretModified(true);
+      setFormState("razorpaySecretModified", true);
     }
   };
 
@@ -137,7 +150,7 @@ export default function AdminPaymentSettingsPage() {
       },
     });
     if (field === "merchantSalt") {
-      setPayuSaltModified(true);
+      setFormState("payuSaltModified", true);
     }
   };
 
@@ -157,7 +170,7 @@ export default function AdminPaymentSettingsPage() {
       },
     });
     if (field === "clientSecret") {
-      setPaypalSecretModified(true);
+      setFormState("paypalSecretModified", true);
     }
   };
 
@@ -299,9 +312,19 @@ export default function AdminPaymentSettingsPage() {
         </div>
       )}
 
-      {success && (
+      {formState.formError && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+          <p className="text-red-800 dark:text-red-200">
+            {formState.formError}
+          </p>
+        </div>
+      )}
+
+      {formState.success && (
         <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-          <p className="text-green-800 dark:text-green-200">{success}</p>
+          <p className="text-green-800 dark:text-green-200">
+            {formState.success}
+          </p>
         </div>
       )}
 
@@ -728,10 +751,10 @@ export default function AdminPaymentSettingsPage() {
           </button>
           <button
             type="submit"
-            disabled={saving}
+            disabled={formState.saving}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >
-            {saving ? (
+            {formState.saving ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Saving...

@@ -1,82 +1,57 @@
 "use client";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { COMPANY_NAME } from "@/constants/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoginRegister } from "@/contexts/LoginRegisterContext";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+/**
+ * RegisterPage Component
+ * Pure presentational component for user registration
+ *
+ * State is managed via:
+ * - useLoginRegister context: form data, validation, submission
+ * - Local state: acceptTerms, redirect logic
+ */
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [validationError, setValidationError] = useState("");
-  const {
-    isLoading: loading,
-    error,
-    execute,
-  } = useLoadingState<void>({
-    onLoadError: (err) => {
-      // Error is already set by useLoadingState
-    },
-  });
 
+  // Get all register form state from context
+  const {
+    registerForm,
+    registerPassword,
+    registerLoading,
+    registerError,
+    handleRegisterSubmit,
+  } = useLoginRegister();
+
+  // Handle registration with terms validation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationError("");
-
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setValidationError("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setValidationError("Password must be at least 8 characters long");
-      return;
-    }
 
     if (!acceptTerms) {
-      setValidationError(
-        "Please accept the Terms of Service and Privacy Policy",
+      registerForm.setFieldError(
+        "acceptTerms" as any,
+        "Please accept the Terms of Service and Privacy Policy"
       );
       return;
     }
 
-    await execute(async () => {
-      await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: "user",
-      });
+    await handleRegisterSubmit(e);
 
-      // Small delay to ensure state is updated before redirect
+    // Redirect after successful registration
+    if (!registerError) {
       setTimeout(() => {
         router.push("/");
       }, 100);
-    });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    }
   };
 
   return (
@@ -99,11 +74,11 @@ export default function RegisterPage() {
 
         {/* Register Form */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {(validationError || error) && (
+          {(registerForm.errors.acceptTerms || registerError) && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
               <p className="text-sm text-red-600 dark:text-red-400">
-                {validationError ||
-                  error?.message ||
+                {registerForm.errors.acceptTerms ||
+                  registerError ||
                   "Registration failed. Please try again."}
               </p>
             </div>
@@ -111,24 +86,34 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name */}
-            <FormField label="Full Name" required>
+            <FormField
+              label="Full Name"
+              required
+              error={registerForm.errors.name}
+            >
               <FormInput
                 type="text"
                 name="name"
-                value={formData.name}
-                onChange={handleChange}
+                value={registerForm.formData.name}
+                onChange={registerForm.handleChange}
+                onBlur={registerForm.handleBlur}
                 placeholder="John Doe"
                 autoComplete="name"
               />
             </FormField>
 
             {/* Email */}
-            <FormField label="Email Address" required>
+            <FormField
+              label="Email Address"
+              required
+              error={registerForm.errors.email}
+            >
               <FormInput
                 type="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={registerForm.formData.email}
+                onChange={registerForm.handleChange}
+                onBlur={registerForm.handleBlur}
                 placeholder="you@example.com"
                 autoComplete="email"
               />
@@ -138,24 +123,30 @@ export default function RegisterPage() {
             <FormField
               label="Password"
               required
-              hint="Must be at least 8 characters"
+              hint="Must be at least 8 characters with uppercase, lowercase, number, and special character"
+              error={registerForm.errors.password}
             >
               <div className="relative">
                 <FormInput
-                  type={showPassword ? "text" : "password"}
+                  type={registerPassword.showPassword ? "text" : "password"}
                   name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={registerForm.formData.password}
+                  onChange={registerForm.handleChange}
+                  onBlur={registerForm.handleBlur}
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={registerPassword.togglePasswordVisibility}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    registerPassword.showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
                 >
-                  {showPassword ? (
+                  {registerPassword.showPassword ? (
                     <EyeOff className="w-5 h-5 text-gray-400" />
                   ) : (
                     <Eye className="w-5 h-5 text-gray-400" />
@@ -165,25 +156,34 @@ export default function RegisterPage() {
             </FormField>
 
             {/* Confirm Password with show/hide */}
-            <FormField label="Confirm Password" required>
+            <FormField
+              label="Confirm Password"
+              required
+              error={registerForm.errors.confirmPassword}
+            >
               <div className="relative">
                 <FormInput
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={
+                    registerPassword.showConfirmPassword ? "text" : "password"
+                  }
                   name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
+                  value={registerForm.formData.confirmPassword}
+                  onChange={registerForm.handleChange}
+                  onBlur={registerForm.handleBlur}
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={registerPassword.toggleConfirmPasswordVisibility}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                   aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
+                    registerPassword.showConfirmPassword
+                      ? "Hide password"
+                      : "Show password"
                   }
                 >
-                  {showConfirmPassword ? (
+                  {registerPassword.showConfirmPassword ? (
                     <EyeOff className="w-5 h-5 text-gray-400" />
                   ) : (
                     <Eye className="w-5 h-5 text-gray-400" />
@@ -222,10 +222,10 @@ export default function RegisterPage() {
             {/* Submit Button - Mobile Optimized */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={registerLoading}
               className="w-full py-3 px-4 min-h-[48px] bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
             >
-              {loading ? (
+              {registerLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -271,7 +271,7 @@ export default function RegisterPage() {
 
           {/* Google Sign Up */}
           <div className="mt-6">
-            <GoogleSignInButton disabled={loading} />
+            <GoogleSignInButton disabled={registerLoading} />
           </div>
 
           {/* Login Divider */}

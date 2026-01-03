@@ -111,10 +111,12 @@ export function useCart() {
         } as CartFE);
       }
     } catch (err: any) {
-      logError(err as Error, {
+      const error =
+        err instanceof Error ? err : new Error(String(err || "Unknown error"));
+      logError(error, {
         component: "useCart.loadCart",
       });
-      setError(err.message || "Failed to load cart");
+      setError(error.message || "Failed to load cart");
     } finally {
       setLoading(false);
     }

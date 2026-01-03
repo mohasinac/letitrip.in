@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import Link from "next/link";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { TICKET_FILTERS } from "@/constants/filters";
-import { supportService } from "@/services/support.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { SimplePagination } from "@/components/common/Pagination";
-import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { TICKET_FILTERS } from "@/constants/filters";
+import { useResourceListState } from "@/hooks/useResourceListState";
+import { supportService } from "@/services/support.service";
+import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function SupportTicketsPage() {
   return (
@@ -22,69 +21,66 @@ export default function SupportTicketsPage() {
 }
 
 function SupportTicketsContent() {
-  const {
-    data: ticketsData,
-    isLoading: loading,
-    error,
-    execute,
-  } = useLoadingState<{
-    tickets: SupportTicketFE[];
-    totalPages: number;
-    stats: {
-      total: number;
-      open: number;
-      inProgress: number;
-      resolved: number;
-      urgent: number;
-    };
-  }>();
-
-  const tickets = ticketsData?.tickets || [];
-  const totalPages = ticketsData?.totalPages || 1;
-  const stats = ticketsData?.stats || {
+  const [stats, setStats] = useState({
     total: 0,
     open: 0,
     inProgress: 0,
     resolved: 0,
     urgent: 0,
-  };
-
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-
+  });
   const [closingTicket, setClosingTicket] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
-    const [ticketsRes, statsData] = await Promise.all([
-      supportService.listTickets({
-        ...filterValues,
-        search: searchQuery || undefined,
-        page: currentPage,
+  const {
+    items: tickets,
+    isLoading: loading,
+    error,
+    filters,
+    setFilter,
+    currentPage,
+    setCurrentPage,
+    hasNextPage,
+    refresh,
+    updateAllFilters,
+    resetFilters,
+    searchTerm,
+    setSearchTerm,
+  } = useResourceListState<SupportTicketFE>({
+    fetchFn: async (page, filters) => {
+      const response = await supportService.listTickets({
+        ...filters,
+        page,
         limit: 20,
-      }),
-      supportService.getStats(filterValues),
-    ]);
+      });
+      return {
+        items: response.data || [],
+        hasNextPage: (response.data?.length || 0) >= 20,
+      };
+    },
+    pageSize: 20,
+    autoFetch: true,
+  });
 
-    return {
-      tickets: ticketsRes.data,
-      totalPages: Math.ceil((ticketsRes.count || 0) / 20),
-      stats: {
-        total: statsData.totalTickets || 0,
-        open: statsData.openTickets || 0,
-        inProgress:
-          statsData.totalTickets -
-            statsData.openTickets -
-            statsData.resolvedTickets || 0,
-        resolved: statsData.resolvedTickets || 0,
-        urgent: statsData.ticketsByPriority?.urgent || 0,
-      },
-    };
-  }, [filterValues, currentPage, searchQuery]);
-
+  // Load stats when filters change
   useEffect(() => {
-    execute(loadData);
-  }, [execute, loadData]);
+    const loadStats = async () => {
+      try {
+        const statsData = await supportService.getStats(filters);
+        setStats({
+          total: statsData.totalTickets || 0,
+          open: statsData.openTickets || 0,
+          inProgress:
+            (statsData.totalTickets || 0) -
+            (statsData.openTickets || 0) -
+            (statsData.resolvedTickets || 0),
+          resolved: statsData.resolvedTickets || 0,
+          urgent: statsData.ticketsByPriority?.urgent || 0,
+        });
+      } catch (err) {
+        // Silently fail stats loading
+      }
+    };
+    loadStats();
+  }, [filters]);
 
   const handleCloseTicket = async (ticketId: string) => {
     if (!confirm("Are you sure you want to close this ticket?")) return;
@@ -92,7 +88,7 @@ function SupportTicketsContent() {
     try {
       setClosingTicket(ticketId);
       await supportService.closeTicket(ticketId);
-      await execute(loadData);
+      await refresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to close ticket");
     } finally {
@@ -178,22 +174,21 @@ function SupportTicketsContent() {
             <UnifiedFilterSidebar
               isOpen={true}
               sections={TICKET_FILTERS}
-              values={filterValues}
+              values={filters}
               onChange={(key: string, value: any) => {
-                setFilterValues((prev) => ({ ...prev, [key]: value }));
+                setFilter(key, value);
               }}
               onApply={() => setCurrentPage(1)}
               onReset={() => {
-                setFilterValues({});
-                setSearchQuery("");
+                resetFilters();
                 setCurrentPage(1);
               }}
               showInlineSearch={true}
               onInlineSearchChange={(value: string) => {
-                setSearchQuery(value);
+                setSearchTerm(value);
                 setCurrentPage(1);
               }}
-              inlineSearchValue={searchQuery}
+              inlineSearchValue={searchTerm}
               inlineSearchPlaceholder="Search tickets..."
             />
           </div>
@@ -220,7 +215,7 @@ function SupportTicketsContent() {
                   No support tickets found
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {Object.keys(filterValues).length > 0
+                  {Object.keys(filters).length > 0
                     ? "Try adjusting your filters"
                     : "Tickets will appear here when customers create them"}
                 </p>
@@ -298,7 +293,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                                  ticket.priority,
+                                  ticket.priority
                                 )}`}
                               >
                                 {formatStatus(ticket.priority)}
@@ -307,7 +302,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                                  ticket.status,
+                                  ticket.status
                                 )}`}
                               >
                                 {formatStatus(ticket.status)}
@@ -359,12 +354,29 @@ function SupportTicketsContent() {
                 </div>
 
                 {/* Pagination */}
-                <SimplePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  className="mt-6"
-                />
+                {tickets.length > 0 && (
+                  <div className="mt-6 flex items-center justify-between">
+                    <button
+                      onClick={() =>
+                        setCurrentPage(Math.max(1, currentPage - 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Page {currentPage}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={!hasNextPage}
+                      className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>

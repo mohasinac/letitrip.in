@@ -17,6 +17,7 @@
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { FormTextarea } from "@/components/forms/FormTextarea";
+import { useFormState } from "@/hooks/useFormState";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
@@ -29,9 +30,6 @@ import { useEffect, useState } from "react";
 
 export default function AdminGeneralSettingsPage() {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "basic" | "contact" | "social" | "maintenance"
   >("basic");
@@ -51,6 +49,16 @@ export default function AdminGeneralSettingsPage() {
     },
   });
 
+  const { formData: saveStatus, setField: setSaveStatus } = useFormState<{
+    saving: boolean;
+    formError: string | null;
+    success: string | null;
+  }>({
+    saving: false,
+    formError: null,
+    success: null,
+  });
+
   useEffect(() => {
     loadSettings();
   }, []);
@@ -67,19 +75,20 @@ export default function AdminGeneralSettingsPage() {
     if (!settings) return;
 
     try {
-      setSaving(true);
-      setFormError(null);
-      setSuccess(null);
+      setSaveStatus("saving", true);
+      setSaveStatus("formError", null);
+      setSaveStatus("success", null);
       await settingsService.updateGeneral(settings);
-      setSuccess("Settings saved successfully!");
-      setTimeout(() => setSuccess(null), 3000);
+      setSaveStatus("success", "Settings saved successfully!");
+      setTimeout(() => setSaveStatus("success", null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setFormError(
+      setSaveStatus(
+        "formError",
         err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
-      setSaving(false);
+      setSaveStatus("saving", false);
     }
   };
 
@@ -190,9 +199,11 @@ export default function AdminGeneralSettingsPage() {
         </div>
       )}
 
-      {success && (
+      {saveStatus.success && (
         <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-          <p className="text-green-800 dark:text-green-200">{success}</p>
+          <p className="text-green-800 dark:text-green-200">
+            {saveStatus.success}
+          </p>
         </div>
       )}
 
@@ -432,10 +443,10 @@ export default function AdminGeneralSettingsPage() {
           </button>
           <button
             type="submit"
-            disabled={saving}
+            disabled={saveStatus.saving}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >
-            {saving ? (
+            {saveStatus.saving ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Saving...

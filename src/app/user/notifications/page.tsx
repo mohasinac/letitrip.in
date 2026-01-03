@@ -1,35 +1,33 @@
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { useResourceListState } from "@/hooks/useResourceListState";
 import { logError } from "@/lib/firebase-error-logger";
-import { toast } from "sonner";
+import {
+  NotificationFE,
+  notificationService,
+  NotificationType,
+} from "@/services/notification.service";
+import { formatDistanceToNow } from "date-fns";
 import {
   Bell,
   Check,
   CheckCheck,
-  Trash2,
-  Package,
-  TrendingUp,
-  MessageSquare,
-  CreditCard,
-  Truck,
-  Star,
-  Loader2,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
+  CreditCard,
   Filter,
+  Loader2,
+  MessageSquare,
+  Package,
+  RefreshCw,
+  Star,
+  Trash2,
+  TrendingUp,
+  Truck,
 } from "lucide-react";
-import {
-  notificationService,
-  NotificationFE,
-  NotificationType,
-} from "@/services/notification.service";
-import AuthGuard from "@/components/auth/AuthGuard";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Icon mapping for notification types
 const typeIcons: Record<NotificationType, React.ReactNode> = {
@@ -160,42 +158,50 @@ function NotificationItem({
 }
 
 function NotificationsContent() {
-  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Loading state
-  const { isLoading, error, execute } = useLoadingState<void>();
-
-  const fetchNotifications = useCallback(async () => {
-    await execute(async () => {
-      const response = await notificationService.list({
-        page,
-        pageSize: 20,
-        unreadOnly: showUnreadOnly,
-      });
-      setNotifications(response.notifications);
-      setTotalPages(response.pagination.totalPages);
-    });
-  }, [page, showUnreadOnly, execute]);
+  // Fetch notifications with filtering and pagination
+  const {
+    items: notifications,
+    currentPage,
+    setCurrentPage,
+    isLoading,
+    error,
+    setFilter,
+    refresh,
+  } = useResourceListState<NotificationFE>({
+    initialItems: [],
+    pageSize: 20,
+  });
 
   useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await notificationService.list({
+          page: currentPage,
+          pageSize: 20,
+          unreadOnly: showUnreadOnly,
+        });
+        setFilter("items", response.notifications);
+      } catch (err) {
+        logError(err as Error, { component: "NotificationsContent.fetch" });
+      }
+    };
     fetchNotifications();
-  }, [fetchNotifications]);
+  }, [currentPage, showUnreadOnly, setFilter]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
       await notificationService.markAsRead([id]);
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === id ? { ...n, read: true, readAt: new Date() } : n,
-        ),
+      // Update notification locally
+      const updatedNotifications = notifications.map((n) =>
+        n.id === id ? { ...n, read: true, readAt: new Date() } : n
       );
+      setFilter("items", updatedNotifications);
     } catch (err) {
       logError(err as Error, {
-        component: "NotificationsPage.handleMarkAsRead",
+        component: "NotificationsContent.handleMarkAsRead",
         metadata: { notificationId: id },
       });
       toast.error("Failed to mark notification as read");
@@ -206,12 +212,16 @@ function NotificationsContent() {
     setActionLoading(true);
     try {
       await notificationService.markAllAsRead();
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true, readAt: new Date() })),
-      );
+      // Update all notifications
+      const updatedNotifications = notifications.map((n) => ({
+        ...n,
+        read: true,
+        readAt: new Date(),
+      }));
+      setFilter("items", updatedNotifications);
     } catch (err) {
       logError(err as Error, {
-        component: "NotificationsPage.handleMarkAllAsRead",
+        component: "NotificationsContent.handleMarkAllAsRead",
       });
       toast.error("Failed to mark all as read");
     } finally {
@@ -222,32 +232,35 @@ function NotificationsContent() {
   const handleDelete = async (id: string) => {
     try {
       await notificationService.delete(id);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      // Remove from list
+      const updatedNotifications = notifications.filter((n) => n.id !== id);
+      setFilter("items", updatedNotifications);
     } catch (err) {
       logError(err as Error, {
-        component: "NotificationsPage.handleDelete",
+        component: "NotificationsContent.handleDelete",
         metadata: { notificationId: id },
       });
       toast.error("Failed to delete notification");
     }
   };
 
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   const handleDeleteRead = async () => {
     setActionLoading(true);
     try {
       await notificationService.deleteRead();
-      setNotifications((prev) => prev.filter((n) => !n.read));
+      const updatedNotifications = notifications.filter((n) => n.read);
+      setFilter("items", updatedNotifications);
     } catch (err) {
       logError(err as Error, {
-        component: "NotificationsPage.handleDeleteRead",
+        component: "NotificationsContent.handleDeleteRead",
       });
       toast.error("Failed to delete read notifications");
     } finally {
       setActionLoading(false);
     }
   };
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
@@ -380,23 +393,22 @@ function NotificationsContent() {
               ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
+            {/* Pagination - can be added later with hasNextPage from API */}
+            {notifications.length > 20 && (
               <div className="flex items-center justify-between mt-6">
                 <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
                   className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </button>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Page {page} of {totalPages}
+                  Page {currentPage}
                 </span>
                 <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
+                  onClick={() => setCurrentPage(currentPage + 1)}
                   className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next

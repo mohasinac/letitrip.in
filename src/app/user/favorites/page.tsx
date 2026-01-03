@@ -2,13 +2,13 @@
 
 import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useResourceListState } from "@/hooks/useResourceListState";
 import { logError } from "@/lib/firebase-error-logger";
 import { favoritesService } from "@/services/favorites.service";
 import { Folder, Gavel, Heart, Loader2, Package, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type FavoriteType = "product" | "shop" | "category" | "auction";
 
@@ -25,30 +25,37 @@ interface FavoriteItem {
 export default function FavoritesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FavoriteType>("product");
+
+  // Use resource list state for favorites
   const {
-    data: items,
+    items,
     isLoading: loading,
     error,
-    execute,
-    setData: setItems,
-  } = useLoadingState<FavoriteItem[]>({ initialData: [] });
+    refresh,
+  } = useResourceListState<FavoriteItem>({
+    fetchFn: async () => {
+      const data = await favoritesService.listByType(activeTab);
+      return {
+        items: data.data || [],
+        hasNextPage: false,
+      };
+    },
+    pageSize: 50,
+    autoFetch: Boolean(user),
+  });
 
-  const fetchFavorites = useCallback(async () => {
-    const data = await favoritesService.listByType(activeTab);
-    return data.data || [];
-  }, [activeTab]);
-
+  // Refresh when tab changes
   useEffect(() => {
     if (user) {
-      execute(fetchFavorites);
+      refresh();
     }
-  }, [user, execute, fetchFavorites]);
+  }, [activeTab, user, refresh]);
 
   const handleRemove = async (itemId: string) => {
     try {
       const result = await favoritesService.removeByType(activeTab, itemId);
       if (result.success) {
-        setItems((items || []).filter((item) => item.id !== itemId));
+        await refresh();
       }
     } catch (err) {
       logError(err as Error, {

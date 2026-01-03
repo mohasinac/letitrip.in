@@ -4,7 +4,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useConversationState } from "@/hooks/useConversationState";
 import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
 import {
@@ -28,8 +28,8 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
 // Participant type icons
@@ -161,18 +161,29 @@ function MessageBubble({ message }: { message: MessageFE }) {
 
 function MessagesContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user } = useAuth();
 
-  const [conversations, setConversations] = useState<ConversationFE[]>([]);
-  const [selectedConversation, setSelectedConversation] =
-    useState<ConversationFE | null>(null);
-  const [messages, setMessages] = useState<MessageFE[]>([]);
-  const [messagesLoading, setMessagesLoading] = useState(false);
-  const [sendingMessage, setSendingMessage] = useState(false);
-  const [newMessage, setNewMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showArchived, setShowArchived] = useState(false);
+  // Use conversation state hook
+  const {
+    conversations,
+    setConversations,
+    selectedConversation,
+    selectConversation,
+    messages,
+    setMessages,
+    newMessage,
+    setNewMessage,
+    messagesLoading,
+    setMessagesLoading,
+    sendingMessage,
+    setSendingMessage,
+    searchQuery,
+    setSearchQuery,
+    showArchived,
+    setShowArchived,
+    addMessage,
+    updateConversationLastMessage,
+  } = useConversationState();
 
   // Loading state
   const { isLoading, error, execute } = useLoadingState<void>();
@@ -185,50 +196,51 @@ function MessagesContent() {
   }, [user?.uid]);
 
   // Load conversations
+  // Load conversations
   const loadConversations = useCallback(async () => {
-    await execute(async () => {
+    try {
       const response = await messagesService.getConversations({
         status: showArchived ? "archived" : "active",
       });
       setConversations(response.conversations);
-    });
-  }, [showArchived, execute]);
+    } catch (err) {
+      logError(err as Error, { component: "MessagesPage.loadConversations" });
+      toast.error("Failed to load conversations");
+    }
+  }, [showArchived, setConversations]);
 
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    if (user) {
+      loadConversations();
+    }
+  }, [user, loadConversations]);
 
   // Load messages for selected conversation
-  const loadMessages = useCallback(async (conversationId: string) => {
-    try {
-      setMessagesLoading(true);
-      const response = await messagesService.getConversation(conversationId);
-      setSelectedConversation(response.conversation);
-      setMessages(response.messages);
+  const loadMessages = useCallback(
+    async (conversationId: string) => {
+      try {
+        setMessagesLoading(true);
+        const response = await messagesService.getConversation(conversationId);
+        selectConversation(response.conversation);
+        setMessages(response.messages);
 
-      // Update conversation list to reflect read status
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === conversationId
-            ? { ...c, unreadCount: 0, isUnread: false }
-            : c,
-        ),
-      );
-    } catch (err) {
-      logError(err as Error, { component: "MessagesPage.loadMessages" });
-      toast.error("Failed to load messages");
-    } finally {
-      setMessagesLoading(false);
-    }
-  }, []);
-
-  // Check for conversation ID in URL
-  useEffect(() => {
-    const conversationId = searchParams.get("id");
-    if (conversationId && !selectedConversation) {
-      loadMessages(conversationId);
-    }
-  }, [searchParams, selectedConversation, loadMessages]);
+        // Update conversation list to reflect read status
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === conversationId
+              ? { ...c, unreadCount: 0, isUnread: false }
+              : c
+          )
+        );
+      } catch (err) {
+        logError(err as Error, { component: "MessagesPage.loadMessages" });
+        toast.error("Failed to load messages");
+      } finally {
+        setMessagesLoading(false);
+      }
+    },
+    [selectConversation, setMessages, setConversations, setMessagesLoading]
+  );
 
   // Send message
   const handleSendMessage = async () => {
@@ -260,26 +272,9 @@ function MessagesContent() {
         }),
       };
 
-      setMessages((prev) => [...prev, optimisticMessage]);
+      addMessage(optimisticMessage);
       setNewMessage("");
-
-      // Update conversation in list
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === selectedConversation.id
-            ? {
-                ...c,
-                lastMessage: {
-                  content: newMessage.trim(),
-                  senderId: user?.uid || "",
-                  sentAt: new Date(),
-                  isFromMe: true,
-                },
-                timeAgo: "just now",
-              }
-            : c,
-        ),
-      );
+      updateConversationLastMessage(selectedConversation.id, optimisticMessage);
     } catch (err) {
       logError(err as Error, { component: "MessagesPage.sendMessage" });
       toast.error("Failed to send message");
@@ -290,7 +285,7 @@ function MessagesContent() {
 
   // Handle conversation selection
   const handleSelectConversation = (conversation: ConversationFE) => {
-    setSelectedConversation(conversation);
+    selectConversation(conversation);
     loadMessages(conversation.id);
     router.push(`/user/messages?id=${conversation.id}`, { scroll: false });
   };
@@ -302,10 +297,9 @@ function MessagesContent() {
     try {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id),
+        prev.filter((c) => c.id !== selectedConversation.id)
       );
-      setSelectedConversation(null);
-      setMessages([]);
+      selectConversation(null);
     } catch (err) {
       logError(err as Error, {
         component: "MessagesPage.handleArchive",
@@ -467,8 +461,8 @@ function MessagesContent() {
                     {searchQuery
                       ? "No conversations found"
                       : showArchived
-                        ? "No archived conversations"
-                        : "No messages yet"}
+                      ? "No archived conversations"
+                      : "No messages yet"}
                   </p>
                 </div>
               ) : (

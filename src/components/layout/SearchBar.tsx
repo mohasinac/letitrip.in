@@ -10,6 +10,7 @@ import {
   searchNavigationRoutes,
   type SearchableRoute,
 } from "@/constants/searchable-routes";
+import { useGlobalSearch } from "@/contexts/GlobalSearchContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ArrowRight, Navigation, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +39,11 @@ const MAX_SUGGESTIONS = 10;
 const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
   ({ isVisible = true, onClose }, ref) => {
     const router = useRouter();
-    const [searchQuery, setSearchQuery] = useState("");
+    const {
+      searchQuery,
+      setSearchQuery,
+      handleSearch: handleGlobalSearch,
+    } = useGlobalSearch();
     const [contentType, setContentType] = useState<ContentType>("all");
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [suggestions, setSuggestions] = useState<SearchableRoute[]>([]);
@@ -55,7 +60,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
       if (contentType === "all" && debouncedSearchQuery.length > 0) {
         const routes = searchNavigationRoutes(
           debouncedSearchQuery,
-          MAX_SUGGESTIONS,
+          MAX_SUGGESTIONS
         );
         setSuggestions(routes);
         setShowSuggestions(routes.length > 0);
@@ -88,7 +93,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         setSearchQuery("");
         router.push(route.path);
       },
-      [router],
+      [router]
     );
 
     useImperativeHandle(ref, () => ({
@@ -119,6 +124,12 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         return;
       }
 
+      // Call global search context
+      handleGlobalSearch(
+        trimmedQuery,
+        contentType !== "all" ? contentType : undefined
+      );
+
       // Build search URL with query params
       const params = new URLSearchParams();
       params.set("q", trimmedQuery);
@@ -144,13 +155,13 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0,
+            prev < suggestions.length - 1 ? prev + 1 : 0
           );
           break;
         case "ArrowUp":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1,
+            prev > 0 ? prev - 1 : suggestions.length - 1
           );
           break;
         case "Enter":
@@ -357,7 +368,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 SearchBar.displayName = "SearchBar";

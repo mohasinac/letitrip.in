@@ -14,6 +14,7 @@ import { toast } from "@/components/admin/Toast";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormSelect } from "@/components/forms/FormSelect";
+import { useFormState } from "@/hooks/useFormState";
 import { logError } from "@/lib/firebase-error-logger";
 import { Check, Mail, Send } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -64,11 +65,20 @@ const defaultSettings: EmailSettings = {
   },
 };
 
+interface EmailFormState {
+  loading: boolean;
+  saving: boolean;
+  testing: "resend" | "sendgrid" | null;
+}
+
 export default function EmailSettingsPage() {
   const [settings, setSettings] = useState<EmailSettings>(defaultSettings);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState<"resend" | "sendgrid" | null>(null);
+  const { formData: formState, setField: setFormState } =
+    useFormState<EmailFormState>({
+      loading: true,
+      saving: false,
+      testing: null,
+    });
 
   useEffect(() => {
     loadSettings();
@@ -76,7 +86,7 @@ export default function EmailSettingsPage() {
 
   const loadSettings = async () => {
     try {
-      setLoading(true);
+      setFormState("loading", true);
       const response = await fetch("/api/admin/settings/email");
       if (!response.ok) throw new Error("Failed to load settings");
       const data = await response.json();
@@ -87,13 +97,13 @@ export default function EmailSettingsPage() {
       });
       toast.error("Failed to load email settings");
     } finally {
-      setLoading(false);
+      setFormState("loading", false);
     }
   };
 
   const handleSave = async () => {
     try {
-      setSaving(true);
+      setFormState("saving", true);
 
       const response = await fetch("/api/admin/settings/email", {
         method: "PUT",
@@ -110,13 +120,13 @@ export default function EmailSettingsPage() {
       });
       toast.error("Failed to save email settings");
     } finally {
-      setSaving(false);
+      setFormState("saving", false);
     }
   };
 
   const handleTestConnection = async (provider: "resend" | "sendgrid") => {
     try {
-      setTesting(provider);
+      setFormState("testing", provider);
 
       const response = await fetch("/api/admin/settings/email/test", {
         method: "POST",
@@ -150,7 +160,7 @@ export default function EmailSettingsPage() {
         } connection`
       );
     } finally {
-      setTesting(null);
+      setFormState("testing", null);
     }
   };
 
