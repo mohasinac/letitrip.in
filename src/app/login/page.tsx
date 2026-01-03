@@ -6,32 +6,35 @@ import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoginRegister } from "@/contexts/LoginRegisterContext";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 
+/**
+ * LoginForm Component
+ * Pure presentational component with form UI and state from context
+ *
+ * State is managed via:
+ * - useLoginRegister context: form data, validation, submission
+ * - useAuth context: authentication state and redirect logic
+ */
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { t } = useI18n();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
+
+  // Get all login form state from context
   const {
-    isLoading: loading,
-    error,
-    execute,
-  } = useLoadingState<void>({
-    onLoadError: (err) => {
-      // Error is already set by useLoadingState
-    },
-  });
+    loginForm,
+    loginPassword,
+    loginLoading,
+    loginError,
+    handleLoginSubmit,
+  } = useLoginRegister();
 
   // Prevent redirect loop: if already authenticated, redirect to home or specified page
   useEffect(() => {
@@ -41,25 +44,19 @@ function LoginForm() {
     }
   }, [isAuthenticated, router, searchParams]);
 
+  // Wrap form submission with redirect logic
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await execute(async () => {
-      await login(formData.email, formData.password);
-      // Get redirect URL from query params or default to home
+    await handleLoginSubmit(e);
+
+    // Redirect after successful login
+    if (!loginError) {
       const redirect = searchParams.get("redirect") || "/";
-      // Small delay to ensure state is updated before redirect
       setTimeout(() => {
         router.replace(redirect);
       }, 100);
-    });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    }
   };
 
   return (
@@ -82,10 +79,10 @@ function LoginForm() {
 
         {/* Login Form */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {error && (
+          {loginError && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
               <p className="text-sm text-red-600 dark:text-red-400">
-                {error.message || "Login failed. Please try again."}
+                {loginError || "Login failed. Please try again."}
               </p>
             </div>
           )}
@@ -95,15 +92,14 @@ function LoginForm() {
             <FormField
               label={t("auth.login.email")}
               required
-              error={
-                error && !formData.email ? t("auth.login.emailRequired") : ""
-              }
+              error={loginForm.errors.email}
             >
               <FormInput
                 type="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={loginForm.formData.email}
+                onChange={loginForm.handleChange}
+                onBlur={loginForm.handleBlur}
                 placeholder={t("auth.login.emailPlaceholder")}
                 autoComplete="email"
               />
@@ -114,30 +110,29 @@ function LoginForm() {
               <FormField
                 label={t("auth.login.password")}
                 required
-                error={
-                  error && !formData.password
-                    ? t("auth.login.passwordRequired")
-                    : ""
-                }
+                error={loginForm.errors.password}
               >
                 <div className="relative">
                   <FormInput
-                    type={showPassword ? "text" : "password"}
+                    type={loginPassword.showPassword ? "text" : "password"}
                     name="password"
-                    value={formData.password}
-                    onChange={handleChange}
+                    value={loginForm.formData.password}
+                    onChange={loginForm.handleChange}
+                    onBlur={loginForm.handleBlur}
                     placeholder="••••••••"
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={loginPassword.togglePasswordVisibility}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                     aria-label={
-                      showPassword ? "Hide password" : "Show password"
+                      loginPassword.showPassword
+                        ? "Hide password"
+                        : "Show password"
                     }
                   >
-                    {showPassword ? (
+                    {loginPassword.showPassword ? (
                       <EyeOff className="w-5 h-5 text-gray-400" />
                     ) : (
                       <Eye className="w-5 h-5 text-gray-400" />
@@ -153,7 +148,9 @@ function LoginForm() {
                 id="remember-me"
                 label={t("auth.login.rememberMe")}
                 checked={false}
-                onChange={() => {}}
+                onChange={() => {
+                  // Remember me functionality can be added to context later
+                }}
               />
               <Link
                 href="/forgot-password"
@@ -166,10 +163,10 @@ function LoginForm() {
             {/* Submit Button - Mobile Optimized (48px min height) */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loginLoading}
               className="w-full min-h-[48px] py-3 px-4 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? (
+              {loginLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -215,7 +212,7 @@ function LoginForm() {
 
           {/* Google Sign In */}
           <div className="mt-6">
-            <GoogleSignInButton disabled={loading} />
+            <GoogleSignInButton disabled={loginLoading} />
           </div>
 
           {/* Register Divider */}

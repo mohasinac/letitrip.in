@@ -21,12 +21,22 @@ interface ErrorContext {
  * Log error to Firebase Analytics
  */
 export async function logError(
-  error: Error | string,
+  error: Error | string | unknown,
   context: ErrorContext = {},
   severity: ErrorSeverity = "medium"
 ): Promise<void> {
-  const errorMessage = typeof error === "string" ? error : error.message;
-  const errorStack = typeof error === "string" ? undefined : error.stack;
+  let errorMessage = "Unknown error";
+  let errorStack: string | undefined;
+
+  if (typeof error === "string") {
+    errorMessage = error;
+  } else if (error instanceof Error) {
+    errorMessage = error.message || "Unknown error";
+    errorStack = error.stack;
+  } else if (error && typeof error === "object") {
+    errorMessage = (error as any).message || JSON.stringify(error);
+    errorStack = (error as any).stack;
+  }
 
   try {
     // Log to Firebase Analytics (FREE tier)

@@ -8,105 +8,54 @@ import { Price } from "@/components/common/values/Price";
 import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFilters } from "@/hooks/useFilters";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useResourceListState } from "@/hooks/useResourceListState";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default function OrdersPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user } = useAuth();
 
-  const [orders, setOrders] = useState<OrderCardFE[]>([]);
-
-  // Loading state
-  const { isLoading, error, execute } = useLoadingState<void>();
-
-  // Cursor pagination state
-  const [cursors, setCursors] = useState<(string | null)[]>([null]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-
-  // Filter state with URL sync
+  // Use resource list state for managing orders
   const {
-    appliedFilters: filters,
-    updateFilters,
-    applyFilters,
-  } = useFilters<{
-    status?: string;
-    sortBy: string;
-    sortOrder: "asc" | "desc";
-  }>(
-    {
-      status: searchParams.get("status") || undefined,
-      sortBy: searchParams.get("sortBy") || "created_at",
-      sortOrder: (searchParams.get("sortOrder") || "desc") as "asc" | "desc",
-    },
-    { syncWithUrl: true },
-  );
-
-  const loadOrders = useCallback(async () => {
-    await execute(async () => {
-      const startAfter = cursors[currentPage - 1];
+    items: orders,
+    isLoading,
+    error,
+    currentPage,
+    setCurrentPage,
+    hasNextPage,
+    refresh,
+  } = useResourceListState<OrderCardFE>({
+    fetchFn: async (page) => {
       const response = await ordersService.list({
-        ...filters,
-        startAfter: startAfter || undefined,
         limit: 20,
+        page,
       } as any);
-
-      setOrders(response.data || []);
-
-      // Check if it's cursor pagination
-      if ("hasNextPage" in response.pagination) {
-        setHasNextPage(response.pagination.hasNextPage || false);
-
-        // Store next cursor
-        if ("nextCursor" in response.pagination) {
-          const cursorPagination = response.pagination as any;
-          if (cursorPagination.nextCursor) {
-            setCursors((prev) => {
-              const newCursors = [...prev];
-              newCursors[currentPage] = cursorPagination.nextCursor || null;
-              return newCursors;
-            });
-          }
-        }
-      }
-    });
-  }, [execute, cursors, currentPage, filters]);
-
-  useEffect(() => {
-    if (user) {
-      loadOrders();
-    }
-  }, [user, loadOrders]);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (filters.status) params.set("status", filters.status);
-    if (filters.sortBy) params.set("sortBy", filters.sortBy);
-    if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
-
-    router.push(`/user/orders?${params.toString()}`, { scroll: false });
-  }, [filters, router]);
+      return {
+        items: response.data || [],
+        hasNextPage:
+          (response.pagination as any)?.hasNextPage ||
+          response.data.length >= 20,
+      };
+    },
+    pageSize: 20,
+    autoFetch: Boolean(user),
+  });
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(currentPage - 1);
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (hasNextPage) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(currentPage + 1);
       globalThis.scrollTo?.({ top: 0, behavior: "smooth" });
     }
   };
@@ -188,7 +137,7 @@ export default function OrdersPage() {
 
   // Handle pull-to-refresh
   const handleRefresh = async () => {
-    await loadOrders();
+    await refresh();
   };
 
   if (!user) {
@@ -197,7 +146,7 @@ export default function OrdersPage() {
   }
 
   if (error) {
-    return <PageState.Error message={error.message} onRetry={loadOrders} />;
+    return <PageState.Error message={error.message} onRetry={refresh} />;
   }
 
   return (
@@ -282,6 +231,3 @@ export default function OrdersPage() {
     </MobilePullToRefresh>
   );
 }
-
-// TODO: Replace hardcoded strings with constants from site constants
-// Texts to consider: "My Orders", "Track and manage your orders", "No orders found", "You haven't placed any orders yet", "Start Shopping", "Previous", "Page {currentPage} • {orders.length} orders", "Next"

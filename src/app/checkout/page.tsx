@@ -13,10 +13,10 @@ import { FormSelect } from "@/components/forms/FormSelect";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
+import { useCheckoutState } from "@/hooks/useCheckoutState";
 import { logError } from "@/lib/firebase-error-logger";
 import { isInternationalAddress } from "@/lib/validators/address.validator";
 import { checkoutService } from "@/services/checkout.service";
-import type { AddressFE } from "@/types/frontend/address.types";
 import {
   Check,
   ChevronLeft,
@@ -27,15 +27,13 @@ import {
   MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 declare global {
   interface Window {
     Razorpay: any;
   }
 }
-
-type CheckoutStep = "address" | "payment" | "review";
 
 interface ShopGroup {
   shopId: string;
@@ -52,34 +50,40 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { cart, loading: cartLoading } = useCart();
 
-  const [currentStep, setCurrentStep] = useState<CheckoutStep>("address");
-  const [shippingAddressId, setShippingAddressId] = useState("");
-  const [shippingAddress, setShippingAddress] = useState<AddressFE | null>(
-    null
-  );
-  const [billingAddressId, setBillingAddressId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<
-    "razorpay" | "paypal" | "cod"
-  >("razorpay");
-  const [currency, setCurrency] = useState<"INR" | "USD" | "EUR" | "GBP">(
-    "INR"
-  );
-  const [useSameAddress, setUseSameAddress] = useState(true);
-  const [notes, setNotes] = useState("");
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
-  const [shopCoupons, setShopCoupons] = useState<
-    Record<string, { code: string; discountAmount: number }>
-  >({});
-  const [availableGateways, setAvailableGateways] = useState<string[]>([
-    "razorpay",
-    "cod",
-  ]);
-  const [isInternational, setIsInternational] = useState(false);
-  const [loadingGateways, setLoadingGateways] = useState(false);
+  // Use checkout state hook to manage all checkout state
+  const {
+    currentStep,
+    shippingAddressId,
+    shippingAddress,
+    billingAddressId,
+    paymentMethod,
+    currency,
+    useSameAddress,
+    notes,
+    processing,
+    error,
+    validationErrors,
+    shopCoupons,
+    availableGateways,
+    isInternational,
+    loadingGateways,
+    setCurrentStep,
+    setShippingAddressId,
+    setShippingAddress,
+    setBillingAddressId,
+    setPaymentMethod,
+    setCurrency,
+    setUseSameAddress,
+    setNotes,
+    setError,
+    setValidationErrors,
+    setShopCoupon,
+    removeShopCoupon,
+    setAvailableGateways,
+    setIsInternational,
+    setLoadingGateways,
+    setProcessing,
+  } = useCheckoutState();
 
   // Group cart items by shop
   const shopGroups = useMemo(() => {
@@ -305,10 +309,7 @@ export default function CheckoutPage() {
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
-      setShopCoupons((prev) => ({
-        ...prev,
-        [shopId]: { code, discountAmount },
-      }));
+      setShopCoupon(shopId, code, discountAmount);
     } catch (error: any) {
       logError(error as Error, {
         component: "CheckoutPage.handleApplyCoupon",
@@ -321,11 +322,7 @@ export default function CheckoutPage() {
   const handleRemoveCoupon = async (shopId: string) => {
     try {
       setError(null);
-      setShopCoupons((prev) => {
-        const updated = { ...prev };
-        delete updated[shopId];
-        return updated;
-      });
+      removeShopCoupon(shopId);
     } catch (error: any) {
       logError(error as Error, {
         component: "CheckoutPage.handleRemoveCoupon",

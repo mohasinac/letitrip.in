@@ -14,6 +14,7 @@
  */
 
 import { FormLabel } from "@/components/forms/FormLabel";
+import { useFormState } from "@/hooks/useFormState";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
@@ -35,7 +36,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const DEFAULT_SETTINGS: ShippingSettings = {
   freeShippingThreshold: 999,
@@ -49,16 +50,25 @@ const DEFAULT_SETTINGS: ShippingSettings = {
   restrictedPincodes: [],
 };
 
+interface ShippingFormState {
+  saving: boolean;
+  formError: string | null;
+  success: string | null;
+  newPincode: string;
+  testing: boolean;
+  testResult: { success: boolean; message: string } | null;
+}
+
 export default function AdminShippingSettingsPage() {
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [newPincode, setNewPincode] = useState("");
-  const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{
-    success: boolean;
-    message: string;
-  } | null>(null);
+  const { formData: formState, setField: setFormState } =
+    useFormState<ShippingFormState>({
+      saving: false,
+      formError: null,
+      success: null,
+      newPincode: "",
+      testing: false,
+      testResult: null,
+    });
 
   const {
     isLoading: loading,
@@ -90,25 +100,26 @@ export default function AdminShippingSettingsPage() {
     e.preventDefault();
 
     try {
-      setSaving(true);
-      setFormError(null);
-      setSuccess(null);
+      setFormState("saving", true);
+      setFormState("formError", null);
+      setFormState("success", null);
       if (!settings) return;
       await settingsService.updateShipping(settings);
-      setSuccess("Shipping settings saved successfully!");
-      setTimeout(() => setSuccess(null), 3000);
+      setFormState("success", "Shipping settings saved successfully!");
+      setTimeout(() => setFormState("success", null), 3000);
     } catch (err) {
       console.error("Error saving settings:", err);
-      setFormError(
+      setFormState(
+        "formError",
         err instanceof Error ? err.message : "Failed to save settings"
       );
     } finally {
-      setSaving(false);
+      setFormState("saving", false);
     }
   };
 
   const addRestrictedPincode = () => {
-    const pincode = newPincode.trim();
+    const pincode = formState.newPincode.trim();
     if (
       pincode &&
       /^\d{6}$/.test(pincode) &&
@@ -119,7 +130,7 @@ export default function AdminShippingSettingsPage() {
         ...settings,
         restrictedPincodes: [...settings.restrictedPincodes, pincode],
       });
-      setNewPincode("");
+      setFormState("newPincode", "");
     }
   };
 
@@ -135,7 +146,7 @@ export default function AdminShippingSettingsPage() {
 
   const handleTestConnection = async () => {
     if (!settings?.shiprocket?.email || !settings?.shiprocket?.password) {
-      setTestResult({
+      setFormState("testResult", {
         success: false,
         message: "Please enter both email and password",
       });
@@ -143,22 +154,22 @@ export default function AdminShippingSettingsPage() {
     }
 
     try {
-      setTesting(true);
-      setTestResult(null);
+      setFormState("testing", true);
+      setFormState("testResult", null);
       const result = await settingsService.testShiprocketConnection(
         settings.shiprocket.email,
         settings.shiprocket.password
       );
-      setTestResult(result);
+      setFormState("testResult", result);
     } catch (err) {
       console.error("Error testing connection:", err);
-      setTestResult({
+      setFormState("testResult", {
         success: false,
         message:
           err instanceof Error ? err.message : "Failed to test connection",
       });
     } finally {
-      setTesting(false);
+      setFormState("testing", false);
     }
   };
 
@@ -230,10 +241,21 @@ export default function AdminShippingSettingsPage() {
         </div>
       )}
 
-      {success && (
+      {formState.formError && (
+        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <p className="text-red-800 dark:text-red-200">
+            {formState.formError}
+          </p>
+        </div>
+      )}
+
+      {formState.success && (
         <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-2">
           <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-          <p className="text-green-800 dark:text-green-200">{success}</p>
+          <p className="text-green-800 dark:text-green-200">
+            {formState.success}
+          </p>
         </div>
       )}
 
@@ -346,10 +368,10 @@ export default function AdminShippingSettingsPage() {
                   <button
                     type="button"
                     onClick={handleTestConnection}
-                    disabled={testing}
+                    disabled={formState.testing}
                     className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
-                    {testing ? (
+                    {formState.testing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Testing...
@@ -363,27 +385,27 @@ export default function AdminShippingSettingsPage() {
                   </span>
                 </div>
 
-                {testResult && (
+                {formState.testResult && (
                   <div
                     className={`p-3 rounded-lg flex items-start gap-2 ${
-                      testResult.success
+                      formState.testResult.success
                         ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
                         : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                     }`}
                   >
-                    {testResult.success ? (
+                    {formState.testResult.success ? (
                       <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                     ) : (
                       <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                     )}
                     <p
                       className={`text-sm ${
-                        testResult.success
+                        formState.testResult.success
                           ? "text-green-800 dark:text-green-200"
                           : "text-red-800 dark:text-red-200"
                       }`}
                     >
-                      {testResult.message}
+                      {formState.testResult.message}
                     </p>
                   </div>
                 )}
@@ -692,9 +714,12 @@ export default function AdminShippingSettingsPage() {
           <div className="flex gap-2 mb-4">
             <input
               type="text"
-              value={newPincode}
+              value={formState.newPincode}
               onChange={(e) =>
-                setNewPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                setFormState(
+                  "newPincode",
+                  e.target.value.replace(/\D/g, "").slice(0, 6)
+                )
               }
               placeholder="Enter 6-digit pincode"
               className="flex-1 max-w-xs px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -702,7 +727,7 @@ export default function AdminShippingSettingsPage() {
             <button
               type="button"
               onClick={addRestrictedPincode}
-              disabled={!/^\d{6}$/.test(newPincode)}
+              disabled={!/^\d{6}$/.test(formState.newPincode)}
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50"
             >
               <Plus className="w-4 h-4" />
@@ -779,15 +804,15 @@ export default function AdminShippingSettingsPage() {
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={saving}
+            disabled={formState.saving}
             className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {saving ? (
+            {formState.saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Save className="w-4 h-4" />
             )}
-            {saving ? "Saving..." : "Save Changes"}
+            {formState.saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>
