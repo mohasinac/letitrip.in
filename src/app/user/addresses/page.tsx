@@ -185,7 +185,7 @@ function AddressesContent() {
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => setDeleteId(address.id)}
+                    onClick={() => setDialogState("deleteId", address.id)}
                     className="px-4 py-3 min-h-[48px] border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 transition-colors font-semibold text-sm touch-manipulation flex items-center justify-center"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -197,9 +197,9 @@ function AddressesContent() {
         )}
 
         {/* Address Form Modal */}
-        {showAddressForm && (
+        {dialogState.showAddressForm && (
           <SmartAddressForm
-            addressId={editingAddressId}
+            addressId={dialogState.editingAddressId}
             onClose={handleFormClose}
             onSuccess={handleFormSuccess}
           />
@@ -207,11 +207,11 @@ function AddressesContent() {
 
         {/* Delete Confirmation */}
         <ConfirmDialog
-          isOpen={deleteId !== null}
+          isOpen={dialogState.deleteId !== null}
           title="Delete Address"
           description="Are you sure you want to delete this address? This action cannot be undone."
           onConfirm={handleConfirmDelete}
-          onClose={() => setDeleteId(null)}
+          onClose={() => setDialogState("deleteId", null)}
           variant="danger"
           confirmLabel="Delete"
         />
