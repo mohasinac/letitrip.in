@@ -164,7 +164,7 @@ export default function EmailSettingsPage() {
     }
   };
 
-  if (loading) {
+  if (formState.loading) {
     return (
       <div className="p-6">
         <AdminPageHeader
@@ -341,10 +341,10 @@ export default function EmailSettingsPage() {
               <button
                 type="button"
                 onClick={() => handleTestConnection("resend")}
-                disabled={testing === "resend"}
+                disabled={formState.testing === "resend"}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg transition-colors"
               >
-                {testing === "resend" ? (
+                {formState.testing === "resend" ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Testing...
@@ -437,10 +437,10 @@ export default function EmailSettingsPage() {
               <button
                 type="button"
                 onClick={() => handleTestConnection("sendgrid")}
-                disabled={testing === "sendgrid"}
+                disabled={formState.testing === "sendgrid"}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-lg transition-colors"
               >
-                {testing === "sendgrid" ? (
+                {formState.testing === "sendgrid" ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Testing...
@@ -547,10 +547,10 @@ export default function EmailSettingsPage() {
           <button
             type="button"
             onClick={handleSave}
-            disabled={saving}
+            disabled={formState.saving}
             className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
           >
-            {saving ? (
+            {formState.saving ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Saving...

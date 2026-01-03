@@ -4,13 +4,20 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { PageState } from "@/components/common/PageState";
 import { SmartAddressForm } from "@/components/common/SmartAddressForm";
+import { useFormState } from "@/hooks/useFormState";
 import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
 import { CheckCircle, Edit, MapPin, Plus, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
+
+interface AddressDialogState {
+  showAddressForm: boolean;
+  editingAddressId: string | null;
+  deleteId: string | null;
+}
 
 function AddressesContent() {
   const {
@@ -19,9 +26,12 @@ function AddressesContent() {
     execute,
     setData: setAddresses,
   } = useLoadingState<AddressFE[]>({ initialData: [] });
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { formData: dialogState, setField: setDialogState } =
+    useFormState<AddressDialogState>({
+      showAddressForm: false,
+      editingAddressId: null,
+      deleteId: null,
+    });
 
   const loadAddresses = useCallback(async () => {
     return await addressService.getAll();
@@ -32,13 +42,13 @@ function AddressesContent() {
   }, [execute, loadAddresses]);
 
   const handleOpenForm = (addressId?: string) => {
-    setEditingAddressId(addressId || null);
-    setShowAddressForm(true);
+    setDialogState("editingAddressId", addressId || null);
+    setDialogState("showAddressForm", true);
   };
 
   const handleFormClose = () => {
-    setShowAddressForm(false);
-    setEditingAddressId(null);
+    setDialogState("showAddressForm", false);
+    setDialogState("editingAddressId", null);
   };
 
   const handleFormSuccess = () => {
@@ -47,17 +57,17 @@ function AddressesContent() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!deleteId) return;
+    if (!dialogState.deleteId) return;
 
     try {
-      await addressService.delete(deleteId);
-      setDeleteId(null);
+      await addressService.delete(dialogState.deleteId);
+      setDialogState("deleteId", null);
       execute(loadAddresses);
       toast.success("Address deleted successfully");
     } catch (error) {
       logError(error as Error, {
         component: "AddressesPage.handleDelete",
-        metadata: { addressId: deleteId },
+        metadata: { addressId: dialogState.deleteId },
       });
       toast.error("Failed to delete address");
     }
