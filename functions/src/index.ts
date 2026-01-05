@@ -16,6 +16,7 @@
 
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v1";
+import { FIRESTORE_BATCH_SIZES } from "./constants/firestore-constants";
 import { notificationService } from "./services/notification.service";
 
 // Initialize Firebase Admin
@@ -201,12 +202,12 @@ async function processEndedAuctions(): Promise<{
 }> {
   const now = admin.firestore.Timestamp.now();
 
-  // Get all live auctions that have ended (limit to 50 per run)
+  // Get all live auctions that have ended (limit to SMALL_BATCH per run)
   const snapshot = await db
     .collection("auctions")
     .where("status", "==", "live")
     .where("end_time", "<=", now)
-    .limit(50)
+    .limit(FIRESTORE_BATCH_SIZES.SMALL_BATCH)
     .get();
 
   console.log(`[Auction Cron] Found ${snapshot.size} auctions to process`);
@@ -265,7 +266,7 @@ async function closeAuction(auctionId: string): Promise<void> {
     .collection("bids")
     .where("auction_id", "==", auctionId)
     .orderBy("amount", "desc")
-    .limit(1)
+    .limit(FIRESTORE_BATCH_SIZES.SINGLE_DOCUMENT)
     .get();
 
   if (bidsSnapshot.empty) {
@@ -474,7 +475,7 @@ async function createWinnerOrder(
       .collection("addresses")
       .where("user_id", "==", winnerId)
       .where("is_default", "==", true)
-      .limit(1)
+      .limit(FIRESTORE_BATCH_SIZES.SINGLE_DOCUMENT)
       .get();
 
     let shippingAddress = null;
@@ -1631,7 +1632,7 @@ export const cleanupOldBids = functions
       const oldBidsSnapshot = await db
         .collection("bids")
         .where("createdAt", "<", cutoffTimestamp)
-        .limit(1000) // Process in batches
+        .limit(FIRESTORE_BATCH_SIZES.EXTRA_LARGE_BATCH) // Process in batches
         .get();
 
       console.log(
@@ -1729,7 +1730,7 @@ export const cleanupExpiredSessions = functions
       const sessionsSnapshot = await db
         .collection("sessions")
         .where("expiresAt", "<", now)
-        .limit(500)
+        .limit(FIRESTORE_BATCH_SIZES.LARGE_BATCH)
         .get();
 
       if (sessionsSnapshot.empty) {
@@ -1781,7 +1782,7 @@ export const cleanupAbandonedCarts = functions
       const cartsSnapshot = await db
         .collection("carts")
         .where("updated_at", "<", cutoffTimestamp)
-        .limit(500)
+        .limit(FIRESTORE_BATCH_SIZES.LARGE_BATCH)
         .get();
 
       if (cartsSnapshot.empty) {
@@ -1828,7 +1829,7 @@ export const expireCoupons = functions
         .collection("coupons")
         .where("is_active", "==", true)
         .where("end_date", "<", now)
-        .limit(100)
+        .limit(FIRESTORE_BATCH_SIZES.MEDIUM_BATCH)
         .get();
 
       if (couponsSnapshot.empty) {

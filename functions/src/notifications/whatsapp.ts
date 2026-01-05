@@ -13,6 +13,7 @@
 
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
+import { FIRESTORE_BATCH_SIZES } from "../constants/firestore-constants";
 
 const db = admin.firestore();
 
@@ -326,7 +327,7 @@ export const sendPaymentReminders = functions.scheduler.onSchedule(
         .collection("orders")
         .where("status", "==", "pending_payment")
         .where("createdAt", "<", oneHourAgo)
-        .limit(100)
+        .limit(FIRESTORE_BATCH_SIZES.MEDIUM_BATCH)
         .get();
 
       if (ordersSnapshot.empty) {
@@ -410,7 +411,7 @@ export const processWhatsAppQueue = functions.scheduler.onSchedule(
       const messagesSnapshot = await db
         .collection("whatsapp_messages")
         .where("status", "==", "pending")
-        .limit(50)
+        .limit(FIRESTORE_BATCH_SIZES.SMALL_BATCH)
         .get();
 
       if (messagesSnapshot.empty) return;

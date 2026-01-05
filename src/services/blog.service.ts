@@ -119,7 +119,7 @@ class BlogService {
     const response = await this.list({
       featured: true,
       status: BLOG_STATUS.PUBLISHED,
-      limit: 100,
+      limit: PAGINATION.MAX_PAGE_SIZE,
     });
     return response.data;
   }

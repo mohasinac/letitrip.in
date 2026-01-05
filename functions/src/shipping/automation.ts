@@ -14,6 +14,7 @@
 
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
+import { FIRESTORE_BATCH_SIZES } from "../constants/firestore-constants";
 
 const db = admin.firestore();
 
@@ -406,7 +407,7 @@ export const cleanupOldTracking = functions.scheduler.onSchedule(
         .collection("shipments")
         .where("status", "in", ["delivered", "cancelled", "rto"])
         .where("updatedAt", "<", ninetyDaysAgo)
-        .limit(500)
+        .limit(FIRESTORE_BATCH_SIZES.LARGE_BATCH)
         .get();
 
       if (oldShipmentsSnapshot.empty) {

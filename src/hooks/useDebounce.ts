@@ -1,10 +1,14 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { DEBOUNCE_DELAYS, THROTTLE_INTERVALS } from "@/constants/ui-constants";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Debounce hook - delays execution until after wait milliseconds have elapsed
  * since the last time the debounced function was invoked
  */
-export function useDebounce<T>(value: T, delay: number = 500): T {
+export function useDebounce<T>(
+  value: T,
+  delay: number = DEBOUNCE_DELAYS.DEFAULT
+): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
@@ -26,7 +30,7 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
  */
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number = 500,
+  delay: number = DEBOUNCE_DELAYS.DEFAULT
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -40,7 +44,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
         callback(...args);
       }, delay);
     },
-    [callback, delay],
+    [callback, delay]
   ) as T;
 
   // Cleanup on unmount
@@ -58,7 +62,10 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 /**
  * Throttle hook - ensures function is called at most once per specified interval
  */
-export function useThrottle<T>(value: T, interval: number = 500): T {
+export function useThrottle<T>(
+  value: T,
+  interval: number = THROTTLE_INTERVALS.DEFAULT
+): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
   const lastExecuted = useRef<number>(Date.now());
 
@@ -92,10 +99,10 @@ interface UseApiOptions {
 export function useApi<T>(
   apiCall: () => Promise<T>,
   dependencies: any[],
-  options: UseApiOptions = {},
+  options: UseApiOptions = {}
 ) {
   const {
-    debounce = 0,
+    debounce = DEBOUNCE_DELAYS.DEFAULT,
     retry = 0,
     retryDelay = 1000,
     enabled = true,
@@ -145,7 +152,7 @@ export function useApi<T>(
 
         // Wait before retry
         await new Promise((resolve) =>
-          setTimeout(resolve, retryDelay * attempts),
+          setTimeout(resolve, retryDelay * attempts)
         );
       }
     }

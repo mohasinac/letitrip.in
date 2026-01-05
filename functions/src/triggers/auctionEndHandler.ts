@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import type { EventContext } from "firebase-functions/v1";
 import * as functions from "firebase-functions/v1";
+import { FIRESTORE_BATCH_SIZES } from "../constants/firestore-constants";
 
 const db = admin.firestore();
 
@@ -20,7 +21,7 @@ export const checkEndedAuctions = functions.pubsub
         .collection("auctions")
         .where("status", "==", "active")
         .where("endDate", "<=", now)
-        .limit(100)
+        .limit(FIRESTORE_BATCH_SIZES.MEDIUM_BATCH)
         .get();
 
       if (endedAuctionsSnapshot.empty) {
@@ -57,7 +58,7 @@ async function processEndedAuction(auctionId: string, auctionData: any) {
       .collection("bids")
       .where("auctionId", "==", auctionId)
       .orderBy("amount", "desc")
-      .limit(1)
+      .limit(FIRESTORE_BATCH_SIZES.SINGLE_DOCUMENT)
       .get();
 
     const hasWinner = !bidsSnapshot.empty;
