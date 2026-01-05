@@ -2,6 +2,7 @@
  * AUCTION TYPE TRANSFORMATIONS
  */
 
+import { AUCTION_TIMING } from "@/constants/time-constants";
 import { safeToISOString } from "@/lib/date-utils";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
@@ -57,7 +58,10 @@ function generateAuctionBadges(
   if (auctionBE.status === AuctionStatus.ACTIVE && timeRemainingSeconds > 0) {
     badges.push("Live");
   }
-  if (timeRemainingSeconds > 0 && timeRemainingSeconds < 3600)
+  if (
+    timeRemainingSeconds > 0 &&
+    timeRemainingSeconds < AUCTION_TIMING.ENDING_SOON_BADGE_THRESHOLD_SECONDS
+  )
     badges.push("Ending Soon");
   if (auctionBE.totalBids > 50) badges.push("Hot");
   if (auctionBE.reserveMet) badges.push("Reserve Met");

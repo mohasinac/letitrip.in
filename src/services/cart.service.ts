@@ -1,3 +1,4 @@
+import { INVENTORY_SETTINGS } from "@/constants/business-logic-constants";
 import { CartBE } from "@/types/backend/cart.types";
 import {
   AddToCartFormFE,
@@ -236,7 +237,7 @@ class CartService {
       sku: "",
       price: product.price,
       quantity: product.quantity,
-      maxQuantity: 100,
+      maxQuantity: INVENTORY_SETTINGS.MAX_QUANTITY_PER_CART_ITEM,
       subtotal,
       discount: 0,
       total: subtotal,
@@ -267,7 +268,7 @@ class CartService {
         // Validate maxQuantity exists
         if (typeof item.maxQuantity !== "number" || item.maxQuantity < 1) {
           console.error("[Cart] Invalid maxQuantity for item", itemId);
-          item.maxQuantity = 100; // Default fallback
+          item.maxQuantity = INVENTORY_SETTINGS.MAX_QUANTITY_PER_CART_ITEM; // Default fallback
         }
 
         // Don't exceed maxQuantity

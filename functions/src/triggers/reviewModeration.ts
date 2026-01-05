@@ -3,6 +3,7 @@ import type { EventContext } from "firebase-functions/v1";
 import * as functions from "firebase-functions/v1";
 import type { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import type { CallableContext } from "firebase-functions/v1/https";
+import { FIRESTORE_BATCH_SIZES } from "../constants/firestore-constants";
 
 const db = admin.firestore();
 
@@ -251,7 +252,7 @@ export const updateReviewStatus = functions.https.onCall(
       const queueSnapshot = await db
         .collection("moderationQueue")
         .where("reviewId", "==", reviewId)
-        .limit(1)
+        .limit(FIRESTORE_BATCH_SIZES.SINGLE_DOCUMENT)
         .get();
 
       if (!queueSnapshot.empty) {

@@ -12,6 +12,8 @@
  * list.pagination.nextPage();
  */
 
+"use client";
+
 import { useCallback, useState } from "react";
 import {
   usePaginationState,

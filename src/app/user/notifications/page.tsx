@@ -1,3 +1,5 @@
+"use client";
+
 import AuthGuard from "@/components/auth/AuthGuard";
 import { useResourceListState } from "@/hooks/useResourceListState";
 import { logError } from "@/lib/firebase-error-logger";

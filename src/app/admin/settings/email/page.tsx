@@ -73,7 +73,7 @@ interface EmailFormState {
 
 export default function EmailSettingsPage() {
   const [settings, setSettings] = useState<EmailSettings>(defaultSettings);
-  const { formData: formState, setField: setFormState } =
+  const { formData: formState, setFieldValue: setFormState } =
     useFormState<EmailFormState>({
       loading: true,
       saving: false,

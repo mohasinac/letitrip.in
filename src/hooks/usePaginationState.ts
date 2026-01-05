@@ -11,6 +11,8 @@
  * pagination.hasNextPage(); // Check if there's a next page
  */
 
+"use client";
+
 import { useCallback, useState } from "react";
 
 export interface PaginationConfig {

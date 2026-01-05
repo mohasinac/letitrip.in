@@ -1,4 +1,5 @@
 import { DEFAULT_CACHE_CONFIG } from "@/config/cache.config";
+import { HTTP_TIMEOUTS } from "@/constants/api-constants";
 import { trackAPIError, trackCacheHit, trackSlowAPI } from "@/lib/analytics";
 import { logError } from "@/lib/firebase-error-logger";
 
@@ -631,7 +632,7 @@ class ApiService {
       }
 
       // Track slow API calls (> 3 seconds)
-      if (duration > 3000) {
+      if (duration > HTTP_TIMEOUTS.SLOW_API_THRESHOLD) {
         trackSlowAPI(endpoint, duration);
       }
 
@@ -693,7 +694,7 @@ class ApiService {
       }
 
       // Track slow API calls (> 3 seconds)
-      if (duration > 3000) {
+      if (duration > HTTP_TIMEOUTS.SLOW_API_THRESHOLD) {
         trackSlowAPI(endpoint, duration);
       }
 

@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import type { Change, EventContext } from "firebase-functions/v1";
 import * as functions from "firebase-functions/v1";
 import type { DocumentSnapshot } from "firebase-functions/v1/firestore";
+import { FIRESTORE_BATCH_SIZES } from "../constants/firestore-constants";
 
 const db = admin.firestore();
 
@@ -217,7 +218,7 @@ export const aggregateUserActivity = functions.pubsub
       const usersSnapshot = await db
         .collection("users")
         .where("preferences.lastActivityAt", ">=", yesterday)
-        .limit(500)
+        .limit(FIRESTORE_BATCH_SIZES.LARGE_BATCH)
         .get();
 
       const promises = usersSnapshot.docs.map(async (userDoc) => {
