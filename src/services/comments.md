@@ -5,12 +5,15 @@
 ### Auth Service Validation (auth.service.ts)
 
 - ✅ **Zod Schemas Implemented**: All authentication methods validated (January 10, 2026)
+- ✅ **Typed Errors Implemented**: ValidationError and AuthError for structured error handling (January 10, 2026)
 - ✅ **Login Validation**: Email format and password length requirements
 - ✅ **Register Validation**: Password strength (uppercase, lowercase, number), name length
 - ✅ **Google Auth Validation**: ID token and optional user data validation
 - ✅ **Password Reset Validation**: Email format validation
 - ✅ **Change Password Validation**: Current and new password validation with strength requirements
 - ✅ **Email Verification Validation**: Token validation
+- ✅ **Error Handling**: Zod errors converted to ValidationError with error details
+- ✅ **Session Errors**: 401 responses throw AuthError with SESSION_EXPIRED code
 
 ### Product Service Validation (products.service.ts)
 
