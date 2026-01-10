@@ -1,4 +1,4 @@
-import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 import {
   clearSessionCookie,
@@ -51,18 +51,5 @@ async function logoutHandler(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
-  // Rate limiting
-  const identifier =
-    req.headers.get("x-forwarded-for") ||
-    req.headers.get("x-real-ip") ||
-    "unknown";
-  if (!apiRateLimiter.check(identifier)) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
-      { status: 429 },
-    );
-  }
-
-  return logoutHandler(req);
-}
+// Export with rate limiting (100 requests per minute)
+export const POST = RateLimitMiddleware.api(logoutHandler);
