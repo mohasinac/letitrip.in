@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { unauthorized, forbidden } from "@/lib/error-redirects";
-import { hasPermission, hasAllPermissions, Permission } from "@/lib/permissions";
+import { forbidden, unauthorized } from "@/lib/error-redirects";
+import {
+  hasAllPermissions,
+  hasPermission,
+  Permission,
+} from "@/lib/permissions";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -120,7 +124,7 @@ export default function AuthGuard({
     if (loadingComponent) {
       return <>{loadingComponent}</>;
     }
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div

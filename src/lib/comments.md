@@ -24,6 +24,23 @@
 - ✅ **Helper Functions**: hasPermission(), hasAllPermissions(), getUserPermissions(), hasRole(), isAdmin(), isSeller(), isAuthenticated()
 - ✅ **Multiple Checks**: Support for checking single or multiple permissions (any or all)
 
+### Rate Limiter (rate-limiter.ts)
+
+- ✅ **Sliding Window Algorithm**: Accurate rate limiting with sliding window (January 10, 2026)
+- ✅ **In-Memory Storage**: Map-based storage, no external dependencies required
+- ✅ **Configurable Limits**: Flexible points and duration configuration
+- ✅ **Auto-Cleanup**: Automatic periodic cleanup of expired entries (every 60 seconds)
+- ✅ **Rich API**: consume(), penalty(), reward(), block(), delete(), get() methods
+- ✅ **Pre-configured Limiters**: 5 common use cases ready to use
+  - Auth: 5 requests per 15 minutes (strict)
+  - API: 100 requests per minute (standard)
+  - Public: 300 requests per minute (lenient)
+  - Password Reset: 3 requests per hour (very strict)
+  - Search: 60 requests per minute (moderate)
+- ✅ **Error Handling**: RateLimitError with retry information
+- ✅ **State Inspection**: Check rate limit state without consuming points
+- ✅ **Type Safety**: Full TypeScript support with interfaces
+
 ## General Improvements
 
 ### 1. Utility Organization

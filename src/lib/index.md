@@ -121,6 +121,81 @@ if (isAdmin(user)) {
 
 ---
 
+### rate-limiter.ts ✅
+
+**Exports:** In-memory rate limiting using sliding window algorithm
+
+**Key Exports:**
+
+- `RateLimiter` - Rate limiter class
+- `RateLimitError` - Error thrown when limit exceeded
+- `RateLimiters` - Pre-configured limiters (auth, api, public, passwordReset, search)
+
+**Features:**
+
+- ✅ **Sliding window algorithm** (January 10, 2026)
+- ✅ **In-memory storage** (Map-based, no external dependencies)
+- ✅ **Configurable limits** (points and duration)
+- ✅ **Auto-cleanup** (periodic removal of expired entries)
+- ✅ **Rich API** (consume, penalty, reward, block, delete)
+- ✅ **Pre-configured limiters** (5 common use cases)
+- ✅ **Type-safe** (Full TypeScript support)
+
+**Pre-configured Limiters:**
+
+- `RateLimiters.auth` - 5 requests per 15 minutes (strict for auth)
+- `RateLimiters.api` - 100 requests per minute (standard API)
+- `RateLimiters.public` - 300 requests per minute (lenient for public)
+- `RateLimiters.passwordReset` - 3 requests per hour (very strict)
+- `RateLimiters.search` - 60 requests per minute (moderate)
+
+**Usage:**
+
+```typescript
+import { RateLimiter, RateLimitError, RateLimiters } from "@/lib/rate-limiter";
+
+// Create custom limiter
+const limiter = new RateLimiter({
+  points: 10,      // 10 requests
+  duration: 60,    // per 60 seconds
+});
+
+// Use pre-configured limiter
+const authLimiter = RateLimiters.auth;
+
+// Consume points
+try {
+  const result = await limiter.consume(clientIp);
+  console.log(`Remaining: ${result.remainingPoints}`);
+  // Request allowed
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.log(`Rate limit exceeded. Retry after ${error.retryAfter}s`);
+    // Return 429 Too Many Requests
+  }
+}
+
+// Check without consuming
+const state = limiter.get(clientIp);
+if (state && !state.isAllowed) {
+  console.log(`Blocked. Wait ${state.msBeforeNext}ms`);
+}
+
+// Penalty (add extra points)
+await limiter.penalty(clientIp, 5);
+
+// Reward (reduce consumed points)
+await limiter.reward(clientIp, 2);
+
+// Block identifier
+await limiter.block(suspiciousIp);
+
+// Reset
+await limiter.delete(clientIp);
+```
+
+---
+
 ## Core Utilities
 
 ### utils.ts
