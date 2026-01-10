@@ -19,6 +19,8 @@ This folder contains reusable form components with consistent styling, validatio
 - `children: React.ReactNode` - Input component
 - `className?: string` - Additional CSS classes
 - `labelClassName?: string` - Label-specific classes
+- `sanitize?: boolean` - Enable auto-sanitization on blur (passed to child)
+- `sanitizeType?: 'string' | 'email' | 'phone' | 'url' | 'html'` - Type of sanitization (passed to child)
 
 **Features:**
 
@@ -27,6 +29,7 @@ This folder contains reusable form components with consistent styling, validatio
 - Helper text for additional guidance
 - Dark mode support
 - Accessible ARIA attributes
+- ✅ **Auto-sanitization support** - Passes sanitization props to child components
 
 ---
 
@@ -39,7 +42,19 @@ This folder contains reusable form components with consistent styling, validatio
 **Props:**
 
 - Extends standard HTML input props
-- `error?: boolean` - Show error state styling
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `leftIcon?: React.ReactNode` - Icon on left side
+- `rightIcon?: React.ReactNode` - Icon on right side
+- `leftAddon?: string` - Text addon on left
+- `rightAddon?: string` - Text addon on right
+- `fullWidth?: boolean` - Take full width (default: true)
+- `showCharCount?: boolean` - Show character count
+- `compact?: boolean` - Compact padding
+- `sanitize?: boolean` - Enable auto-sanitization on blur
+- `sanitizeType?: 'string' | 'email' | 'phone' | 'url'` - Type of sanitization (default: 'string')
+- `onSanitize?: (sanitizedValue: string) => void` - Callback when value is sanitized
 - Forward ref support for form libraries
 
 **Features:**
@@ -47,9 +62,13 @@ This folder contains reusable form components with consistent styling, validatio
 - Error state styling (red border)
 - Dark mode support
 - Consistent padding and sizing
-- Focus ring with yellow accent
+- Focus ring with blue accent
 - Disabled state styling
 - Mobile-optimized (min-height 48px)
+- Icon support (left/right)
+- Addon support (left/right)
+- Character count display
+- ✅ **Auto-sanitization on blur** - Prevents XSS, cleans input based on type
 
 ---
 
@@ -57,12 +76,23 @@ This folder contains reusable form components with consistent styling, validatio
 
 **Export:** `FormTextarea`
 
-**Purpose:** Multi-line text input with consistent styling.
+**Purpose:** Multi-line text input with consistent styling and optional HTML sanitization.
 
 **Props:**
 
 - Extends standard HTML textarea props
-- `error?: boolean` - Show error state
+- `label?: string` - Textarea label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `leftIcon?: React.ReactNode` - Icon on left side
+- `fullWidth?: boolean` - Take full width (default: true)
+- `showCharCount?: boolean` - Show character count
+- `compact?: boolean` - Compact padding
+- `rows?: number` - Number of rows (default: 4)
+- `sanitize?: boolean` - Enable auto-sanitization on blur
+- `sanitizeType?: 'string' | 'html'` - Type of sanitization (default: 'string')
+- `sanitizeHtmlOptions?: SanitizeHtmlOptions` - Options for HTML sanitization
+- `onSanitize?: (sanitizedValue: string) => void` - Callback when value is sanitized
 - Forward ref support
 
 **Features:**
@@ -70,8 +100,9 @@ This folder contains reusable form components with consistent styling, validatio
 - Resizable text area
 - Error state styling
 - Character count support (when maxLength provided)
-- Auto-growing height option
 - Dark mode support
+- ✅ **Auto-sanitization on blur** - Supports both plain text and HTML sanitization
+- ✅ **Configurable HTML sanitization** - Control allowed tags and attributes
 
 ---
 

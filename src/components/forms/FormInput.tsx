@@ -1,12 +1,16 @@
 "use client";
 
-import { forwardRef, InputHTMLAttributes } from "react";
+import {
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeString,
+  sanitizeUrl,
+} from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
+import { forwardRef, InputHTMLAttributes } from "react";
 
-export interface FormInputProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size"
-> {
+export interface FormInputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -17,6 +21,20 @@ export interface FormInputProps extends Omit<
   fullWidth?: boolean;
   showCharCount?: boolean;
   compact?: boolean;
+  /**
+   * Enable auto-sanitization on blur
+   * @default false
+   */
+  sanitize?: boolean;
+  /**
+   * Type of sanitization to apply
+   * @default 'string'
+   */
+  sanitizeType?: "string" | "email" | "phone" | "url";
+  /**
+   * Callback when value is sanitized
+   */
+  onSanitize?: (sanitizedValue: string) => void;
 }
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
@@ -37,12 +55,52 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       type = "text",
       maxLength,
       value,
+      sanitize = false,
+      sanitizeType = "string",
+      onSanitize,
+      onBlur,
       ...props
     },
-    ref,
+    ref
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
+
+    // Handle sanitization on blur
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      if (sanitize && typeof e.target.value === "string") {
+        let sanitizedValue = e.target.value;
+
+        // Apply sanitization based on type
+        switch (sanitizeType) {
+          case "email":
+            sanitizedValue = sanitizeEmail(e.target.value);
+            break;
+          case "phone":
+            sanitizedValue = sanitizePhone(e.target.value);
+            break;
+          case "url":
+            sanitizedValue = sanitizeUrl(e.target.value);
+            break;
+          case "string":
+          default:
+            sanitizedValue = sanitizeString(e.target.value, {
+              maxLength,
+            });
+            break;
+        }
+
+        // Call onSanitize callback if value changed
+        if (sanitizedValue !== e.target.value && onSanitize) {
+          onSanitize(sanitizedValue);
+        }
+      }
+
+      // Call original onBlur if provided
+      if (onBlur) {
+        onBlur(e);
+      }
+    };
 
     const baseInputClasses = cn(
       "w-full rounded-lg border text-sm transition-colors duration-200",
@@ -59,7 +117,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       rightIcon && "pr-10",
       leftAddon && "rounded-l-none",
       rightAddon && "rounded-r-none",
-      className,
+      className
     );
 
     return (
@@ -100,9 +158,10 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
                 error
                   ? `${inputId}-error`
                   : helperText
-                    ? `${inputId}-helper`
-                    : undefined
+                  ? `${inputId}-helper`
+                  : undefined
               }
+              onBlur={handleBlur}
               {...props}
             />
 
@@ -149,7 +208,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 FormInput.displayName = "FormInput";
