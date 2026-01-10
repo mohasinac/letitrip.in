@@ -5,7 +5,7 @@
 ### Input Sanitization (January 10, 2026)
 
 - ✅ **Auto-Sanitization on Blur**: FormInput, FormTextarea, and FormField now support automatic input sanitization
-- ✅ **Multiple Sanitization Types**: 
+- ✅ **Multiple Sanitization Types**:
   - `string` - Plain text with trim, whitespace collapse, max length
   - `email` - Email normalization and cleaning
   - `phone` - Phone number cleaning
@@ -22,6 +22,7 @@
 - ✅ **Test Suite**: Created FormSanitizationTest.tsx with 7 comprehensive test scenarios
 
 **Usage Examples:**
+
 ```tsx
 // String sanitization
 <FormInput
