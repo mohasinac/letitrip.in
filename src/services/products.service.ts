@@ -1,7 +1,6 @@
 import { buildUrl, PRODUCT_ROUTES } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { PRODUCT_STATUS } from "@/constants/statuses";
-import { logServiceError } from "@/lib/error-logger";
 import { ErrorCode, NotFoundError, ValidationError } from "@/lib/errors";
 import { ProductBE, ProductListItemBE } from "@/types/backend/product.types";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/types/transforms/product.transforms";
 import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
+import { BaseService } from "./base-service";
 
 /**
  * Zod validation schemas for product operations
@@ -144,22 +144,30 @@ export const BulkActionSchema = z.object({
 });
 
 /**
- * Products Service - Reference Implementation
+ * Products Service - Extends BaseService
  *
- * This service uses the new type system with automatic FE/BE transformation.
- * All methods return FE types for components, and accept FE types for forms.
+ * This service uses BaseService for standard CRUD operations and adds
+ * product-specific methods. All methods return FE types for components.
  */
-class ProductsService {
-  /**
-   * Handle service errors and convert to user-friendly messages
-   */
-  private handleError(error: any, context: string): never {
-    logServiceError("ProductsService", context, error);
-    throw error;
+class ProductsService extends BaseService<
+  ProductFE,
+  ProductBE,
+  ProductFormFE,
+  Partial<ProductFormFE>
+> {
+  constructor() {
+    super({
+      resourceName: "product",
+      baseRoute: PRODUCT_ROUTES.LIST,
+      toFE: toFEProduct,
+      toBECreate: toBEProductCreate,
+      toBEUpdate: toBEProductUpdate,
+    });
   }
 
   /**
    * List products with filters (returns UI-optimized types)
+   * Overrides getAll to use custom filter logic
    */
   async list(
     filters?: ProductFiltersFE
@@ -190,45 +198,13 @@ class ProductsService {
         pagination: response.pagination,
       };
     } catch (error) {
-      this.handleError(error, "list");
-    }
-  }
-
-  /**
-   * Get product by ID (returns full UI-optimized product)
-   */
-  async getById(id: string): Promise<ProductFE> {
-    try {
-      const response: any = await apiService.get(PRODUCT_ROUTES.BY_ID(id));
-      if (!response.data) {
-        throw new NotFoundError(
-          "Product not found",
-          ErrorCode.PRODUCT_NOT_FOUND,
-          { productId: id }
-        );
-      }
-      return toFEProduct(response.data);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
-      // API might return 404, convert to NotFoundError
-      if (
-        (error as any)?.status === 404 ||
-        (error as any)?.response?.status === 404
-      ) {
-        throw new NotFoundError(
-          "Product not found",
-          ErrorCode.PRODUCT_NOT_FOUND,
-          { productId: id }
-        );
-      }
-      this.handleError(error, `getById(${id})`);
+      throw this.handleError(error as Error, "list");
     }
   }
 
   /**
    * Get product by slug (returns full UI-optimized product)
+   * Product-specific method - slugs are unique to products
    */
   async getBySlug(slug: string): Promise<ProductFE> {
     try {
@@ -256,24 +232,19 @@ class ProductsService {
           { slug }
         );
       }
-      this.handleError(error, `getBySlug(${slug})`);
+      throw this.handleError(error as Error, `getBySlug(${slug})`);
     }
   }
 
   /**
-   * Create product (accepts form data, returns created product)
+   * Create product with validation
+   * Overrides base create to add Zod validation
    */
   async create(formData: ProductFormFE): Promise<ProductFE> {
     try {
       // Validate input data
-      const validatedData = ProductFormSchema.parse(formData);
-
-      const createRequest = toBEProductCreate(validatedData);
-      const response: any = await apiService.post(
-        PRODUCT_ROUTES.LIST,
-        createRequest
-      );
-      return toFEProduct(response.data);
+      ProductFormSchema.parse(formData);
+      return super.create(formData);
     } catch (error) {
       if (error instanceof ZodError) {
         throw new ValidationError(
@@ -282,22 +253,22 @@ class ProductsService {
           { errors: error.errors }
         );
       }
-      this.handleError(error, "create");
+      throw this.handleError(error as Error, "create");
     }
   }
 
   /**
-   * Update product (accepts partial form data)
+   * Update product by slug (products use slugs not IDs)
    */
-  async update(
+  async updateBySlug(
     slug: string,
     formData: Partial<ProductFormFE>
   ): Promise<ProductFE> {
     try {
       // Validate input data (allow partial updates)
-      const validatedData = ProductFormSchema.partial().parse(formData);
+      ProductFormSchema.partial().parse(formData);
 
-      const updateRequest = toBEProductUpdate(validatedData);
+      const updateRequest = toBEProductUpdate(formData);
       const response: any = await apiService.patch(
         PRODUCT_ROUTES.BY_SLUG(slug),
         updateRequest
@@ -321,14 +292,14 @@ class ProductsService {
           { slug }
         );
       }
-      this.handleError(error, `update(${slug})`);
+      throw this.handleError(error as Error, `update(${slug})`);
     }
   }
 
   /**
-   * Delete product
+   * Delete product by slug (products use slugs not IDs)
    */
-  async delete(slug: string): Promise<{ message: string }> {
+  async deleteBySlug(slug: string): Promise<{ message: string }> {
     try {
       return apiService.delete<{ message: string }>(
         PRODUCT_ROUTES.BY_SLUG(slug)
@@ -344,7 +315,7 @@ class ProductsService {
           { slug }
         );
       }
-      this.handleError(error, `delete(${slug})`);
+      throw this.handleError(error as Error, `delete(${slug})`);
     }
   }
 
@@ -356,7 +327,7 @@ class ProductsService {
       const endpoint = buildUrl(PRODUCT_ROUTES.REVIEWS(slug), { page, limit });
       return apiService.get<any>(endpoint);
     } catch (error) {
-      this.handleError(error, `getReviews(${slug})`);
+      throw this.handleError(error as Error, `getReviews(${slug})`);
     }
   }
 
@@ -370,7 +341,7 @@ class ProductsService {
       );
       return toFEProductCards(response.data || []);
     } catch (error) {
-      this.handleError(error, `getVariants(${slug})`);
+      throw this.handleError(error as Error, `getVariants(${slug})`);
     }
   }
 
@@ -385,7 +356,7 @@ class ProductsService {
       const response: any = await apiService.get(endpoint);
       return toFEProductCards(response.data || []);
     } catch (error) {
-      this.handleError(error, `getSimilar(${slug})`);
+      throw this.handleError(error as Error, `getSimilar(${slug})`);
     }
   }
 
@@ -547,8 +518,7 @@ class ProductsService {
           { errors: error.errors }
         );
       }
-      logServiceError("Products", "bulkAction", error as Error);
-      throw error;
+      throw this.handleError(error as Error, "bulkAction");
     }
   }
 
@@ -678,7 +648,7 @@ class ProductsService {
       const response: any = await apiService.post("/products/batch", { ids });
       return toFEProductCards(response.data || []);
     } catch (error) {
-      this.handleError(error, "getByIds");
+      throw this.handleError(error as Error, "getByIds");
     }
   }
 }

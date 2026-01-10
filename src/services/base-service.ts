@@ -46,7 +46,12 @@ export interface ServiceOptions extends Omit<RequestOptions, "method"> {
  * }
  * ```
  */
-export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Partial<TBE>> {
+export abstract class BaseService<
+  TFE,
+  TBE,
+  TCreate = Partial<TBE>,
+  TUpdate = Partial<TBE>
+> {
   protected readonly resourceName: string;
   protected readonly baseRoute: string;
   protected readonly toFE: (be: TBE) => TFE;
@@ -74,14 +79,14 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
     try {
       const response = await apiService.get<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
-        options,
+        options
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id },
+          { id }
         );
       }
 
@@ -97,12 +102,12 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
    */
   async getAll(
     params?: Record<string, any>,
-    options?: ServiceOptions,
+    options?: ServiceOptions
   ): Promise<PaginatedResponse<TFE>> {
     try {
       const response = await apiService.get<PaginatedResponse<TBE>>(
         this.baseRoute,
-        { ...options, params },
+        { ...options, params }
       );
 
       return {
@@ -123,7 +128,7 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       if (!this.toBECreate) {
         throw new AppError(
           `Create operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED,
+          ErrorCode.NOT_IMPLEMENTED
         );
       }
 
@@ -131,13 +136,13 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       const response = await apiService.post<{ data: TBE }>(
         this.baseRoute,
         beData,
-        options,
+        options
       );
 
       if (!response.data) {
         throw new AppError(
           `Failed to create ${this.resourceName}`,
-          ErrorCode.INTERNAL_ERROR,
+          ErrorCode.INTERNAL_ERROR
         );
       }
 
@@ -154,13 +159,13 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
   async update(
     id: string,
     data: TUpdate,
-    options?: ServiceOptions,
+    options?: ServiceOptions
   ): Promise<TFE> {
     try {
       if (!this.toBEUpdate) {
         throw new AppError(
           `Update operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED,
+          ErrorCode.NOT_IMPLEMENTED
         );
       }
 
@@ -168,14 +173,14 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       const response = await apiService.put<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
         beData,
-        options,
+        options
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id },
+          { id }
         );
       }
 
@@ -192,13 +197,13 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
   async patch(
     id: string,
     data: Partial<TUpdate>,
-    options?: ServiceOptions,
+    options?: ServiceOptions
   ): Promise<TFE> {
     try {
       if (!this.toBEUpdate) {
         throw new AppError(
           `Update operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED,
+          ErrorCode.NOT_IMPLEMENTED
         );
       }
 
@@ -206,14 +211,14 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       const response = await apiService.patch<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
         beData,
-        options,
+        options
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id },
+          { id }
         );
       }
 
@@ -241,7 +246,7 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
    */
   async bulkDelete(
     ids: string[],
-    options?: ServiceOptions,
+    options?: ServiceOptions
   ): Promise<{ success: number; failed: number; errors?: string[] }> {
     try {
       const response = await apiService.delete<{
@@ -280,12 +285,12 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
    */
   async count(
     params?: Record<string, any>,
-    options?: ServiceOptions,
+    options?: ServiceOptions
   ): Promise<number> {
     try {
       const response = await apiService.get<{ count: number }>(
         `${this.baseRoute}/count`,
-        { ...options, params },
+        { ...options, params }
       );
 
       return response.count;
@@ -309,10 +314,9 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       error instanceof TypeError ||
       (error as any)?.message?.includes("fetch")
     ) {
-      return new NetworkError(
-        `Network error during ${operation} operation`,
-        { originalError: error },
-      );
+      return new NetworkError(`Network error during ${operation} operation`, {
+        originalError: error,
+      });
     }
 
     // Validation errors
@@ -320,7 +324,7 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
       return new ValidationError(
         (error as any)?.message ||
           `Validation failed for ${operation} operation`,
-        { originalError: error },
+        { originalError: error }
       );
     }
 
@@ -328,17 +332,14 @@ export abstract class BaseService<TFE, TBE, TCreate = Partial<TBE>, TUpdate = Pa
     return new AppError(
       `Failed to ${operation} ${this.resourceName}`,
       ErrorCode.INTERNAL_ERROR,
-      { originalError: error },
+      { originalError: error }
     );
   }
 
   /**
    * Build URL with query parameters
    */
-  protected buildUrl(
-    path: string,
-    params?: Record<string, any>,
-  ): string {
+  protected buildUrl(path: string, params?: Record<string, any>): string {
     if (!params || Object.keys(params).length === 0) {
       return path;
     }
