@@ -618,7 +618,7 @@ class ApiService {
         }));
         const error = new Error(errorData.message || `HTTP ${response.status}`);
 
-        trackAPIError(endpoint, response.status, duration);
+        trackAPIError(endpoint, error);
         logError(error, {
           component: "ApiService.postFormData",
           metadata: {
@@ -639,7 +639,7 @@ class ApiService {
       return await response.json();
     } catch (error) {
       const duration = Date.now() - startTime;
-      trackAPIError(endpoint, 0, duration);
+      trackAPIError(endpoint, error as Error);
 
       logError(error as Error, {
         component: "ApiService.postFormData",
@@ -680,7 +680,7 @@ class ApiService {
         const errorText = await response.text().catch(() => "Unknown error");
         const error = new Error(`HTTP ${response.status}: ${errorText}`);
 
-        trackAPIError(endpoint, response.status, duration);
+        trackAPIError(endpoint, error);
         logError(error, {
           component: "ApiService.getBlob",
           metadata: {
@@ -701,7 +701,7 @@ class ApiService {
       return await response.blob();
     } catch (error) {
       const duration = Date.now() - startTime;
-      trackAPIError(endpoint, 0, duration);
+      trackAPIError(endpoint, error as Error);
 
       logError(error as Error, {
         component: "ApiService.getBlob",

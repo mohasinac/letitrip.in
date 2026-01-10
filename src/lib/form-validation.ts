@@ -249,7 +249,9 @@ export function validateFields(
   fields: FormField[],
   fieldKeys: string[]
 ): ValidationResult {
-  const fieldsToValidate = fields.filter((f) => fieldKeys.includes(f.key));
+  const fieldsToValidate = fields.filter((f) =>
+    fieldKeys.includes(f.key || "")
+  );
   return validateForm(values, fieldsToValidate);
 }
 

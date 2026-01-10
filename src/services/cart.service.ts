@@ -294,6 +294,11 @@ class CartService {
     this.setGuestCart(filtered);
   }
 
+  // Alias for consistency with useCart hook
+  removeGuestCartItem(itemId: string): void {
+    this.removeFromGuestCart(itemId);
+  }
+
   clearGuestCart(): void {
     if (typeof window === "undefined") return;
     localStorage.removeItem(this.GUEST_CART_KEY);

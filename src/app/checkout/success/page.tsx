@@ -74,10 +74,10 @@ function CheckoutSuccessContent() {
       setProcessing(true);
       setError(null);
 
-      const result = await checkoutService.capturePayPalPayment({
+      const result = (await checkoutService.capturePayPalPayment({
         orderId: paypalOrderId!,
         payerId: paypalPayerId!,
-      });
+      })) as { orders?: any[] };
 
       setPaymentCaptured(true);
 
@@ -107,7 +107,9 @@ function CheckoutSuccessContent() {
       setLoading(true);
       setError(null);
 
-      const orderData = await checkoutService.getOrderDetails(orderId!);
+      const orderData = (await checkoutService.getOrderDetails(orderId!)) as {
+        orders?: any[];
+      };
       setOrders(orderData.orders || [orderData]);
       setLoading(false);
     } catch (error: any) {

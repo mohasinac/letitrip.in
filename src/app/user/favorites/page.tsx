@@ -2,47 +2,54 @@
 
 import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
-import { useResourceListState } from "@/hooks/useResourceListState";
 import { logError } from "@/lib/firebase-error-logger";
 import { favoritesService } from "@/services/favorites.service";
 import { Folder, Gavel, Heart, Loader2, Package, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type FavoriteType = "product" | "shop" | "category" | "auction";
 
 interface FavoriteItem {
   id: string;
-  name?: string;
-  title?: string;
-  image?: string;
-  images?: string[];
-  price?: number;
-  favorited_at: string;
+  userId: string;
+  productId: string;
+  product: {
+    id: string;
+    name: string;
+    primaryImage: string;
+    price: number;
+    rating?: number;
+    totalReviews?: number;
+  };
+  addedAt: Date;
 }
 
 export default function FavoritesPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<FavoriteType>("product");
+  const [items, setItems] = useState<FavoriteItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  // Use resource list state for favorites
-  const {
-    items,
-    isLoading: loading,
-    error,
-    refresh,
-  } = useResourceListState<FavoriteItem>({
-    fetchFn: async () => {
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      setError(null);
       const data = await favoritesService.listByType(activeTab);
-      return {
-        items: data.data || [],
-        hasNextPage: false,
-      };
-    },
-    pageSize: 50,
-    autoFetch: Boolean(user),
-  });
+      setItems((data.data || []) as FavoriteItem[]);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setLoading(false);
+    }
+  }, [user, activeTab]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   // Refresh when tab changes
   useEffect(() => {
@@ -91,11 +98,11 @@ export default function FavoritesPage() {
   };
 
   const getItemImage = (item: FavoriteItem) => {
-    return item.image || item.images?.[0] || "/placeholder-image.png";
+    return item.product?.primaryImage || "/placeholder-image.png";
   };
 
   const getItemName = (item: FavoriteItem) => {
-    return item.name || item.title || "Untitled";
+    return item.product?.name || "Untitled";
   };
 
   if (!user) {
@@ -170,7 +177,7 @@ export default function FavoritesPage() {
         </div>
       ) : error ? (
         <div className="text-center py-16 text-red-600 dark:text-red-400">
-          {error.message}
+          {error instanceof Error ? error.message : "Failed to load favorites"}
         </div>
       ) : itemsList.length === 0 ? (
         <div className="text-center py-16">
@@ -216,9 +223,9 @@ export default function FavoritesPage() {
                   </h3>
                 </Link>
 
-                {item.price && (
+                {item.product?.price && (
                   <p className="text-lg font-bold text-primary mb-3">
-                    <Price amount={item.price} />
+                    <Price amount={item.product.price} />
                   </p>
                 )}
 

@@ -8,11 +8,11 @@ import { Price } from "@/components/common/values/Price";
 import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
 import { useAuth } from "@/contexts/AuthContext";
-import { useResourceListState } from "@/hooks/useResourceListState";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -21,30 +21,36 @@ export default function OrdersPage() {
   const { user } = useAuth();
 
   // Use resource list state for managing orders
-  const {
-    items: orders,
-    isLoading,
-    error,
-    currentPage,
-    setCurrentPage,
-    hasNextPage,
-    refresh,
-  } = useResourceListState<OrderCardFE>({
-    fetchFn: async (page) => {
+  const [orders, setOrders] = useState<OrderCardFE[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+
+  const refresh = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
       const response = await ordersService.list({
         limit: 20,
-        page,
+        page: currentPage,
       } as any);
-      return {
-        items: response.data || [],
-        hasNextPage:
-          (response.pagination as any)?.hasNextPage ||
-          response.data.length >= 20,
-      };
-    },
-    pageSize: 20,
-    autoFetch: Boolean(user),
-  });
+      setOrders(response.data || []);
+      setHasNextPage(
+        (response.pagination as any)?.hasNextPage || response.data.length >= 20
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (user) {
+      refresh();
+    }
+  }, [refresh, user]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -146,7 +152,12 @@ export default function OrdersPage() {
   }
 
   if (error) {
-    return <PageState.Error message={error.message} onRetry={refresh} />;
+    return (
+      <PageState.Error
+        message={error instanceof Error ? error.message : String(error)}
+        onRetry={refresh}
+      />
+    );
   }
 
   return (

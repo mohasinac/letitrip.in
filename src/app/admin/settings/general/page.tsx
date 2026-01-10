@@ -49,14 +49,16 @@ export default function AdminGeneralSettingsPage() {
     },
   });
 
-  const { formData: saveStatus, setField: setSaveStatus } = useFormState<{
+  const { formData: saveStatus, setFieldValue: setSaveStatus } = useFormState<{
     saving: boolean;
     formError: string | null;
     success: string | null;
   }>({
-    saving: false,
-    formError: null,
-    success: null,
+    initialData: {
+      saving: false,
+      formError: null,
+      success: null,
+    },
   });
 
   useEffect(() => {

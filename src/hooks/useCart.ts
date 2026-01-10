@@ -151,18 +151,23 @@ export function useCart() {
             throw new Error("Product details required for guest cart");
           }
 
-          cartService.addGuestItem({
-            id: `guest_${Date.now()}_${Math.random()}`,
+          cartService.addToGuestCart({
             productId,
             productName: productDetails.name,
             productSlug: productDetails.name.toLowerCase().replace(/\s+/g, "-"),
             quantity,
             variantId: variant || null,
+            variantName: null,
+            sku: "",
             price: productDetails.price,
-            image: productDetails.image,
+            productImage: productDetails.image,
             shopId: productDetails.shopId,
             shopName: productDetails.shopName,
             isAvailable: true,
+            maxQuantity: 100,
+            subtotal: productDetails.price * quantity,
+            discount: 0,
+            total: productDetails.price * quantity,
           });
 
           await loadCart();
@@ -184,11 +189,11 @@ export function useCart() {
       try {
         if (user) {
           // Authenticated user
-          await cartService.updateQuantity(itemId, quantity);
+          await cartService.updateItem(itemId, quantity);
           await loadCart();
         } else {
           // Guest user
-          cartService.updateGuestItem(itemId, quantity);
+          cartService.updateGuestCartItem(itemId, quantity);
           await loadCart();
         }
       } catch (err: any) {
@@ -208,11 +213,11 @@ export function useCart() {
       try {
         if (user) {
           // Authenticated user
-          await cartService.removeCartItem(itemId);
+          await cartService.removeItem(itemId);
           await loadCart();
         } else {
           // Guest user
-          cartService.removeGuestItem(itemId);
+          cartService.removeGuestCartItem(itemId);
           await loadCart();
         }
       } catch (err: any) {
@@ -231,7 +236,7 @@ export function useCart() {
     try {
       if (user) {
         // Authenticated user
-        await cartService.clearCart();
+        await cartService.clear();
         await loadCart();
       } else {
         // Guest user

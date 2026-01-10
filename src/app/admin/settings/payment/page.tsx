@@ -41,14 +41,16 @@ export default function AdminPaymentSettingsPage() {
     "razorpay" | "payu" | "paypal" | "cod" | "currency"
   >("razorpay");
 
-  const { formData: formState, setField: setFormState } =
+  const { formData: formState, setFieldValue: setFormState } =
     useFormState<PaymentFormState>({
-      saving: false,
-      formError: null,
-      success: null,
-      razorpaySecretModified: false,
-      payuSaltModified: false,
-      paypalSecretModified: false,
+      initialData: {
+        saving: false,
+        formError: null,
+        success: null,
+        razorpaySecretModified: false,
+        payuSaltModified: false,
+        paypalSecretModified: false,
+      },
     });
 
   const {

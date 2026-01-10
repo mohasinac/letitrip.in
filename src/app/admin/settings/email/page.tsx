@@ -75,9 +75,11 @@ export default function EmailSettingsPage() {
   const [settings, setSettings] = useState<EmailSettings>(defaultSettings);
   const { formData: formState, setFieldValue: setFormState } =
     useFormState<EmailFormState>({
-      loading: true,
-      saving: false,
-      testing: null,
+      initialData: {
+        loading: true,
+        saving: false,
+        testing: null,
+      },
     });
 
   useEffect(() => {

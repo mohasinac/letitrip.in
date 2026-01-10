@@ -143,7 +143,7 @@ export interface TemplateButton {
 export const ORDER_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
   id: "order_confirmation_v1",
   name: "order_confirmation",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -195,7 +195,7 @@ export const ORDER_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
 export const SHIPPING_UPDATE_TEMPLATE: WhatsAppTemplate = {
   id: "shipping_update_v1",
   name: "shipping_update",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -245,7 +245,7 @@ export const SHIPPING_UPDATE_TEMPLATE: WhatsAppTemplate = {
 export const OUT_FOR_DELIVERY_TEMPLATE: WhatsAppTemplate = {
   id: "out_for_delivery_v1",
   name: "out_for_delivery",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -282,7 +282,7 @@ export const OUT_FOR_DELIVERY_TEMPLATE: WhatsAppTemplate = {
 export const DELIVERY_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
   id: "delivery_confirmation_v1",
   name: "delivery_confirmation",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -323,7 +323,7 @@ export const DELIVERY_CONFIRMATION_TEMPLATE: WhatsAppTemplate = {
 export const PAYMENT_REMINDER_TEMPLATE: WhatsAppTemplate = {
   id: "payment_reminder_v1",
   name: "payment_reminder",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -364,7 +364,7 @@ export const PAYMENT_REMINDER_TEMPLATE: WhatsAppTemplate = {
 export const ABANDONED_CART_TEMPLATE: WhatsAppTemplate = {
   id: "abandoned_cart_v1",
   name: "abandoned_cart",
-  category: "marketing",
+  category: "MARKETING",
   language: "en",
   status: "approved",
   components: [
@@ -405,7 +405,7 @@ export const ABANDONED_CART_TEMPLATE: WhatsAppTemplate = {
 export const RETURN_REQUEST_TEMPLATE: WhatsAppTemplate = {
   id: "return_request_v1",
   name: "return_request",
-  category: "service",
+  category: "SERVICE",
   language: "en",
   status: "approved",
   components: [
@@ -443,7 +443,7 @@ export const RETURN_REQUEST_TEMPLATE: WhatsAppTemplate = {
 export const REFUND_PROCESSED_TEMPLATE: WhatsAppTemplate = {
   id: "refund_processed_v1",
   name: "refund_processed",
-  category: "utility",
+  category: "UTILITY",
   language: "en",
   status: "approved",
   components: [
@@ -472,7 +472,7 @@ export const REFUND_PROCESSED_TEMPLATE: WhatsAppTemplate = {
 export const OTP_TEMPLATE: WhatsAppTemplate = {
   id: "otp_v1",
   name: "otp_verification",
-  category: "authentication",
+  category: "AUTHENTICATION",
   language: "en",
   status: "approved",
   components: [
@@ -493,7 +493,7 @@ export const OTP_TEMPLATE: WhatsAppTemplate = {
 export const PRICE_DROP_TEMPLATE: WhatsAppTemplate = {
   id: "price_drop_v1",
   name: "price_drop_alert",
-  category: "marketing",
+  category: "MARKETING",
   language: "en",
   status: "approved",
   components: [

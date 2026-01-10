@@ -5,6 +5,7 @@ import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversationState } from "@/hooks/useConversationState";
+import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
 import {
@@ -225,8 +226,8 @@ function MessagesContent() {
         setMessages(response.messages);
 
         // Update conversation list to reflect read status
-        setConversations((prev) =>
-          prev.map((c) =>
+        setConversations(
+          conversations.map((c: ConversationFE) =>
             c.id === conversationId
               ? { ...c, unreadCount: 0, isUnread: false }
               : c
@@ -296,8 +297,10 @@ function MessagesContent() {
 
     try {
       await messagesService.archiveConversation(selectedConversation.id);
-      setConversations((prev) =>
-        prev.filter((c) => c.id !== selectedConversation.id)
+      setConversations(
+        conversations.filter(
+          (c: ConversationFE) => c.id !== selectedConversation.id
+        )
       );
       selectConversation(null);
     } catch (err) {
@@ -329,7 +332,7 @@ function MessagesContent() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => {
-                  setSelectedConversation(null);
+                  selectConversation(null);
                   setMessages([]);
                   router.push("/user/messages", { scroll: false });
                 }}
@@ -492,7 +495,8 @@ function MessagesContent() {
                     <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                       {
                         participantIcons[
-                          selectedConversation.otherParticipant.type
+                          selectedConversation.otherParticipant
+                            .type as ParticipantType
                         ]
                       }
                     </div>

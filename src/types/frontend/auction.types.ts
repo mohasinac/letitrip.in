@@ -5,7 +5,7 @@
  * formatted data, and UI-specific properties.
  */
 
-import { AuctionType, AuctionStatus } from "../shared/common.types";
+import { AuctionStatus, AuctionType } from "../shared/common.types";
 
 /**
  * Auction bid for frontend
@@ -39,6 +39,7 @@ export interface BidFE {
  */
 export interface AuctionFE {
   id: string;
+  slug: string;
   productId: string;
   productName: string;
   productSlug: string;

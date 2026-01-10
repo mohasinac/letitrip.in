@@ -152,7 +152,7 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
 
         const uploadPromise = new Promise<string>((resolve, reject) => {
           xhr.upload.addEventListener("progress", (e) => {
-            if (e.lengthComputable) {
+            if (e.lengthComputable && id) {
               const progressPercent = Math.round((e.loaded / e.total) * 100);
               setProgress(progressPercent);
               onProgress?.(progressPercent);
@@ -191,7 +191,9 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
             reject(new Error("Upload aborted"));
           });
 
-          updateUpload(id, { status: "uploading" });
+          if (id) {
+            updateUpload(id, { status: "uploading" });
+          }
           xhr.open("POST", "/api/media/upload");
           xhr.send(formData);
         });

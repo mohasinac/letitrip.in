@@ -60,14 +60,16 @@ interface ShippingFormState {
 }
 
 export default function AdminShippingSettingsPage() {
-  const { formData: formState, setField: setFormState } =
+  const { formData: formState, setFieldValue: setFormState } =
     useFormState<ShippingFormState>({
-      saving: false,
-      formError: null,
-      success: null,
-      newPincode: "",
-      testing: false,
-      testResult: null,
+      initialData: {
+        saving: false,
+        formError: null,
+        success: null,
+        newPincode: "",
+        testing: false,
+        testResult: null,
+      },
     });
 
   const {

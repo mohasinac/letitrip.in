@@ -26,11 +26,13 @@ function AddressesContent() {
     execute,
     setData: setAddresses,
   } = useLoadingState<AddressFE[]>({ initialData: [] });
-  const { formData: dialogState, setField: setDialogState } =
+  const { formData: dialogState, setFieldValue: setDialogState } =
     useFormState<AddressDialogState>({
-      showAddressForm: false,
-      editingAddressId: null,
-      deleteId: null,
+      initialData: {
+        showAddressForm: false,
+        editingAddressId: null,
+        deleteId: null,
+      },
     });
 
   const loadAddresses = useCallback(async () => {

@@ -1,7 +1,6 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { useResourceListState } from "@/hooks/useResourceListState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   NotificationFE,
@@ -28,7 +27,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Icon mapping for notification types
@@ -164,34 +163,34 @@ function NotificationsContent() {
   const [actionLoading, setActionLoading] = useState(false);
 
   // Fetch notifications with filtering and pagination
-  const {
-    items: notifications,
-    currentPage,
-    setCurrentPage,
-    isLoading,
-    error,
-    setFilter,
-    refresh,
-  } = useResourceListState<NotificationFE>({
-    initialItems: [],
-    pageSize: 20,
-  });
+  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await notificationService.list({
+        page: currentPage,
+        pageSize: 20,
+        unreadOnly: showUnreadOnly,
+      });
+      setNotifications(response.notifications);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to load notifications";
+      setError(message);
+      logError(err as Error, { component: "NotificationsContent.fetch" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, showUnreadOnly]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await notificationService.list({
-          page: currentPage,
-          pageSize: 20,
-          unreadOnly: showUnreadOnly,
-        });
-        setFilter("items", response.notifications);
-      } catch (err) {
-        logError(err as Error, { component: "NotificationsContent.fetch" });
-      }
-    };
     fetchNotifications();
-  }, [currentPage, showUnreadOnly, setFilter]);
+  }, [fetchNotifications]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
@@ -200,7 +199,7 @@ function NotificationsContent() {
       const updatedNotifications = notifications.map((n) =>
         n.id === id ? { ...n, read: true, readAt: new Date() } : n
       );
-      setFilter("items", updatedNotifications);
+      setNotifications(updatedNotifications);
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsContent.handleMarkAsRead",
@@ -220,7 +219,7 @@ function NotificationsContent() {
         read: true,
         readAt: new Date(),
       }));
-      setFilter("items", updatedNotifications);
+      setNotifications(updatedNotifications);
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsContent.handleMarkAllAsRead",
@@ -236,7 +235,7 @@ function NotificationsContent() {
       await notificationService.delete(id);
       // Remove from list
       const updatedNotifications = notifications.filter((n) => n.id !== id);
-      setFilter("items", updatedNotifications);
+      setNotifications(updatedNotifications);
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsContent.handleDelete",
@@ -253,7 +252,7 @@ function NotificationsContent() {
     try {
       await notificationService.deleteRead();
       const updatedNotifications = notifications.filter((n) => n.read);
-      setFilter("items", updatedNotifications);
+      setNotifications(updatedNotifications);
     } catch (err) {
       logError(err as Error, {
         component: "NotificationsContent.handleDeleteRead",
@@ -310,7 +309,7 @@ function NotificationsContent() {
             <button
               onClick={() => {
                 setShowUnreadOnly(!showUnreadOnly);
-                setPage(1);
+                setCurrentPage(1);
               }}
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 showUnreadOnly
@@ -351,7 +350,7 @@ function NotificationsContent() {
           </div>
         ) : error ? (
           <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 text-center">
-            <p className="text-red-600 dark:text-red-400">{error.message}</p>
+            <p className="text-red-600 dark:text-red-400">{error}</p>
             <button
               onClick={fetchNotifications}
               className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-500"
