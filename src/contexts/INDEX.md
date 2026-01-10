@@ -327,6 +327,88 @@ function ConfirmModal({
 
 ---
 
+### FeatureFlagContext.tsx
+
+**Exports:** `FeatureFlagProvider`, `useFeatureFlags()`
+
+**Purpose:** Feature flags and A/B testing using Firebase Remote Config.
+
+**Context Value:**
+
+- `isLoading: boolean` - Flags loading state
+- `isReady: boolean` - Whether flags have been successfully fetched
+- `getBoolean(key, defaultValue?): boolean` - Get boolean flag
+- `getNumber(key, defaultValue?): number` - Get number flag
+- `getString(key, defaultValue?): string` - Get string flag
+- `isFeatureEnabled(featureName): boolean` - Check if feature is enabled
+- `getVariant(experimentName): string | null` - Get A/B test variant
+- `refresh(): Promise<void>` - Refresh flags from remote
+- `getAllFlags(): Record<string, FeatureFlagValue>` - Get all cached flags (debugging)
+
+**Features:**
+
+- Firebase Remote Config integration
+- Boolean, number, and string feature flags
+- Feature enable/disable checks
+- A/B testing support with variants
+- Flag caching for performance
+- Default values for flags
+- Manual refresh capability
+- Error handling with fallbacks
+
+**Usage:**
+
+```typescript
+const { isFeatureEnabled, getVariant, getNumber } = useFeatureFlags();
+
+// Check if feature is enabled
+if (isFeatureEnabled("dark_mode")) {
+  // enable_dark_mode flag is true
+}
+
+// Get A/B test variant
+const layout = getVariant("homepage_layout");
+if (layout === "experimental") {
+  return <ExperimentalHomepage />;
+}
+
+// Get numeric configuration
+const maxItems = getNumber("max_comparison_products", 4);
+
+// Wait for flags to load
+if (!isReady) {
+  return <Loading />;
+}
+```
+
+**Default Flags:**
+
+```typescript
+{
+  // Feature toggles
+  enable_dark_mode: true,
+  enable_notifications: true,
+  enable_search: true,
+  enable_comparison: true,
+  enable_favorites: true,
+  enable_reviews: true,
+  enable_social_share: true,
+  enable_analytics: true,
+
+  // Feature limits
+  max_comparison_products: 4,
+  max_favorites: 100,
+  max_cart_items: 50,
+
+  // A/B testing variants
+  homepage_layout: "default",
+  product_card_style: "default",
+  checkout_flow: "default",
+}
+```
+
+---
+
 ## Feature Contexts
 
 ### ComparisonContext.tsx
