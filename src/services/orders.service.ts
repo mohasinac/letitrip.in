@@ -24,6 +24,123 @@ import {
   toFEOrderCard,
 } from "@/types/transforms/order.transforms";
 import { apiService } from "./api.service";
+import { z } from "zod";
+import { ORDER_STATUS, PAYMENT_STATUS } from "@/constants/statuses";
+
+/**
+ * Zod validation schemas for order operations
+ */
+
+// Create order schema
+export const CreateOrderSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        productId: z.string().min(1, "Product ID is required"),
+        variantId: z.string().optional(),
+        quantity: z
+          .number()
+          .int("Quantity must be a whole number")
+          .min(1, "Quantity must be at least 1")
+          .max(100, "Quantity cannot exceed 100"),
+      })
+    )
+    .min(1, "At least one item is required"),
+  shippingAddressId: z.string().min(1, "Shipping address is required"),
+  paymentMethod: z.enum(["cod", "card", "upi", "netbanking", "wallet"], {
+    errorMap: () => ({ message: "Invalid payment method" }),
+  }),
+  shippingMethod: z.enum(["standard", "express", "overnight"], {
+    errorMap: () => ({ message: "Invalid shipping method" }),
+  }),
+  couponCode: z
+    .string()
+    .min(3, "Coupon code must be at least 3 characters")
+    .max(50, "Coupon code must not exceed 50 characters")
+    .regex(
+      /^[A-Z0-9-]+$/,
+      "Coupon code must contain only uppercase letters, numbers, and hyphens"
+    )
+    .optional(),
+  customerNotes: z
+    .string()
+    .max(500, "Notes must not exceed 500 characters")
+    .optional(),
+});
+
+// Update order status schema
+export const UpdateOrderStatusSchema = z.object({
+  status: z.enum([
+    "pending",
+    "confirmed",
+    "processing",
+    "shipped",
+    "out_for_delivery",
+    "delivered",
+    "cancelled",
+    "returned",
+    "refunded",
+  ], {
+    errorMap: () => ({ message: "Invalid order status" }),
+  }),
+  internalNotes: z
+    .string()
+    .max(1000, "Internal notes must not exceed 1000 characters")
+    .optional(),
+});
+
+// Create shipment schema
+export const CreateShipmentSchema = z.object({
+  trackingNumber: z
+    .string()
+    .min(5, "Tracking number must be at least 5 characters")
+    .max(50, "Tracking number must not exceed 50 characters"),
+  shippingProvider: z
+    .string()
+    .min(2, "Shipping provider must be at least 2 characters")
+    .max(100, "Shipping provider must not exceed 100 characters"),
+  estimatedDelivery: z.date().optional(),
+});
+
+// Cancel order schema
+export const CancelOrderSchema = z.object({
+  reason: z
+    .string()
+    .min(10, "Cancellation reason must be at least 10 characters")
+    .max(500, "Cancellation reason must not exceed 500 characters"),
+});
+
+// Bulk action schema
+export const BulkOrderActionSchema = z.object({
+  action: z.enum([
+    "confirm",
+    "process",
+    "ship",
+    "deliver",
+    "cancel",
+    "refund",
+    "delete",
+    "update",
+  ]),
+  orderIds: z
+    .array(z.string().min(1, "Order ID cannot be empty"))
+    .min(1, "At least one order must be selected"),
+  data: z.any().optional(),
+});
+
+// Bulk refund schema
+export const BulkRefundSchema = z.object({
+  refundAmount: z.number().positive("Refund amount must be positive").optional(),
+  reason: z
+    .string()
+    .min(10, "Refund reason must be at least 10 characters")
+    .max(500, "Refund reason must not exceed 500 characters")
+    .optional(),
+});
+
+/**
+ * Orders Service - Updated with Zod validation ✅
+ */
 
 class OrdersService {
   // List orders (role-filtered)
@@ -56,7 +173,10 @@ class OrdersService {
 
   // Create order (customer checkout)
   async create(formData: CreateOrderFormFE): Promise<OrderFE> {
-    const request = toBECreateOrderRequest(formData);
+    // Validate input data
+    const validatedData = CreateOrderSchema.parse(formData);
+    
+    const request = toBECreateOrderRequest(validatedData);
     const orderBE = await apiService.post<OrderBE>(
       ORDER_ROUTES.CREATE,
       request
@@ -70,7 +190,13 @@ class OrdersService {
     status: string,
     internalNotes?: string
   ): Promise<OrderFE> {
-    const request = toBEUpdateOrderStatusRequest(status, internalNotes);
+    // Validate input data
+    const validatedData = UpdateOrderStatusSchema.parse({ status, internalNotes });
+    
+    const request = toBEUpdateOrderStatusRequest(
+      validatedData.status,
+      validatedData.internalNotes
+    );
     const orderBE = await apiService.patch<OrderBE>(
       ORDER_ROUTES.BY_ID(id),
       request
@@ -85,10 +211,17 @@ class OrdersService {
     shippingProvider: string,
     estimatedDelivery?: Date
   ): Promise<OrderFE> {
-    const request = toBECreateShipmentRequest(
+    // Validate input data
+    const validatedData = CreateShipmentSchema.parse({
       trackingNumber,
       shippingProvider,
-      estimatedDelivery
+      estimatedDelivery,
+    });
+    
+    const request = toBECreateShipmentRequest(
+      validatedData.trackingNumber,
+      validatedData.shippingProvider,
+      validatedData.estimatedDelivery
     );
     const orderBE = await apiService.post<OrderBE>(
       `/orders/${id}/shipment`,
@@ -99,8 +232,11 @@ class OrdersService {
 
   // Cancel order (user before shipping)
   async cancel(id: string, reason: string): Promise<OrderFE> {
+    // Validate input data
+    const validatedData = CancelOrderSchema.parse({ reason });
+    
     const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
-      reason,
+      reason: validatedData.reason,
     });
     return toFEOrder(orderBE);
   }
@@ -161,12 +297,19 @@ class OrdersService {
     data?: any
   ): Promise<BulkActionResponse> {
     try {
+      // Validate bulk action inputs
+      const validatedAction = BulkOrderActionSchema.parse({
+        action,
+        orderIds,
+        data,
+      });
+      
       const response = await apiService.post<BulkActionResponse>(
         ORDER_ROUTES.BULK,
         {
-          action,
-          orderIds,
-          data,
+          action: validatedAction.action,
+          orderIds: validatedAction.orderIds,
+          data: validatedAction.data,
         }
       );
       return response;
@@ -214,6 +357,10 @@ class OrdersService {
     orderIds: string[],
     reason?: string
   ): Promise<BulkActionResponse> {
+    // Validate reason if provided
+    if (reason) {
+      CancelOrderSchema.parse({ reason });
+    }
     return this.bulkAction("cancel", orderIds, { reason });
   }
 
@@ -225,7 +372,9 @@ class OrdersService {
     refundAmount?: number,
     reason?: string
   ): Promise<BulkActionResponse> {
-    return this.bulkAction("refund", orderIds, { refundAmount, reason });
+    // Validate refund data
+    const validatedData = BulkRefundSchema.parse({ refundAmount, reason });
+    return this.bulkAction("refund", orderIds, validatedData);
   }
 
   /**

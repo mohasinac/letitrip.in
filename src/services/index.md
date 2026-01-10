@@ -266,18 +266,61 @@ This folder contains service classes that encapsulate business logic and API com
 
 **Export:** `ordersService`
 
-**Purpose:** Order management and tracking.
+**Purpose:** Order management and tracking with Zod validation. ✅
+
+**Validation Schemas:** ✅
+
+- `CreateOrderSchema` - Order creation validation
+  - Items: Array of products with productId, quantity (1-100), optional variantId
+  - At least one item required
+  - Shipping address ID required (non-empty string)
+  - Payment method: cod/card/upi/netbanking/wallet
+  - Shipping method: standard/express/overnight
+  - Optional coupon code: 3-50 chars, uppercase/numbers/hyphens only
+  - Optional customer notes: max 500 characters
+- `UpdateOrderStatusSchema` - Status update validation
+  - Status: pending/confirmed/processing/shipped/out_for_delivery/delivered/cancelled/returned/refunded
+  - Optional internal notes: max 1000 characters
+- `CreateShipmentSchema` - Shipment creation validation
+  - Tracking number: 5-50 characters
+  - Shipping provider: 2-100 characters
+  - Optional estimated delivery date
+- `CancelOrderSchema` - Cancellation validation
+  - Reason: 10-500 characters required
+- `BulkOrderActionSchema` - Bulk operation validation
+  - Action: confirm/process/ship/deliver/cancel/refund/delete/update
+  - Order IDs: Non-empty array required
+- `BulkRefundSchema` - Bulk refund validation
+  - Optional refund amount: positive number
+  - Optional reason: 10-500 characters
 
 **Key Methods:**
 
 - `getOrders(userId, filters)` - Get user orders
 - `getOrderById(orderId)` - Get order details
-- `updateOrderStatus(orderId, status)` - Update status
-- `cancelOrder(orderId, reason)` - Cancel order
+- `create(formData)` - Create order ✅ Validated
+- `updateOrderStatus(orderId, status, notes)` - Update status ✅ Validated
+- `createShipment(id, tracking, provider, delivery)` - Create shipment ✅ Validated
+- `cancelOrder(orderId, reason)` - Cancel order ✅ Validated
 - `trackOrder(orderId)` - Get tracking info
 - `getOrderHistory(userId)` - Order history
 - `downloadInvoice(orderId)` - Get invoice PDF
-- `requestReturn(orderId, items, reason)` - Return request
+- `bulkAction(action, ids, data)` - Bulk operations ✅ Validated
+- `bulkCancel(ids, reason)` - Bulk cancel ✅ Validated
+- `bulkRefund(ids, amount, reason)` - Bulk refund ✅ Validated
+
+**Features:**
+
+- ✅ **Runtime validation with Zod** (January 10, 2026)
+- ✅ **Order creation validation** (items, addresses, payment method)
+- ✅ **Status transition validation** (9 valid statuses)
+- ✅ **Shipment validation** (tracking number, provider)
+- ✅ **Cancellation validation** (reason required, 10-500 chars)
+- ✅ **Bulk operation validation** (action types, order IDs)
+- ✅ **Refund validation** (amount and reason)
+- Order tracking
+- Invoice generation
+- Return processing
 
 ---
 

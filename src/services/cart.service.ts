@@ -9,8 +9,8 @@ import {
   toBEAddToCartRequest,
   toFECart,
 } from "@/types/transforms/cart.transforms";
-import { apiService } from "./api.service";
 import { z } from "zod";
+import { apiService } from "./api.service";
 
 /**
  * Zod validation schemas for cart operations
@@ -50,7 +50,10 @@ export const ApplyCouponSchema = z.object({
     .string()
     .min(3, "Coupon code must be at least 3 characters")
     .max(50, "Coupon code must not exceed 50 characters")
-    .regex(/^[A-Z0-9-]+$/, "Coupon code must contain only uppercase letters, numbers, and hyphens"),
+    .regex(
+      /^[A-Z0-9-]+$/,
+      "Coupon code must contain only uppercase letters, numbers, and hyphens"
+    ),
 });
 
 // Guest cart item schema
@@ -96,7 +99,7 @@ class CartService {
       quantity: formData.quantity,
       shopId: formData.shopId,
     });
-    
+
     const request = toBEAddToCartRequest(formData);
     const cartBE = await apiService.post<CartBE>("/cart", request);
     return toFECart(cartBE);
@@ -108,10 +111,13 @@ class CartService {
   async updateItem(itemId: string, quantity: number): Promise<CartFE> {
     // Validate input data
     const validatedData = UpdateCartItemSchema.parse({ itemId, quantity });
-    
-    const cartBE = await apiService.patch<CartBE>(`/cart/${validatedData.itemId}`, {
-      quantity: validatedData.quantity,
-    });
+
+    const cartBE = await apiService.patch<CartBE>(
+      `/cart/${validatedData.itemId}`,
+      {
+        quantity: validatedData.quantity,
+      }
+    );
     return toFECart(cartBE);
   }
 
@@ -146,9 +152,9 @@ class CartService {
   async applyCoupon(code: string): Promise<CartFE> {
     // Validate coupon code
     const validatedData = ApplyCouponSchema.parse({ code: code.toUpperCase() });
-    
-    const cartBE = await apiService.post<CartBE>("/cart/coupon", { 
-      code: validatedData.code 
+
+    const cartBE = await apiService.post<CartBE>("/cart/coupon", {
+      code: validatedData.code,
     });
     return toFECart(cartBE);
   }
@@ -305,7 +311,7 @@ class CartService {
   }): void {
     // Validate input data
     const validatedProduct = GuestCartItemSchema.parse(product);
-    
+
     const subtotal = validatedProduct.price * validatedProduct.quantity;
     this.addToGuestCart({
       productId: validatedProduct.productId,
@@ -342,7 +348,10 @@ class CartService {
 
         // Validate maxQuantity exists
         if (typeof item.maxQuantity !== "number" || item.maxQuantity < 1) {
-          console.error("[Cart] Invalid maxQuantity for item", validatedData.itemId);
+          console.error(
+            "[Cart] Invalid maxQuantity for item",
+            validatedData.itemId
+          );
           item.maxQuantity = INVENTORY_SETTINGS.MAX_QUANTITY_PER_CART_ITEM; // Default fallback
         }
 
