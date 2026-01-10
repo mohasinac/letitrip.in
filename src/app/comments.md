@@ -32,15 +32,16 @@
 ### Current Issues
 
 - Root layout includes many providers (7+ context providers)
-- All contexts loaded even if page doesn't need them
-- Could impact initial load performance
-- No lazy loading for optional features
+- ✅ **Fixed**: Non-critical providers now lazy loaded (ComparisonProvider, ViewingHistoryProvider, LoginRegisterProvider)
 
 ### Improvements
 
-- **Lazy Load Providers**: Load non-critical providers only when needed
-  - ComparisonProvider only on product pages
-  - GlobalSearchProvider only when search is used
+- ✅ **Lazy Load Providers Implemented**: Non-critical providers dynamically imported
+  - ComparisonProvider loaded with SSR disabled (client-only)
+  - ViewingHistoryProvider loaded with SSR disabled (client-only)
+  - LoginRegisterProvider loaded with SSR disabled (client-only)
+  - Critical providers (AuthProvider, ThemeProvider, GlobalSearchProvider) remain eager-loaded for initial render
+  - Benefits: Reduced initial bundle size, improved Time to Interactive (TTI)
 - **Split Layouts**: Use segment layouts instead of everything in root
   - User dashboard layout for `/user` routes
   - Seller dashboard layout for `/seller` routes
