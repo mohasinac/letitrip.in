@@ -4,6 +4,79 @@ This folder contains TypeScript type definitions, interfaces, and type utilities
 
 ## Folder Structure
 
+### shared/
+
+**Purpose:** Shared types used by both backend and frontend
+
+**Key Files:**
+
+- `branded.ts` - **NEW: Branded types for type-safe IDs** ✅
+- `common.types.ts` - Common utility types
+- `api.types.ts` - API request/response types
+- `error.types.ts` - Error types
+- `pagination.types.ts` - Pagination types
+- `filter.types.ts` - Filter types
+- `sort.types.ts` - Sorting types
+
+**Branded Types (branded.ts):**
+
+Branded types provide compile-time type safety for IDs without runtime overhead.
+
+**Available Branded Types:**
+- `UserId`, `UserEmail`, `UserRole` - User identifiers
+- `ProductId`, `ProductSku` - Product identifiers
+- `OrderId`, `OrderNumber` - Order identifiers
+- `CartId`, `CartItemId` - Cart identifiers
+- `ShopId`, `ShopSlug` - Shop identifiers
+- `CategoryId`, `CategorySlug` - Category identifiers
+- `ReviewId` - Review identifiers
+- `PaymentId`, `TransactionId` - Payment identifiers
+- `AddressId` - Address identifiers
+- `NotificationId` - Notification identifiers
+- `ConversationId`, `MessageId` - Messaging identifiers
+- `TicketId` - Support ticket identifiers
+- `CouponId`, `CouponCode` - Coupon identifiers
+- `ShipmentId`, `TrackingNumber` - Shipment identifiers
+
+**Type Guards:**
+- `isUserId()`, `isProductId()`, `isOrderId()`, etc.
+- Validate values at runtime
+
+**Helper Functions:**
+- `createUserId()`, `createProductId()`, `createOrderId()`, etc.
+- Create branded types with validation
+
+**Usage Example:**
+```typescript
+import { UserId, ProductId, createUserId } from '@/types/shared/branded';
+
+// Type-safe IDs
+const userId: UserId = 'user123' as UserId;
+const productId: ProductId = 'prod456' as ProductId;
+
+// This will cause a TypeScript error:
+// const wrongAssignment: UserId = productId; // Error!
+
+// Create with validation
+const validatedId = createUserId('user789'); // UserId
+
+// Type guard
+if (isUserId(someValue)) {
+  // someValue is narrowed to UserId
+}
+```
+
+**Common Types:**
+
+- `PaginatedResponse<T>` - Paginated API response
+- `ApiResponse<T>` - Standard API response
+- `ApiError` - API error structure
+- `Filters` - Generic filter object
+- `SortOptions` - Sorting configuration
+- `TimeRange` - Date range filter
+
+---
+
 ### backend/
 
 **Purpose:** Backend/API types (Database schemas, API responses)
