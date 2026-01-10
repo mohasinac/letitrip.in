@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n/useI18n";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 /**
  * LoginForm Component
@@ -26,6 +26,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
   const { t } = useI18n();
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Get all login form state from context
   const {
@@ -49,6 +50,13 @@ function LoginForm() {
     e.preventDefault();
 
     await handleLoginSubmit(e);
+
+    // Store remember me preference in localStorage
+    if (rememberMe && !loginError) {
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("rememberMe");
+    }
 
     // Redirect after successful login
     if (!loginError) {
@@ -147,6 +155,8 @@ function LoginForm() {
               <FormCheckbox
                 id="remember-me"
                 label={t("auth.login.rememberMe")}
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
               />
               <Link
                 href="/forgot-password"
