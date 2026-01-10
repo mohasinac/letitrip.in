@@ -758,6 +758,37 @@ API routes provide backend endpoints for the application.
 ### Middleware
 
 - `api/middleware/*` - API middleware
+- **`api/_middleware/rate-limit.ts`** - Rate limiting middleware
+  - **Exports**:
+    - `withRateLimit(handler, options)` - HOF to wrap API route handlers with rate limiting
+    - `RateLimitMiddleware` - Pre-configured middleware wrappers (auth, api, public, passwordReset, search)
+    - `createRateLimitedHandler(handler, config)` - Utility to create custom rate limited handlers
+    - `RateLimitOptions` - Configuration interface
+    - `ApiRouteHandler` - Type definition for API route handlers
+  - **Features**:
+    - Automatic IP-based rate limiting (supports x-forwarded-for, x-real-ip, cf-connecting-ip)
+    - Configurable rate limiters (use pre-configured or custom RateLimiter instances)
+    - Custom identifier functions (IP, user ID, API key, etc.)
+    - Skip function for conditional rate limiting
+    - Custom error handlers for 429 responses
+    - Automatic rate limit headers (X-RateLimit-Consumed, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After)
+    - Integrates with RateLimiter from `src/lib/rate-limiter.ts`
+  - **Usage**:
+
+    ```typescript
+    // Using pre-configured limiter
+    export const GET = withRateLimit(handler, { limiter: RateLimiters.api });
+
+    // Using convenience wrapper
+    export const POST = RateLimitMiddleware.auth(handler);
+
+    // Custom configuration
+    export const PUT = createRateLimitedHandler(handler, {
+      points: 50,
+      duration: 60,
+      getIdentifier: (req) => req.headers.get("x-user-id") || "anonymous",
+    });
+    ```
 
 ### Notifications
 

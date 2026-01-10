@@ -78,7 +78,16 @@
 
 ### Rate Limiting & Security
 
-- Add rate limiting middleware for all API routes
+- ✅ **Rate Limiting Middleware Implemented**: `api/_middleware/rate-limit.ts`
+  - `withRateLimit()` HOF for wrapping API route handlers
+  - Pre-configured middleware: `RateLimitMiddleware.auth`, `.api`, `.public`, `.passwordReset`, `.search`
+  - Automatic rate limit headers (X-RateLimit-Consumed, X-RateLimit-Remaining, X-RateLimit-Reset)
+  - 429 responses with Retry-After header when limit exceeded
+  - Configurable identifier function (default uses IP address)
+  - Skip function for excluding certain requests
+  - Custom error handlers support
+  - Integrates with RateLimiter from `src/lib/rate-limiter.ts`
+- **Next Steps**: Apply rate limiting to all API routes
 - Implement request validation with Zod schemas
 - Add CORS configuration
 - Implement API key/token rotation
