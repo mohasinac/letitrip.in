@@ -156,8 +156,8 @@ import { RateLimiter, RateLimitError, RateLimiters } from "@/lib/rate-limiter";
 
 // Create custom limiter
 const limiter = new RateLimiter({
-  points: 10,      // 10 requests
-  duration: 60,    // per 60 seconds
+  points: 10, // 10 requests
+  duration: 60, // per 60 seconds
 });
 
 // Use pre-configured limiter

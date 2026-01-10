@@ -1,16 +1,16 @@
 /**
  * Rate Limiter
- * 
+ *
  * In-memory rate limiting using sliding window algorithm.
  * Tracks requests per identifier (IP, user ID, etc.) and enforces limits.
- * 
+ *
  * @example
  * ```typescript
  * const limiter = new RateLimiter({
  *   points: 10,      // Number of requests
  *   duration: 60,    // Per 60 seconds
  * });
- * 
+ *
  * // Check and consume
  * try {
  *   await limiter.consume(clientIp);
@@ -27,23 +27,23 @@ export interface RateLimiterOptions {
    * Maximum number of points (requests) allowed
    */
   points: number;
-  
+
   /**
    * Duration in seconds for the rate limit window
    */
   duration: number;
-  
+
   /**
    * Block duration in seconds when limit is exceeded
    * @default Same as duration
    */
   blockDuration?: number;
-  
+
   /**
    * Execute callback when limit is exceeded
    */
   execEvenly?: boolean;
-  
+
   /**
    * Key prefix for storage
    * @default "rl"
@@ -56,17 +56,17 @@ export interface RateLimiterResponse {
    * Number of points consumed by this request
    */
   consumedPoints: number;
-  
+
   /**
    * Remaining points in current window
    */
   remainingPoints: number;
-  
+
   /**
    * Milliseconds until limit resets
    */
   msBeforeNext: number;
-  
+
   /**
    * Whether the request is allowed
    */
@@ -78,7 +78,7 @@ export class RateLimitError extends Error {
   public remainingPoints: number;
   public msBeforeNext: number;
   public retryAfter: number; // seconds
-  
+
   constructor(response: RateLimiterResponse) {
     super("Rate limit exceeded");
     this.name = "RateLimitError";
@@ -112,7 +112,7 @@ export class RateLimiter {
     this.blockDuration = options.blockDuration ?? options.duration;
     this.keyPrefix = options.keyPrefix ?? "rl";
     this.storage = new Map();
-    
+
     // Start cleanup interval to remove expired entries
     this.startCleanup();
   }
@@ -137,7 +137,7 @@ export class RateLimiter {
         }
       }
     }, 60000);
-    
+
     // Allow Node.js to exit even if cleanup is running
     if (this.cleanupInterval.unref) {
       this.cleanupInterval.unref();
@@ -160,22 +160,22 @@ export class RateLimiter {
   public get(identifier: string): RateLimiterResponse | null {
     const key = this.getKey(identifier);
     const record = this.storage.get(key);
-    
+
     if (!record) {
       return null;
     }
-    
+
     const now = Date.now();
-    
+
     // Check if expired
     if (record.expiresAt < now) {
       this.storage.delete(key);
       return null;
     }
-    
+
     const remainingPoints = Math.max(0, this.points - record.points);
     const msBeforeNext = Math.max(0, record.expiresAt - now);
-    
+
     return {
       consumedPoints: record.points,
       remainingPoints,
@@ -186,7 +186,7 @@ export class RateLimiter {
 
   /**
    * Consume points for an identifier
-   * 
+   *
    * @param identifier - Unique identifier (IP, user ID, etc.)
    * @param points - Number of points to consume (default: 1)
    * @throws {RateLimitError} When rate limit is exceeded
@@ -198,7 +198,7 @@ export class RateLimiter {
     const key = this.getKey(identifier);
     const now = Date.now();
     const record = this.storage.get(key);
-    
+
     if (!record || record.expiresAt < now) {
       // New window or expired
       const expiresAt = now + this.duration * 1000;
@@ -207,9 +207,9 @@ export class RateLimiter {
         timestamp: now,
         expiresAt,
       };
-      
+
       this.storage.set(key, newRecord);
-      
+
       return {
         consumedPoints: points,
         remainingPoints: this.points - points,
@@ -217,32 +217,32 @@ export class RateLimiter {
         isAllowed: true,
       };
     }
-    
+
     // Existing window
     const newPoints = record.points + points;
-    
+
     if (newPoints > this.points) {
       // Rate limit exceeded
       const remainingPoints = 0;
       const msBeforeNext = Math.max(0, record.expiresAt - now);
-      
+
       const response: RateLimiterResponse = {
         consumedPoints: record.points,
         remainingPoints,
         msBeforeNext,
         isAllowed: false,
       };
-      
+
       throw new RateLimitError(response);
     }
-    
+
     // Update record
     record.points = newPoints;
     this.storage.set(key, record);
-    
+
     const remainingPoints = this.points - newPoints;
     const msBeforeNext = Math.max(0, record.expiresAt - now);
-    
+
     return {
       consumedPoints: newPoints,
       remainingPoints,
@@ -253,7 +253,7 @@ export class RateLimiter {
 
   /**
    * Penalty for an identifier (add extra points without throwing)
-   * 
+   *
    * @param identifier - Unique identifier
    * @param points - Number of penalty points
    */
@@ -264,7 +264,7 @@ export class RateLimiter {
     const key = this.getKey(identifier);
     const now = Date.now();
     const record = this.storage.get(key);
-    
+
     if (!record || record.expiresAt < now) {
       // Create new record with penalty
       const expiresAt = now + this.blockDuration * 1000;
@@ -273,9 +273,9 @@ export class RateLimiter {
         timestamp: now,
         expiresAt,
       };
-      
+
       this.storage.set(key, newRecord);
-      
+
       return {
         consumedPoints: points,
         remainingPoints: Math.max(0, this.points - points),
@@ -283,14 +283,14 @@ export class RateLimiter {
         isAllowed: points <= this.points,
       };
     }
-    
+
     // Add penalty to existing record
     record.points += points;
     this.storage.set(key, record);
-    
+
     const remainingPoints = Math.max(0, this.points - record.points);
     const msBeforeNext = Math.max(0, record.expiresAt - now);
-    
+
     return {
       consumedPoints: record.points,
       remainingPoints,
@@ -301,7 +301,7 @@ export class RateLimiter {
 
   /**
    * Reward an identifier (reduce consumed points)
-   * 
+   *
    * @param identifier - Unique identifier
    * @param points - Number of points to reward
    */
@@ -311,7 +311,7 @@ export class RateLimiter {
   ): Promise<RateLimiterResponse> {
     const key = this.getKey(identifier);
     const record = this.storage.get(key);
-    
+
     if (!record) {
       return {
         consumedPoints: 0,
@@ -320,9 +320,9 @@ export class RateLimiter {
         isAllowed: true,
       };
     }
-    
+
     const now = Date.now();
-    
+
     // Check if expired
     if (record.expiresAt < now) {
       this.storage.delete(key);
@@ -333,14 +333,14 @@ export class RateLimiter {
         isAllowed: true,
       };
     }
-    
+
     // Reduce consumed points (min 0)
     record.points = Math.max(0, record.points - points);
     this.storage.set(key, record);
-    
+
     const remainingPoints = this.points - record.points;
     const msBeforeNext = Math.max(0, record.expiresAt - now);
-    
+
     return {
       consumedPoints: record.points,
       remainingPoints,
@@ -351,7 +351,7 @@ export class RateLimiter {
 
   /**
    * Reset rate limit for an identifier
-   * 
+   *
    * @param identifier - Unique identifier
    */
   public async delete(identifier: string): Promise<boolean> {
@@ -361,22 +361,22 @@ export class RateLimiter {
 
   /**
    * Block an identifier for the block duration
-   * 
+   *
    * @param identifier - Unique identifier
    */
   public async block(identifier: string): Promise<RateLimiterResponse> {
     const key = this.getKey(identifier);
     const now = Date.now();
     const expiresAt = now + this.blockDuration * 1000;
-    
+
     const record: RequestRecord = {
       points: this.points + 1, // Exceed limit
       timestamp: now,
       expiresAt,
     };
-    
+
     this.storage.set(key, record);
-    
+
     return {
       consumedPoints: record.points,
       remainingPoints: 0,
