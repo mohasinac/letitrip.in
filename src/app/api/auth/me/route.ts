@@ -1,4 +1,4 @@
-import { apiRateLimiter } from "@/app/api/lib/utils/rate-limiter";
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { COLLECTIONS } from "@/constants/database";
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "../../lib/firebase/config";
@@ -75,18 +75,5 @@ async function meHandler(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  // Rate limiting
-  const identifier =
-    req.headers.get("x-forwarded-for") ||
-    req.headers.get("x-real-ip") ||
-    "unknown";
-  if (!apiRateLimiter.check(identifier)) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
-      { status: 429 },
-    );
-  }
-
-  return meHandler(req);
-}
+// Export with rate limiting (100 requests per minute)
+export const GET = RateLimitMiddleware.api(meHandler);

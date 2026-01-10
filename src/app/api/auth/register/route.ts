@@ -1,3 +1,4 @@
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { withRegistrationTracking } from "@/app/api/middleware/ip-tracker";
 import { COLLECTIONS } from "@/constants/database";
 import {
@@ -223,5 +224,7 @@ async function registerHandler(req: Request) {
   }
 }
 
-// Export with IP tracking and rate limiting (max 3 attempts per hour)
-export const POST = withRegistrationTracking(registerHandler);
+// Export with rate limiting and IP tracking (5 attempts per 15 minutes)
+export const POST = RateLimitMiddleware.auth(
+  withRegistrationTracking(registerHandler)
+);

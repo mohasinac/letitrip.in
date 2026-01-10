@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { getCurrentUser } from "../lib/session";
 
 // GET /api/cart - Get user cart with summary
-export async function GET(request: NextRequest) {
+async function getCartHandler(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
 
@@ -127,7 +128,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/cart - Add item to cart
-export async function POST(request: NextRequest) {
+async function addToCartHandler(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
 
@@ -234,7 +235,7 @@ export async function POST(request: NextRequest) {
 }
 
 // DELETE /api/cart - Clear entire cart
-export async function DELETE(request: NextRequest) {
+async function clearCartHandler(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
 
@@ -265,3 +266,9 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+// Export handlers with rate limiting (100 requests per minute)
+export const GET = RateLimitMiddleware.api(getCartHandler);
+export const POST = RateLimitMiddleware.api(addToCartHandler);
+export const DELETE = RateLimitMiddleware.api(clearCartHandler);
+

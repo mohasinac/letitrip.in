@@ -1,3 +1,4 @@
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { withLoginTracking } from "@/app/api/middleware/ip-tracker";
 import { COLLECTIONS } from "@/constants/database";
 import bcrypt from "bcryptjs";
@@ -143,5 +144,5 @@ async function loginHandler(req: Request) {
   }
 }
 
-// Export with IP tracking and rate limiting (max 5 attempts per 15 minutes)
-export const POST = withLoginTracking(loginHandler);
+// Export with rate limiting and IP tracking (5 attempts per 15 minutes)
+export const POST = RateLimitMiddleware.auth(withLoginTracking(loginHandler));

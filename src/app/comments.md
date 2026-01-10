@@ -87,7 +87,13 @@
   - Skip function for excluding certain requests
   - Custom error handlers support
   - Integrates with RateLimiter from `src/lib/rate-limiter.ts`
-- **Next Steps**: Apply rate limiting to all API routes
+- ✅ **Rate Limiting Applied to Priority Routes**:
+  - **Auth routes**: `/api/auth/login`, `/api/auth/register`, `/api/auth/google`, `/api/auth/me`, `/api/auth/logout` (5 req/15min for auth actions, 100 req/min for reads)
+  - **Cart routes**: `/api/cart` GET/POST/DELETE (100 req/min)
+  - **Products routes**: `/api/products` GET/POST (300 req/min for public GET, 100 req/min for POST)
+  - **Orders routes**: `/api/orders` GET/POST (100 req/min)
+  - Replaced legacy rate limiting implementations with unified middleware
+- **Next Steps**: Apply rate limiting to remaining API routes (search, notifications, payments, etc.)
 - Implement request validation with Zod schemas
 - Add CORS configuration
 - Implement API key/token rotation

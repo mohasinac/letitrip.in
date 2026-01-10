@@ -3,6 +3,7 @@ import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ordersSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
 import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import {
   getUserFromRequest,
   requireAuth,
@@ -195,7 +196,7 @@ export async function GET(request: NextRequest) {
  * POST /api/orders
  * Create order (authenticated users only)
  */
-export async function POST(request: NextRequest) {
+async function createOrderHandler(request: NextRequest) {
   try {
     const { user, error } = await requireAuth(request);
     if (error) return error;
@@ -230,3 +231,8 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Export handlers with rate limiting (100 requests per minute)
+export const GET = RateLimitMiddleware.api(getOrdersHandler);
+export const POST = RateLimitMiddleware.api(createOrderHandler);
+
