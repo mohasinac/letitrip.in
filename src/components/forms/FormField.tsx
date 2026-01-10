@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useId } from "react";
 import { cn } from "@/lib/utils";
+import React, { useId } from "react";
 import { FormLabel } from "./FormLabel";
 
 export interface FormFieldProps {
@@ -15,6 +15,17 @@ export interface FormFieldProps {
   children: React.ReactElement;
   className?: string;
   labelClassName?: string;
+  /**
+   * Enable auto-sanitization on blur for child input
+   * Will be passed to the child component if it supports sanitization
+   * @default false
+   */
+  sanitize?: boolean;
+  /**
+   * Type of sanitization to apply
+   * Will be passed to the child component
+   */
+  sanitizeType?: "string" | "email" | "phone" | "url" | "html";
 }
 
 /**
@@ -38,17 +49,22 @@ export const FormField: React.FC<FormFieldProps> = ({
   children,
   className,
   labelClassName,
+  sanitize,
+  sanitizeType,
 }) => {
   const generatedId = useId();
   const fieldId = id || generatedId;
   const errorId = `${fieldId}-error`;
   const helperId = `${fieldId}-helper`;
 
-  // Clone child to inject id and aria attributes
+  // Clone child to inject id, aria attributes, and sanitization props
   const childWithProps = React.cloneElement(children, {
     id: fieldId,
     "aria-invalid": error ? true : undefined,
     "aria-describedby": error ? errorId : helperText ? helperId : undefined,
+    // Pass sanitization props if they're defined
+    ...(sanitize !== undefined && { sanitize }),
+    ...(sanitizeType !== undefined && { sanitizeType }),
     ...children.props,
   });
 

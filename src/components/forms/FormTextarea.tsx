@@ -1,12 +1,15 @@
 "use client";
 
-import { forwardRef, TextareaHTMLAttributes } from "react";
+import {
+  sanitizeHtml,
+  SanitizeHtmlOptions,
+  sanitizeString,
+} from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
+import { forwardRef, TextareaHTMLAttributes } from "react";
 
-export interface FormTextareaProps extends Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "size"
-> {
+export interface FormTextareaProps
+  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -14,6 +17,24 @@ export interface FormTextareaProps extends Omit<
   fullWidth?: boolean;
   showCharCount?: boolean;
   compact?: boolean;
+  /**
+   * Enable auto-sanitization on blur
+   * @default false
+   */
+  sanitize?: boolean;
+  /**
+   * Type of sanitization to apply
+   * @default 'string'
+   */
+  sanitizeType?: "string" | "html";
+  /**
+   * Options for HTML sanitization (only when sanitizeType='html')
+   */
+  sanitizeHtmlOptions?: SanitizeHtmlOptions;
+  /**
+   * Callback when value is sanitized
+   */
+  onSanitize?: (sanitizedValue: string) => void;
 }
 
 export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
@@ -31,12 +52,43 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
       rows = 4,
       maxLength,
       value,
+      sanitize = false,
+      sanitizeType = "string",
+      sanitizeHtmlOptions,
+      onSanitize,
+      onBlur,
       ...props
     },
-    ref,
+    ref
   ) => {
     const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
+
+    // Handle sanitization on blur
+    const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (sanitize && typeof e.target.value === "string") {
+        let sanitizedValue = e.target.value;
+
+        // Apply sanitization based on type
+        if (sanitizeType === "html") {
+          sanitizedValue = sanitizeHtml(e.target.value, sanitizeHtmlOptions);
+        } else {
+          sanitizedValue = sanitizeString(e.target.value, {
+            maxLength,
+          });
+        }
+
+        // Call onSanitize callback if value changed
+        if (sanitizedValue !== e.target.value && onSanitize) {
+          onSanitize(sanitizedValue);
+        }
+      }
+
+      // Call original onBlur if provided
+      if (onBlur) {
+        onBlur(e);
+      }
+    };
 
     return (
       <div className={cn(fullWidth && "w-full")}>
@@ -76,16 +128,17 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
                 "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
               "resize-y",
               leftIcon && "pl-10",
-              className,
+              className
             )}
             aria-invalid={!!error}
             aria-describedby={
               error
                 ? `${textareaId}-error`
                 : helperText
-                  ? `${textareaId}-helper`
-                  : undefined
+                ? `${textareaId}-helper`
+                : undefined
             }
+            onBlur={handleBlur}
             {...props}
           />
         </div>
@@ -119,7 +172,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 FormTextarea.displayName = "FormTextarea";

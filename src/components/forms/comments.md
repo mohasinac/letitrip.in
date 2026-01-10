@@ -1,5 +1,57 @@
 # Form Components - Future Refactoring Notes
 
+## Completed Improvements ✅
+
+### Input Sanitization (January 10, 2026)
+
+- ✅ **Auto-Sanitization on Blur**: FormInput, FormTextarea, and FormField now support automatic input sanitization
+- ✅ **Multiple Sanitization Types**: 
+  - `string` - Plain text with trim, whitespace collapse, max length
+  - `email` - Email normalization and cleaning
+  - `phone` - Phone number cleaning
+  - `url` - URL validation with protocol checking
+  - `html` - HTML sanitization with configurable whitelist
+- ✅ **Configurable Behavior**:
+  - `sanitize` prop - Enable/disable sanitization
+  - `sanitizeType` prop - Choose sanitization type
+  - `sanitizeHtmlOptions` prop - Configure HTML sanitization (for FormTextarea)
+  - `onSanitize` callback - React to sanitized values
+- ✅ **XSS Prevention**: Blocks malicious scripts and dangerous protocols (javascript:, data:, vbscript:)
+- ✅ **Raw Value Preservation**: Original value stays in state until blur event triggers sanitization
+- ✅ **FormField Integration**: Sanitization props pass through to child components
+- ✅ **Test Suite**: Created FormSanitizationTest.tsx with 7 comprehensive test scenarios
+
+**Usage Examples:**
+```tsx
+// String sanitization
+<FormInput
+  sanitize
+  sanitizeType="string"
+  onSanitize={(cleaned) => setName(cleaned)}
+/>
+
+// Email sanitization
+<FormInput
+  type="email"
+  sanitize
+  sanitizeType="email"
+  onSanitize={(cleaned) => setEmail(cleaned)}
+/>
+
+// HTML sanitization with basic formatting
+<FormTextarea
+  sanitize
+  sanitizeType="html"
+  sanitizeHtmlOptions={{ allowBasicFormatting: true }}
+  onSanitize={(cleaned) => setBio(cleaned)}
+/>
+
+// Via FormField wrapper
+<FormField label="Name" sanitize sanitizeType="string">
+  <FormInput value={name} onChange={...} onSanitize={...} />
+</FormField>
+```
+
 ## Potential Improvements
 
 ### 1. Form Validation
