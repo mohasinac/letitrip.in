@@ -2,6 +2,50 @@
 
 This folder contains utility functions, helpers, and libraries that are shared across the application.
 
+## Environment & Configuration
+
+### env.ts
+
+**Exports:** Type-safe environment variables with runtime validation
+
+**Key Exports:**
+
+- `env` - Validated environment variables object (typed)
+- `isDevelopment` - Boolean flag for development mode
+- `isProduction` - Boolean flag for production mode
+- `isTest` - Boolean flag for test mode
+- `getAllowedFileTypes()` - Get allowed file types as array
+- `getFirebaseClientConfig()` - Firebase client configuration
+- `getFirebaseAdminConfig()` - Firebase Admin SDK configuration
+- `getRateLimitConfig()` - Rate limiting configuration
+
+**Features:**
+
+- Runtime validation using Zod schemas
+- Type-safe access to environment variables
+- Automatic validation on import
+- Server-side and client-side variable separation
+- Helpful error messages for missing/invalid variables
+
+**Usage:**
+
+```typescript
+import { env, getFirebaseClientConfig } from '@/lib/env';
+
+// Type-safe access
+const apiUrl = env.NEXT_PUBLIC_API_URL; // string (validated)
+const maxFileSize = env.MAX_FILE_SIZE; // number
+
+// Helper functions
+if (env.isDevelopment) {
+  console.log('Running in development mode');
+}
+
+const firebaseConfig = getFirebaseClientConfig();
+```
+
+---
+
 ## Core Utilities
 
 ### utils.ts

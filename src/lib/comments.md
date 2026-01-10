@@ -1,5 +1,14 @@
 # Lib Utilities - Future Refactoring Notes
 
+## Completed Improvements ✅
+
+### Environment Validation (env.ts)
+- ✅ **Runtime Validation**: Implemented with Zod schemas (January 10, 2026)
+- ✅ **Type Safety**: Full type safety with @t3-oss/env-nextjs
+- ✅ **Validation on Import**: Automatic validation at startup
+- ✅ **Server/Client Separation**: Clear separation of server and client variables
+- ✅ **Helper Functions**: Added utility functions for common configs
+
 ## General Improvements
 
 ### 1. Utility Organization
