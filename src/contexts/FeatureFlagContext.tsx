@@ -3,13 +3,13 @@
 import { logError } from "@/lib/firebase-error-logger";
 import { getApps, initializeApp } from "firebase/app";
 import {
-  type RemoteConfig,
   fetchAndActivate,
   getBoolean,
   getNumber,
   getRemoteConfig,
   getString,
   getValue,
+  type RemoteConfig,
 } from "firebase/remote-config";
 import {
   createContext,
@@ -50,7 +50,7 @@ interface FeatureFlagContextValue {
 }
 
 const FeatureFlagContext = createContext<FeatureFlagContextValue | undefined>(
-  undefined,
+  undefined
 );
 
 /**
@@ -85,7 +85,7 @@ export function FeatureFlagProvider({
   const [isReady, setIsReady] = useState(false);
   const [remoteConfig, setRemoteConfig] = useState<RemoteConfig | null>(null);
   const [flagCache, setFlagCache] = useState<Record<string, FeatureFlagValue>>(
-    {},
+    {}
   );
 
   // Initialize Firebase Remote Config
@@ -146,7 +146,7 @@ export function FeatureFlagProvider({
       logError(
         error,
         "FEATURE_FLAGS",
-        "Failed to initialize Firebase Remote Config",
+        "Failed to initialize Firebase Remote Config"
       );
       setIsLoading(false);
     }
@@ -164,7 +164,7 @@ export function FeatureFlagProvider({
         logError(
           error,
           "FEATURE_FLAGS",
-          "Failed to fetch feature flags from Remote Config",
+          "Failed to fetch feature flags from Remote Config"
         );
       } finally {
         setIsLoading(false);
@@ -190,7 +190,7 @@ export function FeatureFlagProvider({
         return defaultValue;
       }
     },
-    [remoteConfig],
+    [remoteConfig]
   );
 
   /**
@@ -209,7 +209,7 @@ export function FeatureFlagProvider({
         return defaultValue;
       }
     },
-    [remoteConfig],
+    [remoteConfig]
   );
 
   /**
@@ -228,7 +228,7 @@ export function FeatureFlagProvider({
         return defaultValue;
       }
     },
-    [remoteConfig],
+    [remoteConfig]
   );
 
   /**
@@ -239,7 +239,7 @@ export function FeatureFlagProvider({
       const flagKey = `enable_${featureName}`;
       return getBooleanFlag(flagKey, false);
     },
-    [getBooleanFlag],
+    [getBooleanFlag]
   );
 
   /**
@@ -258,12 +258,12 @@ export function FeatureFlagProvider({
         logError(
           error,
           "FEATURE_FLAGS",
-          `Failed to get variant for: ${experimentName}`,
+          `Failed to get variant for: ${experimentName}`
         );
         return null;
       }
     },
-    [remoteConfig],
+    [remoteConfig]
   );
 
   /**
@@ -338,7 +338,7 @@ export function useFeatureFlags(): FeatureFlagContextValue {
 
   if (!context) {
     throw new Error(
-      "useFeatureFlags must be used within a FeatureFlagProvider",
+      "useFeatureFlags must be used within a FeatureFlagProvider"
     );
   }
 
