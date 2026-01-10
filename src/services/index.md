@@ -514,19 +514,63 @@ class ProductService extends BaseService<
 
 **Export:** `shopsService`
 
-**Purpose:** Shop/store management.
+**Purpose:** Shop/store management. Extends BaseService for type-safe CRUD operations. ✅
 
-**Key Methods:**
+**Architecture:** Extends `BaseService<ShopFE, ShopBE, ShopFormFE, Partial<ShopFormFE>>` ✅
 
-- `getShops(filters)` - List shops
-- `getShopById(id)` - Get shop details
-- `getShopBySlug(slug)` - Get shop by URL
-- `createShop(data)` - Create shop (seller)
-- `updateShop(id, data)` - Update shop
-- `getShopProducts(shopId)` - Shop products
-- `getShopStats(shopId)` - Shop statistics
-- `followShop(shopId)` - Follow shop
-- `unfollowShop(shopId)` - Unfollow shop
+**Inherited Methods from BaseService:** ✅
+
+- `getById(id)` - Get shop by ID with FE transformation
+- `getAll(params, options)` - Get paginated shops list
+- `create(data, options)` - Create new shop
+- `update(id, data, options)` - Update shop by ID
+- `patch(id, data, options)` - Partial update shop
+- `delete(id, options)` - Delete shop by ID
+- `bulkDelete(ids, options)` - Delete multiple shops
+- `exists(id, options)` - Check if shop exists
+- `count(params, options)` - Count shops
+
+**Custom Shop-Specific Methods:**
+
+- `list(filters)` - List shops with custom filters, returns ShopCardFE (overrides getAll)
+- `getBySlug(slug)` - Get shop by URL-friendly slug
+- `updateBySlug(slug, formData)` - Update shop by slug
+- `deleteBySlug(slug)` - Delete shop by slug
+- `verify(slug, data)` - Verify shop (admin only)
+- `ban(slug, data)` - Ban/unban shop (admin only)
+- `setFeatureFlags(slug, data)` - Set feature flags (admin only)
+- `getPayments(slug)` - Get shop payments (owner/admin)
+- `processPayment(slug, data)` - Process payment (admin only)
+- `getStats(slug)` - Get shop statistics
+- `getShopProducts(slug, options)` - Get products for shop (paginated)
+- `getShopReviews(slug, page?, limit?)` - Get shop reviews (paginated)
+- `follow(slug)` - Follow shop
+- `unfollow(slug)` - Unfollow shop
+- `checkFollowing(slug)` - Check if following shop
+- `getFollowing()` - Get following shops list
+- `getFeatured()` - Get featured shops
+- `getHomepage()` - Get homepage shops
+- `bulkVerify(ids)` - Bulk verify shops
+- `bulkUnverify(ids)` - Bulk unverify shops
+- `bulkFeature(ids)` - Bulk feature shops
+- `bulkUnfeature(ids)` - Bulk unfeature shops
+- `bulkActivate(ids)` - Bulk activate shops
+- `bulkDeactivate(ids)` - Bulk deactivate shops
+- `bulkBan(ids, banReason?)` - Bulk ban shops
+- `bulkUnban(ids)` - Bulk unban shops
+- `bulkUpdate(ids, updates)` - Bulk update shops
+- `getByIds(ids)` - Batch fetch shops by IDs
+
+**Features:**
+
+- ✅ **Extends BaseService** for type-safe CRUD operations (January 11, 2026)
+- ✅ **Consistent error handling** via BaseService.handleError
+- ✅ **Slug-based operations** for user-friendly URLs alongside ID-based operations
+- ✅ **Admin verification** and moderation capabilities
+- ✅ **Payment processing** and tracking
+- ✅ **Social features** (follow/unfollow)
+- ✅ **Bulk operations** for admin efficiency
+- ✅ **Reduced duplication** from 313 lines via BaseService inheritance
 
 ---
 
@@ -629,17 +673,41 @@ class ProductService extends BaseService<
 
 **Export:** `reviewsService`
 
-**Purpose:** Product and shop reviews.
+**Purpose:** Product and shop reviews management. Extends BaseService for type-safe CRUD operations. ✅
 
-**Key Methods:**
+**Architecture:** Extends `BaseService<ReviewFE, ReviewBE, ReviewFormFE, Partial<ReviewFormFE>>` ✅
 
-- `getReviews(productId/shopId, filters)` - Get reviews
-- `createReview(data)` - Submit review
-- `updateReview(id, data)` - Update review
-- `deleteReview(id)` - Delete review
-- `likeReview(id)` - Like review
-- `reportReview(id, reason)` - Report review
-- `getReviewStats(productId)` - Rating statistics
+**Inherited Methods from BaseService:** ✅
+
+- `getById(id)` - Get review by ID with FE transformation
+- `create(data, options)` - Create new review
+- `update(id, data, options)` - Update review
+- `delete(id, options)` - Delete review
+
+**Custom Review-Specific Methods:**
+
+- `list(filters)` - List reviews with filters and pagination (overrides getAll)
+- `moderate(id, data)` - Moderate review (approve/reject for shop owners/admin)
+- `markHelpful(id)` - Mark review as helpful
+- `uploadMedia(files)` - Upload review media (images/videos)
+- `getSummary(filters)` - Get review summary statistics (average rating, distribution, verified purchase %)
+- `canReview(productId?, auctionId?)` - Check if user can review
+- `getFeatured()` - Get featured reviews
+- `getHomepage()` - Get homepage reviews (featured, approved, verified)
+- `bulkApprove(ids)` - Bulk approve reviews (admin)
+- `bulkReject(ids)` - Bulk reject reviews (admin)
+
+**Features:**
+
+- ✅ **Extends BaseService** for type-safe CRUD operations (January 11, 2026)
+- ✅ **Consistent error handling** via BaseService.handleError
+- ✅ **Review moderation** for shop owners and admins
+- ✅ **Media uploads** for photo/video reviews
+- ✅ **Helpful voting** system
+- ✅ **Review eligibility** checking
+- ✅ **Statistics and summaries** for product ratings
+- ✅ **Bulk moderation** for admin efficiency
+- ✅ **Reduced duplication** from 203 lines via BaseService inheritance
 
 ---
 
