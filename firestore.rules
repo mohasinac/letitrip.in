@@ -55,25 +55,61 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       
       // Users can only create their own profile
-      allow create: if isAuthenticated() && userId() == userDocId;
+      allow create: if isAuthenticated() 
+        && userId() == userDocId
+        && request.resource.data.keys().hasAll(['email', 'role'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.email.size() <= 255
+        && request.resource.data.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
+        && request.resource.data.role in ['buyer', 'seller', 'admin']
+        && (!('display_name' in request.resource.data) || (request.resource.data.display_name is string && request.resource.data.display_name.size() <= 100))
+        && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20))
+        && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 500));
       
       // Users can update their own profile, admins can update any
-      allow update: if isOwner(userDocId) || isAdmin();
+      allow update: if (isOwner(userDocId) || isAdmin())
+        && (!('email' in request.resource.data) || (request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 255))
+        && (!('display_name' in request.resource.data) || (request.resource.data.display_name is string && request.resource.data.display_name.size() <= 100))
+        && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20))
+        && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 500))
+        && (!('role' in request.resource.data) || isAdmin()); // Only admins can change roles
       
       // Only admins can delete users
       allow delete: if isAdmin();
       
       // User subcollections (addresses, favorites, etc.)
       match /addresses/{addressId} {
-        allow read, write: if isOwner(userDocId);
+        allow read: if isOwner(userDocId);
+        
+        allow create: if isOwner(userDocId)
+          && request.resource.data.keys().hasAll(['street', 'city', 'state', 'zip', 'country'])
+          && request.resource.data.street is string && request.resource.data.street.size() > 0 && request.resource.data.street.size() <= 200
+          && request.resource.data.city is string && request.resource.data.city.size() > 0 && request.resource.data.city.size() <= 100
+          && request.resource.data.state is string && request.resource.data.state.size() > 0 && request.resource.data.state.size() <= 100
+          && request.resource.data.zip is string && request.resource.data.zip.size() > 0 && request.resource.data.zip.size() <= 20
+          && request.resource.data.country is string && request.resource.data.country.size() > 0 && request.resource.data.country.size() <= 100;
+        
+        allow update: if isOwner(userDocId);
+        allow delete: if isOwner(userDocId);
       }
       
       match /favorites/{favoriteId} {
-        allow read, write: if isOwner(userDocId);
+        allow read: if isOwner(userDocId);
+        allow create: if isOwner(userDocId)
+          && request.resource.data.keys().hasAll(['product_id'])
+          && request.resource.data.product_id is string;
+        allow update: if isOwner(userDocId);
+        allow delete: if isOwner(userDocId);
       }
       
       match /follows/{followId} {
-        allow read, write: if isOwner(userDocId);
+        allow read: if isOwner(userDocId);
+        allow create: if isOwner(userDocId)
+          && request.resource.data.keys().hasAll(['shop_id'])
+          && request.resource.data.shop_id is string;
+        allow update: if isOwner(userDocId);
+        allow delete: if isOwner(userDocId);
       }
     }
     
@@ -86,10 +122,23 @@ service cloud.firestore {
       allow read: if true;
       
       // Only sellers and admins can create shops
-      allow create: if isSellerOrAdmin();
+      allow create: if isSellerOrAdmin()
+        && request.resource.data.keys().hasAll(['name', 'owner_id'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 200
+        && request.resource.data.owner_id is string
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 2000))
+        && (!('email' in request.resource.data) || (request.resource.data.email is string && request.resource.data.email.size() <= 255))
+        && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20));
       
       // Shop owners and admins can update
-      allow update: if ownsShop(shopId) || isAdmin();
+      allow update: if (ownsShop(shopId) || isAdmin())
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 200))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 2000))
+        && (!('email' in request.resource.data) || (request.resource.data.email is string && request.resource.data.email.size() <= 255))
+        && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20))
+        && (!('owner_id' in request.resource.data) || isAdmin()); // Only admins can transfer ownership
       
       // Only admins can delete shops
       allow delete: if isAdmin();
@@ -104,10 +153,26 @@ service cloud.firestore {
       allow read: if true;
       
       // Sellers and admins can create products
-      allow create: if isSellerOrAdmin();
+      allow create: if isSellerOrAdmin()
+        && request.resource.data.keys().hasAll(['name', 'price', 'shop_id', 'category_id'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 200
+        && request.resource.data.price is number
+        && request.resource.data.price >= 0
+        && request.resource.data.shop_id is string
+        && request.resource.data.category_id is string
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000))
+        && (!('stock' in request.resource.data) || (request.resource.data.stock is number && request.resource.data.stock >= 0))
+        && (!('sku' in request.resource.data) || (request.resource.data.sku is string && request.resource.data.sku.size() <= 100));
       
       // Product owners (via shop) and admins can update
-      allow update: if isSellerOrAdmin();
+      allow update: if isSellerOrAdmin()
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 200))
+        && (!('price' in request.resource.data) || (request.resource.data.price is number && request.resource.data.price >= 0))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000))
+        && (!('stock' in request.resource.data) || (request.resource.data.stock is number && request.resource.data.stock >= 0))
+        && (!('sku' in request.resource.data) || (request.resource.data.sku is string && request.resource.data.sku.size() <= 100));
       
       // Product owners and admins can delete
       allow delete: if isSellerOrAdmin();
@@ -122,7 +187,22 @@ service cloud.firestore {
       allow read: if true;
       
       // Only admins can write categories
-      allow create, update, delete: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['name', 'slug'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.slug is string
+        && request.resource.data.slug.size() > 0
+        && request.resource.data.slug.size() <= 100
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 1000));
+      
+      allow update: if isAdmin()
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100))
+        && (!('slug' in request.resource.data) || (request.resource.data.slug is string && request.resource.data.slug.size() > 0 && request.resource.data.slug.size() <= 100))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 1000));
+      
+      allow delete: if isAdmin();
     }
     
     // ============================================
@@ -134,10 +214,19 @@ service cloud.firestore {
       allow read: if isOwner(resource.data.customer_id) || isAdmin();
       
       // Only authenticated users can create orders (via API)
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['customer_id', 'total', 'status'])
+        && request.resource.data.customer_id is string
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        && request.resource.data.status in ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+        && (!('shipping_address' in request.resource.data) || request.resource.data.shipping_address is map)
+        && (!('notes' in request.resource.data) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
       
       // Only admins and the customer can update orders
-      allow update: if isOwner(resource.data.customer_id) || isAdmin();
+      allow update: if (isOwner(resource.data.customer_id) || isAdmin())
+        && (!('status' in request.resource.data) || request.resource.data.status in ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
+        && (!('notes' in request.resource.data) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
       
       // Only admins can delete orders
       allow delete: if isAdmin();
@@ -152,10 +241,22 @@ service cloud.firestore {
       allow read: if resource.data.is_active == true && resource.data.is_public == true;
       
       // Shop owners and admins can create coupons
-      allow create: if isSellerOrAdmin();
+      allow create: if isSellerOrAdmin()
+        && request.resource.data.keys().hasAll(['code', 'discount_type', 'discount_value'])
+        && request.resource.data.code is string
+        && request.resource.data.code.size() > 0
+        && request.resource.data.code.size() <= 50
+        && request.resource.data.discount_type in ['percentage', 'fixed']
+        && request.resource.data.discount_value is number
+        && request.resource.data.discount_value > 0
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 500));
       
       // Shop owners and admins can update their coupons
-      allow update: if isSellerOrAdmin();
+      allow update: if isSellerOrAdmin()
+        && (!('code' in request.resource.data) || (request.resource.data.code is string && request.resource.data.code.size() > 0 && request.resource.data.code.size() <= 50))
+        && (!('discount_type' in request.resource.data) || request.resource.data.discount_type in ['percentage', 'fixed'])
+        && (!('discount_value' in request.resource.data) || (request.resource.data.discount_value is number && request.resource.data.discount_value > 0))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 500));
       
       // Shop owners and admins can delete their coupons
       allow delete: if isSellerOrAdmin();
@@ -170,10 +271,22 @@ service cloud.firestore {
       allow read: if true;
       
       // Sellers and admins can create auctions
-      allow create: if isSellerOrAdmin();
+      allow create: if isSellerOrAdmin()
+        && request.resource.data.keys().hasAll(['title', 'starting_price', 'start_time', 'end_time'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.starting_price is number
+        && request.resource.data.starting_price >= 0
+        && request.resource.data.start_time is timestamp
+        && request.resource.data.end_time is timestamp
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000));
       
       // Auction owners and admins can update
-      allow update: if isSellerOrAdmin();
+      allow update: if isSellerOrAdmin()
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 200))
+        && (!('starting_price' in request.resource.data) || (request.resource.data.starting_price is number && request.resource.data.starting_price >= 0))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000));
       
       // Auction owners and admins can delete
       allow delete: if isSellerOrAdmin();
@@ -188,10 +301,16 @@ service cloud.firestore {
       allow read: if true;
       
       // Only authenticated users can create bids
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['auction_id', 'user_id', 'amount'])
+        && request.resource.data.auction_id is string
+        && request.resource.data.user_id is string
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0;
       
       // Users can update their own bids (for auto-bid), admins can update any
-      allow update: if isOwner(resource.data.user_id) || isAdmin();
+      allow update: if (isOwner(resource.data.user_id) || isAdmin())
+        && (!('amount' in request.resource.data) || (request.resource.data.amount is number && request.resource.data.amount > 0));
       
       // Only admins can delete bids
       allow delete: if isAdmin();
@@ -206,10 +325,19 @@ service cloud.firestore {
       allow read: if true;
       
       // Authenticated users can create reviews
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['product_id', 'user_id', 'rating'])
+        && request.resource.data.product_id is string
+        && request.resource.data.user_id is string
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && (!('comment' in request.resource.data) || (request.resource.data.comment is string && request.resource.data.comment.size() <= 2000));
       
       // Users can update their own reviews, admins can update any
-      allow update: if isOwner(resource.data.user_id) || isAdmin();
+      allow update: if (isOwner(resource.data.user_id) || isAdmin())
+        && (!('rating' in request.resource.data) || (request.resource.data.rating is number && request.resource.data.rating >= 1 && request.resource.data.rating <= 5))
+        && (!('comment' in request.resource.data) || (request.resource.data.comment is string && request.resource.data.comment.size() <= 2000));
       
       // Users can delete their own reviews, admins can delete any
       allow delete: if isOwner(resource.data.user_id) || isAdmin();
@@ -224,10 +352,17 @@ service cloud.firestore {
       allow read: if isOwner(resource.data.user_id);
       
       // Users can add to their cart
-      allow create: if isAuthenticated() && request.resource.data.user_id == userId();
+      allow create: if isAuthenticated() 
+        && request.resource.data.user_id == userId()
+        && request.resource.data.keys().hasAll(['product_id', 'quantity'])
+        && request.resource.data.product_id is string
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.quantity <= 999;
       
       // Users can update their own cart items
-      allow update: if isOwner(resource.data.user_id);
+      allow update: if isOwner(resource.data.user_id)
+        && (!('quantity' in request.resource.data) || (request.resource.data.quantity is number && request.resource.data.quantity > 0 && request.resource.data.quantity <= 999));
       
       // Users can delete their own cart items
       allow delete: if isOwner(resource.data.user_id);
@@ -289,10 +424,20 @@ service cloud.firestore {
       allow read: if isOwner(resource.data.user_id) || isAdmin();
       
       // Authenticated users can create tickets
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['user_id', 'subject', 'status'])
+        && request.resource.data.user_id is string
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() > 0
+        && request.resource.data.subject.size() <= 200
+        && request.resource.data.status in ['open', 'in_progress', 'resolved', 'closed']
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000));
       
       // Only admins can update tickets (to assign, resolve, etc.)
-      allow update: if isAdmin();
+      allow update: if isAdmin()
+        && (!('subject' in request.resource.data) || (request.resource.data.subject is string && request.resource.data.subject.size() > 0 && request.resource.data.subject.size() <= 200))
+        && (!('status' in request.resource.data) || request.resource.data.status in ['open', 'in_progress', 'resolved', 'closed'])
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() <= 5000));
       
       // Only admins can delete tickets
       allow delete: if isAdmin();
@@ -300,7 +445,14 @@ service cloud.firestore {
       // Ticket messages subcollection
       match /messages/{messageId} {
         allow read: if isOwner(get(/databases/$(database)/documents/support_tickets/$(ticketId)).data.user_id) || isAdmin();
-        allow create: if isAuthenticated();
+        
+        allow create: if isAuthenticated()
+          && request.resource.data.keys().hasAll(['user_id', 'content'])
+          && request.resource.data.user_id is string
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 5000;
+        
         allow update, delete: if isAdmin();
       }
     }
@@ -326,7 +478,25 @@ service cloud.firestore {
       allow read: if resource.data.status == 'published' || isAdmin();
       
       // Only admins can write
-      allow create, update, delete: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['title', 'content', 'status'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.status in ['draft', 'published', 'archived']
+        && (!('excerpt' in request.resource.data) || (request.resource.data.excerpt is string && request.resource.data.excerpt.size() <= 500))
+        && (!('slug' in request.resource.data) || (request.resource.data.slug is string && request.resource.data.slug.size() <= 200));
+      
+      allow update: if isAdmin()
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 200))
+        && (!('content' in request.resource.data) || (request.resource.data.content is string && request.resource.data.content.size() > 0))
+        && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'published', 'archived'])
+        && (!('excerpt' in request.resource.data) || (request.resource.data.excerpt is string && request.resource.data.excerpt.size() <= 500))
+        && (!('slug' in request.resource.data) || (request.resource.data.slug is string && request.resource.data.slug.size() <= 200));
+      
+      allow delete: if isAdmin();
     }
     
     // ============================================
