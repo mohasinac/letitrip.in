@@ -1,11 +1,6 @@
-import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
+import { buildUrl, ORDER_ROUTES } from "@/constants/api-routes";
 import { logServiceError } from "@/lib/error-logger";
-import {
-  ValidationError,
-  NotFoundError,
-  BusinessError,
-  ErrorCode,
-} from "@/lib/errors";
+import { ErrorCode, NotFoundError, ValidationError } from "@/lib/errors";
 import {
   OrderBE,
   OrderFiltersBE,
@@ -236,12 +231,13 @@ class OrdersService {
           { errors: error.errors }
         );
       }
-      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
-        throw new NotFoundError(
-          "Order not found",
-          ErrorCode.ORDER_NOT_FOUND,
-          { orderId: id }
-        );
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError("Order not found", ErrorCode.ORDER_NOT_FOUND, {
+          orderId: id,
+        });
       }
       throw error;
     }
@@ -280,12 +276,13 @@ class OrdersService {
           { errors: error.errors }
         );
       }
-      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
-        throw new NotFoundError(
-          "Order not found",
-          ErrorCode.ORDER_NOT_FOUND,
-          { orderId: id }
-        );
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError("Order not found", ErrorCode.ORDER_NOT_FOUND, {
+          orderId: id,
+        });
       }
       throw error;
     }
@@ -309,12 +306,13 @@ class OrdersService {
           { errors: error.errors }
         );
       }
-      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
-        throw new NotFoundError(
-          "Order not found",
-          ErrorCode.ORDER_NOT_FOUND,
-          { orderId: id }
-        );
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError("Order not found", ErrorCode.ORDER_NOT_FOUND, {
+          orderId: id,
+        });
       }
       throw error;
     }

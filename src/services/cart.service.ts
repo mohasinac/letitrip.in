@@ -1,10 +1,5 @@
 import { INVENTORY_SETTINGS } from "@/constants/business-logic-constants";
-import {
-  ValidationError,
-  NotFoundError,
-  BusinessError,
-  ErrorCode,
-} from "@/lib/errors";
+import { ErrorCode, NotFoundError, ValidationError } from "@/lib/errors";
 import { CartBE } from "@/types/backend/cart.types";
 import {
   AddToCartFormFE,
@@ -145,12 +140,13 @@ class CartService {
           { errors: error.errors }
         );
       }
-      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
-        throw new NotFoundError(
-          "Cart item not found",
-          ErrorCode.NOT_FOUND,
-          { itemId }
-        );
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError("Cart item not found", ErrorCode.NOT_FOUND, {
+          itemId,
+        });
       }
       throw error;
     }
@@ -187,7 +183,9 @@ class CartService {
   async applyCoupon(code: string): Promise<CartFE> {
     try {
       // Validate coupon code
-      const validatedData = ApplyCouponSchema.parse({ code: code.toUpperCase() });
+      const validatedData = ApplyCouponSchema.parse({
+        code: code.toUpperCase(),
+      });
 
       const cartBE = await apiService.post<CartBE>("/cart/coupon", {
         code: validatedData.code,
