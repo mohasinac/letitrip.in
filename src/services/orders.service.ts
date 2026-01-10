@@ -1,6 +1,12 @@
 import { ORDER_ROUTES, buildUrl } from "@/constants/api-routes";
 import { logServiceError } from "@/lib/error-logger";
 import {
+  ValidationError,
+  NotFoundError,
+  BusinessError,
+  ErrorCode,
+} from "@/lib/errors";
+import {
   OrderBE,
   OrderFiltersBE,
   UpdateOrderStatusRequestBE,
@@ -23,7 +29,7 @@ import {
   toFEOrder,
   toFEOrderCard,
 } from "@/types/transforms/order.transforms";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
 /**
@@ -178,15 +184,26 @@ class OrdersService {
 
   // Create order (customer checkout)
   async create(formData: CreateOrderFormFE): Promise<OrderFE> {
-    // Validate input data
-    const validatedData = CreateOrderSchema.parse(formData);
+    try {
+      // Validate input data
+      const validatedData = CreateOrderSchema.parse(formData);
 
-    const request = toBECreateOrderRequest(validatedData);
-    const orderBE = await apiService.post<OrderBE>(
-      ORDER_ROUTES.CREATE,
-      request
-    );
-    return toFEOrder(orderBE);
+      const request = toBECreateOrderRequest(validatedData);
+      const orderBE = await apiService.post<OrderBE>(
+        ORDER_ROUTES.CREATE,
+        request
+      );
+      return toFEOrder(orderBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid order data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 
   // Update order status (seller/admin)
@@ -195,21 +212,39 @@ class OrdersService {
     status: string,
     internalNotes?: string
   ): Promise<OrderFE> {
-    // Validate input data
-    const validatedData = UpdateOrderStatusSchema.parse({
-      status,
-      internalNotes,
-    });
+    try {
+      // Validate input data
+      const validatedData = UpdateOrderStatusSchema.parse({
+        status,
+        internalNotes,
+      });
 
-    const request = toBEUpdateOrderStatusRequest(
-      validatedData.status,
-      validatedData.internalNotes
-    );
-    const orderBE = await apiService.patch<OrderBE>(
-      ORDER_ROUTES.BY_ID(id),
-      request
-    );
-    return toFEOrder(orderBE);
+      const request = toBEUpdateOrderStatusRequest(
+        validatedData.status,
+        validatedData.internalNotes
+      );
+      const orderBE = await apiService.patch<OrderBE>(
+        ORDER_ROUTES.BY_ID(id),
+        request
+      );
+      return toFEOrder(orderBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid order status",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
+        throw new NotFoundError(
+          "Order not found",
+          ErrorCode.ORDER_NOT_FOUND,
+          { orderId: id }
+        );
+      }
+      throw error;
+    }
   }
 
   // Create shipment (seller/admin)
@@ -219,34 +254,70 @@ class OrdersService {
     shippingProvider: string,
     estimatedDelivery?: Date
   ): Promise<OrderFE> {
-    // Validate input data
-    const validatedData = CreateShipmentSchema.parse({
-      trackingNumber,
-      shippingProvider,
-      estimatedDelivery,
-    });
+    try {
+      // Validate input data
+      const validatedData = CreateShipmentSchema.parse({
+        trackingNumber,
+        shippingProvider,
+        estimatedDelivery,
+      });
 
-    const request = toBECreateShipmentRequest(
-      validatedData.trackingNumber,
-      validatedData.shippingProvider,
-      validatedData.estimatedDelivery
-    );
-    const orderBE = await apiService.post<OrderBE>(
-      `/orders/${id}/shipment`,
-      request
-    );
-    return toFEOrder(orderBE);
+      const request = toBECreateShipmentRequest(
+        validatedData.trackingNumber,
+        validatedData.shippingProvider,
+        validatedData.estimatedDelivery
+      );
+      const orderBE = await apiService.post<OrderBE>(
+        `/orders/${id}/shipment`,
+        request
+      );
+      return toFEOrder(orderBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid shipment data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
+        throw new NotFoundError(
+          "Order not found",
+          ErrorCode.ORDER_NOT_FOUND,
+          { orderId: id }
+        );
+      }
+      throw error;
+    }
   }
 
   // Cancel order (user before shipping)
   async cancel(id: string, reason: string): Promise<OrderFE> {
-    // Validate input data
-    const validatedData = CancelOrderSchema.parse({ reason });
+    try {
+      // Validate input data
+      const validatedData = CancelOrderSchema.parse({ reason });
 
-    const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
-      reason: validatedData.reason,
-    });
-    return toFEOrder(orderBE);
+      const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
+        reason: validatedData.reason,
+      });
+      return toFEOrder(orderBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid cancellation reason",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
+        throw new NotFoundError(
+          "Order not found",
+          ErrorCode.ORDER_NOT_FOUND,
+          { orderId: id }
+        );
+      }
+      throw error;
+    }
   }
 
   // Track shipment
