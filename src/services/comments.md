@@ -1,5 +1,16 @@
 # Services Layer - Future Refactoring Notes
 
+## Completed Improvements ✅
+
+### Auth Service Validation (auth.service.ts)
+- ✅ **Zod Schemas Implemented**: All authentication methods validated (January 10, 2026)
+- ✅ **Login Validation**: Email format and password length requirements
+- ✅ **Register Validation**: Password strength (uppercase, lowercase, number), name length
+- ✅ **Google Auth Validation**: ID token and optional user data validation
+- ✅ **Password Reset Validation**: Email format validation
+- ✅ **Change Password Validation**: Current and new password validation with strength requirements
+- ✅ **Email Verification Validation**: Token validation
+
 ## General Architecture Improvements
 
 ### 1. Service Layer Abstraction

@@ -1,7 +1,68 @@
 import { logServiceError } from "@/lib/error-logger";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
+import { z } from "zod";
 import { apiService } from "./api.service";
+
+/**
+ * Zod validation schemas for authentication
+ */
+
+// Login credentials schema
+export const LoginCredentialsSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  rememberMe: z.boolean().optional(),
+});
+
+// Register data schema
+export const RegisterDataSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must not exceed 100 characters"),
+  role: z.enum(["user", "seller"]).optional().default("user"),
+});
+
+// Google auth data schema
+export const GoogleAuthDataSchema = z.object({
+  idToken: z.string().min(1, "ID token is required"),
+  userData: z
+    .object({
+      displayName: z.string().optional(),
+      email: z.string().email().optional(),
+      photoURL: z.string().url().optional(),
+    })
+    .optional(),
+});
+
+// Password reset request schema
+export const PasswordResetRequestSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+// Change password schema
+export const ChangePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z
+    .string()
+    .min(8, "New password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+});
+
+// Email verification schema
+export const EmailVerificationSchema = z.object({
+  token: z.string().min(1, "Verification token is required"),
+});
 
 /**
  * Auth API response user (simplified, not full UserBE)
@@ -150,11 +211,14 @@ class AuthService {
   // Register new user
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
+      // Validate input with Zod
+      const validatedData = RegisterDataSchema.parse(data);
+
       const response = await apiService.post<{
         message: string;
         user: AuthUserBE;
         sessionId: string;
-      }>("/auth/register", data);
+      }>("/auth/register", validatedData);
 
       // Transform and store user
       const userFE = toFEAuthUser(response.user);
@@ -173,11 +237,14 @@ class AuthService {
   // Login user
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
+      // Validate input with Zod
+      const validatedCredentials = LoginCredentialsSchema.parse(credentials);
+
       const response = await apiService.post<{
         message: string;
         user: AuthUserBE;
         sessionId: string;
-      }>("/auth/login", credentials);
+      }>("/auth/login", validatedCredentials);
 
       // Transform and store user
       const userFE = toFEAuthUser(response.user);
@@ -196,12 +263,15 @@ class AuthService {
   // Google Sign-In
   async loginWithGoogle(data: GoogleAuthData): Promise<GoogleAuthResponse> {
     try {
+      // Validate input with Zod
+      const validatedData = GoogleAuthDataSchema.parse(data);
+
       const response = await apiService.post<{
         message: string;
         user: AuthUserBE;
         sessionId: string;
         isNewUser: boolean;
-      }>("/auth/google", data);
+      }>("/auth/google", validatedData);
 
       // Transform and store user
       const userFE = toFEAuthUser(response.user);
@@ -333,12 +403,16 @@ class AuthService {
 
   // Request password reset
   async requestPasswordReset(email: string): Promise<{ message: string }> {
-    return apiService.post("/auth/reset-password", { email });
+    // Validate email with Zod
+    const validatedData = PasswordResetRequestSchema.parse({ email });
+    return apiService.post("/auth/reset-password", validatedData);
   }
 
   // Verify email
   async verifyEmail(token: string): Promise<{ message: string }> {
-    return apiService.post("/auth/verify-email", { token });
+    // Validate token with Zod
+    const validatedData = EmailVerificationSchema.parse({ token });
+    return apiService.post("/auth/verify-email", validatedData);
   }
 
   // Update user profile
@@ -359,10 +433,12 @@ class AuthService {
     currentPassword: string,
     newPassword: string
   ): Promise<{ message: string }> {
-    return apiService.post("/auth/change-password", {
+    // Validate passwords with Zod
+    const validatedData = ChangePasswordSchema.parse({
       currentPassword,
       newPassword,
     });
+    return apiService.post("/auth/change-password", validatedData);
   }
 }
 
