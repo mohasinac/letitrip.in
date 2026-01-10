@@ -68,6 +68,14 @@
 - ✅ **Customer Notes Validation**: Max 500 characters
 - ✅ **Internal Notes Validation**: Max 1000 characters
 
+### Users Service (users.service.ts)
+
+- ✅ **Extends BaseService**: Migrated to BaseService<UserFE, UserBE, UserProfileFormFE, Partial<UserProfileFormFE>> (January 11, 2026)
+- ✅ **Generic CRUD Operations**: Inherits getById, getAll, create, update, patch, delete, bulkDelete, exists, count from BaseService
+- ✅ **Custom Methods Preserved**: list (with filters), ban, changeRole, getMe, updateMe, changePassword, sendEmailVerification, verifyEmail, sendMobileVerification, verifyMobile, uploadAvatar, deleteAvatar, deleteAccount, getStats, bulkMakeSeller, bulkMakeUser, bulkBan, bulkUnban, bulkVerifyEmail, bulkVerifyPhone, bulkDelete
+- ✅ **Error Handling**: BaseService error handling integration for consistent error responses
+- ✅ **Benefits**: Reduced code duplication, consistent error handling, type-safe CRUD operations, easier testing
+
 ## General Architecture Improvements
 
 ### 1. Service Layer Abstraction

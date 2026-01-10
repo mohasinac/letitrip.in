@@ -155,18 +155,61 @@ class ProductService extends BaseService<
 
 **Export:** `usersService`
 
-**Purpose:** User profile and account management.
+**Purpose:** User profile and account management. Extends BaseService for type-safe CRUD operations. ✅
 
-**Key Methods:**
+**Architecture:** Extends `BaseService<UserFE, UserBE, UserProfileFormFE, Partial<UserProfileFormFE>>` ✅
 
-- `getProfile(userId)` - Get user profile
-- `updateProfile(userId, data)` - Update profile
-- `uploadProfilePicture(file)` - Upload profile photo
-- `getAddresses(userId)` - Get user addresses
-- `addAddress(userId, address)` - Add new address
-- `updateAddress(addressId, address)` - Update address
-- `deleteAddress(addressId)` - Delete address
-- `setDefaultAddress(addressId)` - Set default address
+**Inherited Methods from BaseService:** ✅
+
+- `getById(id)` - Get user by ID with FE transformation
+- `getAll(params, options)` - Get paginated users list
+- `create(data, options)` - Create new user
+- `update(id, data, options)` - Update user (overridden with custom endpoint structure)
+- `patch(id, data, options)` - Partial update user
+- `delete(id, options)` - Delete user
+- `bulkDelete(ids, options)` - Delete multiple users
+- `exists(id, options)` - Check if user exists
+- `count(params, options)` - Count users
+
+**Custom User-Specific Methods:**
+
+- `list(filters)` - List users with custom filter logic (admin only, overrides getAll)
+- `ban(id, isBanned, banReason?)` - Ban/unban user (admin only)
+- `changeRole(id, role, notes?)` - Change user role (admin only)
+- `getMe()` - Get current user profile
+- `updateMe(formData)` - Update current user profile
+- `changePassword(formData)` - Change password
+- `sendEmailVerification()` - Send email verification OTP
+- `verifyEmail(formData)` - Verify email with OTP
+- `sendMobileVerification()` - Send mobile verification OTP
+- `verifyMobile(formData)` - Verify mobile with OTP
+- `uploadAvatar(file)` - Upload user avatar
+- `deleteAvatar()` - Delete user avatar
+- `deleteAccount(password)` - Delete user account
+- `getStats()` - Get user statistics (admin only)
+- `bulkMakeSeller(ids)` - Bulk make users sellers
+- `bulkMakeUser(ids)` - Bulk make sellers regular users
+- `bulkBan(ids, banReason?)` - Bulk ban users
+- `bulkUnban(ids)` - Bulk unban users
+- `bulkVerifyEmail(ids)` - Bulk verify emails
+- `bulkVerifyPhone(ids)` - Bulk verify phones
+
+**Features:**
+
+- ✅ **Extends BaseService** for type-safe CRUD operations (January 11, 2026)
+- ✅ **Consistent error handling** via BaseService.handleError
+- ✅ **FE/BE type transformation** (UserFE ↔ UserBE)
+- User profile management
+- Avatar upload/delete
+- Email and mobile verification with OTP
+- Password management
+- Role management (admin features)
+- User ban/unban (admin features)
+- User statistics (admin features)
+- Bulk operations (admin features)
+- Account deletion
+- Pagination support
+- Advanced filtering
 
 ---
 
