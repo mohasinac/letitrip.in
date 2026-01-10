@@ -46,6 +46,74 @@ const firebaseConfig = getFirebaseClientConfig();
 
 ---
 
+## Security & Permissions
+
+### permissions.ts ✅
+
+**Exports:** Granular permission-based access control system
+
+**Key Exports:**
+
+- `PERMISSIONS` - All available permissions (100+ permissions)
+- `ROLE_PERMISSIONS` - Role-to-permissions mapping
+- `hasPermission(user, permission)` - Check single or multiple permissions (any)
+- `hasAllPermissions(user, permissions)` - Check all permissions required
+- `getUserPermissions(user)` - Get all user permissions
+- `hasRole(user, role)` - Check user role
+- `isAdmin(user)` - Check if user is admin
+- `isSeller(user)` - Check if user is seller
+- `isAuthenticated(user)` - Check if user is authenticated
+
+**Permission Categories:**
+
+- **Products**: view, create, edit, delete, publish, feature, manage_all
+- **Orders**: view_own, view_all, create, update, cancel, refund, manage_all
+- **Shops**: view, create, edit, delete, manage_all
+- **Users**: view, edit_own, edit_all, delete, manage_roles
+- **Reviews**: view, create, edit_own, delete_own, moderate
+- **Categories**: view, create, edit, delete
+- **Auctions**: view, create, edit, delete, bid, manage_all
+- **Payments**: view_own, view_all, process, refund
+- **Analytics**: view_own, view_all
+- **Support**: view_own, create, manage_all
+- **Admin**: dashboard, settings, manage_system
+
+**Features:**
+
+- ✅ **Granular permissions** (January 10, 2026)
+- ✅ **Role-based defaults** (admin, seller, user, guest)
+- ✅ **Custom permissions** (per-user overrides)
+- ✅ **Multiple permission checks** (any or all)
+- ✅ **Type-safe** (TypeScript enums and types)
+
+**Usage:**
+
+```typescript
+import { hasPermission, PERMISSIONS, isAdmin } from "@/lib/permissions";
+
+// Check single permission
+if (hasPermission(user, PERMISSIONS.PRODUCTS_CREATE)) {
+  // User can create products
+}
+
+// Check multiple permissions (any)
+if (hasPermission(user, [PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_EDIT])) {
+  // User can create OR edit products
+}
+
+// Check multiple permissions (all)
+if (hasAllPermissions(user, [PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_PUBLISH])) {
+  // User can create AND publish products
+}
+
+// Role checks
+if (isAdmin(user)) {
+  // User is admin
+}
+```
+
+---
+
 ## Core Utilities
 
 ### utils.ts
