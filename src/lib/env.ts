@@ -1,14 +1,14 @@
 /**
  * Type-safe environment variables with runtime validation
- * 
+ *
  * This module validates all environment variables at startup using Zod schemas.
  * It provides type-safe access to environment variables throughout the application.
- * 
+ *
  * @module env
  */
 
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
   /**
@@ -17,23 +17,31 @@ export const env = createEnv({
    */
   server: {
     // Node Environment
-    NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
-    
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("production"),
+
     // Firebase Admin (Server-side only)
-    FIREBASE_ADMIN_PROJECT_ID: z.string().min(1, 'Firebase Admin Project ID is required'),
-    FIREBASE_ADMIN_CLIENT_EMAIL: z.string().email('Invalid Firebase Admin Client Email'),
-    FIREBASE_ADMIN_PRIVATE_KEY: z.string().min(1, 'Firebase Admin Private Key is required'),
-    
+    FIREBASE_ADMIN_PROJECT_ID: z
+      .string()
+      .min(1, "Firebase Admin Project ID is required"),
+    FIREBASE_ADMIN_CLIENT_EMAIL: z
+      .string()
+      .email("Invalid Firebase Admin Client Email"),
+    FIREBASE_ADMIN_PRIVATE_KEY: z
+      .string()
+      .min(1, "Firebase Admin Private Key is required"),
+
     // Application Settings
-    COUPON_CODE_PREFIX: z.string().default('LT'),
+    COUPON_CODE_PREFIX: z.string().default("LT"),
     COUPON_CODE_LENGTH: z.coerce.number().int().positive().default(8),
     MAX_FILE_SIZE: z.coerce.number().int().positive().default(10485760), // 10MB
-    ALLOWED_FILE_TYPES: z.string().default('image/jpeg,image/png,image/webp'),
-    
+    ALLOWED_FILE_TYPES: z.string().default("image/jpeg,image/png,image/webp"),
+
     // Rate Limiting
     RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900000), // 15 minutes
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(100),
-    
+
     // Firebase Indexes
     USE_COMPOSITE_INDEXES: z.coerce.boolean().default(false),
   },
@@ -44,27 +52,43 @@ export const env = createEnv({
    */
   client: {
     // Site Configuration
-    NEXT_PUBLIC_SITE_NAME: z.string().default('Letitrip'),
-    NEXT_PUBLIC_DOMAIN: z.string().default('letitrip.in'),
-    NEXT_PUBLIC_SITE_URL: z.string().url('Invalid site URL'),
-    NEXT_PUBLIC_API_URL: z.string().url('Invalid API URL'),
-    
+    NEXT_PUBLIC_SITE_NAME: z.string().default("Letitrip"),
+    NEXT_PUBLIC_DOMAIN: z.string().default("letitrip.in"),
+    NEXT_PUBLIC_SITE_URL: z.string().url("Invalid site URL"),
+    NEXT_PUBLIC_API_URL: z.string().url("Invalid API URL"),
+
     // Contact Information
-    NEXT_PUBLIC_CONTACT_PHONE: z.string().regex(/^\+?[0-9-]+$/, 'Invalid phone number format'),
-    NEXT_PUBLIC_WHATSAPP_NUMBER: z.string().regex(/^\+?[0-9-]+$/, 'Invalid WhatsApp number format'),
-    
+    NEXT_PUBLIC_CONTACT_PHONE: z
+      .string()
+      .regex(/^\+?[0-9-]+$/, "Invalid phone number format"),
+    NEXT_PUBLIC_WHATSAPP_NUMBER: z
+      .string()
+      .regex(/^\+?[0-9-]+$/, "Invalid WhatsApp number format"),
+
     // Firebase Configuration (Client-side)
-    NEXT_PUBLIC_FIREBASE_API_KEY: z.string().min(1, 'Firebase API Key is required'),
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().min(1, 'Firebase Auth Domain is required'),
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1, 'Firebase Project ID is required'),
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().min(1, 'Firebase Storage Bucket is required'),
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().min(1, 'Firebase Messaging Sender ID is required'),
-    NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1, 'Firebase App ID is required'),
+    NEXT_PUBLIC_FIREBASE_API_KEY: z
+      .string()
+      .min(1, "Firebase API Key is required"),
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z
+      .string()
+      .min(1, "Firebase Auth Domain is required"),
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: z
+      .string()
+      .min(1, "Firebase Project ID is required"),
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z
+      .string()
+      .min(1, "Firebase Storage Bucket is required"),
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z
+      .string()
+      .min(1, "Firebase Messaging Sender ID is required"),
+    NEXT_PUBLIC_FIREBASE_APP_ID: z
+      .string()
+      .min(1, "Firebase App ID is required"),
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
-    
+
     // Socket Configuration
-    NEXT_PUBLIC_SOCKET_URL: z.string().url('Invalid Socket URL'),
-    
+    NEXT_PUBLIC_SOCKET_URL: z.string().url("Invalid Socket URL"),
+
     // Feature Flags
     NEXT_PUBLIC_ENABLE_ANALYTICS: z.coerce.boolean().default(true),
   },
@@ -86,7 +110,7 @@ export const env = createEnv({
     RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,
     RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS,
     USE_COMPOSITE_INDEXES: process.env.USE_COMPOSITE_INDEXES,
-    
+
     // Client
     NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME,
     NEXT_PUBLIC_DOMAIN: process.env.NEXT_PUBLIC_DOMAIN,
@@ -95,12 +119,17 @@ export const env = createEnv({
     NEXT_PUBLIC_CONTACT_PHONE: process.env.NEXT_PUBLIC_CONTACT_PHONE,
     NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
     NEXT_PUBLIC_ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS,
   },
@@ -125,23 +154,23 @@ export const env = createEnv({
 /**
  * Check if running in development mode
  */
-export const isDevelopment = env.NODE_ENV === 'development';
+export const isDevelopment = env.NODE_ENV === "development";
 
 /**
  * Check if running in production mode
  */
-export const isProduction = env.NODE_ENV === 'production';
+export const isProduction = env.NODE_ENV === "production";
 
 /**
  * Check if running in test mode
  */
-export const isTest = env.NODE_ENV === 'test';
+export const isTest = env.NODE_ENV === "test";
 
 /**
  * Get allowed file types as an array
  */
 export const getAllowedFileTypes = (): string[] => {
-  return env.ALLOWED_FILE_TYPES.split(',').map(type => type.trim());
+  return env.ALLOWED_FILE_TYPES.split(",").map((type) => type.trim());
 };
 
 /**
@@ -163,7 +192,7 @@ export const getFirebaseClientConfig = () => ({
 export const getFirebaseAdminConfig = () => ({
   projectId: env.FIREBASE_ADMIN_PROJECT_ID,
   clientEmail: env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  privateKey: env.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  privateKey: env.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, "\n"),
 });
 
 /**

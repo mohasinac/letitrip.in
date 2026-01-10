@@ -19,6 +19,68 @@ import type { PaginatedResponse } from "@/types/shared/pagination.types";
 import type { BulkActionResponse } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
 import { getUserFriendlyError } from "@/components/common/ErrorMessage";
+import { z } from "zod";
+
+/**
+ * Zod validation schemas for product operations
+ */
+
+// Product form schema for create/update
+export const ProductFormSchema = z.object({
+  name: z.string().min(3, "Product name must be at least 3 characters").max(200, "Product name must not exceed 200 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters").max(200, "Slug must not exceed 200 characters").regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens").optional(),
+  description: z.string().min(10, "Description must be at least 10 characters").max(5000, "Description must not exceed 5000 characters"),
+  price: z.number().positive("Price must be greater than 0").max(10000000, "Price must not exceed ₹1,00,00,000"),
+  compareAtPrice: z.number().positive().optional().nullable(),
+  costPerItem: z.number().positive().optional().nullable(),
+  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+  sku: z.string().optional().nullable(),
+  barcode: z.string().optional().nullable(),
+  trackQuantity: z.boolean().optional().default(true),
+  continueSellingWhenOutOfStock: z.boolean().optional().default(false),
+  requiresShipping: z.boolean().optional().default(true),
+  weight: z.number().positive().optional().nullable(),
+  categoryId: z.string().min(1, "Category is required"),
+  shopId: z.string().min(1, "Shop ID is required"),
+  sellerId: z.string().min(1, "Seller ID is required"),
+  tags: z.array(z.string()).optional().default([]),
+  images: z.array(z.string().url("Invalid image URL")).min(1, "At least one image is required").max(10, "Maximum 10 images allowed"),
+  status: z.enum(["draft", "published", "archived"]).optional().default("draft"),
+  featured: z.boolean().optional().default(false),
+  seo: z.object({
+    title: z.string().max(60, "SEO title must not exceed 60 characters").optional().nullable(),
+    description: z.string().max(160, "SEO description must not exceed 160 characters").optional().nullable(),
+  }).optional(),
+});
+
+// Stock update schema
+export const StockUpdateSchema = z.object({
+  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+});
+
+// Status update schema
+export const StatusUpdateSchema = z.object({
+  status: z.enum(["draft", "published", "archived"], {
+    errorMap: () => ({ message: "Status must be draft, published, or archived" }),
+  }),
+});
+
+// Quick create schema (minimal fields)
+export const QuickCreateSchema = z.object({
+  name: z.string().min(3, "Product name must be at least 3 characters").max(200, "Product name must not exceed 200 characters"),
+  price: z.number().positive("Price must be greater than 0").max(10000000, "Price must not exceed ₹1,00,00,000"),
+  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+  categoryId: z.string().min(1, "Category is required"),
+  status: z.enum(["draft", "published", "archived"]).optional(),
+  images: z.array(z.string().url("Invalid image URL")).optional(),
+});
+
+// Bulk action schema
+export const BulkActionSchema = z.object({
+  action: z.enum(["publish", "unpublish", "archive", "feature", "unfeature", "update-stock", "delete", "update"]),
+  productIds: z.array(z.string().min(1, "Product ID cannot be empty")).min(1, "At least one product must be selected"),
+  data: z.any().optional(),
+});
 
 /**
  * Products Service - Reference Implementation
@@ -100,7 +162,10 @@ class ProductsService {
    */
   async create(formData: ProductFormFE): Promise<ProductFE> {
     try {
-      const createRequest = toBEProductCreate(formData);
+      // Validate input data
+      const validatedData = ProductFormSchema.parse(formData);
+      
+      const createRequest = toBEProductCreate(validatedData);
       const response: any = await apiService.post(
         PRODUCT_ROUTES.LIST,
         createRequest,
@@ -119,7 +184,10 @@ class ProductsService {
     formData: Partial<ProductFormFE>,
   ): Promise<ProductFE> {
     try {
-      const updateRequest = toBEProductUpdate(formData);
+      // Validate input data (allow partial updates)
+      const validatedData = ProductFormSchema.partial().parse(formData);
+      
+      const updateRequest = toBEProductUpdate(validatedData);
       const response: any = await apiService.patch(
         PRODUCT_ROUTES.BY_SLUG(slug),
         updateRequest,
@@ -202,8 +270,11 @@ class ProductsService {
    * Update product stock
    */
   async updateStock(slug: string, stockCount: number): Promise<ProductFE> {
+    // Validate stock count
+    const validatedData = StockUpdateSchema.parse({ stockCount });
+    
     const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
-      stockCount,
+      stockCount: validatedData.stockCount,
     });
     return toFEProduct(response.data);
   }
@@ -212,8 +283,11 @@ class ProductsService {
    * Update product status
    */
   async updateStatus(slug: string, status: string): Promise<ProductFE> {
+    // Validate status
+    const validatedData = StatusUpdateSchema.parse({ status });
+    
     const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
-      status,
+      status: validatedData.status,
     });
     return toFEProduct(response.data);
   }
@@ -262,12 +336,19 @@ class ProductsService {
     data?: any,
   ): Promise<BulkActionResponse> {
     try {
+      // Validate bulk action inputs
+      const validatedAction = BulkActionSchema.parse({
+        action,
+        productIds,
+        data,
+      });
+      
       const response = await apiService.post<BulkActionResponse>(
         PRODUCT_ROUTES.BULK,
         {
-          action,
-          ids: productIds,
-          updates: data,
+          action: validatedAction.action,
+          ids: validatedAction.productIds,
+          updates: validatedAction.data,
         },
       );
       return response;
@@ -362,9 +443,12 @@ class ProductsService {
    * Quick update for inline editing
    */
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
+    // Validate using partial schema
+    const validatedData = ProductFormSchema.partial().parse(data);
+    
     const productBE = await apiService.patch<ProductBE>(
       PRODUCT_ROUTES.BY_SLUG(slug),
-      data,
+      validatedData,
     );
     return toFEProduct(productBE);
   }
