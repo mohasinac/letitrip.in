@@ -8,23 +8,34 @@ This folder contains service classes that encapsulate business logic and API com
 
 **Export:** `authService`
 
-**Purpose:** User authentication and session management.
+**Purpose:** User authentication and session management with Zod validation. ✅
+
+**Validation Schemas:** ✅
+- `LoginCredentialsSchema` - Email and password validation
+- `RegisterDataSchema` - Registration with password strength requirements
+- `GoogleAuthDataSchema` - Google OAuth token validation
+- `PasswordResetRequestSchema` - Email validation for password reset
+- `ChangePasswordSchema` - Password change with strength validation
+- `EmailVerificationSchema` - Token validation for email verification
 
 **Key Methods:**
 
-- `login(email, password, rememberMe?)` - Email/password authentication
-- `loginWithGoogle(idToken, userData)` - Google OAuth login
-- `register(data)` - User registration
+- `login(email, password, rememberMe?)` - Email/password authentication ✅ Validated
+- `loginWithGoogle(idToken, userData)` - Google OAuth login ✅ Validated
+- `register(data)` - User registration ✅ Validated
 - `logout()` - Sign out user
 - `getCurrentUser()` - Get current authenticated user
 - `getCachedUser()` - Get cached user (instant)
 - `refreshToken()` - Refresh auth token
-- `verifyEmail(token)` - Verify email address
-- `resetPassword(email)` - Send password reset email
-- `updatePassword(oldPassword, newPassword)` - Change password
+- `verifyEmail(token)` - Verify email address ✅ Validated
+- `requestPasswordReset(email)` - Send password reset email ✅ Validated
+- `changePassword(oldPassword, newPassword)` - Change password ✅ Validated
 
 **Features:**
 
+- ✅ **Runtime validation with Zod** (January 10, 2026)
+- ✅ **Password strength requirements** (uppercase, lowercase, number)
+- ✅ **Email format validation**
 - JWT token management
 - Session persistence
 - Token refresh logic
