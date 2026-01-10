@@ -176,7 +176,21 @@ class ProductService extends BaseService<
 
 **Export:** `productsService`
 
-**Purpose:** Product catalog management with Zod validation. ✅
+**Purpose:** Product catalog management with Zod validation. Extends BaseService for type-safe CRUD operations. ✅
+
+**Architecture:** Extends `BaseService<ProductFE, ProductBE, ProductFormFE, Partial<ProductFormFE>>` ✅
+
+**Inherited Methods from BaseService:** ✅
+
+- `getById(id)` - Get product by ID with FE transformation
+- `getAll(params, options)` - Get paginated products list
+- `create(data, options)` - Create new product with validation
+- `update(id, data, options)` - Full update product
+- `patch(id, data, options)` - Partial update product
+- `delete(id, options)` - Delete product
+- `bulkDelete(ids, options)` - Delete multiple products
+- `exists(id, options)` - Check if product exists
+- `count(params, options)` - Count products
 
 **Validation Schemas:** ✅
 
@@ -195,24 +209,39 @@ class ProductService extends BaseService<
 - `QuickCreateSchema` - Minimal product creation (name, price, stock, category)
 - `BulkActionSchema` - Bulk operation validation (action type + product IDs)
 
-**Key Methods:**
+**Custom Product-Specific Methods:**
 
-- `getProducts(filters, pagination)` - List products with filters
-- `getProductById(id)` - Get single product
-- `getProductBySlug(slug)` - Get product by URL slug
-- `createProduct(data)` - Create new product (seller) ✅ Validated
-- `updateProduct(slug, data)` - Update product ✅ Validated
-- `deleteProduct(id)` - Delete product
-- `updateStock(slug, stockCount)` - Update stock ✅ Validated
-- `updateStatus(slug, status)` - Update status ✅ Validated
-- `bulkAction(action, ids, data)` - Bulk operations ✅ Validated
-- `bulkUpdate(ids, updates)` - Bulk update ✅ Validated
+- `list(filters)` - List products with custom filter logic (overrides getAll)
+- `getBySlug(slug)` - Get product by slug (unique to products) ✅ Validated
+- `updateBySlug(slug, data)` - Update product by slug ✅ Validated
+- `deleteBySlug(slug)` - Delete product by slug ✅ Validated
+- `getReviews(slug, page, limit)` - Get product reviews with pagination
+- `getVariants(slug)` - Get product variants
+- `getSimilar(slug, limit)` - Get similar products
+- `getSellerProducts(slug, limit)` - Get seller's other products
+- `updateStock(slug, stockCount)` - Update stock count ✅ Validated
+- `updateStatus(slug, status)` - Update product status ✅ Validated
+- `incrementView(slug)` - Increment view count
+- `getFeatured()` - Get featured products
+- `getHomepage()` - Get homepage products
+- `bulkAction(action, ids, data)` - Generic bulk operations ✅ Validated
+- `bulkPublish(ids)` - Bulk publish products
+- `bulkUnpublish(ids)` - Bulk unpublish products
+- `bulkArchive(ids)` - Bulk archive products
+- `bulkFeature(ids)` - Bulk feature products
+- `bulkUnfeature(ids)` - Bulk unfeature products
+- `bulkUpdateStock(ids, stockCount)` - Bulk update stock
+- `bulkUpdate(ids, updates)` - Bulk update products ✅ Validated
 - `quickCreate(data)` - Quick product creation ✅ Validated
 - `quickUpdate(slug, data)` - Quick product update ✅ Validated
+- `getByIds(ids)` - Batch fetch products by IDs
 
 **Features:**
 
+- ✅ **Extends BaseService** for type-safe CRUD operations (January 11, 2026)
 - ✅ **Runtime validation with Zod** (January 10, 2026)
+- ✅ **Consistent error handling** via BaseService.handleError
+- ✅ **FE/BE type transformation** (ProductFE ↔ ProductBE)
 - ✅ **Price and stock validation**
 - ✅ **Image URL validation (1-10 images)**
 - ✅ **SEO metadata validation**
@@ -220,21 +249,10 @@ class ProductService extends BaseService<
 - Product search and filtering
 - Variants management
 - Review aggregation
-- Similar products
-- Featured products
-- FE/BE type transformation
-- `searchProducts(query)` - Search products
-- `getFeaturedProducts()` - Get featured products
-- `getRelatedProducts(productId)` - Get similar products
-- `updateStock(productId, quantity)` - Update inventory
-
-**Features:**
-
+- Similar products recommendations
+- Featured products curation
 - Pagination support
 - Advanced filtering
-- Full-text search
-- Image management
-- Variant handling
 - Stock management
 - Seller-specific queries
 
