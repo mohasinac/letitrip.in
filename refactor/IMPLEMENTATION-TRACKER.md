@@ -2,7 +2,7 @@
 
 **Last Updated**: January 10, 2026  
 **Current Phase**: Phase 1 - Foundation & Security  
-**Overall Progress**: 16/75 tasks completed (21.3%)
+**Overall Progress**: 17/75 tasks completed (22.7%)
 
 ---
 
@@ -27,7 +27,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 1: Foundation & Security (Weeks 1-4)
 
 **Goal**: Establish secure, type-safe foundation  
-**Progress**: 16/25 tasks (64%)
+**Progress**: 17/25 tasks (68%)
 
 ### Week 1: Type Safety & Validation (7/7) ✅ COMPLETE
 
@@ -244,7 +244,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Enhanced Collections**: users, shops, products, categories, orders, coupons, auctions, bids, reviews, cart, support_tickets, blog_posts (15 collections)
   - **Validation Types**: Required fields, type checking, string size limits, numeric ranges, enum validation, email format validation
 
-### Week 3: Error Handling (1/5)
+### Week 3: Error Handling (2/5)
 
 #### Task 3.1: Create Typed Error Classes
 
@@ -265,13 +265,20 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 3.2: Update Auth Service with Typed Errors
 
-- [ ] **Refactor `src/services/auth-service.ts`**
-  - **Replace**: Generic throws with typed errors
-  - **Use**: AuthError for auth failures
-  - **Use**: ValidationError for invalid input
-  - **Test**: Trigger errors, check types
-  - **Update**: `src/services/comments.md` - mark auth service errors done
+- [x] **Refactor `src/services/auth.service.ts`** ✅
+  - **Replace**: Generic throws with typed errors ✅
+  - **Use**: AuthError for auth failures ✅
+  - **Use**: ValidationError for invalid input ✅
+  - **Test**: Trigger errors, check types ✅
+  - **Update**: `src/services/comments.md` - mark auth service errors done ✅
   - **Estimate**: 30 minutes
+  - **Actual**: 20 minutes
+  - **Changes**:
+    * Added ValidationError for Zod validation failures
+    * Added AuthError for SESSION_EXPIRED (401 errors)
+    * All auth methods now throw typed errors with error codes
+    * Error details include Zod validation errors
+    * Improved error context for debugging
 
 #### Task 3.3: Update Product Service with Typed Errors
 

@@ -1,7 +1,13 @@
 import { logServiceError } from "@/lib/error-logger";
+import {
+  ValidationError,
+  AuthError,
+  ErrorCode,
+  handleError,
+} from "@/lib/errors";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
 /**
@@ -230,6 +236,13 @@ class AuthService {
         sessionId: response.sessionId,
       };
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid registration data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
       throw error;
     }
   }
@@ -256,6 +269,13 @@ class AuthService {
         sessionId: response.sessionId,
       };
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid login credentials format",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
       throw error;
     }
   }
@@ -284,6 +304,13 @@ class AuthService {
         isNewUser: response.isNewUser,
       };
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid Google auth data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
       throw error;
     }
   }
@@ -333,6 +360,10 @@ class AuthService {
         if (typeof window !== "undefined") {
           localStorage.removeItem(this.STORAGE_KEY);
         }
+        throw new AuthError(
+          "Session expired or invalid",
+          ErrorCode.SESSION_EXPIRED
+        );
       }
       // Return null silently for unauthenticated users
       return null;
@@ -403,16 +434,38 @@ class AuthService {
 
   // Request password reset
   async requestPasswordReset(email: string): Promise<{ message: string }> {
-    // Validate email with Zod
-    const validatedData = PasswordResetRequestSchema.parse({ email });
-    return apiService.post("/auth/reset-password", validatedData);
+    try {
+      // Validate email with Zod
+      const validatedData = PasswordResetRequestSchema.parse({ email });
+      return apiService.post("/auth/reset-password", validatedData);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid email format",
+          ErrorCode.INVALID_FORMAT,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 
   // Verify email
   async verifyEmail(token: string): Promise<{ message: string }> {
-    // Validate token with Zod
-    const validatedData = EmailVerificationSchema.parse({ token });
-    return apiService.post("/auth/verify-email", validatedData);
+    try {
+      // Validate token with Zod
+      const validatedData = EmailVerificationSchema.parse({ token });
+      return apiService.post("/auth/verify-email", validatedData);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid verification token",
+          ErrorCode.INVALID_TOKEN,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 
   // Update user profile
@@ -433,12 +486,23 @@ class AuthService {
     currentPassword: string,
     newPassword: string
   ): Promise<{ message: string }> {
-    // Validate passwords with Zod
-    const validatedData = ChangePasswordSchema.parse({
-      currentPassword,
-      newPassword,
-    });
-    return apiService.post("/auth/change-password", validatedData);
+    try {
+      // Validate passwords with Zod
+      const validatedData = ChangePasswordSchema.parse({
+        currentPassword,
+        newPassword,
+      });
+      return apiService.post("/auth/change-password", validatedData);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid password format",
+          ErrorCode.INVALID_FORMAT,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 }
 
