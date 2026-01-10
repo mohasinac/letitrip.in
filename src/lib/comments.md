@@ -41,6 +41,35 @@
 - ✅ **State Inspection**: Check rate limit state without consuming points
 - ✅ **Type Safety**: Full TypeScript support with interfaces
 
+### Input Sanitization (sanitize.ts)
+
+- ✅ **XSS Prevention**: Comprehensive HTML sanitization with DOMPurify (January 10, 2026)
+- ✅ **Multiple Sanitization Types**: HTML, plain text, email, phone, URL, filename, search queries
+- ✅ **Configurable HTML Sanitization**: Whitelist-based approach with options
+  - allowBasicFormatting: p, strong, em, headings, lists, code
+  - allowLinks: anchor tags with href
+  - allowImages: img tags with src, alt
+  - stripAll: Remove all HTML (text only)
+  - Custom whitelist: allowedTags and allowedAttributes arrays
+- ✅ **Specialized Sanitizers**:
+  - sanitizeEmail(): Normalize and clean email addresses
+  - sanitizePhone(): Clean phone numbers
+  - sanitizeUrl(): Validate protocols, block javascript:/data:/vbscript:
+  - sanitizeFilename(): Remove path traversal (../) and dangerous characters
+  - sanitizeSearchQuery(): Clean search input (max 200 chars)
+- ✅ **Batch Processing**: sanitizeObject() recursively sanitizes object properties
+  - Field-specific sanitization (htmlFields, emailFields, phoneFields, urlFields)
+  - Configurable HTML options for HTML fields
+  - Preserves non-string values and null/undefined
+- ✅ **Pre-configured Sanitizers**: 5 common use cases
+  - Sanitizers.userName: Plain text, max 100 chars
+  - Sanitizers.title: Plain text, max 200 chars
+  - Sanitizers.description: Basic formatting allowed
+  - Sanitizers.richContent: Formatting + links + images
+  - Sanitizers.comment: Plain text, max 5000 chars
+- ✅ **String Utilities**: Trim, collapse whitespace, lowercase, max length
+- ✅ **Type Safety**: Full TypeScript support with interfaces and generics
+
 ## General Improvements
 
 ### 1. Utility Organization

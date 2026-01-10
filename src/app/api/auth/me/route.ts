@@ -12,7 +12,7 @@ async function meHandler(req: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized", message: "No session found" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -22,7 +22,7 @@ async function meHandler(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Invalid or expired session" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -57,7 +57,7 @@ async function meHandler(req: NextRequest) {
             : null,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("Get current user error:", error);
@@ -70,7 +70,7 @@ async function meHandler(req: NextRequest) {
             ? "An unexpected error occurred"
             : error.message,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

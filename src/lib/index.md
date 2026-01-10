@@ -196,6 +196,103 @@ await limiter.delete(clientIp);
 
 ---
 
+### sanitize.ts ✅
+
+**Exports:** Input sanitization utilities to prevent XSS and injection attacks
+
+**Key Exports:**
+
+- `sanitizeHtml(input, options)` - Sanitize HTML content with DOMPurify
+- `sanitizeString(input, options)` - Sanitize plain text strings
+- `sanitizeEmail(email)` - Sanitize and normalize email addresses
+- `sanitizePhone(phone)` - Sanitize phone numbers
+- `sanitizeUrl(url, options)` - Sanitize and validate URLs
+- `sanitizeFilename(filename)` - Remove path traversal and dangerous characters
+- `sanitizeSearchQuery(query)` - Sanitize search input
+- `sanitizeJson(input)` - Parse and validate JSON safely
+- `sanitizeObject(obj, options)` - Batch sanitize object properties
+- `Sanitizers` - Pre-configured sanitizers (userName, title, description, richContent, comment)
+
+**Features:**
+
+- ✅ **XSS Prevention** (Removes malicious scripts and tags) (January 10, 2026)
+- ✅ **Configurable HTML sanitization** (Whitelist tags and attributes)
+- ✅ **Multiple sanitization types** (HTML, plain text, email, phone, URL, filename)
+- ✅ **Batch processing** (Sanitize entire objects recursively)
+- ✅ **Pre-configured sanitizers** (Common use cases ready to use)
+- ✅ **Type-safe** (Full TypeScript support)
+
+**HTML Sanitization Options:**
+
+- `allowBasicFormatting` - Allow p, strong, em, headings, lists
+- `allowLinks` - Allow anchor tags with href
+- `allowImages` - Allow img tags with src
+- `stripAll` - Remove all HTML tags (text only)
+- Custom whitelist via `allowedTags` and `allowedAttributes`
+
+**Usage:**
+
+```typescript
+import {
+  sanitizeHtml,
+  sanitizeString,
+  sanitizeEmail,
+  sanitizeUrl,
+  sanitizeObject,
+  Sanitizers,
+} from "@/lib/sanitize";
+
+// Sanitize HTML - Remove malicious content
+const userContent = '<script>alert("XSS")</script><p>Hello</p>';
+const clean = sanitizeHtml(userContent, { allowBasicFormatting: true });
+// Result: '<p>Hello</p>'
+
+// Sanitize plain text
+const userInput = "  <script>  Hello World  ";
+const cleanText = sanitizeString(userInput);
+// Result: 'Hello World'
+
+// Sanitize email
+const email = sanitizeEmail("  USER@EXAMPLE.COM  <script>");
+// Result: 'user@example.com'
+
+// Sanitize URL - Block dangerous protocols
+const url = sanitizeUrl("javascript:alert('XSS')");
+// Result: '' (empty - blocked)
+
+const safeUrl = sanitizeUrl("https://example.com/page");
+// Result: 'https://example.com/page'
+
+// Batch sanitize object
+const userData = {
+  name: "<script>John</script>",
+  email: "  JOHN@EXAMPLE.COM  ",
+  bio: "<p>Hello <script>bad</script>World</p>",
+};
+
+const clean = sanitizeObject(userData, {
+  emailFields: ["email"],
+  htmlFields: ["bio"],
+  htmlOptions: { allowBasicFormatting: true },
+});
+// Result: {
+//   name: 'John',
+//   email: 'john@example.com',
+//   bio: '<p>Hello World</p>'
+// }
+
+// Use pre-configured sanitizers
+const title = Sanitizers.title("<b>My Title</b>" + "x".repeat(300));
+// Result: 'My Title...' (max 200 chars, no HTML)
+
+const description = Sanitizers.description(
+  "<p>My <strong>description</strong></p>"
+);
+// Result: '<p>My <strong>description</strong></p>' (basic formatting allowed)
+```
+
+---
+
 ## Core Utilities
 
 ### utils.ts
