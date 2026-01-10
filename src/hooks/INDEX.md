@@ -5,6 +5,7 @@ Comprehensive documentation for all reusable React hooks in the application.
 ## Table of Contents
 
 - [Authentication](#authentication)
+- [Data Fetching (React Query)](#data-fetching-react-query)
 - [Form Management](#form-management)
 - [UI State Management](#ui-state-management)
 - [List & Pagination](#list--pagination)
@@ -89,6 +90,87 @@ function LoginForm() {
   return <form onSubmit={handleSubmit}>...</form>;
 }
 ```
+
+---
+
+## Data Fetching (React Query)
+
+### queries/useProduct.ts ✅
+
+**Exports:** Product data fetching and mutation hooks using React Query
+
+**Query Hooks:**
+
+- `useProduct(id, options?)` - Fetch single product by ID
+- `useProductBySlug(slug, options?)` - Fetch single product by slug
+- `useProducts(filters?, options?)` - Fetch paginated list of products
+- `useProductReviews(productId, options?)` - Fetch product reviews
+- `useProductVariants(productId, options?)` - Fetch product variants
+- `useSimilarProducts(productId, options?)` - Fetch similar products
+- `useFeaturedProducts(options?)` - Fetch featured products
+
+**Mutation Hooks:**
+
+- `useCreateProduct(options?)` - Create new product
+- `useUpdateProduct(options?)` - Update product by ID
+- `useUpdateProductBySlug(options?)` - Update product by slug
+- `useDeleteProduct(options?)` - Delete product
+- `useUpdateProductStock(options?)` - Update product stock
+- `useUpdateProductStatus(options?)` - Update product status (draft/published/archived)
+- `useBulkDeleteProducts(options?)` - Delete multiple products
+
+**Features:**
+
+- ✅ **Automatic caching** with 5-minute stale time
+- ✅ **Background refetching** on reconnect
+- ✅ **Optimistic updates** via cache invalidation
+- ✅ **Type-safe** queries and mutations
+- ✅ **Automatic error handling** via React Query
+- ✅ **Loading states** built-in
+- ✅ **Retry logic** with exponential backoff
+
+**Query Hook Example:**
+
+```tsx
+function ProductPage({ id }: { id: string }) {
+  const { data: product, isLoading, error } = useProduct(id);
+
+  if (isLoading) return <Skeleton />;
+  if (error) return <Error message={error.message} />;
+  if (!product) return <NotFound />;
+
+  return <ProductDetails product={product} />;
+}
+```
+
+**Mutation Hook Example:**
+
+```tsx
+function CreateProductForm() {
+  const createProduct = useCreateProduct({
+    onSuccess: (product) => {
+      toast.success('Product created!');
+      router.push(`/products/${product.slug}`);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSubmit = (data: ProductFormFE) => {
+    createProduct.mutate(data);
+  };
+
+  return <Form onSubmit={handleSubmit} loading={createProduct.isPending} />;
+}
+```
+
+**Cache Invalidation:**
+
+Mutations automatically invalidate relevant queries:
+- Create/Update/Delete → Invalidates product lists
+- Update specific product → Invalidates that product detail
+- Bulk operations → Invalidates all product queries
 
 ---
 

@@ -1,24 +1,21 @@
-import { apiService } from "./api.service";
-import { BaseService } from "./base-service";
 import { SHOP_ROUTES } from "@/constants/api-routes";
 import { logError } from "@/lib/firebase-error-logger";
+import type { ProductListItemBE } from "@/types/backend/product.types";
 import { ShopBE } from "@/types/backend/shop.types";
-import { ShopFE, ShopCardFE, ShopFormFE } from "@/types/frontend/shop.types";
-import {
-  toFEShop,
-  toFEShopCard,
-  toBECreateShopRequest,
-} from "@/types/transforms/shop.transforms";
-import type {
-  ProductBE,
-  ProductListItemBE,
-} from "@/types/backend/product.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import { toFEProductCard } from "@/types/transforms/product.transforms";
+import { ShopCardFE, ShopFE, ShopFormFE } from "@/types/frontend/shop.types";
 import type {
   PaginatedResponseBE,
   PaginatedResponseFE,
 } from "@/types/shared/common.types";
+import { toFEProductCard } from "@/types/transforms/product.transforms";
+import {
+  toBECreateShopRequest,
+  toFEShop,
+  toFEShopCard,
+} from "@/types/transforms/shop.transforms";
+import { apiService } from "./api.service";
+import { BaseService } from "./base-service";
 
 interface ShopVerificationData {
   isVerified: boolean;
@@ -66,7 +63,7 @@ class ShopsService extends BaseService<
    * Override list to support custom filters and return ShopCardFE
    */
   async list(
-    filters?: Record<string, any>,
+    filters?: Record<string, any>
   ): Promise<PaginatedResponseFE<ShopCardFE>> {
     try {
       const params = new URLSearchParams();
@@ -115,12 +112,15 @@ class ShopsService extends BaseService<
   /**
    * Update shop by slug
    */
-  async updateBySlug(slug: string, formData: Partial<ShopFormFE>): Promise<ShopFE> {
+  async updateBySlug(
+    slug: string,
+    formData: Partial<ShopFormFE>
+  ): Promise<ShopFE> {
     try {
       const request = toBECreateShopRequest(formData as ShopFormFE);
       const response: any = await apiService.patch(
         SHOP_ROUTES.BY_SLUG(slug),
-        request,
+        request
       );
       return toFEShop(response.data);
     } catch (error) {
@@ -133,7 +133,9 @@ class ShopsService extends BaseService<
    */
   async deleteBySlug(slug: string): Promise<{ message: string }> {
     try {
-      return await apiService.delete<{ message: string }>(SHOP_ROUTES.BY_SLUG(slug));
+      return await apiService.delete<{ message: string }>(
+        SHOP_ROUTES.BY_SLUG(slug)
+      );
     } catch (error) {
       return BaseService.handleError(error, "delete shop");
     }
@@ -146,7 +148,10 @@ class ShopsService extends BaseService<
    */
   async verify(slug: string, data: ShopVerificationData): Promise<ShopFE> {
     try {
-      const response: any = await apiService.patch(`/shops/${slug}/verify`, data);
+      const response: any = await apiService.patch(
+        `/shops/${slug}/verify`,
+        data
+      );
       return toFEShop(response.data);
     } catch (error) {
       return BaseService.handleError(error, "verify shop");
@@ -172,7 +177,7 @@ class ShopsService extends BaseService<
     try {
       const response: any = await apiService.patch(
         `/shops/${slug}/feature`,
-        data,
+        data
       );
       return toFEShop(response.data);
     } catch (error) {
@@ -218,7 +223,7 @@ class ShopsService extends BaseService<
    */
   async getShopProducts(
     slug: string,
-    options?: { page?: number; limit?: number; filters?: Record<string, any> },
+    options?: { page?: number; limit?: number; filters?: Record<string, any> }
   ): Promise<PaginatedResponseFE<ProductCardFE>> {
     try {
       const params = new URLSearchParams();
@@ -234,8 +239,9 @@ class ShopsService extends BaseService<
       const endpoint = qs
         ? `/shops/${slug}/products?${qs}`
         : `/shops/${slug}/products`;
-      const response =
-        await apiService.get<PaginatedResponseBE<ProductListItemBE>>(endpoint);
+      const response = await apiService.get<
+        PaginatedResponseBE<ProductListItemBE>
+      >(endpoint);
 
       return {
         data: response.data.map(toFEProductCard),
@@ -253,7 +259,7 @@ class ShopsService extends BaseService<
   async getShopReviews(
     slug: string,
     page?: number,
-    limit?: number,
+    limit?: number
   ): Promise<any> {
     try {
       const params = new URLSearchParams();
@@ -274,7 +280,10 @@ class ShopsService extends BaseService<
    */
   async follow(slug: string): Promise<{ message: string }> {
     try {
-      return await apiService.post<{ message: string }>(`/shops/${slug}/follow`, {});
+      return await apiService.post<{ message: string }>(
+        `/shops/${slug}/follow`,
+        {}
+      );
     } catch (error) {
       return BaseService.handleError(error, "follow shop");
     }
@@ -285,7 +294,9 @@ class ShopsService extends BaseService<
    */
   async unfollow(slug: string): Promise<{ message: string }> {
     try {
-      return await apiService.delete<{ message: string }>(`/shops/${slug}/follow`);
+      return await apiService.delete<{ message: string }>(
+        `/shops/${slug}/follow`
+      );
     } catch (error) {
       return BaseService.handleError(error, "unfollow shop");
     }
@@ -296,7 +307,9 @@ class ShopsService extends BaseService<
    */
   async checkFollowing(slug: string): Promise<{ isFollowing: boolean }> {
     try {
-      return await apiService.get<{ isFollowing: boolean }>(`/shops/${slug}/follow`);
+      return await apiService.get<{ isFollowing: boolean }>(
+        `/shops/${slug}/follow`
+      );
     } catch (error) {
       return BaseService.handleError(error, "check if following shop");
     }
@@ -308,7 +321,7 @@ class ShopsService extends BaseService<
   async getFollowing(): Promise<{ shops: ShopCardFE[]; count: number }> {
     try {
       const response = await apiService.get<{ shops: ShopBE[]; count: number }>(
-        "/shops/following",
+        "/shops/following"
       );
       return {
         shops: response.shops.map(toFEShopCard),
@@ -325,7 +338,7 @@ class ShopsService extends BaseService<
   async getFeatured(): Promise<ShopCardFE[]> {
     try {
       const response = await apiService.get<{ data: ShopBE[] }>(
-        "/shops?featured=true&verified=true&limit=100",
+        "/shops?featured=true&verified=true&limit=100"
       );
       return response.data.map(toFEShopCard);
     } catch (error) {
@@ -339,7 +352,7 @@ class ShopsService extends BaseService<
   async getHomepage(): Promise<ShopCardFE[]> {
     try {
       const response = await apiService.get<{ data: ShopBE[] }>(
-        "/shops?featured=true&verified=true&limit=20",
+        "/shops?featured=true&verified=true&limit=20"
       );
       return response.data.map(toFEShopCard);
     } catch (error) {
@@ -353,7 +366,7 @@ class ShopsService extends BaseService<
   private async bulkAction(
     action: string,
     ids: string[],
-    data?: Record<string, any>,
+    data?: Record<string, any>
   ): Promise<{
     success: boolean;
     results: {
@@ -430,8 +443,8 @@ class ShopsService extends BaseService<
 
 export const shopsService = new ShopsService();
 export type {
-  ShopVerificationData,
-  ShopFeatureData,
   ShopBanData,
+  ShopFeatureData,
   ShopPaymentData,
+  ShopVerificationData,
 };

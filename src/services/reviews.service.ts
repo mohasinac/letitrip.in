@@ -159,7 +159,9 @@ class ReviewsService extends BaseService<
       const queryString = params.toString();
       const endpoint = `/reviews/can-review?${queryString}`;
 
-      return await apiService.get<{ canReview: boolean; reason?: string }>(endpoint);
+      return await apiService.get<{ canReview: boolean; reason?: string }>(
+        endpoint
+      );
     } catch (error) {
       return BaseService.handleError(error, "check if user can review");
     }

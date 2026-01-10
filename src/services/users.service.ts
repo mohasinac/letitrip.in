@@ -104,7 +104,10 @@ class UsersService extends BaseService<
   ): Promise<UserFE> {
     try {
       const request = toBEBanUserRequest(isBanned, banReason);
-      const response: any = await apiService.patch(USER_ROUTES.BAN(id), request);
+      const response: any = await apiService.patch(
+        USER_ROUTES.BAN(id),
+        request
+      );
       return toFEUser(response.data);
     } catch (error) {
       throw this.handleError(error as Error, `ban(${id})`);
@@ -117,7 +120,10 @@ class UsersService extends BaseService<
   async changeRole(id: string, role: string, notes?: string): Promise<UserFE> {
     try {
       const request = toBEChangeRoleRequest(role, notes);
-      const response: any = await apiService.patch(USER_ROUTES.ROLE(id), request);
+      const response: any = await apiService.patch(
+        USER_ROUTES.ROLE(id),
+        request
+      );
       return toFEUser(response.data);
     } catch (error) {
       throw this.handleError(error as Error, `changeRole(${id})`);
@@ -144,10 +150,10 @@ class UsersService extends BaseService<
   async updateMe(formData: UserProfileFormFE): Promise<UserFE> {
     try {
       const request = toBEUpdateUserRequest(formData);
-      const response = await apiService.patch<{ user: UserBE; message: string }>(
-        USER_ROUTES.UPDATE_PROFILE,
-        request
-      );
+      const response = await apiService.patch<{
+        user: UserBE;
+        message: string;
+      }>(USER_ROUTES.UPDATE_PROFILE, request);
       return toFEUser(response.user);
     } catch (error) {
       throw this.handleError(error as Error, "updateMe");
@@ -188,9 +194,12 @@ class UsersService extends BaseService<
     formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     try {
-      return apiService.post<{ message: string }>("/user/verify-email/confirm", {
-        otp: formData.otp,
-      });
+      return apiService.post<{ message: string }>(
+        "/user/verify-email/confirm",
+        {
+          otp: formData.otp,
+        }
+      );
     } catch (error) {
       throw this.handleError(error as Error, "verifyEmail");
     }
@@ -214,9 +223,12 @@ class UsersService extends BaseService<
     formData: OTPVerificationFormFE
   ): Promise<{ message: string }> {
     try {
-      return apiService.post<{ message: string }>("/user/verify-mobile/confirm", {
-        otp: formData.otp,
-      });
+      return apiService.post<{ message: string }>(
+        "/user/verify-mobile/confirm",
+        {
+          otp: formData.otp,
+        }
+      );
     } catch (error) {
       throw this.handleError(error as Error, "verifyMobile");
     }
