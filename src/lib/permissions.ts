@@ -1,21 +1,21 @@
 /**
  * Permission System
- * 
+ *
  * Granular permission-based access control for the application.
  * Replaces simple role-based checks with fine-grained permissions.
- * 
+ *
  * @example
  * ```typescript
  * // Check single permission
  * if (hasPermission(user, 'products.create')) {
  *   // User can create products
  * }
- * 
+ *
  * // Check multiple permissions (any)
  * if (hasPermission(user, ['products.create', 'products.edit'])) {
  *   // User can create OR edit products
  * }
- * 
+ *
  * // Check multiple permissions (all)
  * if (hasAllPermissions(user, ['products.create', 'products.publish'])) {
  *   // User can create AND publish products
@@ -23,7 +23,7 @@
  * ```
  */
 
-import { UserRole, USER_ROLES } from "@/constants/statuses";
+import { USER_ROLES, UserRole } from "@/constants/statuses";
 
 /**
  * Permission categories and actions
@@ -273,7 +273,7 @@ export interface UserWithPermissions {
 
 /**
  * Check if a user has a specific permission or any of multiple permissions
- * 
+ *
  * @param user - User object with role and optional custom permissions
  * @param permission - Single permission or array of permissions (any match)
  * @returns true if user has the permission(s)
@@ -286,7 +286,7 @@ export function hasPermission(
 
   // Get role-based permissions
   const rolePermissions = ROLE_PERMISSIONS[user.role] || [];
-  
+
   // Combine with custom permissions if any
   const allPermissions = [
     ...rolePermissions,
@@ -304,7 +304,7 @@ export function hasPermission(
 
 /**
  * Check if a user has ALL specified permissions
- * 
+ *
  * @param user - User object with role and optional custom permissions
  * @param permissions - Array of permissions (all required)
  * @returns true if user has all permissions
@@ -317,7 +317,7 @@ export function hasAllPermissions(
 
   // Get role-based permissions
   const rolePermissions = ROLE_PERMISSIONS[user.role] || [];
-  
+
   // Combine with custom permissions if any
   const allPermissions = [
     ...rolePermissions,
@@ -330,7 +330,7 @@ export function hasAllPermissions(
 
 /**
  * Get all permissions for a user
- * 
+ *
  * @param user - User object with role and optional custom permissions
  * @returns Array of all permissions the user has
  */
@@ -348,7 +348,7 @@ export function getUserPermissions(
 
 /**
  * Check if a user has a specific role
- * 
+ *
  * @param user - User object with role
  * @param role - Role or array of roles to check
  * @returns true if user has the role
@@ -368,7 +368,7 @@ export function hasRole(
 
 /**
  * Check if a user is an admin
- * 
+ *
  * @param user - User object with role
  * @returns true if user is admin
  */
@@ -378,17 +378,19 @@ export function isAdmin(user: UserWithPermissions | null | undefined): boolean {
 
 /**
  * Check if a user is a seller
- * 
+ *
  * @param user - User object with role
  * @returns true if user is seller
  */
-export function isSeller(user: UserWithPermissions | null | undefined): boolean {
+export function isSeller(
+  user: UserWithPermissions | null | undefined
+): boolean {
   return hasRole(user, USER_ROLES.SELLER);
 }
 
 /**
  * Check if a user is authenticated (not guest)
- * 
+ *
  * @param user - User object with role
  * @returns true if user is authenticated
  */
