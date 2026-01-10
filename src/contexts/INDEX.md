@@ -215,6 +215,118 @@ const { theme, toggleTheme } = useTheme();
 
 ---
 
+### ModalContext.tsx
+
+**Exports:** `ModalProvider`, `useModal()`
+
+**Purpose:** Promise-based modal management system with stacking support.
+
+**Context Value:**
+
+- `modals: Modal[]` - Stack of active modals (bottom to top)
+- `openModal<T>(component, options?): Promise<ModalResult<T>>` - Open modal and await result
+- `closeModal(id, result?): void` - Close specific modal by ID
+- `closeAll(): void` - Close all open modals
+- `getActiveModal(): Modal | null` - Get top-most (currently active) modal
+
+**Modal Interface:**
+
+```typescript
+interface Modal {
+  id: string;
+  component: ReactNode;
+  onClose?: () => void;
+  closeOnBackdropClick?: boolean; // default: true
+  closeOnEscape?: boolean; // default: true
+}
+
+type ModalResult<T = unknown> = {
+  confirmed: boolean;
+  data?: T;
+};
+```
+
+**Features:**
+
+- Promise-based API for async/await modal interactions
+- Modal stacking for nested/multiple modals
+- Escape key handling (closes top modal)
+- Backdrop click handling
+- Custom onClose callbacks
+- TypeScript generics for typed modal results
+- Automatic unique ID generation
+- No UI components (headless) - bring your own modal UI
+
+**Usage:**
+
+```typescript
+const { openModal, closeModal } = useModal();
+
+// Simple confirm dialog
+const result = await openModal(<ConfirmDialog message="Delete item?" />);
+if (result.confirmed) {
+  // User confirmed
+}
+
+// Modal with custom data
+const result = await openModal<{ name: string; email: string }>(
+  <UserFormModal />
+);
+if (result.confirmed && result.data) {
+  console.log("User data:", result.data.name, result.data.email);
+}
+
+// Modal with custom options
+await openModal(<ImportantModal />, {
+  closeOnBackdropClick: false,
+  closeOnEscape: false,
+  onClose: () => console.log("Modal closed"),
+});
+
+// Nested modals (stacking)
+const firstResult = await openModal(<FirstModal />);
+if (firstResult.confirmed) {
+  const secondResult = await openModal(<SecondModal />);
+  // Second modal stacks on top
+}
+```
+
+**Implementation Notes:**
+
+- This is a headless context - you need to render your own modal UI components
+- Use `modals` array to render your modal components
+- Top-most modal (last in array) is the active one
+- Call `closeModal(id, result)` from within your modal component
+- Modal components receive no props by default - use closures or context
+
+**Example Modal Component:**
+
+```typescript
+function ConfirmModal({
+  message,
+  modalId,
+}: {
+  message: string;
+  modalId: string;
+}) {
+  const { closeModal } = useModal();
+
+  return (
+    <div className="modal">
+      <p>{message}</p>
+      <button onClick={() => closeModal(modalId, { confirmed: true })}>
+        Confirm
+      </button>
+      <button onClick={() => closeModal(modalId, { confirmed: false })}>
+        Cancel
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
 ## Feature Contexts
 
 ### ComparisonContext.tsx
