@@ -15,12 +15,14 @@ const SESSION_SECRET =
   process.env.SESSION_SECRET || "dev-secret-key-not-for-production";
 const SESSION_COOKIE_NAME = "session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
+const REMEMBER_ME_MAX_AGE = 60 * 60 * 24 * 30; // 30 days in seconds
 
 export interface SessionData {
   userId: string;
   email: string;
   role: string;
   sessionId: string;
+  rememberMe?: boolean;
   iat?: number;
   exp?: number;
 }
@@ -51,12 +53,16 @@ export async function createSession(
   userId: string,
   email: string,
   role: string,
-  req?: NextRequest
+  req?: NextRequest,
+  rememberMe: boolean = false
 ): Promise<{ sessionId: string; token: string }> {
   try {
     const sessionId = generateSessionId();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + SESSION_MAX_AGE * 1000);
+
+    // Use longer expiry if remember me is enabled
+    const maxAge = rememberMe ? REMEMBER_ME_MAX_AGE : SESSION_MAX_AGE;
+    const expiresAt = new Date(now.getTime() + maxAge * 1000);
 
     // Get user agent and IP if available
     const userAgent = req?.headers.get("user-agent") || undefined;
@@ -72,10 +78,11 @@ export async function createSession(
         email,
         role,
         sessionId,
+        rememberMe,
       },
       SESSION_SECRET,
       {
-        expiresIn: SESSION_MAX_AGE,
+        expiresIn: maxAge,
       }
     );
 

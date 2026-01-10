@@ -12,12 +12,13 @@ import {
 interface LoginRequestBody {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 async function loginHandler(req: Request) {
   try {
     const body: LoginRequestBody = await req.json();
-    const { email, password } = body;
+    const { email, password, rememberMe = false } = body;
 
     // Validate input
     if (!email || !password) {
@@ -91,7 +92,8 @@ async function loginHandler(req: Request) {
       userData.uid,
       userData.email,
       userData.role,
-      req as NextRequest
+      req as NextRequest,
+      rememberMe
     );
 
     // Update last login

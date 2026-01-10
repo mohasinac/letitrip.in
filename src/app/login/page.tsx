@@ -8,6 +8,7 @@ import { COMPANY_NAME } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoginRegister } from "@/contexts/LoginRegisterContext";
 import { useI18n } from "@/lib/i18n/useI18n";
+import { authPersistenceService } from "@/services/auth-persistence.service";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,18 +25,14 @@ import { Suspense, useEffect, useState } from "react";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const { t } = useI18n();
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get all login form state from context
-  const {
-    loginForm,
-    loginPassword,
-    loginLoading,
-    loginError,
-    handleLoginSubmit,
-  } = useLoginRegister();
+  // Get login form state from context for form fields
+  const { loginForm, loginPassword } = useLoginRegister();
 
   // Prevent redirect loop: if already authenticated, redirect to home or specified page
   useEffect(() => {
@@ -49,21 +46,40 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await handleLoginSubmit(e);
-
-    // Store remember me preference in localStorage
-    if (rememberMe && !loginError) {
-      localStorage.setItem("rememberMe", "true");
-    } else {
-      localStorage.removeItem("rememberMe");
+    // Validate form
+    if (!loginForm.validate()) {
+      return;
     }
 
-    // Redirect after successful login
-    if (!loginError) {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call login with remember me parameter
+      await login(
+        loginForm.formData.email,
+        loginForm.formData.password,
+        rememberMe
+      );
+
+      // Store remember me preference using the persistence service
+      if (rememberMe) {
+        authPersistenceService.enableRememberMe(30); // Remember for 30 days
+      } else {
+        authPersistenceService.disableRememberMe();
+      }
+
+      // Redirect after successful login
       const redirect = searchParams.get("redirect") || "/";
       setTimeout(() => {
         router.replace(redirect);
       }, 100);
+    } catch (err: any) {
+      // Error handling
+      console.error("Login failed:", err);
+      setError(err?.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,10 +103,10 @@ function LoginForm() {
 
         {/* Login Form */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {loginError && (
+          {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
               <p className="text-sm text-red-600 dark:text-red-400">
-                {loginError || "Login failed. Please try again."}
+                {error || "Login failed. Please try again."}
               </p>
             </div>
           )}
@@ -169,10 +185,10 @@ function LoginForm() {
             {/* Submit Button - Mobile Optimized (48px min height) */}
             <button
               type="submit"
-              disabled={loginLoading}
+              disabled={isLoading}
               className="w-full min-h-[48px] py-3 px-4 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-gray-900 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loginLoading ? (
+              {isLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -218,7 +234,7 @@ function LoginForm() {
 
           {/* Google Sign In */}
           <div className="mt-6">
-            <GoogleSignInButton disabled={loginLoading} />
+            <GoogleSignInButton disabled={isLoading} />
           </div>
 
           {/* Register Divider */}

@@ -1,15 +1,15 @@
 "use client";
 
+import { logError } from "@/lib/firebase-error-logger";
+import { AuthResponse, authService } from "@/services/auth.service";
+import { UserFE } from "@/types/frontend/user.types";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  useCallback,
 } from "react";
-import { authService, AuthResponse } from "@/services/auth.service";
-import { UserFE } from "@/types/frontend/user.types";
-import { logError } from "@/lib/firebase-error-logger";
 
 interface GoogleAuthResponse extends AuthResponse {
   isNewUser: boolean;
@@ -19,14 +19,18 @@ interface AuthContextType {
   user: UserFE | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<AuthResponse>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<AuthResponse>;
   loginWithGoogle: (
     idToken: string,
     userData?: {
       displayName?: string;
       email?: string;
       photoURL?: string;
-    },
+    }
   ) => Promise<GoogleAuthResponse>;
   register: (data: {
     email: string;
@@ -42,7 +46,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -79,19 +83,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [initializeAuth]);
 
   // Login function
-  const login = useCallback(async (email: string, password: string) => {
-    try {
-      const response = await authService.login({ email, password });
-      // Immediately set user state with the response
-      setUser(response.user);
-      setLoading(false);
-      return response;
-    } catch (error) {
-      setUser(null);
-      setLoading(false);
-      throw error;
-    }
-  }, []);
+  const login = useCallback(
+    async (email: string, password: string, rememberMe: boolean = false) => {
+      try {
+        const response = await authService.login({
+          email,
+          password,
+          rememberMe,
+        });
+        // Immediately set user state with the response
+        setUser(response.user);
+        setLoading(false);
+        return response;
+      } catch (error) {
+        setUser(null);
+        setLoading(false);
+        throw error;
+      }
+    },
+    []
+  );
 
   // Google Login function
   const loginWithGoogle = useCallback(
@@ -101,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName?: string;
         email?: string;
         photoURL?: string;
-      },
+      }
     ) => {
       try {
         const response = await authService.loginWithGoogle({
@@ -118,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Register function
@@ -141,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    []
   );
 
   // Logout function

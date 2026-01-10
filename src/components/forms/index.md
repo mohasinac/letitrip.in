@@ -1,0 +1,429 @@
+# Form Components
+
+This folder contains reusable form components with consistent styling, validation, and accessibility features.
+
+## Components
+
+### FormField.tsx
+
+**Export:** `FormField`
+
+**Purpose:** Wrapper component that provides label, error message, helper text, and consistent styling for form inputs.
+
+**Props:**
+
+- `label?: string` - Field label text
+- `required?: boolean` - Show required indicator
+- `error?: string` - Error message to display
+- `helperText?: string` - Helper text below input
+- `children: React.ReactNode` - Input component
+- `className?: string` - Additional CSS classes
+- `labelClassName?: string` - Label-specific classes
+
+**Features:**
+
+- Consistent label styling with required indicator
+- Error message display with red styling
+- Helper text for additional guidance
+- Dark mode support
+- Accessible ARIA attributes
+
+---
+
+### FormInput.tsx
+
+**Export:** `FormInput`
+
+**Purpose:** Enhanced text input component with consistent styling and validation states.
+
+**Props:**
+
+- Extends standard HTML input props
+- `error?: boolean` - Show error state styling
+- Forward ref support for form libraries
+
+**Features:**
+
+- Error state styling (red border)
+- Dark mode support
+- Consistent padding and sizing
+- Focus ring with yellow accent
+- Disabled state styling
+- Mobile-optimized (min-height 48px)
+
+---
+
+### FormTextarea.tsx
+
+**Export:** `FormTextarea`
+
+**Purpose:** Multi-line text input with consistent styling.
+
+**Props:**
+
+- Extends standard HTML textarea props
+- `error?: boolean` - Show error state
+- Forward ref support
+
+**Features:**
+
+- Resizable text area
+- Error state styling
+- Character count support (when maxLength provided)
+- Auto-growing height option
+- Dark mode support
+
+---
+
+### FormCheckbox.tsx
+
+**Export:** `FormCheckbox`
+
+**Purpose:** Styled checkbox input with label support.
+
+**Props:**
+
+- `id: string` - Input ID (required for label association)
+- `label: string` - Checkbox label text
+- `checked?: boolean` - Controlled checked state
+- `onChange?: (e: ChangeEvent) => void` - Change handler
+- `error?: boolean` - Show error state
+- Forward ref support
+
+**Features:**
+
+- Custom checkbox styling with yellow accent
+- Label click handling
+- Indeterminate state support
+- Error state
+- Dark mode support
+
+---
+
+### FormRadio.tsx
+
+**Exports:** `FormRadio`, `FormRadioGroup`
+
+**Purpose:** Radio button input and group container.
+
+**FormRadio Props:**
+
+- `id: string` - Input ID
+- `label: string` - Radio label
+- `value: string` - Radio value
+- `checked?: boolean` - Controlled state
+- `onChange?: (e: ChangeEvent) => void` - Change handler
+
+**FormRadioGroup Props:**
+
+- `name: string` - Radio group name
+- `value: string` - Selected value
+- `onChange: (value: string) => void` - Value change handler
+- `options: Array<{label, value}>` - Radio options
+- `error?: boolean` - Show error state
+
+**Features:**
+
+- Grouped radio buttons
+- Single selection enforcement
+- Yellow accent for selected state
+- Vertical or horizontal layout
+- Dark mode support
+
+---
+
+### FormSelect.tsx
+
+**Export:** `FormSelect`
+
+**Purpose:** Styled select dropdown with consistent styling.
+
+**Props:**
+
+- Extends standard HTML select props
+- `error?: boolean` - Show error state
+- `options?: Array<{label, value}>` - Select options
+- `placeholder?: string` - Placeholder text
+- Forward ref support
+
+**Features:**
+
+- Custom dropdown arrow styling
+- Error state styling
+- Placeholder support
+- Option group support
+- Dark mode support
+
+---
+
+### FormNumberInput.tsx
+
+**Export:** `FormNumberInput`
+
+**Purpose:** Number input with increment/decrement buttons and validation.
+
+**Props:**
+
+- `value: number` - Current value
+- `onChange: (value: number) => void` - Value change handler
+- `min?: number` - Minimum value
+- `max?: number` - Maximum value
+- `step?: number` - Increment step (default: 1)
+- `error?: boolean` - Show error state
+- `disabled?: boolean` - Disable input
+- Forward ref support
+
+**Features:**
+
+- Increment/decrement buttons
+- Min/max validation
+- Step support for decimals
+- Keyboard arrow key support
+- Mouse wheel support (optional)
+- Error state styling
+- Mobile-friendly button sizes
+
+---
+
+### FormListInput.tsx
+
+**Export:** `FormListInput`
+
+**Purpose:** Dynamic list input for adding/removing multiple values (e.g., tags, URLs, features).
+
+**Props:**
+
+- `values: string[]` - Array of current values
+- `onChange: (values: string[]) => void` - Values change handler
+- `placeholder?: string` - Input placeholder
+- `addButtonText?: string` - Add button text
+- `error?: boolean` - Show error state
+- `maxItems?: number` - Maximum number of items
+- `validator?: (value: string) => boolean` - Custom validation function
+
+**Features:**
+
+- Add new items with button or Enter key
+- Remove items individually
+- Drag and drop reordering
+- Validation per item
+- Max items limit
+- Empty state message
+- Dark mode support
+
+---
+
+### FormKeyValueInput.tsx
+
+**Export:** `FormKeyValueInput`
+
+**Purpose:** Input for key-value pairs (e.g., metadata, custom fields).
+
+**Props:**
+
+- `pairs: Array<{key: string, value: string}>` - Current key-value pairs
+- `onChange: (pairs) => void` - Pairs change handler
+- `keyPlaceholder?: string` - Key input placeholder
+- `valuePlaceholder?: string` - Value input placeholder
+- `addButtonText?: string` - Add button text
+- `error?: boolean` - Show error state
+
+**Features:**
+
+- Add/remove key-value pairs
+- Duplicate key prevention
+- Empty state handling
+- Validation for both key and value
+- Dark mode support
+
+---
+
+### FormLabel.tsx
+
+**Export:** `FormLabel`
+
+**Purpose:** Standalone label component with consistent styling.
+
+**Props:**
+
+- `htmlFor?: string` - Associated input ID
+- `required?: boolean` - Show required indicator
+- `children: React.ReactNode` - Label content
+- `className?: string` - Additional classes
+
+**Features:**
+
+- Required indicator (red asterisk)
+- Consistent typography
+- Dark mode support
+- Accessible label association
+
+---
+
+### FormSection.tsx
+
+**Export:** `FormSection`
+
+**Purpose:** Section container for grouping related form fields.
+
+**Props:**
+
+- `title?: string` - Section title
+- `description?: string` - Section description
+- `children: React.ReactNode` - Form fields
+- `className?: string` - Additional classes
+
+**Features:**
+
+- Visual grouping with border
+- Title and description styling
+- Consistent spacing
+- Dark mode support
+
+---
+
+### FormFieldset.tsx
+
+**Export:** `FormFieldset`
+
+**Purpose:** Semantic fieldset element with legend for form groups.
+
+**Props:**
+
+- `legend?: string` - Fieldset legend
+- `children: React.ReactNode` - Form fields
+- `disabled?: boolean` - Disable all child inputs
+- Extends standard fieldset HTML attributes
+
+**Features:**
+
+- Semantic HTML fieldset
+- Legend styling
+- Disabled state propagation
+- Accessible grouping
+
+---
+
+## Wizard Components
+
+### WizardForm.tsx
+
+**Export:** `WizardForm`
+
+**Purpose:** Multi-step form wizard container.
+
+**Props:**
+
+- `steps: Array<StepConfig>` - Wizard steps configuration
+- `currentStep: number` - Current active step
+- `onStepChange: (step: number) => void` - Step change handler
+- `onSubmit: () => void` - Final submission handler
+- `children: React.ReactNode` - Step content
+
+**Features:**
+
+- Multi-step navigation
+- Progress indicator
+- Step validation
+- Back/Next navigation
+- Submit on final step
+
+---
+
+### WizardSteps.tsx
+
+**Export:** `WizardSteps`
+
+**Purpose:** Visual step indicator for wizard forms.
+
+**Props:**
+
+- `steps: Array<{label: string}>` - Step labels
+- `currentStep: number` - Current active step
+- `completedSteps: number[]` - Array of completed step indices
+
+**Features:**
+
+- Visual progress indicator
+- Step numbers with status (completed, active, pending)
+- Connecting lines between steps
+- Responsive design
+- Yellow accent for active/completed steps
+
+---
+
+### WizardActionBar.tsx
+
+**Export:** `WizardActionBar`
+
+**Purpose:** Action buttons for wizard navigation (Back, Next, Submit).
+
+**Props:**
+
+- `currentStep: number` - Current step
+- `totalSteps: number` - Total number of steps
+- `onBack: () => void` - Back button handler
+- `onNext: () => void` - Next button handler
+- `onSubmit: () => void` - Submit button handler
+- `nextDisabled?: boolean` - Disable next button
+- `submitDisabled?: boolean` - Disable submit button
+- `isLoading?: boolean` - Show loading state
+
+**Features:**
+
+- Context-aware button display (Back/Next vs Submit)
+- Loading states
+- Disabled states
+- Mobile-optimized button sizes
+- Yellow primary action buttons
+
+---
+
+## Common Patterns
+
+### Form State Management
+
+- Controlled components pattern
+- Forward ref support for form libraries (React Hook Form, Formik)
+- Error prop for validation feedback
+- onChange handlers with typed events
+
+### Styling Conventions
+
+- Tailwind CSS utility classes
+- Dark mode via `dark:` variants
+- Yellow accent color (`yellow-500/600`) for interactive elements
+- Consistent spacing (`p-2`, `p-3`, `gap-2`)
+- Mobile-first responsive design
+- Min-height 48px for touch targets
+
+### Validation & Error Handling
+
+- Error prop triggers error styling (red borders, text)
+- Error messages displayed below inputs
+- Required field indicators (asterisk)
+- Helper text for additional guidance
+- Inline validation support
+
+### Accessibility
+
+- Proper label associations with htmlFor/id
+- ARIA attributes (aria-invalid, aria-describedby)
+- Keyboard navigation support
+- Focus management
+- Screen reader friendly error messages
+- Semantic HTML elements
+
+### Component Composition
+
+- FormField wraps inputs for consistent layout
+- FormSection groups related fields
+- FormFieldset for semantic grouping
+- Wizard components for multi-step flows
+
+### TypeScript Support
+
+- Fully typed props with interfaces
+- Generic types for flexible data structures
+- Extends standard HTML element props
+- Forward ref types
