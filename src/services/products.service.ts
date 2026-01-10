@@ -1,25 +1,24 @@
-import { apiService } from "./api.service";
 import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { PRODUCT_STATUS } from "@/constants/statuses";
+import { logServiceError } from "@/lib/error-logger";
 import { ProductBE, ProductListItemBE } from "@/types/backend/product.types";
 import {
-  ProductFE,
   ProductCardFE,
-  ProductFormFE,
+  ProductFE,
   ProductFiltersFE,
+  ProductFormFE,
 } from "@/types/frontend/product.types";
+import type { BulkActionResponse } from "@/types/shared/common.types";
+import type { PaginatedResponse } from "@/types/shared/pagination.types";
 import {
-  toFEProduct,
-  toFEProductCards,
   toBEProductCreate,
   toBEProductUpdate,
+  toFEProduct,
+  toFEProductCards,
 } from "@/types/transforms/product.transforms";
-import type { PaginatedResponse } from "@/types/shared/pagination.types";
-import type { BulkActionResponse } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
-import { getUserFriendlyError } from "@/components/common/ErrorMessage";
 import { z } from "zod";
+import { apiService } from "./api.service";
 
 /**
  * Zod validation schemas for product operations
@@ -27,13 +26,33 @@ import { z } from "zod";
 
 // Product form schema for create/update
 export const ProductFormSchema = z.object({
-  name: z.string().min(3, "Product name must be at least 3 characters").max(200, "Product name must not exceed 200 characters"),
-  slug: z.string().min(3, "Slug must be at least 3 characters").max(200, "Slug must not exceed 200 characters").regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens").optional(),
-  description: z.string().min(10, "Description must be at least 10 characters").max(5000, "Description must not exceed 5000 characters"),
-  price: z.number().positive("Price must be greater than 0").max(10000000, "Price must not exceed ₹1,00,00,000"),
+  name: z
+    .string()
+    .min(3, "Product name must be at least 3 characters")
+    .max(200, "Product name must not exceed 200 characters"),
+  slug: z
+    .string()
+    .min(3, "Slug must be at least 3 characters")
+    .max(200, "Slug must not exceed 200 characters")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens"
+    )
+    .optional(),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(5000, "Description must not exceed 5000 characters"),
+  price: z
+    .number()
+    .positive("Price must be greater than 0")
+    .max(10000000, "Price must not exceed ₹1,00,00,000"),
   compareAtPrice: z.number().positive().optional().nullable(),
   costPerItem: z.number().positive().optional().nullable(),
-  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+  stockCount: z
+    .number()
+    .int("Stock count must be a whole number")
+    .min(0, "Stock count cannot be negative"),
   sku: z.string().optional().nullable(),
   barcode: z.string().optional().nullable(),
   trackQuantity: z.boolean().optional().default(true),
@@ -44,32 +63,62 @@ export const ProductFormSchema = z.object({
   shopId: z.string().min(1, "Shop ID is required"),
   sellerId: z.string().min(1, "Seller ID is required"),
   tags: z.array(z.string()).optional().default([]),
-  images: z.array(z.string().url("Invalid image URL")).min(1, "At least one image is required").max(10, "Maximum 10 images allowed"),
-  status: z.enum(["draft", "published", "archived"]).optional().default("draft"),
+  images: z
+    .array(z.string().url("Invalid image URL"))
+    .min(1, "At least one image is required")
+    .max(10, "Maximum 10 images allowed"),
+  status: z
+    .enum(["draft", "published", "archived"])
+    .optional()
+    .default("draft"),
   featured: z.boolean().optional().default(false),
-  seo: z.object({
-    title: z.string().max(60, "SEO title must not exceed 60 characters").optional().nullable(),
-    description: z.string().max(160, "SEO description must not exceed 160 characters").optional().nullable(),
-  }).optional(),
+  seo: z
+    .object({
+      title: z
+        .string()
+        .max(60, "SEO title must not exceed 60 characters")
+        .optional()
+        .nullable(),
+      description: z
+        .string()
+        .max(160, "SEO description must not exceed 160 characters")
+        .optional()
+        .nullable(),
+    })
+    .optional(),
 });
 
 // Stock update schema
 export const StockUpdateSchema = z.object({
-  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+  stockCount: z
+    .number()
+    .int("Stock count must be a whole number")
+    .min(0, "Stock count cannot be negative"),
 });
 
 // Status update schema
 export const StatusUpdateSchema = z.object({
   status: z.enum(["draft", "published", "archived"], {
-    errorMap: () => ({ message: "Status must be draft, published, or archived" }),
+    errorMap: () => ({
+      message: "Status must be draft, published, or archived",
+    }),
   }),
 });
 
 // Quick create schema (minimal fields)
 export const QuickCreateSchema = z.object({
-  name: z.string().min(3, "Product name must be at least 3 characters").max(200, "Product name must not exceed 200 characters"),
-  price: z.number().positive("Price must be greater than 0").max(10000000, "Price must not exceed ₹1,00,00,000"),
-  stockCount: z.number().int("Stock count must be a whole number").min(0, "Stock count cannot be negative"),
+  name: z
+    .string()
+    .min(3, "Product name must be at least 3 characters")
+    .max(200, "Product name must not exceed 200 characters"),
+  price: z
+    .number()
+    .positive("Price must be greater than 0")
+    .max(10000000, "Price must not exceed ₹1,00,00,000"),
+  stockCount: z
+    .number()
+    .int("Stock count must be a whole number")
+    .min(0, "Stock count cannot be negative"),
   categoryId: z.string().min(1, "Category is required"),
   status: z.enum(["draft", "published", "archived"]).optional(),
   images: z.array(z.string().url("Invalid image URL")).optional(),
@@ -77,8 +126,19 @@ export const QuickCreateSchema = z.object({
 
 // Bulk action schema
 export const BulkActionSchema = z.object({
-  action: z.enum(["publish", "unpublish", "archive", "feature", "unfeature", "update-stock", "delete", "update"]),
-  productIds: z.array(z.string().min(1, "Product ID cannot be empty")).min(1, "At least one product must be selected"),
+  action: z.enum([
+    "publish",
+    "unpublish",
+    "archive",
+    "feature",
+    "unfeature",
+    "update-stock",
+    "delete",
+    "update",
+  ]),
+  productIds: z
+    .array(z.string().min(1, "Product ID cannot be empty"))
+    .min(1, "At least one product must be selected"),
   data: z.any().optional(),
 });
 
@@ -101,7 +161,7 @@ class ProductsService {
    * List products with filters (returns UI-optimized types)
    */
   async list(
-    filters?: ProductFiltersFE,
+    filters?: ProductFiltersFE
   ): Promise<{ data: ProductCardFE[]; count: number; pagination: any }> {
     try {
       // Convert FE filters to BE filters - simplified mapping
@@ -164,11 +224,11 @@ class ProductsService {
     try {
       // Validate input data
       const validatedData = ProductFormSchema.parse(formData);
-      
+
       const createRequest = toBEProductCreate(validatedData);
       const response: any = await apiService.post(
         PRODUCT_ROUTES.LIST,
-        createRequest,
+        createRequest
       );
       return toFEProduct(response.data);
     } catch (error) {
@@ -181,16 +241,16 @@ class ProductsService {
    */
   async update(
     slug: string,
-    formData: Partial<ProductFormFE>,
+    formData: Partial<ProductFormFE>
   ): Promise<ProductFE> {
     try {
       // Validate input data (allow partial updates)
       const validatedData = ProductFormSchema.partial().parse(formData);
-      
+
       const updateRequest = toBEProductUpdate(validatedData);
       const response: any = await apiService.patch(
         PRODUCT_ROUTES.BY_SLUG(slug),
-        updateRequest,
+        updateRequest
       );
       return toFEProduct(response.data);
     } catch (error) {
@@ -204,7 +264,7 @@ class ProductsService {
   async delete(slug: string): Promise<{ message: string }> {
     try {
       return apiService.delete<{ message: string }>(
-        PRODUCT_ROUTES.BY_SLUG(slug),
+        PRODUCT_ROUTES.BY_SLUG(slug)
       );
     } catch (error) {
       this.handleError(error, `delete(${slug})`);
@@ -229,7 +289,7 @@ class ProductsService {
   async getVariants(slug: string): Promise<ProductCardFE[]> {
     try {
       const response: any = await apiService.get(
-        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`,
+        `${PRODUCT_ROUTES.BY_SLUG(slug)}/variants`
       );
       return toFEProductCards(response.data || []);
     } catch (error) {
@@ -257,7 +317,7 @@ class ProductsService {
    */
   async getSellerProducts(
     slug: string,
-    limit?: number,
+    limit?: number
   ): Promise<ProductCardFE[]> {
     const endpoint = buildUrl(`${PRODUCT_ROUTES.BY_SLUG(slug)}/seller-items`, {
       limit,
@@ -272,7 +332,7 @@ class ProductsService {
   async updateStock(slug: string, stockCount: number): Promise<ProductFE> {
     // Validate stock count
     const validatedData = StockUpdateSchema.parse({ stockCount });
-    
+
     const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
       stockCount: validatedData.stockCount,
     });
@@ -285,7 +345,7 @@ class ProductsService {
   async updateStatus(slug: string, status: string): Promise<ProductFE> {
     // Validate status
     const validatedData = StatusUpdateSchema.parse({ status });
-    
+
     const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
       status: validatedData.status,
     });
@@ -308,8 +368,9 @@ class ProductsService {
       status: "published",
       limit: 100,
     });
-    const response =
-      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
     return toFEProductCards(response.data || []);
   }
 
@@ -322,8 +383,9 @@ class ProductsService {
       status: PRODUCT_STATUS.PUBLISHED,
       limit: PAGINATION.DEFAULT_PAGE_SIZE,
     });
-    const response =
-      await apiService.get<PaginatedResponse<ProductListItemBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponse<ProductListItemBE>>(
+      endpoint
+    );
     return toFEProductCards(response.data || []);
   }
 
@@ -333,7 +395,7 @@ class ProductsService {
   async bulkAction(
     action: string,
     productIds: string[],
-    data?: any,
+    data?: any
   ): Promise<BulkActionResponse> {
     try {
       // Validate bulk action inputs
@@ -342,14 +404,14 @@ class ProductsService {
         productIds,
         data,
       });
-      
+
       const response = await apiService.post<BulkActionResponse>(
         PRODUCT_ROUTES.BULK,
         {
           action: validatedAction.action,
           ids: validatedAction.productIds,
           updates: validatedAction.data,
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -398,7 +460,7 @@ class ProductsService {
    */
   async bulkUpdateStock(
     productIds: string[],
-    stockCount: number,
+    stockCount: number
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update-stock", productIds, { stockCount });
   }
@@ -415,7 +477,7 @@ class ProductsService {
    */
   async bulkUpdate(
     productIds: string[],
-    updates: Partial<ProductFormFE>,
+    updates: Partial<ProductFormFE>
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", productIds, toBEProductUpdate(updates));
   }
@@ -445,10 +507,10 @@ class ProductsService {
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
     // Validate using partial schema
     const validatedData = ProductFormSchema.partial().parse(data);
-    
+
     const productBE = await apiService.patch<ProductBE>(
       PRODUCT_ROUTES.BY_SLUG(slug),
-      validatedData,
+      validatedData
     );
     return toFEProduct(productBE);
   }
