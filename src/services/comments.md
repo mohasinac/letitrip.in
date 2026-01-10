@@ -36,6 +36,22 @@
 - ✅ **Price Validation**: Must be positive numbers
 - ✅ **Image URL Validation**: Must be valid URLs
 
+### Order Service Validation (orders.service.ts)
+
+- ✅ **Zod Schemas Implemented**: All order operations validated (January 10, 2026)
+- ✅ **Create Order Validation**: Items array (min 1), shipping address, payment/shipping methods
+- ✅ **Order Items Validation**: Product ID, quantity (1-100), optional variant ID
+- ✅ **Payment Method Validation**: cod/card/upi/netbanking/wallet enum
+- ✅ **Shipping Method Validation**: standard/express/overnight enum
+- ✅ **Coupon Code Validation**: 3-50 chars, uppercase/numbers/hyphens format
+- ✅ **Status Update Validation**: 9 valid order statuses enum
+- ✅ **Shipment Validation**: Tracking number (5-50 chars), provider (2-100 chars)
+- ✅ **Cancel Validation**: Reason required (10-500 characters)
+- ✅ **Bulk Operations Validation**: Action type and order IDs validation
+- ✅ **Refund Validation**: Optional amount (positive), optional reason (10-500 chars)
+- ✅ **Customer Notes Validation**: Max 500 characters
+- ✅ **Internal Notes Validation**: Max 1000 characters
+
 ## General Architecture Improvements
 
 ### 1. Service Layer Abstraction
