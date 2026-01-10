@@ -1,18 +1,18 @@
 /**
  * Branded Types for Type-Safe IDs
- * 
+ *
  * This module provides branded types to prevent mixing different ID types.
  * Branded types add compile-time safety without runtime overhead.
- * 
+ *
  * @example
  * ```typescript
  * const userId: UserId = 'user123' as UserId;
  * const productId: ProductId = 'product456' as ProductId;
- * 
+ *
  * // This will cause a TypeScript error:
  * // const wrongId: UserId = productId; // Error!
  * ```
- * 
+ *
  * @module branded-types
  */
 
@@ -26,83 +26,83 @@ export type Branded<T, B> = T & Brand<B>;
 /**
  * User-related branded types
  */
-export type UserId = Branded<string, 'UserId'>;
-export type UserEmail = Branded<string, 'UserEmail'>;
-export type UserRole = Branded<string, 'UserRole'>;
+export type UserId = Branded<string, "UserId">;
+export type UserEmail = Branded<string, "UserEmail">;
+export type UserRole = Branded<string, "UserRole">;
 
 /**
  * Product-related branded types
  */
-export type ProductId = Branded<string, 'ProductId'>;
-export type ProductSku = Branded<string, 'ProductSku'>;
+export type ProductId = Branded<string, "ProductId">;
+export type ProductSku = Branded<string, "ProductSku">;
 
 /**
  * Order-related branded types
  */
-export type OrderId = Branded<string, 'OrderId'>;
-export type OrderNumber = Branded<string, 'OrderNumber'>;
+export type OrderId = Branded<string, "OrderId">;
+export type OrderNumber = Branded<string, "OrderNumber">;
 
 /**
  * Cart-related branded types
  */
-export type CartId = Branded<string, 'CartId'>;
-export type CartItemId = Branded<string, 'CartItemId'>;
+export type CartId = Branded<string, "CartId">;
+export type CartItemId = Branded<string, "CartItemId">;
 
 /**
  * Shop-related branded types
  */
-export type ShopId = Branded<string, 'ShopId'>;
-export type ShopSlug = Branded<string, 'ShopSlug'>;
+export type ShopId = Branded<string, "ShopId">;
+export type ShopSlug = Branded<string, "ShopSlug">;
 
 /**
  * Category-related branded types
  */
-export type CategoryId = Branded<string, 'CategoryId'>;
-export type CategorySlug = Branded<string, 'CategorySlug'>;
+export type CategoryId = Branded<string, "CategoryId">;
+export type CategorySlug = Branded<string, "CategorySlug">;
 
 /**
  * Review-related branded types
  */
-export type ReviewId = Branded<string, 'ReviewId'>;
+export type ReviewId = Branded<string, "ReviewId">;
 
 /**
  * Payment-related branded types
  */
-export type PaymentId = Branded<string, 'PaymentId'>;
-export type TransactionId = Branded<string, 'TransactionId'>;
+export type PaymentId = Branded<string, "PaymentId">;
+export type TransactionId = Branded<string, "TransactionId">;
 
 /**
  * Address-related branded types
  */
-export type AddressId = Branded<string, 'AddressId'>;
+export type AddressId = Branded<string, "AddressId">;
 
 /**
  * Notification-related branded types
  */
-export type NotificationId = Branded<string, 'NotificationId'>;
+export type NotificationId = Branded<string, "NotificationId">;
 
 /**
  * Conversation-related branded types
  */
-export type ConversationId = Branded<string, 'ConversationId'>;
-export type MessageId = Branded<string, 'MessageId'>;
+export type ConversationId = Branded<string, "ConversationId">;
+export type MessageId = Branded<string, "MessageId">;
 
 /**
  * Support ticket-related branded types
  */
-export type TicketId = Branded<string, 'TicketId'>;
+export type TicketId = Branded<string, "TicketId">;
 
 /**
  * Coupon-related branded types
  */
-export type CouponId = Branded<string, 'CouponId'>;
-export type CouponCode = Branded<string, 'CouponCode'>;
+export type CouponId = Branded<string, "CouponId">;
+export type CouponCode = Branded<string, "CouponCode">;
 
 /**
  * Shipment-related branded types
  */
-export type ShipmentId = Branded<string, 'ShipmentId'>;
-export type TrackingNumber = Branded<string, 'TrackingNumber'>;
+export type ShipmentId = Branded<string, "ShipmentId">;
+export type TrackingNumber = Branded<string, "TrackingNumber">;
 
 /**
  * Type guards to check if a value is a valid branded type
@@ -114,7 +114,7 @@ export type TrackingNumber = Branded<string, 'TrackingNumber'>;
  * @returns True if the value is a non-empty string
  */
 const isValidId = (value: unknown): value is string => {
-  return typeof value === 'string' && value.length > 0;
+  return typeof value === "string" && value.length > 0;
 };
 
 /**

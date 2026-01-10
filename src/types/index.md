@@ -23,6 +23,7 @@ This folder contains TypeScript type definitions, interfaces, and type utilities
 Branded types provide compile-time type safety for IDs without runtime overhead.
 
 **Available Branded Types:**
+
 - `UserId`, `UserEmail`, `UserRole` - User identifiers
 - `ProductId`, `ProductSku` - Product identifiers
 - `OrderId`, `OrderNumber` - Order identifiers
@@ -39,26 +40,29 @@ Branded types provide compile-time type safety for IDs without runtime overhead.
 - `ShipmentId`, `TrackingNumber` - Shipment identifiers
 
 **Type Guards:**
+
 - `isUserId()`, `isProductId()`, `isOrderId()`, etc.
 - Validate values at runtime
 
 **Helper Functions:**
+
 - `createUserId()`, `createProductId()`, `createOrderId()`, etc.
 - Create branded types with validation
 
 **Usage Example:**
+
 ```typescript
-import { UserId, ProductId, createUserId } from '@/types/shared/branded';
+import { UserId, ProductId, createUserId } from "@/types/shared/branded";
 
 // Type-safe IDs
-const userId: UserId = 'user123' as UserId;
-const productId: ProductId = 'prod456' as ProductId;
+const userId: UserId = "user123" as UserId;
+const productId: ProductId = "prod456" as ProductId;
 
 // This will cause a TypeScript error:
 // const wrongAssignment: UserId = productId; // Error!
 
 // Create with validation
-const validatedId = createUserId('user789'); // UserId
+const validatedId = createUserId("user789"); // UserId
 
 // Type guard
 if (isUserId(someValue)) {

@@ -30,7 +30,7 @@ This folder contains utility functions, helpers, and libraries that are shared a
 **Usage:**
 
 ```typescript
-import { env, getFirebaseClientConfig } from '@/lib/env';
+import { env, getFirebaseClientConfig } from "@/lib/env";
 
 // Type-safe access
 const apiUrl = env.NEXT_PUBLIC_API_URL; // string (validated)
@@ -38,7 +38,7 @@ const maxFileSize = env.MAX_FILE_SIZE; // number
 
 // Helper functions
 if (env.isDevelopment) {
-  console.log('Running in development mode');
+  console.log("Running in development mode");
 }
 
 const firebaseConfig = getFirebaseClientConfig();

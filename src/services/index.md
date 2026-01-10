@@ -11,6 +11,7 @@ This folder contains service classes that encapsulate business logic and API com
 **Purpose:** User authentication and session management with Zod validation. ✅
 
 **Validation Schemas:** ✅
+
 - `LoginCredentialsSchema` - Email and password validation
 - `RegisterDataSchema` - Registration with password strength requirements
 - `GoogleAuthDataSchema` - Google OAuth token validation
@@ -87,16 +88,53 @@ This folder contains service classes that encapsulate business logic and API com
 
 **Export:** `productsService`
 
-**Purpose:** Product catalog management.
+**Purpose:** Product catalog management with Zod validation. ✅
+
+**Validation Schemas:** ✅
+
+- `ProductFormSchema` - Complete product create/update validation
+  - Name: 3-200 characters
+  - Description: 10-5000 characters
+  - Price: Positive number, max ₹1,00,00,000
+  - Stock count: Non-negative integer
+  - Images: 1-10 valid URLs required
+  - Category, Shop, Seller IDs required
+  - Optional: compareAtPrice, costPerItem, weight, sku, barcode, tags
+  - Status: draft/published/archived
+  - SEO metadata validation (title max 60, description max 160)
+- `StockUpdateSchema` - Stock count validation (non-negative integer)
+- `StatusUpdateSchema` - Status validation (draft/published/archived)
+- `QuickCreateSchema` - Minimal product creation (name, price, stock, category)
+- `BulkActionSchema` - Bulk operation validation (action type + product IDs)
 
 **Key Methods:**
 
 - `getProducts(filters, pagination)` - List products with filters
 - `getProductById(id)` - Get single product
 - `getProductBySlug(slug)` - Get product by URL slug
-- `createProduct(data)` - Create new product (seller)
-- `updateProduct(id, data)` - Update product
+- `createProduct(data)` - Create new product (seller) ✅ Validated
+- `updateProduct(slug, data)` - Update product ✅ Validated
 - `deleteProduct(id)` - Delete product
+- `updateStock(slug, stockCount)` - Update stock ✅ Validated
+- `updateStatus(slug, status)` - Update status ✅ Validated
+- `bulkAction(action, ids, data)` - Bulk operations ✅ Validated
+- `bulkUpdate(ids, updates)` - Bulk update ✅ Validated
+- `quickCreate(data)` - Quick product creation ✅ Validated
+- `quickUpdate(slug, data)` - Quick product update ✅ Validated
+
+**Features:**
+
+- ✅ **Runtime validation with Zod** (January 10, 2026)
+- ✅ **Price and stock validation**
+- ✅ **Image URL validation (1-10 images)**
+- ✅ **SEO metadata validation**
+- ✅ **Bulk operation validation**
+- Product search and filtering
+- Variants management
+- Review aggregation
+- Similar products
+- Featured products
+- FE/BE type transformation
 - `searchProducts(query)` - Search products
 - `getFeaturedProducts()` - Get featured products
 - `getRelatedProducts(productId)` - Get similar products
