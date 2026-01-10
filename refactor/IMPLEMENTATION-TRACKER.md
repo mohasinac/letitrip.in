@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 2 - Performance & Architecture  
-**Overall Progress**: 35/75 tasks completed (46.7%)
+**Overall Progress**: 36/75 tasks completed (48.0%)
 
 ---
 
@@ -388,7 +388,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 2: Performance & Architecture (Weeks 5-8)
 
 **Goal**: Optimize performance and code organization  
-**Progress**: 10/25 tasks (40%)
+**Progress**: 11/25 tasks (44%)
 
 ### Week 5: Context Optimization (6/6) ✅ COMPLETE
 
@@ -462,7 +462,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 30 minutes
   - **Completed**: Implemented dynamic imports for non-critical context providers (ComparisonProvider, ViewingHistoryProvider, LoginRegisterProvider) with SSR disabled. These providers are now code-split and only loaded client-side, reducing the initial bundle size. Critical providers (AuthProvider, ThemeProvider, GlobalSearchProvider) remain eager-loaded for proper SSR and initial render. Updated src/app/comments.md to mark lazy loading improvement as completed with implementation details.
 
-### Week 6: Service Layer Refactoring (4/7)
+### Week 6: Service Layer Refactoring (5/7)
 
 #### Task 6.1: Create BaseService Class ✅
 
@@ -508,16 +508,17 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 90 minutes
   - **Completed**: Migrated reviews.service.ts (203 lines) and shops.service.ts (313 lines) to extend BaseService pattern. Reviews service extends BaseService<ReviewFE, ReviewBE, ReviewFormFE, Partial<ReviewFormFE>> with inherited CRUD (getById, create, update, delete) and custom methods (list with filters, moderate, markHelpful, uploadMedia, getSummary, canReview, getFeatured, getHomepage, bulk approve/reject). Shops service extends BaseService<ShopFE, ShopBE, ShopFormFE, Partial<ShopFormFE>> with inherited CRUD and custom methods (list returns ShopCardFE, getBySlug/updateBySlug/deleteBySlug for slug-based operations, verify, ban, setFeatureFlags, payments, stats, products/reviews, follow/unfollow, featured/homepage, bulk operations, getByIds). Added BaseService.handleError() to all methods. Cart service (442 lines) and orders service (476 lines) intentionally not migrated due to specialized logic (guest cart, coupons) and complex validation schemas. Strategic approach focused on services that benefit most from BaseService pattern. No TypeScript errors. Updated documentation in comments.md and index.md for both services.
 
-#### Task 6.5: Install and Configure React Query
+#### Task 6.5: Install and Configure React Query ✅
 
-- [ ] **Setup React Query**
-  - **Install**: `npm install @tanstack/react-query`
+- [x] **Setup React Query**
+  - **Install**: `npm install @tanstack/react-query @tanstack/react-query-devtools`
   - **Create**: `src/lib/react-query.ts`
   - **Configure**: Query client with defaults
   - **Add**: Provider to layout
   - **Test**: Query client accessible
   - **Update**: `src/lib/index.md`
   - **Estimate**: 30 minutes
+  - **Completed**: Installed React Query v5 and devtools. Created src/lib/react-query.ts with configured QueryClient (5min stale time, 10min cache time, 3 retries with exponential backoff, refetch on reconnect). Created comprehensive query key factories for all entities (products, users, orders, cart, shops, categories, reviews, auctions) with hierarchical structure for efficient cache invalidation. Added helper functions (invalidateQueries, prefetchQuery). Created QueryProvider component in src/components/providers/QueryProvider.tsx with devtools in development mode. Integrated QueryProvider into app/layout.tsx wrapping AuthProvider. No TypeScript errors. Updated src/lib/index.md with comprehensive React Query documentation including configuration details, query key factories, features, and usage examples.
 
 #### Task 6.6: Create Query Hooks for Products
 

@@ -4,6 +4,67 @@ This folder contains utility functions, helpers, and libraries that are shared a
 
 ## Environment & Configuration
 
+### react-query.ts ✅
+
+**Exports:** React Query (TanStack Query) configuration for server state management
+
+**Key Exports:**
+
+- `createQueryClient()` - Create configured QueryClient instance
+- `queryClient` - Singleton query client instance
+- `queryKeys` - Query key factories for cache management
+- `invalidateQueries(client, queryKey)` - Helper to invalidate queries
+- `prefetchQuery(client, queryKey, queryFn)` - Helper to prefetch data
+
+**Query Client Configuration:**
+
+- **Stale Time**: 5 minutes (data considered fresh)
+- **Cache Time**: 10 minutes (inactive queries kept in cache)
+- **Retry**: 3 attempts with exponential backoff
+- **Refetch on Window Focus**: Disabled by default
+- **Refetch on Reconnect**: Enabled
+- **Refetch on Mount**: Disabled (uses cache)
+
+**Query Key Factories:**
+
+- `queryKeys.products.*` - Product queries (all, lists, detail, bySlug, reviews, variants, similar)
+- `queryKeys.users.*` - User queries (all, lists, detail, me, stats)
+- `queryKeys.orders.*` - Order queries (all, lists, detail, stats)
+- `queryKeys.cart.*` - Cart queries (all, current)
+- `queryKeys.shops.*` - Shop queries (all, lists, detail, bySlug, products, stats, following)
+- `queryKeys.categories.*` - Category queries (all, tree, detail)
+- `queryKeys.reviews.*` - Review queries (all, lists, detail, summary)
+- `queryKeys.auctions.*` - Auction queries (all, lists, detail, bids)
+
+**Features:**
+
+- ✅ **Optimized caching** with 5-minute stale time, 10-minute cache time
+- ✅ **Automatic retries** with exponential backoff
+- ✅ **Standardized query keys** for consistent cache invalidation
+- ✅ **Helper functions** for common operations
+- ✅ **Development devtools** for debugging queries
+
+**Usage:**
+
+```typescript
+import { queryClient, queryKeys, invalidateQueries } from "@/lib/react-query";
+
+// Use query keys
+const productQuery = useQuery({
+  queryKey: queryKeys.products.detail(productId),
+  queryFn: () => productsService.getById(productId),
+});
+
+// Invalidate after mutation
+await invalidateQueries(queryClient, queryKeys.products.lists());
+```
+
+**Related Components:**
+
+- `QueryProvider` - React Query provider component in `@/components/providers/QueryProvider.tsx`
+
+---
+
 ### env.ts
 
 **Exports:** Type-safe environment variables with runtime validation
