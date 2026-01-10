@@ -88,6 +88,75 @@ const { loginForm, loginPassword, handleLoginSubmit } = useLoginRegister();
 
 ## UI & Theme
 
+### NotificationContext.tsx
+
+**Exports:** `NotificationProvider`, `useNotification()`
+
+**Purpose:** Toast notification system for user feedback.
+
+**Context Value:**
+
+- `toasts: Toast[]` - List of active toast notifications
+- `showSuccess(message, options?): string` - Show success toast
+- `showError(message, options?): string` - Show error toast
+- `showWarning(message, options?): string` - Show warning toast
+- `showInfo(message, options?): string` - Show info toast
+- `showToast(toast): string` - Show custom toast
+- `dismiss(id): void` - Dismiss specific toast by ID
+- `dismissAll(): void` - Dismiss all active toasts
+
+**Toast Interface:**
+
+```typescript
+interface Toast {
+  id: string;
+  type: "success" | "error" | "warning" | "info";
+  message: string;
+  title?: string;
+  duration?: number; // milliseconds, 0 = no auto-dismiss
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+```
+
+**Features:**
+
+- Multiple toast types (success, error, warning, info)
+- Auto-dismiss with configurable duration (default: 5000ms)
+- Manual dismiss
+- Optional action buttons
+- Toast stacking
+- Unique IDs for each toast
+- Returns toast ID for programmatic control
+
+**Usage:**
+
+```typescript
+const { showSuccess, showError, dismiss } = useNotification();
+
+// Simple success toast
+showSuccess("Data saved successfully!");
+
+// Toast with custom duration
+showError("Failed to save", { duration: 3000 });
+
+// Toast with title and action
+const toastId = showWarning("Unsaved changes", {
+  title: "Warning",
+  action: {
+    label: "Save",
+    onClick: () => handleSave(),
+  },
+});
+
+// Dismiss specific toast
+dismiss(toastId);
+```
+
+---
+
 ### ThemeContext.tsx
 
 **Exports:** `ThemeProvider`, `useTheme()`
