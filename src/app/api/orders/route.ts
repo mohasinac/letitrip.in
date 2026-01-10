@@ -1,9 +1,9 @@
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
 import { ordersSieveConfig } from "@/app/api/lib/sieve/config";
 import { createPaginationMeta } from "@/app/api/lib/sieve/firestore";
 import { parseSieveQuery } from "@/app/api/lib/sieve/parser";
-import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import {
   getUserFromRequest,
   requireAuth,
@@ -235,4 +235,3 @@ async function createOrderHandler(request: NextRequest) {
 // Export handlers with rate limiting (100 requests per minute)
 export const GET = RateLimitMiddleware.api(getOrdersHandler);
 export const POST = RateLimitMiddleware.api(createOrderHandler);
-
