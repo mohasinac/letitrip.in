@@ -3,10 +3,12 @@
 ## Error Handling
 
 ### ErrorBoundary
+
 **File**: [error-boundary.tsx](error-boundary.tsx)
 **Status**: ✅ Complete
 
 React 19 Error Boundary implementation with:
+
 - Class component with componentDidCatch lifecycle
 - Error logging integration via logServiceError
 - Reset functionality (resetErrorBoundary method)
@@ -16,6 +18,7 @@ React 19 Error Boundary implementation with:
 - Section-specific error boundary wrapper
 
 **Usage**:
+
 ```tsx
 // Global app wrapper
 <ErrorBoundary>
@@ -34,6 +37,7 @@ React 19 Error Boundary implementation with:
 ```
 
 **Features**:
+
 - Integrates with typed error system (isAppError)
 - Error logger integration
 - Graceful error recovery with retry
