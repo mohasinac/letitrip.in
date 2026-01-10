@@ -35,28 +35,59 @@ This folder contains authentication-related UI components for user authenticatio
 
 **Export:** `AuthGuard` (default)
 
-**Purpose:** HOC/wrapper component for protecting routes that require authentication or specific roles.
+**Purpose:** HOC/wrapper component for protecting routes that require authentication or specific permissions/roles. ✅
 
 **Features:**
 
 - Checks authentication status before rendering children
-- Role-based access control (RBAC)
+- ✅ **Permission-based access control** (granular permissions) - NEW
+- ✅ **Role-based access control** (RBAC) - LEGACY (deprecated)
 - Automatic redirects for unauthorized access
 - Integration with error-redirect utility
 - Loading state management during auth check
+- ✅ **Custom loading/unauthorized components** - NEW
+- ✅ **Multiple permission checks** (OR and AND logic) - NEW
 
 **Props:**
 
 - `children: React.ReactNode` - Protected content
 - `requireAuth?: boolean` - Whether authentication is required (default: true)
 - `redirectTo?: string` - Custom redirect path (default: '/login')
-- `allowedRoles?: string[]` - Array of roles permitted to access
+- `allowedRoles?: string[]` - ⚠️ **DEPRECATED** - Array of roles permitted to access (use `requiredPermissions` instead)
+- ✅ `requiredPermissions?: Permission | Permission[]` - **NEW** - Required permissions (OR logic - user needs at least one)
+- ✅ `requiredPermissionsAll?: Permission[]` - **NEW** - Required permissions (AND logic - user needs all)
+- ✅ `loadingComponent?: React.ReactNode` - **NEW** - Custom loading component
+- ✅ `unauthorizedComponent?: React.ReactNode` - **NEW** - Custom unauthorized component
 
 **Usage:**
 
 ```tsx
+// Legacy role-based (deprecated)
 <AuthGuard allowedRoles={["admin", "seller"]}>
   <ProtectedContent />
+</AuthGuard>
+
+// NEW: Permission-based (recommended)
+<AuthGuard requiredPermissions={PERMISSIONS.PRODUCTS_CREATE}>
+  <CreateProduct />
+</AuthGuard>
+
+// NEW: Multiple permissions (OR logic)
+<AuthGuard requiredPermissions={[PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_EDIT]}>
+  <ProductEditor />
+</AuthGuard>
+
+// NEW: Multiple permissions (AND logic)
+<AuthGuard requiredPermissionsAll={[PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_PUBLISH]}>
+  <PublishProduct />
+</AuthGuard>
+
+// NEW: Custom loading component
+<AuthGuard
+  requiredPermissions={PERMISSIONS.ADMIN_DASHBOARD}
+  loadingComponent={<CustomSpinner />}
+>
+  <AdminDashboard />
 </AuthGuard>
 ```
 

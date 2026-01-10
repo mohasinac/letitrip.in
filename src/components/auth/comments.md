@@ -1,5 +1,21 @@
 # Auth Components - Future Refactoring Notes
 
+## Completed Improvements ✅
+
+### AuthGuard Component (AuthGuard.tsx)
+
+- ✅ **Permission-Based Access Control**: Implemented granular permission checking (January 10, 2026)
+- ✅ **New Props Added**:
+  - `requiredPermissions` - Check single or multiple permissions (OR logic)
+  - `requiredPermissionsAll` - Check all permissions required (AND logic)
+  - `loadingComponent` - Custom loading component
+  - `unauthorizedComponent` - Custom unauthorized component
+- ✅ **Enhanced Loading State**: Better loading state management with `isCheckingPermissions`
+- ✅ **Backwards Compatible**: Kept `allowedRoles` prop (deprecated) for backwards compatibility
+- ✅ **Permission Integration**: Integrated with permission system using `hasPermission()` and `hasAllPermissions()`
+- ✅ **Error Handling**: Uses `forbidden.insufficientPermissions()` for permission failures
+- ✅ **TypeScript Support**: Full type safety with `Permission` type from permission system
+
 ## Potential Improvements
 
 ### 1. Google Sign-In Button
@@ -12,10 +28,10 @@
 
 ### 2. AuthGuard
 
+- ✅ **Permission Granularity**: ~~Move toward permission-based access control instead of role-based~~ (COMPLETED)
+- ✅ **Loading UI**: ~~Add customizable loading component instead of rendering nothing~~ (COMPLETED)
 - **Performance**: Consider memoizing authorization checks to prevent unnecessary re-renders
 - **Multiple Role Support**: Enhance to support OR/AND logic for role combinations (e.g., admin OR seller)
-- **Permission Granularity**: Move toward permission-based access control instead of role-based (more flexible)
-- **Loading UI**: Add customizable loading component instead of rendering nothing
 - **TypeScript**: Create union types for role values instead of string arrays
 - **Redirect State**: Preserve original URL in redirect for post-auth navigation
 

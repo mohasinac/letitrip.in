@@ -97,12 +97,19 @@ if (hasPermission(user, PERMISSIONS.PRODUCTS_CREATE)) {
 }
 
 // Check multiple permissions (any)
-if (hasPermission(user, [PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_EDIT])) {
+if (
+  hasPermission(user, [PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_EDIT])
+) {
   // User can create OR edit products
 }
 
 // Check multiple permissions (all)
-if (hasAllPermissions(user, [PERMISSIONS.PRODUCTS_CREATE, PERMISSIONS.PRODUCTS_PUBLISH])) {
+if (
+  hasAllPermissions(user, [
+    PERMISSIONS.PRODUCTS_CREATE,
+    PERMISSIONS.PRODUCTS_PUBLISH,
+  ])
+) {
   // User can create AND publish products
 }
 

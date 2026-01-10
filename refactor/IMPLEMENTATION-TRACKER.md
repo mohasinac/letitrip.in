@@ -2,7 +2,7 @@
 
 **Last Updated**: January 10, 2026  
 **Current Phase**: Phase 1 - Foundation & Security  
-**Overall Progress**: 8/75 tasks completed (10.7%)
+**Overall Progress**: 9/75 tasks completed (12%)
 
 ---
 
@@ -27,7 +27,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 1: Foundation & Security (Weeks 1-4)
 
 **Goal**: Establish secure, type-safe foundation  
-**Progress**: 8/25 tasks (32%)
+**Progress**: 9/25 tasks (36%)
 
 ### Week 1: Type Safety & Validation (7/7) ✅ COMPLETE
 
@@ -113,7 +113,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Completed**: January 10, 2026
   - **Result**: 6 Zod schemas implemented (CreateOrderSchema, UpdateOrderStatusSchema, CreateShipmentSchema, CancelOrderSchema, BulkOrderActionSchema, BulkRefundSchema)
 
-### Week 2: Security Enhancements (1/8)
+### Week 2: Security Enhancements (2/8)
 
 #### Task 2.1: Create Permission System
 
@@ -131,14 +131,19 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 2.2: Enhance AuthGuard Component
 
-- [ ] **Refactor `src/components/auth/AuthGuard.tsx`**
-  - **Add**: `requiredPermissions` prop
-  - **Integrate**: Permission checking with `hasPermission`
-  - **Keep**: Existing role-based checks (deprecated)
-  - **Add**: Loading state while checking permissions
+- [x] **Refactor `src/components/auth/AuthGuard.tsx`**
+  - **Add**: `requiredPermissions` prop (single or multiple, OR logic)
+  - **Add**: `requiredPermissionsAll` prop (multiple permissions, AND logic)
+  - **Add**: `loadingComponent` prop (custom loading UI)
+  - **Add**: `unauthorizedComponent` prop (custom unauthorized UI)
+  - **Integrate**: Permission checking with `hasPermission()` and `hasAllPermissions()`
+  - **Keep**: Existing role-based checks (deprecated but backwards compatible)
+  - **Add**: Enhanced loading state with `isCheckingPermissions`
   - **Test**: Guard with different permissions
-  - **Update**: `src/components/auth/comments.md` - mark as permission-based
+  - **Update**: `src/components/auth/index.md` and `src/components/auth/comments.md` - marked as permission-based
   - **Estimate**: 30 minutes
+  - **Completed**: January 10, 2026
+  - **Result**: Full permission-based access control with backwards compatibility, custom loading/unauthorized components
 
 #### Task 2.3: Create Rate Limiter
 
