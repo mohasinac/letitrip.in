@@ -76,6 +76,22 @@
 - ✅ **Error Handling**: BaseService error handling integration for consistent error responses
 - ✅ **Benefits**: Reduced code duplication, consistent error handling, type-safe CRUD operations, easier testing
 
+### Reviews Service (reviews.service.ts)
+
+- ✅ **Extends BaseService**: Migrated to BaseService<ReviewFE, ReviewBE, ReviewFormFE, Partial<ReviewFormFE>> (January 11, 2026)
+- ✅ **Generic CRUD Operations**: Inherits getById, create, update, delete from BaseService
+- ✅ **Custom Methods Preserved**: list (with filters and pagination), moderate, markHelpful, uploadMedia, getSummary, canReview, getFeatured, getHomepage, bulkApprove, bulkReject
+- ✅ **Error Handling**: BaseService error handling integration for all methods
+- ✅ **Benefits**: Reduced code duplication (203 lines), consistent error handling, type-safe CRUD operations
+
+### Shops Service (shops.service.ts)
+
+- ✅ **Extends BaseService**: Migrated to BaseService<ShopFE, ShopBE, ShopFormFE, Partial<ShopFormFE>> (January 11, 2026)
+- ✅ **Generic CRUD Operations**: Inherits getById, create, update, delete from BaseService
+- ✅ **Custom Methods Preserved**: list (returns ShopCardFE), getBySlug, updateBySlug, deleteBySlug, verify, ban, setFeatureFlags, getPayments, processPayment, getStats, getShopProducts, getShopReviews, follow, unfollow, checkFollowing, getFollowing, getFeatured, getHomepage, bulk operations (bulkVerify, bulkUnverify, bulkFeature, bulkUnfeature, bulkActivate, bulkDeactivate, bulkBan, bulkUnban, bulkDelete, bulkUpdate), getByIds
+- ✅ **Error Handling**: BaseService error handling integration for all methods
+- ✅ **Benefits**: Reduced code duplication (313 lines), consistent error handling, type-safe CRUD operations, slug-based operations alongside ID-based
+
 ## General Architecture Improvements
 
 ### 1. Service Layer Abstraction

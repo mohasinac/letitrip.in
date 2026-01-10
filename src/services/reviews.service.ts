@@ -8,95 +8,111 @@ import {
   toFEReviews,
 } from "@/types/transforms/review.transforms";
 import { apiService } from "./api.service";
+import { BaseService } from "./base-service";
 
 interface ModerateReviewData {
   isApproved: boolean;
   moderationNotes?: string;
 }
 
-class ReviewsService {
-  // List reviews with cursor-based pagination
+/**
+ * Reviews Service - Extends BaseService
+ *
+ * Provides review management with BaseService CRUD operations
+ * plus review-specific methods for moderation and filtering.
+ */
+class ReviewsService extends BaseService<
+  ReviewFE,
+  ReviewBE,
+  ReviewFormFE,
+  Partial<ReviewFormFE>
+> {
+  constructor() {
+    super({
+      resourceName: "review",
+      baseRoute: REVIEW_ROUTES.LIST,
+      toFE: toFEReview,
+      toBECreate: toBECreateReviewRequest,
+      toBEUpdate: (data) => toBECreateReviewRequest(data as ReviewFormFE),
+    });
+  }
+
+  /**
+   * Override list to support custom query string building
+   */
   async list(
     filters?: Record<string, any>
   ): Promise<PaginatedResponseFE<ReviewFE>> {
-    const params = new URLSearchParams();
+    try {
+      const params = new URLSearchParams();
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
-        }
-      });
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            params.append(key, value.toString());
+          }
+        });
+      }
+
+      const queryString = params.toString();
+      const endpoint = queryString
+        ? `${REVIEW_ROUTES.LIST}?${queryString}`
+        : REVIEW_ROUTES.LIST;
+
+      const response: any = await apiService.get(endpoint);
+      return {
+        data: toFEReviews(response.data || response.reviews || []),
+        count: response.count || 0,
+        pagination: response.pagination,
+      };
+    } catch (error) {
+      return BaseService.handleError(error, "list reviews");
     }
-
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `${REVIEW_ROUTES.LIST}?${queryString}`
-      : REVIEW_ROUTES.LIST;
-
-    const response: any = await apiService.get(endpoint);
-    return {
-      data: toFEReviews(response.data || response.reviews || []),
-      count: response.count || 0,
-      pagination: response.pagination,
-    };
   }
 
-  // Get review by ID
-  async getById(id: string): Promise<ReviewFE> {
-    const response: any = await apiService.get(REVIEW_ROUTES.BY_ID(id));
-    return toFEReview(response.data);
-  }
+  // Note: getById, create, update, delete are inherited from BaseService
 
-  // Create review (authenticated users after purchase)
-  async create(formData: ReviewFormFE): Promise<ReviewFE> {
-    const request = toBECreateReviewRequest(formData);
-    const response: any = await apiService.post(REVIEW_ROUTES.CREATE, request);
-    return toFEReview(response.data);
-  }
-
-  // Update review (author only)
-  async update(id: string, formData: Partial<ReviewFormFE>): Promise<ReviewFE> {
-    const request = toBECreateReviewRequest(formData as ReviewFormFE);
-    const response: any = await apiService.patch(
-      REVIEW_ROUTES.UPDATE(id),
-      request
-    );
-    return toFEReview(response.data);
-  }
-
-  // Delete review (author/admin)
-  async delete(id: string): Promise<{ message: string }> {
-    return apiService.delete<{ message: string }>(REVIEW_ROUTES.DELETE(id));
-  }
-
-  // Moderate review (shop owner/admin)
+  /**
+   * Moderate review (shop owner/admin)
+   * Approve or reject reviews with optional moderation notes
+   */
   async moderate(id: string, data: ModerateReviewData): Promise<ReviewFE> {
-    const response: any = await apiService.patch(
-      `${REVIEW_ROUTES.BY_ID(id)}/moderate`,
-      data
-    );
-    return toFEReview(response.data);
+    try {
+      const response: any = await apiService.patch(
+        `${REVIEW_ROUTES.BY_ID(id)}/moderate`,
+        data
+      );
+      return toFEReview(response.data);
+    } catch (error) {
+      return BaseService.handleError(error, "moderate review");
+    }
   }
 
   // Mark review as helpful
   async markHelpful(id: string): Promise<{ helpfulCount: number }> {
-    return apiService.post<{ helpfulCount: number }>(
-      REVIEW_ROUTES.HELPFUL(id),
-      {}
-    );
+    try {
+      return await apiService.post<{ helpfulCount: number }>(
+        REVIEW_ROUTES.HELPFUL(id),
+        {}
+      );
+    } catch (error) {
+      return BaseService.handleError(error, "mark review as helpful");
+    }
   }
 
   // Upload media for review
-  // BUG FIX: Use apiService.postFormData for consistency and proper error handling
   async uploadMedia(files: File[]): Promise<{ urls: string[] }> {
-    const formData = new FormData();
-    files.forEach((file) => formData.append("files", file));
+    try {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
 
-    return apiService.postFormData<{ urls: string[] }>(
-      REVIEW_ROUTES.MEDIA,
-      formData
-    );
+      return await apiService.postFormData<{ urls: string[] }>(
+        REVIEW_ROUTES.MEDIA,
+        formData
+      );
+    } catch (error) {
+      return BaseService.handleError(error, "upload review media");
+    }
   }
 
   // Get review summary for a product/shop
@@ -110,20 +126,24 @@ class ReviewsService {
     ratingDistribution: { rating: number; count: number }[];
     verifiedPurchasePercentage: number;
   }> {
-    const params = new URLSearchParams();
+    try {
+      const params = new URLSearchParams();
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, value.toString());
+        }
+      });
 
-    const queryString = params.toString();
-    const endpoint = queryString
-      ? `${REVIEW_ROUTES.SUMMARY}?${queryString}`
-      : REVIEW_ROUTES.SUMMARY;
+      const queryString = params.toString();
+      const endpoint = queryString
+        ? `${REVIEW_ROUTES.SUMMARY}?${queryString}`
+        : REVIEW_ROUTES.SUMMARY;
 
-    return apiService.get<any>(endpoint);
+      return await apiService.get<any>(endpoint);
+    } catch (error) {
+      return BaseService.handleError(error, "get review summary");
+    }
   }
 
   // Check if user can review
@@ -131,30 +151,42 @@ class ReviewsService {
     productId?: string,
     auctionId?: string
   ): Promise<{ canReview: boolean; reason?: string }> {
-    const params = new URLSearchParams();
-    if (productId) params.append("productId", productId);
-    if (auctionId) params.append("auctionId", auctionId);
+    try {
+      const params = new URLSearchParams();
+      if (productId) params.append("productId", productId);
+      if (auctionId) params.append("auctionId", auctionId);
 
-    const queryString = params.toString();
-    const endpoint = `/reviews/can-review?${queryString}`;
+      const queryString = params.toString();
+      const endpoint = `/reviews/can-review?${queryString}`;
 
-    return apiService.get<{ canReview: boolean; reason?: string }>(endpoint);
+      return await apiService.get<{ canReview: boolean; reason?: string }>(endpoint);
+    } catch (error) {
+      return BaseService.handleError(error, "check if user can review");
+    }
   }
 
   // Get featured reviews
   async getFeatured(): Promise<ReviewFE[]> {
-    const response = await apiService.get<{ data: ReviewBE[] }>(
-      "/reviews?featured=true&isApproved=true&limit=100"
-    );
-    return toFEReviews(response.data);
+    try {
+      const response = await apiService.get<{ data: ReviewBE[] }>(
+        "/reviews?featured=true&isApproved=true&limit=100"
+      );
+      return toFEReviews(response.data);
+    } catch (error) {
+      return BaseService.handleError(error, "get featured reviews");
+    }
   }
 
   // Get homepage reviews
   async getHomepage(): Promise<ReviewFE[]> {
-    const response = await apiService.get<{ data: ReviewBE[] }>(
-      `${REVIEW_ROUTES.LIST}?featured=true&isApproved=true&verifiedPurchase=true&limit=20`
-    );
-    return toFEReviews(response.data);
+    try {
+      const response = await apiService.get<{ data: ReviewBE[] }>(
+        `${REVIEW_ROUTES.LIST}?featured=true&isApproved=true&verifiedPurchase=true&limit=20`
+      );
+      return toFEReviews(response.data);
+    } catch (error) {
+      return BaseService.handleError(error, "get homepage reviews");
+    }
   }
 
   // Bulk operations (admin only)
@@ -170,7 +202,11 @@ class ReviewsService {
     };
     summary: { total: number; succeeded: number; failed: number };
   }> {
-    return apiService.post(REVIEW_ROUTES.BULK, { action, ids, data });
+    try {
+      return await apiService.post(REVIEW_ROUTES.BULK, { action, ids, data });
+    } catch (error) {
+      return BaseService.handleError(error, `bulk ${action} reviews`);
+    }
   }
 
   async bulkApprove(ids: string[]): Promise<any> {
