@@ -4,6 +4,7 @@ Comprehensive documentation for all reusable React hooks in the application.
 
 ## Table of Contents
 
+- [Authentication](#authentication)
 - [Form Management](#form-management)
 - [UI State Management](#ui-state-management)
 - [List & Pagination](#list--pagination)
@@ -11,6 +12,85 @@ Comprehensive documentation for all reusable React hooks in the application.
 - [E-commerce](#e-commerce)
 - [Media & Upload](#media--upload)
 - [Utilities](#utilities)
+
+## Authentication
+
+### useAuthState.ts
+
+**Export:** `useAuthState(): AuthState`
+
+Hook to access authentication state without actions. Provides read-only access to authentication state.
+
+**Benefits:**
+
+- Components only re-render when state changes (not when actions are called)
+- Optimized performance for components that display user info
+- Type-safe access to auth state
+
+**Returns:**
+
+- `user: UserFE | null` - Current authenticated user or null
+- `loading: boolean` - Whether auth state is being initialized
+- `isAuthenticated: boolean` - Whether a user is logged in
+- `isAdmin: boolean` - Whether current user is an admin
+- `isSeller: boolean` - Whether current user is a seller
+- `isAdminOrSeller: boolean` - Whether current user is admin or seller
+
+**Throws:** Error if used outside of AuthProvider
+
+**Example:**
+
+```tsx
+function UserProfile() {
+  const { user, loading } = useAuthState();
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Not logged in</div>;
+
+  return <div>{user.displayName}</div>;
+}
+```
+
+---
+
+### useAuthActions.ts
+
+**Export:** `useAuthActions(): AuthActions`
+
+Hook to access authentication actions without state. Provides access to authentication methods.
+
+**Benefits:**
+
+- Components only re-render when new action functions are provided (rare)
+- Optimized performance for forms and action buttons
+- Type-safe access to auth methods
+
+**Returns:**
+
+- `login(email, password, rememberMe?): Promise<AuthResponse>` - Login with credentials
+- `loginWithGoogle(idToken, userData?): Promise<GoogleAuthResponse>` - Login with Google
+- `register(data): Promise<AuthResponse>` - Create new user account
+- `logout(): Promise<void>` - Logout current user
+- `refreshUser(): Promise<void>` - Refresh user data from server
+
+**Throws:** Error if used outside of AuthProvider
+
+**Example:**
+
+```tsx
+function LoginForm() {
+  const { login } = useAuthActions();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await login(email, password);
+  };
+
+  return <form onSubmit={handleSubmit}>...</form>;
+}
+```
+
+---
 
 ## Form Management
 
