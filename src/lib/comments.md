@@ -10,6 +10,20 @@
 - ✅ **Server/Client Separation**: Clear separation of server and client variables
 - ✅ **Helper Functions**: Added utility functions for common configs
 
+### Permission System (permissions.ts)
+
+- ✅ **Granular Permissions**: 100+ fine-grained permissions implemented (January 10, 2026)
+- ✅ **Role-Based Defaults**: Comprehensive role-to-permission mappings
+  - Admin: Full system access (all permissions)
+  - Seller: Shop and product management permissions
+  - User: Customer permissions (orders, reviews, profile)
+  - Guest: View-only permissions
+- ✅ **Custom Permissions**: Support for per-user permission overrides
+- ✅ **Permission Categories**: 11 categories (products, orders, shops, users, reviews, categories, auctions, payments, analytics, support, admin)
+- ✅ **Type Safety**: Full TypeScript types and enums
+- ✅ **Helper Functions**: hasPermission(), hasAllPermissions(), getUserPermissions(), hasRole(), isAdmin(), isSeller(), isAuthenticated()
+- ✅ **Multiple Checks**: Support for checking single or multiple permissions (any or all)
+
 ## General Improvements
 
 ### 1. Utility Organization

@@ -23,9 +23,8 @@ import {
   toFEOrder,
   toFEOrderCard,
 } from "@/types/transforms/order.transforms";
-import { apiService } from "./api.service";
 import { z } from "zod";
-import { ORDER_STATUS, PAYMENT_STATUS } from "@/constants/statuses";
+import { apiService } from "./api.service";
 
 /**
  * Zod validation schemas for order operations
@@ -70,19 +69,22 @@ export const CreateOrderSchema = z.object({
 
 // Update order status schema
 export const UpdateOrderStatusSchema = z.object({
-  status: z.enum([
-    "pending",
-    "confirmed",
-    "processing",
-    "shipped",
-    "out_for_delivery",
-    "delivered",
-    "cancelled",
-    "returned",
-    "refunded",
-  ], {
-    errorMap: () => ({ message: "Invalid order status" }),
-  }),
+  status: z.enum(
+    [
+      "pending",
+      "confirmed",
+      "processing",
+      "shipped",
+      "out_for_delivery",
+      "delivered",
+      "cancelled",
+      "returned",
+      "refunded",
+    ],
+    {
+      errorMap: () => ({ message: "Invalid order status" }),
+    }
+  ),
   internalNotes: z
     .string()
     .max(1000, "Internal notes must not exceed 1000 characters")
@@ -130,7 +132,10 @@ export const BulkOrderActionSchema = z.object({
 
 // Bulk refund schema
 export const BulkRefundSchema = z.object({
-  refundAmount: z.number().positive("Refund amount must be positive").optional(),
+  refundAmount: z
+    .number()
+    .positive("Refund amount must be positive")
+    .optional(),
   reason: z
     .string()
     .min(10, "Refund reason must be at least 10 characters")
@@ -175,7 +180,7 @@ class OrdersService {
   async create(formData: CreateOrderFormFE): Promise<OrderFE> {
     // Validate input data
     const validatedData = CreateOrderSchema.parse(formData);
-    
+
     const request = toBECreateOrderRequest(validatedData);
     const orderBE = await apiService.post<OrderBE>(
       ORDER_ROUTES.CREATE,
@@ -191,8 +196,11 @@ class OrdersService {
     internalNotes?: string
   ): Promise<OrderFE> {
     // Validate input data
-    const validatedData = UpdateOrderStatusSchema.parse({ status, internalNotes });
-    
+    const validatedData = UpdateOrderStatusSchema.parse({
+      status,
+      internalNotes,
+    });
+
     const request = toBEUpdateOrderStatusRequest(
       validatedData.status,
       validatedData.internalNotes
@@ -217,7 +225,7 @@ class OrdersService {
       shippingProvider,
       estimatedDelivery,
     });
-    
+
     const request = toBECreateShipmentRequest(
       validatedData.trackingNumber,
       validatedData.shippingProvider,
@@ -234,7 +242,7 @@ class OrdersService {
   async cancel(id: string, reason: string): Promise<OrderFE> {
     // Validate input data
     const validatedData = CancelOrderSchema.parse({ reason });
-    
+
     const orderBE = await apiService.post<OrderBE>(ORDER_ROUTES.CANCEL(id), {
       reason: validatedData.reason,
     });
@@ -303,7 +311,7 @@ class OrdersService {
         orderIds,
         data,
       });
-      
+
       const response = await apiService.post<BulkActionResponse>(
         ORDER_ROUTES.BULK,
         {
