@@ -1,6 +1,6 @@
 /**
  * Typed Error Classes for Application
- * 
+ *
  * Provides structured error handling with error codes and HTTP status codes.
  * All errors extend from AppError base class.
  */
@@ -14,7 +14,7 @@ export const ErrorCode = {
   INVALID_INPUT: 1001,
   MISSING_REQUIRED_FIELD: 1002,
   INVALID_FORMAT: 1003,
-  
+
   // Authentication Errors (2000-2999)
   AUTH_ERROR: 2000,
   UNAUTHORIZED: 2001,
@@ -24,12 +24,12 @@ export const ErrorCode = {
   SESSION_EXPIRED: 2005,
   ACCOUNT_LOCKED: 2006,
   EMAIL_NOT_VERIFIED: 2007,
-  
+
   // Authorization Errors (3000-3999)
   FORBIDDEN: 3000,
   INSUFFICIENT_PERMISSIONS: 3001,
   RESOURCE_ACCESS_DENIED: 3002,
-  
+
   // Not Found Errors (4000-4999)
   NOT_FOUND: 4000,
   USER_NOT_FOUND: 4001,
@@ -37,18 +37,18 @@ export const ErrorCode = {
   ORDER_NOT_FOUND: 4003,
   SHOP_NOT_FOUND: 4004,
   RESOURCE_NOT_FOUND: 4005,
-  
+
   // Network Errors (5000-5999)
   NETWORK_ERROR: 5000,
   REQUEST_FAILED: 5001,
   TIMEOUT: 5002,
   CONNECTION_ERROR: 5003,
-  
+
   // Server Errors (6000-6999)
   INTERNAL_ERROR: 6000,
   DATABASE_ERROR: 6001,
   EXTERNAL_SERVICE_ERROR: 6002,
-  
+
   // Business Logic Errors (7000-7999)
   BUSINESS_ERROR: 7000,
   INSUFFICIENT_STOCK: 7001,
@@ -58,7 +58,7 @@ export const ErrorCode = {
   OPERATION_NOT_ALLOWED: 7005,
 } as const;
 
-export type ErrorCodeType = typeof ErrorCode[keyof typeof ErrorCode];
+export type ErrorCodeType = (typeof ErrorCode)[keyof typeof ErrorCode];
 
 /**
  * Base application error class
@@ -78,7 +78,7 @@ export class AppError extends Error {
     details?: unknown
   ) {
     super(message);
-    
+
     this.name = this.constructor.name;
     this.code = code;
     this.statusCode = statusCode;
@@ -110,7 +110,7 @@ export class AppError extends Error {
  */
 export class ValidationError extends AppError {
   constructor(
-    message: string = 'Validation failed',
+    message: string = "Validation failed",
     code: ErrorCodeType = ErrorCode.VALIDATION_ERROR,
     details?: unknown
   ) {
@@ -123,7 +123,7 @@ export class ValidationError extends AppError {
  */
 export class AuthError extends AppError {
   constructor(
-    message: string = 'Authentication failed',
+    message: string = "Authentication failed",
     code: ErrorCodeType = ErrorCode.AUTH_ERROR,
     details?: unknown
   ) {
@@ -136,7 +136,7 @@ export class AuthError extends AppError {
  */
 export class AuthorizationError extends AppError {
   constructor(
-    message: string = 'Access denied',
+    message: string = "Access denied",
     code: ErrorCodeType = ErrorCode.FORBIDDEN,
     details?: unknown
   ) {
@@ -149,7 +149,7 @@ export class AuthorizationError extends AppError {
  */
 export class NotFoundError extends AppError {
   constructor(
-    message: string = 'Resource not found',
+    message: string = "Resource not found",
     code: ErrorCodeType = ErrorCode.NOT_FOUND,
     details?: unknown
   ) {
@@ -162,7 +162,7 @@ export class NotFoundError extends AppError {
  */
 export class NetworkError extends AppError {
   constructor(
-    message: string = 'Network request failed',
+    message: string = "Network request failed",
     code: ErrorCodeType = ErrorCode.NETWORK_ERROR,
     details?: unknown
   ) {
@@ -175,7 +175,7 @@ export class NetworkError extends AppError {
  */
 export class DatabaseError extends AppError {
   constructor(
-    message: string = 'Database operation failed',
+    message: string = "Database operation failed",
     code: ErrorCodeType = ErrorCode.DATABASE_ERROR,
     details?: unknown
   ) {
@@ -221,7 +221,9 @@ export function isAuthError(error: unknown): error is AuthError {
 /**
  * Type guard for AuthorizationError
  */
-export function isAuthorizationError(error: unknown): error is AuthorizationError {
+export function isAuthorizationError(
+  error: unknown
+): error is AuthorizationError {
   return error instanceof AuthorizationError;
 }
 
@@ -262,17 +264,13 @@ export function toAppError(error: unknown): AppError {
   }
 
   if (error instanceof Error) {
-    return new AppError(
-      error.message,
-      ErrorCode.INTERNAL_ERROR,
-      500,
-      false,
-      { originalError: error.name }
-    );
+    return new AppError(error.message, ErrorCode.INTERNAL_ERROR, 500, false, {
+      originalError: error.name,
+    });
   }
 
   return new AppError(
-    'An unknown error occurred',
+    "An unknown error occurred",
     ErrorCode.INTERNAL_ERROR,
     500,
     false,
@@ -290,7 +288,7 @@ export function handleError(error: unknown): {
   details?: unknown;
 } {
   const appError = toAppError(error);
-  
+
   return {
     message: appError.message,
     code: appError.code,

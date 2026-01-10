@@ -300,6 +300,7 @@ const description = Sanitizers.description(
 **Key Exports:**
 
 **Error Classes:**
+
 - `AppError` - Base error class with error codes and status codes
 - `ValidationError` - For invalid input data (400)
 - `AuthError` - For authentication failures (401)
@@ -310,6 +311,7 @@ const description = Sanitizers.description(
 - `BusinessError` - For domain-specific errors (customizable)
 
 **Error Codes:**
+
 - `ErrorCode` - 50+ specific error codes organized by category
   - Validation (1000-1999): VALIDATION_ERROR, INVALID_INPUT, MISSING_REQUIRED_FIELD
   - Authentication (2000-2999): UNAUTHORIZED, INVALID_CREDENTIALS, TOKEN_EXPIRED
@@ -320,6 +322,7 @@ const description = Sanitizers.description(
   - Business Logic (7000-7999): INSUFFICIENT_STOCK, PAYMENT_FAILED
 
 **Type Guards:**
+
 - `isAppError(error)` - Check if error is AppError
 - `isValidationError(error)` - Check if error is ValidationError
 - `isAuthError(error)` - Check if error is AuthError
@@ -330,10 +333,12 @@ const description = Sanitizers.description(
 - `isBusinessError(error)` - Check if error is BusinessError
 
 **Utilities:**
+
 - `toAppError(error)` - Convert any error to AppError
 - `handleError(error)` - Get error response object
 
 **Features:**
+
 - ✅ **Structured errors** (January 10, 2026)
 - ✅ **HTTP status codes** (automatic mapping)
 - ✅ **Error codes** (50+ specific codes)
@@ -344,22 +349,36 @@ const description = Sanitizers.description(
 - ✅ **Stack traces** (preserved for debugging)
 
 **Usage:**
+
 ```typescript
-import { ValidationError, AuthError, NotFoundError, ErrorCode, isValidationError, handleError } from '@/lib/errors';
+import {
+  ValidationError,
+  AuthError,
+  NotFoundError,
+  ErrorCode,
+  isValidationError,
+  handleError,
+} from "@/lib/errors";
 
 // Throw specific error types
-throw new ValidationError('Email is required', ErrorCode.MISSING_REQUIRED_FIELD, { field: 'email' });
-throw new AuthError('Invalid credentials', ErrorCode.INVALID_CREDENTIALS);
-throw new NotFoundError('Product not found', ErrorCode.PRODUCT_NOT_FOUND, { productId: 'prod_123' });
+throw new ValidationError(
+  "Email is required",
+  ErrorCode.MISSING_REQUIRED_FIELD,
+  { field: "email" }
+);
+throw new AuthError("Invalid credentials", ErrorCode.INVALID_CREDENTIALS);
+throw new NotFoundError("Product not found", ErrorCode.PRODUCT_NOT_FOUND, {
+  productId: "prod_123",
+});
 
 // Type guards in catch blocks
 try {
   await someOperation();
 } catch (error) {
   if (isValidationError(error)) {
-    console.log('Validation failed:', error.details);
+    console.log("Validation failed:", error.details);
   } else if (isAuthError(error)) {
-    router.push('/login');
+    router.push("/login");
   }
 }
 
@@ -369,7 +388,10 @@ export async function POST(req: Request) {
     // ... operation
   } catch (error) {
     const { message, code, statusCode, details } = handleError(error);
-    return Response.json({ error: message, code, details }, { status: statusCode });
+    return Response.json(
+      { error: message, code, details },
+      { status: statusCode }
+    );
   }
 }
 ```

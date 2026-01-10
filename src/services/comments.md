@@ -18,6 +18,7 @@
 ### Product Service Validation (products.service.ts)
 
 - ✅ **Zod Schemas Implemented**: All CRUD and bulk operations validated (January 10, 2026)
+- ✅ **Typed Errors Implemented**: ValidationError and NotFoundError for structured error handling (January 10, 2026)
 - ✅ **Create Validation**: Name, description, price, stock, images, category required
 - ✅ **Update Validation**: Partial updates with validation
 - ✅ **Stock Update Validation**: Non-negative integer validation
@@ -27,6 +28,8 @@
 - ✅ **Price Validation**: Positive numbers, max ₹1,00,00,000
 - ✅ **Image Validation**: 1-10 valid URLs required
 - ✅ **SEO Metadata Validation**: Title max 60 chars, description max 160 chars
+- ✅ **Error Handling**: Zod errors converted to ValidationError with error details
+- ✅ **Not Found Handling**: 404 responses throw NotFoundError (getById, getBySlug, update, delete)
 
 ### Cart Service Validation (cart.service.ts)
 

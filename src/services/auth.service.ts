@@ -1,10 +1,5 @@
 import { logServiceError } from "@/lib/error-logger";
-import {
-  ValidationError,
-  AuthError,
-  ErrorCode,
-  handleError,
-} from "@/lib/errors";
+import { AuthError, ErrorCode, ValidationError } from "@/lib/errors";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
 import { z, ZodError } from "zod";

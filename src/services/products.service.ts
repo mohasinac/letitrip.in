@@ -1,7 +1,8 @@
-import { PRODUCT_ROUTES, buildUrl } from "@/constants/api-routes";
+import { buildUrl, PRODUCT_ROUTES } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { PRODUCT_STATUS } from "@/constants/statuses";
 import { logServiceError } from "@/lib/error-logger";
+import { ErrorCode, NotFoundError, ValidationError } from "@/lib/errors";
 import { ProductBE, ProductListItemBE } from "@/types/backend/product.types";
 import {
   ProductCardFE,
@@ -17,7 +18,7 @@ import {
   toFEProduct,
   toFEProductCards,
 } from "@/types/transforms/product.transforms";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
 /**
@@ -199,8 +200,29 @@ class ProductsService {
   async getById(id: string): Promise<ProductFE> {
     try {
       const response: any = await apiService.get(PRODUCT_ROUTES.BY_ID(id));
+      if (!response.data) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { productId: id }
+        );
+      }
       return toFEProduct(response.data);
     } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      // API might return 404, convert to NotFoundError
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { productId: id }
+        );
+      }
       this.handleError(error, `getById(${id})`);
     }
   }
@@ -211,8 +233,29 @@ class ProductsService {
   async getBySlug(slug: string): Promise<ProductFE> {
     try {
       const response: any = await apiService.get(PRODUCT_ROUTES.BY_SLUG(slug));
+      if (!response.data) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
       return toFEProduct(response.data);
     } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      // API might return 404, convert to NotFoundError
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
       this.handleError(error, `getBySlug(${slug})`);
     }
   }
@@ -232,6 +275,13 @@ class ProductsService {
       );
       return toFEProduct(response.data);
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid product data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
       this.handleError(error, "create");
     }
   }
@@ -254,6 +304,23 @@ class ProductsService {
       );
       return toFEProduct(response.data);
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid product data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
       this.handleError(error, `update(${slug})`);
     }
   }
@@ -267,6 +334,16 @@ class ProductsService {
         PRODUCT_ROUTES.BY_SLUG(slug)
       );
     } catch (error) {
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
       this.handleError(error, `delete(${slug})`);
     }
   }
@@ -330,26 +407,74 @@ class ProductsService {
    * Update product stock
    */
   async updateStock(slug: string, stockCount: number): Promise<ProductFE> {
-    // Validate stock count
-    const validatedData = StockUpdateSchema.parse({ stockCount });
+    try {
+      // Validate stock count
+      const validatedData = StockUpdateSchema.parse({ stockCount });
 
-    const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
-      stockCount: validatedData.stockCount,
-    });
-    return toFEProduct(response.data);
+      const response: any = await apiService.patch(
+        PRODUCT_ROUTES.BY_SLUG(slug),
+        {
+          stockCount: validatedData.stockCount,
+        }
+      );
+      return toFEProduct(response.data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid stock count",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
+      throw error;
+    }
   }
 
   /**
    * Update product status
    */
   async updateStatus(slug: string, status: string): Promise<ProductFE> {
-    // Validate status
-    const validatedData = StatusUpdateSchema.parse({ status });
+    try {
+      // Validate status
+      const validatedData = StatusUpdateSchema.parse({ status });
 
-    const response: any = await apiService.patch(PRODUCT_ROUTES.BY_SLUG(slug), {
-      status: validatedData.status,
-    });
-    return toFEProduct(response.data);
+      const response: any = await apiService.patch(
+        PRODUCT_ROUTES.BY_SLUG(slug),
+        {
+          status: validatedData.status,
+        }
+      );
+      return toFEProduct(response.data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid product status",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
+      throw error;
+    }
   }
 
   /**
@@ -415,6 +540,13 @@ class ProductsService {
       );
       return response;
     } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid bulk action data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
       logServiceError("Products", "bulkAction", error as Error);
       throw error;
     }
@@ -505,14 +637,35 @@ class ProductsService {
    * Quick update for inline editing
    */
   async quickUpdate(slug: string, data: any): Promise<ProductFE> {
-    // Validate using partial schema
-    const validatedData = ProductFormSchema.partial().parse(data);
+    try {
+      // Validate using partial schema
+      const validatedData = ProductFormSchema.partial().parse(data);
 
-    const productBE = await apiService.patch<ProductBE>(
-      PRODUCT_ROUTES.BY_SLUG(slug),
-      validatedData
-    );
-    return toFEProduct(productBE);
+      const productBE = await apiService.patch<ProductBE>(
+        PRODUCT_ROUTES.BY_SLUG(slug),
+        validatedData
+      );
+      return toFEProduct(productBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid product update data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      if (
+        (error as any)?.status === 404 ||
+        (error as any)?.response?.status === 404
+      ) {
+        throw new NotFoundError(
+          "Product not found",
+          ErrorCode.PRODUCT_NOT_FOUND,
+          { slug }
+        );
+      }
+      throw error;
+    }
   }
 
   /**
