@@ -185,22 +185,47 @@ This folder contains service classes that encapsulate business logic and API com
 
 **Export:** `cartService`
 
-**Purpose:** Shopping cart management.
+**Purpose:** Shopping cart management with Zod validation. ✅
+
+**Validation Schemas:** ✅
+
+- `AddToCartSchema` - Add item validation
+  - Product ID required (non-empty string)
+  - Quantity: 1 to MAX_QUANTITY_PER_CART_ITEM (integer)
+  - Shop ID required
+  - Optional variant ID
+- `UpdateCartItemSchema` - Update quantity validation
+  - Item ID required (non-empty string)
+  - Quantity: 0 to MAX_QUANTITY_PER_CART_ITEM (integer)
+- `ApplyCouponSchema` - Coupon code validation
+  - Code: 3-50 characters
+  - Format: Uppercase letters, numbers, hyphens only
+- `GuestCartItemSchema` - Guest cart validation
+  - Product ID, name, shop ID, shop name required
+  - Price must be positive
+  - Image must be valid URL
+  - Quantity: 1 to MAX_QUANTITY_PER_CART_ITEM (integer)
 
 **Key Methods:**
 
 - `getCart(userId?)` - Get cart (guest or user)
-- `addToCart(item)` - Add item
-- `updateCartItem(itemId, quantity)` - Update quantity
+- `addToCart(item)` - Add item ✅ Validated
+- `updateCartItem(itemId, quantity)` - Update quantity ✅ Validated
 - `removeFromCart(itemId)` - Remove item
 - `clearCart()` - Empty cart
 - `mergeGuestCart(guestCart, userId)` - Merge guest cart to user
 - `validateCart()` - Validate stock and prices
 - `getCartTotal()` - Calculate total
-- `applyCoupon(code)` - Apply discount code
+- `applyCoupon(code)` - Apply discount code ✅ Validated
+- `addToGuestCartWithDetails(product)` - Add to guest cart ✅ Validated
+- `updateGuestCartItem(itemId, quantity)` - Update guest cart ✅ Validated
 
 **Features:**
 
+- ✅ **Runtime validation with Zod** (January 10, 2026)
+- ✅ **Quantity validation** (1 to MAX_QUANTITY_PER_CART_ITEM)
+- ✅ **Coupon code format validation**
+- ✅ **Guest cart validation** (product details, price, image URL)
 - Guest cart (localStorage)
 - User cart (Firestore)
 - Cart merging on login

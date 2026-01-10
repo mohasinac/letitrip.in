@@ -25,6 +25,17 @@
 - ✅ **Image Validation**: 1-10 valid URLs required
 - ✅ **SEO Metadata Validation**: Title max 60 chars, description max 160 chars
 
+### Cart Service Validation (cart.service.ts)
+
+- ✅ **Zod Schemas Implemented**: All cart operations validated (January 10, 2026)
+- ✅ **Add to Cart Validation**: Product ID, shop ID, quantity (1 to MAX_QUANTITY_PER_CART_ITEM)
+- ✅ **Update Quantity Validation**: Item ID and quantity (0 to MAX_QUANTITY_PER_CART_ITEM)
+- ✅ **Coupon Code Validation**: 3-50 chars, uppercase letters/numbers/hyphens only
+- ✅ **Guest Cart Validation**: Full product details validation (ID, name, price, image URL)
+- ✅ **Quantity Limits**: Enforced MAX_QUANTITY_PER_CART_ITEM limit
+- ✅ **Price Validation**: Must be positive numbers
+- ✅ **Image URL Validation**: Must be valid URLs
+
 ## General Architecture Improvements
 
 ### 1. Service Layer Abstraction

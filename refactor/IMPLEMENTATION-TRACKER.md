@@ -2,7 +2,7 @@
 
 **Last Updated**: January 10, 2026  
 **Current Phase**: Phase 1 - Foundation & Security  
-**Overall Progress**: 5/75 tasks completed (6.7%)
+**Overall Progress**: 6/75 tasks completed (8%)
 
 ---
 
@@ -27,9 +27,9 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 1: Foundation & Security (Weeks 1-4)
 
 **Goal**: Establish secure, type-safe foundation  
-**Progress**: 5/25 tasks (20%)
+**Progress**: 6/25 tasks (24%)
 
-### Week 1: Type Safety & Validation (5/7)
+### Week 1: Type Safety & Validation (6/7)
 
 #### Task 1.1: Install Dependencies
 
@@ -93,12 +93,14 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 1.6: Add Zod Validation to Cart Service
 
-- [ ] **Enhance `src/services/cart-service.ts`**
-  - **Add**: Schemas for add item, update quantity
-  - **Refactor**: All cart operations with validation
+- [x] **Enhance `src/services/cart.service.ts`**
+  - **Add**: Schemas for add item, update quantity, apply coupon, guest cart
+  - **Refactor**: All cart operations with validation (addItem, updateItem, applyCoupon, addToGuestCartWithDetails, updateGuestCartItem)
   - **Test**: Add invalid item to cart
-  - **Update**: `src/services/comments.md` - mark cart service as validated
+  - **Update**: `src/services/index.md` and `src/services/comments.md` - marked cart service as validated
   - **Estimate**: 30 minutes
+  - **Completed**: January 10, 2026
+  - **Result**: 4 Zod schemas implemented (AddToCartSchema, UpdateCartItemSchema, ApplyCouponSchema, GuestCartItemSchema)
 
 #### Task 1.7: Add Zod Validation to Order Service
 
