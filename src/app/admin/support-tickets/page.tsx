@@ -5,7 +5,6 @@ import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { TICKET_FILTERS } from "@/constants/filters";
-import { useResourceListState } from "@/hooks/useResourceListState";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import Link from "next/link";
@@ -29,36 +28,46 @@ function SupportTicketsContent() {
     urgent: 0,
   });
   const [closingTicket, setClosingTicket] = useState<string | null>(null);
+  const [tickets, setTickets] = useState<SupportTicketFE[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
 
-  const {
-    items: tickets,
-    isLoading: loading,
-    error,
-    filters,
-    setFilter,
-    currentPage,
-    setCurrentPage,
-    hasNextPage,
-    refresh,
-    updateAllFilters,
-    resetFilters,
-    searchTerm,
-    setSearchTerm,
-  } = useResourceListState<SupportTicketFE>({
-    fetchFn: async (page, filters) => {
+  const handleSetFilter = (key: string, value: any) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const refresh = async () => {
+    setLoading(true);
+    setError(null);
+    try {
       const response = await supportService.listTickets({
         ...filters,
-        page,
+        page: currentPage,
         limit: 20,
       });
-      return {
-        items: response.data || [],
-        hasNextPage: (response.data?.length || 0) >= 20,
-      };
-    },
-    pageSize: 20,
-    autoFetch: true,
-  });
+      setTickets(response.data || []);
+      setHasNextPage((response.data?.length || 0) >= 20);
+    } catch (err: any) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load initial data and refresh on filter/page changes
+  useEffect(() => {
+    refresh();
+  }, [filters, currentPage, searchTerm]);
 
   // Load stats when filters change
   useEffect(() => {
@@ -176,17 +185,15 @@ function SupportTicketsContent() {
               sections={TICKET_FILTERS}
               values={filters}
               onChange={(key: string, value: any) => {
-                setFilter(key, value);
+                handleSetFilter(key, value);
               }}
               onApply={() => setCurrentPage(1)}
               onReset={() => {
                 resetFilters();
-                setCurrentPage(1);
               }}
               showInlineSearch={true}
               onInlineSearchChange={(value: string) => {
                 setSearchTerm(value);
-                setCurrentPage(1);
               }}
               inlineSearchValue={searchTerm}
               inlineSearchPlaceholder="Search tickets..."
@@ -197,7 +204,9 @@ function SupportTicketsContent() {
           <div className="flex-1">
             {error && (
               <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-300">
-                {error.message || "Failed to load support tickets"}
+                {error instanceof Error
+                  ? error.message
+                  : "Failed to load support tickets"}
               </div>
             )}
 

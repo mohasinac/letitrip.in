@@ -14,6 +14,7 @@ class SearchService {
         products: [],
         shops: [],
         categories: [],
+        total: 0,
       };
     }
 
@@ -50,6 +51,7 @@ class SearchService {
         products: result?.products || [],
         shops: result?.shops || [],
         categories: result?.categories || [],
+        total: result?.total || 0,
       };
     } catch (error) {
       logServiceError("SearchService", "search", error as Error);
@@ -58,6 +60,7 @@ class SearchService {
         products: [],
         shops: [],
         categories: [],
+        total: 0,
       };
     }
   }

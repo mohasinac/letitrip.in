@@ -103,7 +103,7 @@ export default function HistoryPage() {
             <button
               onClick={() => removeFromHistory(item.id)}
               className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-800 hover:text-red-500 dark:hover:text-red-400 transition-all"
-              aria-label={`Remove ${item.title} from history`}
+              aria-label={`Remove ${item.name} from history`}
             >
               <X className="w-4 h-4" />
             </button>
@@ -113,7 +113,7 @@ export default function HistoryPage() {
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-700">
                 <OptimizedImage
                   src={item.image}
-                  alt={item.title}
+                  alt={item.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-200"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
@@ -123,11 +123,11 @@ export default function HistoryPage() {
               {/* Content */}
               <div className="p-3">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {item.title}
+                  {item.name}
                 </h3>
 
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {item.shop_name}
+                  {item.shopName}
                 </p>
 
                 <div className="flex items-center justify-between mt-2">

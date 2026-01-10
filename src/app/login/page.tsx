@@ -147,10 +147,6 @@ function LoginForm() {
               <FormCheckbox
                 id="remember-me"
                 label={t("auth.login.rememberMe")}
-                checked={false}
-                onChange={() => {
-                  // Remember me functionality can be added to context later
-                }}
               />
               <Link
                 href="/forgot-password"

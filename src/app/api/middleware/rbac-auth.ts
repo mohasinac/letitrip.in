@@ -94,10 +94,7 @@ export async function requireAuth(
 
     return {
       error: NextResponse.json(
-        errorToJson(
-          new UnauthorizedError("Authentication required"),
-          requestContext
-        ),
+        errorToJson(new UnauthorizedError("Authentication required")),
         { status: 401 }
       ),
     };
@@ -138,8 +135,7 @@ export async function requireRole(
             `This action requires one of the following roles: ${roles.join(
               ", "
             )}`
-          ),
-          requestContext
+          )
         ),
         { status: 403 }
       ),
@@ -208,8 +204,7 @@ export async function requireOwnership(
         errorToJson(
           new ForbiddenError(
             "You don't have permission to access this resource"
-          ),
-          requestContext
+          )
         ),
         { status: 403 }
       ),
@@ -260,8 +255,7 @@ export async function requireShopOwnership(
       errorToJson(
         new ForbiddenError(
           "You don't have permission to access this shop's resources"
-        ),
-        requestContext
+        )
       ),
       { status: 403 }
     ),

@@ -107,7 +107,7 @@ export function RecentlyViewedWidget({
             <div className="relative w-36 h-36 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 mb-2">
               <OptimizedImage
                 src={item.image}
-                alt={item.title}
+                alt={item.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-200"
                 sizes="144px"
@@ -116,7 +116,7 @@ export function RecentlyViewedWidget({
 
             {/* Title */}
             <h3 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              {item.title}
+              {item.name}
             </h3>
 
             {/* Price */}

@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ShoppingCart, ArrowLeft, Trash2, Loader2 } from "lucide-react";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
-import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { EmptyState } from "@/components/common/EmptyState";
 import Toast from "@/components/common/Toast";
-import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
+import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function CartPage() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function CartPage() {
     loading,
     isMerging,
     mergeSuccess,
-    updateItem,
+    updateQuantity,
     removeItem,
     clearCart,
     applyCoupon,
@@ -164,7 +164,7 @@ export default function CartPage() {
                     <CartItem
                       key={item.id}
                       item={item}
-                      onUpdateQuantity={updateItem}
+                      onUpdateQuantity={updateQuantity}
                       onRemove={removeItem}
                     />
                   ))}

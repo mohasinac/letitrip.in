@@ -77,8 +77,8 @@ export default function CheckoutPage() {
     setNotes,
     setError,
     setValidationErrors,
-    setShopCoupon,
-    removeShopCoupon,
+    applyCoupon,
+    removeCoupon,
     setAvailableGateways,
     setIsInternational,
     setLoadingGateways,
@@ -309,7 +309,7 @@ export default function CheckoutPage() {
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
-      setShopCoupon(shopId, code, discountAmount);
+      applyCoupon(shopId, code, discountAmount);
     } catch (error: any) {
       logError(error as Error, {
         component: "CheckoutPage.handleApplyCoupon",
@@ -322,7 +322,7 @@ export default function CheckoutPage() {
   const handleRemoveCoupon = async (shopId: string) => {
     try {
       setError(null);
-      removeShopCoupon(shopId);
+      removeCoupon(shopId);
     } catch (error: any) {
       logError(error as Error, {
         component: "CheckoutPage.handleRemoveCoupon",
@@ -358,7 +358,13 @@ export default function CheckoutPage() {
         notes: notes || undefined,
       };
 
-      const result = await checkoutService.createOrder(orderData);
+      const result = (await checkoutService.createOrder(orderData)) as {
+        orders: Array<{ id: string }>;
+        amount: number;
+        currency: string;
+        total: number;
+        razorpay_order_id: string;
+      };
 
       if (paymentMethod === "razorpay") {
         // Check if Razorpay is loaded
