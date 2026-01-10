@@ -2,6 +2,94 @@
 
 This folder contains service classes that encapsulate business logic and API communication. Services act as the data layer between components and backend APIs/Firebase.
 
+## Base Service
+
+### base-service.ts
+
+**Export:** `BaseService<TFE, TBE, TCreate, TUpdate>` (abstract class)
+
+**Purpose:** Generic base class for all service implementations providing standardized CRUD operations, type transformations, and error handling. ✅
+
+**Type Parameters:**
+
+- `TFE` - Frontend Entity type (what components use)
+- `TBE` - Backend Entity type (what API returns)
+- `TCreate` - Create DTO type (defaults to `Partial<TBE>`)
+- `TUpdate` - Update DTO type (defaults to `Partial<TBE>`)
+
+**Configuration:**
+
+```typescript
+constructor(config: {
+  resourceName: string; // For logging and error messages
+  baseRoute: string; // Base API route (e.g., '/api/products')
+  toFE: (be: TBE) => TFE; // Backend to Frontend transformer
+  toBECreate?: (dto: TCreate) => Partial<TBE>; // Create transformer
+  toBEUpdate?: (dto: TUpdate) => Partial<TBE>; // Update transformer
+})
+```
+
+**CRUD Methods:**
+
+- `getById(id, options?)` - Get single entity by ID → `Promise<TFE>`
+- `getAll(params?, options?)` - Get paginated list → `Promise<PaginatedResponse<TFE>>`
+- `create(data, options?)` - Create new entity → `Promise<TFE>`
+- `update(id, data, options?)` - Full update entity → `Promise<TFE>`
+- `patch(id, data, options?)` - Partial update entity → `Promise<TFE>`
+- `delete(id, options?)` - Delete single entity → `Promise<void>`
+- `bulkDelete(ids, options?)` - Delete multiple entities → `Promise<{success, failed, errors}>`
+- `exists(id, options?)` - Check if entity exists → `Promise<boolean>`
+- `count(params?, options?)` - Count entities → `Promise<number>`
+
+**Helper Methods:**
+
+- `handleError(error, operation)` - Converts errors to AppError types
+- `buildUrl(path, params?)` - Builds URLs with query parameters
+
+**Error Handling:**
+
+- Automatically converts errors to AppError hierarchy (NetworkError, ValidationError, NotFoundError)
+- Integrates with logServiceError for consistent logging
+- Preserves error context and details
+
+**Usage Example:**
+
+```typescript
+class ProductService extends BaseService<
+  ProductFE,
+  ProductBE,
+  ProductCreateDTO,
+  ProductUpdateDTO
+> {
+  constructor() {
+    super({
+      resourceName: "product",
+      baseRoute: "/api/products",
+      toFE: toFEProduct,
+      toBECreate: toBEProductCreate,
+      toBEUpdate: toBEProductUpdate,
+    });
+  }
+
+  // Add custom methods beyond CRUD
+  async getBySlug(slug: string): Promise<ProductFE> {
+    const response = await apiService.get(`${this.baseRoute}/slug/${slug}`);
+    return this.toFE(response.data);
+  }
+}
+```
+
+**Features:**
+
+- ✅ **Type-safe generic interface** for all services
+- ✅ **Standardized CRUD operations** reduce code duplication
+- ✅ **Automatic error handling** with AppError conversion
+- ✅ **Transform functions** for FE/BE data mapping
+- ✅ **Extensible** - add custom methods while inheriting base functionality
+- ✅ **Comprehensive test coverage** (29 tests passing)
+
+---
+
 ## Authentication & User Services
 
 ### auth.service.ts
