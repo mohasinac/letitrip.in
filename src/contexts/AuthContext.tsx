@@ -1,15 +1,72 @@
 "use client";
 
-import { logError } from "@/lib/firebase-error-logger";
-import { AuthResponse, authService } from "@/services/auth.service";
-import { UserFE } from "@/types/frontend/user.types";
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+/**
+ * @deprecated This file is maintained for backward compatibility only.
+ * Please use the new split context hooks instead:
+ *
+ * - For state: `import { useAuthState } from '@/hooks/useAuthState'`
+ * - For actions: `import { useAuthActions } from '@/hooks/useAuthActions'`
+ * - For provider: `import { AuthProvider } from '@/contexts/auth'`
+ *
+ * The new split context architecture provides better performance by preventing
+ * unnecessary re-renders. Components that only need state won't re-render when
+ * actions are called, and components that only need actions won't re-render
+ * when state changes.
+ *
+ * @example Migration
+ * ```tsx
+ * // Old way (still works, but less performant)
+ * import { useAuth } from '@/contexts/AuthContext';
+ * const { user, login } = useAuth();
+ *
+ * // New way (recommended)
+ * import { useAuthState, useAuthActions } from '@/hooks/useAuth';
+ * const { user } = useAuthState();
+ * const { login } = useAuthActions();
+ * ```
+ */
+
+import { useAuthActions } from "@/hooks/useAuthActions";
+import { useAuthState } from "@/hooks/useAuthState";
+
+// Re-export provider for backward compatibility
+export { AuthProvider } from "@/contexts/auth";
+
+// Re-export types
+export type { AuthActions } from "@/contexts/auth/AuthActionsContext";
+export type { AuthState } from "@/contexts/auth/AuthStateContext";
+
+/**
+ * @deprecated Use `useAuthState` and `useAuthActions` hooks instead
+ * for better performance. This combined hook causes components to
+ * re-render on every state OR action change.
+ *
+ * @example
+ * ```tsx
+ * // Instead of:
+ * const { user, login } = useAuth();
+ *
+ * // Use:
+ * import { useAuthState, useAuthActions } from '@/hooks/useAuth';
+ * const { user } = useAuthState();
+ * const { login } = useAuthActions();
+ * ```
+ */
+export function useAuth() {
+  const state = useAuthState();
+  const actions = useAuthActions();
+
+  return {
+    ...state,
+    ...actions,
+  };
+}
+
+// Legacy context export for type compatibility
+// Not recommended for direct use
+import type { AuthResponse } from "@/services/auth.service";
+import type { UserFE } from "@/types/frontend/user.types";
+import { createContext } from "react";
 
 interface GoogleAuthResponse extends AuthResponse {
   isNewUser: boolean;
@@ -45,165 +102,9 @@ interface AuthContextType {
   isAdminOrSeller: boolean;
 }
 
+/**
+ * @deprecated Use AuthStateContext and AuthActionsContext instead
+ */
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserFE | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Initialize auth state
-  const initializeAuth = useCallback(async () => {
-    try {
-      // First, try to get cached user for immediate UI update
-      const cachedUser = authService.getCachedUser();
-      if (cachedUser) {
-        setUser(cachedUser);
-        setLoading(false); // Show UI immediately with cached user
-      }
-
-      // Then validate with server (silently)
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-
-      if (!currentUser && cachedUser) {
-        // Session expired, cached user cleared automatically by authService
-      }
-    } catch (error: any) {
-      logError(error as Error, { component: "AuthContext.initializeAuth" });
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
-
-  // Login function
-  const login = useCallback(
-    async (email: string, password: string, rememberMe: boolean = false) => {
-      try {
-        const response = await authService.login({
-          email,
-          password,
-          rememberMe,
-        });
-        // Immediately set user state with the response
-        setUser(response.user);
-        setLoading(false);
-        return response;
-      } catch (error) {
-        setUser(null);
-        setLoading(false);
-        throw error;
-      }
-    },
-    []
-  );
-
-  // Google Login function
-  const loginWithGoogle = useCallback(
-    async (
-      idToken: string,
-      userData?: {
-        displayName?: string;
-        email?: string;
-        photoURL?: string;
-      }
-    ) => {
-      try {
-        const response = await authService.loginWithGoogle({
-          idToken,
-          userData,
-        });
-        // Immediately set user state with the response
-        setUser(response.user);
-        setLoading(false);
-        return response;
-      } catch (error) {
-        setUser(null);
-        setLoading(false);
-        throw error;
-      }
-    },
-    []
-  );
-
-  // Register function
-  const register = useCallback(
-    async (data: {
-      email: string;
-      password: string;
-      name: string;
-      role?: string;
-    }) => {
-      try {
-        const response = await authService.register(data);
-        // Immediately set user state with the response
-        setUser(response.user);
-        setLoading(false);
-        return response;
-      } catch (error) {
-        setUser(null);
-        setLoading(false);
-        throw error;
-      }
-    },
-    []
-  );
-
-  // Logout function
-  const logout = useCallback(async () => {
-    try {
-      await authService.logout();
-    } catch (error: any) {
-      logError(error as Error, { component: "AuthContext.logout" });
-    } finally {
-      setUser(null);
-    }
-  }, []);
-
-  // Refresh user from server
-  const refreshUser = useCallback(async () => {
-    try {
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-    } catch (error: any) {
-      logError(error as Error, { component: "AuthContext.refreshUser" });
-      setUser(null);
-    }
-  }, []);
-
-  // Computed values (UserFE already has these as boolean fields)
-  const isAuthenticated = !!user;
-  const isAdmin = user?.isAdmin || false;
-  const isSeller = user?.isSeller || false;
-  const isAdminOrSeller = isAdmin || isSeller;
-
-  const value: AuthContextType = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    loginWithGoogle,
-    register,
-    logout,
-    refreshUser,
-    isAdmin,
-    isSeller,
-    isAdminOrSeller,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
