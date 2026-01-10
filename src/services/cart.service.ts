@@ -1,4 +1,10 @@
 import { INVENTORY_SETTINGS } from "@/constants/business-logic-constants";
+import {
+  ValidationError,
+  NotFoundError,
+  BusinessError,
+  ErrorCode,
+} from "@/lib/errors";
 import { CartBE } from "@/types/backend/cart.types";
 import {
   AddToCartFormFE,
@@ -9,7 +15,7 @@ import {
   toBEAddToCartRequest,
   toFECart,
 } from "@/types/transforms/cart.transforms";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
 /**
@@ -92,33 +98,62 @@ class CartService {
    * Add item to cart
    */
   async addItem(formData: AddToCartFormFE): Promise<CartFE> {
-    // Validate input data
-    const validatedData = AddToCartSchema.parse({
-      productId: formData.productId,
-      variantId: formData.variantId,
-      quantity: formData.quantity,
-      shopId: formData.shopId,
-    });
+    try {
+      // Validate input data
+      const validatedData = AddToCartSchema.parse({
+        productId: formData.productId,
+        variantId: formData.variantId,
+        quantity: formData.quantity,
+        shopId: formData.shopId,
+      });
 
-    const request = toBEAddToCartRequest(formData);
-    const cartBE = await apiService.post<CartBE>("/cart", request);
-    return toFECart(cartBE);
+      const request = toBEAddToCartRequest(formData);
+      const cartBE = await apiService.post<CartBE>("/cart", request);
+      return toFECart(cartBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid cart item data",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 
   /**
    * Update cart item quantity
    */
   async updateItem(itemId: string, quantity: number): Promise<CartFE> {
-    // Validate input data
-    const validatedData = UpdateCartItemSchema.parse({ itemId, quantity });
+    try {
+      // Validate input data
+      const validatedData = UpdateCartItemSchema.parse({ itemId, quantity });
 
-    const cartBE = await apiService.patch<CartBE>(
-      `/cart/${validatedData.itemId}`,
-      {
-        quantity: validatedData.quantity,
+      const cartBE = await apiService.patch<CartBE>(
+        `/cart/${validatedData.itemId}`,
+        {
+          quantity: validatedData.quantity,
+        }
+      );
+      return toFECart(cartBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid quantity",
+          ErrorCode.VALIDATION_ERROR,
+          { errors: error.errors }
+        );
       }
-    );
-    return toFECart(cartBE);
+      if ((error as any)?.status === 404 || (error as any)?.response?.status === 404) {
+        throw new NotFoundError(
+          "Cart item not found",
+          ErrorCode.NOT_FOUND,
+          { itemId }
+        );
+      }
+      throw error;
+    }
   }
 
   /**
@@ -150,13 +185,24 @@ class CartService {
    * Apply coupon to cart
    */
   async applyCoupon(code: string): Promise<CartFE> {
-    // Validate coupon code
-    const validatedData = ApplyCouponSchema.parse({ code: code.toUpperCase() });
+    try {
+      // Validate coupon code
+      const validatedData = ApplyCouponSchema.parse({ code: code.toUpperCase() });
 
-    const cartBE = await apiService.post<CartBE>("/cart/coupon", {
-      code: validatedData.code,
-    });
-    return toFECart(cartBE);
+      const cartBE = await apiService.post<CartBE>("/cart/coupon", {
+        code: validatedData.code,
+      });
+      return toFECart(cartBE);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          "Invalid coupon code format",
+          ErrorCode.INVALID_FORMAT,
+          { errors: error.errors }
+        );
+      }
+      throw error;
+    }
   }
 
   /**

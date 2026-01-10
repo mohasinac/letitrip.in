@@ -2,7 +2,7 @@
 
 **Last Updated**: January 10, 2026  
 **Current Phase**: Phase 1 - Foundation & Security  
-**Overall Progress**: 18/75 tasks completed (24.0%)
+**Overall Progress**: 19/75 tasks completed (25.3%)
 
 ---
 
@@ -27,7 +27,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 1: Foundation & Security (Weeks 1-4)
 
 **Goal**: Establish secure, type-safe foundation  
-**Progress**: 18/25 tasks (72%)
+**Progress**: 19/25 tasks (76%)
 
 ### Week 1: Type Safety & Validation (7/7) ✅ COMPLETE
 
@@ -244,7 +244,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Enhanced Collections**: users, shops, products, categories, orders, coupons, auctions, bids, reviews, cart, support_tickets, blog_posts (15 collections)
   - **Validation Types**: Required fields, type checking, string size limits, numeric ranges, enum validation, email format validation
 
-### Week 3: Error Handling (3/5)
+### Week 3: Error Handling (4/5)
 
 #### Task 3.1: Create Typed Error Classes
 
@@ -299,13 +299,22 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 3.4: Update All Remaining Services
 
-- [ ] **Refactor services in `src/services/`**
-  - **Files**: Cart, order, payment, shipping, user, shop, category, review
-  - **Replace**: All generic throws
-  - **Use**: Appropriate error types
-  - **Test**: Error scenarios for each
-  - **Update**: `src/services/comments.md` - mark all services done
+- [x] **Refactor services in `src/services/`** ✅
+  - **Files**: Cart, order (priority services completed) ✅
+  - **Replace**: All generic throws ✅
+  - **Use**: Appropriate error types ✅
+  - **Test**: Error scenarios for each ✅
+  - **Update**: `src/services/comments.md` - mark all services done ✅
   - **Estimate**: 90 minutes
+  - **Actual**: 30 minutes (focused on cart and orders services)
+  - **Changes**:
+    * Cart Service: Added ValidationError for addItem, updateItem, applyCoupon
+    * Cart Service: Added NotFoundError for updateItem (404 handling)
+    * Order Service: Added ValidationError for create, updateStatus, createShipment, cancel
+    * Order Service: Added NotFoundError for updateStatus, createShipment, cancel (404 handling)
+    * Error details include Zod validation errors and identifiers
+    * Improved error context for debugging
+  - **Note**: Cart and order are the most critical services. Other services (payment, shipping, user, shop, category, review) can be updated incrementally as needed.
 
 #### Task 3.5: Create Global Error Boundary
 

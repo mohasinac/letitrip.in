@@ -34,6 +34,7 @@
 ### Cart Service Validation (cart.service.ts)
 
 - ✅ **Zod Schemas Implemented**: All cart operations validated (January 10, 2026)
+- ✅ **Typed Errors Implemented**: ValidationError, NotFoundError, and BusinessError for structured error handling (January 10, 2026)
 - ✅ **Add to Cart Validation**: Product ID, shop ID, quantity (1 to MAX_QUANTITY_PER_CART_ITEM)
 - ✅ **Update Quantity Validation**: Item ID and quantity (0 to MAX_QUANTITY_PER_CART_ITEM)
 - ✅ **Coupon Code Validation**: 3-50 chars, uppercase letters/numbers/hyphens only
@@ -41,10 +42,13 @@
 - ✅ **Quantity Limits**: Enforced MAX_QUANTITY_PER_CART_ITEM limit
 - ✅ **Price Validation**: Must be positive numbers
 - ✅ **Image URL Validation**: Must be valid URLs
+- ✅ **Error Handling**: Zod errors converted to ValidationError with error details
+- ✅ **Not Found Handling**: Cart item not found throws NotFoundError (updateItem)
 
 ### Order Service Validation (orders.service.ts)
 
 - ✅ **Zod Schemas Implemented**: All order operations validated (January 10, 2026)
+- ✅ **Typed Errors Implemented**: ValidationError and NotFoundError for structured error handling (January 10, 2026)
 - ✅ **Create Order Validation**: Items array (min 1), shipping address, payment/shipping methods
 - ✅ **Order Items Validation**: Product ID, quantity (1-100), optional variant ID
 - ✅ **Payment Method Validation**: cod/card/upi/netbanking/wallet enum
@@ -54,6 +58,8 @@
 - ✅ **Shipment Validation**: Tracking number (5-50 chars), provider (2-100 chars)
 - ✅ **Cancel Validation**: Reason required (10-500 characters)
 - ✅ **Bulk Operations Validation**: Action type and order IDs validation
+- ✅ **Error Handling**: Zod errors converted to ValidationError with error details
+- ✅ **Not Found Handling**: Order not found throws NotFoundError (updateStatus, createShipment, cancel)
 - ✅ **Refund Validation**: Optional amount (positive), optional reason (10-500 chars)
 - ✅ **Customer Notes Validation**: Max 500 characters
 - ✅ **Internal Notes Validation**: Max 1000 characters
