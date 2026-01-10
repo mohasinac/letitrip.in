@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 2 - Performance & Architecture  
-**Overall Progress**: 33/75 tasks completed (44.0%)
+**Overall Progress**: 34/75 tasks completed (45.3%)
 
 ---
 
@@ -388,7 +388,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 2: Performance & Architecture (Weeks 5-8)
 
 **Goal**: Optimize performance and code organization  
-**Progress**: 8/25 tasks (32%)
+**Progress**: 9/25 tasks (36%)
 
 ### Week 5: Context Optimization (6/6) ✅ COMPLETE
 
@@ -462,7 +462,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 30 minutes
   - **Completed**: Implemented dynamic imports for non-critical context providers (ComparisonProvider, ViewingHistoryProvider, LoginRegisterProvider) with SSR disabled. These providers are now code-split and only loaded client-side, reducing the initial bundle size. Critical providers (AuthProvider, ThemeProvider, GlobalSearchProvider) remain eager-loaded for proper SSR and initial render. Updated src/app/comments.md to mark lazy loading improvement as completed with implementation details.
 
-### Week 6: Service Layer Refactoring (2/7)
+### Week 6: Service Layer Refactoring (3/7)
 
 #### Task 6.1: Create BaseService Class ✅
 
@@ -487,14 +487,15 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 45 minutes
   - **Completed**: Refactored ProductsService to extend BaseService<ProductFE, ProductBE, ProductFormFE, Partial<ProductFormFE>>. Removed duplicate CRUD code (getById, create, update, delete now inherited from BaseService). Kept all product-specific methods: getBySlug, updateBySlug, deleteBySlug (products use slugs not IDs), list (custom filter logic), getReviews, getVariants, getSimilar, getSellerProducts, updateStock, updateStatus, incrementView, getFeatured, getHomepage, all bulk operations, quickCreate/Update, getByIds. Updated error handling to use BaseService.handleError(). Maintained Zod validation in create() override. Tests: 30/40 passing (10 failures are test expectation mismatches, core functionality works). Updated src/services/comments.md and src/services/index.md with BaseService integration details.
 
-#### Task 6.3: Migrate User Service to BaseService
+#### Task 6.3: Migrate User Service to BaseService ✅
 
-- [ ] **Refactor `src/services/user-service.ts`**
+- [x] **Refactor `src/services/user-service.ts`**
   - **Extend**: BaseService<UserDB>
   - **Keep**: Custom methods
   - **Test**: User operations
   - **Update**: `src/services/comments.md`
   - **Estimate**: 30 minutes
+  - **Completed**: Refactored UsersService to extend BaseService<UserFE, UserBE, UserProfileFormFE, Partial<UserProfileFormFE>>. Removed duplicate CRUD code (getById now inherited, getAll available). Kept all user-specific methods: list (overrides getAll with custom filters), update (overridden with custom endpoint structure), ban, changeRole, getMe, updateMe, changePassword, email/mobile verification methods (send + verify), uploadAvatar, deleteAvatar, deleteAccount, getStats, and all bulk operations (bulkMakeSeller, bulkMakeUser, bulkBan, bulkUnban, bulkVerifyEmail, bulkVerifyPhone, bulkDelete). Updated all methods to use BaseService.handleError() for consistent error handling. No TypeScript errors. Updated src/services/comments.md and src/services/index.md with BaseService integration details.
 
 #### Task 6.4: Migrate Remaining Services to BaseService
 
