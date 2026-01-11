@@ -244,7 +244,10 @@ function ProfilePage() {
   });
 
   return (
-    <Form onSubmit={(data) => updateProfile.mutate(data)} loading={updateProfile.isPending} />
+    <Form
+      onSubmit={(data) => updateProfile.mutate(data)}
+      loading={updateProfile.isPending}
+    />
   );
 }
 ```
