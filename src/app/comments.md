@@ -7,6 +7,7 @@
 **Status**: Implemented in product pages
 
 **Product Detail Page (`products/[slug]/page.tsx`):**
+
 - ✅ Migrated to React Query `useProductBySlug` hook
 - ✅ Added Suspense boundary with ProductPageSkeleton fallback
 - ✅ Split into ProductContent component for better Suspense support
@@ -15,6 +16,7 @@
 - ✅ Error handling via React Query built-in error states
 
 **Products Listing Page (`products/page.tsx`):**
+
 - ✅ Migrated to React Query `useProducts` hook
 - ✅ Already has Suspense boundary with loading fallback
 - ✅ Automatic refetch on filter/sort/page changes
@@ -22,11 +24,36 @@
 - ✅ Cleaner state management with React Query
 
 **Benefits:**
+
 - Automatic caching reduces redundant API calls
 - Suspense provides better loading UX
 - React Query handles loading/error states
 - Background refetching keeps data fresh
 - Improved performance with cached data
+
+### Skeleton Loading States ✅
+
+**Status**: Implemented in dashboard pages
+
+**User Dashboard (`user/page.tsx`):**
+- ✅ Added UserProfileSkeleton component for loading state
+- ✅ Replaces generic spinner with component-specific skeleton
+- ✅ Better UX with layout-matching loading state
+
+**User Orders Page (`user/orders/page.tsx`):**
+- ✅ Added OrderCardSkeletonList component for loading state
+- ✅ Shows 5 skeleton cards matching actual order cards
+- ✅ Improved loading experience with realistic placeholders
+
+**User Settings Page (`user/settings/page.tsx`):**
+- ✅ Imported UserProfileSkeleton for consistency
+- ✅ Ready for future skeleton integration
+
+**Benefits:**
+- Consistent loading experience across dashboard
+- Reduced perceived loading time
+- Better visual continuity during data fetching
+- Improved user experience with layout-aware skeletons
 
 ---
 
