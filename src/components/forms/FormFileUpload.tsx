@@ -5,9 +5,9 @@
  * Reuses useMediaUpload hook for upload logic
  */
 
-import React, { forwardRef, useCallback, useRef, useState } from "react";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 import { cn } from "@/lib/utils";
+import React, { forwardRef, useCallback, useRef, useState } from "react";
 
 export interface FormFileUploadProps
   extends Omit<
@@ -30,10 +30,7 @@ export interface FormFileUploadProps
   autoUpload?: boolean; // Auto upload on file select (default: true)
 }
 
-export const FormFileUpload = forwardRef<
-  HTMLInputElement,
-  FormFileUploadProps
->(
+export const FormFileUpload = forwardRef<HTMLInputElement, FormFileUploadProps>(
   (
     {
       label,
@@ -245,14 +242,16 @@ export const FormFileUpload = forwardRef<
             isDragging
               ? "border-blue-500 bg-blue-50"
               : displayError
-                ? "border-red-300 bg-red-50"
-                : "border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100",
+              ? "border-red-300 bg-red-50"
+              : "border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100",
             disabled &&
               "cursor-not-allowed opacity-50 hover:border-gray-300 hover:bg-gray-50"
           )}
         >
           {/* Preview or upload prompt */}
-          {showPreview && previewUrl && selectedFile?.type.startsWith("image/") ? (
+          {showPreview &&
+          previewUrl &&
+          selectedFile?.type.startsWith("image/") ? (
             <div className="relative">
               <img
                 src={previewUrl}
@@ -326,12 +325,16 @@ export const FormFileUpload = forwardRef<
                   <>
                     <div className="font-medium text-gray-900">{fileName}</div>
                     {fileSize && (
-                      <div className="text-sm text-gray-500 mt-1">{fileSize}</div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {fileSize}
+                      </div>
                     )}
                   </>
                 ) : (
                   <>
-                    <span className="text-blue-600 font-medium">Click to upload</span>
+                    <span className="text-blue-600 font-medium">
+                      Click to upload
+                    </span>
                     <span className="text-gray-600"> or drag and drop</span>
                   </>
                 )}
