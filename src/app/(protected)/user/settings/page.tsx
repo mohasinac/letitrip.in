@@ -3,6 +3,7 @@
 import { SettingsSection } from "@/components/common/SettingsSection";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
@@ -34,6 +35,7 @@ export default function SettingsPage() {
     name: "",
     email: "",
     phone: "",
+    phoneCountryCode: "+91",
   });
 
   useEffect(() => {
@@ -43,10 +45,16 @@ export default function SettingsPage() {
     }
 
     // Load user data
+    const phoneWithCode = user.phoneNumber || "";
+    const countryCodeMatch = phoneWithCode.match(/^(\+\d+)/);
+    const countryCode = countryCodeMatch ? countryCodeMatch[1] : "+91";
+    const phoneOnly = phoneWithCode.replace(/^\+\d+\s*/, "");
+    
     setFormData({
       name: user.fullName || "",
       email: user.email || "",
-      phone: user.phoneNumber || "",
+      phone: phoneOnly,
+      phoneCountryCode: countryCode,
     });
   }, [user]);
 
@@ -88,7 +96,7 @@ export default function SettingsPage() {
       await authService.updateProfile({
         fullName: formData.name,
         email: formData.email,
-        phoneNumber: formData.phone,
+        phoneNumber: formData.phone ? `${formData.phoneCountryCode} ${formData.phone}` : undefined,
       });
 
       setSuccess(true);
@@ -211,13 +219,13 @@ export default function SettingsPage() {
             label="Phone Number"
             hint="Used for order updates and delivery coordination"
           >
-            <FormInput
-              type="tel"
+            <FormPhoneInput
               value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
+              countryCode={formData.phoneCountryCode}
+              onChange={(phone, countryCode) =>
+                setFormData({ ...formData, phone, phoneCountryCode: countryCode })
               }
-              placeholder="+91 9876543210"
+              placeholder="9876543210"
               autoComplete="tel"
             />
           </FormField>

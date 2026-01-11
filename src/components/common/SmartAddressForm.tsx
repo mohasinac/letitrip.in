@@ -1,6 +1,7 @@
 "use client";
 
 import { FormLabel } from "@/components/forms/FormLabel";
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
 import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
 import {
   ADDRESS_TYPES,
@@ -30,7 +31,6 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { GPSButton } from "./GPSButton";
-import { MobileInput } from "./MobileInput";
 import { PincodeInput } from "./PincodeInput";
 import { StateSelector } from "./StateSelector";
 
@@ -307,14 +307,17 @@ export function SmartAddressForm({
             name="mobileNumber"
             control={control}
             render={({ field }) => (
-              <MobileInput
+              <FormPhoneInput
                 value={field.value || ""}
-                onChange={field.onChange}
                 countryCode={watch("countryCode")}
-                onCountryCodeChange={(code) => setValue("countryCode", code)}
+                onChange={(phone, code) => {
+                  field.onChange(phone);
+                  setValue("countryCode", code);
+                }}
                 required
                 error={errors.mobileNumber?.message}
                 label="Mobile Number"
+                autoFormat={true}
               />
             )}
           />
@@ -325,13 +328,14 @@ export function SmartAddressForm({
           name="alternateMobileNumber"
           control={control}
           render={({ field }) => (
-            <MobileInput
+            <FormPhoneInput
               value={field.value || ""}
-              onChange={field.onChange}
               countryCode={watch("countryCode")}
+              onChange={(phone) => field.onChange(phone)}
               error={errors.alternateMobileNumber?.message}
               label="Alternate Mobile (Optional)"
               placeholder="Optional"
+              autoFormat={true}
             />
           )}
         />

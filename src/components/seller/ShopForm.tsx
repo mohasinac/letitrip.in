@@ -12,6 +12,7 @@ import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -30,7 +31,8 @@ export default function ShopForm({
   const [slug, setSlug] = useState(shop?.slug || "");
   const [description, setDescription] = useState(shop?.description || "");
   const [location, setLocation] = useState(shop?.address || "");
-  const [phone, setPhone] = useState(shop?.phone || "");
+  const [phone, setPhone] = useState(shop?.phone?.replace(/^\+\d+\s*/, "") || "");
+  const [phoneCountryCode, setPhoneCountryCode] = useState(shop?.phone?.match(/^(\+\d+)/)?.[1] || "+91");
   const [email, setEmail] = useState(shop?.email || "");
   const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,8 +65,7 @@ export default function ShopForm({
       newErrors.description = "Description must be at least 50 characters";
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       newErrors.email = "Invalid email address";
-    if (phone && !/^[0-9]{10}$/.test(phone.replace(/\s/g, "")))
-      newErrors.phone = "Phone number must be 10 digits";
+    // FormPhoneInput handles validation internally
     if (website && !/^https?:\/\/.+/.test(website))
       newErrors.website = "Website must be a valid URL";
     setErrors(newErrors);
@@ -79,7 +80,7 @@ export default function ShopForm({
       slug: slug.trim(),
       description: description.trim(),
       address: location.trim() || undefined,
-      phone: phone.trim() || undefined,
+      phone: phone.trim() ? `${phoneCountryCode} ${phone.trim()}` : undefined,
       email: email.trim() || undefined,
     };
     await onSubmit(data);
@@ -163,12 +164,16 @@ export default function ShopForm({
               />
             </FormField>
             <FormField label="Phone" error={errors.phone}>
-              <FormInput
-                type="tel"
+              <FormPhoneInput
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                countryCode={phoneCountryCode}
+                onChange={(phone, countryCode) => {
+                  setPhone(phone);
+                  setPhoneCountryCode(countryCode);
+                }}
                 placeholder="9876543210"
                 disabled={isSubmitting}
+                autoFormat={true}
               />
             </FormField>
           </div>
