@@ -2,16 +2,24 @@
 
 /**
  * MFA Enrollment Component
- * 
+ *
  * Allows users to enroll in Multi-Factor Authentication (MFA)
  * Supports both Phone (SMS) and TOTP (Authenticator App) methods
  */
 
-import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { authMFAService, MFAFactorInfo } from "@/services/auth-mfa-service";
 import { TotpSecret } from "firebase/auth";
-import { Smartphone, Shield, Key, Trash2, QrCode, Copy, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  Check,
+  Copy,
+  Key,
+  QrCode,
+  Shield,
+  Smartphone,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 export interface MFAEnrollmentProps {
   onEnrollmentComplete?: () => void;
@@ -102,7 +110,8 @@ export function MFAEnrollment({
       setVerificationId(result.verificationId);
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to send verification code";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send verification code";
       setError(errorMessage);
       onError?.(err as Error);
     } finally {
@@ -129,7 +138,8 @@ export function MFAEnrollment({
       resetForm();
       onEnrollmentComplete?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to verify code";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to verify code";
       setError(errorMessage);
       onError?.(err as Error);
     } finally {
@@ -142,7 +152,9 @@ export function MFAEnrollment({
     setError(null);
 
     try {
-      const result = await authMFAService.enrollTotpMFA(totpDisplayName || undefined);
+      const result = await authMFAService.enrollTotpMFA(
+        totpDisplayName || undefined
+      );
 
       setTotpSecret(result.totpSecret);
       setQrCodeUrl(result.qrCodeUrl);
@@ -150,7 +162,8 @@ export function MFAEnrollment({
       setStep("totp-setup");
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to generate TOTP secret";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to generate TOTP secret";
       setError(errorMessage);
       onError?.(err as Error);
       setStep("select");
@@ -183,7 +196,8 @@ export function MFAEnrollment({
       resetForm();
       onEnrollmentComplete?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to verify code";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to verify code";
       setError(errorMessage);
       onError?.(err as Error);
     } finally {
@@ -203,7 +217,8 @@ export function MFAEnrollment({
       await authMFAService.unenrollMFA({ factorUid });
       await loadEnrolledFactors();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to remove MFA method";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to remove MFA method";
       setError(errorMessage);
       onError?.(err as Error);
     } finally {
@@ -256,10 +271,16 @@ export function MFAEnrollment({
                   )}
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {factor.displayName || (factor.factorId === "phone" ? "Phone" : "Authenticator")}
+                      {factor.displayName ||
+                        (factor.factorId === "phone"
+                          ? "Phone"
+                          : "Authenticator")}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {factor.phoneNumber || `Enrolled ${new Date(factor.enrollmentTime).toLocaleDateString()}`}
+                      {factor.phoneNumber ||
+                        `Enrolled ${new Date(
+                          factor.enrollmentTime
+                        ).toLocaleDateString()}`}
                     </div>
                   </div>
                 </div>
@@ -291,7 +312,8 @@ export function MFAEnrollment({
             Add New MFA Method
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            Choose how you'd like to secure your account with multi-factor authentication
+            Choose how you'd like to secure your account with multi-factor
+            authentication
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -396,7 +418,9 @@ export function MFAEnrollment({
                 <input
                   type="text"
                   value={phoneCode}
-                  onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  onChange={(e) =>
+                    setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
                   placeholder="123456"
                   maxLength={6}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center text-2xl tracking-widest"
@@ -434,10 +458,13 @@ export function MFAEnrollment({
           <div className="space-y-6">
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
-                <strong>Step 1:</strong> Install an authenticator app on your phone (Google Authenticator, Authy, Microsoft Authenticator, etc.)
+                <strong>Step 1:</strong> Install an authenticator app on your
+                phone (Google Authenticator, Authy, Microsoft Authenticator,
+                etc.)
               </p>
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>Step 2:</strong> Scan the QR code below or manually enter the secret key
+                <strong>Step 2:</strong> Scan the QR code below or manually
+                enter the secret key
               </p>
             </div>
 
@@ -533,7 +560,9 @@ export function MFAEnrollment({
               <input
                 type="text"
                 value={totpCode}
-                onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                onChange={(e) =>
+                  setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
                 placeholder="123456"
                 maxLength={6}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center text-2xl tracking-widest"

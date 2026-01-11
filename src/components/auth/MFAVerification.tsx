@@ -2,16 +2,16 @@
 
 /**
  * MFA Verification Component
- * 
+ *
  * Handles second-factor verification during sign-in
  * When user encounters MFA challenge, this component verifies the code
  */
 
-import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { authMFAService } from "@/services/auth-mfa-service";
 import { MultiFactorResolver } from "firebase/auth";
-import { Smartphone, Key, Shield, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { AlertCircle, Key, Shield, Smartphone } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export interface MFAVerificationProps {
   resolver: MultiFactorResolver;
@@ -70,7 +70,8 @@ export function MFAVerification({
 
       onVerificationComplete?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Verification failed";
+      const errorMessage =
+        err instanceof Error ? err.message : "Verification failed";
       setError(errorMessage);
       onVerificationError?.(err as Error);
     } finally {
@@ -142,13 +143,16 @@ export function MFAVerification({
                     <div>
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {hint.displayName ||
-                          (hint.factorId === "phone" ? "SMS" : "Authenticator App")}
+                          (hint.factorId === "phone"
+                            ? "SMS"
+                            : "Authenticator App")}
                       </div>
-                      {hint.factorId === "phone" && (hint as any).phoneNumber && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {(hint as any).phoneNumber}
-                        </div>
-                      )}
+                      {hint.factorId === "phone" &&
+                        (hint as any).phoneNumber && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {(hint as any).phoneNumber}
+                          </div>
+                        )}
                     </div>
                   </div>
                 </button>

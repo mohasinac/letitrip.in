@@ -140,6 +140,109 @@ export interface CapturePayPalOrderResponse {
   capturedAt: string;
 }
 
+// PhonePe specific types
+export interface CreatePhonePeOrderParams {
+  amount: number;
+  orderId: string;
+  merchantUserId: string;
+  mobileNumber: string;
+  callbackUrl: string;
+  redirectUrl?: string;
+  redirectMode?: "POST" | "REDIRECT";
+}
+
+export interface CreatePhonePeOrderResponse {
+  merchantId: string;
+  merchantTransactionId: string;
+  instrumentResponse: {
+    type: string;
+    intentUrl?: string;
+    redirectUrl?: string;
+  };
+  success: boolean;
+  code: string;
+  message: string;
+}
+
+export interface VerifyPhonePePaymentParams {
+  merchantTransactionId: string;
+}
+
+export interface VerifyPhonePePaymentResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data: {
+    merchantId: string;
+    merchantTransactionId: string;
+    transactionId: string;
+    amount: number;
+    state: string;
+    responseCode: string;
+    paymentInstrument: {
+      type: string;
+      utr?: string;
+    };
+  };
+}
+
+export interface PhonePeRefundParams {
+  merchantTransactionId: string;
+  originalTransactionId: string;
+  amount: number;
+}
+
+export interface PhonePeRefundResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data: {
+    merchantId: string;
+    merchantTransactionId: string;
+    transactionId: string;
+    amount: number;
+    state: string;
+    responseCode: string;
+  };
+}
+
+// UPI specific types
+export interface CreateUpiPaymentParams {
+  amount: number;
+  orderId: string;
+  vpa: string; // Virtual Payment Address (UPI ID)
+  name: string;
+  description?: string;
+  callbackUrl?: string;
+}
+
+export interface CreateUpiPaymentResponse {
+  id: string;
+  orderId: string;
+  amount: number;
+  vpa: string;
+  status: string;
+  qrCodeUrl?: string;
+  intentUrl?: string;
+  createdAt: string;
+}
+
+export interface VerifyUpiPaymentParams {
+  id: string;
+  orderId: string;
+}
+
+export interface VerifyUpiPaymentResponse {
+  success: boolean;
+  id: string;
+  orderId: string;
+  amount: number;
+  vpa: string;
+  utr: string; // Unique Transaction Reference
+  status: string;
+  paidAt?: string;
+}
+
 // Currency conversion types
 export interface CurrencyConversionParams {
   amount: number;
@@ -368,6 +471,262 @@ class PayPalService {
 }
 
 // ============================================================================
+// PHONEPE SERVICE
+// ============================================================================
+
+class PhonePeService {
+  private readonly baseUrl = "/api/payments/phonepe";
+
+  /**
+   * Create a new PhonePe payment order
+   * PhonePe uses UPI-based payments popular in India
+   */
+  async createOrder(
+    params: CreatePhonePeOrderParams
+  ): Promise<CreatePhonePeOrderResponse> {
+    try {
+      const response = await apiService.post<CreatePhonePeOrderResponse>(
+        `${this.baseUrl}/orders`,
+        params
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "PhonePeService.createOrder",
+        params: {
+          amount: params.amount,
+          orderId: params.orderId,
+          merchantUserId: params.merchantUserId,
+        },
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Verify PhonePe payment status
+   */
+  async verifyPayment(
+    params: VerifyPhonePePaymentParams
+  ): Promise<VerifyPhonePePaymentResponse> {
+    try {
+      const response = await apiService.post<VerifyPhonePePaymentResponse>(
+        `${this.baseUrl}/verify`,
+        params
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "PhonePeService.verifyPayment",
+        params,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Check payment status
+   */
+  async checkStatus(
+    merchantTransactionId: string
+  ): Promise<VerifyPhonePePaymentResponse> {
+    try {
+      const response = await apiService.get<VerifyPhonePePaymentResponse>(
+        `${this.baseUrl}/status/${merchantTransactionId}`
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "PhonePeService.checkStatus",
+        merchantTransactionId,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Refund a PhonePe payment
+   */
+  async refundPayment(
+    params: PhonePeRefundParams
+  ): Promise<PhonePeRefundResponse> {
+    try {
+      const response = await apiService.post<PhonePeRefundResponse>(
+        `${this.baseUrl}/refund`,
+        params
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "PhonePeService.refundPayment",
+        params: {
+          merchantTransactionId: params.merchantTransactionId,
+          amount: params.amount,
+        },
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get refund status
+   */
+  async getRefundStatus(
+    merchantTransactionId: string
+  ): Promise<PhonePeRefundResponse> {
+    try {
+      const response = await apiService.get<PhonePeRefundResponse>(
+        `${this.baseUrl}/refund/${merchantTransactionId}`
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "PhonePeService.getRefundStatus",
+        merchantTransactionId,
+      });
+      throw error;
+    }
+  }
+}
+
+// ============================================================================
+// UPI SERVICE
+// ============================================================================
+
+class UpiService {
+  private readonly baseUrl = "/api/payments/upi";
+
+  /**
+   * Create a UPI payment request
+   * Supports multiple UPI payment methods including:
+   * - Direct VPA (UPI ID) collection
+   * - QR code generation
+   * - Intent-based payments
+   */
+  async createPayment(
+    params: CreateUpiPaymentParams
+  ): Promise<CreateUpiPaymentResponse> {
+    try {
+      const response = await apiService.post<CreateUpiPaymentResponse>(
+        `${this.baseUrl}/create`,
+        params
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.createPayment",
+        params: {
+          amount: params.amount,
+          orderId: params.orderId,
+          vpa: params.vpa,
+        },
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Generate UPI QR code for payment
+   */
+  async generateQrCode(params: {
+    amount: number;
+    orderId: string;
+    name: string;
+    description?: string;
+  }): Promise<{ qrCodeUrl: string; qrCodeData: string }> {
+    try {
+      const response = await apiService.post<{
+        qrCodeUrl: string;
+        qrCodeData: string;
+      }>(`${this.baseUrl}/generate-qr`, params);
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.generateQrCode",
+        params,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Verify UPI payment
+   */
+  async verifyPayment(
+    params: VerifyUpiPaymentParams
+  ): Promise<VerifyUpiPaymentResponse> {
+    try {
+      const response = await apiService.post<VerifyUpiPaymentResponse>(
+        `${this.baseUrl}/verify`,
+        params
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.verifyPayment",
+        params,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Check UPI payment status
+   */
+  async checkStatus(id: string): Promise<VerifyUpiPaymentResponse> {
+    try {
+      const response = await apiService.get<VerifyUpiPaymentResponse>(
+        `${this.baseUrl}/status/${id}`
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.checkStatus",
+        id,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Validate UPI VPA (Virtual Payment Address)
+   */
+  async validateVpa(vpa: string): Promise<{ isValid: boolean; name?: string }> {
+    try {
+      const response = await apiService.post<{
+        isValid: boolean;
+        name?: string;
+      }>(`${this.baseUrl}/validate-vpa`, { vpa });
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.validateVpa",
+        vpa,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get UPI payment details
+   */
+  async getPaymentDetails(id: string): Promise<PaymentDetails> {
+    try {
+      const response = await apiService.get<PaymentDetails>(
+        `${this.baseUrl}/payments/${id}`
+      );
+      return response;
+    } catch (error) {
+      logError(error as Error, {
+        component: "UpiService.getPaymentDetails",
+        id,
+      });
+      throw error;
+    }
+  }
+}
+
+// ============================================================================
 // GENERIC PAYMENT SERVICE
 // ============================================================================
 
@@ -480,11 +839,15 @@ class GenericPaymentService {
 class PaymentService {
   public razorpay: RazorpayService;
   public paypal: PayPalService;
+  public phonepe: PhonePeService;
+  public upi: UpiService;
   public generic: GenericPaymentService;
 
   constructor() {
     this.razorpay = new RazorpayService();
     this.paypal = new PayPalService();
+    this.phonepe = new PhonePeService();
+    this.upi = new UpiService();
     this.generic = new GenericPaymentService();
   }
 
@@ -493,13 +856,26 @@ class PaymentService {
    */
   async createOrder(
     gatewayId: string,
-    params: CreateOrderParams | CreatePayPalOrderParams
-  ): Promise<CreateOrderResponse | CreatePayPalOrderResponse> {
+    params:
+      | CreateOrderParams
+      | CreatePayPalOrderParams
+      | CreatePhonePeOrderParams
+      | CreateUpiPaymentParams
+  ): Promise<
+    | CreateOrderResponse
+    | CreatePayPalOrderResponse
+    | CreatePhonePeOrderResponse
+    | CreateUpiPaymentResponse
+  > {
     switch (gatewayId) {
       case "razorpay":
         return this.razorpay.createOrder(params as CreateOrderParams);
       case "paypal":
         return this.paypal.createOrder(params as CreatePayPalOrderParams);
+      case "phonepe":
+        return this.phonepe.createOrder(params as CreatePhonePeOrderParams);
+      case "upi":
+        return this.upi.createPayment(params as CreateUpiPaymentParams);
       default:
         throw new Error(`Unsupported gateway: ${gatewayId}`);
     }
@@ -510,11 +886,22 @@ class PaymentService {
    */
   async verifyPayment(
     gatewayId: string,
-    params: VerifyPaymentParams
-  ): Promise<VerifyPaymentResponse> {
+    params:
+      | VerifyPaymentParams
+      | VerifyPhonePePaymentParams
+      | VerifyUpiPaymentParams
+  ): Promise<
+    | VerifyPaymentResponse
+    | VerifyPhonePePaymentResponse
+    | VerifyUpiPaymentResponse
+  > {
     switch (gatewayId) {
       case "razorpay":
-        return this.razorpay.verifyPayment(params);
+        return this.razorpay.verifyPayment(params as VerifyPaymentParams);
+      case "phonepe":
+        return this.phonepe.verifyPayment(params as VerifyPhonePePaymentParams);
+      case "upi":
+        return this.upi.verifyPayment(params as VerifyUpiPaymentParams);
       default:
         throw new Error(`Unsupported gateway: ${gatewayId}`);
     }
@@ -525,13 +912,15 @@ class PaymentService {
    */
   async refundPayment(
     gatewayId: string,
-    params: RefundPaymentParams
-  ): Promise<RefundPaymentResponse> {
+    params: RefundPaymentParams | PhonePeRefundParams
+  ): Promise<RefundPaymentResponse | PhonePeRefundResponse> {
     switch (gatewayId) {
       case "razorpay":
-        return this.razorpay.refundPayment(params);
+        return this.razorpay.refundPayment(params as RefundPaymentParams);
       case "paypal":
-        return this.paypal.refundPayment(params);
+        return this.paypal.refundPayment(params as RefundPaymentParams);
+      case "phonepe":
+        return this.phonepe.refundPayment(params as PhonePeRefundParams);
       default:
         throw new Error(`Unsupported gateway: ${gatewayId}`);
     }
@@ -599,4 +988,3 @@ class PaymentService {
 // ============================================================================
 
 export const paymentService = new PaymentService();
-
