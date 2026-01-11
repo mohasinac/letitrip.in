@@ -711,6 +711,65 @@ function ProductList() {
 
 ---
 
+### useLocalStorage.ts
+
+**Export:** `useLocalStorage<T>(key, initialValue, options): [T, SetValue<T>, RemoveValue]`
+
+**Purpose:** Manage state synchronized with localStorage with automatic serialization/deserialization.
+
+**Parameters:**
+
+- `key: string` - The localStorage key
+- `initialValue: T` - Initial value if key doesn't exist
+- `options?: UseLocalStorageOptions<T>` - Configuration options
+  - `serializer?: (value: T) => string` - Custom serializer (default: JSON.stringify)
+  - `deserializer?: (value: string) => T` - Custom deserializer (default: JSON.parse)
+  - `initializeWithValue?: boolean` - Initialize with stored value (default: true)
+  - `syncData?: boolean` - Sync across tabs/windows (default: true)
+
+**Returns:**
+
+- `[0]: T` - The stored value
+- `[1]: (value: T | ((val: T) => T)) => void` - Setter function (supports functional updates)
+- `[2]: () => void` - Remove value function
+
+**Features:**
+
+- Automatic serialization/deserialization with JSON
+- Custom serializer/deserializer support
+- SSR-safe (returns initialValue on server)
+- Cross-tab synchronization with storage events
+- Custom events for same-tab synchronization
+- Functional updates like useState
+- Error handling with console warnings
+- Re-reads value when key changes
+- TypeScript generics for type safety
+
+**Example:**
+
+```tsx
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+
+function UserPreferences() {
+  const [theme, setTheme, removeTheme] = useLocalStorage<string>(
+    "theme",
+    "light",
+    { syncData: true }
+  );
+
+  return (
+    <div>
+      <p>Current theme: {theme}</p>
+      <button onClick={() => setTheme("dark")}>Dark</button>
+      <button onClick={() => setTheme("light")}>Light</button>
+      <button onClick={removeTheme}>Reset</button>
+    </div>
+  );
+}
+```
+
+---
+
 ### useResourceListState.ts
 
 **Export:** `useResourceListState<T>(config): ResourceListState<T>`

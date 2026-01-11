@@ -683,23 +683,89 @@ function BlogEditor() {
 
 **Export:** `WizardForm`
 
-**Purpose:** Multi-step form wizard container.
+**Purpose:** Multi-step form wizard container with auto-save capability.
 
 **Props:**
 
-- `steps: Array<StepConfig>` - Wizard steps configuration
-- `currentStep: number` - Current active step
-- `onStepChange: (step: number) => void` - Step change handler
-- `onSubmit: () => void` - Final submission handler
-- `children: React.ReactNode` - Step content
+- `steps: WizardFormStep[]` - Wizard steps configuration with validation
+- `initialData?: Partial<T>` - Initial form data
+- `onSubmit: (data: T) => void | Promise<void>` - Final submission handler
+- `onSaveDraft?: (data: T, currentStep: number) => void | Promise<void>` - Draft save handler
+- `onValidate?: (stepIndex: number) => Promise<boolean>` - Per-step validation
+- `onStepChange?: (stepIndex: number) => void` - Step change handler
+- `submitLabel?: string` - Submit button label (default: "Create")
+- `className?: string` - Additional CSS classes
+- `showValidateButton?: boolean` - Show validate button (default: true)
+- `showSaveDraftButton?: boolean` - Show save draft button (default: true)
+- `stepsVariant?: "numbered" | "pills"` - Step indicator style
+- `children?: (props: WizardFormChildProps<T>) => ReactNode` - Render function
+- **Auto-save props:**
+  - `enableAutoSave?: boolean` - Enable auto-save to localStorage (default: false)
+  - `autoSaveKey?: string` - localStorage key (default: "wizard-form-autosave")
+  - `autoSaveDelay?: number` - Debounce delay in ms (default: 1000)
+  - `onAutoSave?: (data: T, currentStep: number) => void` - Auto-save callback
+  - `onRestore?: (data: T, currentStep: number) => void` - Data restore callback
 
 **Features:**
 
-- Multi-step navigation
-- Progress indicator
-- Step validation
-- Back/Next navigation
-- Submit on final step
+- Multi-step navigation with WizardSteps component
+- Form state management with TypeScript generics
+- Per-step validation tracking with StepState
+- Save draft functionality
+- **Auto-save to localStorage** with configurable debounce
+- **Automatic data restoration** on page reload
+- **Restore notification banner** with timestamp
+- **Clear auto-save** button to start fresh
+- **Clears auto-save** on successful submission
+- Mobile-friendly sticky action bar
+- Dark mode support
+- Render props pattern for custom layouts
+- Demo: `/demo/wizard-form-autosave`
+
+**Auto-Save Features:**
+
+- Automatically saves form data and current step to localStorage
+- Debounced saving (configurable delay, default 1 second)
+- Restores data on page reload/refresh
+- Shows notification when data is restored
+- Clears saved data after successful submission
+- Optional callbacks for save and restore events
+- SSR-safe with useLocalStorage hook
+
+**Example:**
+
+```tsx
+import { WizardForm, WizardFormStep } from "@/components/forms/WizardForm";
+
+interface FormData {
+  name: string;
+  email: string;
+  company: string;
+}
+
+const steps: WizardFormStep[] = [
+  {
+    label: "Personal Info",
+    icon: "👤",
+    content: <PersonalInfoStep />,
+  },
+  {
+    label: "Company Info",
+    icon: "💼",
+    content: <CompanyInfoStep />,
+  },
+];
+
+<WizardForm<FormData>
+  steps={steps}
+  onSubmit={handleSubmit}
+  enableAutoSave={true}
+  autoSaveKey="my-form-autosave"
+  autoSaveDelay={1000}
+  onAutoSave={(data, step) => console.log("Auto-saved", data)}
+  onRestore={(data, step) => console.log("Restored", data)}
+/>;
+```
 
 ---
 

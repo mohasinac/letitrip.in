@@ -7,9 +7,9 @@
 
 "use client";
 
-import React, { forwardRef, useMemo } from "react";
-import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+import React, { forwardRef, useMemo } from "react";
 import "react-quill/dist/quill.snow.css";
 
 // Dynamically import ReactQuill to avoid SSR issues
@@ -88,7 +88,12 @@ export const FormRichText = forwardRef<HTMLDivElement, FormRichTextProps>(
             ["bold", "italic", "underline", "strike"],
             [{ color: [] }, { background: [] }],
             [{ script: "sub" }, { script: "super" }],
-            [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+            [
+              { list: "ordered" },
+              { list: "bullet" },
+              { indent: "-1" },
+              { indent: "+1" },
+            ],
             [{ direction: "rtl" }, { align: [] }],
             ["link", "image", "video"],
             ["blockquote", "code-block"],
@@ -130,7 +135,11 @@ export const FormRichText = forwardRef<HTMLDivElement, FormRichTextProps>(
     };
 
     return (
-      <div ref={ref} className={cn(fullWidth && "w-full", className)} {...props}>
+      <div
+        ref={ref}
+        className={cn(fullWidth && "w-full", className)}
+        {...props}
+      >
         {/* Label */}
         {label && (
           <label className="block text-sm font-medium text-gray-700 mb-1">

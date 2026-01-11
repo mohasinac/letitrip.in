@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, ReactNode } from "react";
-import { WizardSteps, WizardStep, StepState } from "./WizardSteps";
-import { WizardActionBar } from "./WizardActionBar";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { WizardActionBar } from "./WizardActionBar";
+import { StepState, WizardStep, WizardSteps } from "./WizardSteps";
 
 export interface WizardFormStep extends WizardStep {
   validate?: () => boolean | Promise<boolean>;
@@ -23,6 +24,12 @@ export interface WizardFormProps<T = Record<string, unknown>> {
   showSaveDraftButton?: boolean;
   stepsVariant?: "numbered" | "pills";
   children?: (props: WizardFormChildProps<T>) => ReactNode;
+  // Auto-save props
+  enableAutoSave?: boolean; // Enable auto-save to localStorage (default: false)
+  autoSaveKey?: string; // localStorage key for auto-save
+  autoSaveDelay?: number; // Debounce delay in ms (default: 1000)
+  onAutoSave?: (data: T, currentStep: number) => void; // Callback when auto-save happens
+  onRestore?: (data: T, currentStep: number) => void; // Callback when data is restored
 }
 
 export interface WizardFormChildProps<T = Record<string, unknown>> {
@@ -35,6 +42,8 @@ export interface WizardFormChildProps<T = Record<string, unknown>> {
   isValid: boolean;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
+  clearAutoSave?: () => void; // Clear auto-saved data
+  hasAutoSavedData?: boolean; // Whether auto-saved data exists
 }
 
 /**
@@ -61,7 +70,26 @@ export function WizardForm<T = Record<string, unknown>>({
   showSaveDraftButton = true,
   stepsVariant = "numbered",
   children,
+  enableAutoSave = false,
+  autoSaveKey = "wizard-form-autosave",
+  autoSaveDelay = 1000,
+  onAutoSave,
+  onRestore,
 }: WizardFormProps<T>) {
+  // Auto-save data structure
+  interface AutoSaveData {
+    formData: Partial<T>;
+    currentStep: number;
+    timestamp: number;
+  }
+
+  // Use localStorage for auto-save
+  const [savedData, setSavedData, clearSavedData] =
+    useLocalStorage<AutoSaveData | null>(autoSaveKey, null, {
+      initializeWithValue: enableAutoSave,
+      syncData: false,
+    });
+
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<T>>(initialData || {});
   const [stepStates, setStepStates] = useState<StepState[]>(
@@ -70,14 +98,49 @@ export function WizardForm<T = Record<string, unknown>>({
       isValid: true,
       hasErrors: false,
       errorCount: 0,
-    })),
+    }))
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasRestoredData, setHasRestoredData] = useState(false);
+
+  // Restore saved data on mount
+  useEffect(() => {
+    if (enableAutoSave && savedData && !hasRestoredData) {
+      setFormData(savedData.formData);
+      setCurrentStep(savedData.currentStep);
+      setHasRestoredData(true);
+      onRestore?.(savedData.formData as T, savedData.currentStep);
+    }
+  }, [enableAutoSave, savedData, hasRestoredData, onRestore]);
+
+  // Auto-save with debounce
+  useEffect(() => {
+    if (!enableAutoSave) return;
+
+    const timeoutId = setTimeout(() => {
+      const autoSaveData: AutoSaveData = {
+        formData,
+        currentStep,
+        timestamp: Date.now(),
+      };
+      setSavedData(autoSaveData);
+      onAutoSave?.(formData as T, currentStep);
+    }, autoSaveDelay);
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    formData,
+    currentStep,
+    enableAutoSave,
+    autoSaveDelay,
+    setSavedData,
+    onAutoSave,
+  ]);
 
   // Check if all steps are valid
   const isAllValid = stepStates.every(
-    (state) => state.isComplete && state.isValid && !state.hasErrors,
+    (state) => state.isComplete && state.isValid && !state.hasErrors
   );
 
   // Update step state
@@ -89,7 +152,7 @@ export function WizardForm<T = Record<string, unknown>>({
         return newStates;
       });
     },
-    [],
+    []
   );
 
   // Handle step click
@@ -98,7 +161,7 @@ export function WizardForm<T = Record<string, unknown>>({
       setCurrentStep(stepIndex);
       onStepChange?.(stepIndex);
     },
-    [onStepChange],
+    [onStepChange]
   );
 
   // Go to next step
@@ -175,7 +238,7 @@ export function WizardForm<T = Record<string, unknown>>({
 
       // Check if all valid
       const allValid = stepStates.every(
-        (state) => state.isValid && !state.hasErrors,
+        (state) => state.isValid && !state.hasErrors
       );
       if (!allValid) {
         setIsSubmitting(false);
@@ -183,10 +246,22 @@ export function WizardForm<T = Record<string, unknown>>({
       }
 
       await onSubmit(formData as T);
+
+      // Clear auto-saved data after successful submission
+      if (enableAutoSave) {
+        clearSavedData();
+      }
     } finally {
       setIsSubmitting(false);
     }
-  }, [handleValidate, stepStates, onSubmit, formData]);
+  }, [
+    handleValidate,
+    stepStates,
+    onSubmit,
+    formData,
+    enableAutoSave,
+    clearSavedData,
+  ]);
 
   // Child render props
   const childProps: WizardFormChildProps<T> = {
@@ -199,6 +274,8 @@ export function WizardForm<T = Record<string, unknown>>({
     isValid: isAllValid,
     goToNextStep,
     goToPreviousStep,
+    clearAutoSave: enableAutoSave ? clearSavedData : undefined,
+    hasAutoSavedData: enableAutoSave && savedData !== null,
   };
 
   // Map steps for WizardSteps component
@@ -209,6 +286,39 @@ export function WizardForm<T = Record<string, unknown>>({
 
   return (
     <div className={cn("flex flex-col min-h-screen", className)}>
+      {/* Restore Notification */}
+      {enableAutoSave && hasRestoredData && savedData && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 px-4 py-3">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-sm text-blue-800 dark:text-blue-200">
+                Your progress has been restored from{" "}
+                {new Date(savedData.timestamp).toLocaleString()}
+              </span>
+            </div>
+            <button
+              onClick={clearSavedData}
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Start Fresh
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Step Navigation */}
       <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <WizardSteps
