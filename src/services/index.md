@@ -184,6 +184,7 @@ class ProductService extends BaseService<
 **Core Methods:**
 
 **Enrollment:**
+
 - `initializeRecaptcha(containerId)` - Initialize invisible reCAPTCHA for phone MFA → `RecaptchaVerifier`
 - `enrollPhoneMFA(request)` - Start phone MFA enrollment → `{verificationId, message}`
 - `verifyPhoneMFA(request)` - Complete phone MFA enrollment with verification code → `void`
@@ -191,14 +192,17 @@ class ProductService extends BaseService<
 - `verifyTotpMFA(totpSecret, request)` - Complete TOTP MFA enrollment → `void`
 
 **Management:**
+
 - `getEnrolledFactors()` - Get list of enrolled MFA factors → `MFAFactorInfo[]`
 - `unenrollMFA(request)` - Remove an MFA factor → `void`
 - `isMFAEnabled()` - Check if user has any MFA factors → `boolean`
 
 **Sign-in:**
+
 - `signInWithMFA(request)` - Complete sign-in with second factor → `void`
 
 **Utilities:**
+
 - `clearRecaptcha()` - Clean up reCAPTCHA verifier → `void`
 
 **Types:**
@@ -263,15 +267,15 @@ try {
     phoneNumber: "+1234567890",
     displayName: "My Phone",
   });
-  
+
   // User receives SMS code
-  
+
   // 3. Verify Phone MFA
   await authMFAService.verifyPhoneMFA({
     verificationId,
     verificationCode: "123456",
   });
-  
+
   console.log("Phone MFA enrolled successfully!");
 } catch (error) {
   console.error("MFA enrollment failed:", error);
@@ -282,15 +286,15 @@ try {
   const { qrCodeUrl, secretKey } = await authMFAService.enrollTotpMFA(
     "My Authenticator"
   );
-  
+
   // Show QR code to user or display secret key
   // User scans QR code with authenticator app
-  
+
   // Verify TOTP MFA
   await authMFAService.verifyTotpMFA(totpSecret, {
     verificationCode: "123456", // From authenticator app
   });
-  
+
   console.log("TOTP MFA enrolled successfully!");
 } catch (error) {
   console.error("TOTP enrollment failed:", error);

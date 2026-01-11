@@ -1,24 +1,23 @@
 /**
  * Device Management Service
- * 
+ *
  * Manages user devices for security and session management.
  * Tracks devices used to access accounts and allows users to revoke access.
  */
 
+import { db } from "@/lib/firebase-client";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
-  setDoc,
-  deleteDoc,
-  query,
-  where,
   orderBy,
+  query,
   serverTimestamp,
-  Timestamp,
+  setDoc,
+  where,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase-client";
 import { z } from "zod";
 
 // ============================================================================
@@ -254,11 +253,7 @@ class DeviceService {
       // Generate device name if not provided
       const deviceName =
         validated.deviceName ||
-        generateDeviceName(
-          parsedUA.deviceType,
-          parsedUA.browser,
-          parsedUA.os
-        );
+        generateDeviceName(parsedUA.deviceType, parsedUA.browser, parsedUA.os);
 
       // Generate device ID from user agent + timestamp
       const deviceId = await this.generateDeviceId(
@@ -545,9 +540,7 @@ class DeviceService {
       return revokedCount;
     } catch (error) {
       throw new DeviceError(
-        error instanceof Error
-          ? error.message
-          : "Failed to revoke all devices",
+        error instanceof Error ? error.message : "Failed to revoke all devices",
         "DEVICE_REVOKE_ALL_FAILED"
       );
     }

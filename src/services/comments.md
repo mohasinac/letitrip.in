@@ -2,6 +2,40 @@
 
 ## Completed Improvements ✅
 
+### Payment Service Enhancements (payment.service.ts)
+
+- ✅ **PhonePe Integration**: Complete PhonePe payment gateway support (Task 11.5 - January 11, 2026)
+- ✅ **UPI Payment Support**: Dedicated UPI payment service (Task 11.6 - January 11, 2026)
+- ✅ **PhonePe Features**:
+  - createOrder: Create PhonePe payment order with UPI
+  - verifyPayment: Verify payment transaction status
+  - checkStatus: Poll payment status by transaction ID
+  - refundPayment: Initiate refund for PhonePe payment
+  - getRefundStatus: Check refund status
+  - Support for both redirect and POST callback modes
+  - Intent URL and redirect URL generation
+- ✅ **UPI Features**:
+  - createPayment: Create direct UPI payment request
+  - generateQrCode: Generate UPI QR code for payment
+  - verifyPayment: Verify UPI payment completion
+  - checkStatus: Poll UPI payment status
+  - validateVpa: Validate UPI VPA (Virtual Payment Address)
+  - getPaymentDetails: Get detailed payment information
+  - Support for direct VPA collection, QR code, and intent-based payments
+- ✅ **Type Definitions**:
+  - CreatePhonePeOrderParams/Response
+  - VerifyPhonePePaymentParams/Response
+  - PhonePeRefundParams/Response
+  - CreateUpiPaymentParams/Response
+  - VerifyUpiPaymentParams/Response
+- ✅ **Error Handling**: Consistent error logging for all payment operations
+- ✅ **Generic Methods Updated**:
+  - createOrder now supports phonepe and upi gateways
+  - verifyPayment supports phonepe and upi verification
+  - refundPayment supports phonepe refunds
+- ✅ **India-focused**: Both services optimized for Indian market
+- ✅ **Multiple UPI Methods**: QR code, VPA collection, and intent-based flows
+
 ### Auth MFA Service (auth-mfa-service.ts)
 
 - ✅ **MFA Service Created**: Complete multi-factor authentication service (January 11, 2026)

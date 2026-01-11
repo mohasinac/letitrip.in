@@ -1,35 +1,31 @@
 /**
  * Multi-Factor Authentication Service
- * 
+ *
  * Provides MFA enrollment, verification, and management functionality
  * using Firebase Authentication's built-in MFA support.
- * 
+ *
  * Features:
  * - SMS-based MFA enrollment
  * - TOTP (Time-based One-Time Password) support
  * - MFA verification during sign-in
  * - Device trust management
  * - MFA unenrollment
- * 
+ *
  * @module services/auth-mfa-service
  */
 
+import { AuthError, ValidationError } from "@/lib/errors";
 import {
   getAuth,
   multiFactor,
+  MultiFactorResolver,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   RecaptchaVerifier,
   TotpMultiFactorGenerator,
   TotpSecret,
-  User,
-  MultiFactorError,
-  MultiFactorInfo,
-  MultiFactorResolver,
-  MultiFactorSession,
 } from "firebase/auth";
 import { z } from "zod";
-import { AuthError, ValidationError } from "@/lib/errors";
 
 // ============================================================================
 // Validation Schemas
@@ -152,7 +148,10 @@ export class AuthMFAService {
       // Get current user
       const user = this.auth.currentUser;
       if (!user) {
-        throw new AuthError("User must be signed in to enroll MFA", "UNAUTHORIZED");
+        throw new AuthError(
+          "User must be signed in to enroll MFA",
+          "UNAUTHORIZED"
+        );
       }
 
       // Check if reCAPTCHA is initialized
@@ -211,7 +210,10 @@ export class AuthMFAService {
       // Get current user
       const user = this.auth.currentUser;
       if (!user) {
-        throw new AuthError("User must be signed in to verify MFA", "UNAUTHORIZED");
+        throw new AuthError(
+          "User must be signed in to verify MFA",
+          "UNAUTHORIZED"
+        );
       }
 
       // Create phone credential
@@ -255,7 +257,10 @@ export class AuthMFAService {
       // Get current user
       const user = this.auth.currentUser;
       if (!user) {
-        throw new AuthError("User must be signed in to enroll MFA", "UNAUTHORIZED");
+        throw new AuthError(
+          "User must be signed in to enroll MFA",
+          "UNAUTHORIZED"
+        );
       }
 
       // Get multi-factor session
@@ -303,14 +308,18 @@ export class AuthMFAService {
       // Get current user
       const user = this.auth.currentUser;
       if (!user) {
-        throw new AuthError("User must be signed in to verify MFA", "UNAUTHORIZED");
+        throw new AuthError(
+          "User must be signed in to verify MFA",
+          "UNAUTHORIZED"
+        );
       }
 
       // Create multi-factor assertion
-      const multiFactorAssertion = TotpMultiFactorGenerator.assertionForEnrollment(
-        totpSecret,
-        validated.verificationCode
-      );
+      const multiFactorAssertion =
+        TotpMultiFactorGenerator.assertionForEnrollment(
+          totpSecret,
+          validated.verificationCode
+        );
 
       // Finalize enrollment with optional display name
       await multiFactor(user).enroll(
@@ -358,9 +367,7 @@ export class AuthMFAService {
         factorId: factor.factorId,
         enrollmentTime: factor.enrollmentTime,
         phoneNumber:
-          factor.factorId === "phone"
-            ? (factor as any).phoneNumber
-            : undefined,
+          factor.factorId === "phone" ? (factor as any).phoneNumber : undefined,
       }));
     } catch (error) {
       if (error instanceof AuthError) {
@@ -385,7 +392,10 @@ export class AuthMFAService {
       // Get current user
       const user = this.auth.currentUser;
       if (!user) {
-        throw new AuthError("User must be signed in to unenroll MFA", "UNAUTHORIZED");
+        throw new AuthError(
+          "User must be signed in to unenroll MFA",
+          "UNAUTHORIZED"
+        );
       }
 
       // Find the factor to unenroll
@@ -395,7 +405,10 @@ export class AuthMFAService {
       );
 
       if (!factorToUnenroll) {
-        throw new ValidationError("MFA factor not found", "MFA_FACTOR_NOT_FOUND");
+        throw new ValidationError(
+          "MFA factor not found",
+          "MFA_FACTOR_NOT_FOUND"
+        );
       }
 
       // Unenroll the factor
@@ -438,7 +451,10 @@ export class AuthMFAService {
       // Get selected factor (default to first factor)
       const selectedFactor = resolver.hints[selectedFactorIndex];
       if (!selectedFactor) {
-        throw new ValidationError("Invalid factor selected", "INVALID_MFA_FACTOR");
+        throw new ValidationError(
+          "Invalid factor selected",
+          "INVALID_MFA_FACTOR"
+        );
       }
 
       let multiFactorAssertion;
@@ -469,7 +485,9 @@ export class AuthMFAService {
 
         multiFactorAssertion =
           PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
-      } else if (selectedFactor.factorId === TotpMultiFactorGenerator.FACTOR_ID) {
+      } else if (
+        selectedFactor.factorId === TotpMultiFactorGenerator.FACTOR_ID
+      ) {
         // TOTP MFA
         multiFactorAssertion = TotpMultiFactorGenerator.assertionForSignIn(
           selectedFactor.uid,
