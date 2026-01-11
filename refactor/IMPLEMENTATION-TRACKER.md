@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 2 - Performance & Architecture  
-**Overall Progress**: 37/75 tasks completed (49.3%)
+**Overall Progress**: 38/75 tasks completed (50.7%)
 
 ---
 
@@ -388,7 +388,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 2: Performance & Architecture (Weeks 5-8)
 
 **Goal**: Optimize performance and code organization  
-**Progress**: 12/25 tasks (48%)
+**Progress**: 13/25 tasks (52%)
 
 ### Week 5: Context Optimization (6/6) ✅ COMPLETE
 
@@ -462,7 +462,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 30 minutes
   - **Completed**: Implemented dynamic imports for non-critical context providers (ComparisonProvider, ViewingHistoryProvider, LoginRegisterProvider) with SSR disabled. These providers are now code-split and only loaded client-side, reducing the initial bundle size. Critical providers (AuthProvider, ThemeProvider, GlobalSearchProvider) remain eager-loaded for proper SSR and initial render. Updated src/app/comments.md to mark lazy loading improvement as completed with implementation details.
 
-### Week 6: Service Layer Refactoring (6/7)
+### Week 6: Service Layer Refactoring (7/7) ✅ COMPLETE
 
 #### Task 6.1: Create BaseService Class ✅
 
@@ -531,14 +531,15 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 45 minutes
   - **Completed**: Created comprehensive product query hooks with 7 query hooks (useProduct, useProductBySlug, useProducts, useProductReviews, useProductVariants, useSimilarProducts, useFeaturedProducts) and 7 mutation hooks (useCreateProduct, useUpdateProduct, useUpdateProductBySlug, useDeleteProduct, useUpdateProductStock, useUpdateProductStatus, useBulkDeleteProducts). All hooks leverage React Query for automatic caching (5-min stale time), background refetching, optimistic updates via cache invalidation, type-safe queries/mutations, automatic error handling, loading states, and retry logic with exponential backoff. Mutations automatically invalidate relevant queries for optimistic UI updates. Full JSDoc documentation with usage examples for each hook. No TypeScript errors. Updated src/hooks/index.md with comprehensive React Query section including query/mutation examples, features list, and cache invalidation details.
 
-#### Task 6.7: Create Query Hooks for Other Entities
+#### Task 6.7: Create Query Hooks for Other Entities ✅
 
-- [ ] **Create query hooks for all services**
+- [x] **Create query hooks for all services**
   - **Files**: useOrders, useCart, useUser, useShop, useCategories
   - **Implement**: Standard query patterns
   - **Test**: Each hook
   - **Update**: `src/hooks/index.md` - add all query hooks
   - **Estimate**: 90 minutes
+  - **Completed**: Created 5 comprehensive query hook files with 40+ hooks total. Cart hooks (useCart.ts, 7 hooks): useCart query, useAddToCart, useUpdateCartItem, useRemoveFromCart, useClearCart, useApplyCoupon, useRemoveCoupon mutations with automatic cache invalidation. User hooks (useUser.ts, 10 hooks): useCurrentUser, useUser, useUsers queries, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useChangePassword, useSendEmailVerification, useVerifyEmail mutations for profile management. Shop hooks (useShop.ts, 10 hooks): useShop, useShopBySlug, useShops, useShopStats, useFollowingShops, useFeaturedShops queries, useCreateShop, useUpdateShop, useFollowShop, useUnfollowShop mutations with social features. Order hooks (useOrder.ts, 4 hooks): useOrder, useOrders queries (uses OrderCardFE for list view), useCreateOrder, useCancelOrder mutations. Category hooks (useCategory.ts, 3 hooks): useCategories, useCategoryTree, useCategory queries with extended 15-minute stale time for rarely-changing data. All hooks: matched actual service method signatures (addItem vs add, updateItem with quantity param, list vs getAll, getTree vs getCategoryTree), proper type safety (UserProfileFormFE not Partial, ChangePasswordFormFE with confirmPassword, OTPVerificationFormFE, OrderCardFE vs OrderFE), JSDoc documentation with examples, automatic cache invalidation patterns. Fixed all TypeScript errors. Updated src/hooks/index.md with complete documentation for all new hooks including usage examples. Week 6 complete (7/7 tasks, 100%).
 
 ### Week 7: Performance Optimizations (0/6)
 
