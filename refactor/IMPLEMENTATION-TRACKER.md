@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 3 - Feature Enhancements  
-**Overall Progress**: 54/82 tasks completed (65.9%)
+**Overall Progress**: 55/82 tasks completed (67.1%)
 
 ---
 
@@ -744,9 +744,9 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 3: Feature Enhancements (Weeks 9-13)
 
 **Goal**: Add new features and improve UX  
-**Progress**: 3/31 tasks (9.7%)
+**Progress**: 4/31 tasks (12.9%)
 
-### Week 9: Hook Enhancements (3/6)
+### Week 9: Hook Enhancements (4/6)
 
 #### Task 9.1: Add Schema Validation to useFormState
 
@@ -782,12 +782,24 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 9.4: Add Optimistic Updates to useCart
 
-- [ ] **Enhance `src/hooks/useCart.ts`**
+- [x] **Enhance `src/hooks/queries/useCart.ts`** ✅
   - **Add**: Optimistic add/remove/update
   - **Implement**: Rollback on error
   - **Test**: Cart operations with network delay
   - **Update**: `src/hooks/comments.md`
   - **Estimate**: 45 minutes
+  - **Implementation Notes**:
+    - Enhanced all 6 React Query cart mutation hooks with optimistic updates
+    - useAddToCart: optimistically adds temp item with placeholder values immediately
+    - useUpdateCartItem: updates quantity and recalculates totals before server confirmation
+    - useRemoveFromCart: removes item immediately with rollback on error
+    - useClearCart: clears cart optimistically, sets items to [], itemCount to 0
+    - useApplyCoupon: applies discount immediately (estimated 10% discount)
+    - useRemoveCoupon: removes discount and recalculates total immediately
+    - Pattern: onMutate (cancelQueries, snapshot previousCart, update cache), onError (rollback), onSuccess (invalidate)
+    - Prevents race conditions with queryClient.cancelQueries()
+    - Demo page: `/demo/cart-optimistic` with network delay slider (0-3000ms) and error simulation
+    - Visual feedback: loading states, immediate updates, rollback on error
 
 #### Task 9.5: Add Cursor Pagination to usePaginationState
 

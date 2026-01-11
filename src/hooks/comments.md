@@ -52,14 +52,20 @@
 
 ### useCart
 
-- **Optimistic Updates**: Better optimistic UI updates
-- **Undo/Redo**: Support cart action undo
-- **Cart Sync**: Better sync between guest and user carts
-- **Cart Persistence**: Configurable persistence strategy
-- **Cart Events**: Event system for cart changes
-- **Price Recalculation**: Automatic price updates on quantity change
-- **Stock Checking**: Real-time stock availability checks
-- **Wishlist Integration**: Move between cart and wishlist
+- [x] **Optimistic Updates**: ✅ Complete optimistic updates with rollback (Task 9.4)
+  - `onMutate`: cancelQueries, snapshot previousCart, update cache optimistically
+  - `onError`: rollback to previousCart if mutation fails
+  - `onSuccess`: invalidate queries to refetch real data
+  - Prevents race conditions with cancelQueries
+  - All 6 hooks enhanced: useAddToCart, useUpdateCartItem, useRemoveFromCart, useClearCart, useApplyCoupon, useRemoveCoupon
+  - Demo page: `/demo/cart-optimistic` with network delay simulation and error testing
+- [ ] **Undo/Redo**: Support cart action undo
+- [ ] **Cart Sync**: Better sync between guest and user carts
+- [ ] **Cart Persistence**: Configurable persistence strategy
+- [ ] **Cart Events**: Event system for cart changes
+- [ ] **Price Recalculation**: Automatic price updates on quantity change
+- [ ] **Stock Checking**: Real-time stock availability checks
+- [ ] **Wishlist Integration**: Move between cart and wishlist
 
 ### useWizardFormState
 
