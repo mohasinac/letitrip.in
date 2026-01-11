@@ -7,10 +7,11 @@ import { DateDisplay } from "@/components/common/values/DateDisplay";
 import { Price } from "@/components/common/values/Price";
 import { MobileDataTable } from "@/components/mobile/MobileDataTable";
 import { MobilePullToRefresh } from "@/components/mobile/MobilePullToRefresh";
+import { OrderCardSkeletonList } from "@/components/skeletons";
 import { useAuth } from "@/contexts/AuthContext";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -178,12 +179,7 @@ export default function OrdersPage() {
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2
-                  className="w-8 h-8 text-primary animate-spin"
-                  role="status"
-                />
-              </div>
+              <OrderCardSkeletonList count={5} />
             ) : orders.length === 0 ? (
               <EmptyState
                 title="No orders found"

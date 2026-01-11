@@ -12,19 +12,16 @@ import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCa
 import { Price } from "@/components/common/values/Price";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { PRODUCT_FILTERS } from "@/constants/filters";
+import { useProducts } from "@/hooks/queries/useProduct";
 import { useCart } from "@/hooks/useCart";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
-import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
-import type { ProductCardFE } from "@/types/frontend/product.types";
 import { Filter, Grid, List, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { useProducts } from "@/hooks/queries/useProduct";
 
 function ProductsContent() {
   const router = useRouter();
@@ -67,8 +64,12 @@ function ProductsContent() {
     page,
     limit,
   };
-  const { data: productsData, isLoading: loading, error } = useProducts(queryFilters);
-  
+  const {
+    data: productsData,
+    isLoading: loading,
+    error,
+  } = useProducts(queryFilters);
+
   const products = productsData?.data || [];
   const totalItems = productsData?.count || 0;
 

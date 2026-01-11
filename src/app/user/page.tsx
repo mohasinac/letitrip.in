@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  Package,
-  MapPin,
-  User,
-  ShoppingBag,
-  Clock,
-  ChevronRight,
-} from "lucide-react";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Price } from "@/components/common/values/Price";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { ordersService } from "@/services/orders.service";
+import { Price } from "@/components/common/values/Price";
+import { UserProfileSkeleton } from "@/components/skeletons";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@/hooks/useLoadingState";
+import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
+import {
+  ChevronRight,
+  Clock,
+  MapPin,
+  Package,
+  ShoppingBag,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
 
 interface DashboardData {
   recentOrders: OrderCardFE[];
@@ -58,13 +59,13 @@ export default function UserDashboardPage() {
     // Calculate stats
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(
-      (o) => o.status === "pending" || o.status === "confirmed",
+      (o) => o.status === "pending" || o.status === "confirmed"
     ).length;
     const completedOrders = orders.filter(
-      (o) => o.status === "delivered",
+      (o) => o.status === "delivered"
     ).length;
     const cancelledOrders = orders.filter(
-      (o) => o.status === "cancelled",
+      (o) => o.status === "cancelled"
     ).length;
 
     return {
@@ -96,14 +97,7 @@ export default function UserDashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div
-        role="status"
-        className="flex justify-center items-center min-h-screen"
-      >
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-      </div>
-    );
+    return <UserProfileSkeleton />;
   }
 
   return (
@@ -257,8 +251,8 @@ export default function UserDashboardPage() {
                             order.status === "delivered"
                               ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                               : order.status === "cancelled"
-                                ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                              ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
                           }`}
                         >
                           {order.status.charAt(0).toUpperCase() +
