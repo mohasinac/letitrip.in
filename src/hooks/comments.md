@@ -56,6 +56,22 @@
 - **Stock Checking**: Real-time stock availability checks
 - **Wishlist Integration**: Move between cart and wishlist
 
+### useWizardFormState
+
+- [x] **Per-Step Schema Validation**: ✅ Zod schema integration complete (Task 9.2)
+  - Supports array of Zod schemas for each wizard step
+  - validateBeforeNext option prevents navigation with invalid data
+  - autoMarkComplete marks steps complete after validation passes
+  - validateStep(stepIndex) method for programmatic validation
+  - getStepErrors(stepIndex) retrieves field-level errors per step
+  - Enhanced StepState with errors field for detailed feedback
+  - Demo page: `/demo/wizard-form` with 3-step registration wizard
+- [ ] **Step History**: Track navigation history with back/forward
+- [ ] **Partial Save**: Auto-save progress at each step
+- [ ] **Conditional Steps**: Show/hide steps based on previous answers
+- [ ] **Step Dependencies**: Validate dependencies between steps
+- [ ] **Step Async Validation**: Support async validation per step
+
 ### usePaginationState
 
 - **Cursor Pagination**: Better cursor-based pagination support
