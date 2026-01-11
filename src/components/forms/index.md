@@ -249,6 +249,74 @@ function MyForm() {
 
 ---
 
+### FormCurrencyInput.tsx
+
+**Export:** `FormCurrencyInput`
+
+**Purpose:** Currency input with symbol, auto-formatting, and optional currency selector.
+
+**Props:**
+
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `value?: number | null` - Numeric value (not formatted)
+- `currency?: Currency` - Currency code: "INR", "USD", "EUR", "GBP" (default: "INR")
+- `onChange?: (value: number | null, currency: Currency) => void` - Value change handler
+- `onCurrencyChange?: (currency: Currency) => void` - Currency change handler
+- `showCurrencySelector?: boolean` - Show currency dropdown (default: false)
+- `autoFormat?: boolean` - Enable auto-formatting on blur (default: true)
+- `allowNegative?: boolean` - Allow negative values (default: false)
+- `min?: number` - Minimum value (auto-clamped)
+- `max?: number` - Maximum value (auto-clamped)
+- `fullWidth?: boolean` - Full width input (default: true)
+- `compact?: boolean` - Compact size variant
+- Forward ref support
+
+**Features:**
+
+- Currency symbol display (₹, $, €, £)
+- Auto-formatting with Indian number format for INR (1,23,456.78)
+- Currency selector dropdown with 4 currencies
+- Format preview shows formatted value
+- Min/max value clamping
+- Removes formatting on focus for easy editing
+- Reuses `formatPrice` from @/lib/price.utils
+- Validation support with error messages
+- Negative value support (optional)
+- Accessible with proper ARIA attributes
+- Demo: `/demo/form-currency-input`
+
+**Example:**
+
+```tsx
+import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
+
+function ProductForm() {
+  const [price, setPrice] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<Currency>("INR");
+
+  return (
+    <FormCurrencyInput
+      label="Product Price"
+      value={price}
+      currency={currency}
+      onChange={(value, curr) => {
+        setPrice(value);
+        setCurrency(curr);
+      }}
+      showCurrencySelector
+      min={10}
+      max={1000000}
+      required
+      helperText="Enter price in INR"
+    />
+  );
+}
+```
+
+---
+
 ### FormNumberInput.tsx
 
 **Export:** `FormNumberInput`
