@@ -2016,3 +2016,361 @@ refactor(lib): Add environment validation with Zod
 
 Related: refactor/IMPLEMENTATION-TRACKER.md
 ```
+
+---
+
+## Phase 4: React Library Extraction (Weeks 14-16) - NEW
+
+**Goal:** Extract reusable components, utilities, and styles into a standalone React library submodule that can be used across projects.
+
+### Overview
+
+Extract common functionality into `@letitrip/react-library` package:
+- Utilities (formatters, validators, date/time helpers)
+- UI Components (forms, common components, values)
+- Styles (Tailwind config, theme utilities)
+- Hooks (reusable React hooks)
+- Complete with TypeScript, Storybook, and documentation
+
+### Week 14: Library Setup & Utilities (0/6)
+
+#### Task 14.1: Create React Library Submodule
+
+- [ ] **Set up library structure**
+  - **Repository**: Create `react-library` as Git submodule
+  - **Package.json**: Configure as workspace package `@letitrip/react-library`
+  - **TypeScript**: Set up tsconfig for library compilation
+  - **Build**: Configure Rollup/Vite for library bundling
+  - **Exports**: Define package exports for tree-shaking
+  - **Estimate**: 90 minutes
+
+**Structure:**
+```
+react-library/
+├── package.json           # @letitrip/react-library
+├── tsconfig.json          # Library TypeScript config
+├── vite.config.ts         # Build configuration
+├── .storybook/            # Storybook setup
+├── src/
+│   ├── index.ts           # Main export
+│   ├── utils/             # Utility functions
+│   ├── components/        # React components
+│   ├── hooks/             # React hooks
+│   ├── styles/            # Tailwind & theme
+│   └── types/             # Shared TypeScript types
+└── stories/               # Storybook stories
+```
+
+#### Task 14.2: Migrate Core Utilities
+
+- [ ] **Extract utility functions**
+  - **Formatters**: `formatters.ts` → `@letitrip/react-library/utils`
+    - formatPrice, formatDate, formatNumber, formatPhone, etc.
+  - **Validators**: `validators.ts`, `validation/*` → `@letitrip/react-library/utils`
+    - Email, phone, pincode, URL validators
+  - **Date Utils**: `date-utils.ts` → `@letitrip/react-library/utils`
+    - safeToISOString, formatRelativeTime, date manipulation
+  - **String Utils**: `utils.ts` → `@letitrip/react-library/utils`
+    - cn, slugify, truncate, sanitize functions
+  - **Update**: Main app to import from `@letitrip/react-library`
+  - **Test**: All utility functions work after migration
+  - **Estimate**: 120 minutes
+
+**Files to migrate:**
+- `src/lib/formatters.ts` (50+ formatter functions)
+- `src/lib/date-utils.ts` (date utilities)
+- `src/lib/validators.ts` (validation functions)
+- `src/lib/validation/` (email, phone, pincode validators)
+- `src/lib/utils.ts` (cn, slugify helpers)
+- `src/lib/sanitize.ts` (input sanitization)
+- `src/lib/price.utils.ts` (currency formatting)
+
+#### Task 14.3: Migrate Value Display Components
+
+- [ ] **Extract display components**
+  - **Date Display**: `DateDisplay`, `RelativeDate`, `DateRange`
+  - **Price Display**: `Price` component
+  - **Status Badges**: Status display components
+  - **Add**: Storybook stories for each component
+  - **Update**: Import paths in main app
+  - **Test**: Components render correctly
+  - **Estimate**: 90 minutes
+
+**Files to migrate:**
+- `src/components/common/values/DateDisplay.tsx`
+- `src/components/common/values/Price.tsx`
+- `src/components/common/values/` (all value display components)
+
+#### Task 14.4: Create Storybook Documentation
+
+- [ ] **Set up Storybook**
+  - **Install**: Storybook for React + TypeScript
+  - **Configure**: Tailwind CSS support in Storybook
+  - **Stories**: Create stories for utilities
+  - **Docs**: MDX documentation for each utility
+  - **Deploy**: Storybook build configuration
+  - **Estimate**: 120 minutes
+
+**Storybook Structure:**
+```
+stories/
+├── utils/
+│   ├── Formatters.stories.tsx
+│   ├── Validators.stories.tsx
+│   └── DateUtils.stories.tsx
+├── components/
+│   ├── DateDisplay.stories.tsx
+│   └── Price.stories.tsx
+└── Introduction.stories.mdx
+```
+
+#### Task 14.5: Migrate Accessibility Utilities
+
+- [ ] **Extract accessibility helpers**
+  - **Accessibility**: `accessibility.ts` → library
+  - **ARIA Helpers**: Form field ARIA props
+  - **Keyboard Nav**: Keyboard navigation utilities
+  - **Screen Reader**: Announcement functions
+  - **Add**: Storybook examples
+  - **Test**: Accessibility features work
+  - **Estimate**: 60 minutes
+
+**Files to migrate:**
+- `src/lib/accessibility.ts` (ARIA utilities, keyboard helpers)
+
+#### Task 14.6: Week 14 Integration & Testing
+
+- [ ] **Verify utilities migration**
+  - **Test**: Run all tests with new imports
+  - **Build**: Verify library builds correctly
+  - **Imports**: Update all import paths in main app
+  - **Documentation**: Update library README
+  - **Commit**: Week 14 completion
+  - **Estimate**: 90 minutes
+
+### Week 15: Component Migration (0/6)
+
+#### Task 15.1: Migrate Form Components
+
+- [ ] **Extract form components to library**
+  - **Base Forms**: FormInput, FormTextarea, FormSelect
+  - **Specialized**: FormPhoneInput, FormCurrencyInput, FormDatePicker
+  - **Wrappers**: FormField, FormLabel, FormActions
+  - **Add**: Storybook stories for each
+  - **Update**: Import paths in main app
+  - **Test**: All forms still work
+  - **Estimate**: 180 minutes
+
+**Files to migrate:**
+- `src/components/forms/FormInput.tsx`
+- `src/components/forms/FormTextarea.tsx`
+- `src/components/forms/FormSelect.tsx`
+- `src/components/forms/FormPhoneInput.tsx`
+- `src/components/forms/FormCurrencyInput.tsx`
+- `src/components/forms/FormDatePicker.tsx`
+- `src/components/forms/FormField.tsx`
+- `src/components/forms/FormLabel.tsx`
+- `src/components/forms/FormCheckbox.tsx`
+- `src/components/forms/FormRadio.tsx`
+- `src/components/forms/FormSwitch.tsx`
+- `src/components/forms/FormFileUpload.tsx`
+
+#### Task 15.2: Migrate Common UI Components
+
+- [ ] **Extract common components**
+  - **Buttons**: Button variants
+  - **Cards**: Card component
+  - **Modals**: Modal/Dialog components
+  - **Tooltips**: Tooltip component
+  - **Badges**: Badge components
+  - **Add**: Comprehensive Storybook stories
+  - **Test**: Components work in main app
+  - **Estimate**: 150 minutes
+
+**Files to migrate:**
+- `src/components/ui/Button.tsx`
+- `src/components/ui/Card.tsx`
+- `src/components/ui/Modal.tsx`
+- `src/components/common/Tooltip.tsx`
+- `src/components/common/Badge.tsx`
+
+#### Task 15.3: Migrate Layout Components
+
+- [ ] **Extract layout components**
+  - **Container**: Layout containers
+  - **Grid**: Grid system
+  - **Stack**: Spacing utilities
+  - **Divider**: Divider component
+  - **Add**: Layout stories and examples
+  - **Test**: Layouts render correctly
+  - **Estimate**: 90 minutes
+
+#### Task 15.4: Migrate React Hooks
+
+- [ ] **Extract reusable hooks**
+  - **useMediaQuery**: Responsive hooks
+  - **useDebounce**: Debounce hook
+  - **useLocalStorage**: Storage hooks
+  - **useClipboard**: Clipboard hook
+  - **usePrevious**: Previous value hook
+  - **Add**: Hook documentation and examples
+  - **Test**: Hooks work in main app
+  - **Estimate**: 120 minutes
+
+**Files to migrate:**
+- `src/hooks/useMediaQuery.ts`
+- `src/hooks/useDebounce.ts`
+- `src/hooks/useLocalStorage.ts`
+- `src/hooks/useClipboard.ts`
+- `src/hooks/usePrevious.ts`
+- `src/hooks/useToggle.ts`
+- Other generic hooks
+
+#### Task 15.5: Migrate Picker Components
+
+- [ ] **Extract picker components**
+  - **DateTimePicker**: Date/time selection
+  - **ColorPicker**: Color selection (if exists)
+  - **CountryPicker**: Country selection
+  - **Add**: Interactive Storybook demos
+  - **Test**: Pickers work correctly
+  - **Estimate**: 90 minutes
+
+**Files to migrate:**
+- `src/components/common/DateTimePicker.tsx`
+- `src/components/common/StateSelector.tsx`
+- `src/components/common/PincodeInput.tsx`
+
+#### Task 15.6: Week 15 Integration & Testing
+
+- [ ] **Verify component migration**
+  - **Test**: All components render in main app
+  - **Storybook**: Verify all stories work
+  - **Build**: Library builds without errors
+  - **Documentation**: Component API docs
+  - **Commit**: Week 15 completion
+  - **Estimate**: 90 minutes
+
+### Week 16: Styles & Finalization (0/6)
+
+#### Task 16.1: Migrate Theme System
+
+- [ ] **Extract theme configuration**
+  - **Tailwind Config**: Base Tailwind setup
+  - **Theme Tokens**: Colors, spacing, typography
+  - **Dark Mode**: Theme switching utilities
+  - **CSS Variables**: Design tokens
+  - **Add**: Theme documentation
+  - **Test**: Styling works in main app
+  - **Estimate**: 120 minutes
+
+**Files to migrate:**
+- `src/lib/theme/` (theme utilities)
+- Tailwind configuration (extract reusable parts)
+- CSS variables and design tokens
+
+#### Task 16.2: Create Library Documentation
+
+- [ ] **Comprehensive documentation**
+  - **README**: Library overview and setup
+  - **API Docs**: Component and utility API
+  - **Examples**: Usage examples for each export
+  - **Migration Guide**: Migrating from old imports
+  - **Changelog**: Version history
+  - **Contributing**: Contribution guidelines
+  - **Estimate**: 150 minutes
+
+**Documentation Structure:**
+```
+docs/
+├── README.md              # Main documentation
+├── getting-started.md     # Setup guide
+├── components/            # Component docs
+├── utils/                 # Utility docs
+├── hooks/                 # Hook docs
+├── migration-guide.md     # Migration from old paths
+└── changelog.md           # Version history
+```
+
+#### Task 16.3: TypeScript Types Export
+
+- [ ] **Extract shared types**
+  - **Common Types**: Reusable TypeScript types
+  - **Prop Types**: Component prop interfaces
+  - **Utility Types**: Helper types
+  - **Export**: Proper type exports for consumers
+  - **Test**: Type checking works in main app
+  - **Estimate**: 90 minutes
+
+**Types to migrate:**
+- Common interfaces and types
+- Component prop types
+- Utility function types
+- Generic reusable types
+
+#### Task 16.4: Build & Bundle Configuration
+
+- [ ] **Optimize library build**
+  - **Tree Shaking**: Ensure proper tree-shaking
+  - **Code Splitting**: Split by feature
+  - **Minification**: Optimize bundle size
+  - **Source Maps**: Generate source maps
+  - **Peer Dependencies**: Configure peer deps
+  - **Test**: Build produces optimized bundles
+  - **Estimate**: 120 minutes
+
+**Build Output:**
+```
+dist/
+├── index.js               # CJS bundle
+├── index.mjs              # ESM bundle
+├── index.d.ts             # TypeScript declarations
+├── utils/                 # Split chunks
+├── components/
+└── styles/
+```
+
+#### Task 16.5: Integration Testing
+
+- [ ] **End-to-end testing**
+  - **Unit Tests**: Test all library exports
+  - **Integration**: Test in main app context
+  - **Storybook**: Visual regression tests
+  - **TypeScript**: Type checking tests
+  - **Build**: CI/CD pipeline setup
+  - **Coverage**: Code coverage reporting
+  - **Estimate**: 150 minutes
+
+#### Task 16.6: Phase 4 Completion & Deployment
+
+- [ ] **Finalize library extraction**
+  - **Review**: Code review all migrations
+  - **Performance**: Bundle size analysis
+  - **Documentation**: Final docs update
+  - **Main App**: Update all imports to use library
+  - **Storybook**: Deploy Storybook to GitHub Pages
+  - **Commit**: Phase 4 completion
+  - **Tag**: Version 1.0.0 of React Library
+  - **Estimate**: 120 minutes
+
+---
+
+## Phase 4 Progress Tracking
+
+### By Week
+
+- **Week 14**: 0/6 tasks (0%) - Utilities & Setup
+- **Week 15**: 0/6 tasks (0%) - Component Migration
+- **Week 16**: 0/6 tasks (0%) - Styles & Finalization
+
+### Time Investment
+
+- **Estimated Total**: ~1,920 minutes (~32 hours)
+- **Completed**: 0 minutes
+- **Remaining**: ~1,920 minutes (~32 hours)
+
+### Overall Progress (Including Phase 4)
+
+**Phases 1-3: 82/82 tasks (100%) ✅**
+**Phase 4: 0/18 tasks (0%)**
+**Total: 82/100 tasks (82%)**
