@@ -4,6 +4,7 @@ import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { FormCheckbox } from "@/components/forms/FormCheckbox";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { useLoginRegister } from "@/contexts/LoginRegisterContext";
 import { Eye, EyeOff } from "lucide-react";
@@ -22,6 +23,8 @@ import { useState } from "react";
 export default function RegisterPage() {
   const router = useRouter();
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
 
   // Get all register form state from context
   const {
@@ -116,6 +119,23 @@ export default function RegisterPage() {
                 onBlur={registerForm.handleBlur}
                 placeholder="you@example.com"
                 autoComplete="email"
+              />
+            </FormField>
+
+            {/* Phone Number (Optional) */}
+            <FormField
+              label="Phone Number (Optional)"
+              hint="For order updates and delivery coordination"
+            >
+              <FormPhoneInput
+                value={phone}
+                countryCode={phoneCountryCode}
+                onChange={(phoneValue, countryCode) => {
+                  setPhone(phoneValue);
+                  setPhoneCountryCode(countryCode);
+                }}
+                placeholder="9876543210"
+                autoFormat={true}
               />
             </FormField>
 
