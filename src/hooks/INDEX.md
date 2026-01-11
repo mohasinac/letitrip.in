@@ -361,13 +361,16 @@ function CategoryNav() {
 
 **Export:** `useFormState<T>(options): UseFormStateReturn<T>`
 
-Generic form state management with validation and error handling.
+Generic form state management with validation and error handling. Supports Zod schema validation for type-safe form validation.
 
 **Parameters:**
 
 - `initialData: T` - Initial form values
 - `onDataChange?: (data: T) => void` - Callback on data change
-- `onValidate?: (data: T) => Record<string, string>` - Validation function
+- `onValidate?: (data: T) => Record<string, string>` - Custom validation function
+- `schema?: z.ZodSchema<T>` - Zod schema for type-safe validation (NEW)
+- `validateOnChange?: boolean` - Validate on change (default: false) (NEW)
+- `validateOnBlur?: boolean` - Validate on blur (default: true) (NEW)
 
 **Returns:**
 
@@ -381,7 +384,32 @@ Generic form state management with validation and error handling.
 - `setFormData(data): void` - Update all form data
 - `reset(newData?): void` - Reset form
 - `validate(): boolean` - Validate all fields
+- `validateField(field): boolean` - Validate a specific field (NEW)
 - `isValid: boolean` - Form validity status
+- `isValidating: boolean` - Whether form is currently being validated (NEW)
+
+**Example with Zod Schema:**
+
+```typescript
+const schema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+const { formData, handleChange, errors, validate } = useFormState({
+  initialData: { email: "", password: "" },
+  schema,
+  validateOnBlur: true,
+});
+```
+
+**Features:**
+
+- ✅ Zod schema validation support
+- ✅ Field-level validation
+- ✅ Configurable validation timing (onChange, onBlur, manual)
+- ✅ Full TypeScript type inference from schema
+- ✅ Compatible with custom validation functions
 
 ---
 
