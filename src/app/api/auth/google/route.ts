@@ -1,3 +1,4 @@
+import { RateLimitMiddleware } from "@/app/api/_middleware/rate-limit";
 import { getAuthAdmin, getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { cookies } from "next/headers";

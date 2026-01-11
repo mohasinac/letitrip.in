@@ -94,14 +94,17 @@ export class AppError extends Error {
    * Convert error to JSON representation
    */
   toJSON() {
-    return {
+    const result: Record<string, any> = {
       name: this.name,
       message: this.message,
       code: this.code,
       statusCode: this.statusCode,
       timestamp: this.timestamp.toISOString(),
-      ...(this.details && { details: this.details }),
     };
+    if (this.details) {
+      result.details = this.details;
+    }
+    return result;
   }
 }
 
@@ -289,10 +292,18 @@ export function handleError(error: unknown): {
 } {
   const appError = toAppError(error);
 
-  return {
+  const result: {
+    message: string;
+    code: ErrorCodeType;
+    statusCode: number;
+    details?: unknown;
+  } = {
     message: appError.message,
     code: appError.code,
     statusCode: appError.statusCode,
-    ...(appError.details && { details: appError.details }),
   };
+  if (appError.details) {
+    result.details = appError.details;
+  }
+  return result;
 }

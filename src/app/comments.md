@@ -36,20 +36,24 @@
 **Status**: Implemented in dashboard pages
 
 **User Dashboard (`user/page.tsx`):**
+
 - ✅ Added UserProfileSkeleton component for loading state
 - ✅ Replaces generic spinner with component-specific skeleton
 - ✅ Better UX with layout-matching loading state
 
 **User Orders Page (`user/orders/page.tsx`):**
+
 - ✅ Added OrderCardSkeletonList component for loading state
 - ✅ Shows 5 skeleton cards matching actual order cards
 - ✅ Improved loading experience with realistic placeholders
 
 **User Settings Page (`user/settings/page.tsx`):**
+
 - ✅ Imported UserProfileSkeleton for consistency
 - ✅ Ready for future skeleton integration
 
 **Benefits:**
+
 - Consistent loading experience across dashboard
 - Reduced perceived loading time
 - Better visual continuity during data fetching
