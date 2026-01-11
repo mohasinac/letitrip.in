@@ -398,7 +398,7 @@ const { formData, handleChange, errors, validatingFields } = useFormState({
   initialData: { email: "", username: "" },
   schema: z.object({
     email: z.string().email("Invalid email"),
-    username: z.string().min(3, "Username too short")
+    username: z.string().min(3, "Username too short"),
   }),
   asyncValidators: {
     email: async (value) => {
@@ -408,10 +408,10 @@ const { formData, handleChange, errors, validatingFields } = useFormState({
     username: async (value) => {
       const exists = await checkUsernameExists(value);
       return exists ? "Username already taken" : null;
-    }
+    },
   },
   debounceMs: 500,
-  validateOnChange: true
+  validateOnChange: true,
 });
 ```
 

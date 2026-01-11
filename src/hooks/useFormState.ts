@@ -8,17 +8,17 @@
  *
  * @example
  * const { formData, handleChange, setFieldValue, errors, touched, reset } = useFormState(initialData);
- * 
+ *
  * @example With Zod Schema
  * const schema = z.object({
  *   email: z.string().email("Invalid email"),
  *   password: z.string().min(8, "Password must be at least 8 characters")
  * });
- * const { formData, handleChange, errors, validate } = useFormState({ 
- *   initialData, 
- *   schema 
+ * const { formData, handleChange, errors, validate } = useFormState({
+ *   initialData,
+ *   schema
  * });
- * 
+ *
  * @example With Async Validation
  * const { formData, handleChange, errors, validatingFields } = useFormState({
  *   initialData: { email: "" },
@@ -98,7 +98,9 @@ export function useFormState<T extends Record<string, any>>({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isValidating, setIsValidating] = useState(false);
-  const [validatingFields, setValidatingFields] = useState<Record<string, boolean>>({});
+  const [validatingFields, setValidatingFields] = useState<
+    Record<string, boolean>
+  >({});
 
   // Debounce timers for async validation
   const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
@@ -125,11 +127,11 @@ export function useFormState<T extends Record<string, any>>({
           }
         }
       }
-      
+
       if (onValidate) {
         return onValidate(data);
       }
-      
+
       return {};
     },
     [schema, onValidate]
@@ -154,14 +156,14 @@ export function useFormState<T extends Record<string, any>>({
           }
         }
       }
-      
+
       // Fall back to full validation if no field-specific schema
       if (onValidate) {
         const testData = { ...formData, [field]: value };
         const allErrors = onValidate(testData);
         return allErrors[field as string] || null;
       }
-      
+
       return null;
     },
     [schema, onValidate, formData]
@@ -189,7 +191,7 @@ export function useFormState<T extends Record<string, any>>({
 
       try {
         const error = await asyncValidator(value, formData);
-        
+
         // Check if validation was aborted
         if (controller.signal.aborted) {
           return null;
