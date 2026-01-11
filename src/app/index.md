@@ -88,7 +88,19 @@ Public pages accessible without authentication.
 
 ### `(auth)/` - Authentication Pages
 
-Authentication-related pages:
+Authentication-related pages. Users already logged in are redirected to their dashboard.
+
+#### `(auth)/layout.tsx`
+
+- **Purpose**: Client-side layout for authentication pages
+- **Features**:
+  - Redirects authenticated users to appropriate dashboard
+  - Role-based redirect (admin → /admin, seller → /seller, user → /user)
+  - Minimal centered layout for auth forms
+  - Loading state during authentication check
+  - No header/footer for focused experience
+
+**Pages**:
 
 - `/login` - User login
 - `/register` - User registration
