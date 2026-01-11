@@ -59,6 +59,58 @@
 - Better visual continuity during data fetching
 - Improved user experience with layout-aware skeletons
 
+### React Query Hooks Migration ✅
+
+**Status**: Migrated cart pages to React Query hooks (Task 8.5)
+
+**Cart Page (`(protected)/cart/page.tsx`):**
+
+- ✅ Migrated from custom useCart hook to React Query hooks
+- ✅ Using `useCart()` for fetching cart data
+- ✅ Using `useUpdateCartItem()` for quantity updates
+- ✅ Using `useRemoveFromCart()` for item removal
+- ✅ Using `useClearCart()` for clearing entire cart
+- ✅ Using `useApplyCoupon()` and `useRemoveCoupon()` for coupon management
+- ✅ Automatic cache invalidation on mutations
+- ✅ Built-in loading and error states
+- ✅ Toast notifications on success/error
+
+**Migration Pattern:**
+
+```tsx
+// OLD: Custom hook with manual state management
+const { cart, loading, updateQuantity, removeItem } = useCart();
+
+// NEW: React Query hooks with automatic caching
+const { data: cart, isLoading } = useCart();
+const updateItem = useUpdateCartItem({
+  onSuccess: () => toast.success("Updated"),
+});
+const removeItem = useRemoveFromCart({
+  onSuccess: () => toast.success("Removed"),
+});
+
+// Usage
+updateItem.mutate({ itemId, quantity });
+removeItem.mutate(itemId);
+```
+
+**Remaining Migrations** (following same pattern):
+
+- **User Pages**: useCurrentUser, useUpdateProfile, useChangePassword
+- **Shop Pages**: useShop, useShopBySlug, useFollowShop
+- **Order Pages**: useOrder, useOrders, useCreateOrder, useCancelOrder
+- **Category Pages**: useCategories, useCategoryTree
+
+**Benefits:**
+
+- Automatic caching and background refetching
+- Built-in loading/error states
+- Optimistic updates via cache invalidation
+- Reduced boilerplate code
+- Better error handling
+- Consistent API interaction pattern
+
 ---
 
 ## Route Organization
