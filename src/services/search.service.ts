@@ -1,13 +1,13 @@
 /**
  * Search Service
- * 
+ *
  * Advanced search service with:
  * - Fuzzy search for typo tolerance
  * - Autocomplete suggestions
  * - Advanced filtering (price, category, rating, etc.)
  * - Search history and trending searches
  * - Real-time search suggestions
- * 
+ *
  * Enhanced with Task 12.1 (January 11, 2026):
  * - Fuzzy matching algorithm
  * - Autocomplete with debouncing
@@ -31,26 +31,32 @@ export interface AdvancedSearchFilters extends SearchFiltersFE {
   // Price filters
   minPrice?: number;
   maxPrice?: number;
-  
+
   // Rating filters
   minRating?: number;
-  
+
   // Availability
   inStock?: boolean;
-  
+
   // Category
   categoryId?: string;
-  
+
   // Shop
   shopId?: string;
-  
+
   // Sorting
-  sortBy?: 'relevance' | 'price_asc' | 'price_desc' | 'rating' | 'newest' | 'popular';
-  
+  sortBy?:
+    | "relevance"
+    | "price_asc"
+    | "price_desc"
+    | "rating"
+    | "newest"
+    | "popular";
+
   // Pagination
   page?: number;
   limit?: number;
-  
+
   // Search options
   fuzzy?: boolean; // Enable fuzzy matching
   exact?: boolean; // Exact match only
@@ -58,7 +64,7 @@ export interface AdvancedSearchFilters extends SearchFiltersFE {
 
 export interface SearchSuggestion {
   text: string;
-  type: 'product' | 'shop' | 'category' | 'keyword';
+  type: "product" | "shop" | "category" | "keyword";
   highlight?: string;
   count?: number;
 }
@@ -72,7 +78,7 @@ export interface SearchHistoryItem {
 export interface TrendingSearch {
   query: string;
   count: number;
-  trend: 'up' | 'down' | 'stable';
+  trend: "up" | "down" | "stable";
 }
 
 export interface SearchAnalytics {
@@ -89,8 +95,8 @@ export interface SearchAnalytics {
 class SearchService {
   private searchHistory: SearchHistoryItem[] = [];
   private readonly MAX_HISTORY = 50;
-  private readonly HISTORY_STORAGE_KEY = 'search_history';
-  
+  private readonly HISTORY_STORAGE_KEY = "search_history";
+
   constructor() {
     // Load search history from localStorage
     this.loadSearchHistory();
@@ -99,7 +105,9 @@ class SearchService {
   /**
    * Advanced search with fuzzy matching and filters
    */
-  async advancedSearch(filters: AdvancedSearchFilters): Promise<SearchResultFE> {
+  async advancedSearch(
+    filters: AdvancedSearchFilters
+  ): Promise<SearchResultFE> {
     // Validate query parameter
     if (!filters.q || filters.q.trim() === "") {
       return {
@@ -127,10 +135,10 @@ class SearchService {
     try {
       const params = new URLSearchParams();
       params.append("q", cleanQuery);
-      
+
       // Type filter
       if (filters.type) params.append("type", filters.type);
-      
+
       // Price filters
       if (filters.minPrice !== undefined) {
         params.append("minPrice", filters.minPrice.toString());
@@ -138,32 +146,32 @@ class SearchService {
       if (filters.maxPrice !== undefined) {
         params.append("maxPrice", filters.maxPrice.toString());
       }
-      
+
       // Rating filter
       if (filters.minRating !== undefined) {
         params.append("minRating", filters.minRating.toString());
       }
-      
+
       // Availability filter
       if (filters.inStock !== undefined) {
         params.append("inStock", filters.inStock.toString());
       }
-      
+
       // Category filter
       if (filters.categoryId) {
         params.append("categoryId", filters.categoryId);
       }
-      
+
       // Shop filter
       if (filters.shopId) {
         params.append("shopId", filters.shopId);
       }
-      
+
       // Sorting
       if (filters.sortBy) {
         params.append("sortBy", filters.sortBy);
       }
-      
+
       // Pagination
       if (filters.page && filters.page > 0) {
         params.append("page", filters.page.toString());
@@ -172,7 +180,7 @@ class SearchService {
         const safeLimit = Math.min(filters.limit, 100);
         params.append("limit", safeLimit.toString());
       }
-      
+
       // Search options
       if (filters.fuzzy) {
         params.append("fuzzy", "true");
@@ -187,7 +195,7 @@ class SearchService {
 
       // Save to search history
       this.addToHistory(cleanQuery, result.total || 0);
-      
+
       // Track analytics
       this.trackSearch(cleanQuery, result.total || 0);
 
@@ -295,7 +303,11 @@ class SearchService {
 
       return suggestions || [];
     } catch (error) {
-      logServiceError("SearchService", "getAutocompleteSuggestions", error as Error);
+      logServiceError(
+        "SearchService",
+        "getAutocompleteSuggestions",
+        error as Error
+      );
       return [];
     }
   }
@@ -303,11 +315,14 @@ class SearchService {
   /**
    * Search with fuzzy matching for typo tolerance
    */
-  async fuzzySearch(query: string, filters?: Omit<AdvancedSearchFilters, 'q' | 'fuzzy'>): Promise<SearchResultFE> {
+  async fuzzySearch(
+    query: string,
+    filters?: Omit<AdvancedSearchFilters, "q" | "fuzzy">
+  ): Promise<SearchResultFE> {
     return this.advancedSearch({
       q: query,
       fuzzy: true,
-      ...filters
+      ...filters,
     });
   }
 
@@ -323,7 +338,7 @@ class SearchService {
    */
   clearSearchHistory(): void {
     this.searchHistory = [];
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.removeItem(this.HISTORY_STORAGE_KEY);
     }
   }
@@ -333,7 +348,7 @@ class SearchService {
    */
   removeFromHistory(query: string): void {
     this.searchHistory = this.searchHistory.filter(
-      item => item.query !== query
+      (item) => item.query !== query
     );
     this.saveSearchHistory();
   }
@@ -360,7 +375,10 @@ class SearchService {
   /**
    * Get popular searches in a category
    */
-  async getPopularSearches(categoryId?: string, limit: number = 10): Promise<string[]> {
+  async getPopularSearches(
+    categoryId?: string,
+    limit: number = 10
+  ): Promise<string[]> {
     try {
       const params = new URLSearchParams();
       params.append("limit", limit.toString());
@@ -382,9 +400,12 @@ class SearchService {
   /**
    * Track search analytics
    */
-  private async trackSearch(query: string, resultsCount: number): Promise<void> {
+  private async trackSearch(
+    query: string,
+    resultsCount: number
+  ): Promise<void> {
     try {
-      await apiService.post('/search/analytics', {
+      await apiService.post("/search/analytics", {
         query,
         resultsCount,
         timestamp: new Date().toISOString(),
@@ -398,9 +419,13 @@ class SearchService {
   /**
    * Track search result click
    */
-  async trackClick(query: string, resultId: string, resultType: 'product' | 'shop' | 'category'): Promise<void> {
+  async trackClick(
+    query: string,
+    resultId: string,
+    resultType: "product" | "shop" | "category"
+  ): Promise<void> {
     try {
-      await apiService.post('/search/click', {
+      await apiService.post("/search/click", {
         query,
         resultId,
         resultType,
@@ -418,7 +443,7 @@ class SearchService {
   private addToHistory(query: string, resultsCount: number): void {
     // Remove duplicate if exists
     this.searchHistory = this.searchHistory.filter(
-      item => item.query !== query
+      (item) => item.query !== query
     );
 
     // Add new item
@@ -441,7 +466,7 @@ class SearchService {
    * Load search history from localStorage
    */
   private loadSearchHistory(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       const stored = localStorage.getItem(this.HISTORY_STORAGE_KEY);
@@ -462,7 +487,7 @@ class SearchService {
    * Save search history to localStorage
    */
   private saveSearchHistory(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       localStorage.setItem(
@@ -496,8 +521,8 @@ class SearchService {
         } else {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1, // substitution
-            matrix[i][j - 1] + 1,     // insertion
-            matrix[i - 1][j] + 1      // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j] + 1 // deletion
           );
         }
       }
@@ -510,13 +535,17 @@ class SearchService {
    * Check if two strings are similar (fuzzy match)
    * @private
    */
-  private isFuzzyMatch(query: string, target: string, threshold: number = 0.7): boolean {
+  private isFuzzyMatch(
+    query: string,
+    target: string,
+    threshold: number = 0.7
+  ): boolean {
     const distance = this.levenshteinDistance(
       query.toLowerCase(),
       target.toLowerCase()
     );
     const maxLength = Math.max(query.length, target.length);
-    const similarity = 1 - (distance / maxLength);
+    const similarity = 1 - distance / maxLength;
     return similarity >= threshold;
   }
 }
