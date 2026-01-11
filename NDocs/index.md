@@ -29,6 +29,23 @@ Project phase 2 completion report and milestone documentation
 - Best practices
 - Migration strategies
 
+### performance/
+
+**Purpose**: Performance optimization documentation
+
+**Files**:
+
+- `LIGHTHOUSE-GUIDE.md` - Comprehensive Lighthouse performance auditing guide
+- `QUICK-REFERENCE.md` - Quick reference for performance metrics and fixes
+
+**Topics Covered**:
+
+- Core Web Vitals (LCP, CLS, FID/TBT)
+- Lighthouse auditing
+- Performance optimization
+- CI/CD integration
+- Real User Monitoring (RUM)
+
 ## Documentation Structure
 
 Organized by topic with clear navigation and cross-references.
