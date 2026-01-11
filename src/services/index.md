@@ -2,6 +2,125 @@
 
 This folder contains service classes that encapsulate business logic and API communication. Services act as the data layer between components and backend APIs/Firebase.
 
+## Recommendation Service
+
+### recommendation.service.ts
+
+**Export:** `recommendationService`
+
+**Purpose:** Product recommendation engine with similar products, frequently bought together, personalized recommendations, and trending products. ✅
+
+**Type Definitions:**
+
+- `RecommendationOptions` - Base options for all recommendations:
+  - `limit` - Maximum number of results (default varies by method)
+  - `excludeProductIds` - Product IDs to exclude
+  - `minSimilarityScore` - Minimum similarity threshold
+- `SimilarProductsOptions` - Options for similar product recommendations:
+  - Extends `RecommendationOptions`
+  - `categoryId` - Filter by category
+  - `tags` - Filter by tags array
+  - `priceRange` - Percentage range (e.g., 20 for ±20%)
+- `FrequentlyBoughtTogetherOptions` - Options for bought-together recommendations:
+  - Extends `RecommendationOptions`
+  - `minPurchaseCount` - Minimum co-purchase count (default: 5)
+  - `minConfidence` - Association confidence 0-1 (default: 0.3)
+- `PersonalizedRecommendationOptions` - Options for personalized recommendations:
+  - Extends `RecommendationOptions`
+  - `userId` - User ID (required)
+  - `includeViewed` - Include viewed products in analysis (default: true)
+  - `includeWishlisted` - Include wishlisted products (default: true)
+  - `includePurchased` - Include purchased products (default: true)
+- `TrendingProductsOptions` - Options for trending products:
+  - Extends `RecommendationOptions`
+  - `period` - Time period: 'day' | 'week' | 'month' (default: 'week')
+  - `categoryId` - Filter by category
+- `RecommendationScore` - Similarity score result:
+  - `productId` - Product identifier
+  - `score` - Similarity score (0-1)
+  - `reasons` - Array of similarity reasons
+
+**Recommendation Methods:**
+
+- `getSimilarProducts(productId, options?)` - Get similar products → `Promise<ProductFE[]>`
+  - Based on category, tags, and attributes
+  - Default limit: 10
+  - Price range filtering
+  - Category and tag matching
+  - Exclude specific products
+- `getFrequentlyBoughtTogether(productId, options?)` - Get bought-together products → `Promise<ProductFE[]>`
+  - Association rule mining
+  - Default limit: 5
+  - Minimum purchase count: 5
+  - Minimum confidence: 0.3
+  - Exclude specific products
+- `getPersonalizedRecommendations(options)` - Get personalized recommendations → `Promise<ProductFE[]>`
+  - Based on user history (views, wishlist, purchases)
+  - Collaborative filtering
+  - Default limit: 20
+  - Configurable history sources
+- `getTrendingProducts(options?)` - Get trending products → `Promise<ProductFE[]>`
+  - Based on views, purchases, and engagement
+  - Time period filtering (day/week/month)
+  - Category filtering
+  - Default limit: 20
+
+**Recently Viewed Methods:**
+
+- `getRecentlyViewedProducts(limit?)` - Get recently viewed product IDs → `string[]`
+  - Returns most recent first
+  - Default limit: 10
+  - Maximum stored: 50
+  - Stored in localStorage
+- `addToRecentlyViewed(productId)` - Add product to recently viewed → `void`
+  - Automatic deduplication
+  - Timestamp tracking
+  - FIFO when limit reached
+- `clearRecentlyViewed()` - Clear all recently viewed → `void`
+
+**Bundle Methods:**
+
+- `getHomePageRecommendations(userId?)` - Get home page bundle → `Promise<{trending, forYou, newArrivals}>`
+  - Trending products (10)
+  - Personalized/daily trending (10)
+  - New arrivals (10)
+  - Optimized for home page display
+- `getCompleteProductRecommendations(productId, userId?)` - Get product page bundle → `Promise<{similar, boughtTogether, fromSameSeller}>`
+  - Similar products (8)
+  - Frequently bought together (4)
+  - From same seller (6)
+  - Optimized for product detail page
+
+**Client-Side Fallback Methods:**
+
+- `calculateSimilarityScore(product1, product2)` - Calculate similarity score → `number`
+  - Category match: 40% weight
+  - Price similarity: 20% weight
+  - Tag overlap: 30% weight
+  - Same seller: 10% weight
+  - Returns score 0-1
+- `findSimilarProductsLocally(targetProduct, allProducts, options?)` - Client-side similar products → `ProductFE[]`
+  - Fallback when API unavailable
+  - Uses similarity scoring
+  - Includes similarity reasons
+  - Configurable limit and exclusions
+
+**Features:**
+
+- ✅ **Similar products** with multi-factor similarity scoring
+- ✅ **Frequently bought together** with association rules
+- ✅ **Personalized recommendations** based on user behavior
+- ✅ **Trending products** with time period filtering
+- ✅ **Recently viewed tracking** with localStorage persistence
+- ✅ **Bundle recommendations** for home and product pages
+- ✅ **Client-side fallback** when server unavailable
+- ✅ **Similarity reasons** for transparency
+- ✅ **Category and tag filtering** for better relevance
+- ✅ **Price range matching** for similar price points
+- ✅ **Graceful error handling** with empty arrays fallback
+
+---
+
 ## Search Service
 
 ### search.service.ts

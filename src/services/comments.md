@@ -2,6 +2,65 @@
 
 ## Completed Improvements ✅
 
+### Recommendation Service (recommendation.service.ts)
+
+- ✅ **Recommendation Service Created**: Complete product recommendation engine (Task 12.3 - January 11, 2026)
+- ✅ **Similar Products Algorithm**:
+  - Multi-factor similarity scoring (category 40%, price 20%, tags 30%, seller 10%)
+  - Price range filtering (configurable percentage)
+  - Category and tag matching
+  - Exclude specific products
+  - Default limit: 10 products
+  - Server-side API integration: GET /recommendations/similar
+- ✅ **Frequently Bought Together**:
+  - Association rule mining for co-purchased products
+  - Minimum purchase count threshold (default: 5)
+  - Confidence scoring (0-1, default: 0.3)
+  - Default limit: 5 products
+  - Server-side API integration: GET /recommendations/bought-together
+- ✅ **Personalized Recommendations**:
+  - Based on user viewing history
+  - Based on wishlist items
+  - Based on purchase history
+  - Collaborative filtering approach
+  - Configurable history sources (viewed/wishlisted/purchased)
+  - Default limit: 20 products
+  - Server-side API integration: GET /recommendations/personalized
+- ✅ **Trending Products**:
+  - Time period filtering (day/week/month, default: week)
+  - Category filtering
+  - Based on views, purchases, and engagement metrics
+  - Default limit: 20 products
+  - Server-side API integration: GET /recommendations/trending
+- ✅ **Recently Viewed Tracking**:
+  - Local storage persistence (max 50 products)
+  - FIFO when limit reached
+  - Timestamp tracking for recency
+  - getRecentlyViewedProducts: Returns product IDs (most recent first)
+  - addToRecentlyViewed: Adds product with automatic deduplication
+  - clearRecentlyViewed: Clears all history
+- ✅ **Bundle Methods**:
+  - getHomePageRecommendations: 3 sections (trending, forYou, newArrivals)
+  - getCompleteProductRecommendations: 3 sections (similar, boughtTogether, fromSameSeller)
+  - Optimized for specific page contexts
+  - Parallel API calls for performance
+- ✅ **Client-Side Fallback**:
+  - calculateSimilarityScore: Multi-factor scoring algorithm
+  - findSimilarProductsLocally: Works when API unavailable
+  - getSimilarityReasons: Explains why products are similar
+  - Transparency for recommendations
+- ✅ **Type Definitions**:
+  - RecommendationOptions (base interface)
+  - SimilarProductsOptions
+  - FrequentlyBoughtTogetherOptions
+  - PersonalizedRecommendationOptions
+  - TrendingProductsOptions
+  - RecommendationScore
+- ✅ **Error Handling**: Graceful fallback to empty arrays on API errors
+- ✅ **Performance**: Parallel API calls in bundle methods
+- ✅ **Flexibility**: Configurable limits, thresholds, and filters for all methods
+- ✅ **Documentation**: Comprehensive section added to src/services/index.md
+
 ### Search Components (search/)
 
 - ✅ **Search UI Components Created**: Complete search interface implementation (Task 12.2 - January 11, 2026)
