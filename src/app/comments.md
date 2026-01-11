@@ -170,12 +170,51 @@ removeItem.mutate(itemId);
 
 ## API Route Structure
 
+### API Versioning Implementation ✅
+
+**Status**: Implemented API v1 structure (Task 8.6)
+
+**Created:**
+
+- ✅ `api/v1/` directory structure
+- ✅ Version middleware (`api/v1/middleware.ts`)
+- ✅ Health check endpoint (`api/v1/health/route.ts`)
+- ✅ Versioning documentation (`api/v1/README.md`)
+
+**Features:**
+
+- Version headers (X-API-Version, Deprecation, Sunset, Link)
+- Accept-Version header negotiation
+- Version validation utilities
+- Versioned error responses
+- Breaking changes policy
+
+**Middleware Functions:**
+
+- `withApiVersion()` - Wraps handlers with version metadata
+- `validateApiVersion()` - Validates request version
+- `versionedErrorResponse()` - Creates versioned error responses
+
+**Migration Strategy:**
+
+1. Phase 1: Create v1 structure ✅
+2. Phase 2: Migrate routes gradually (planned)
+3. Phase 3: Deprecation period
+4. Phase 4: Sunset legacy routes
+
+**Benefits:**
+
+- Backward compatibility for API consumers
+- Clear deprecation/sunset timelines
+- Version negotiation for clients
+- Easier breaking changes management
+
 ### Current Issues
 
 - 40+ API route directories
 - No clear organization by domain/feature
 - Some routes could be consolidated
-- No API versioning strategy
+- Gradual migration to v1 needed
 
 ### Improvements
 
