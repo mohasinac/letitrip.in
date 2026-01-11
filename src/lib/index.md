@@ -354,6 +354,161 @@ const description = Sanitizers.description(
 
 ---
 
+### accessibility.ts ✅
+
+**Exports:** Accessibility utilities for WCAG-compliant form components and interfaces
+
+**Key Exports:**
+
+- `generateId(prefix)` - Generate unique IDs for form elements
+- `getFormFieldAriaProps(props)` - Generate ARIA attributes for form fields
+- `announceToScreenReader(message, priority)` - Announce messages to screen readers
+- `KeyCodes` - Keyboard key code constants
+- `isKey(event, ...keys)` - Check if keyboard event matches specified keys
+- `trapFocus(element, event)` - Trap focus within an element (for modals)
+- `focusElement(elementOrId)` - Focus an element safely
+- `getNextFocusableElement(current, reverse)` - Get next focusable element
+- `getLabelText(label, required, helperText)` - Generate accessible label text
+- `formatErrorMessage(error, fieldLabel)` - Format error message for screen readers
+- `getValidationAriaProps(state)` - Get ARIA props for validation states
+- `createSROnlyElement(text)` - Create screen reader only element
+
+**Features:**
+
+- ✅ **ARIA Attribute Generation** (Automated aria-invalid, aria-required, aria-describedby)
+- ✅ **Screen Reader Announcements** (Dynamic announcements with aria-live regions)
+- ✅ **Keyboard Navigation Helpers** (KeyCodes, isKey, focus management)
+- ✅ **Focus Management** (trapFocus for modals, focusElement, getNextFocusableElement)
+- ✅ **Error Announcements** (Automatic error message announcements)
+- ✅ **WCAG 2.1 Compliant** (Level AA accessibility standards)
+
+**ARIA Attributes Supported:**
+
+- `aria-invalid` - Indicates error state
+- `aria-required` - Indicates required field
+- `aria-describedby` - Links helper text and error messages
+- `aria-label` - Provides accessible label
+- `aria-labelledby` - References label element
+- `aria-disabled` - Indicates disabled state
+- `aria-readonly` - Indicates read-only state
+- `aria-busy` - Indicates loading/validating state
+- `aria-live` - Announces dynamic content changes
+- `aria-atomic` - Ensures complete message reading
+
+**Keyboard Codes:**
+
+- Navigation: ENTER (13), ESCAPE (27), TAB (9), ARROW keys (37-40)
+- Actions: SPACE (32), HOME (36), END (35), PAGE_UP (33), PAGE_DOWN (34)
+
+**Usage:**
+
+```typescript
+import {
+  generateId,
+  getFormFieldAriaProps,
+  announceToScreenReader,
+  KeyCodes,
+  isKey,
+  trapFocus,
+  focusElement,
+} from "@/lib/accessibility";
+
+// Generate unique ID
+const inputId = generateId("email"); // 'email-1'
+
+// Get ARIA attributes for form field
+const ariaProps = getFormFieldAriaProps({
+  id: inputId,
+  error: "Email is required",
+  helperText: "Enter your email address",
+  required: true,
+  disabled: false,
+});
+// Result: {
+//   id: 'email-1',
+//   'aria-invalid': 'true',
+//   'aria-describedby': 'email-1-error email-1-helper',
+//   'aria-required': 'true'
+// }
+
+// Announce message to screen readers
+announceToScreenReader("Form submitted successfully", "polite");
+announceToScreenReader("Error: Invalid input", "assertive");
+
+// Check keyboard event
+const handleKeyDown = (event: React.KeyboardEvent) => {
+  if (isKey(event, "ENTER", "SPACE")) {
+    // Handle Enter or Space key
+    event.preventDefault();
+    handleSubmit();
+  }
+  
+  if (isKey(event, "ESCAPE")) {
+    // Handle Escape key
+    handleClose();
+  }
+};
+
+// Trap focus in modal
+const handleModalKeyDown = (event: KeyboardEvent) => {
+  const modalElement = document.getElementById("modal");
+  if (modalElement) {
+    trapFocus(modalElement, event);
+  }
+};
+
+// Focus element safely
+focusElement("email-input");
+focusElement(inputRef.current);
+
+// Get label text for screen readers
+const label = getLabelText("Email", true, "Enter your email");
+// Result: 'Email (required). Enter your email'
+
+// Format error message
+const errorMsg = formatErrorMessage("Invalid format", "Email");
+// Result: 'Error in Email: Invalid format'
+```
+
+**Error Announcements (Automatic):**
+
+```typescript
+// In form components
+useEffect(() => {
+  if (error && error !== prevErrorRef.current) {
+    announceToScreenReader(`Error: ${error}`, "assertive");
+  }
+  prevErrorRef.current = error;
+}, [error]);
+```
+
+**Implementation in Forms:**
+
+```tsx
+<input
+  {...getFormFieldAriaProps({
+    id: inputId,
+    error: error,
+    helperText: helperText,
+    required: required,
+  })}
+  aria-label={!label ? placeholder : undefined}
+/>
+
+{error && (
+  <p
+    id={`${inputId}-error`}
+    role="alert"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {error}
+  </p>
+)}
+```
+
+---
+
 ### errors.ts ✅
 
 **Exports:** Typed error classes for structured error handling
