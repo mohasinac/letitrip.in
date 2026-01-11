@@ -2,6 +2,114 @@
 
 This folder contains service classes that encapsulate business logic and API communication. Services act as the data layer between components and backend APIs/Firebase.
 
+## Search Service
+
+### search.service.ts
+
+**Export:** `searchService`
+
+**Purpose:** Advanced search functionality with fuzzy matching, autocomplete, filters, search history, trending searches, and analytics. ✅
+
+**Type Definitions:**
+
+- `AdvancedSearchFilters` - Extended search filters:
+  - Extends `SearchFiltersFE` (base filters)
+  - `minPrice`, `maxPrice` - Price range filtering
+  - `minRating` - Minimum rating filter (1-5 stars)
+  - `inStock` - Availability filter
+  - `categoryId`, `shopId` - Entity filtering
+  - `sortBy` - Sort options: relevance, price (asc/desc), rating, newest, popular
+  - `page`, `limit` - Pagination controls
+  - `fuzzy` - Enable fuzzy matching for typo tolerance
+  - `exact` - Exact match only flag
+- `SearchSuggestion` - Autocomplete suggestion structure:
+  - `text` - Suggestion text
+  - `type` - 'product' | 'shop' | 'category' | 'keyword'
+  - `highlight` - Highlighted portion of text
+  - `count` - Number of results for this suggestion
+- `SearchHistoryItem` - User search history entry:
+  - `query` - Search query string
+  - `timestamp` - When search was performed
+  - `resultsCount` - Number of results returned
+- `TrendingSearch` - Popular search query:
+  - `query` - Trending query string
+  - `count` - Search frequency
+  - `trend` - 'up' | 'down' | 'stable'
+- `SearchAnalytics` - Search tracking data:
+  - `query` - Search query
+  - `resultsCount` - Number of results
+  - `clickedResults` - Array of clicked result IDs
+  - `timestamp` - Analytics timestamp
+
+**Search Methods:**
+
+- `advancedSearch(filters)` - Advanced search with all filters → `Promise<SearchResultFE>`
+  - Full filter support (price, rating, category, shop, availability)
+  - Fuzzy matching for typo tolerance
+  - Multiple sort options
+  - Pagination support
+  - Automatic history tracking
+  - Analytics integration
+- `search(filters)` - Basic search (backwards compatible) → `Promise<SearchResultFE>`
+  - Query validation (2-500 characters)
+  - DoS protection with limit capping
+  - Graceful error handling
+- `quickSearch(query)` - Quick search with 5 result limit → `Promise<SearchResultFE>`
+- `fuzzySearch(query, filters?)` - Search with fuzzy matching enabled → `Promise<SearchResultFE>`
+  - Levenshtein distance algorithm
+  - Typo tolerance
+  - Optional additional filters
+
+**Autocomplete Methods:**
+
+- `getAutocompleteSuggestions(query)` - Get autocomplete suggestions → `Promise<SearchSuggestion[]>`
+  - Minimum 2 characters required
+  - Returns up to 10 suggestions
+  - Includes suggestion types and counts
+  - Graceful error handling
+
+**History Methods:**
+
+- `getSearchHistory()` - Get user's search history → `SearchHistoryItem[]`
+  - Returns most recent first
+  - Limited to 50 entries
+  - Stored in localStorage
+- `clearSearchHistory()` - Clear all search history → `void`
+- `removeFromHistory(query)` - Remove specific entry → `void`
+
+**Trending & Popular:**
+
+- `getTrendingSearches(limit?)` - Get trending searches → `Promise<TrendingSearch[]>`
+  - Default limit: 10
+  - Includes trend direction (up/down/stable)
+  - Sorted by search frequency
+- `getPopularSearches(categoryId?, limit?)` - Get popular searches → `Promise<string[]>`
+  - Optional category filtering
+  - Default limit: 10
+  - Returns query strings
+
+**Analytics Methods:**
+
+- `trackClick(query, resultId, resultType)` - Track search result click → `Promise<void>`
+  - Tracks user engagement
+  - Records clicked results
+  - Silent failure on errors
+
+**Features:**
+
+- ✅ **Fuzzy matching** with Levenshtein distance algorithm for typo tolerance
+- ✅ **Advanced filtering** (price, rating, category, shop, availability, sorting)
+- ✅ **Autocomplete** with real-time suggestions
+- ✅ **Search history** with localStorage persistence
+- ✅ **Trending searches** with trend direction tracking
+- ✅ **Analytics tracking** for search queries and clicks
+- ✅ **Query validation** to prevent DoS attacks
+- ✅ **Graceful error handling** with empty results fallback
+- ✅ **Pagination support** for large result sets
+- ✅ **Multiple sort options** (relevance, price, rating, newest, popular)
+
+---
+
 ## Base Service
 
 ### base-service.ts
