@@ -317,6 +317,78 @@ function ProductForm() {
 
 ---
 
+### FormDatePicker.tsx
+
+**Export:** `FormDatePicker`
+
+**Purpose:** Date picker with custom calendar UI and date validation (no external dependencies).
+
+**Props:**
+
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `value?: Date | string | null` - Selected date
+- `onChange?: (date: Date | null) => void` - Date change handler
+- `minDate?: Date | string` - Minimum allowed date
+- `maxDate?: Date | string` - Maximum allowed date
+- `displayFormat?: "YYYY-MM-DD" | "DD/MM/YYYY" | "MM/DD/YYYY"` - Date display format (default: "YYYY-MM-DD")
+- `showIcon?: boolean` - Show calendar icon (default: true)
+- `placeholder?: string` - Input placeholder
+- `fullWidth?: boolean` - Full width input (default: true)
+- `compact?: boolean` - Compact size variant
+- `disabled?: boolean` - Disable input and calendar
+- Forward ref support
+
+**Features:**
+
+- Custom calendar UI without external dependencies (no date-fns/dayjs)
+- Month/year navigation with arrow buttons
+- 7-column calendar grid with day headers (Sun-Sat)
+- Min/max date validation with disabled states
+- Multiple display formats (ISO, European, US)
+- Visual indicators: selected (blue bg), today (blue border), disabled (gray)
+- Footer actions: "Today" button, "Clear" button
+- Format preview shows formatted date below input
+- Date range hint when min/max dates are set
+- Native JavaScript Date API (lightweight, ~469 lines)
+- Full keyboard navigation support
+- Proper ARIA attributes for accessibility
+- Helper functions: getDaysInMonth, getFirstDayOfMonth, formatDate, parseDate
+- Demo: `/demo/form-date-picker`
+
+**Example:**
+
+```tsx
+import { FormDatePicker } from "@/components/forms/FormDatePicker";
+
+function BookingForm() {
+  const [date, setDate] = useState<Date | null>(null);
+
+  // Only allow future dates
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 1);
+
+  const maxDate = new Date();
+  maxDate.setMonth(maxDate.getMonth() + 6); // 6 months max
+
+  return (
+    <FormDatePicker
+      label="Booking Date"
+      value={date}
+      onChange={setDate}
+      minDate={minDate}
+      maxDate={maxDate}
+      displayFormat="DD/MM/YYYY"
+      required
+      helperText="Select your preferred date"
+    />
+  );
+}
+```
+
+---
+
 ### FormNumberInput.tsx
 
 **Export:** `FormNumberInput`
