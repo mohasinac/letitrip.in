@@ -167,6 +167,143 @@ This folder contains authentication-related UI components for user authenticatio
 
 ---
 
+### MFAEnrollment.tsx
+
+**Export:** `MFAEnrollment`
+
+**Purpose:** UI component for enrolling in Multi-Factor Authentication (MFA). Allows users to add phone SMS or authenticator app as second factor.
+
+**Features:**
+
+- Method selection (Phone SMS or Authenticator App)
+- Phone MFA enrollment flow with SMS verification
+- TOTP MFA enrollment flow with QR code generation
+- Display and manage enrolled factors
+- Remove enrolled factors with confirmation
+- QR code display for authenticator apps
+- Manual secret key entry with copy button
+- Display names for factors (optional)
+- Step-based enrollment flow
+- reCAPTCHA integration for phone MFA
+- Full error handling and loading states
+- Dark mode support
+- Responsive design
+
+**Props:**
+
+- `onEnrollmentComplete?: () => void` - Callback on successful enrollment
+- `onError?: (error: Error) => void` - Callback on error
+- `className?: string` - Additional CSS classes
+
+**Usage:**
+
+```tsx
+import { MFAEnrollment } from "@/components/auth/MFAEnrollment";
+
+function AccountSecurity() {
+  return (
+    <MFAEnrollment
+      onEnrollmentComplete={() => {
+        toast.success("MFA enabled successfully");
+      }}
+      onError={(error) => {
+        toast.error(error.message);
+      }}
+    />
+  );
+}
+```
+
+**Enrollment Flow:**
+
+1. **Select Method**: User chooses Phone SMS or Authenticator App
+2. **Phone SMS Flow**:
+   - Enter phone number with country code
+   - Enter optional display name
+   - Receive SMS verification code
+   - Enter 6-digit code to complete enrollment
+3. **Authenticator App Flow**:
+   - Generate QR code and secret key
+   - Scan QR code with authenticator app (or enter key manually)
+   - Enter optional display name
+   - Enter 6-digit code from app to complete enrollment
+4. **Factor Management**:
+   - View all enrolled factors
+   - Remove factors with confirmation
+
+---
+
+### MFAVerification.tsx
+
+**Export:** `MFAVerification`
+
+**Purpose:** UI component for verifying MFA during sign-in. Handles second-factor verification challenge.
+
+**Features:**
+
+- Display available MFA factors
+- Factor selection (if multiple enrolled)
+- 6-digit code input
+- Support for phone SMS and TOTP factors
+- reCAPTCHA integration for phone verification
+- Integration with MultiFactorResolver
+- Error handling and loading states
+- Resend code option for SMS
+- Help/support links
+- Dark mode support
+- Responsive design
+
+**Props:**
+
+- `resolver: MultiFactorResolver` - Firebase MFA resolver from auth error
+- `onVerificationComplete?: () => void` - Callback on successful verification
+- `onVerificationError?: (error: Error) => void` - Callback on error
+- `onCancel?: () => void` - Callback when user cancels
+- `className?: string` - Additional CSS classes
+
+**Usage:**
+
+```tsx
+import { MFAVerification } from "@/components/auth/MFAVerification";
+import { MultiFactorError } from "firebase/auth";
+
+// In sign-in error handler
+catch (error) {
+  if (error.code === "auth/multi-factor-auth-required") {
+    const mfaError = error as MultiFactorError;
+    setMFAResolver(mfaError.resolver);
+  }
+}
+
+// Render verification component
+{mfaResolver && (
+  <MFAVerification
+    resolver={mfaResolver}
+    onVerificationComplete={() => {
+      toast.success("Signed in successfully");
+      router.push("/dashboard");
+    }}
+    onVerificationError={(error) => {
+      toast.error(error.message);
+    }}
+    onCancel={() => {
+      setMFAResolver(null);
+    }}
+  />
+)}
+```
+
+**Verification Flow:**
+
+1. User attempts sign-in and triggers MFA challenge
+2. Component displays available factors (phone or authenticator)
+3. User selects factor (if multiple enrolled)
+4. User enters 6-digit verification code
+5. Component verifies code with Firebase
+6. On success, sign-in completes and user is authenticated
+
+---
+
 ## Common Patterns
 
 ### Authentication Flow
