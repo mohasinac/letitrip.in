@@ -1,4 +1,8 @@
-// Components export placeholder
-// This will be populated with actual components in Task 15.1-15.3
+/**
+ * Components
+ *
+ * All React components exported from the library.
+ */
 
-export {};
+// Value Display Components (Task 14.3)
+export * from "./values";

@@ -270,8 +270,10 @@ export function slugToTitle(slug: string): string {
 /**
  * Format discount percentage
  * Returns positive percentage (e.g., "25%" not "-25%")
+ * Note: Not exported to avoid conflict with price.utils formatDiscount
+ * Use formatDiscountPercentage from price.utils for null-safe version
  */
-export function formatDiscount(
+function formatDiscountBasic(
   originalPrice: number,
   currentPrice: number
 ): string {
