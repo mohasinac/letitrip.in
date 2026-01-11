@@ -5,6 +5,7 @@ import RichTextEditor from "@/components/common/RichTextEditor";
 import SlugInput from "@/components/common/SlugInput";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
+import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { FormTextarea } from "@/components/forms/FormTextarea";
@@ -202,31 +203,27 @@ export default function AuctionForm({
       {/* Bidding Details */}
       <Card title="Bidding Details">
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Starting Bid (₹)" required>
-            <FormInput
-              type="number"
+          <FormField label="Starting Bid" required>
+            <FormCurrencyInput
               value={formData.startingBid}
-              onChange={(e) =>
-                handleChange("startingBid", parseFloat(e.target.value))
-              }
+              currency="INR"
+              onChange={(value) => handleChange("startingBid", value || 0)}
               min={1}
-              step={1}
+              autoFormat={true}
               disabled={isSubmitting}
             />
           </FormField>
 
           <FormField
-            label="Reserve Price (₹)"
+            label="Reserve Price"
             hint="Minimum price for the item to be sold (optional)"
           >
-            <FormInput
-              type="number"
+            <FormCurrencyInput
               value={formData.reservePrice}
-              onChange={(e) =>
-                handleChange("reservePrice", parseFloat(e.target.value) || 0)
-              }
+              currency="INR"
+              onChange={(value) => handleChange("reservePrice", value || 0)}
               min={0}
-              step={1}
+              autoFormat={true}
               disabled={isSubmitting}
             />
           </FormField>

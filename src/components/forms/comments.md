@@ -2,6 +2,31 @@
 
 ## Completed Improvements ✅
 
+### Currency Input Integration (January 2026)
+
+- ✅ **ProductInlineForm Integration**: Replaced price FormInput with FormCurrencyInput
+- ✅ **Product Edit Wizard Integration**: Replaced price FormInput in BasicInfoStep
+- ✅ **AuctionForm Integration**: Replaced starting bid and reserve price with FormCurrencyInput
+- ✅ **Currency Support**: All price fields support 4 currencies (INR default, USD, EUR, GBP)
+- ✅ **Auto-Formatting**: Prices auto-format with currency symbols on blur
+- ✅ **Input Sanitization**: Non-numeric characters automatically removed
+- ✅ **Validation**: Built-in price validation with min/max support
+- ✅ **Consistent UX**: Unified currency input experience across platform
+- ✅ **Task 13.2 Complete**: 45 minutes
+
+**Integrated Forms:**
+
+- ProductInlineForm (`src/components/seller/ProductInlineForm.tsx`)
+- Product Edit Wizard BasicInfoStep (`src/components/seller/product-edit-wizard/BasicInfoStep.tsx`)
+- AuctionForm (`src/components/seller/AuctionForm.tsx`)
+
+**Currency Codes Supported:**
+
+- 🇮🇳 INR (₹) - Indian Rupee - Default
+- 🇺🇸 USD ($) - US Dollar
+- 🇪🇺 EUR (€) - Euro
+- 🇬🇧 GBP (£) - British Pound
+
 ### Phone Input Integration (January 2026)
 
 - ✅ **ShopForm Integration**: Replaced FormInput with FormPhoneInput in shop setup/edit forms

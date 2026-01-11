@@ -2,6 +2,7 @@
 
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput } from "@/components/forms/FormInput";
+import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { StepProps } from "./types";
@@ -23,20 +24,19 @@ export function BasicInfoStep({ formData, setFormData }: StepProps) {
         onChange={(slug: string) => setFormData({ ...formData, slug })}
       />
 
-      <FormInput
-        id="edit-product-price"
-        label="Price (₹)"
-        type="number"
-        required
-        min={0}
-        step={0.01}
+      <FormCurrencyInput
+        label="Price"
         value={formData.price}
-        onChange={(e) =>
+        currency="INR"
+        onChange={(value) =>
           setFormData({
             ...formData,
-            price: parseFloat(e.target.value) || 0,
+            price: value || 0,
           })
         }
+        min={0}
+        autoFormat={true}
+        required
       />
 
       <div>

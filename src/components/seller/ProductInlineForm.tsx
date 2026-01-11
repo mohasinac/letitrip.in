@@ -2,6 +2,7 @@
 
 import SlugInput from "@/components/common/SlugInput";
 import { FormInput } from "@/components/forms/FormInput";
+import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
@@ -28,6 +29,7 @@ export function ProductInlineForm({
     name: product?.name || "",
     slug: product?.slug || "",
     price: product?.price || 0,
+    currency: "INR" as const,
     stockCount: product?.stockCount || 0,
     categoryId: product?.categoryId || "",
     description: product && "description" in product ? product.description : "",
@@ -144,19 +146,18 @@ export function ProductInlineForm({
 
       {/* Price */}
       <div>
-        <FormInput
-          id="product-price"
-          label="Price (₹)"
-          type="number"
-          required
-          min={0}
-          step={0.01}
+        <FormCurrencyInput
+          label="Price"
           value={formData.price}
-          onChange={(e) => {
-            setFormData({ ...formData, price: parseFloat(e.target.value) });
+          currency={formData.currency}
+          onChange={(value) => {
+            setFormData({ ...formData, price: value || 0 });
             clearError("price");
           }}
+          min={0}
           error={errors.price}
+          autoFormat={true}
+          required
         />
       </div>
 
