@@ -110,7 +110,19 @@ Authentication-related pages. Users already logged in are redirected to their da
 
 ### `(protected)/` - Protected Pages
 
-Pages requiring authentication:
+Pages requiring authentication. Unauthenticated users are redirected to /login.
+
+#### `(protected)/layout.tsx`
+
+- **Purpose**: Client-side layout protecting authenticated pages
+- **Features**:
+  - Uses AuthGuard component to require authentication
+  - Redirects to /login if user not authenticated
+  - Loading spinner during authentication check
+  - Full-width layout (sidebars are page-specific)
+  - Simple and flexible for different dashboard layouts
+
+**Pages**:
 
 - `/user` - User dashboard and profile
 - `/seller` - Seller dashboard
