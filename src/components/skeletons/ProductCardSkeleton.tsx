@@ -1,6 +1,6 @@
 /**
  * ProductCardSkeleton Component
- * 
+ *
  * Loading skeleton for product cards
  * Matches the layout of actual ProductCard component
  */
@@ -42,7 +42,7 @@ export function ProductCardSkeleton() {
 
 /**
  * ProductCardSkeletonGrid Component
- * 
+ *
  * Grid of product card skeletons
  */
 export function ProductCardSkeletonGrid({ count = 8 }: { count?: number }) {

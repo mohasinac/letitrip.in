@@ -1,6 +1,6 @@
 /**
  * OrderCardSkeleton Component
- * 
+ *
  * Loading skeleton for order cards
  * Matches the layout of actual OrderCard component
  */
@@ -54,7 +54,7 @@ export function OrderCardSkeleton() {
 
 /**
  * OrderCardSkeletonList Component
- * 
+ *
  * List of order card skeletons
  */
 export function OrderCardSkeletonList({ count = 3 }: { count?: number }) {

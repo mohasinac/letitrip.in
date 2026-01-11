@@ -12,17 +12,14 @@ import { SimilarProducts } from "@/components/product/SimilarProducts";
 import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { useCart } from "@/hooks/useCart";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useProductBySlug } from "@/hooks/queries/useProduct";
+import { useShop } from "@/hooks/queries/useShop";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatDiscount, formatINR } from "@/lib/price.utils";
-import { productsService } from "@/services/products.service";
-import { shopsService } from "@/services/shops.service";
-import type { ProductFE } from "@/types/frontend/product.types";
-import type { ShopFE } from "@/types/frontend/shop.types";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 
 interface ProductPageProps {
   params: Promise<{
@@ -30,33 +27,31 @@ interface ProductPageProps {
   }>;
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const router = useRouter();
-  const { slug } = use(params);
+function ProductPageSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-6">
+          <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+        </div>
+        <ProductCardSkeletonGrid count={1} />
+      </div>
+    </div>
+  );
+}
 
-  const [shop, setShop] = useState<ShopFE | null>(null);
+function ProductContent({ slug }: { slug: string }) {
+  const router = useRouter();
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const {
-    isLoading: loading,
-    error,
-    data: product,
-    setData: setProduct,
-    execute,
-  } = useLoadingState<ProductFE>({
-    onLoadError: (err) => {
-      logError(err, {
-        component: "ProductDetail.loadProduct",
-        metadata: { slug },
-      });
-    },
+
+  // Use React Query hooks for data fetching
+  const { data: product, isLoading, error } = useProductBySlug(slug);
+  const { data: shop } = useShop(product?.shopId, {
+    enabled: !!product?.shopId,
   });
 
   const { addItem, loading: cartLoading } = useCart();
   const { addToHistory } = useViewingHistory();
-
-  useEffect(() => {
-    loadProduct();
-  }, [slug]);
 
   // Track product view in history
   useEffect(() => {
@@ -73,37 +68,8 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
   }, [product, shop, addToHistory]);
 
-  const loadProduct = () =>
-    execute(async () => {
-      const data = await productsService.getBySlug(slug);
-
-      // Load shop info
-      if (data.shopId) {
-        try {
-          const shopData = await shopsService.getById(data.shopId);
-          setShop(shopData);
-        } catch (error) {
-          logError(error as Error, {
-            component: "ProductDetail.loadShop",
-            metadata: { shopId: data.shopId },
-          });
-          // Non-critical error, continue showing product
-        }
-      }
-      return data;
-    });
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="mb-6">
-            <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-          </div>
-          <ProductCardSkeletonGrid count={1} />
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <ProductPageSkeleton />;
   }
 
   if (error) {
@@ -112,7 +78,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         <ErrorMessage
           message={error.message || "Failed to load product. Please try again."}
           showRetry
-          onRetry={loadProduct}
+          onRetry={() => window.location.reload()}
           showGoBack
           onGoBack={() => router.push("/products")}
         />
@@ -504,5 +470,15 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductPage({ params }: ProductPageProps) {
+  const { slug } = use(params);
+
+  return (
+    <Suspense fallback={<ProductPageSkeleton />}>
+      <ProductContent slug={slug} />
+    </Suspense>
   );
 }
