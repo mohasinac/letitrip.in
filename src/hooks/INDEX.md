@@ -361,51 +361,66 @@ function CategoryNav() {
 
 **Export:** `useFormState<T>(options): UseFormStateReturn<T>`
 
-Generic form state management with validation and error handling. Supports Zod schema validation for type-safe form validation.
+Generic form state management with validation and error handling. Supports Zod schema validation and async validation for type-safe form validation.
 
 **Parameters:**
 
 - `initialData: T` - Initial form values
 - `onDataChange?: (data: T) => void` - Callback on data change
 - `onValidate?: (data: T) => Record<string, string>` - Custom validation function
-- `schema?: z.ZodSchema<T>` - Zod schema for type-safe validation (NEW)
-- `validateOnChange?: boolean` - Validate on change (default: false) (NEW)
-- `validateOnBlur?: boolean` - Validate on blur (default: true) (NEW)
+- `schema?: z.ZodSchema<T>` - Zod schema for type-safe validation
+- `asyncValidators?: Partial<Record<keyof T, AsyncValidator>>` - Async validators for fields (NEW)
+- `debounceMs?: number` - Debounce delay for async validation (default: 300ms) (NEW)
+- `validateOnChange?: boolean` - Validate on change (default: false)
+- `validateOnBlur?: boolean` - Validate on blur (default: true)
 
 **Returns:**
 
 - `formData: T` - Current form data
 - `errors: Record<string, string>` - Validation errors by field
 - `touched: Record<string, boolean>` - Touched fields
+- `validatingFields: Record<string, boolean>` - Fields being validated asynchronously (NEW)
 - `setFieldValue(field, value): void` - Update single field
 - `setFieldError(field, error): void` - Set field error
 - `handleChange(e): void` - Input change handler
 - `handleBlur(e): void` - Input blur handler
 - `setFormData(data): void` - Update all form data
 - `reset(newData?): void` - Reset form
-- `validate(): boolean` - Validate all fields
-- `validateField(field): boolean` - Validate a specific field (NEW)
+- `validate(): Promise<boolean>` - Validate all fields (now async) (UPDATED)
+- `validateField(field): Promise<boolean>` - Validate a specific field (now async) (UPDATED)
 - `isValid: boolean` - Form validity status
-- `isValidating: boolean` - Whether form is currently being validated (NEW)
+- `isValidating: boolean` - Whether form is currently being validated
 
-**Example with Zod Schema:**
+**Example with Async Validation:**
 
 ```typescript
-const schema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-const { formData, handleChange, errors, validate } = useFormState({
-  initialData: { email: "", password: "" },
-  schema,
-  validateOnBlur: true,
+const { formData, handleChange, errors, validatingFields } = useFormState({
+  initialData: { email: "", username: "" },
+  schema: z.object({
+    email: z.string().email("Invalid email"),
+    username: z.string().min(3, "Username too short")
+  }),
+  asyncValidators: {
+    email: async (value) => {
+      const exists = await checkEmailExists(value);
+      return exists ? "Email already taken" : null;
+    },
+    username: async (value) => {
+      const exists = await checkUsernameExists(value);
+      return exists ? "Username already taken" : null;
+    }
+  },
+  debounceMs: 500,
+  validateOnChange: true
 });
 ```
 
 **Features:**
 
 - ✅ Zod schema validation support
+- ✅ Async validation with debouncing
+- ✅ Automatic cancellation of previous async validations
+- ✅ Per-field loading indicators
 - ✅ Field-level validation
 - ✅ Configurable validation timing (onChange, onBlur, manual)
 - ✅ Full TypeScript type inference from schema

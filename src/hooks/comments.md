@@ -37,12 +37,17 @@
   - Full TypeScript type inference from Zod schema
   - Falls back to custom `onValidate` function if no schema provided
   - Demo page: `/demo/form-validation` with comprehensive example
-- [ ] **Async Validation**: Support async validators (e.g., API calls) - Task 9.3
+- [x] **Async Validation**: ✅ Async validator support complete (Task 9.3)
+  - `asyncValidators` parameter accepts async functions for each field
+  - Debounced async validation (configurable delay, default 300ms)
+  - `validatingFields` state tracks which fields are being validated
+  - Automatic cancellation of previous async validations (AbortController)
+  - Loading states for async validation feedback
+  - Demo page: `/demo/async-validation` with email/username availability checks
 - [ ] **Dependent Fields**: Validation that depends on other fields
 - [ ] **Field Arrays**: Better support for dynamic field arrays
 - [ ] **Nested Objects**: Improved nested object handling
 - [ ] **Transform Values**: Value transformation before validation
-- [ ] **Debounced Validation**: Debounce expensive validations
 - [ ] **Initial Errors**: Support showing initial errors
 
 ### useCart

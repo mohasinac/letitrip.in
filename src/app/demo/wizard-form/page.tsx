@@ -1,7 +1,7 @@
 "use client";
 
-import { z } from "zod";
 import { useWizardFormState } from "@/hooks/useWizardFormState";
+import { z } from "zod";
 
 // Define Zod schemas for each step
 const step1Schema = z.object({
@@ -9,7 +9,10 @@ const step1Schema = z.object({
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores"
+    ),
 });
 
 const step2Schema = z.object({
@@ -55,10 +58,12 @@ export default function WizardFormDemoPage() {
 
   const handleSubmit = () => {
     wizard.setIsSubmitting(true);
-    
+
     // Validate all steps before final submit
-    const allValid = [0, 1, 2].every(stepIndex => wizard.validateStep(stepIndex));
-    
+    const allValid = [0, 1, 2].every((stepIndex) =>
+      wizard.validateStep(stepIndex)
+    );
+
     if (allValid) {
       alert("Form submitted successfully! Check console for data.");
       console.log("Submitted data:", wizard.formData);
@@ -74,16 +79,15 @@ export default function WizardFormDemoPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Multi-Step Wizard Form Demo (Zod Validation)</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Multi-Step Wizard Form Demo (Zod Validation)
+      </h1>
 
       {/* Progress Bar */}
       <div className="mb-8">
         <div className="flex justify-between mb-2">
           {wizard.stepStates.map((state, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center flex-1"
-            >
+            <div key={index} className="flex flex-col items-center flex-1">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold mb-1 ${
                   index === wizard.currentStep
@@ -97,9 +101,13 @@ export default function WizardFormDemoPage() {
               >
                 {state.isComplete ? "✓" : index + 1}
               </div>
-              <span className="text-xs text-gray-600">{wizard.steps[index]}</span>
+              <span className="text-xs text-gray-600">
+                {wizard.steps[index]}
+              </span>
               {state.hasErrors && (
-                <span className="text-xs text-red-500">{state.errorCount} errors</span>
+                <span className="text-xs text-red-500">
+                  {state.errorCount} errors
+                </span>
               )}
             </div>
           ))}
@@ -111,7 +119,8 @@ export default function WizardFormDemoPage() {
           />
         </div>
         <p className="text-sm text-gray-600 mt-2 text-center">
-          Step {wizard.currentStep + 1} of {wizard.totalSteps} - {wizard.currentStepName}
+          Step {wizard.currentStep + 1} of {wizard.totalSteps} -{" "}
+          {wizard.currentStepName}
         </p>
       </div>
 
@@ -121,7 +130,7 @@ export default function WizardFormDemoPage() {
         {wizard.currentStep === 0 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4">Account Information</h2>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="email">
                 Email Address *
@@ -137,26 +146,37 @@ export default function WizardFormDemoPage() {
                 placeholder="user@example.com"
               />
               {currentStepErrors.email && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.email}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.email}
+                </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="username">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="username"
+              >
                 Username * (3-20 chars, alphanumeric)
               </label>
               <input
                 type="text"
                 id="username"
                 value={wizard.formData.username || ""}
-                onChange={(e) => wizard.updateFormData("username", e.target.value)}
+                onChange={(e) =>
+                  wizard.updateFormData("username", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-md ${
-                  currentStepErrors.username ? "border-red-500" : "border-gray-300"
+                  currentStepErrors.username
+                    ? "border-red-500"
+                    : "border-gray-300"
                 }`}
                 placeholder="john_doe123"
               />
               {currentStepErrors.username && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.username}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.username}
+                </p>
               )}
             </div>
           </div>
@@ -166,42 +186,60 @@ export default function WizardFormDemoPage() {
         {wizard.currentStep === 1 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="firstName">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="firstName"
+              >
                 First Name * (min 2 chars)
               </label>
               <input
                 type="text"
                 id="firstName"
                 value={wizard.formData.firstName || ""}
-                onChange={(e) => wizard.updateFormData("firstName", e.target.value)}
+                onChange={(e) =>
+                  wizard.updateFormData("firstName", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-md ${
-                  currentStepErrors.firstName ? "border-red-500" : "border-gray-300"
+                  currentStepErrors.firstName
+                    ? "border-red-500"
+                    : "border-gray-300"
                 }`}
                 placeholder="John"
               />
               {currentStepErrors.firstName && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.firstName}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.firstName}
+                </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="lastName">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="lastName"
+              >
                 Last Name * (min 2 chars)
               </label>
               <input
                 type="text"
                 id="lastName"
                 value={wizard.formData.lastName || ""}
-                onChange={(e) => wizard.updateFormData("lastName", e.target.value)}
+                onChange={(e) =>
+                  wizard.updateFormData("lastName", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-md ${
-                  currentStepErrors.lastName ? "border-red-500" : "border-gray-300"
+                  currentStepErrors.lastName
+                    ? "border-red-500"
+                    : "border-gray-300"
                 }`}
                 placeholder="Doe"
               />
               {currentStepErrors.lastName && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.lastName}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.lastName}
+                </p>
               )}
             </div>
 
@@ -220,7 +258,9 @@ export default function WizardFormDemoPage() {
                 placeholder="9876543210"
               />
               {currentStepErrors.phone && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.phone}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.phone}
+                </p>
               )}
             </div>
           </div>
@@ -230,23 +270,32 @@ export default function WizardFormDemoPage() {
         {wizard.currentStep === 2 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4">Address Information</h2>
-            
+
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="address">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="address"
+              >
                 Street Address * (min 10 chars)
               </label>
               <input
                 type="text"
                 id="address"
                 value={wizard.formData.address || ""}
-                onChange={(e) => wizard.updateFormData("address", e.target.value)}
+                onChange={(e) =>
+                  wizard.updateFormData("address", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-md ${
-                  currentStepErrors.address ? "border-red-500" : "border-gray-300"
+                  currentStepErrors.address
+                    ? "border-red-500"
+                    : "border-gray-300"
                 }`}
                 placeholder="123 Main Street"
               />
               {currentStepErrors.address && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.address}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.address}
+                </p>
               )}
             </div>
 
@@ -265,26 +314,37 @@ export default function WizardFormDemoPage() {
                 placeholder="Mumbai"
               />
               {currentStepErrors.city && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.city}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.city}
+                </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="zipCode">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="zipCode"
+              >
                 ZIP Code * (6 digits)
               </label>
               <input
                 type="text"
                 id="zipCode"
                 value={wizard.formData.zipCode || ""}
-                onChange={(e) => wizard.updateFormData("zipCode", e.target.value)}
+                onChange={(e) =>
+                  wizard.updateFormData("zipCode", e.target.value)
+                }
                 className={`w-full px-3 py-2 border rounded-md ${
-                  currentStepErrors.zipCode ? "border-red-500" : "border-gray-300"
+                  currentStepErrors.zipCode
+                    ? "border-red-500"
+                    : "border-gray-300"
                 }`}
                 placeholder="400001"
               />
               {currentStepErrors.zipCode && (
-                <p className="text-red-500 text-sm mt-1">{currentStepErrors.zipCode}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {currentStepErrors.zipCode}
+                </p>
               )}
             </div>
           </div>
@@ -362,12 +422,20 @@ export default function WizardFormDemoPage() {
               key={index}
               className="flex items-center justify-between p-2 bg-white rounded border"
             >
-              <span className="font-medium">Step {index + 1}: {wizard.steps[index]}</span>
+              <span className="font-medium">
+                Step {index + 1}: {wizard.steps[index]}
+              </span>
               <div className="flex gap-2 text-sm">
-                <span className={state.isComplete ? "text-green-600" : "text-gray-400"}>
+                <span
+                  className={
+                    state.isComplete ? "text-green-600" : "text-gray-400"
+                  }
+                >
                   {state.isComplete ? "✓ Complete" : "Incomplete"}
                 </span>
-                <span className={state.isValid ? "text-green-600" : "text-red-600"}>
+                <span
+                  className={state.isValid ? "text-green-600" : "text-red-600"}
+                >
                   {state.isValid ? "Valid" : `${state.errorCount} errors`}
                 </span>
               </div>
@@ -376,7 +444,9 @@ export default function WizardFormDemoPage() {
         </div>
         <div className="mt-2 text-sm">
           <strong>All Valid:</strong>{" "}
-          <span className={wizard.isAllValid ? "text-green-600" : "text-red-600"}>
+          <span
+            className={wizard.isAllValid ? "text-green-600" : "text-red-600"}
+          >
             {wizard.isAllValid ? "Yes" : "No"}
           </span>
         </div>
