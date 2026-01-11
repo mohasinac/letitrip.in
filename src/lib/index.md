@@ -442,7 +442,7 @@ const handleKeyDown = (event: React.KeyboardEvent) => {
     event.preventDefault();
     handleSubmit();
   }
-  
+
   if (isKey(event, "ESCAPE")) {
     // Handle Escape key
     handleClose();
@@ -493,18 +493,20 @@ useEffect(() => {
     required: required,
   })}
   aria-label={!label ? placeholder : undefined}
-/>
+/>;
 
-{error && (
-  <p
-    id={`${inputId}-error`}
-    role="alert"
-    aria-live="polite"
-    aria-atomic="true"
-  >
-    {error}
-  </p>
-)}
+{
+  error && (
+    <p
+      id={`${inputId}-error`}
+      role="alert"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {error}
+    </p>
+  );
+}
 ```
 
 ---

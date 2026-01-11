@@ -151,6 +151,192 @@ class ProductService extends BaseService<
 
 ---
 
+### auth-mfa-service.ts ✅
+
+**Export:** `authMFAService`
+
+**Purpose:** Multi-Factor Authentication (MFA) management using Firebase Authentication's MFA capabilities. ✅
+
+**Features:**
+
+- ✅ **Phone-based MFA** - SMS verification using Firebase Phone Auth
+- ✅ **TOTP MFA** - Time-based One-Time Password for authenticator apps (Google Authenticator, Authy)
+- ✅ **MFA Enrollment** - Add second factor to user account
+- ✅ **MFA Verification** - Verify second factor during sign-in
+- ✅ **Factor Management** - List, remove enrolled factors
+- ✅ **reCAPTCHA Integration** - Bot protection for phone MFA
+- ✅ **Type-safe with Zod** - Input validation for all operations
+
+**Validation Schemas:**
+
+- `EnrollPhoneMFASchema` - Phone enrollment validation
+  - Phone number: 10+ digits, international format (+[country][number])
+  - Optional display name
+- `VerifyPhoneMFASchema` - Phone verification validation
+  - Verification ID required
+  - Verification code: exactly 6 digits
+- `VerifyTotpMFASchema` - TOTP verification validation
+  - Verification code: exactly 6 digits
+  - Optional display name
+- `UnEnrollMFASchema` - Factor removal validation
+  - Factor UID required
+
+**Core Methods:**
+
+**Enrollment:**
+- `initializeRecaptcha(containerId)` - Initialize invisible reCAPTCHA for phone MFA → `RecaptchaVerifier`
+- `enrollPhoneMFA(request)` - Start phone MFA enrollment → `{verificationId, message}`
+- `verifyPhoneMFA(request)` - Complete phone MFA enrollment with verification code → `void`
+- `enrollTotpMFA(displayName?)` - Start TOTP MFA enrollment → `{totpSecret, qrCodeUrl, secretKey}`
+- `verifyTotpMFA(totpSecret, request)` - Complete TOTP MFA enrollment → `void`
+
+**Management:**
+- `getEnrolledFactors()` - Get list of enrolled MFA factors → `MFAFactorInfo[]`
+- `unenrollMFA(request)` - Remove an MFA factor → `void`
+- `isMFAEnabled()` - Check if user has any MFA factors → `boolean`
+
+**Sign-in:**
+- `signInWithMFA(request)` - Complete sign-in with second factor → `void`
+
+**Utilities:**
+- `clearRecaptcha()` - Clean up reCAPTCHA verifier → `void`
+
+**Types:**
+
+```typescript
+interface EnrollPhoneMFARequest {
+  phoneNumber: string; // International format: +[country][number]
+  displayName?: string; // User-friendly name for this factor
+}
+
+interface EnrollPhoneMFAResponse {
+  verificationId: string; // Use this to verify the code
+  message: string; // User-facing message
+}
+
+interface VerifyPhoneMFARequest {
+  verificationId: string; // From enrollPhoneMFA
+  verificationCode: string; // 6-digit SMS code
+}
+
+interface EnrollTotpMFAResponse {
+  totpSecret: TotpSecret; // Use this to verify enrollment
+  qrCodeUrl: string; // Show QR code to user
+  secretKey: string; // Manual entry key
+}
+
+interface VerifyTotpMFARequest {
+  verificationCode: string; // 6-digit code from authenticator app
+  displayName?: string; // User-friendly name
+}
+
+interface MFAFactorInfo {
+  uid: string; // Unique factor ID
+  displayName?: string; // User-friendly name
+  factorId: string; // "phone" or "totp"
+  enrollmentTime: string; // ISO timestamp
+  phoneNumber?: string; // Only for phone factors
+}
+
+interface UnEnrollMFARequest {
+  factorUid: string; // Factor UID to remove
+}
+
+interface SignInWithMFARequest {
+  verificationCode: string; // 6-digit code
+  resolver: MultiFactorResolver; // From MFA error
+  selectedFactorIndex?: number; // Which factor to use (default: 0)
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { authMFAService } from "@/services/auth-mfa-service";
+
+// 1. Initialize reCAPTCHA (for phone MFA)
+authMFAService.initializeRecaptcha("recaptcha-container");
+
+// 2. Enroll Phone MFA
+try {
+  const { verificationId } = await authMFAService.enrollPhoneMFA({
+    phoneNumber: "+1234567890",
+    displayName: "My Phone",
+  });
+  
+  // User receives SMS code
+  
+  // 3. Verify Phone MFA
+  await authMFAService.verifyPhoneMFA({
+    verificationId,
+    verificationCode: "123456",
+  });
+  
+  console.log("Phone MFA enrolled successfully!");
+} catch (error) {
+  console.error("MFA enrollment failed:", error);
+}
+
+// Enroll TOTP MFA
+try {
+  const { qrCodeUrl, secretKey } = await authMFAService.enrollTotpMFA(
+    "My Authenticator"
+  );
+  
+  // Show QR code to user or display secret key
+  // User scans QR code with authenticator app
+  
+  // Verify TOTP MFA
+  await authMFAService.verifyTotpMFA(totpSecret, {
+    verificationCode: "123456", // From authenticator app
+  });
+  
+  console.log("TOTP MFA enrolled successfully!");
+} catch (error) {
+  console.error("TOTP enrollment failed:", error);
+}
+
+// Get enrolled factors
+const factors = await authMFAService.getEnrolledFactors();
+console.log("Enrolled factors:", factors);
+
+// Remove an MFA factor
+await authMFAService.unenrollMFA({ factorUid: "factor-uid-123" });
+
+// Check if MFA is enabled
+const hasMFA = await authMFAService.isMFAEnabled();
+```
+
+**Error Handling:**
+
+- `ValidationError` - Invalid input (phone format, code length, etc.)
+- `AuthError` - Authentication failures (user not signed in, enrollment failed, etc.)
+- Custom error codes:
+  - `UNAUTHORIZED` - User not signed in
+  - `MFA_ENROLLMENT_FAILED` - Enrollment process failed
+  - `MFA_VERIFICATION_FAILED` - Verification failed
+  - `MFA_UNENROLL_FAILED` - Factor removal failed
+  - `MFA_SIGN_IN_FAILED` - Sign-in with MFA failed
+  - `MFA_FACTOR_NOT_FOUND` - Factor UID not found
+  - `RECAPTCHA_NOT_INITIALIZED` - reCAPTCHA not initialized
+  - `INVALID_VERIFICATION_CODE` - Invalid code format
+  - `INVALID_MFA_FACTOR` - Invalid factor selected
+  - `UNSUPPORTED_MFA_FACTOR` - Unsupported factor type
+
+**Implementation Notes:**
+
+- Uses Firebase Authentication's built-in MFA support
+- Supports both SMS (phone) and TOTP (authenticator app) factors
+- reCAPTCHA required for phone MFA to prevent abuse
+- TOTP more reliable than SMS (no network dependency)
+- Users can enroll multiple factors
+- QR codes work with Google Authenticator, Authy, Microsoft Authenticator, etc.
+- Factor UIDs are persistent across sessions
+- Enrollment requires active authenticated session
+- Sign-in with MFA handled by MultiFactorResolver from Firebase
+
+---
+
 ### users.service.ts
 
 **Export:** `usersService`
