@@ -143,11 +143,10 @@ export function FeatureFlagProvider({
 
       setRemoteConfig(config);
     } catch (error) {
-      logError(
-        error,
-        "FEATURE_FLAGS",
-        "Failed to initialize Firebase Remote Config"
-      );
+      logError(error, {
+        context: "FEATURE_FLAGS",
+        details: "Failed to initialize Firebase Remote Config",
+      });
       setIsLoading(false);
     }
   }, [remoteConfigInstance]);
@@ -161,11 +160,10 @@ export function FeatureFlagProvider({
         await fetchAndActivate(remoteConfig);
         setIsReady(true);
       } catch (error) {
-        logError(
-          error,
-          "FEATURE_FLAGS",
-          "Failed to fetch feature flags from Remote Config"
-        );
+        logError(error, {
+          context: "FEATURE_FLAGS",
+          details: "Failed to fetch feature flags from Remote Config",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -186,7 +184,10 @@ export function FeatureFlagProvider({
         setFlagCache((prev) => ({ ...prev, [key]: value }));
         return value;
       } catch (error) {
-        logError(error, "FEATURE_FLAGS", `Failed to get boolean flag: ${key}`);
+        logError(error, {
+          context: "FEATURE_FLAGS",
+          details: `Failed to get boolean flag: ${key}`,
+        });
         return defaultValue;
       }
     },
@@ -205,7 +206,10 @@ export function FeatureFlagProvider({
         setFlagCache((prev) => ({ ...prev, [key]: value }));
         return value;
       } catch (error) {
-        logError(error, "FEATURE_FLAGS", `Failed to get number flag: ${key}`);
+        logError(error, {
+          context: "FEATURE_FLAGS",
+          details: `Failed to get number flag: ${key}`,
+        });
         return defaultValue;
       }
     },
@@ -224,7 +228,10 @@ export function FeatureFlagProvider({
         setFlagCache((prev) => ({ ...prev, [key]: value }));
         return value;
       } catch (error) {
-        logError(error, "FEATURE_FLAGS", `Failed to get string flag: ${key}`);
+        logError(error, {
+          context: "FEATURE_FLAGS",
+          details: `Failed to get string flag: ${key}`,
+        });
         return defaultValue;
       }
     },
@@ -255,11 +262,10 @@ export function FeatureFlagProvider({
         setFlagCache((prev) => ({ ...prev, [experimentName]: variant }));
         return variant || null;
       } catch (error) {
-        logError(
-          error,
-          "FEATURE_FLAGS",
-          `Failed to get variant for: ${experimentName}`
-        );
+        logError(error, {
+          context: "FEATURE_FLAGS",
+          details: `Failed to get variant for: ${experimentName}`,
+        });
         return null;
       }
     },
@@ -278,7 +284,10 @@ export function FeatureFlagProvider({
       // Clear cache to force re-fetching all flags
       setFlagCache({});
     } catch (error) {
-      logError(error, "FEATURE_FLAGS", "Failed to refresh feature flags");
+      logError(error, {
+        context: "FEATURE_FLAGS",
+        details: "Failed to refresh feature flags",
+      });
     } finally {
       setIsLoading(false);
     }

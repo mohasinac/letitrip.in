@@ -16,7 +16,7 @@ interface LoginRequestBody {
   rememberMe?: boolean;
 }
 
-async function loginHandler(req: Request) {
+async function loginHandler(req: NextRequest) {
   try {
     const body: LoginRequestBody = await req.json();
     const { email, password, rememberMe = false } = body;

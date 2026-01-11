@@ -50,7 +50,7 @@ function transformOrder(id: string, data: any) {
  * - Seller: Orders for their shop(s)
  * - Admin: All orders
  */
-export async function GET(request: NextRequest) {
+async function getOrdersHandler(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
     const role = user?.role || "guest";

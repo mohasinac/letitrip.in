@@ -7,6 +7,11 @@ import Header from "@/components/layout/Header";
 import { MobileInstallPrompt } from "@/components/mobile/MobileInstallPrompt";
 import { MobileOfflineIndicator } from "@/components/mobile/MobileOfflineIndicator";
 import { ComparisonBar } from "@/components/products/ComparisonBar";
+import {
+  ComparisonProvider,
+  LoginRegisterProvider,
+  ViewingHistoryProvider,
+} from "@/components/providers/DynamicProviders";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GlobalSearchProvider } from "@/contexts/GlobalSearchContext";
@@ -19,40 +24,10 @@ import {
   generateWebSiteSchema,
 } from "@/lib/seo/schema";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = defaultMetadata;
-
-// Lazy load non-critical context providers
-// These providers are not needed for initial page render
-// and can be loaded after the main UI is interactive
-const ComparisonProvider = dynamic(
-  () =>
-    import("@/contexts/ComparisonContext").then((mod) => ({
-      default: mod.ComparisonProvider,
-    })),
-  { ssr: false }
-);
-
-const ViewingHistoryProvider = dynamic(
-  () =>
-    import("@/contexts/ViewingHistoryContext").then((mod) => ({
-      default: mod.ViewingHistoryProvider,
-    })),
-  { ssr: false }
-);
-
-const LoginRegisterProvider = dynamic(
-  () =>
-    import("@/contexts/LoginRegisterContext").then((mod) => ({
-      default: mod.LoginRegisterProvider,
-    })),
-  { ssr: false }
-);
 
 export const metadata: Metadata = defaultMetadata;
 

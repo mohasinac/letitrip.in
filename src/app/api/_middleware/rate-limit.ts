@@ -46,7 +46,7 @@ export interface RateLimitOptions {
  */
 export type ApiRouteHandler = (
   request: NextRequest,
-  context?: { params?: Record<string, string> }
+  context?: { params?: Promise<Record<string, string>> }
 ) => Promise<NextResponse> | NextResponse;
 
 /**
@@ -136,7 +136,7 @@ export function withRateLimit(
 
   return async (
     request: NextRequest,
-    context?: { params?: Record<string, string> }
+    context?: { params?: Promise<Record<string, string>> }
   ) => {
     try {
       // Skip rate limiting if skip function returns true

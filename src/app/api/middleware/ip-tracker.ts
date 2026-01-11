@@ -20,24 +20,24 @@ import {
   ActivityAction,
   ipTrackerService,
 } from "@/services/ip-tracker.service";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface IPTrackingOptions {
   action: ActivityAction;
   checkRateLimit?: boolean;
   maxAttempts?: number;
   windowMinutes?: number;
-  extractUserId?: (request: Request) => Promise<string | undefined>;
+  extractUserId?: (request: NextRequest) => Promise<string | undefined>;
 }
 
 /**
  * Middleware wrapper to track IP and apply rate limiting
  */
 export function withIPTracking(
-  handler: (request: Request, context?: any) => Promise<Response>,
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
   options: IPTrackingOptions | ActivityAction
 ) {
-  return async (request: Request, context?: any): Promise<Response> => {
+  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
     try {
       // Normalize options
       const opts: IPTrackingOptions =
@@ -152,7 +152,7 @@ export function withIPTracking(
  * Simplified wrapper for login endpoint with rate limiting
  */
 export function withLoginTracking(
-  handler: (request: Request, context?: any) => Promise<Response>
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>
 ) {
   return withIPTracking(handler, {
     action: "login",
@@ -166,7 +166,7 @@ export function withLoginTracking(
  * Simplified wrapper for registration endpoint
  */
 export function withRegistrationTracking(
-  handler: (request: Request, context?: any) => Promise<Response>
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>
 ) {
   return withIPTracking(handler, {
     action: "register",

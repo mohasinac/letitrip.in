@@ -235,7 +235,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid registration data",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.issues }
         );
       }
       throw error;

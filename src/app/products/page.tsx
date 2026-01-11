@@ -59,8 +59,8 @@ function ProductsContent() {
   // Use React Query hook for products
   const queryFilters = {
     ...filters,
-    sortBy: sort.field,
-    sortOrder: sort.order,
+    sortBy: sort?.field || "createdAt",
+    sortOrder: sort?.order || "desc",
     page,
     limit,
   };
