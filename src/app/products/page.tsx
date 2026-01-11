@@ -24,6 +24,7 @@ import type { ProductCardFE } from "@/types/frontend/product.types";
 import { Filter, Grid, List, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
+import { useProducts } from "@/hooks/queries/useProduct";
 
 function ProductsContent() {
   const router = useRouter();
@@ -58,21 +59,30 @@ function ProductsContent() {
     initialLimit: 20,
   });
 
-  const {
-    isLoading: loading,
-    error,
-    execute,
-  } = useLoadingState({
-    onLoadError: (error) => {
-      logError(error, { component: "ProductsContent.loadProducts" });
-      toast.error("Failed to load products");
-    },
-  });
-  const [products, setProducts] = useState<ProductCardFE[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
+  // Use React Query hook for products
+  const queryFilters = {
+    ...filters,
+    sortBy: sort.field,
+    sortOrder: sort.order,
+    page,
+    limit,
+  };
+  const { data: productsData, isLoading: loading, error } = useProducts(queryFilters);
+  
+  const products = productsData?.data || [];
+  const totalItems = productsData?.count || 0;
+
   const [showFilters, setShowFilters] = useState(false);
   const [filterOptions, setFilterOptions] = useState(PRODUCT_FILTERS);
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
+
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      logError(error, { component: "ProductsContent.loadProducts" });
+      toast.error("Failed to load products");
+    }
+  }, [error]);
 
   // Extract view from filters
   const view = (filters.view as "grid" | "table") || "grid";
@@ -81,11 +91,6 @@ function ProductsContent() {
   useEffect(() => {
     loadFilterOptions();
   }, []);
-
-  // Load products when filters, sort, or page changes
-  useEffect(() => {
-    loadProducts();
-  }, [filters, sort, page, limit]);
 
   const loadFilterOptions = async () => {
     try {
@@ -143,43 +148,6 @@ function ProductsContent() {
       });
     }
   };
-
-  const loadProducts = () =>
-    execute(async () => {
-      // Build filter params
-      const filterParams: any = {};
-      if (filters.categoryId) filterParams.categoryId = filters.categoryId;
-      if (filters.shopId) filterParams.shopId = filters.shopId;
-      if (filters.minPrice) filterParams.minPrice = Number(filters.minPrice);
-      if (filters.maxPrice) filterParams.maxPrice = Number(filters.maxPrice);
-      if (filters.status) filterParams.status = filters.status;
-      if (filters.featured === "true") filterParams.featured = true;
-      if (filters.search) filterParams.search = filters.search;
-
-      // Get cursor for current page
-      const startAfter = cursors[page - 1];
-
-      const response = await productsService.list({
-        ...filterParams,
-        sortBy: sort?.field || "createdAt",
-        sortOrder: sort?.order || "desc",
-        startAfter: startAfter || undefined,
-        limit,
-      } as any);
-
-      const productsData = response.data || [];
-      setProducts(productsData);
-      setTotalItems(response.pagination?.total || productsData.length);
-
-      // Store cursor for next page
-      if (response.pagination?.nextCursor && !cursors[page]) {
-        setCursors((prev) => {
-          const newCursors = [...prev];
-          newCursors[page] = response.pagination.nextCursor;
-          return newCursors;
-        });
-      }
-    });
 
   const handleResetFilters = useCallback(() => {
     resetUrlFilters();

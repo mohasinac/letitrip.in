@@ -1,6 +1,6 @@
 /**
  * UserProfileSkeleton Component
- * 
+ *
  * Loading skeleton for user profile page
  * Matches the layout of actual UserProfile component
  */
@@ -92,7 +92,10 @@ export function UserProfileSkeleton() {
         <div className="h-6 bg-gray-200 rounded w-40" />
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 rounded">
+            <div
+              key={i}
+              className="flex items-center gap-4 p-3 bg-gray-50 rounded"
+            >
               <div className="w-10 h-10 bg-gray-200 rounded" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-3/4" />

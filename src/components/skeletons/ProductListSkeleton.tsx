@@ -1,6 +1,6 @@
 /**
  * ProductListSkeleton Component
- * 
+ *
  * Loading skeleton for product list view
  * Matches the layout of actual ProductList component
  */
@@ -50,7 +50,7 @@ export function ProductListSkeleton() {
 
 /**
  * ProductListSkeletonList Component
- * 
+ *
  * List of product list skeletons
  */
 export function ProductListSkeletonList({ count = 5 }: { count?: number }) {

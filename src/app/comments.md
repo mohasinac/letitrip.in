@@ -1,5 +1,35 @@
 # src/app - Future Improvements & Refactoring Notes
 
+## Performance Improvements
+
+### React Query & Suspense Integration ✅
+
+**Status**: Implemented in product pages
+
+**Product Detail Page (`products/[slug]/page.tsx`):**
+- ✅ Migrated to React Query `useProductBySlug` hook
+- ✅ Added Suspense boundary with ProductPageSkeleton fallback
+- ✅ Split into ProductContent component for better Suspense support
+- ✅ Automatic caching and background refetching
+- ✅ Removed manual loading state management (useLoadingState)
+- ✅ Error handling via React Query built-in error states
+
+**Products Listing Page (`products/page.tsx`):**
+- ✅ Migrated to React Query `useProducts` hook
+- ✅ Already has Suspense boundary with loading fallback
+- ✅ Automatic refetch on filter/sort/page changes
+- ✅ Removed manual loadProducts function
+- ✅ Cleaner state management with React Query
+
+**Benefits:**
+- Automatic caching reduces redundant API calls
+- Suspense provides better loading UX
+- React Query handles loading/error states
+- Background refetching keeps data fresh
+- Improved performance with cached data
+
+---
+
 ## Route Organization
 
 ### Current Issues
