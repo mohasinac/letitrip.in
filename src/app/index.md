@@ -53,7 +53,18 @@ The `src/app` directory contains all Next.js App Router pages, layouts, API rout
 
 ### `(public)/` - Public Pages
 
-Public pages accessible without authentication:
+Public pages accessible without authentication.
+
+#### `(public)/layout.tsx`
+
+- **Purpose**: Minimal layout for public pages
+- **Features**:
+  - SEO metadata configured for public indexing
+  - No authentication required
+  - Relies on root layout for Header, Footer, Breadcrumbs
+  - Intentionally minimal for page flexibility
+
+**Pages**:
 
 - `/products` - Product listing with filters and search
 - `/shops` - Shop directory and individual shop pages
