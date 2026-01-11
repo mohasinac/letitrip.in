@@ -4,6 +4,13 @@
 
 The `src/app` directory contains all Next.js App Router pages, layouts, API routes, and server actions. This follows the Next.js 13+ App Router convention where folder structure defines routes.
 
+**Route Groups**: Pages are organized into route groups for better structure:
+
+- `(public)` - Public pages (products, shops, categories, etc.)
+- `(auth)` - Authentication pages (login, register, etc.)
+- `(protected)` - Protected pages requiring authentication (user, cart, seller, etc.)
+- `(admin)` - Admin dashboard pages
+
 ## Key Files
 
 ### Layout & Error Handling
@@ -41,6 +48,59 @@ The `src/app` directory contains all Next.js App Router pages, layouts, API rout
 
 - **Purpose**: 404 page for non-existent routes
 - **Features**: Custom 404 UI with navigation suggestions
+
+## Route Groups
+
+### `(public)/` - Public Pages
+
+Public pages accessible without authentication:
+
+- `/products` - Product listing with filters and search
+- `/shops` - Shop directory and individual shop pages
+- `/categories` - Category navigation and filtered views
+- `/auctions` - Live and upcoming auctions
+- `/blog` - Blog posts and articles
+- `/reviews` - Product and shop reviews
+- `/search` - Global search results
+- `/compare` - Product comparison tool
+- `/company` - About us and company information
+- `/contact` - Contact form
+- `/faq` - Frequently asked questions
+- `/guide` - User guides and tutorials
+- `/events` - Platform events
+- `/fees` - Fee structure information
+- `/privacy-policy` - Privacy policy
+- `/terms-of-service` - Terms of service
+- `/cookie-policy` - Cookie policy
+- `/shipping-policy` - Shipping policy
+- `/refund-policy` - Refund policy
+
+### `(auth)/` - Authentication Pages
+
+Authentication-related pages:
+
+- `/login` - User login
+- `/register` - User registration
+- `/logout` - Logout confirmation
+- `/forgot-password` - Password reset request
+- `/reset-password` - Password reset with token
+
+### `(protected)/` - Protected Pages
+
+Pages requiring authentication:
+
+- `/user` - User dashboard and profile
+- `/seller` - Seller dashboard
+- `/cart` - Shopping cart
+- `/checkout` - Checkout process
+- `/support` - Support tickets
+
+### `(admin)/` - Admin Pages
+
+Admin dashboard and management:
+
+- `/admin` - Admin dashboard root
+- `/admin/*` - Various admin management pages
 
 ### Main Pages
 
@@ -759,6 +819,7 @@ API routes provide backend endpoints for the application.
 
 - `api/middleware/*` - API middleware
 - **`api/_middleware/rate-limit.ts`** - Rate limiting middleware
+
   - **Exports**:
     - `withRateLimit(handler, options)` - HOF to wrap API route handlers with rate limiting
     - `RateLimitMiddleware` - Pre-configured middleware wrappers (auth, api, public, passwordReset, search)
