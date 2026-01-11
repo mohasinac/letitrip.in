@@ -1,8 +1,8 @@
 "use client";
 
 import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
 import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { FormTextarea } from "@/components/forms/FormTextarea";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";

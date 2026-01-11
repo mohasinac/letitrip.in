@@ -1,8 +1,8 @@
 "use client";
 
 import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
 import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
+import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { StepProps } from "./types";

@@ -16,6 +16,7 @@
 **Analysis Summary:**
 
 RichTextEditor is a comprehensive component providing:
+
 - Full rich text formatting (bold, italic, headings, lists, etc.)
 - Toolbar with formatting controls
 - HTML output with sanitization
@@ -23,6 +24,7 @@ RichTextEditor is a comprehensive component providing:
 - Currently used in: ShopForm, AuctionForm, CategoryForm, Blog Wizard
 
 FormRichText would be a form-focused wrapper that adds:
+
 - Form field integration (label, error, helperText)
 - Consistent form styling
 - React Hook Form integration
@@ -45,14 +47,16 @@ FormRichText would be a form-focused wrapper that adds:
 **Analysis Summary:**
 
 MediaUploader is a comprehensive component that handles:
+
 - Single or multiple file uploads
-- Drag-and-drop functionality  
+- Drag-and-drop functionality
 - File preview with thumbnails
 - Remove/reorder capabilities
 - Integration with media service
 - Currently used in: User Settings (avatar), Admin Product Edit, Category Form, Hero Slides
 
 FormFileUpload is a form-focused component that provides:
+
 - Single file upload with form integration
 - useMediaUpload hook integration
 - Upload progress indication
@@ -78,11 +82,13 @@ FormFileUpload is a form-focused component that provides:
 **Analysis Summary:**
 
 FormDatePicker is a date-only component suitable for:
+
 - Birthdate selection
 - Event dates without specific times
 - Date range filters (future implementation)
 
 DateTimePicker is currently used (and appropriate) for:
+
 - Auction start/end times (needs precise time)
 - Coupon validity periods (needs day start/end times)
 - Scheduled operations

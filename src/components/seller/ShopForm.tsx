@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Save } from "lucide-react";
-import SlugInput from "@/components/common/SlugInput";
 import RichTextEditor from "@/components/common/RichTextEditor";
-import { useShopSlugValidation } from "@/lib/validation/slug";
-import type { ShopFE } from "@/types/frontend/shop.types";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { FormActions } from "@/components/ui/FormActions";
+import SlugInput from "@/components/common/SlugInput";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { FormActions } from "@/components/ui/FormActions";
+import { useShopSlugValidation } from "@/lib/validation/slug";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import { Save } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ShopFormProps {
   shop?: ShopFE;
@@ -31,8 +31,12 @@ export default function ShopForm({
   const [slug, setSlug] = useState(shop?.slug || "");
   const [description, setDescription] = useState(shop?.description || "");
   const [location, setLocation] = useState(shop?.address || "");
-  const [phone, setPhone] = useState(shop?.phone?.replace(/^\+\d+\s*/, "") || "");
-  const [phoneCountryCode, setPhoneCountryCode] = useState(shop?.phone?.match(/^(\+\d+)/)?.[1] || "+91");
+  const [phone, setPhone] = useState(
+    shop?.phone?.replace(/^\+\d+\s*/, "") || ""
+  );
+  const [phoneCountryCode, setPhoneCountryCode] = useState(
+    shop?.phone?.match(/^(\+\d+)/)?.[1] || "+91"
+  );
   const [email, setEmail] = useState(shop?.email || "");
   const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -223,8 +227,8 @@ export default function ShopForm({
                 ? "Creating..."
                 : "Saving..."
               : mode === "create"
-                ? "Create Shop"
-                : "Save Changes"}
+              ? "Create Shop"
+              : "Save Changes"}
           </Button>
         }
       />

@@ -31,6 +31,7 @@
 ### Scope
 
 **Utilities (30+ files)**
+
 - Formatters (date, price, phone, number, etc.)
 - Validators (email, phone, pincode, URL)
 - Date utilities (manipulation, formatting)
@@ -39,6 +40,7 @@
 - Sanitization functions
 
 **Components (30+ components)**
+
 - Form components (20 components)
 - UI components (Button, Card, Modal, etc.)
 - Value displays (DateDisplay, Price, etc.)
@@ -46,11 +48,13 @@
 - Layout components
 
 **Hooks (10+ hooks)**
+
 - useMediaQuery, useDebounce, useLocalStorage
 - useClipboard, usePrevious, useToggle
 - Other generic React hooks
 
 **Styles**
+
 - Tailwind configuration
 - Theme utilities
 - CSS variables
@@ -94,9 +98,7 @@ Add workspace configuration:
 ```json
 {
   "name": "letitrip",
-  "workspaces": [
-    "react-library"
-  ],
+  "workspaces": ["react-library"],
   "scripts": {
     "lib:dev": "cd react-library && npm run dev",
     "lib:build": "cd react-library && npm run build",
@@ -204,19 +206,19 @@ react-library/
 
 ```typescript
 // Utilities
-export * from './utils';
+export * from "./utils";
 
 // Components
-export * from './components';
+export * from "./components";
 
 // Hooks
-export * from './hooks';
+export * from "./hooks";
 
 // Styles
-export * from './styles';
+export * from "./styles";
 
 // Types
-export * from './types';
+export * from "./types";
 ```
 
 ---
@@ -256,9 +258,7 @@ export * from './types';
       "types": "./dist/hooks/index.d.ts"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc && vite build",
@@ -295,10 +295,10 @@ export * from './types';
 ### vite.config.ts
 
 ```typescript
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
-import dts from 'vite-plugin-dts';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
   plugins: [
@@ -310,21 +310,21 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        utils: resolve(__dirname, 'src/utils/index.ts'),
-        components: resolve(__dirname, 'src/components/index.ts'),
-        hooks: resolve(__dirname, 'src/hooks/index.ts'),
+        index: resolve(__dirname, "src/index.ts"),
+        utils: resolve(__dirname, "src/utils/index.ts"),
+        components: resolve(__dirname, "src/components/index.ts"),
+        hooks: resolve(__dirname, "src/hooks/index.ts"),
       },
-      name: 'LetitripReactLibrary',
-      formats: ['es', 'cjs'],
+      name: "LetitripReactLibrary",
+      formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: ["react", "react-dom", "react/jsx-runtime"],
       output: {
         globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-          'react/jsx-runtime': 'jsxRuntime',
+          react: "React",
+          "react-dom": "ReactDOM",
+          "react/jsx-runtime": "jsxRuntime",
         },
       },
     },
@@ -380,22 +380,22 @@ export default defineConfig({
 ### .storybook/main.ts
 
 ```typescript
-import type { StorybookConfig } from '@storybook/react-vite';
+import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+    "@storybook/addon-interactions",
+    "@storybook/addon-a11y",
   ],
   framework: {
-    name: '@storybook/react-vite',
+    name: "@storybook/react-vite",
     options: {},
   },
   docs: {
-    autodocs: 'tag',
+    autodocs: "tag",
   },
 };
 
@@ -405,12 +405,12 @@ export default config;
 ### .storybook/preview.ts
 
 ```typescript
-import type { Preview } from '@storybook/react';
-import '../src/styles/tailwind.css';
+import type { Preview } from "@storybook/react";
+import "../src/styles/tailwind.css";
 
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
+    actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -426,21 +426,21 @@ export default preview;
 ### Example Story - stories/components/forms/FormInput.stories.tsx
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react';
-import { FormInput } from '../../../src/components/forms/FormInput';
+import type { Meta, StoryObj } from "@storybook/react";
+import { FormInput } from "../../../src/components/forms/FormInput";
 
 const meta = {
-  title: 'Components/Forms/FormInput',
+  title: "Components/Forms/FormInput",
   component: FormInput,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    label: { control: 'text' },
+    label: { control: "text" },
     type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number'],
+      control: "select",
+      options: ["text", "email", "password", "number"],
     },
   },
 } satisfies Meta<typeof FormInput>;
@@ -450,31 +450,31 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    label: 'Username',
-    placeholder: 'Enter your username',
+    label: "Username",
+    placeholder: "Enter your username",
   },
 };
 
 export const WithError: Story = {
   args: {
-    label: 'Email',
-    type: 'email',
-    error: 'Please enter a valid email address',
+    label: "Email",
+    type: "email",
+    error: "Please enter a valid email address",
   },
 };
 
 export const Required: Story = {
   args: {
-    label: 'Full Name',
+    label: "Full Name",
     required: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    label: 'Disabled Input',
+    label: "Disabled Input",
     disabled: true,
-    value: 'Cannot edit this',
+    value: "Cannot edit this",
   },
 };
 ```
@@ -486,6 +486,7 @@ export const Disabled: Story = {
 ### Phase 1: Setup (Task 14.1)
 
 1. **Create directory structure**
+
    ```powershell
    mkdir react-library
    cd react-library
@@ -493,6 +494,7 @@ export const Disabled: Story = {
    ```
 
 2. **Install dependencies**
+
    ```powershell
    npm install --save-dev vite @vitejs/plugin-react typescript
    npm install --save-dev @storybook/react @storybook/react-vite
@@ -501,6 +503,7 @@ export const Disabled: Story = {
    ```
 
 3. **Create config files**
+
    - vite.config.ts
    - tsconfig.json
    - .storybook/main.ts
@@ -513,6 +516,7 @@ export const Disabled: Story = {
 ### Phase 2: Utilities Migration (Tasks 14.2-14.6)
 
 1. **Copy utility files** (don't delete from main app yet)
+
    - src/lib/formatters.ts → react-library/src/utils/formatters.ts
    - src/lib/validators.ts → react-library/src/utils/validators.ts
    - src/lib/date-utils.ts → react-library/src/utils/date-utils.ts
@@ -522,25 +526,29 @@ export const Disabled: Story = {
    - src/lib/price.utils.ts → react-library/src/utils/price.ts
 
 2. **Create index files**
+
    - react-library/src/utils/index.ts (export all utilities)
 
 3. **Add Storybook stories**
+
    - stories/utils/Formatters.stories.tsx
    - stories/utils/Validators.stories.tsx
 
 4. **Test library build**
+
    ```powershell
    cd react-library
    npm run build
    ```
 
 5. **Update ONE file in main app as test**
+
    ```typescript
    // Before
-   import { formatPrice } from '@/lib/formatters';
-   
+   import { formatPrice } from "@/lib/formatters";
+
    // After
-   import { formatPrice } from '@letitrip/react-library';
+   import { formatPrice } from "@letitrip/react-library";
    ```
 
 6. **Verify it works, then continue**
@@ -548,20 +556,25 @@ export const Disabled: Story = {
 ### Phase 3: Component Migration (Tasks 15.1-15.6)
 
 1. **Copy form components** (maintain in main app initially)
-   - src/components/forms/* → react-library/src/components/forms/*
+
+   - src/components/forms/_ → react-library/src/components/forms/_
 
 2. **Copy UI components**
-   - src/components/ui/* → react-library/src/components/ui/*
+
+   - src/components/ui/_ → react-library/src/components/ui/_
 
 3. **Copy value displays**
-   - src/components/common/values/* → react-library/src/components/values/*
+
+   - src/components/common/values/_ → react-library/src/components/values/_
 
 4. **Copy pickers**
+
    - src/components/common/DateTimePicker.tsx → react-library/src/components/pickers/
 
 5. **Add Storybook stories for each component**
 
 6. **Test components in Storybook**
+
    ```powershell
    cd react-library
    npm run storybook
@@ -575,6 +588,7 @@ export const Disabled: Story = {
 ### Phase 4: Hooks Migration (Task 15.4)
 
 1. **Copy generic hooks**
+
    - src/hooks/useMediaQuery.ts → react-library/src/hooks/
    - src/hooks/useDebounce.ts → react-library/src/hooks/
    - (other generic hooks)
@@ -586,6 +600,7 @@ export const Disabled: Story = {
 ### Phase 5: Styles Migration (Task 16.1)
 
 1. **Extract Tailwind config**
+
    - Create react-library/tailwind.config.ts
    - Export reusable theme tokens
 
@@ -596,6 +611,7 @@ export const Disabled: Story = {
 ### Phase 6: Cleanup (After all migrations)
 
 1. **Delete original files from main app**
+
    - Only after all imports updated
    - Use grep to find any remaining old imports
 
@@ -611,6 +627,7 @@ export const Disabled: Story = {
 ### Utilities (30+ files)
 
 #### Core Utilities
+
 - ✅ `src/lib/formatters.ts` → `utils/formatters.ts`
 - ✅ `src/lib/validators.ts` → `utils/validators.ts`
 - ✅ `src/lib/date-utils.ts` → `utils/date-utils.ts`
@@ -620,6 +637,7 @@ export const Disabled: Story = {
 - ✅ `src/lib/price.utils.ts` → `utils/price.ts`
 
 #### Validation
+
 - ✅ `src/lib/validation/email.ts` → `utils/validators/email.ts`
 - ✅ `src/lib/validation/phone.ts` → `utils/validators/phone.ts`
 - ✅ `src/lib/validation/pincode.ts` → `utils/validators/pincode.ts`
@@ -628,6 +646,7 @@ export const Disabled: Story = {
 ### Components (30+ components)
 
 #### Form Components (20 components)
+
 - ✅ `src/components/forms/FormInput.tsx`
 - ✅ `src/components/forms/FormTextarea.tsx`
 - ✅ `src/components/forms/FormSelect.tsx`
@@ -651,6 +670,7 @@ export const Disabled: Story = {
 - ✅ `src/components/forms/FormRating.tsx`
 
 #### UI Components
+
 - ✅ `src/components/ui/Button.tsx`
 - ✅ `src/components/ui/Card.tsx`
 - ✅ `src/components/ui/Modal.tsx`
@@ -658,16 +678,19 @@ export const Disabled: Story = {
 - ✅ `src/components/common/Badge.tsx`
 
 #### Value Displays
+
 - ✅ `src/components/common/values/DateDisplay.tsx`
 - ✅ `src/components/common/values/Price.tsx`
 - ✅ `src/components/common/values/` (all value components)
 
 #### Pickers
+
 - ✅ `src/components/common/DateTimePicker.tsx`
 - ✅ `src/components/common/StateSelector.tsx`
 - ✅ `src/components/common/PincodeInput.tsx`
 
 ### Hooks (10+ hooks)
+
 - ✅ `src/hooks/useMediaQuery.ts`
 - ✅ `src/hooks/useDebounce.ts`
 - ✅ `src/hooks/useLocalStorage.ts`
@@ -677,6 +700,7 @@ export const Disabled: Story = {
 - Other generic React hooks (not business-logic specific)
 
 ### Styles
+
 - ✅ Tailwind configuration (reusable parts)
 - ✅ `src/lib/theme/` utilities
 - ✅ CSS variables
@@ -690,43 +714,43 @@ export const Disabled: Story = {
 
 ```typescript
 // Utilities
-import { formatPrice, formatDate } from '@/lib/formatters';
-import { isValidEmail, isValidPhone } from '@/lib/validators';
-import { cn, slugify } from '@/lib/utils';
+import { formatPrice, formatDate } from "@/lib/formatters";
+import { isValidEmail, isValidPhone } from "@/lib/validators";
+import { cn, slugify } from "@/lib/utils";
 
 // Components
-import { FormInput } from '@/components/forms/FormInput';
-import { FormPhoneInput } from '@/components/forms/FormPhoneInput';
-import { DateDisplay } from '@/components/common/values/DateDisplay';
+import { FormInput } from "@/components/forms/FormInput";
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+import { DateDisplay } from "@/components/common/values/DateDisplay";
 
 // Hooks
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useDebounce } from "@/hooks/useDebounce";
 ```
 
 ### After (With Library)
 
 ```typescript
 // Utilities
-import { formatPrice, formatDate } from '@letitrip/react-library';
-import { isValidEmail, isValidPhone } from '@letitrip/react-library';
-import { cn, slugify } from '@letitrip/react-library';
+import { formatPrice, formatDate } from "@letitrip/react-library";
+import { isValidEmail, isValidPhone } from "@letitrip/react-library";
+import { cn, slugify } from "@letitrip/react-library";
 
 // Components
-import { FormInput, FormPhoneInput } from '@letitrip/react-library';
-import { DateDisplay } from '@letitrip/react-library';
+import { FormInput, FormPhoneInput } from "@letitrip/react-library";
+import { DateDisplay } from "@letitrip/react-library";
 
 // Hooks
-import { useMediaQuery, useDebounce } from '@letitrip/react-library';
+import { useMediaQuery, useDebounce } from "@letitrip/react-library";
 ```
 
 ### Alternative (Specific Imports for Tree-Shaking)
 
 ```typescript
 // Import specific modules
-import { formatPrice, formatDate } from '@letitrip/react-library/utils';
-import { FormInput, FormPhoneInput } from '@letitrip/react-library/components';
-import { useMediaQuery, useDebounce } from '@letitrip/react-library/hooks';
+import { formatPrice, formatDate } from "@letitrip/react-library/utils";
+import { FormInput, FormPhoneInput } from "@letitrip/react-library/components";
+import { useMediaQuery, useDebounce } from "@letitrip/react-library/hooks";
 ```
 
 ### Update Script
@@ -741,20 +765,20 @@ $files = Get-ChildItem -Path "src" -Include "*.ts","*.tsx" -Recurse
 
 foreach ($file in $files) {
     $content = Get-Content $file.FullName -Raw
-    
+
     # Update utility imports
     $content = $content -replace "from '@/lib/formatters'", "from '@letitrip/react-library'"
     $content = $content -replace "from '@/lib/validators'", "from '@letitrip/react-library'"
     $content = $content -replace "from '@/lib/date-utils'", "from '@letitrip/react-library'"
     $content = $content -replace "from '@/lib/utils'", "from '@letitrip/react-library'"
-    
+
     # Update component imports
     $content = $content -replace "from '@/components/forms/", "from '@letitrip/react-library/components/"
     $content = $content -replace "from '@/components/ui/", "from '@letitrip/react-library/components/"
-    
+
     # Update hook imports
     $content = $content -replace "from '@/hooks/(useMediaQuery|useDebounce|useLocalStorage|useClipboard|usePrevious|useToggle)'", "from '@letitrip/react-library/hooks/`$1'"
-    
+
     Set-Content $file.FullName $content
 }
 
@@ -769,23 +793,23 @@ Write-Host "Import paths updated!"
 
 ```typescript
 // react-library/src/utils/__tests__/formatters.test.ts
-import { describe, it, expect } from 'vitest';
-import { formatPrice, formatDate } from '../formatters';
+import { describe, it, expect } from "vitest";
+import { formatPrice, formatDate } from "../formatters";
 
-describe('formatPrice', () => {
-  it('formats INR currency correctly', () => {
-    expect(formatPrice(1000, 'INR')).toBe('₹1,000.00');
+describe("formatPrice", () => {
+  it("formats INR currency correctly", () => {
+    expect(formatPrice(1000, "INR")).toBe("₹1,000.00");
   });
 
-  it('formats USD currency correctly', () => {
-    expect(formatPrice(1000, 'USD')).toBe('$1,000.00');
+  it("formats USD currency correctly", () => {
+    expect(formatPrice(1000, "USD")).toBe("$1,000.00");
   });
 });
 
-describe('formatDate', () => {
-  it('formats date correctly', () => {
-    const date = new Date('2024-01-15');
-    expect(formatDate(date)).toBe('15 Jan 2024');
+describe("formatDate", () => {
+  it("formats date correctly", () => {
+    const date = new Date("2024-01-15");
+    expect(formatDate(date)).toBe("15 Jan 2024");
   });
 });
 ```
@@ -796,13 +820,13 @@ Test library in main app:
 
 ```typescript
 // src/__tests__/library-integration.test.ts
-import { render, screen } from '@testing-library/react';
-import { FormInput } from '@letitrip/react-library';
+import { render, screen } from "@testing-library/react";
+import { FormInput } from "@letitrip/react-library";
 
-describe('Library Integration', () => {
-  it('renders FormInput from library', () => {
+describe("Library Integration", () => {
+  it("renders FormInput from library", () => {
     render(<FormInput label="Test" />);
-    expect(screen.getByLabelText('Test')).toBeInTheDocument();
+    expect(screen.getByLabelText("Test")).toBeInTheDocument();
   });
 });
 ```
@@ -813,7 +837,7 @@ Use Storybook for visual testing:
 
 ```typescript
 // react-library/.storybook/test-runner.ts
-import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import { toMatchImageSnapshot } from "jest-image-snapshot";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -832,6 +856,7 @@ export default {
 ## Checklist
 
 ### Setup Phase
+
 - [ ] Create react-library directory
 - [ ] Initialize package.json
 - [ ] Install dependencies
@@ -842,6 +867,7 @@ export default {
 - [ ] Update root tsconfig.json paths
 
 ### Utilities Migration
+
 - [ ] Copy utility files
 - [ ] Create index exports
 - [ ] Add Storybook stories
@@ -850,6 +876,7 @@ export default {
 - [ ] Verify test passes
 
 ### Component Migration
+
 - [ ] Copy form components
 - [ ] Copy UI components
 - [ ] Copy value displays
@@ -859,28 +886,33 @@ export default {
 - [ ] Update imports gradually
 
 ### Hooks Migration
+
 - [ ] Copy generic hooks
 - [ ] Add hook stories
 - [ ] Update imports
 
 ### Styles Migration
+
 - [ ] Extract Tailwind config
 - [ ] Extract CSS variables
 - [ ] Test styling
 
 ### Documentation
+
 - [ ] Write README.md
 - [ ] Create migration guide
 - [ ] Add usage examples
 - [ ] Write changelog
 
 ### Testing
+
 - [ ] Run unit tests
 - [ ] Run integration tests
 - [ ] Visual regression tests
 - [ ] Test in main app
 
 ### Cleanup
+
 - [ ] Delete original files
 - [ ] Search for old imports
 - [ ] Final build test

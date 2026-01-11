@@ -49,7 +49,7 @@ export default function SettingsPage() {
     const countryCodeMatch = phoneWithCode.match(/^(\+\d+)/);
     const countryCode = countryCodeMatch ? countryCodeMatch[1] : "+91";
     const phoneOnly = phoneWithCode.replace(/^\+\d+\s*/, "");
-    
+
     setFormData({
       name: user.fullName || "",
       email: user.email || "",
@@ -96,7 +96,9 @@ export default function SettingsPage() {
       await authService.updateProfile({
         fullName: formData.name,
         email: formData.email,
-        phoneNumber: formData.phone ? `${formData.phoneCountryCode} ${formData.phone}` : undefined,
+        phoneNumber: formData.phone
+          ? `${formData.phoneCountryCode} ${formData.phone}`
+          : undefined,
       });
 
       setSuccess(true);
@@ -223,7 +225,11 @@ export default function SettingsPage() {
               value={formData.phone}
               countryCode={formData.phoneCountryCode}
               onChange={(phone, countryCode) =>
-                setFormData({ ...formData, phone, phoneCountryCode: countryCode })
+                setFormData({
+                  ...formData,
+                  phone,
+                  phoneCountryCode: countryCode,
+                })
               }
               placeholder="9876543210"
               autoComplete="tel"

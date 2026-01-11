@@ -3,12 +3,14 @@
 ## Running Lighthouse Audits
 
 ### Prerequisites
+
 ```bash
 # Ensure dev server is running
 npm run dev
 ```
 
 ### Run Audit
+
 ```bash
 # Run comprehensive audit on all pages
 node scripts/development/run-lighthouse.js
@@ -30,28 +32,28 @@ code lighthouse-reports/lighthouse-report.md
 
 ### Core Web Vitals
 
-| Metric | Good | Needs Work | Poor | What It Measures |
-|--------|------|------------|------|------------------|
-| **LCP** | ≤ 2.5s | 2.5s - 4.0s | > 4.0s | Loading performance |
-| **FID (TBT)** | ≤ 200ms | 200ms - 600ms | > 600ms | Interactivity |
-| **CLS** | ≤ 0.1 | 0.1 - 0.25 | > 0.25 | Visual stability |
+| Metric        | Good    | Needs Work    | Poor    | What It Measures    |
+| ------------- | ------- | ------------- | ------- | ------------------- |
+| **LCP**       | ≤ 2.5s  | 2.5s - 4.0s   | > 4.0s  | Loading performance |
+| **FID (TBT)** | ≤ 200ms | 200ms - 600ms | > 600ms | Interactivity       |
+| **CLS**       | ≤ 0.1   | 0.1 - 0.25    | > 0.25  | Visual stability    |
 
 ### Other Metrics
 
-| Metric | Good | Needs Work | Poor |
-|--------|------|------------|------|
+| Metric  | Good   | Needs Work  | Poor   |
+| ------- | ------ | ----------- | ------ |
 | **FCP** | ≤ 1.8s | 1.8s - 3.0s | > 3.0s |
-| **SI** | ≤ 3.4s | 3.4s - 5.8s | > 5.8s |
+| **SI**  | ≤ 3.4s | 3.4s - 5.8s | > 5.8s |
 | **TTI** | ≤ 3.8s | 3.8s - 7.3s | > 7.3s |
 
 ## Lighthouse Scores
 
-| Category | Good | Needs Work | Poor |
-|----------|------|------------|------|
-| Performance | 90-100 | 50-89 | 0-49 |
-| Accessibility | 90-100 | 50-89 | 0-49 |
-| Best Practices | 90-100 | 50-89 | 0-49 |
-| SEO | 90-100 | 50-89 | 0-49 |
+| Category       | Good   | Needs Work | Poor |
+| -------------- | ------ | ---------- | ---- |
+| Performance    | 90-100 | 50-89      | 0-49 |
+| Accessibility  | 90-100 | 50-89      | 0-49 |
+| Best Practices | 90-100 | 50-89      | 0-49 |
+| SEO            | 90-100 | 50-89      | 0-49 |
 
 ## Quick Fixes
 
@@ -111,14 +113,17 @@ export default function Page() {
 }
 
 // ✅ GOOD: Proper meta tags
-import Head from 'next/head';
+import Head from "next/head";
 
 export default function Page() {
   return (
     <>
       <Head>
         <title>Product Listing | Letitrip</title>
-        <meta name="description" content="Browse our wide selection of products" />
+        <meta
+          name="description"
+          content="Browse our wide selection of products"
+        />
         <meta property="og:title" content="Product Listing" />
         <meta property="og:description" content="Browse our wide selection" />
       </Head>
@@ -131,12 +136,14 @@ export default function Page() {
 ## Output Files
 
 ### Markdown Report
+
 ```
 lighthouse-reports/
   └── lighthouse-report.md          # Summary report with all pages
 ```
 
 ### JSON Reports
+
 ```
 lighthouse-reports/
   ├── home-desktop.json             # Full Home page report
@@ -166,27 +173,36 @@ lighthouse-reports/
 ## Common Patterns
 
 ### Lazy Loading
+
 ```typescript
 // For components
-const Modal = dynamic(() => import('./Modal'), { ssr: false });
+const Modal = dynamic(() => import("./Modal"), { ssr: false });
 
 // For images
-<Image src="..." loading="lazy" />
+<Image src="..." loading="lazy" />;
 ```
 
 ### Code Splitting
+
 ```typescript
 // Route-based
 // pages/dashboard.tsx is automatically code-split
 
 // Component-based
-const Chart = dynamic(() => import('./Chart'));
+const Chart = dynamic(() => import("./Chart"));
 ```
 
 ### Preloading
+
 ```typescript
 // In _document.tsx or component
-<link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin />
+<link
+  rel="preload"
+  href="/fonts/inter.woff2"
+  as="font"
+  type="font/woff2"
+  crossOrigin
+/>
 ```
 
 ## Next Steps
