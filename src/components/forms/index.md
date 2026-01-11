@@ -403,7 +403,7 @@ function BookingForm() {
 - `value?: string | null` - URL of uploaded file
 - `onChange?: (url: string | null) => void` - URL change handler
 - `onFileSelect?: (file: File | null) => void` - File selection handler
-- `accept?: string` - File types (e.g., "image/*,video/*")
+- `accept?: string` - File types (e.g., "image/_,video/_")
 - `maxSize?: number` - Max file size in bytes (default: 5MB)
 - `allowedTypes?: string[]` - Allowed MIME types
 - `showPreview?: boolean` - Show file preview (default: true)
@@ -447,6 +447,81 @@ function ProductForm() {
       maxSize={5 * 1024 * 1024} // 5MB
       required
       helperText="Upload product image (max 5MB)"
+    />
+  );
+}
+```
+
+---
+
+### FormRichText.tsx
+
+**Export:** `FormRichText`
+
+**Purpose:** Rich text editor component using React Quill with formatting toolbar.
+
+**Props:**
+
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `value?: string` - HTML content value
+- `onChange?: (value: string) => void` - Content change handler
+- `placeholder?: string` - Placeholder text
+- `fullWidth?: boolean` - Full width input (default: true)
+- `compact?: boolean` - Compact size variant
+- `disabled?: boolean` - Disable editor
+- `readOnly?: boolean` - Read-only mode
+- `minHeight?: string` - Minimum editor height (default: "150px")
+- `maxHeight?: string` - Maximum editor height
+- `required?: boolean` - Required field indicator
+- `showToolbar?: boolean` - Show formatting toolbar (default: true)
+- `modules?: "minimal" | "standard" | "full"` - Toolbar preset (default: "standard")
+- Forward ref support
+
+**Toolbar Presets:**
+
+- **minimal**: Bold, italic, underline, link
+- **standard**: Headers, bold, italic, underline, strike, lists, link, blockquote
+- **full**: Complete formatting options including fonts, colors, alignment, images, videos
+
+**Features:**
+
+- Rich text editing with Quill.js editor
+- Three toolbar configuration presets
+- Text formatting: bold, italic, underline, strike, colors
+- Headers (H1-H6) with customizable styles
+- Lists: ordered and unordered with indentation
+- Links, images, and video embeds
+- Blockquotes with custom styling
+- Code blocks with syntax highlighting
+- Custom min/max height configuration
+- Character count display (excluding HTML tags)
+- Read-only mode for displaying formatted content
+- SSR-compatible with dynamic import
+- Loading skeleton while editor initializes
+- Custom scrollbar styling
+- Accessible with keyboard navigation
+- Demo: `/demo/form-rich-text`
+
+**Example:**
+
+```tsx
+import { FormRichText } from "@/components/forms/FormRichText";
+
+function BlogEditor() {
+  const [content, setContent] = useState("");
+
+  return (
+    <FormRichText
+      label="Blog Post Content"
+      value={content}
+      onChange={setContent}
+      modules="full"
+      minHeight="300px"
+      placeholder="Start writing..."
+      required
+      helperText="Write your blog post with rich formatting"
     />
   );
 }

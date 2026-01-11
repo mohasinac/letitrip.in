@@ -120,7 +120,9 @@ export default function FormFileUploadDemo() {
             <p className="text-sm text-gray-600 mb-2">Selected file:</p>
             <pre className="text-xs text-gray-800">
               {selectedFile
-                ? `${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`
+                ? `${selectedFile.name} (${(selectedFile.size / 1024).toFixed(
+                    1
+                  )} KB)`
                 : "(none)"}
             </pre>
           </div>
@@ -135,7 +137,12 @@ export default function FormFileUploadDemo() {
               label="Images Only"
               value={null}
               accept="image/*"
-              allowedTypes={["image/jpeg", "image/png", "image/gif", "image/webp"]}
+              allowedTypes={[
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "image/webp",
+              ]}
               helperText="JPEG, PNG, GIF, or WebP"
             />
 
@@ -232,15 +239,16 @@ export default function FormFileUploadDemo() {
               visual feedback
             </li>
             <li>
-              ✓ <strong>Image Preview:</strong> Automatic preview for image files
+              ✓ <strong>Image Preview:</strong> Automatic preview for image
+              files
             </li>
             <li>
               ✓ <strong>Progress Tracking:</strong> Real-time upload progress
               display
             </li>
             <li>
-              ✓ <strong>File Validation:</strong> Size and type validation before
-              upload
+              ✓ <strong>File Validation:</strong> Size and type validation
+              before upload
             </li>
             <li>
               ✓ <strong>Auto Upload:</strong> Automatic upload on file selection
@@ -251,19 +259,20 @@ export default function FormFileUploadDemo() {
               uploading
             </li>
             <li>
-              ✓ <strong>Clear Function:</strong> Easy file removal with clear button
+              ✓ <strong>Clear Function:</strong> Easy file removal with clear
+              button
             </li>
             <li>
-              ✓ <strong>Error Handling:</strong> Comprehensive error messages for
-              validation
+              ✓ <strong>Error Handling:</strong> Comprehensive error messages
+              for validation
             </li>
             <li>
               ✓ <strong>Reuses useMediaUpload:</strong> Built on existing upload
               infrastructure
             </li>
             <li>
-              ✓ <strong>Accessible:</strong> Keyboard navigation and screen reader
-              support
+              ✓ <strong>Accessible:</strong> Keyboard navigation and screen
+              reader support
             </li>
           </ul>
         </div>
