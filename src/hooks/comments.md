@@ -85,12 +85,20 @@
 
 ### usePaginationState
 
-- **Cursor Pagination**: Better cursor-based pagination support
-- **Infinite Scroll**: Support infinite scroll pattern
-- **Page Jump Validation**: Prevent invalid page jumps
-- **URL Sync**: Optional URL synchronization
-- **Memory**: Remember last visited page per resource
-- **Prefetching**: Prefetch next page data
+- [x] **Cursor Pagination**: ✅ Complete cursor-based pagination support (Task 9.5)
+  - `getCurrentCursor()`: Get cursor for current page
+  - `getNextCursor()`: Get cursor for next page
+  - `addCursor(cursor)`: Store cursor for current page
+  - Supports both cursor-based and offset-based pagination
+- [x] **Load More Pattern**: ✅ Complete with `loadMore()` method (Task 9.5)
+  - `mode: "page" | "loadMore"` configuration
+  - `loadMore()`: Increment page in load-more mode
+  - Works with cursor and offset pagination
+  - Demo: `/demo/pagination`
+- [ ] **Page Jump Validation**: Prevent invalid page jumps
+- [ ] **URL Sync**: Optional URL synchronization
+- [ ] **Memory**: Remember last visited page per resource
+- [ ] **Prefetching**: Prefetch next page data
 
 ### useResourceListState
 
