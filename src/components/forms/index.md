@@ -187,6 +187,68 @@ This folder contains reusable form components with consistent styling, validatio
 
 ---
 
+### FormPhoneInput.tsx
+
+**Export:** `FormPhoneInput`
+
+**Purpose:** Phone number input with country code selector and auto-formatting.
+
+**Props:**
+
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `value?: string` - Phone number (without country code)
+- `countryCode?: string` - Selected country code (default: "+91")
+- `onChange?: (phone: string, countryCode: string) => void` - Change handler
+- `onCountryCodeChange?: (countryCode: string) => void` - Country code change handler
+- `autoFormat?: boolean` - Enable auto-formatting on blur (default: true)
+- `showCountrySelector?: boolean` - Show country code dropdown (default: true)
+- `sanitize?: boolean` - Enable sanitization on blur (default: true)
+- `fullWidth?: boolean` - Full width input (default: true)
+- `compact?: boolean` - Compact size variant
+- Forward ref support
+
+**Features:**
+
+- Country code selector with 8 common countries (India, US, UK, Australia, UAE, Singapore, Malaysia, China)
+- Flag emojis for visual country identification
+- Auto-formatting for Indian numbers (XXXXX XXXXX format)
+- Sanitization removes invalid characters
+- Format preview shows formatted number
+- Validation support with error messages
+- Reuses `formatPhoneNumber` from @/lib/formatters
+- Reuses `sanitizePhone` from @/lib/sanitize
+- Accessible with proper ARIA attributes
+- Demo: `/demo/form-phone-input`
+
+**Example:**
+
+```tsx
+import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+
+function MyForm() {
+  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+
+  return (
+    <FormPhoneInput
+      label="Phone Number"
+      value={phone}
+      countryCode={countryCode}
+      onChange={(phone, code) => {
+        setPhone(phone);
+        setCountryCode(code);
+      }}
+      required
+      helperText="Enter your mobile number"
+    />
+  );
+}
+```
+
+---
+
 ### FormNumberInput.tsx
 
 **Export:** `FormNumberInput`

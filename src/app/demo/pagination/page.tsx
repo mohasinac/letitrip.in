@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { usePaginationState } from "@/hooks/usePaginationState";
+import { useEffect, useState } from "react";
 
 /**
  * Demo page for usePaginationState hook
@@ -92,7 +92,9 @@ export default function PaginationDemo() {
           if (mode === "loadMore") {
             // Append for load more
             setItems((prev) =>
-              pagination.currentPage === 1 ? result.items : [...prev, ...result.items]
+              pagination.currentPage === 1
+                ? result.items
+                : [...prev, ...result.items]
             );
           } else {
             // Replace for page mode
@@ -111,7 +113,9 @@ export default function PaginationDemo() {
           if (mode === "loadMore") {
             // Append for load more
             setItems((prev) =>
-              pagination.currentPage === 1 ? result.items : [...prev, ...result.items]
+              pagination.currentPage === 1
+                ? result.items
+                : [...prev, ...result.items]
             );
           } else {
             // Replace for page mode

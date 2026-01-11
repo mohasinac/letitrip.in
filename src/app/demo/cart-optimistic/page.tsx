@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import {
-  useCart,
   useAddToCart,
-  useUpdateCartItem,
-  useRemoveFromCart,
-  useClearCart,
   useApplyCoupon,
+  useCart,
+  useClearCart,
   useRemoveCoupon,
+  useRemoveFromCart,
+  useUpdateCartItem,
 } from "@/hooks/queries/useCart";
+import { useState } from "react";
 
 /**
  * Demo page for cart optimistic updates
@@ -392,7 +392,9 @@ export default function CartOptimisticDemo() {
           </h3>
           <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
             <li>Add items to cart - notice immediate UI update</li>
-            <li>Increase network delay to see optimistic updates more clearly</li>
+            <li>
+              Increase network delay to see optimistic updates more clearly
+            </li>
             <li>Update quantities - cart totals update immediately</li>
             <li>
               Enable error simulation and try any operation - watch it rollback

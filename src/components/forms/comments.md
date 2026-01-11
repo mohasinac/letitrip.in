@@ -2,6 +2,35 @@
 
 ## Completed Improvements ✅
 
+### FormPhoneInput Component (January 11, 2026)
+
+- ✅ **Country Code Selector**: Dropdown with 8 common countries (India, US, UK, Australia, UAE, Singapore, Malaysia, China)
+- ✅ **Flag Emojis**: Visual country identification in dropdown
+- ✅ **Auto-formatting**: Indian numbers formatted as XXXXX XXXXX on blur
+- ✅ **Sanitization**: Removes invalid characters using `sanitizePhone` from @/lib/sanitize
+- ✅ **Format Preview**: Shows formatted number below input field
+- ✅ **Reuses Utilities**: Uses `formatPhoneNumber` from @/lib/formatters
+- ✅ **Validation Support**: Error messages and required field indicators
+- ✅ **Flexible API**: Separate callbacks for phone and country code changes
+- ✅ **State Variants**: Compact size, disabled state, without country selector
+- ✅ **Demo Page**: Created `/demo/form-phone-input` with examples
+- ✅ **Task 10.1 Complete**: 45 minutes
+
+**Usage:**
+
+```tsx
+<FormPhoneInput
+  label="Phone Number"
+  value={phone}
+  countryCode={countryCode}
+  onChange={(phone, code) => {
+    setPhone(phone);
+    setCountryCode(code);
+  }}
+  required
+/>
+```
+
 ### Input Sanitization (January 10, 2026)
 
 - ✅ **Auto-Sanitization on Blur**: FormInput, FormTextarea, and FormField now support automatic input sanitization
@@ -138,7 +167,7 @@
 
 ### Create Specialized Components
 
-- `FormPhoneInput` - Phone number with country code selector
+- ✅ `FormPhoneInput` - Phone number with country code selector (Task 10.1 Complete)
 - `FormDatePicker` - Date picker with calendar UI
 - `FormTimePicker` - Time picker with AM/PM support
 - `FormColorPicker` - Color picker with hex/rgb/hsl support

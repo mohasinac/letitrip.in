@@ -1,7 +1,7 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 /**
  * Demo page for useInfiniteScroll hook
@@ -125,9 +125,7 @@ export default function InfiniteScrollDemo() {
             </div>
             <div>
               <span className="text-gray-600">Has More:</span>{" "}
-              <span className="font-medium">
-                {hasNextPage ? "Yes" : "No"}
-              </span>
+              <span className="font-medium">{hasNextPage ? "Yes" : "No"}</span>
             </div>
             <div>
               <span className="text-gray-600">Sentinel Visible:</span>{" "}
@@ -174,9 +172,7 @@ export default function InfiniteScrollDemo() {
               </div>
             ) : (
               <div className="text-gray-500">
-                {isIntersecting
-                  ? "Loading..."
-                  : "Scroll down to load more"}
+                {isIntersecting ? "Loading..." : "Scroll down to load more"}
               </div>
             )}
           </div>
@@ -221,9 +217,7 @@ export default function InfiniteScrollDemo() {
               <strong>React Query Integration:</strong> useInfiniteQuery manages
               page state and caching
             </li>
-            <li>
-              Scroll down slowly to see the sentinel trigger loading
-            </li>
+            <li>Scroll down slowly to see the sentinel trigger loading</li>
           </ol>
         </div>
 
@@ -234,7 +228,8 @@ export default function InfiniteScrollDemo() {
           </h3>
           <ul className="text-sm text-gray-700 space-y-1">
             <li>
-              • <strong>Total Items:</strong> {TOTAL_PAGES * PAGE_SIZE} ({TOTAL_PAGES} pages × {PAGE_SIZE} items/page)
+              • <strong>Total Items:</strong> {TOTAL_PAGES * PAGE_SIZE} (
+              {TOTAL_PAGES} pages × {PAGE_SIZE} items/page)
             </li>
             <li>
               • <strong>Simulated Delay:</strong> 1000ms per page load
@@ -249,7 +244,8 @@ export default function InfiniteScrollDemo() {
               • <strong>Debounce:</strong> 200ms (prevent duplicate loads)
             </li>
             <li>
-              • <strong>React Query:</strong> Automatic caching and deduplication
+              • <strong>React Query:</strong> Automatic caching and
+              deduplication
             </li>
           </ul>
         </div>

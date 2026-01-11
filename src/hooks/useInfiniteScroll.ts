@@ -19,7 +19,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface UseInfiniteScrollOptions {
   /**
@@ -121,7 +121,12 @@ export function useInfiniteScroll(
       const [entry] = entries;
       setIsIntersecting(entry.isIntersecting);
 
-      if (entry.isIntersecting && hasMore && !isLoadingRef.current && !disabled) {
+      if (
+        entry.isIntersecting &&
+        hasMore &&
+        !isLoadingRef.current &&
+        !disabled
+      ) {
         loadMore();
       }
     },
