@@ -636,6 +636,81 @@ const { data } = useQuery({
 
 ---
 
+### useInfiniteScroll.ts
+
+**Export:** `useInfiniteScroll(options): InfiniteScrollReturn`
+
+**Purpose:** Detects when user scrolls to bottom and triggers loading more data using Intersection Observer API.
+
+**Parameters:**
+
+- `onLoadMore: () => void | Promise<void>` - Callback to load more data
+- `hasMore?: boolean` (default: true) - Whether there's more data to load
+- `isLoading?: boolean` (default: false) - Whether currently loading
+- `threshold?: number` (default: 0.5) - Intersection threshold 0-1 (0.5 = 50% visible)
+- `rootMargin?: string` (default: "100px") - Trigger distance before element visible
+- `debounceDelay?: number` (default: 200) - Debounce delay in ms
+- `disabled?: boolean` (default: false) - Disable infinite scroll
+
+**Returns:**
+
+- `observerRef: (node: HTMLElement | null) => void` - Ref to attach to sentinel element
+- `isIntersecting: boolean` - Whether sentinel is currently intersecting
+- `loadMore: () => void` - Manual trigger to load more
+
+**Features:**
+
+- Intersection Observer API for efficient scroll detection
+- Automatic loading when sentinel element becomes visible
+- Debouncing to prevent multiple simultaneous loads
+- Works seamlessly with React Query infinite queries
+- Customizable threshold and root margin
+- Demo: `/demo/infinite-scroll`
+
+**Example:**
+
+```tsx
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+
+function ProductList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["products"],
+      queryFn: ({ pageParam = 1 }) => fetchProducts(pageParam),
+      getNextPageParam: (lastPage) => lastPage.nextPage,
+      initialPageParam: 1,
+    });
+
+  const { observerRef } = useInfiniteScroll({
+    onLoadMore: fetchNextPage,
+    hasMore: hasNextPage,
+    isLoading: isFetchingNextPage,
+    threshold: 0.5,
+    rootMargin: "100px",
+  });
+
+  const allProducts = data?.pages.flatMap((page) => page.items) ?? [];
+
+  return (
+    <div>
+      {allProducts.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+
+      {/* Sentinel element */}
+      {hasNextPage && (
+        <div ref={observerRef} className="py-4 text-center">
+          {isFetchingNextPage ? "Loading..." : "Scroll for more"}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
 ### useResourceListState.ts
 
 **Export:** `useResourceListState<T>(config): ResourceListState<T>`

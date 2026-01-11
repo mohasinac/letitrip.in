@@ -100,6 +100,21 @@
 - [ ] **Memory**: Remember last visited page per resource
 - [ ] **Prefetching**: Prefetch next page data
 
+### useInfiniteScroll
+
+- [x] **Intersection Observer**: ✅ Complete infinite scroll with Intersection Observer (Task 9.6)
+  - Detects when sentinel element becomes visible (threshold, rootMargin configurable)
+  - Automatic loading when user scrolls near bottom
+  - Debouncing (200ms default) prevents duplicate loads
+  - Integrates with React Query infinite queries
+  - `observerRef`: attach to sentinel element
+  - `isIntersecting`: current visibility state
+  - `loadMore()`: manual trigger
+  - Demo: `/demo/infinite-scroll` with 5 pages, 10 items/page, 1000ms delay
+- [ ] **Bi-directional Scroll**: Support loading older items when scrolling up
+- [ ] **Virtual Scrolling**: Optimize for very large lists
+- [ ] **Pull to Refresh**: Mobile pull-to-refresh pattern
+
 ### useResourceListState
 
 - **Virtual Scrolling**: Support for virtualized lists
