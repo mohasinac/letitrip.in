@@ -1,4 +1,21 @@
-// Utility functions export placeholder
-// This will be populated with actual utilities in Task 14.2
+/**
+ * Utility Functions
+ *
+ * This module exports all utility functions for the library.
+ * Includes formatters, validators, date utilities, and more.
+ */
 
-export {};
+// Core utilities
+export * from "./cn";
+
+// Formatters
+export * from "./formatters";
+
+// Date utilities
+export * from "./date-utils";
+
+// Validators
+export * from "./validators";
+
+// Sanitization
+export * from "./sanitize";
