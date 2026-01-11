@@ -566,25 +566,73 @@ Prevents navigation with unsaved changes.
 
 **Export:** `usePaginationState(config): PaginationState`
 
+**Purpose:** Manages pagination state with cursor-based and offset-based approaches, supporting both page-based and load-more patterns.
+
 **Parameters:**
 
-- `initialPage?: number` (default: 1)
-- `pageSize?: number` (default: 20)
-- `totalItems?: number`
+- `pageSize?: number` (default: 10) - Items per page
+- `initialPage?: number` (default: 1) - Starting page
+- `useCursor?: boolean` (default: false) - Use cursor-based pagination
+- `mode?: "page" | "loadMore"` (default: "page") - Pagination mode
 
 **Returns:**
 
-- `currentPage: number`
-- `pageSize: number`
-- `totalPages: number`
-- `totalItems: number`
-- `goToPage(page): void`
-- `goToNextPage(): void`
-- `goToPreviousPage(): void`
-- `setPageSize(size): void`
-- `hasNextPage: boolean`
-- `hasPreviousPage: boolean`
-- `reset(): void`
+- `currentPage: number` - Current page number
+- `pageSize: number` - Items per page
+- `cursors: (string | null)[]` - Array of page cursors
+- `hasNextPage: boolean` - Whether next page exists
+- `hasPreviousPage: boolean` - Whether previous page exists
+- `totalCount?: number` - Total items (offset-based only)
+- `mode: "page" | "loadMore"` - Current pagination mode
+- `goToPage(page): void` - Navigate to specific page
+- `nextPage(): void` - Go to next page
+- `previousPage(): void` - Go to previous page
+- `reset(): void` - Reset to initial state
+- `loadMore(): void` - Load next page (append mode)
+- `setCursors(cursors): void` - Set all cursors
+- `addCursor(cursor): void` - Add cursor for current page
+- `getCurrentCursor(): string | null` - Get cursor for current page
+- `getNextCursor(): string | null` - Get cursor for next page
+- `setHasNextPage(has): void` - Update hasNextPage flag
+- `setTotalCount(count): void` - Set total item count
+- `offset: number` - Current offset (for offset-based pagination)
+- `limit: number` - Alias for pageSize
+
+**Features:**
+
+- Dual mode: page-based navigation or load-more pattern
+- Cursor-based pagination for real-time data
+- Offset-based pagination with total count
+- Automatic cursor management
+- Demo: `/demo/pagination`
+
+**Example:**
+
+```tsx
+// Cursor-based with load more
+const pagination = usePaginationState({
+  pageSize: 20,
+  mode: "loadMore",
+  useCursor: true,
+});
+
+// Fetch data
+const { data } = useQuery({
+  queryKey: ["items", pagination.currentPage],
+  queryFn: async () => {
+    const cursor = pagination.getCurrentCursor();
+    const result = await fetchItems(cursor, pagination.pageSize);
+    pagination.addCursor(result.nextCursor);
+    pagination.setHasNextPage(result.hasMore);
+    return result.items;
+  },
+});
+
+// Load more button
+<button onClick={pagination.loadMore} disabled={!pagination.hasNextPage}>
+  Load More
+</button>;
+```
 
 ---
 

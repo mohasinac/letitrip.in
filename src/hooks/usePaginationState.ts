@@ -19,6 +19,7 @@ export interface PaginationConfig {
   pageSize?: number;
   initialPage?: number;
   useCursor?: boolean;
+  mode?: "page" | "loadMore"; // New: pagination mode
 }
 
 export interface UsePaginationStateReturn {
@@ -28,21 +29,26 @@ export interface UsePaginationStateReturn {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   totalCount?: number;
+  mode: "page" | "loadMore";
 
   // Navigation
   goToPage: (page: number) => void;
   nextPage: () => void;
   previousPage: () => void;
   reset: () => void;
+  loadMore: () => void; // New: load more items
 
   // Cursor management
   setCursors: (cursors: (string | null)[]) => void;
   addCursor: (cursor: string | null) => void;
+  getCurrentCursor: () => string | null; // New: get current cursor
+  getNextCursor: () => string | null; // New: get next cursor
   setHasNextPage: (has: boolean) => void;
   setTotalCount: (count: number) => void;
 
   // Offset calculation
   offset: number;
+  limit: number; // New: alias for pageSize
 }
 
 export function usePaginationState(
@@ -50,6 +56,7 @@ export function usePaginationState(
 ): UsePaginationStateReturn {
   const pageSize = config?.pageSize ?? 10;
   const initialPage = config?.initialPage ?? 1;
+  const mode = config?.mode ?? "page";
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -79,6 +86,12 @@ export function usePaginationState(
     setHasNextPage(false);
   }, [initialPage]);
 
+  const loadMore = useCallback(() => {
+    if (hasNextPage && mode === "loadMore") {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }, [hasNextPage, mode]);
+
   const addCursor = useCallback(
     (cursor: string | null) => {
       setCursors((prev) => {
@@ -93,6 +106,14 @@ export function usePaginationState(
     [currentPage]
   );
 
+  const getCurrentCursor = useCallback(() => {
+    return cursors[currentPage - 1] ?? null;
+  }, [cursors, currentPage]);
+
+  const getNextCursor = useCallback(() => {
+    return cursors[currentPage] ?? null;
+  }, [cursors, currentPage]);
+
   const offset = (currentPage - 1) * pageSize;
 
   return {
@@ -102,17 +123,22 @@ export function usePaginationState(
     hasNextPage,
     hasPreviousPage: currentPage > 1,
     totalCount,
+    mode,
 
     goToPage,
     nextPage,
     previousPage,
     reset,
+    loadMore,
 
     setCursors,
     addCursor,
+    getCurrentCursor,
+    getNextCursor,
     setHasNextPage,
     setTotalCount,
 
     offset,
+    limit: pageSize,
   };
 }
