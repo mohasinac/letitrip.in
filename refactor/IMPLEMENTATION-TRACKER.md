@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 2 - Performance & Architecture  
-**Overall Progress**: 40/75 tasks completed (53.3%)
+**Overall Progress**: 41/75 tasks completed (54.7%)
 
 ---
 
@@ -388,7 +388,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 2: Performance & Architecture (Weeks 5-8)
 
 **Goal**: Optimize performance and code organization  
-**Progress**: 15/25 tasks (60%)
+**Progress**: 16/25 tasks (64%)
 
 ### Week 5: Context Optimization (6/6) ✅ COMPLETE
 
@@ -541,7 +541,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Estimate**: 90 minutes
   - **Completed**: Created 5 comprehensive query hook files with 40+ hooks total. Cart hooks (useCart.ts, 7 hooks): useCart query, useAddToCart, useUpdateCartItem, useRemoveFromCart, useClearCart, useApplyCoupon, useRemoveCoupon mutations with automatic cache invalidation. User hooks (useUser.ts, 10 hooks): useCurrentUser, useUser, useUsers queries, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useChangePassword, useSendEmailVerification, useVerifyEmail mutations for profile management. Shop hooks (useShop.ts, 10 hooks): useShop, useShopBySlug, useShops, useShopStats, useFollowingShops, useFeaturedShops queries, useCreateShop, useUpdateShop, useFollowShop, useUnfollowShop mutations with social features. Order hooks (useOrder.ts, 4 hooks): useOrder, useOrders queries (uses OrderCardFE for list view), useCreateOrder, useCancelOrder mutations. Category hooks (useCategory.ts, 3 hooks): useCategories, useCategoryTree, useCategory queries with extended 15-minute stale time for rarely-changing data. All hooks: matched actual service method signatures (addItem vs add, updateItem with quantity param, list vs getAll, getTree vs getCategoryTree), proper type safety (UserProfileFormFE not Partial, ChangePasswordFormFE with confirmPassword, OTPVerificationFormFE, OrderCardFE vs OrderFE), JSDoc documentation with examples, automatic cache invalidation patterns. Fixed all TypeScript errors. Updated src/hooks/index.md with complete documentation for all new hooks including usage examples. Week 6 complete (7/7 tasks, 100%).
 
-### Week 7: Performance Optimizations (2/6)
+### Week 7: Performance Optimizations (3/6)
 
 #### Task 7.1: Create Skeleton Components ✅
 
@@ -572,14 +572,15 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Update**: `src/app/comments.md`
   - **Estimate**: 30 minutes
 
-#### Task 7.3: Add Suspense to Dashboard Pages
+#### Task 7.3: Add Suspense to Dashboard Pages ✅
 
-- [ ] **Update dashboard pages**
+- [x] **Update dashboard pages**
   - **Files**: Dashboard, orders, profile pages
   - **Add**: Suspense boundaries
   - **Add**: Appropriate skeletons
   - **Test**: Loading states
   - **Estimate**: 45 minutes
+  - **Completed**: Added skeleton loading states to dashboard pages for improved UX. User dashboard (user/page.tsx): imported UserProfileSkeleton, replaced generic spinner with layout-matching skeleton. User orders page (user/orders/page.tsx): added OrderCardSkeletonList component, replaced Loader2 spinner with 5 skeleton cards matching actual order cards. User settings page (user/settings/page.tsx): added UserProfileSkeleton import for consistency. Benefits: reduced perceived loading time with layout-aware placeholders, consistent loading experience across dashboard, better visual continuity, improved UX with realistic loading states, eliminated generic spinners. No TypeScript errors. Updated src/app/comments.md documenting skeleton loading state implementation with all improvements and benefits.
 
 #### Task 7.4: Implement Code Splitting
 
