@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 3 - Feature Enhancements  
-**Overall Progress**: 52/82 tasks completed (63.4%)
+**Overall Progress**: 53/82 tasks completed (64.6%)
 
 ---
 
@@ -744,9 +744,9 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 3: Feature Enhancements (Weeks 9-13)
 
 **Goal**: Add new features and improve UX  
-**Progress**: 1/31 tasks (3.2%)
+**Progress**: 2/31 tasks (6.5%)
 
-### Week 9: Hook Enhancements (1/6)
+### Week 9: Hook Enhancements (2/6)
 
 #### Task 9.1: Add Schema Validation to useFormState
 
@@ -761,12 +761,13 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 9.2: Add Schema Validation to useWizardFormState
 
-- [ ] **Enhance `src/hooks/useWizardFormState.ts`**
+- [x] **Enhance `src/hooks/useWizardFormState.ts`**
   - **Add**: Per-step schema validation
   - **Implement**: Step validation before next
   - **Test**: Multi-step form
   - **Update**: `src/hooks/comments.md`
   - **Estimate**: 45 minutes
+  - **Completed**: Added per-step Zod schema validation to useWizardFormState hook. New features: stepSchemas array accepts Zod schema for each step, validateBeforeNext option prevents proceeding to next step unless current step validates, autoMarkComplete automatically marks step complete after successful validation, validateStep(stepIndex) method validates specific step and returns boolean, getStepErrors(stepIndex) retrieves errors for specific step, isValidating state flag, enhanced StepState with errors field for detailed error messages. Hook validates current step before nextStep(), returns false if validation fails. Created comprehensive demo page at /demo/wizard-form with 3-step registration wizard: Step 1 (Account: email, username), Step 2 (Personal: firstName, lastName, phone), Step 3 (Address: address, city, zipCode). Each step has its own Zod schema. Progress bar shows step completion and error counts. Updated hooks/comments.md with completion notes.
 
 #### Task 9.3: Add Async Validation to useFormState
 
