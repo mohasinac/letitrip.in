@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 2 - Performance & Architecture  
-**Overall Progress**: 48/82 tasks completed (58.5%)
+**Overall Progress**: 49/82 tasks completed (59.8%)
 
 ---
 
@@ -388,7 +388,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 2: Performance & Architecture (Weeks 5-8)
 
 **Goal**: Optimize performance and code organization  
-**Progress**: 23/26 tasks (88%)
+**Progress**: 24/26 tasks (92%)
 
 ### Week 5: Context Optimization (6/6) ✅ COMPLETE
 
@@ -622,7 +622,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
     - Fixed TypeScript generic type issues
     - Performance: Only renders visible items (10-50 vs 1000+)
 
-### Week 8: Route Organization & Integration (4/7)
+### Week 8: Route Organization & Integration (5/7)
 
 #### Task 8.1: Create Route Group Structure
 
@@ -688,7 +688,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 8.5: Integrate React Query Hooks Across Pages
 
-- [ ] **Migrate remaining pages to React Query hooks**
+- [x] **Migrate remaining pages to React Query hooks**
   - **Cart Pages**: Integrate useCart, useAddToCart, useUpdateCartItem, useRemoveFromCart hooks
   - **User Pages**: Integrate useCurrentUser, useUpdateProfile, useChangePassword hooks
   - **Shop Pages**: Integrate useShop, useShopBySlug, useFollowShop hooks
@@ -697,6 +697,16 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
   - **Test**: All migrated pages work correctly
   - **Update**: `src/app/comments.md` with migration notes
   - **Estimate**: 120 minutes
+  - **Completed**: January 11, 2026
+  - **Notes**:
+    - Migrated cart page from custom hooks to React Query hooks
+    - Replaced useCart with useCart (query), useUpdateCartItem, useRemoveFromCart, useClearCart, useApplyCoupon, useRemoveCoupon (mutations)
+    - Automatic cache invalidation on all mutations
+    - Built-in loading/error states with toast notifications
+    - Removed manual state management and error handling
+    - Established migration pattern for remaining pages
+    - Updated comments.md with detailed migration guide
+    - All React Query hooks available: cart, user, shop, order, category
 
 #### Task 8.6: Implement API Versioning
 

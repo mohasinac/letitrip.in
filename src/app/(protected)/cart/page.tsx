@@ -4,39 +4,56 @@ import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { EmptyState } from "@/components/common/EmptyState";
-import Toast from "@/components/common/Toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
+import {
+  useApplyCoupon,
+  useCart,
+  useClearCart,
+  useRemoveCoupon,
+  useRemoveFromCart,
+  useUpdateCartItem,
+} from "@/hooks/queries/useCart";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function CartPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const {
-    cart,
-    loading,
-    isMerging,
-    mergeSuccess,
-    updateQuantity,
-    removeItem,
-    clearCart,
-    applyCoupon,
-    removeCoupon,
-  } = useCart();
+
+  // React Query hooks
+  const { data: cart, isLoading: loading } = useCart();
+  const updateCartItem = useUpdateCartItem({
+    onSuccess: () => toast.success("Cart updated"),
+    onError: () => toast.error("Failed to update cart"),
+  });
+  const removeFromCart = useRemoveFromCart({
+    onSuccess: () => toast.success("Item removed from cart"),
+    onError: () => toast.error("Failed to remove item"),
+  });
+  const clearCartMutation = useClearCart({
+    onSuccess: () => {
+      toast.success("Cart cleared");
+      setShowClearDialog(false);
+    },
+    onError: () => toast.error("Failed to clear cart"),
+  });
+  const applyCouponMutation = useApplyCoupon({
+    onSuccess: () => toast.success("Coupon applied"),
+    onError: (error) => toast.error(error.message || "Failed to apply coupon"),
+  });
+  const removeCouponMutation = useRemoveCoupon({
+    onSuccess: () => toast.success("Coupon removed"),
+    onError: () => toast.error("Failed to remove coupon"),
+  });
+
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const handleClearCart = async () => {
-    try {
-      await clearCart();
-      setShowClearDialog(false);
-    } catch (error) {
-      toast.error("Failed to clear cart. Please try again.");
-    }
+  const handleClearCart = () => {
+    clearCartMutation.mutate();
   };
 
   const handleCheckout = () => {
@@ -50,28 +67,27 @@ export default function CartPage() {
   };
 
   const handleApplyCoupon = async (code: string) => {
-    try {
-      await applyCoupon(code);
-    } catch (error) {
-      throw error;
-    }
+    applyCouponMutation.mutate(code);
   };
 
-  // Show toast when merge succeeds
-  useEffect(() => {
-    if (mergeSuccess) {
-      setShowToast(true);
-    }
-  }, [mergeSuccess]);
+  const handleRemoveCoupon = () => {
+    removeCouponMutation.mutate();
+  };
+
+  const handleUpdateQuantity = (itemId: string, quantity: number) => {
+    updateCartItem.mutate({ itemId, quantity });
+  };
+
+  const handleRemoveItem = (itemId: string) => {
+    removeFromCart.mutate(itemId);
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-2 text-sm text-gray-600">
-            {isMerging ? "Merging your cart items..." : "Loading cart..."}
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Loading cart...</p>
         </div>
       </div>
     );
@@ -110,15 +126,6 @@ export default function CartPage() {
 
   return (
     <>
-      {/* Toast Notification */}
-      <Toast
-        message="Your cart items have been successfully merged!"
-        type="success"
-        duration={3000}
-        show={showToast && mergeSuccess}
-        onClose={() => setShowToast(false)}
-      />
-
       <div className="min-h-screen bg-gray-50">
         {/* Header - Mobile Optimized */}
         <div className="bg-white border-b border-gray-200">
@@ -164,8 +171,8 @@ export default function CartPage() {
                     <CartItem
                       key={item.id}
                       item={item}
-                      onUpdateQuantity={updateQuantity}
-                      onRemove={removeItem}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      onRemove={handleRemoveItem}
                     />
                   ))}
                 </div>
@@ -195,7 +202,7 @@ export default function CartPage() {
                 itemCount={cart.itemCount}
                 couponCode={(cart as any).couponCode}
                 onApplyCoupon={handleApplyCoupon}
-                onRemoveCoupon={removeCoupon}
+                onRemoveCoupon={handleRemoveCoupon}
                 onCheckout={handleCheckout}
               />
 
