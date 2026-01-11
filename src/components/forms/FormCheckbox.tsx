@@ -1,12 +1,17 @@
 "use client";
 
-import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
+import { announceToScreenReader } from "@/lib/accessibility";
 import { cn } from "@/lib/utils";
+import {
+  forwardRef,
+  InputHTMLAttributes,
+  ReactNode,
+  useEffect,
+  useRef,
+} from "react";
 
-export interface FormCheckboxProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "type" | "size"
-> {
+export interface FormCheckboxProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
   label: string | ReactNode;
   description?: string;
   error?: string;
@@ -19,6 +24,16 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
       (typeof label === "string"
         ? label.toLowerCase().replace(/\s+/g, "-")
         : `checkbox-${Math.random().toString(36).slice(2, 9)}`);
+
+    const prevErrorRef = useRef<string | undefined>();
+
+    // Announce errors to screen readers
+    useEffect(() => {
+      if (error && error !== prevErrorRef.current) {
+        announceToScreenReader(`Error: ${error}`, "assertive");
+      }
+      prevErrorRef.current = error;
+    }, [error]);
 
     return (
       <div className={cn("relative flex items-start", className)}>
@@ -33,11 +48,17 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
               error
                 ? "border-red-500 text-red-600"
                 : "border-gray-300 dark:border-gray-600 text-blue-600",
-              props.disabled && "cursor-not-allowed opacity-60",
+              props.disabled && "cursor-not-allowed opacity-60"
             )}
             aria-invalid={!!error}
+            aria-required={props.required}
+            aria-checked={props.checked}
             aria-describedby={
-              description ? `${checkboxId}-description` : undefined
+              error
+                ? `${checkboxId}-error`
+                : description
+                ? `${checkboxId}-description`
+                : undefined
             }
             {...props}
           />
@@ -50,7 +71,7 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
               error
                 ? "text-red-600 dark:text-red-400"
                 : "text-gray-700 dark:text-gray-300",
-              props.disabled && "cursor-not-allowed opacity-60",
+              props.disabled && "cursor-not-allowed opacity-60"
             )}
           >
             {label}
@@ -64,14 +85,20 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
             </p>
           )}
           {error && (
-            <p className="mt-1 text-red-600 dark:text-red-400" role="alert">
+            <p
+              id={`${checkboxId}-error`}
+              className="mt-1 text-red-600 dark:text-red-400"
+              role="alert"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {error}
             </p>
           )}
         </div>
       </div>
     );
-  },
+  }
 );
 
 FormCheckbox.displayName = "FormCheckbox";
