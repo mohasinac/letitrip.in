@@ -21,11 +21,13 @@
 ### Core Formatters
 
 #### 1. src/lib/formatters.ts
+
 **Lines:** ~400
 **Dependencies:** date-fns, External APIs
 **Exports:** 20+ functions
 
 **Key Functions:**
+
 - `formatDate(date, format)` - Format dates with various formats
 - `formatRelativeTime(date)` - "2 hours ago" style
 - `formatDateRange(start, end)` - Date range formatting
@@ -44,10 +46,12 @@
 - `slugToTitle(slug)` - Convert slug to title case
 
 **Dependencies:**
+
 - date-fns: format, formatDistanceToNow, parseISO
 - No internal dependencies
 
 **Migration Notes:**
+
 - Pure utility functions
 - No React dependencies
 - Can be migrated as-is
@@ -55,11 +59,13 @@
 ---
 
 #### 2. src/lib/date-utils.ts
+
 **Lines:** ~150
 **Dependencies:** date-fns
 **Exports:** 10+ functions
 
 **Key Functions:**
+
 - `safeToISOString(date)` - Safe date to ISO conversion
 - `isValidDate(date)` - Date validation
 - `toDateInputValue(date)` - Convert to input format (YYYY-MM-DD)
@@ -72,10 +78,12 @@
 - `getDaysDifference(date1, date2)` - Calculate difference
 
 **Dependencies:**
+
 - date-fns: parseISO, isValid, format, addDays, subDays
 - No internal dependencies
 
 **Migration Notes:**
+
 - Pure utility functions
 - No React dependencies
 - Can be migrated as-is
@@ -83,11 +91,13 @@
 ---
 
 #### 3. src/lib/utils.ts
+
 **Lines:** ~100
 **Dependencies:** clsx, tailwind-merge
 **Exports:** 5+ functions
 
 **Key Functions:**
+
 - `cn(...inputs)` - Tailwind class merging (most important!)
 - `slugify(text)` - Convert text to URL-friendly slug
 - `capitalize(text)` - Capitalize first letter
@@ -95,11 +105,13 @@
 - `debounce(func, delay)` - Debounce utility
 
 **Dependencies:**
+
 - clsx: ^2.1.0
 - tailwind-merge: ^2.2.0
 - No internal dependencies
 
 **Migration Notes:**
+
 - Essential for Tailwind usage
 - cn() used everywhere in components
 - Must be migrated first
@@ -107,11 +119,13 @@
 ---
 
 #### 4. src/lib/validators.ts
+
 **Lines:** ~200
 **Dependencies:** libphonenumber-js
 **Exports:** 15+ validation functions
 
 **Key Functions:**
+
 - `isValidEmail(email)` - Email validation
 - `isValidPhone(phone, countryCode)` - Phone validation
 - `isValidPincode(pincode, state)` - Indian pincode validation
@@ -125,69 +139,82 @@
 - `isValidUPI(upi)` - UPI ID validation
 
 **Dependencies:**
+
 - libphonenumber-js: ^1.10.0
 - ./validation/email, ./validation/phone (internal)
 
 **Migration Notes:**
-- Has internal dependencies (validation/* folder)
+
+- Has internal dependencies (validation/\* folder)
 - Must migrate validation folder first
 
 ---
 
 #### 5. src/lib/validation/email.ts
+
 **Lines:** ~50
 **Dependencies:** None
 **Exports:** Email validation functions
 
 **Functions:**
+
 - `validateEmail(email)` - Regex-based email validation
 - `isDisposableEmail(email)` - Check disposable email providers
 - `getDomainFromEmail(email)` - Extract domain
 
 **Migration Notes:**
+
 - No dependencies
 - Can be migrated independently
 
 ---
 
 #### 6. src/lib/validation/phone.ts
+
 **Lines:** ~80
 **Dependencies:** libphonenumber-js
 **Exports:** Phone validation functions
 
 **Functions:**
+
 - `validatePhone(phone, country)` - Phone validation with country
 - `formatPhoneForDisplay(phone)` - Format for display
 - `parsePhoneNumber(phone)` - Parse phone components
 
 **Migration Notes:**
+
 - Depends on libphonenumber-js
 - Used by validators.ts
 
 ---
 
 #### 7. src/lib/validation/pincode.ts
+
 **Lines:** ~60
 **Dependencies:** None
 **Exports:** Pincode validation functions
 
 **Functions:**
+
 - `validatePincode(pincode, state)` - Indian pincode validation
 - `getPincodeState(pincode)` - Get state from pincode
 - `isValidPincodeFormat(pincode)` - Format validation
 
 **Migration Notes:**
+
 - India-specific validation
 - No external dependencies
 
 ---
 
 #### 8. src/lib/sanitize.ts
+
 **Lines:** ~100
 **Dependencies:** None
 **Exports:** Input sanitization functions
 
 **Functions:**
+
 - `sanitizeHTML(html)` - Remove dangerous HTML
 - `sanitizeInput(input)` - Sanitize user input
 - `escapeRegExp(string)` - Escape regex special chars
@@ -195,6 +222,7 @@
 - `sanitizeFileName(filename)` - Safe filename
 
 **Migration Notes:**
+
 - Security-critical functions
 - No dependencies
 - Pure functions
@@ -202,11 +230,13 @@
 ---
 
 #### 9. src/lib/accessibility.ts
+
 **Lines:** ~80
 **Dependencies:** None
 **Exports:** Accessibility helper functions
 
 **Functions:**
+
 - `generateAriaLabel(label, required)` - Generate ARIA labels
 - `getAriaProps(props)` - Extract ARIA props from component props
 - `announceToScreenReader(message)` - Screen reader announcements
@@ -215,6 +245,7 @@
 - `isElementVisible(element)` - Check element visibility
 
 **Migration Notes:**
+
 - Used by form components
 - No external dependencies
 - Browser API usage (DOM)
@@ -222,11 +253,13 @@
 ---
 
 #### 10. src/lib/price.utils.ts
+
 **Lines:** ~120
 **Dependencies:** None
 **Exports:** Price calculation and formatting
 
 **Functions:**
+
 - `formatPrice(amount, currency, locale)` - Format with Intl.NumberFormat
 - `calculateDiscount(original, discount)` - Calculate discount
 - `calculateDiscountPercentage(original, final)` - Calculate %
@@ -235,6 +268,7 @@
 - `convertCurrency(amount, from, to, rates)` - Currency conversion
 
 **Migration Notes:**
+
 - Some overlap with formatters.ts
 - Consider consolidating formatPrice functions
 - No external dependencies
@@ -242,17 +276,20 @@
 ---
 
 #### 11. src/lib/form-validation.ts
+
 **Lines:** ~150
 **Dependencies:** ./validators
 **Exports:** Form validation utilities
 
 **Functions:**
+
 - `validateFormField(field, value, rules)` - Validate single field
 - `validateForm(values, rules)` - Validate entire form
 - `getFieldError(field, value)` - Get error message
 - `isFormValid(errors)` - Check if form has errors
 
 **Migration Notes:**
+
 - Depends on validators.ts
 - Used by form components
 - May need to update for library context
@@ -260,15 +297,18 @@
 ---
 
 #### 12. src/lib/link-utils.ts (Optional - Check if reusable)
+
 **Lines:** ~40
 **Dependencies:** Next.js (may not be reusable)
 **Exports:** Link utilities
 
 **Functions:**
+
 - `buildProductUrl(slug)` - Build product URL
 - `buildCategoryUrl(slug)` - Build category URL
 
 **Migration Notes:**
+
 - May be too application-specific
 - Consider excluding from library
 - Uses Next.js routing (not reusable)
@@ -280,6 +320,7 @@
 ### Form Components (21 files)
 
 #### 1. src/components/forms/FormField.tsx
+
 **Lines:** ~80
 **Dependencies:** React
 **Props:** children, label, error, required, helperText
@@ -288,10 +329,12 @@
 Wrapper component for form fields with label, error display, and helper text.
 
 **Internal Dependencies:**
+
 - FormLabel
 - None from lib/
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH (used by all form components)
@@ -299,6 +342,7 @@ Wrapper component for form fields with label, error display, and helper text.
 ---
 
 #### 2. src/components/forms/FormLabel.tsx
+
 **Lines:** ~40
 **Dependencies:** React
 **Props:** children, required, htmlFor
@@ -307,9 +351,11 @@ Wrapper component for form fields with label, error display, and helper text.
 Form label with required indicator.
 
 **Internal Dependencies:**
+
 - None
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -317,6 +363,7 @@ Form label with required indicator.
 ---
 
 #### 3. src/components/forms/FormInput.tsx
+
 **Lines:** ~120
 **Dependencies:** React, @/lib/utils (cn), @/lib/accessibility
 **Props:** label, type, error, required, disabled, placeholder, value, onChange
@@ -325,22 +372,26 @@ Form label with required indicator.
 Standard text input with label, error display, and accessibility.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn (from utils)
 - getAriaProps (from accessibility)
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
 **Migration Notes:**
+
 - Update imports for cn and accessibility utilities
 - Ensure FormField and FormLabel migrated first
 
 ---
 
 #### 4. src/components/forms/FormTextarea.tsx
+
 **Lines:** ~100
 **Dependencies:** React, @/lib/utils
 **Props:** label, error, required, rows, maxLength, value, onChange
@@ -349,11 +400,13 @@ Standard text input with label, error display, and accessibility.
 Textarea with character counter and auto-resize.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -361,6 +414,7 @@ Textarea with character counter and auto-resize.
 ---
 
 #### 5. src/components/forms/FormSelect.tsx
+
 **Lines:** ~110
 **Dependencies:** React, @/lib/utils
 **Props:** label, options, error, required, placeholder, value, onChange
@@ -369,11 +423,13 @@ Textarea with character counter and auto-resize.
 Select dropdown with custom styling.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -381,6 +437,7 @@ Select dropdown with custom styling.
 ---
 
 #### 6. src/components/forms/FormCheckbox.tsx
+
 **Lines:** ~80
 **Dependencies:** React, @/lib/utils
 **Props:** label, checked, onChange, disabled
@@ -389,9 +446,11 @@ Select dropdown with custom styling.
 Checkbox with label.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -399,6 +458,7 @@ Checkbox with label.
 ---
 
 #### 7. src/components/forms/FormRadio.tsx
+
 **Lines:** ~90
 **Dependencies:** React, @/lib/utils
 **Props:** name, options, value, onChange, label
@@ -407,10 +467,12 @@ Checkbox with label.
 Radio button group.
 
 **Internal Dependencies:**
+
 - FormField
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -418,6 +480,7 @@ Radio button group.
 ---
 
 #### 8. src/components/forms/FormSwitch.tsx
+
 **Lines:** ~70
 **Dependencies:** React, @/lib/utils
 **Props:** checked, onChange, label, disabled
@@ -426,9 +489,11 @@ Radio button group.
 Toggle switch.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -436,6 +501,7 @@ Toggle switch.
 ---
 
 #### 9. src/components/forms/FormPhoneInput.tsx ⭐
+
 **Lines:** ~200
 **Dependencies:** React, libphonenumber-js, @/lib/validators, @/lib/formatters
 **Props:** label, value, onChange, countryCode, error, required
@@ -445,6 +511,7 @@ Phone input with country code selector and validation.
 Supports 8 countries: IN, US, UK, CA, AU, SG, AE, NZ
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - FormSelect (for country dropdown)
@@ -453,6 +520,7 @@ Supports 8 countries: IN, US, UK, CA, AU, SG, AE, NZ
 - formatPhoneNumber (formatters)
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - libphonenumber-js: ^1.10.0
 
@@ -461,6 +529,7 @@ Supports 8 countries: IN, US, UK, CA, AU, SG, AE, NZ
 ---
 
 #### 10. src/components/forms/FormCurrencyInput.tsx ⭐
+
 **Lines:** ~180
 **Dependencies:** React, @/lib/price.utils, @/lib/formatters
 **Props:** label, value, onChange, currency, error, required
@@ -470,6 +539,7 @@ Currency input with formatting and validation.
 Supports 4 currencies: INR, USD, EUR, GBP
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - FormSelect (for currency dropdown)
@@ -477,6 +547,7 @@ Supports 4 currencies: INR, USD, EUR, GBP
 - formatPrice (price.utils)
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH (already refined and tested)
@@ -484,6 +555,7 @@ Supports 4 currencies: INR, USD, EUR, GBP
 ---
 
 #### 11. src/components/forms/FormDatePicker.tsx
+
 **Lines:** ~150
 **Dependencies:** React, date-fns, @/lib/date-utils
 **Props:** label, value, onChange, minDate, maxDate, error, required
@@ -492,6 +564,7 @@ Supports 4 currencies: INR, USD, EUR, GBP
 Date picker with calendar popup.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - DateTimePicker (common component)
@@ -499,6 +572,7 @@ Date picker with calendar popup.
 - date utilities
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - date-fns: ^3.0.0
 
@@ -507,6 +581,7 @@ Date picker with calendar popup.
 ---
 
 #### 12. src/components/forms/FormTimePicker.tsx
+
 **Lines:** ~100
 **Dependencies:** React, @/lib/date-utils
 **Props:** label, value, onChange, error, required
@@ -515,11 +590,13 @@ Date picker with calendar popup.
 Time picker (HH:MM format).
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -527,6 +604,7 @@ Time picker (HH:MM format).
 ---
 
 #### 13. src/components/forms/FormFileUpload.tsx
+
 **Lines:** ~180
 **Dependencies:** React, @/lib/formatters
 **Props:** label, onChange, accept, maxSize, multiple, error
@@ -535,12 +613,14 @@ Time picker (HH:MM format).
 File upload with drag-and-drop, preview, and validation.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 - formatFileSize
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -548,6 +628,7 @@ File upload with drag-and-drop, preview, and validation.
 ---
 
 #### 14. src/components/forms/FormRichText.tsx
+
 **Lines:** ~150
 **Dependencies:** React, (rich text editor library)
 **Props:** label, value, onChange, error, toolbar
@@ -556,11 +637,13 @@ File upload with drag-and-drop, preview, and validation.
 Rich text editor for formatted content.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - (Check if using external editor library)
 
@@ -569,6 +652,7 @@ Rich text editor for formatted content.
 ---
 
 #### 15. src/components/forms/FormSlider.tsx
+
 **Lines:** ~100
 **Dependencies:** React, @/lib/utils
 **Props:** label, min, max, step, value, onChange
@@ -577,10 +661,12 @@ Rich text editor for formatted content.
 Range slider input.
 
 **Internal Dependencies:**
+
 - FormField
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -588,6 +674,7 @@ Range slider input.
 ---
 
 #### 16. src/components/forms/FormColorPicker.tsx
+
 **Lines:** ~120
 **Dependencies:** React, @/lib/utils
 **Props:** label, value, onChange, error
@@ -596,11 +683,13 @@ Range slider input.
 Color picker input.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - (May use external color picker library)
 
@@ -609,6 +698,7 @@ Color picker input.
 ---
 
 #### 17. src/components/forms/FormTagInput.tsx
+
 **Lines:** ~130
 **Dependencies:** React, @/lib/utils
 **Props:** label, tags, onTagsChange, error
@@ -617,11 +707,13 @@ Color picker input.
 Tag input for multiple values.
 
 **Internal Dependencies:**
+
 - FormField
 - FormLabel
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -629,6 +721,7 @@ Tag input for multiple values.
 ---
 
 #### 18. src/components/forms/FormPasswordInput.tsx
+
 **Lines:** ~100
 **Dependencies:** React, @/lib/validators, @/lib/utils
 **Props:** label, value, onChange, showStrength, error
@@ -637,11 +730,13 @@ Tag input for multiple values.
 Password input with visibility toggle and strength indicator.
 
 **Internal Dependencies:**
+
 - FormInput
 - cn
 - isValidPassword
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -649,6 +744,7 @@ Password input with visibility toggle and strength indicator.
 ---
 
 #### 19. src/components/forms/FormOTPInput.tsx
+
 **Lines:** ~110
 **Dependencies:** React, @/lib/utils
 **Props:** length, value, onChange, error
@@ -657,10 +753,12 @@ Password input with visibility toggle and strength indicator.
 OTP input with automatic focus management.
 
 **Internal Dependencies:**
+
 - FormField
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -668,6 +766,7 @@ OTP input with automatic focus management.
 ---
 
 #### 20. src/components/forms/FormRating.tsx
+
 **Lines:** ~90
 **Dependencies:** React, @/lib/utils
 **Props:** label, value, onChange, max, error
@@ -676,10 +775,12 @@ OTP input with automatic focus management.
 Star rating input.
 
 **Internal Dependencies:**
+
 - FormField
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** LOW
@@ -687,6 +788,7 @@ Star rating input.
 ---
 
 #### 21. src/components/forms/FormActions.tsx
+
 **Lines:** ~60
 **Dependencies:** React, @/lib/utils
 **Props:** children, align
@@ -695,9 +797,11 @@ Star rating input.
 Form action buttons container.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -707,6 +811,7 @@ Form action buttons container.
 ### UI Components (5 files)
 
 #### 22. src/components/ui/Button.tsx
+
 **Lines:** ~150
 **Dependencies:** React, @/lib/utils
 **Props:** variant, size, disabled, loading, children, onClick
@@ -717,9 +822,11 @@ Form action buttons container.
 Button component with variants, sizes, and loading state.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -727,6 +834,7 @@ Button component with variants, sizes, and loading state.
 ---
 
 #### 23. src/components/ui/Card.tsx
+
 **Lines:** ~80
 **Dependencies:** React, @/lib/utils
 **Props:** children, variant, padding
@@ -735,9 +843,11 @@ Button component with variants, sizes, and loading state.
 Card container component.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -745,6 +855,7 @@ Card container component.
 ---
 
 #### 24. src/components/ui/Modal.tsx
+
 **Lines:** ~130
 **Dependencies:** React, @/lib/accessibility
 **Props:** isOpen, onClose, title, children
@@ -753,10 +864,12 @@ Card container component.
 Modal dialog with focus trap and accessibility.
 
 **Internal Dependencies:**
+
 - cn
 - trapFocus (accessibility)
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -764,6 +877,7 @@ Modal dialog with focus trap and accessibility.
 ---
 
 #### 25. src/components/common/Tooltip.tsx
+
 **Lines:** ~90
 **Dependencies:** React, @/lib/utils
 **Props:** content, children, position
@@ -772,9 +886,11 @@ Modal dialog with focus trap and accessibility.
 Tooltip component.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -782,6 +898,7 @@ Tooltip component.
 ---
 
 #### 26. src/components/common/Badge.tsx
+
 **Lines:** ~60
 **Dependencies:** React, @/lib/utils
 **Props:** children, variant, size
@@ -790,9 +907,11 @@ Tooltip component.
 Badge component for status indicators.
 
 **Internal Dependencies:**
+
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -802,11 +921,13 @@ Badge component for status indicators.
 ### Value Display Components (4 files)
 
 #### 27. src/components/common/values/DateDisplay.tsx ⭐
+
 **Lines:** ~100
 **Dependencies:** React, @/lib/formatters, @/lib/date-utils
 **Props:** date, format, relative
 
 **Sub-components:**
+
 - DateDisplay - Format dates
 - RelativeDate - "2 hours ago"
 - DateRange - Date range display
@@ -815,10 +936,12 @@ Badge component for status indicators.
 Display formatted dates with various formats.
 
 **Internal Dependencies:**
+
 - formatDate, formatRelativeTime, formatDateRange
 - date utilities
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - date-fns: ^3.0.0
 
@@ -827,6 +950,7 @@ Display formatted dates with various formats.
 ---
 
 #### 28. src/components/common/values/Price.tsx
+
 **Lines:** ~70
 **Dependencies:** React, @/lib/price.utils
 **Props:** amount, currency, showDiscount, originalPrice
@@ -835,10 +959,12 @@ Display formatted dates with various formats.
 Display formatted prices with optional discount.
 
 **Internal Dependencies:**
+
 - formatPrice
 - calculateDiscountPercentage
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** HIGH
@@ -846,6 +972,7 @@ Display formatted prices with optional discount.
 ---
 
 #### 29. src/components/common/values/Status.tsx
+
 **Lines:** ~60
 **Dependencies:** React, @/lib/utils, Badge
 **Props:** status, variant
@@ -854,10 +981,12 @@ Display formatted prices with optional discount.
 Display status with colored badge.
 
 **Internal Dependencies:**
+
 - Badge
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** LOW (may be too app-specific)
@@ -867,6 +996,7 @@ Display status with colored badge.
 ### Picker Components (3 files)
 
 #### 30. src/components/common/DateTimePicker.tsx
+
 **Lines:** ~250
 **Dependencies:** React, date-fns, @/lib/date-utils
 **Props:** value, onChange, showTime, minDate, maxDate
@@ -875,10 +1005,12 @@ Display status with colored badge.
 Full-featured date/time picker with calendar.
 
 **Internal Dependencies:**
+
 - date utilities
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 - date-fns: ^3.0.0
 
@@ -887,6 +1019,7 @@ Full-featured date/time picker with calendar.
 ---
 
 #### 31. src/components/common/StateSelector.tsx
+
 **Lines:** ~100
 **Dependencies:** React, FormSelect
 **Props:** value, onChange, country
@@ -895,10 +1028,12 @@ Full-featured date/time picker with calendar.
 Indian state selector dropdown.
 
 **Internal Dependencies:**
+
 - FormSelect
 - cn
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -906,6 +1041,7 @@ Indian state selector dropdown.
 ---
 
 #### 32. src/components/common/PincodeInput.tsx
+
 **Lines:** ~90
 **Dependencies:** React, @/lib/validators, FormInput
 **Props:** value, onChange, error, state
@@ -914,10 +1050,12 @@ Indian state selector dropdown.
 Indian pincode input with validation.
 
 **Internal Dependencies:**
+
 - FormInput
 - isValidPincode
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** MEDIUM
@@ -925,6 +1063,7 @@ Indian pincode input with validation.
 ---
 
 #### 33. src/components/error-boundary.tsx
+
 **Lines:** ~80
 **Dependencies:** React
 **Props:** children, fallback
@@ -933,9 +1072,11 @@ Indian pincode input with validation.
 Error boundary component.
 
 **Internal Dependencies:**
+
 - None
 
 **External Dependencies:**
+
 - react: ^18.0.0
 
 **Migration Priority:** LOW (may be app-specific)
@@ -945,6 +1086,7 @@ Error boundary component.
 ## Hooks (10 files)
 
 #### 1. src/hooks/useMediaQuery.ts
+
 **Lines:** ~50
 **Dependencies:** React
 
@@ -952,8 +1094,9 @@ Error boundary component.
 Hook for responsive design based on media queries.
 
 **Usage:**
+
 ```tsx
-const isMobile = useMediaQuery('(max-width: 768px)');
+const isMobile = useMediaQuery("(max-width: 768px)");
 ```
 
 **Migration Priority:** HIGH
@@ -961,6 +1104,7 @@ const isMobile = useMediaQuery('(max-width: 768px)');
 ---
 
 #### 2. src/hooks/useDebounce.ts
+
 **Lines:** ~30
 **Dependencies:** React
 
@@ -968,6 +1112,7 @@ const isMobile = useMediaQuery('(max-width: 768px)');
 Debounce hook for delayed value updates.
 
 **Usage:**
+
 ```tsx
 const debouncedSearch = useDebounce(searchTerm, 500);
 ```
@@ -977,6 +1122,7 @@ const debouncedSearch = useDebounce(searchTerm, 500);
 ---
 
 #### 3. src/hooks/useLocalStorage.ts
+
 **Lines:** ~60
 **Dependencies:** React
 
@@ -984,8 +1130,9 @@ const debouncedSearch = useDebounce(searchTerm, 500);
 Hook for localStorage with React state sync.
 
 **Usage:**
+
 ```tsx
-const [value, setValue] = useLocalStorage('key', defaultValue);
+const [value, setValue] = useLocalStorage("key", defaultValue);
 ```
 
 **Migration Priority:** HIGH
@@ -993,6 +1140,7 @@ const [value, setValue] = useLocalStorage('key', defaultValue);
 ---
 
 #### 4. src/hooks/useClipboard.ts
+
 **Lines:** ~40
 **Dependencies:** React
 
@@ -1000,6 +1148,7 @@ const [value, setValue] = useLocalStorage('key', defaultValue);
 Hook for clipboard operations.
 
 **Usage:**
+
 ```tsx
 const { copy, copied } = useClipboard();
 ```
@@ -1009,6 +1158,7 @@ const { copy, copied } = useClipboard();
 ---
 
 #### 5. src/hooks/usePrevious.ts
+
 **Lines:** ~20
 **Dependencies:** React
 
@@ -1016,6 +1166,7 @@ const { copy, copied } = useClipboard();
 Hook to get previous value of a variable.
 
 **Usage:**
+
 ```tsx
 const previousValue = usePrevious(value);
 ```
@@ -1025,6 +1176,7 @@ const previousValue = usePrevious(value);
 ---
 
 #### 6. src/hooks/useToggle.ts
+
 **Lines:** ~25
 **Dependencies:** React
 
@@ -1032,6 +1184,7 @@ const previousValue = usePrevious(value);
 Hook for boolean toggle state.
 
 **Usage:**
+
 ```tsx
 const [isOpen, toggle] = useToggle(false);
 ```
@@ -1041,6 +1194,7 @@ const [isOpen, toggle] = useToggle(false);
 ---
 
 #### 7. src/hooks/useInterval.ts
+
 **Lines:** ~35
 **Dependencies:** React
 
@@ -1048,8 +1202,11 @@ const [isOpen, toggle] = useToggle(false);
 Hook for setInterval with auto cleanup.
 
 **Usage:**
+
 ```tsx
-useInterval(() => { /* code */ }, 1000);
+useInterval(() => {
+  /* code */
+}, 1000);
 ```
 
 **Migration Priority:** LOW
@@ -1057,6 +1214,7 @@ useInterval(() => { /* code */ }, 1000);
 ---
 
 #### 8. src/hooks/useOnClickOutside.ts
+
 **Lines:** ~40
 **Dependencies:** React
 
@@ -1064,6 +1222,7 @@ useInterval(() => { /* code */ }, 1000);
 Hook to detect clicks outside an element.
 
 **Usage:**
+
 ```tsx
 useOnClickOutside(ref, () => setIsOpen(false));
 ```
@@ -1073,6 +1232,7 @@ useOnClickOutside(ref, () => setIsOpen(false));
 ---
 
 #### 9. src/hooks/useKeyPress.ts
+
 **Lines:** ~35
 **Dependencies:** React
 
@@ -1080,8 +1240,9 @@ useOnClickOutside(ref, () => setIsOpen(false));
 Hook to detect specific key presses.
 
 **Usage:**
+
 ```tsx
-const escapePressed = useKeyPress('Escape');
+const escapePressed = useKeyPress("Escape");
 ```
 
 **Migration Priority:** LOW
@@ -1089,6 +1250,7 @@ const escapePressed = useKeyPress('Escape');
 ---
 
 #### 10. src/hooks/useWindowSize.ts
+
 **Lines:** ~45
 **Dependencies:** React
 
@@ -1096,6 +1258,7 @@ const escapePressed = useKeyPress('Escape');
 Hook to track window size.
 
 **Usage:**
+
 ```tsx
 const { width, height } = useWindowSize();
 ```
@@ -1107,10 +1270,12 @@ const { width, height } = useWindowSize();
 ## Styles (5 files)
 
 #### 1. Tailwind Configuration (Reusable Parts)
+
 **File:** tailwind.config.js (extract reusable theme)
 **Lines:** ~50 (reusable parts)
 
 **Extract:**
+
 - Color palette
 - Spacing scale
 - Typography scale
@@ -1118,6 +1283,7 @@ const { width, height } = useWindowSize();
 - Shadows
 
 **Migration Notes:**
+
 - Create react-library/tailwind.config.ts
 - Export theme tokens separately
 - Main app can extend library config
@@ -1125,6 +1291,7 @@ const { width, height } = useWindowSize();
 ---
 
 #### 2. src/lib/theme/colors.ts
+
 **Lines:** ~40
 **Dependencies:** None
 
@@ -1136,6 +1303,7 @@ Color theme constants.
 ---
 
 #### 3. src/lib/theme/typography.ts
+
 **Lines:** ~30
 **Dependencies:** None
 
@@ -1147,6 +1315,7 @@ Typography constants and utilities.
 ---
 
 #### 4. CSS Variables (Extract from globals.css)
+
 **Lines:** ~30 (reusable parts)
 
 **Description:**
@@ -1157,6 +1326,7 @@ CSS custom properties for theming.
 ---
 
 #### 5. Design Tokens
+
 **Lines:** ~50
 **Dependencies:** None
 
@@ -1170,10 +1340,12 @@ Design system tokens (spacing, colors, etc.).
 ## Types (5 files)
 
 #### 1. src/types/common.ts
+
 **Lines:** ~100
 **Dependencies:** None
 
 **Types:**
+
 - CommonProps
 - ValueOf
 - Optional
@@ -1185,10 +1357,12 @@ Design system tokens (spacing, colors, etc.).
 ---
 
 #### 2. Form Component Prop Types
+
 **Lines:** ~150 (all form components)
 **Dependencies:** React
 
 **Types:**
+
 - FormFieldProps
 - FormInputProps
 - FormSelectProps
@@ -1201,10 +1375,12 @@ Design system tokens (spacing, colors, etc.).
 ---
 
 #### 3. Utility Function Types
+
 **Lines:** ~50
 **Dependencies:** None
 
 **Types:**
+
 - Currency
 - DateFormat
 - ValidationRule
@@ -1215,10 +1391,12 @@ Design system tokens (spacing, colors, etc.).
 ---
 
 #### 4. Hook Types
+
 **Lines:** ~30
 **Dependencies:** None
 
 **Types:**
+
 - UseMediaQueryOptions
 - UseDebounceOptions
 - etc.
@@ -1232,16 +1410,19 @@ Design system tokens (spacing, colors, etc.).
 ### External Dependencies (to add to library package.json)
 
 **Required (peerDependencies):**
+
 - react: ^18.0.0
 - react-dom: ^18.0.0
 
 **Direct Dependencies:**
+
 - clsx: ^2.1.0 (for cn function)
 - tailwind-merge: ^2.2.0 (for cn function)
 - date-fns: ^3.0.0 (for date utilities)
 - libphonenumber-js: ^1.10.0 (for phone validation)
 
 **DevDependencies:**
+
 - typescript: ^5.3.0
 - vite: ^5.0.0
 - @vitejs/plugin-react: ^4.2.0
@@ -1256,19 +1437,21 @@ Design system tokens (spacing, colors, etc.).
 ### Internal Dependencies (Within Library)
 
 **High Dependency:**
+
 - cn (utils.ts) - Used by ALL components
 - FormField, FormLabel - Used by all form components
 - date utilities - Used by date/time components
 - validators - Used by form inputs with validation
 
 **Migration Order (Based on Dependencies):**
+
 1. utils.ts (cn function)
 2. accessibility.ts
 3. FormLabel.tsx
 4. FormField.tsx
 5. date-utils.ts
 6. formatters.ts
-7. validators.ts (after validation/* folder)
+7. validators.ts (after validation/\* folder)
 8. All other utilities
 9. Form components (after FormField/FormLabel)
 10. UI components
@@ -1282,6 +1465,7 @@ Design system tokens (spacing, colors, etc.).
 ### By Priority
 
 **HIGH Priority (Must migrate first):**
+
 - 15 utilities
 - 12 form components
 - 4 UI components
@@ -1290,6 +1474,7 @@ Design system tokens (spacing, colors, etc.).
 - 4 hooks
 
 **MEDIUM Priority:**
+
 - 3 utilities
 - 7 form components
 - 2 UI components
@@ -1297,33 +1482,34 @@ Design system tokens (spacing, colors, etc.).
 - 4 hooks
 
 **LOW Priority (Can skip or migrate later):**
+
 - 2 form components
 - 1 value display
 - 2 hooks
 
 ### By File Type
 
-| Type | Total | HIGH | MEDIUM | LOW |
-|------|-------|------|--------|-----|
-| Utilities | 12 | 8 | 3 | 1 |
-| Components | 33 | 18 | 11 | 4 |
-| Hooks | 10 | 4 | 4 | 2 |
-| Styles | 5 | 1 | 4 | 0 |
-| Types | 5 | 4 | 1 | 0 |
-| **Total** | **65** | **35** | **23** | **7** |
+| Type       | Total  | HIGH   | MEDIUM | LOW   |
+| ---------- | ------ | ------ | ------ | ----- |
+| Utilities  | 12     | 8      | 3      | 1     |
+| Components | 33     | 18     | 11     | 4     |
+| Hooks      | 10     | 4      | 4      | 2     |
+| Styles     | 5      | 1      | 4      | 0     |
+| Types      | 5      | 4      | 1      | 0     |
+| **Total**  | **65** | **35** | **23** | **7** |
 
 ### Estimated Migration Time
 
-| Phase | Tasks | Files | Estimated Time |
-|-------|-------|-------|----------------|
-| Setup | 1 | - | 90 min |
-| Utilities | 5 | 12 | 450 min |
-| Components | 6 | 33 | 720 min |
-| Hooks | 1 | 10 | 120 min |
-| Styles | 1 | 5 | 120 min |
-| Documentation | 1 | - | 150 min |
-| Testing | 2 | - | 270 min |
-| **Total** | **18** | **65** | **~1,920 min (~32 hours)** |
+| Phase         | Tasks  | Files  | Estimated Time             |
+| ------------- | ------ | ------ | -------------------------- |
+| Setup         | 1      | -      | 90 min                     |
+| Utilities     | 5      | 12     | 450 min                    |
+| Components    | 6      | 33     | 720 min                    |
+| Hooks         | 1      | 10     | 120 min                    |
+| Styles        | 1      | 5      | 120 min                    |
+| Documentation | 1      | -      | 150 min                    |
+| Testing       | 2      | -      | 270 min                    |
+| **Total**     | **18** | **65** | **~1,920 min (~32 hours)** |
 
 ---
 

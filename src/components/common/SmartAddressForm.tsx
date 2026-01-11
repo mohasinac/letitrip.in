@@ -46,7 +46,7 @@ const SmartAddressSchema = z.object({
     .optional()
     .refine(
       (val) => !val || (val.length === 10 && isValidIndianPhone(val)),
-      "Invalid mobile number",
+      "Invalid mobile number"
     ),
   countryCode: z.string(),
   addressLine1: z.string().min(5, "Address must be at least 5 characters"),
@@ -61,7 +61,7 @@ const SmartAddressSchema = z.object({
     .refine(
       (val) =>
         ALL_INDIAN_STATES.includes(val as (typeof ALL_INDIAN_STATES)[number]),
-      "Invalid state",
+      "Invalid state"
     ),
   country: z.string(),
   pincode: z
@@ -140,7 +140,7 @@ export function SmartAddressForm({
       setValue("fullName", address.fullName);
       setValue(
         "mobileNumber",
-        address.phoneNumber.replace(/\D/g, "").slice(-10),
+        address.phoneNumber.replace(/\D/g, "").slice(-10)
       );
       setValue("addressLine1", address.addressLine1);
       setValue("addressLine2", address.addressLine2 || "");
@@ -180,7 +180,7 @@ export function SmartAddressForm({
         }
       }
     },
-    [setValue],
+    [setValue]
   );
 
   // Handle area selection from pincode
@@ -188,7 +188,7 @@ export function SmartAddressForm({
     (area: string) => {
       setValue("area", area);
     },
-    [setValue],
+    [setValue]
   );
 
   // Handle GPS location detection
@@ -198,7 +198,7 @@ export function SmartAddressForm({
       setValue("latitude", coords.latitude);
       setValue("longitude", coords.longitude);
     },
-    [setValue],
+    [setValue]
   );
 
   // Handle reverse geocode address
@@ -212,7 +212,7 @@ export function SmartAddressForm({
       if (address.state) setValue("state", address.state);
       if (address.pincode) setValue("pincode", address.pincode);
     },
-    [setValue],
+    [setValue]
   );
 
   const onSubmit = async (data: SmartAddressFormData) => {

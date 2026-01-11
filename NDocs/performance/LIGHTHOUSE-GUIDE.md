@@ -21,6 +21,7 @@ node scripts/development/run-lighthouse.js
 ```
 
 This will:
+
 - Audit 6 key pages (Home, Products, Search, Product Details, Cart, Login)
 - Run desktop audits with realistic network throttling
 - Generate JSON reports for each page
@@ -30,6 +31,7 @@ This will:
 ### Output
 
 After running, check:
+
 - `lighthouse-reports/lighthouse-report.md` - Summary report with all pages
 - `lighthouse-reports/[page]-desktop.json` - Full Lighthouse report for each page
 
@@ -42,11 +44,13 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: Loading performance - when the largest content element becomes visible.
 
 **Thresholds**:
+
 - 🟢 Good: ≤ 2.5s
 - 🟡 Needs Improvement: 2.5s - 4.0s
 - 🔴 Poor: > 4.0s
 
 **How to improve**:
+
 - Optimize server response times
 - Use CDN for static assets
 - Preload critical resources (images, fonts)
@@ -59,11 +63,13 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: Interactivity - how quickly the page responds to user interaction.
 
 **Thresholds (TBT)**:
+
 - 🟢 Good: ≤ 200ms
 - 🟡 Needs Improvement: 200ms - 600ms
 - 🔴 Poor: > 600ms
 
 **How to improve**:
+
 - Reduce JavaScript execution time
 - Code split to avoid loading unused code
 - Break up long tasks (>50ms)
@@ -76,11 +82,13 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: Visual stability - how much the page layout shifts unexpectedly.
 
 **Thresholds**:
+
 - 🟢 Good: ≤ 0.1
 - 🟡 Needs Improvement: 0.1 - 0.25
 - 🔴 Poor: > 0.25
 
 **How to improve**:
+
 - Add width/height attributes to images and videos
 - Reserve space for ads and embeds
 - Avoid inserting content above existing content
@@ -94,6 +102,7 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: When the first content renders on screen.
 
 **Thresholds**:
+
 - 🟢 Good: ≤ 1.8s
 - 🟡 Needs Improvement: 1.8s - 3.0s
 - 🔴 Poor: > 3.0s
@@ -103,6 +112,7 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: How quickly content is visually displayed.
 
 **Thresholds**:
+
 - 🟢 Good: ≤ 3.4s
 - 🟡 Needs Improvement: 3.4s - 5.8s
 - 🔴 Poor: > 5.8s
@@ -112,6 +122,7 @@ Lighthouse measures [Core Web Vitals](https://web.dev/vitals/), Google's key met
 **What it measures**: When the page becomes fully interactive.
 
 **Thresholds**:
+
 - 🟢 Good: ≤ 3.8s
 - 🟡 Needs Improvement: 3.8s - 7.3s
 - 🔴 Poor: > 7.3s
@@ -125,6 +136,7 @@ Lighthouse provides scores in 4 categories (0-100):
 Measures loading performance and runtime performance.
 
 **Weighted Metrics**:
+
 - First Contentful Paint: 10%
 - Speed Index: 10%
 - Largest Contentful Paint: 25%
@@ -132,6 +144,7 @@ Measures loading performance and runtime performance.
 - Cumulative Layout Shift: 25%
 
 **Score Ranges**:
+
 - 🟢 90-100: Good
 - 🟡 50-89: Needs Improvement
 - 🔴 0-49: Poor
@@ -141,6 +154,7 @@ Measures loading performance and runtime performance.
 Checks for common accessibility issues.
 
 **Key Audits**:
+
 - ARIA attributes
 - Color contrast
 - Form labels
@@ -153,6 +167,7 @@ Checks for common accessibility issues.
 Checks for modern web development best practices.
 
 **Key Audits**:
+
 - HTTPS usage
 - Console errors
 - Deprecated APIs
@@ -165,6 +180,7 @@ Checks for modern web development best practices.
 Checks for search engine optimization basics.
 
 **Key Audits**:
+
 - Meta descriptions
 - Valid robots.txt
 - Crawlable links
@@ -179,6 +195,7 @@ Checks for search engine optimization basics.
 **Issue**: JavaScript bundle too large (> 300KB)
 
 **Fixes**:
+
 - ✅ Code splitting with dynamic imports
 - ✅ Tree shaking to remove unused code
 - ✅ Lazy load routes and heavy components
@@ -190,6 +207,7 @@ Checks for search engine optimization basics.
 **Issue**: Images not optimized or too large
 
 **Fixes**:
+
 - ✅ Use Next.js Image component (automatic optimization)
 - ✅ Convert to WebP format
 - ✅ Implement responsive images (srcset)
@@ -201,6 +219,7 @@ Checks for search engine optimization basics.
 **Issue**: CSS/JS blocks initial render
 
 **Fixes**:
+
 - ✅ Inline critical CSS
 - ✅ Defer non-critical CSS
 - ✅ Async/defer non-critical JavaScript
@@ -211,6 +230,7 @@ Checks for search engine optimization basics.
 **Issue**: TTFB (Time to First Byte) > 600ms
 
 **Fixes**:
+
 - ✅ Implement caching (Redis, CDN)
 - ✅ Optimize database queries
 - ✅ Use static generation (SSG) where possible
@@ -222,6 +242,7 @@ Checks for search engine optimization basics.
 **Issue**: External scripts slow down page load
 
 **Fixes**:
+
 - ✅ Load third-party scripts asynchronously
 - ✅ Use facade patterns for heavy embeds (YouTube, maps)
 - ✅ Self-host critical third-party resources
@@ -232,6 +253,7 @@ Checks for search engine optimization basics.
 ### Real User Monitoring (RUM)
 
 Use tools to monitor real user experience:
+
 - Google Analytics 4 (Web Vitals)
 - Vercel Analytics
 - Sentry Performance Monitoring
@@ -299,6 +321,7 @@ jobs:
 ### 3. Prioritize Fixes
 
 Focus on:
+
 1. Core Web Vitals (LCP, FID, CLS)
 2. Critical user paths (checkout, product pages)
 3. High-impact, low-effort improvements
@@ -326,6 +349,7 @@ Focus on:
 **Error**: Chrome launcher fails
 
 **Fix**:
+
 ```bash
 # Install Chrome dependencies (Linux)
 sudo apt-get install -y libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev
@@ -339,6 +363,7 @@ export CHROME_PATH=/path/to/chrome
 **Issue**: Scores vary between runs
 
 **Explanation**: Normal variation due to:
+
 - Network conditions
 - CPU load
 - Background processes

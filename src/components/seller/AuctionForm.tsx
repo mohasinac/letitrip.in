@@ -3,9 +3,9 @@
 import DateTimePicker from "@/components/common/DateTimePicker";
 import RichTextEditor from "@/components/common/RichTextEditor";
 import SlugInput from "@/components/common/SlugInput";
+import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
 import { FormField } from "@/components/forms/FormField";
 import { FormInput } from "@/components/forms/FormInput";
-import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
 import { FormLabel } from "@/components/forms/FormLabel";
 import { FormSelect } from "@/components/forms/FormSelect";
 import { FormTextarea } from "@/components/forms/FormTextarea";

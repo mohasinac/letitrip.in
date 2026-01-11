@@ -27,17 +27,21 @@ We're extracting reusable utilities, components, and styles from the main Letitr
 ## Documentation Created
 
 ### 1. IMPLEMENTATION-TRACKER.md (Updated)
+
 **Location:** `refactor/IMPLEMENTATION-TRACKER.md`
 
 Added **Phase 4: React Library Extraction**
+
 - Week 14: Library Setup & Utilities (6 tasks)
 - Week 15: Component Migration (6 tasks)
 - Week 16: Styles & Finalization (6 tasks)
 
 ### 2. LIBRARY-SETUP-GUIDE.md
+
 **Location:** `refactor/LIBRARY-SETUP-GUIDE.md`
 
 Complete technical guide covering:
+
 - Workspace configuration (NPM workspaces)
 - Library structure and directory layout
 - Build configuration (Vite + TypeScript)
@@ -47,9 +51,11 @@ Complete technical guide covering:
 - Testing strategy
 
 ### 3. LIBRARY-FILE-INVENTORY.md
+
 **Location:** `refactor/LIBRARY-FILE-INVENTORY.md`
 
 Detailed inventory of all 65 files:
+
 - 12 utility files (formatters, validators, date utils, etc.)
 - 33 components (forms, UI, values, pickers)
 - 10 hooks (useDebounce, useMediaQuery, etc.)
@@ -86,6 +92,7 @@ react-library/
 ## Key Extractions
 
 ### High Priority Utilities
+
 - **formatters.ts**: 20+ functions (date, price, phone, number)
 - **validators.ts**: 15+ validation functions
 - **date-utils.ts**: Date manipulation
@@ -93,6 +100,7 @@ react-library/
 - **accessibility.ts**: ARIA helpers
 
 ### High Priority Components
+
 - **FormInput**: ⭐ Already refined
 - **FormPhoneInput**: ⭐ Supports 8 countries
 - **FormCurrencyInput**: ⭐ Supports 4 currencies
@@ -101,6 +109,7 @@ react-library/
 - **Button, Card, Modal**: UI primitives
 
 ### High Priority Hooks
+
 - **useMediaQuery**: Responsive design
 - **useDebounce**: Delayed updates
 - **useLocalStorage**: Local storage sync
@@ -111,6 +120,7 @@ react-library/
 ## Migration Strategy
 
 ### Phase 1: Setup (Task 14.1) - 90 min
+
 1. Create react-library directory
 2. Initialize package.json with dependencies
 3. Setup Vite build configuration
@@ -118,6 +128,7 @@ react-library/
 5. Update root workspace configuration
 
 ### Phase 2: Utilities (Tasks 14.2-14.6) - 450 min
+
 1. Migrate core utilities (cn, formatters, validators)
 2. Migrate value display components
 3. Setup Storybook
@@ -126,6 +137,7 @@ react-library/
 6. Update imports incrementally
 
 ### Phase 3: Components (Week 15) - 720 min
+
 1. Migrate form components (20 components)
 2. Migrate UI components (Button, Card, Modal)
 3. Migrate layout components
@@ -134,6 +146,7 @@ react-library/
 6. Add Storybook stories for all
 
 ### Phase 4: Finalization (Week 16) - 660 min
+
 1. Migrate theme system
 2. Create comprehensive documentation
 3. Export TypeScript types
@@ -148,16 +161,19 @@ react-library/
 ### External (to install in library)
 
 **Peer Dependencies:**
+
 - react: ^18.0.0
 - react-dom: ^18.0.0
 
 **Dependencies:**
+
 - clsx: ^2.1.0 (for cn)
 - tailwind-merge: ^2.2.0 (for cn)
 - date-fns: ^3.0.0 (for dates)
 - libphonenumber-js: ^1.10.0 (for phone)
 
 **Dev Dependencies:**
+
 - vite, typescript, @storybook/react, vitest
 - tailwindcss, postcss, autoprefixer
 
@@ -173,22 +189,25 @@ react-library/
 ## Import Path Changes
 
 ### Before
+
 ```typescript
-import { formatPrice } from '@/lib/formatters';
-import { FormInput } from '@/components/forms/FormInput';
-import { useDebounce } from '@/hooks/useDebounce';
+import { formatPrice } from "@/lib/formatters";
+import { FormInput } from "@/components/forms/FormInput";
+import { useDebounce } from "@/hooks/useDebounce";
 ```
 
 ### After
+
 ```typescript
-import { formatPrice, FormInput, useDebounce } from '@letitrip/react-library';
+import { formatPrice, FormInput, useDebounce } from "@letitrip/react-library";
 ```
 
 ### Or (specific imports for tree-shaking)
+
 ```typescript
-import { formatPrice } from '@letitrip/react-library/utils';
-import { FormInput } from '@letitrip/react-library/components';
-import { useDebounce } from '@letitrip/react-library/hooks';
+import { formatPrice } from "@letitrip/react-library/utils";
+import { FormInput } from "@letitrip/react-library/components";
+import { useDebounce } from "@letitrip/react-library/hooks";
 ```
 
 ---
@@ -196,16 +215,19 @@ import { useDebounce } from '@letitrip/react-library/hooks';
 ## Testing Plan
 
 ### Unit Tests
+
 - Vitest for all utilities
 - React Testing Library for components
 - Jest for hooks
 
 ### Integration Tests
+
 - Test library in main app context
 - Verify all imports work
 - Check component rendering
 
 ### Visual Tests
+
 - Storybook for visual regression
 - Accessibility testing (A11y addon)
 - Cross-browser testing
@@ -245,18 +267,21 @@ stories/
 ## Exclusions (Not Migrating)
 
 ### Business Logic
+
 - link-utils.ts (Next.js routing)
 - category-hierarchy.ts
 - payment-gateway-selector.ts
 - permissions.ts, rbac-permissions.ts
 - rate-limiter.ts
-- firebase/* (app config)
+- firebase/\* (app config)
 
 ### Domain-Specific Components
-- admin/*, auction/*, product/*
-- shop/*, user/*, checkout/*
+
+- admin/_, auction/_, product/\*
+- shop/_, user/_, checkout/\*
 
 ### App-Specific Hooks
+
 - useAuth, useCart, useProducts, useAuction
 
 **Reason**: These are too application-specific and contain business logic.
@@ -281,6 +306,7 @@ stories/
 ### Immediate Actions
 
 1. **Start Task 14.1**: Create library structure
+
    ```powershell
    mkdir react-library
    cd react-library
@@ -288,12 +314,14 @@ stories/
    ```
 
 2. **Install dependencies**:
+
    ```powershell
    npm install --save-dev vite @vitejs/plugin-react typescript
    npm install clsx tailwind-merge date-fns libphonenumber-js
    ```
 
 3. **Create config files**:
+
    - vite.config.ts
    - tsconfig.json
    - package.json (update)
@@ -305,6 +333,7 @@ stories/
 ### Today's Goal (Week 14, Day 1)
 
 Complete Task 14.1: Library structure setup
+
 - Create directory
 - Setup package.json
 - Configure build tools
@@ -324,11 +353,13 @@ Complete Task 14.1: Library structure setup
 ## Resources
 
 ### Documentation
+
 - [IMPLEMENTATION-TRACKER.md](refactor/IMPLEMENTATION-TRACKER.md) - Task tracking
 - [LIBRARY-SETUP-GUIDE.md](refactor/LIBRARY-SETUP-GUIDE.md) - Technical guide
 - [LIBRARY-FILE-INVENTORY.md](refactor/LIBRARY-FILE-INVENTORY.md) - File details
 
 ### References
+
 - Vite Library Mode: https://vitejs.dev/guide/build.html#library-mode
 - NPM Workspaces: https://docs.npmjs.com/cli/v7/using-npm/workspaces
 - Storybook for React: https://storybook.js.org/docs/react/get-started/install
@@ -390,12 +421,14 @@ Related: refactor/IMPLEMENTATION-TRACKER.md
 ### Status Updates
 
 **After each task:**
+
 - Mark task complete in IMPLEMENTATION-TRACKER.md
 - Update TODO list
 - Commit changes
 - Brief status message
 
 **After each week:**
+
 - Week summary
 - Progress report
 - Issues encountered
@@ -408,6 +441,7 @@ Related: refactor/IMPLEMENTATION-TRACKER.md
 **Phase 4 Progress: 0/18 tasks (0%)**
 
 ### Week 14: 0/6 tasks (0%)
+
 - [ ] 14.1: Create React Library Submodule
 - [ ] 14.2: Migrate Core Utilities
 - [ ] 14.3: Migrate Value Display Components
@@ -416,9 +450,11 @@ Related: refactor/IMPLEMENTATION-TRACKER.md
 - [ ] 14.6: Week 14 Integration & Testing
 
 ### Week 15: 0/6 tasks (0%)
+
 - [ ] 15.1-15.6: Component migration tasks
 
 ### Week 16: 0/6 tasks (0%)
+
 - [ ] 16.1-16.6: Finalization tasks
 
 ---

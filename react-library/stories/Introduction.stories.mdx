@@ -1,0 +1,82 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Introduction" />
+
+# @letitrip/react-library
+
+Welcome to the Letitrip React Library documentation!
+
+## 🎯 Overview
+
+This library contains reusable React components, utilities, and hooks extracted from the main Letitrip application.
+
+## 📦 What's Included
+
+### Utilities
+
+- **Formatters**: Date, price, phone, number formatting
+- **Validators**: Email, phone, pincode, URL validation
+- **Date Utils**: Date manipulation and parsing
+- **String Utils**: cn(), slugify, truncate
+- **Accessibility**: ARIA helpers, keyboard navigation
+
+### Components
+
+- **Form Components**: 21 accessible form inputs
+- **UI Components**: Button, Card, Modal, etc.
+- **Value Displays**: DateDisplay, Price, Status
+- **Pickers**: DateTimePicker, State, Pincode
+
+### Hooks
+
+- **useMediaQuery**: Responsive design
+- **useDebounce**: Delayed updates
+- **useLocalStorage**: Local storage sync
+- **useClipboard**: Clipboard operations
+- And more...
+
+## 🚀 Getting Started
+
+Browse the sidebar to explore components and utilities. Each story includes:
+
+- Live examples
+- Interactive controls
+- Code snippets
+- Accessibility information
+
+## 📖 Usage Example
+
+\`\`\`typescript
+import { formatPrice, FormInput, useDebounce } from '@letitrip/react-library';
+
+function MyComponent() {
+const price = formatPrice(1000, 'INR'); // ₹1,000.00
+
+return (
+<FormInput 
+      label="Product Name"
+      required
+      error="This field is required"
+    />
+);
+}
+\`\`\`
+
+## ♿ Accessibility
+
+All components follow WCAG 2.1 AA guidelines and include:
+
+- Proper ARIA labels
+- Keyboard navigation
+- Screen reader support
+- Focus management
+
+## 🎨 Theming
+
+Components use Tailwind CSS and can be customized via theme configuration.
+
+---
+
+**Version**: 1.0.0  
+**Status**: In Development  
+**Last Updated**: January 12, 2026

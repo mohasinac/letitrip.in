@@ -1,0 +1,8 @@
+/* Global styles for react-library */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Will be populated with design tokens in Task 16.1 */
+}

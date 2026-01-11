@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Modern auction and e-commerce platform built with Next.js",
+  "workspaces": [
+    "react-library"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mohasinac/letitrip.in"
@@ -28,6 +31,11 @@
     "indexes:deploy": "node firestore-indexes/deploy-indexes.js",
     "indexes:dry-run": "node firestore-indexes/deploy-indexes.js --dry-run",
     "indexes:build": "node firestore-indexes/deploy-indexes.js --skip-deploy",
+    "lib:dev": "cd react-library && npm run dev",
+    "lib:build": "cd react-library && npm run build",
+    "lib:test": "cd react-library && npm test",
+    "lib:storybook": "cd react-library && npm run storybook",
+    "lib:build-storybook": "cd react-library && npm run build-storybook",
     "functions:build": "cd functions && npm run build",
     "functions:serve": "cd functions && npm run serve",
     "functions:deploy": "firebase deploy --only functions",
