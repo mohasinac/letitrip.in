@@ -9,6 +9,7 @@ Comprehensive documentation for all reusable React hooks in the application.
 - [Form Management](#form-management)
 - [UI State Management](#ui-state-management)
 - [List & Pagination](#list--pagination)
+- [Virtual Scrolling](#virtual-scrolling)
 - [URL Synchronization](#url-synchronization)
 - [E-commerce](#e-commerce)
 - [Media & Upload](#media--upload)
@@ -585,6 +586,194 @@ Resource list with automatic API fetching.
 - All from `useResourceListState`
 - `refetch(): Promise<void>`
 - `refreshing: boolean`
+
+---
+
+## Virtual Scrolling
+
+### useVirtualList.ts ✅
+
+**Export:** `useVirtualList(options): UseVirtualListReturn`
+
+Hook for implementing virtual scrolling with large lists. Only renders items visible in the viewport, dramatically improving performance for lists with hundreds or thousands of items.
+
+**Parameters:**
+
+- `count: number` - Total number of items in the list (required)
+- `estimateSize?: number` - Estimated size of each item in pixels (default: 50)
+- `overscan?: number` - Number of items to render outside visible area (default: 5)
+- `horizontal?: boolean` - Enable horizontal scrolling (default: false)
+- `scrollMargin?: number` - Scroll margin in pixels (default: 0)
+- `gap?: number` - Gap between items in pixels (default: 0)
+- `dynamic?: boolean` - Enable dynamic item sizing for variable heights (default: false)
+
+**Returns:**
+
+- `virtualItems: Array` - Virtual items to render (index, key, size, start, end)
+- `totalSize: number` - Total size of scrollable area
+- `parentRef: React.RefObject<HTMLDivElement>` - Ref for scrollable container
+- `measureElement: (element) => void` - Measure item size (for dynamic sizing)
+- `scrollToIndex: (index, options?) => void` - Scroll to specific item
+- `scrollToOffset: (offset, options?) => void` - Scroll to specific offset
+- `virtualizer` - Virtualizer instance for advanced use
+
+**Example - Basic List:**
+
+```tsx
+function ProductList({ products }: { products: Product[] }) {
+  const { virtualItems, totalSize, parentRef } = useVirtualList({
+    count: products.length,
+    estimateSize: 200, // Estimated height of each product card
+    overscan: 5,
+  });
+
+  return (
+    <div ref={parentRef} className="h-screen overflow-auto">
+      <div style={{ height: `${totalSize}px`, position: "relative" }}>
+        {virtualItems.map((virtualItem) => {
+          const product = products[virtualItem.index];
+          return (
+            <div
+              key={virtualItem.key}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualItem.size}px`,
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              <ProductCard product={product} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+```
+
+**Example - Dynamic Sizing:**
+
+```tsx
+function DynamicList({ items }: { items: Item[] }) {
+  const { virtualItems, totalSize, parentRef, measureElement } = useVirtualList(
+    {
+      count: items.length,
+      estimateSize: 100,
+      dynamic: true, // Enable dynamic sizing
+    }
+  );
+
+  return (
+    <div ref={parentRef} className="h-screen overflow-auto">
+      <div style={{ height: `${totalSize}px`, position: "relative" }}>
+        {virtualItems.map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            data-index={virtualItem.index}
+            ref={measureElement}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <ItemCard item={items[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### useVirtualGrid.ts ✅
+
+**Export:** `useVirtualGrid(options): UseVirtualGridReturn`
+
+Hook for grid-based virtual scrolling. Virtualizes rows while displaying multiple columns per row.
+
+**Parameters:**
+
+- All parameters from `useVirtualList`
+- `columns: number` - Number of columns in the grid (required)
+
+**Returns:**
+
+- All returns from `useVirtualList`
+- `columns: number` - Number of columns
+- `rowCount: number` - Calculated number of rows
+
+**Example - Product Grid:**
+
+```tsx
+function ProductGrid({ products }: { products: Product[] }) {
+  const columns = 4;
+  const rowCount = Math.ceil(products.length / columns);
+
+  const { virtualItems, totalSize, parentRef } = useVirtualList({
+    count: rowCount,
+    estimateSize: 300, // Height of each row
+    overscan: 2,
+  });
+
+  return (
+    <div ref={parentRef} className="h-screen overflow-auto">
+      <div style={{ height: `${totalSize}px`, position: "relative" }}>
+        {virtualItems.map((virtualRow) => {
+          const startIndex = virtualRow.index * columns;
+          const rowProducts = products.slice(startIndex, startIndex + columns);
+
+          return (
+            <div
+              key={virtualRow.key}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <div className="grid grid-cols-4 gap-4">
+                {rowProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+```
+
+**Benefits:**
+
+- **Performance**: Render only visible items (10-50 items instead of 1000+)
+- **Memory**: Reduced DOM nodes and memory usage
+- **Smooth Scrolling**: Maintains 60 FPS even with thousands of items
+- **Dynamic Sizing**: Supports items with variable heights/widths
+- **Horizontal**: Supports both vertical and horizontal scrolling
+- **Grid Support**: Easy grid implementation with row virtualization
+
+**Use Cases:**
+
+- Product lists with 100+ items
+- Search results with thousands of entries
+- Order history lists
+- Message/chat lists
+- Admin tables with many rows
+- Image galleries
+- Any large dataset that needs scrolling
 
 ---
 
