@@ -9,23 +9,28 @@
 ### Implementation Details
 
 **What was created:**
+
 1. Library directory structure
+
    - `/src` with subdirectories for utils, components, hooks, styles, types
    - `/stories` for Storybook documentation
    - `/.storybook` for Storybook configuration
 
 2. Package configuration
+
    - package.json with proper exports for tree-shaking
    - Support for both React 18 and React 19
    - Workspace package setup
 
 3. Build configuration
+
    - Vite config for library bundling
    - TypeScript configuration
    - Multiple entry points (index, utils, components, hooks, styles)
    - Both ESM and CommonJS output formats
 
 4. Storybook setup
+
    - Storybook 7.6 configured
    - A11y addon for accessibility testing
    - Preview configuration for Tailwind CSS
@@ -38,6 +43,7 @@
 ### Build Verification
 
 ✅ Library builds successfully with Vite
+
 - Generated ESM and CommonJS bundles
 - Type definitions created
 - Split chunks for each module
@@ -56,16 +62,19 @@ dist/styles/index.js      0.00 kB │ gzip: 0.02 kB
 ### Technical Decisions
 
 1. **React Version Support**: Configured to support both React 18 and 19
+
    - Used `^18.0.0 || ^19.0.0` in peerDependencies
    - Required --legacy-peer-deps for Storybook 7.6 compatibility
 
 2. **Build Tool**: Chose Vite over Rollup directly
+
    - Faster builds
    - Better DX with hot module replacement
    - Built-in TypeScript support
    - Simple configuration
 
 3. **Package Exports**: Multiple entry points
+
    - Main: `@letitrip/react-library`
    - Specific: `@letitrip/react-library/utils`, etc.
    - Better tree-shaking for consumers
@@ -78,21 +87,25 @@ dist/styles/index.js      0.00 kB │ gzip: 0.02 kB
 ### Challenges & Solutions
 
 **Challenge 1: React 19 Peer Dependency**
+
 - Storybook 7.6 officially supports React ^16-18
 - Main app uses React 19
 - Solution: Updated library peerDeps to accept React 19, installed with --legacy-peer-deps
 
 **Challenge 2: TypeScript Build Errors**
+
 - Missing type definitions for minimatch
 - Solution: Installed @types/node, simplified build script to skip tsc initially
 
 **Challenge 3: PowerShell Path Issues**
+
 - Double `cd react-library` causing path errors
 - Solution: Used absolute paths or single directory change
 
 ### What's Next (Task 14.2)
 
 Migrate core utilities:
+
 - formatters.ts (20+ functions)
 - validators.ts (15+ functions)
 - date-utils.ts
@@ -141,12 +154,14 @@ react-library/
 ### Dependencies Installed
 
 **Production:**
+
 - clsx: ^2.1.0
 - tailwind-merge: ^2.2.0
 - date-fns: ^3.0.0
 - libphonenumber-js: ^1.10.0
 
 **Development:**
+
 - vite: ^5.0.0
 - typescript: ^5.3.0
 - @vitejs/plugin-react: ^4.2.0
@@ -178,7 +193,87 @@ Actual: ~90 minutes
 
 ---
 
-## Next Task: 14.2 - Migrate Core Utilities
+## Task 14.2: Migrate Core Utilities ✅
 
-Status: Not Started
-Estimate: 120 minutes
+**Completed**: January 12, 2026
+**Duration**: 120 minutes
+
+Successfully migrated 50+ utility functions to the library with full build verification.
+
+### Files Migrated
+
+1. **cn.ts** - NEW
+   - Critical Tailwind class merging utility
+   - Most-used function across all components
+   - Dependencies: clsx + tailwind-merge
+
+2. **formatters.ts** - COPIED & MODIFIED
+   - 25+ formatting functions for Indian context
+   - Currency, dates, phones, numbers, file sizes
+   - Order IDs, SKUs, addresses, payment methods
+   - **Fixed**: Intl.ListFormat compatibility with feature detection + fallback
+
+3. **date-utils.ts** - COPIED & MODIFIED
+   - 10+ date manipulation functions
+   - Safe conversions with error handling
+   - **Fixed**: Removed firebase-error-logger dependency (2 occurrences)
+   - **Changed**: logError() → console.error()
+
+4. **validators.ts** - COPIED
+   - 15+ validation functions
+   - India-specific: GST, PAN, Aadhar, IFSC, UPI
+   - International: Email, phone, URL
+   - No modifications needed
+
+5. **sanitize.ts** - COPIED
+   - Input sanitization and XSS prevention
+   - HTML cleaning, tag stripping
+   - Filename sanitization
+   - No modifications needed
+
+### Build Results
+
+**Final successful build**:
+- Bundle: 103.07 KB (raw), 24.49 KB (gzipped)
+- Build time: 2.97s
+- Errors: 0 ✅
+
+### Challenges Resolved
+
+1. **Firebase Error Logger Dependency**
+   - Problem: date-utils.ts imported app-specific logger
+   - Lines affected: 4 (import), 27, 87 (usage)
+   - Solution: Replaced with console.error()
+   - Rationale: Library must be app-agnostic
+
+2. **Intl.ListFormat Compatibility**
+   - Problem: TypeScript type error (ListFormat not in Intl types)
+   - Location: formatters.ts:415
+   - Solution: Feature detection with fallback
+   - Implementation:
+     ```typescript
+     if (typeof Intl !== "undefined" && "ListFormat" in Intl) {
+       return new (Intl as any).ListFormat(locale, {...}).format(items);
+     }
+     // Manual "and" joining fallback
+     ```
+
+### Build Iteration
+
+1. **Attempt 1**: 2 errors (firebase, ListFormat)
+2. **Attempt 2**: 1 error (second logError)
+3. **Attempt 3**: ✅ Success
+
+### Technical Decisions
+
+- **Logging**: Console.error for library errors (no external deps)
+- **Compatibility**: Feature detection over polyfills
+- **Bundle size**: 103KB acceptable for 50+ utilities
+- **Tree-shaking**: Separate utils/index.js entry point
+
+---
+
+## Next Task: 14.3 - Migrate Value Display Components
+
+Status: Ready to start
+Estimate: 90 minutes

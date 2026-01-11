@@ -2066,7 +2066,7 @@ react-library/
 
 #### Task 14.2: Migrate Core Utilities
 
-- [ ] **Extract utility functions**
+- [x] **Extract utility functions**
   - **Formatters**: `formatters.ts` → `@letitrip/react-library/utils`
     - formatPrice, formatDate, formatNumber, formatPhone, etc.
   - **Validators**: `validators.ts`, `validation/*` → `@letitrip/react-library/utils`
@@ -2078,6 +2078,7 @@ react-library/
   - **Update**: Main app to import from `@letitrip/react-library`
   - **Test**: All utility functions work after migration
   - **Estimate**: 120 minutes
+  - **Completed**: January 12, 2026
 
 **Files to migrate:**
 
@@ -2374,18 +2375,18 @@ dist/
 
 ### By Week
 
-- **Week 14**: 1/6 tasks (17%) - Utilities & Setup
+- **Week 14**: 2/6 tasks (33%) - Utilities & Setup
 - **Week 15**: 0/6 tasks (0%) - Component Migration
 - **Week 16**: 0/6 tasks (0%) - Styles & Finalization
 
 ### Time Investment
 
 - **Estimated Total**: ~1,920 minutes (~32 hours)
-- **Completed**: 90 minutes
-- **Remaining**: ~1,830 minutes (~30.5 hours)
+- **Completed**: 210 minutes (~3.5 hours)
+- **Remaining**: ~1,710 minutes (~28.5 hours)
 
 ### Overall Progress (Including Phase 4)
 
 **Phases 1-3: 82/82 tasks (100%) ✅**
-**Phase 4: 1/18 tasks (6%)**
-**Total: 83/100 tasks (83%)**
+**Phase 4: 2/18 tasks (11%)**
+**Total: 84/100 tasks (84%)**

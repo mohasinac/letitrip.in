@@ -41,12 +41,12 @@ The library provides multiple entry points for tree-shaking:
 
 ```typescript
 // Main entry point
-import { X } from '@letitrip/react-library';
+import { X } from "@letitrip/react-library";
 
 // Specific imports (better tree-shaking)
-import { X } from '@letitrip/react-library/utils';
-import { Y } from '@letitrip/react-library/components';
-import { Z } from '@letitrip/react-library/hooks';
+import { X } from "@letitrip/react-library/utils";
+import { Y } from "@letitrip/react-library/components";
+import { Z } from "@letitrip/react-library/hooks";
 ```
 
 ## Package Exports
@@ -81,6 +81,7 @@ npm run build
 ```
 
 Output:
+
 - `dist/index.js` - ESM bundle
 - `dist/index.cjs` - CommonJS bundle
 - `dist/index.d.ts` - Type definitions
@@ -112,15 +113,15 @@ Output:
 The library is integrated into the main monorepo as a workspace:
 
 **Root package.json:**
+
 ```json
 {
-  "workspaces": [
-    "react-library"
-  ]
+  "workspaces": ["react-library"]
 }
 ```
 
 **Root tsconfig.json:**
+
 ```json
 {
   "compilerOptions": {
@@ -134,7 +135,10 @@ The library is integrated into the main monorepo as a workspace:
 
 ## Migration Status
 
-### Completed (Task 14.1)
+### Completed
+
+**Task 14.1: Library Structure** ✅
+
 - ✅ Library structure created
 - ✅ Package configuration
 - ✅ TypeScript setup
@@ -143,38 +147,100 @@ The library is integrated into the main monorepo as a workspace:
 - ✅ Workspace integration
 - ✅ Build verification
 
+**Task 14.2: Core Utilities** ✅
+
+- ✅ cn function (Tailwind class merging)
+- ✅ formatters.ts (20+ formatting functions)
+- ✅ date-utils.ts (date manipulation)
+- ✅ validators.ts (validation functions)
+- ✅ sanitize.ts (input sanitization)
+- ✅ Build successful (103KB utils bundle)
+
 ### Pending
 
 **Week 14 (Remaining)**
-- ⏳ Task 14.2: Migrate core utilities
+
 - ⏳ Task 14.3: Migrate value display components
 - ⏳ Task 14.4: Create Storybook documentation
 - ⏳ Task 14.5: Migrate accessibility utilities
 - ⏳ Task 14.6: Week 14 integration & testing
 
 **Week 15**
+
 - ⏳ Task 15.1-15.6: Component migration
 
 **Week 16**
+
 - ⏳ Task 16.1-16.6: Styles & finalization
 
-## Contents (To Be Populated)
+## Contents
 
-### Utilities (Task 14.2)
-- Formatters (date, price, phone, number)
-- Validators (email, phone, pincode, URL)
-- Date utilities
-- String utilities (cn, slugify)
-- Accessibility helpers
-- Sanitization
+### Utilities ✅ (Task 14.2 Complete)
+
+**cn.ts** - Tailwind class merging
+
+- `cn(...inputs)` - Merge Tailwind classes intelligently
+
+**formatters.ts** - Formatting functions (20+ functions)
+
+- `formatCompactCurrency(amount)` - Indian numbering (K, L, Cr)
+- `formatDate(date, options)` - Localized date formatting
+- `formatRelativeTime(date, options)` - "2 hours ago" style
+- `formatNumber(num, options)` - Indian numbering system
+- `formatCompactNumber(num)` - 1K, 1M, 1B notation
+- `formatPercentage(value, options)` - Percentage formatting
+- `formatPhoneNumber(phone)` - Indian phone format
+- `formatPincode(pincode)` - 6-digit pincode
+- `formatFileSize(bytes)` - KB, MB, GB
+- `formatDuration(seconds)` - Human-readable duration
+- `formatOrderId(id)` - #ORD-XXXXX
+- `formatShopId(id)` - SHP-XXXXX
+- `formatSKU(sku)` - Uppercase SKU
+- `truncateText(text, maxLength)` - Text with ellipsis
+- `slugToTitle(slug)` - Convert slug to title
+- `formatDiscount(original, current)` - Discount percentage
+- `formatRating(rating, max)` - Rating display
+- `formatReviewCount(count)` - Review count
+- `formatStockStatus(stock)` - Stock status
+- `formatTimeRemaining(endTime)` - Auction countdown
+- `formatAddress(address)` - Multi-line address
+- `formatCardNumber(card)` - Masked card number
+- `formatUPI(upiId)` - UPI ID formatting
+- `formatBankAccount(account)` - Masked account
+- `formatDateRange(start, end)` - Date range
+- `formatBoolean(value)` - Yes/No
+- `formatList(items, locale)` - List with "and"
+
+**date-utils.ts** - Date manipulation
+
+- `safeToISOString(date)` - Safe date to ISO conversion
+- `toISOStringOrDefault(date, fallback)` - With fallback
+- `isValidDate(date)` - Date validation
+- `toDateInputValue(date)` - YYYY-MM-DD format
+- `getTodayDateInputValue()` - Today's date input
+- `safeToDate(value)` - Safe date conversion
+
+**validators.ts** - Validation functions
+
+- Email, phone, pincode, URL validation
+- Form field validation
+- Input validation rules
+
+**sanitize.ts** - Input sanitization
+
+- HTML sanitization
+- XSS prevention
+- Input cleaning
 
 ### Components (Tasks 15.1-15.3)
-- Form components (21 components)
-- UI components (Button, Card, Modal, etc.)
-- Value displays (DateDisplay, Price, Status)
-- Pickers (DateTimePicker, State, Pincode)
+
+- Form components (21 components) - Pending
+- UI components (Button, Card, Modal, etc.) - Pending
+- Value displays (DateDisplay, Price, Status) - Pending
+- Pickers (DateTimePicker, State, Pincode) - Pending
 
 ### Hooks (Task 15.4)
+
 - useMediaQuery
 - useDebounce
 - useLocalStorage
@@ -184,12 +250,14 @@ The library is integrated into the main monorepo as a workspace:
 - And more...
 
 ### Styles (Task 16.1)
+
 - Tailwind configuration
 - Theme tokens
 - CSS variables
 - Design system
 
 ### Types (Task 16.3)
+
 - Common types
 - Component prop types
 - Utility function types
@@ -245,6 +313,7 @@ dist/
 ## Next Steps
 
 1. **Task 14.2**: Migrate core utilities
+
    - formatters.ts
    - validators.ts
    - date-utils.ts
@@ -252,6 +321,7 @@ dist/
    - sanitize.ts
 
 2. **Task 14.3**: Migrate value display components
+
    - DateDisplay
    - Price
    - Status badges
