@@ -154,13 +154,21 @@ The library is integrated into the main monorepo as a workspace:
 - ✅ date-utils.ts (date manipulation)
 - ✅ validators.ts (validation functions)
 - ✅ sanitize.ts (input sanitization)
+- ✅ price.utils.ts (price formatting)
 - ✅ Build successful (103KB utils bundle)
+
+**Task 14.3: Value Display Components** ✅
+
+- ✅ Migrated 20 value display components
+- ✅ DateDisplay (3 variants), Price, Status components
+- ✅ All imports updated to library paths
+- ✅ Build successful (35KB components bundle)
+- ✅ Fixed Currency/formatDiscount conflicts
 
 ### Pending
 
 **Week 14 (Remaining)**
 
-- ⏳ Task 14.3: Migrate value display components
 - ⏳ Task 14.4: Create Storybook documentation
 - ⏳ Task 14.5: Migrate accessibility utilities
 - ⏳ Task 14.6: Week 14 integration & testing
@@ -232,11 +240,43 @@ The library is integrated into the main monorepo as a workspace:
 - XSS prevention
 - Input cleaning
 
-### Components (Tasks 15.1-15.3)
+**price.utils.ts** - Price formatting
+
+- `formatPrice(amount, options)` - Null-safe price formatting
+- `formatDiscount(original, current)` - Discount calculation
+- `PriceCurrency` type - INR, USD, EUR, GBP
+
+### Components ✅ (Task 14.3 Complete - 20 Components)
+
+**Value Display Components**
+
+- `DateDisplay` - Formatted date display with time options
+- `RelativeDate` - "2 hours ago" style dates
+- `DateRange` - Display date ranges
+- `Price` - Price with currency symbol and discount
+- `Address` - Formatted multi-line address
+- `AuctionStatus` - Auction status badge
+- `BidCount` - Bid count display
+- `Currency` - Currency amounts with localization
+- `Dimensions` - Product dimensions (LxWxH)
+- `Email` - Email display with link
+- `OrderId` - Formatted order ID
+- `PaymentStatus` - Payment status badge
+- `Percentage` - Percentage display
+- `PhoneNumber` - Formatted phone number with link
+- `Quantity` - Quantity display with unit
+- `Rating` - Star rating with count
+- `ShippingStatus` - Shipping status badge
+- `SKU` - SKU code display
+- `StockStatus` - Stock availability badge
+- `TimeRemaining` - Countdown timer for auctions
+- `TruncatedText` - Text with "Show more" expansion
+- `Weight` - Weight display with unit conversion
+
+### Form Components (Task 15.1)
 
 - Form components (21 components) - Pending
 - UI components (Button, Card, Modal, etc.) - Pending
-- Value displays (DateDisplay, Price, Status) - Pending
 - Pickers (DateTimePicker, State, Pincode) - Pending
 
 ### Hooks (Task 15.4)
