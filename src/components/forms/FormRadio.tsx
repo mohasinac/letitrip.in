@@ -39,6 +39,8 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
             hasError && "border-red-500",
             props.disabled && "opacity-50 cursor-not-allowed",
           )}
+          aria-checked={props.checked}
+          aria-describedby={description ? `${radioId}-description` : undefined}
           {...props}
         />
         <div className="flex-1">
@@ -52,7 +54,10 @@ export const FormRadio = forwardRef<HTMLInputElement, FormRadioProps>(
             {label}
           </label>
           {description && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <p 
+              id={`${radioId}-description`}
+              className="text-xs text-gray-500 dark:text-gray-400 mt-0.5"
+            >
               {description}
             </p>
           )}
@@ -113,7 +118,12 @@ export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
       </div>
 
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p 
+          className="text-sm text-red-600 dark:text-red-400" 
+          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {error}
         </p>
       )}

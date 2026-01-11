@@ -63,6 +63,15 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   ) => {
     const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
+    const prevErrorRef = useRef<string | undefined>();
+
+    // Announce errors to screen readers
+    useEffect(() => {
+      if (error && error !== prevErrorRef.current) {
+        announceToScreenReader(`Error: ${error}`, "assertive");
+      }
+      prevErrorRef.current = error;
+    }, [error]);
 
     // Handle sanitization on blur
     const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
@@ -131,6 +140,8 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
               className
             )}
             aria-invalid={!!error}
+            aria-required={props.required}
+            aria-label={!label ? props.placeholder || "Text area" : undefined}
             aria-describedby={
               error
                 ? `${textareaId}-error`
@@ -151,6 +162,8 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
                 id={`${textareaId}-error`}
                 className="text-sm text-red-600 dark:text-red-400"
                 role="alert"
+                aria-live="polite"
+                aria-atomic="true"
               >
                 {error}
               </p>

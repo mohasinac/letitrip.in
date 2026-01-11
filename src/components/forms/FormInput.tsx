@@ -1,5 +1,6 @@
 "use client";
 
+import { announceToScreenReader } from "@/lib/accessibility";
 import {
   sanitizeEmail,
   sanitizePhone,
@@ -7,7 +8,7 @@ import {
   sanitizeUrl,
 } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
-import { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes, useEffect, useRef } from "react";
 
 export interface FormInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
@@ -65,6 +66,15 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     const currentLength = typeof value === "string" ? value.length : 0;
+    const prevErrorRef = useRef<string | undefined>();
+
+    // Announce errors to screen readers
+    useEffect(() => {
+      if (error && error !== prevErrorRef.current) {
+        announceToScreenReader(`Error: ${error}`, "assertive");
+      }
+      prevErrorRef.current = error;
+    }, [error]);
 
     // Handle sanitization on blur
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -154,6 +164,10 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
               maxLength={maxLength}
               className={baseInputClasses}
               aria-invalid={!!error}
+              aria-required={props.required}
+              aria-label={
+                !label ? props.placeholder || "Input field" : undefined
+              }
               aria-describedby={
                 error
                   ? `${inputId}-error`
@@ -187,6 +201,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
                 id={`${inputId}-error`}
                 className="text-sm text-red-600 dark:text-red-400"
                 role="alert"
+                aria-live="polite"
+                aria-atomic="true"
               >
                 {error}
               </p>

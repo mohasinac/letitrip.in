@@ -1,8 +1,9 @@
 "use client";
 
-import { forwardRef, SelectHTMLAttributes } from "react";
-import { ChevronDown } from "lucide-react";
+import { announceToScreenReader } from "@/lib/accessibility";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
+import { forwardRef, SelectHTMLAttributes, useEffect, useRef } from "react";
 
 export interface FormSelectOption {
   value: string;
@@ -10,10 +11,8 @@ export interface FormSelectOption {
   disabled?: boolean;
 }
 
-export interface FormSelectProps extends Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  "size"
-> {
+export interface FormSelectProps
+  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -37,9 +36,18 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
       id,
       ...props
     },
-    ref,
+    ref
   ) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
+    const prevErrorRef = useRef<string | undefined>();
+
+    // Announce errors to screen readers
+    useEffect(() => {
+      if (error && error !== prevErrorRef.current) {
+        announceToScreenReader(`Error: ${error}`, "assertive");
+      }
+      prevErrorRef.current = error;
+    }, [error]);
 
     return (
       <div className={cn(fullWidth && "w-full")}>
@@ -68,15 +76,17 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
               "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
               props.disabled &&
                 "bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-60",
-              className,
+              className
             )}
             aria-invalid={!!error}
+            aria-required={props.required}
+            aria-label={!label ? "Select an option" : undefined}
             aria-describedby={
               error
                 ? `${selectId}-error`
                 : helperText
-                  ? `${selectId}-helper`
-                  : undefined
+                ? `${selectId}-helper`
+                : undefined
             }
             {...props}
           >
@@ -107,6 +117,8 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
             id={`${selectId}-error`}
             className="mt-1 text-sm text-red-600 dark:text-red-400"
             role="alert"
+            aria-live="polite"
+            aria-atomic="true"
           >
             {error}
           </p>
@@ -121,7 +133,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
         )}
       </div>
     );
-  },
+  }
 );
 
 FormSelect.displayName = "FormSelect";
