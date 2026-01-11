@@ -52,7 +52,10 @@ export interface UseVirtualListOptions {
 /**
  * Virtual List Hook Return Type
  */
-export interface UseVirtualListReturn<TScrollElement extends Element = HTMLDivElement, TItemElement extends Element = Element> {
+export interface UseVirtualListReturn<
+  TScrollElement extends Element = HTMLDivElement,
+  TItemElement extends Element = Element
+> {
   /**
    * Array of virtual items to render
    * Each item has: index, key, size, start, end
@@ -77,12 +80,16 @@ export interface UseVirtualListReturn<TScrollElement extends Element = HTMLDivEl
   /**
    * Scroll to a specific item index
    */
-  scrollToIndex: ReturnType<typeof useVirtualizer<TScrollElement, TItemElement>>["scrollToIndex"];
+  scrollToIndex: ReturnType<
+    typeof useVirtualizer<TScrollElement, TItemElement>
+  >["scrollToIndex"];
 
   /**
    * Scroll to a specific offset
    */
-  scrollToOffset: ReturnType<typeof useVirtualizer<TScrollElement, TItemElement>>["scrollToOffset"];
+  scrollToOffset: ReturnType<
+    typeof useVirtualizer<TScrollElement, TItemElement>
+  >["scrollToOffset"];
 
   /**
    * Get the virtualizer instance for advanced use cases
@@ -196,7 +203,10 @@ export interface UseVirtualListReturn<TScrollElement extends Element = HTMLDivEl
  * }
  * ```
  */
-export function useVirtualList<TScrollElement extends Element = HTMLDivElement, TItemElement extends Element = Element>(
+export function useVirtualList<
+  TScrollElement extends Element = HTMLDivElement,
+  TItemElement extends Element = Element
+>(
   options: UseVirtualListOptions
 ): UseVirtualListReturn<TScrollElement, TItemElement> {
   const {
