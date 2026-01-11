@@ -148,6 +148,7 @@ Advanced search components integrated with the search service featuring autocomp
 **Type Integration**:
 
 All components use types from `@/services/search.service`:
+
 - `AdvancedSearchFilters` - Filter configuration
 - `SearchSuggestion` - Autocomplete suggestion format
 - Plus types from frontend types (ProductFE, ShopCardFE, CategoryFE)
@@ -185,9 +186,9 @@ function SearchPage() {
   const handleSearch = async (searchQuery: string) => {
     setQuery(searchQuery);
     setLoading(true);
-    const data = await searchService.advancedSearch({ 
-      ...filters, 
-      q: searchQuery 
+    const data = await searchService.advancedSearch({
+      ...filters,
+      q: searchQuery,
     });
     setResults(data);
     setLoading(false);
@@ -202,7 +203,7 @@ function SearchPage() {
         showHistory
         autoFocus
       />
-      
+
       <div className="grid grid-cols-4 gap-6 mt-6">
         <aside className="col-span-1">
           <SearchFilters
@@ -212,7 +213,7 @@ function SearchPage() {
             shops={shops}
           />
         </aside>
-        
+
         <main className="col-span-3">
           <SearchResults
             products={results?.products}
@@ -225,7 +226,7 @@ function SearchPage() {
             pageSize={filters.limit}
             onPageChange={(page) => setFilters({ ...filters, page })}
             onProductClick={(product) => {
-              searchService.trackClick(query, product.id, 'product');
+              searchService.trackClick(query, product.id, "product");
               router.push(`/products/${product.slug}`);
             }}
           />
