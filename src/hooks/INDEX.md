@@ -149,7 +149,7 @@ function ProductPage({ id }: { id: string }) {
 function CreateProductForm() {
   const createProduct = useCreateProduct({
     onSuccess: (product) => {
-      toast.success('Product created!');
+      toast.success("Product created!");
       router.push(`/products/${product.slug}`);
     },
     onError: (error) => {
@@ -168,9 +168,186 @@ function CreateProductForm() {
 **Cache Invalidation:**
 
 Mutations automatically invalidate relevant queries:
+
 - Create/Update/Delete → Invalidates product lists
 - Update specific product → Invalidates that product detail
 - Bulk operations → Invalidates all product queries
+
+### queries/useCart.ts ✅
+
+**Exports:** Cart data fetching and mutation hooks
+
+**Query Hooks:**
+
+- `useCart(options?)` - Fetch current user's cart
+
+**Mutation Hooks:**
+
+- `useAddToCart(options?)` - Add item to cart
+- `useUpdateCartItem(options?)` - Update cart item quantity
+- `useRemoveFromCart(options?)` - Remove item from cart
+- `useClearCart(options?)` - Clear entire cart
+- `useApplyCoupon(options?)` - Apply coupon code
+- `useRemoveCoupon(options?)` - Remove applied coupon
+
+**Example:**
+
+```tsx
+function CartPage() {
+  const { data: cart, isLoading } = useCart();
+  const updateItem = useUpdateCartItem({
+    onSuccess: () => toast.success("Cart updated"),
+  });
+
+  return (
+    <div>
+      {cart?.items.map((item) => (
+        <CartItem
+          key={item.id}
+          item={item}
+          onUpdateQuantity={(quantity) =>
+            updateItem.mutate({ itemId: item.id, quantity })
+          }
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+### queries/useUser.ts ✅
+
+**Exports:** User profile data fetching and mutation hooks
+
+**Query Hooks:**
+
+- `useCurrentUser(options?)` - Fetch current user profile
+- `useUser(id, options?)` - Fetch user by ID
+- `useUsers(filters?, options?)` - Fetch paginated list of users
+
+**Mutation Hooks:**
+
+- `useUpdateProfile(options?)` - Update user profile
+- `useUploadAvatar(options?)` - Upload new avatar
+- `useDeleteAvatar(options?)` - Delete current avatar
+- `useChangePassword(options?)` - Change password
+- `useSendEmailVerification(options?)` - Send verification email
+- `useVerifyEmail(options?)` - Verify email with OTP code
+
+**Example:**
+
+```tsx
+function ProfilePage() {
+  const { data: user, isLoading } = useCurrentUser();
+  const updateProfile = useUpdateProfile({
+    onSuccess: () => toast.success("Profile updated!"),
+  });
+
+  return (
+    <Form onSubmit={(data) => updateProfile.mutate(data)} loading={updateProfile.isPending} />
+  );
+}
+```
+
+### queries/useShop.ts ✅
+
+**Exports:** Shop data fetching and mutation hooks
+
+**Query Hooks:**
+
+- `useShop(id, options?)` - Fetch shop by ID
+- `useShopBySlug(slug, options?)` - Fetch shop by slug
+- `useShops(filters?, options?)` - Fetch paginated list of shops
+- `useShopStats(shopId, options?)` - Fetch shop statistics
+- `useFollowingShops(options?)` - Fetch user's followed shops
+- `useFeaturedShops(options?)` - Fetch featured shops
+
+**Mutation Hooks:**
+
+- `useCreateShop(options?)` - Create new shop
+- `useUpdateShop(options?)` - Update shop details
+- `useFollowShop(options?)` - Follow a shop
+- `useUnfollowShop(options?)` - Unfollow a shop
+
+**Example:**
+
+```tsx
+function ShopPage({ slug }: { slug: string }) {
+  const { data: shop, isLoading } = useShopBySlug(slug);
+  const followShop = useFollowShop({
+    onSuccess: () => toast.success("Now following shop!"),
+  });
+
+  return (
+    <div>
+      <ShopHeader shop={shop} />
+      <Button onClick={() => followShop.mutate(shop.id)}>Follow</Button>
+    </div>
+  );
+}
+```
+
+### queries/useOrder.ts ✅
+
+**Exports:** Order data fetching and mutation hooks
+
+**Query Hooks:**
+
+- `useOrder(id, options?)` - Fetch order by ID
+- `useOrders(filters?, options?)` - Fetch paginated list of orders
+
+**Mutation Hooks:**
+
+- `useCreateOrder(options?)` - Create new order
+- `useCancelOrder(options?)` - Cancel existing order
+
+**Example:**
+
+```tsx
+function OrdersPage() {
+  const { data, isLoading } = useOrders({ status: "pending" });
+
+  return (
+    <div>
+      {data?.data.map((order) => (
+        <OrderCard key={order.id} order={order} />
+      ))}
+    </div>
+  );
+}
+```
+
+### queries/useCategory.ts ✅
+
+**Exports:** Category data fetching hooks (read-only)
+
+**Query Hooks:**
+
+- `useCategories(filters?, options?)` - Fetch all categories
+- `useCategoryTree(parentId?, options?)` - Fetch hierarchical category tree
+- `useCategory(id, options?)` - Fetch category by ID
+
+**Features:**
+
+- Extended stale time (15 minutes) for rarely-changing data
+- Hierarchical tree structure support
+- Efficient caching
+
+**Example:**
+
+```tsx
+function CategoryNav() {
+  const { data: tree, isLoading } = useCategoryTree();
+
+  return (
+    <nav>
+      {tree?.map((category) => (
+        <CategoryTreeNode key={category.id} node={category} />
+      ))}
+    </nav>
+  );
+}
+```
 
 ---
 
