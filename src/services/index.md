@@ -399,6 +399,75 @@ const hasMFA = await authMFAService.isMFAEnabled();
 
 ---
 
+### device-service.ts ✅
+
+**Export:** `deviceService` (singleton), `DeviceInfo`, `AddDeviceRequest`, `UpdateDeviceRequest`, `RevokeDeviceRequest`
+
+**Purpose:** Device management service for tracking and managing user devices for security and session management.
+
+**Features:**
+
+- Device tracking with user agent parsing
+- Automatic device type detection (desktop, mobile, tablet)
+- Browser and OS detection from user agent
+- IP address and location tracking
+- Trusted device management
+- Device revocation for security
+- Last active timestamp tracking
+- Batch device operations
+
+**Device Information:**
+
+```typescript
+interface DeviceInfo {
+  deviceId: string;
+  userId: string;
+  deviceName: string;
+  deviceType: "desktop" | "mobile" | "tablet" | "unknown";
+  browser?: string;
+  browserVersion?: string;
+  os?: string;
+  osVersion?: string;
+  ipAddress?: string;
+  location?: string;
+  isTrusted: boolean;
+  lastActiveAt: Date;
+  createdAt: Date;
+  userAgent?: string;
+}
+```
+
+**Methods:**
+
+- `addDevice(request)` - Add a new device or update existing device
+- `getDevice(deviceId, userId)` - Get a specific device
+- `listDevices(userId)` - List all devices for a user (ordered by last active)
+- `updateDevice(request)` - Update device information (name, trusted status)
+- `revokeDevice(request)` - Revoke a device (delete it)
+- `updateLastActive(deviceId, userId)` - Update last active timestamp
+- `getTrustedDevices(userId)` - Get only trusted devices
+- `revokeAllExcept(userId, currentDeviceId)` - Revoke all devices except current
+
+**User Agent Parsing:**
+
+- Automatically detects device type (desktop/mobile/tablet)
+- Extracts browser name and version (Chrome, Firefox, Safari, Edge, IE)
+- Extracts OS name and version (Windows, macOS, Linux, Android, iOS)
+- Generates user-friendly device names (e.g., "Windows - Chrome - Desktop")
+
+**Storage:**
+
+- Firestore collection: `devices`
+- Document ID: Generated device ID (consistent hash)
+- Indexed by: userId, isTrusted, lastActiveAt
+
+**Error Handling:**
+
+- `DeviceError` - Device-specific errors with error codes
+- `DeviceValidationError` - Validation errors from Zod
+
+---
+
 ## E-commerce Core Services
 
 ### products.service.ts
