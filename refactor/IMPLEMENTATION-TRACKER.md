@@ -2,7 +2,7 @@
 
 **Last Updated**: January 11, 2026  
 **Current Phase**: Phase 3 - Feature Enhancements  
-**Overall Progress**: 58/82 tasks completed (70.7%)
+**Overall Progress**: 59/82 tasks completed (72.0%)
 
 ---
 
@@ -744,7 +744,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 ## Phase 3: Feature Enhancements (Weeks 9-13)
 
 **Goal**: Add new features and improve UX  
-**Progress**: 7/31 tasks (22.6%)
+**Progress**: 8/31 tasks (25.8%)
 
 ### Week 9: Hook Enhancements (6/6) ✅ COMPLETE
 
@@ -840,7 +840,7 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
     - Demo page: `/demo/infinite-scroll` with 5 pages, 10 items/page, 1000ms simulated delay
     - Visual feedback: loading state, sentinel visibility indicator, progress stats
 
-### Week 10: Form Component Enhancements (1/7)
+### Week 10: Form Component Enhancements (2/7)
 
 #### Task 10.1: Create FormPhoneInput
 
@@ -867,13 +867,28 @@ git add . && git commit -m "refactor: Complete Phase [N] - [Phase Name]"
 
 #### Task 10.2: Create FormCurrencyInput
 
-- [ ] **Create `src/components/forms/FormCurrencyInput.tsx`**
+- [x] **Create `src/components/forms/FormCurrencyInput.tsx`** ✅
   - **New File**: FormCurrencyInput component
-  - **Reuse**: formatCurrency from lib
+  - **Reuse**: formatPrice from lib
   - **Add**: Currency symbol
   - **Test**: Currency formatting
   - **Update**: `src/components/forms/index.md`
   - **Estimate**: 30 minutes
+  - **Implementation Notes**:
+    - Created FormCurrencyInput component with currency symbol display
+    - Supports 4 currencies: INR (₹), USD ($), EUR (€), GBP (£)
+    - Auto-formatting with Indian number format for INR (1,23,456.78)
+    - Optional currency selector dropdown to switch currencies
+    - Format preview shows formatted value when not focused
+    - Removes formatting on focus for easier editing
+    - Min/max validation with automatic clamping
+    - Negative value support (optional with allowNegative prop)
+    - Reuses formatPrice utility from @/lib/price.utils
+    - Separate callbacks for value and currency changes
+    - State variants: compact, disabled
+    - Demo page: `/demo/form-currency-input` with 5 examples (basic, validation, selector, range, negative)
+    - Validation example with min/max constraints
+    - Accessible with proper labels and ARIA attributes
 
 #### Task 10.3: Create FormDatePicker
 

@@ -2,6 +2,38 @@
 
 ## Completed Improvements ✅
 
+### FormCurrencyInput Component (January 11, 2026)
+
+- ✅ **Currency Symbol Display**: Shows ₹ for INR, $ for USD, € for EUR, £ for GBP
+- ✅ **Auto-formatting**: Formats with Indian number system for INR (1,23,456.78)
+- ✅ **Currency Selector**: Optional dropdown to switch between 4 currencies
+- ✅ **Format Preview**: Shows formatted value below input when not focused
+- ✅ **Min/Max Validation**: Automatic clamping to valid range
+- ✅ **Negative Values**: Optional support for negative amounts
+- ✅ **Clean Input**: Removes formatting on focus for easy editing
+- ✅ **Reuses Utilities**: Uses `formatPrice` from @/lib/price.utils
+- ✅ **Validation Support**: Error messages and required field indicators
+- ✅ **State Variants**: Compact size, disabled state
+- ✅ **Demo Page**: Created `/demo/form-currency-input` with examples
+- ✅ **Task 10.2 Complete**: 30 minutes
+
+**Usage:**
+
+```tsx
+<FormCurrencyInput
+  label="Product Price"
+  value={price}
+  currency={currency}
+  onChange={(value, curr) => {
+    setPrice(value);
+    setCurrency(curr);
+  }}
+  showCurrencySelector
+  min={10}
+  max={1000000}
+/>
+```
+
 ### FormPhoneInput Component (January 11, 2026)
 
 - ✅ **Country Code Selector**: Dropdown with 8 common countries (India, US, UK, Australia, UAE, Singapore, Malaysia, China)
@@ -168,6 +200,7 @@
 ### Create Specialized Components
 
 - ✅ `FormPhoneInput` - Phone number with country code selector (Task 10.1 Complete)
+- ✅ `FormCurrencyInput` - Currency input with symbol and formatter (Task 10.2 Complete)
 - `FormDatePicker` - Date picker with calendar UI
 - `FormTimePicker` - Time picker with AM/PM support
 - `FormColorPicker` - Color picker with hex/rgb/hsl support
