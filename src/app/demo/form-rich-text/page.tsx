@@ -248,20 +248,20 @@ export default function FormRichTextDemo() {
           <h3 className="font-semibold text-blue-900 mb-2">Features:</h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>
-              ✓ <strong>React Quill Integration:</strong> Built on industry-standard
-              Quill.js editor
+              ✓ <strong>React Quill Integration:</strong> Built on
+              industry-standard Quill.js editor
             </li>
             <li>
               ✓ <strong>Toolbar Presets:</strong> Minimal, Standard, and Full
               configurations
             </li>
             <li>
-              ✓ <strong>Rich Formatting:</strong> Headers, bold, italic, underline,
-              strike, colors
+              ✓ <strong>Rich Formatting:</strong> Headers, bold, italic,
+              underline, strike, colors
             </li>
             <li>
-              ✓ <strong>Lists & Indentation:</strong> Ordered and unordered lists
-              with nesting
+              ✓ <strong>Lists & Indentation:</strong> Ordered and unordered
+              lists with nesting
             </li>
             <li>
               ✓ <strong>Links & Media:</strong> Insert links, images, and videos
@@ -276,16 +276,16 @@ export default function FormRichTextDemo() {
               ✓ <strong>Custom Heights:</strong> Configurable min and max height
             </li>
             <li>
-              ✓ <strong>Character Count:</strong> Shows character count (excluding
-              HTML)
+              ✓ <strong>Character Count:</strong> Shows character count
+              (excluding HTML)
             </li>
             <li>
-              ✓ <strong>Read-only Mode:</strong> Display formatted content without
-              editing
+              ✓ <strong>Read-only Mode:</strong> Display formatted content
+              without editing
             </li>
             <li>
-              ✓ <strong>SSR Compatible:</strong> Dynamic import to avoid server-side
-              rendering issues
+              ✓ <strong>SSR Compatible:</strong> Dynamic import to avoid
+              server-side rendering issues
             </li>
             <li>
               ✓ <strong>Accessible:</strong> Keyboard navigation and focus
