@@ -2,6 +2,39 @@
 
 ## Completed Improvements ✅
 
+### FormFileUpload Component (January 11, 2026)
+
+- ✅ **Drag and Drop**: Full drag-and-drop support with visual feedback
+- ✅ **Image Preview**: Automatic preview for image files using object URLs
+- ✅ **Progress Tracking**: Real-time upload progress display
+- ✅ **File Validation**: Size and type validation before upload
+- ✅ **Auto Upload Mode**: Automatic upload on file selection (default)
+- ✅ **Manual Upload Mode**: Option to review file before uploading
+- ✅ **Clear Function**: Easy file removal with clear button
+- ✅ **Visual Feedback**: Blue border when dragging, progress overlay on preview
+- ✅ **Error Handling**: Comprehensive error messages for validation failures
+- ✅ **Reuses useMediaUpload**: Built on existing upload infrastructure
+- ✅ **File Size Display**: Human-readable format (KB, MB)
+- ✅ **File Type Hints**: Shows accepted types based on accept attribute
+- ✅ **State Variants**: Compact size, disabled state, custom preview height
+- ✅ **Accessible**: Keyboard navigation, screen reader support
+- ✅ **Demo Page**: Created `/demo/form-file-upload` with 6 examples
+- ✅ **Task 10.4 Complete**: 60 minutes
+
+**Usage:**
+
+```tsx
+<FormFileUpload
+  label="Product Image"
+  value={imageUrl}
+  onChange={setImageUrl}
+  accept="image/*"
+  maxSize={5 * 1024 * 1024}
+  required
+  helperText="Upload product image (max 5MB)"
+/>
+```
+
 ### FormDatePicker Component (January 11, 2026)
 
 - ✅ **Lightweight Implementation**: No external dependencies (no date-fns, dayjs, or react-datepicker)

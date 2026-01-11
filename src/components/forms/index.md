@@ -389,6 +389,71 @@ function BookingForm() {
 
 ---
 
+### FormFileUpload.tsx
+
+**Export:** `FormFileUpload`
+
+**Purpose:** File upload component with drag-and-drop, preview, and validation (reuses useMediaUpload).
+
+**Props:**
+
+- `label?: string` - Input label
+- `error?: string` - Error message
+- `helperText?: string` - Helper text
+- `value?: string | null` - URL of uploaded file
+- `onChange?: (url: string | null) => void` - URL change handler
+- `onFileSelect?: (file: File | null) => void` - File selection handler
+- `accept?: string` - File types (e.g., "image/*,video/*")
+- `maxSize?: number` - Max file size in bytes (default: 5MB)
+- `allowedTypes?: string[]` - Allowed MIME types
+- `showPreview?: boolean` - Show file preview (default: true)
+- `previewHeight?: string` - Preview container height (default: "200px")
+- `fullWidth?: boolean` - Full width input (default: true)
+- `compact?: boolean` - Compact size variant
+- `autoUpload?: boolean` - Auto upload on file select (default: true)
+- Forward ref support
+
+**Features:**
+
+- Drag-and-drop with visual feedback (blue border when dragging)
+- Automatic image preview with object URL
+- Real-time upload progress tracking
+- File validation (size, type) before upload
+- Auto-upload mode (uploads immediately on selection)
+- Manual upload mode (review before uploading)
+- Clear button to remove selected file
+- Progress overlay on preview during upload
+- Error handling with detailed messages
+- Reuses `useMediaUpload` hook for upload logic
+- File size display with human-readable format
+- File type hints based on accept attribute
+- Accessible with proper ARIA attributes
+- Demo: `/demo/form-file-upload`
+
+**Example:**
+
+```tsx
+import { FormFileUpload } from "@/components/forms/FormFileUpload";
+
+function ProductForm() {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  return (
+    <FormFileUpload
+      label="Product Image"
+      value={imageUrl}
+      onChange={setImageUrl}
+      accept="image/*"
+      maxSize={5 * 1024 * 1024} // 5MB
+      required
+      helperText="Upload product image (max 5MB)"
+    />
+  );
+}
+```
+
+---
+
 ### FormNumberInput.tsx
 
 **Export:** `FormNumberInput`
