@@ -165,11 +165,21 @@ The library is integrated into the main monorepo as a workspace:
 - ✅ Build successful (35KB components bundle)
 - ✅ Fixed Currency/formatDiscount conflicts
 
+**Task 14.4: Storybook Documentation** ✅
+
+- ✅ Created comprehensive utility stories
+- ✅ Formatters stories (8 variants with live examples)
+- ✅ Validators stories (6 validation types)
+- ✅ Date utils stories (4 utility categories)
+- ✅ Component stories for DateDisplay, Price, Status
+- ✅ Updated Introduction with library overview
+- ✅ Storybook builds successfully (18s build time)
+
 ### Pending
 
 **Week 14 (Remaining)**
 
-- ⏳ Task 14.4: Create Storybook documentation
+- ⏳ Task 14.5: Migrate accessibility utilities
 - ⏳ Task 14.5: Migrate accessibility utilities
 - ⏳ Task 14.6: Week 14 integration & testing
 

@@ -13,9 +13,9 @@
 
 "use client";
 
-import { formatCompactCurrency } from "../../utils/formatters";
-import { formatPrice, formatDiscount } from "../../utils/price.utils";
 import { cn } from "../../utils/cn";
+import { formatCompactCurrency } from "../../utils/formatters";
+import { formatDiscount, formatPrice } from "../../utils/price.utils";
 
 interface PriceProps {
   amount: number;
