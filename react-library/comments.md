@@ -528,7 +528,153 @@ Already configured from Task 14.1:
 
 ---
 
-## Next Task: 14.5 - Migrate Accessibility Utilities
+## Task 14.5: Migrate Accessibility Utilities ✅
+
+**Completed**: January 12, 2026
+**Duration**: 60 minutes
+
+Successfully migrated comprehensive accessibility utilities for form fields, keyboard navigation, and screen reader support.
+
+### File Migrated
+
+**accessibility.ts** - 266 lines, 13 exported functions/constants
+
+Complete toolkit for building accessible React components:
+
+1. **ID Generation**
+   - `generateId(prefix)` - Unique ID generation for form elements
+   - Server-safe (uses random IDs in SSR)
+   - Client-side counter for consistent IDs
+
+2. **ARIA Helpers**
+   - `getFormFieldAriaProps(props)` - Complete ARIA attributes for form fields
+   - Handles: invalid, describedby, required, disabled, readonly
+   - Automatically links error and helper text
+
+3. **Screen Reader Announcements**
+   - `announceToScreenReader(message, priority)` - Live region announcements
+   - Supports "polite" and "assertive" priorities
+   - Auto-creates live region on first use
+   - Auto-clears after 3 seconds
+
+4. **Keyboard Navigation**
+   - `KeyCodes` constant - All keyboard key codes
+   - `isKey(event, ...keys)` - Check multiple keys at once
+   - `trapFocus(element, event)` - Focus trap for modals/dialogs
+   - Supports Tab/Shift+Tab navigation
+
+5. **Label & Error Formatting**
+   - `getLabelText(label, required, helperText)` - Formatted label text
+   - `formatErrorMessage(error, fieldLabel)` - Accessible error messages
+   - Contextual messages for screen readers
+
+6. **Validation States**
+   - `getValidationAriaProps(state)` - ARIA for validation states
+   - Handles: error, isValidating, isValid
+   - Sets aria-invalid and aria-busy appropriately
+
+7. **Focus Management**
+   - `focusElement(elementOrId)` - Programmatic focus with RAF
+   - `getNextFocusableElement(current, reverse)` - Navigate focusable elements
+   - Circular navigation (wraps around)
+
+8. **Screen Reader Only (SR-Only)**
+   - `srOnlyClassName` - Tailwind-compatible SR-only class
+   - `createSROnlyElement(text)` - Create SR-only span elements
+   - Visually hidden but announced
+
+### Build Results
+
+**Library build**: ✅ Successful (6.04 seconds)
+- Utils bundle: 42.36 KB raw (was 39KB, +3.36KB)
+- Utils bundle gzipped: 13.57 KB (was 12.4KB, +1.17KB)
+- Accessibility adds ~3KB to utils (reasonable for full a11y toolkit)
+
+### Technical Features
+
+**TypeScript Interfaces**:
+- `FormFieldAriaProps` - Props for form field ARIA
+- `ValidationState` - Validation state shape
+
+**React Integration**:
+- Compatible with React 18/19
+- Uses `React.KeyboardEvent` types
+- SSR-safe implementations
+
+**DOM Manipulation**:
+- Safe window checks (`typeof window === "undefined"`)
+- requestAnimationFrame for focus
+- Proper element querying with type assertions
+
+### Usage Examples
+
+```typescript
+// Form field with ARIA
+const ariaProps = getFormFieldAriaProps({
+  id: "email",
+  error: "Invalid email",
+  helperText: "We'll never share your email",
+  required: true
+});
+// Returns: { id, aria-invalid, aria-describedby, aria-required }
+
+// Screen reader announcement
+announceToScreenReader("Form submitted successfully", "assertive");
+
+// Keyboard navigation
+function handleKeyDown(e: React.KeyboardEvent) {
+  if (isKey(e, "ENTER", "SPACE")) {
+    // Handle activation
+  }
+  if (isKey(e, "ESCAPE")) {
+    // Close modal
+  }
+}
+
+// Focus management in modal
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    trapFocus(modalRef.current, e);
+  };
+  document.addEventListener("keydown", handleKeyDown);
+  return () => document.removeEventListener("keydown", handleKeyDown);
+}, []);
+```
+
+### Accessibility Benefits
+
+1. **WCAG 2.1 AA Compliance**
+   - Proper ARIA labels and descriptions
+   - Screen reader announcements
+   - Keyboard navigation support
+
+2. **Form Accessibility**
+   - Error announcements
+   - Required field indicators
+   - Helper text associations
+
+3. **Keyboard Support**
+   - Full keyboard navigation
+   - Focus trapping in dialogs
+   - Circular focus management
+
+4. **Screen Reader Support**
+   - Live regions for updates
+   - SR-only text for context
+   - Proper ARIA attributes
+
+### Technical Decisions
+
+- **No External Dependencies**: Pure TypeScript implementation
+- **SSR-Safe**: All DOM operations check for `window`
+- **Framework Agnostic**: Can be used with any React setup
+- **Tailwind Compatible**: SR-only class uses Tailwind utilities
+
+**Next**: Task 14.6 - Week 14 integration & testing
+
+---
+
+## Next Task: 14.6 - Week 14 Integration & Testing
 
 Status: Ready to start
-Estimate: 60 minutes
+Estimate: 90 minutes

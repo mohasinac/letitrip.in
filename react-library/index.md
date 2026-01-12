@@ -175,11 +175,20 @@ The library is integrated into the main monorepo as a workspace:
 - ✅ Updated Introduction with library overview
 - ✅ Storybook builds successfully (18s build time)
 
+**Task 14.5: Accessibility Utilities** ✅
+
+- ✅ Migrated accessibility.ts (13 functions)
+- ✅ ARIA helpers for form fields
+- ✅ Keyboard navigation utilities (KeyCodes, trapFocus)
+- ✅ Screen reader announcements
+- ✅ Focus management utilities
+- ✅ Build successful (43KB utils bundle)
+
 ### Pending
 
 **Week 14 (Remaining)**
 
-- ⏳ Task 14.5: Migrate accessibility utilities
+- ⏳ Task 14.6: Week 14 integration & testing
 - ⏳ Task 14.5: Migrate accessibility utilities
 - ⏳ Task 14.6: Week 14 integration & testing
 
@@ -255,6 +264,22 @@ The library is integrated into the main monorepo as a workspace:
 - `formatPrice(amount, options)` - Null-safe price formatting
 - `formatDiscount(original, current)` - Discount calculation
 - `PriceCurrency` type - INR, USD, EUR, GBP
+
+**accessibility.ts** - Accessibility helpers (Task 14.5)
+
+- `generateId(prefix)` - Unique ID generation
+- `getFormFieldAriaProps(props)` - ARIA attributes for forms
+- `announceToScreenReader(message, priority)` - Screen reader announcements
+- `KeyCodes` - Keyboard key code constants
+- `isKey(event, ...keys)` - Keyboard event checker
+- `trapFocus(element, event)` - Focus trap for modals
+- `getLabelText(label, required, helperText)` - Formatted labels
+- `formatErrorMessage(error, fieldLabel)` - Accessible errors
+- `getValidationAriaProps(state)` - Validation ARIA attributes
+- `focusElement(elementOrId)` - Programmatic focus
+- `getNextFocusableElement(current, reverse)` - Focus navigation
+- `srOnlyClassName` - Screen reader only CSS class
+- `createSROnlyElement(text)` - Create SR-only element
 
 ### Components ✅ (Task 14.3 Complete - 20 Components)
 

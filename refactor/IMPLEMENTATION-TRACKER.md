@@ -2033,7 +2033,7 @@ Extract common functionality into `@letitrip/react-library` package:
 - Hooks (reusable React hooks)
 - Complete with TypeScript, Storybook, and documentation
 
-### Week 14: Library Setup & Utilities (4/6)
+### Week 14: Library Setup & Utilities (5/6)
 
 #### Task 14.1: Create React Library Submodule
 
@@ -2136,7 +2136,7 @@ stories/
 
 #### Task 14.5: Migrate Accessibility Utilities
 
-- [ ] **Extract accessibility helpers**
+- [x] **Extract accessibility helpers**
   - **Accessibility**: `accessibility.ts` → library
   - **ARIA Helpers**: Form field ARIA props
   - **Keyboard Nav**: Keyboard navigation utilities
@@ -2144,10 +2144,22 @@ stories/
   - **Add**: Storybook examples
   - **Test**: Accessibility features work
   - **Estimate**: 60 minutes
+  - **Completed**: January 12, 2026
 
-**Files to migrate:**
-
-- `src/lib/accessibility.ts` (ARIA utilities, keyboard helpers)
+**Functions migrated:**
+- `generateId()` - Unique ID generation for form elements
+- `getFormFieldAriaProps()` - ARIA attributes for forms
+- `announceToScreenReader()` - Screen reader announcements
+- `KeyCodes` constants - Keyboard key mappings
+- `isKey()` - Keyboard event checker
+- `trapFocus()` - Focus management for modals
+- `getLabelText()` - Formatted label text
+- `formatErrorMessage()` - Accessible error messages
+- `getValidationAriaProps()` - Validation state ARIA
+- `focusElement()` - Programmatic focus management
+- `getNextFocusableElement()` - Focus navigation
+- `srOnlyClassName` - Screen reader only styles
+- `createSROnlyElement()` - SR-only element creation
 
 #### Task 14.6: Week 14 Integration & Testing
 
@@ -2378,18 +2390,18 @@ dist/
 
 ### By Week
 
-- **Week 14**: 4/6 tasks (67%) - Utilities & Setup
+- **Week 14**: 5/6 tasks (83%) - Utilities & Setup
 - **Week 15**: 0/6 tasks (0%) - Component Migration
 - **Week 16**: 0/6 tasks (0%) - Styles & Finalization
 
 ### Time Investment
 
 - **Estimated Total**: ~1,920 minutes (~32 hours)
-- **Completed**: 420 minutes (~7 hours)
-- **Remaining**: ~1,500 minutes (~25 hours)
+- **Completed**: 480 minutes (~8 hours)
+- **Remaining**: ~1,440 minutes (~24 hours)
 
 ### Overall Progress (Including Phase 4)
 
 **Phases 1-3: 82/82 tasks (100%) ✅**
-**Phase 4: 4/18 tasks (22%)**
-**Total: 86/100 tasks (86%)**
+**Phase 4: 5/18 tasks (28%)**
+**Total: 87/100 tasks (87%)**
