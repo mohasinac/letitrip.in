@@ -1,8 +1,11 @@
 "use client";
 
-import { PriceCurrency as Currency, formatPrice } from "../../utils/price.utils";
-import { cn } from "../../utils/cn";
 import { forwardRef, InputHTMLAttributes, useState } from "react";
+import { cn } from "../../utils/cn";
+import {
+  PriceCurrency as Currency,
+  formatPrice,
+} from "../../utils/price.utils";
 
 // Common currencies for the platform
 const CURRENCIES: Array<{ code: Currency; symbol: string; name: string }> = [
