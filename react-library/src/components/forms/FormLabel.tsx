@@ -3,7 +3,8 @@
 import React from "react";
 import { cn } from "../../utils/cn";
 
-export interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+export interface FormLabelProps
+  extends React.LabelHTMLAttributes<HTMLLabelElement> {
   children: React.ReactNode;
   required?: boolean;
   optional?: boolean;
@@ -31,7 +32,7 @@ export const FormLabel: React.FC<FormLabelProps> = ({
     <label
       className={cn(
         "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1",
-        className,
+        className
       )}
       {...props}
     >

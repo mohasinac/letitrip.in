@@ -1,13 +1,13 @@
 "use client";
 
+import { forwardRef, TextareaHTMLAttributes, useEffect, useRef } from "react";
 import { announceToScreenReader } from "../../utils/accessibility";
+import { cn } from "../../utils/cn";
 import {
   sanitizeHtml,
   SanitizeHtmlOptions,
   sanitizeString,
 } from "../../utils/sanitize";
-import { cn } from "../../utils/cn";
-import { forwardRef, TextareaHTMLAttributes, useEffect, useRef } from "react";
 
 export interface FormTextareaProps
   extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {

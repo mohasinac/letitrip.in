@@ -1,9 +1,9 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+import { forwardRef, SelectHTMLAttributes, useEffect, useRef } from "react";
 import { announceToScreenReader } from "../../utils/accessibility";
 import { cn } from "../../utils/cn";
-import { forwardRef, SelectHTMLAttributes, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
 
 export interface FormSelectOption {
   value: string;

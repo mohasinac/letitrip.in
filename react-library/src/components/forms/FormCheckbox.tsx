@@ -1,7 +1,5 @@
 "use client";
 
-import { announceToScreenReader } from "../../utils/accessibility";
-import { cn } from "../../utils/cn";
 import {
   forwardRef,
   InputHTMLAttributes,
@@ -9,6 +7,8 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { announceToScreenReader } from "../../utils/accessibility";
+import { cn } from "../../utils/cn";
 
 export interface FormCheckboxProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {

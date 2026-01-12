@@ -1,14 +1,14 @@
 "use client";
 
+import { forwardRef, InputHTMLAttributes, useEffect, useRef } from "react";
 import { announceToScreenReader } from "../../utils/accessibility";
+import { cn } from "../../utils/cn";
 import {
   sanitizeEmail,
   sanitizePhone,
   sanitizeString,
   sanitizeUrl,
 } from "../../utils/sanitize";
-import { cn } from "../../utils/cn";
-import { forwardRef, InputHTMLAttributes, useEffect, useRef } from "react";
 
 export interface FormInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
