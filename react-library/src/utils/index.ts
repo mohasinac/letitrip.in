@@ -22,3 +22,6 @@ export * from "./sanitize";
 
 // Price utilities
 export * from "./price.utils";
+
+// Accessibility
+export * from "./accessibility";
