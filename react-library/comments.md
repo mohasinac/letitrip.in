@@ -832,3 +832,223 @@ Completed all 6 tasks:
 All infrastructure, utilities, and initial components successfully migrated to @letitrip/react-library.
 
 **Progress**: 6/18 tasks (33%), Overall: 88/100 (88%)
+---
+
+## Task 15.1: Migrate Form Components ✅
+
+**Completed**: January 12, 2026
+**Duration**: 180 minutes
+
+Migrated 9 form components to the React library.
+
+### Components Migrated
+
+**Base Form Inputs** (3):
+1. **FormInput** - Text input with comprehensive features
+   - Sanitization support (string, email, phone, URL)
+   - Icons (left/right), addons (left/right)
+   - Character counter
+   - Auto-sanitization on blur
+   - Error and helper text with ARIA
+
+2. **FormTextarea** - Multi-line text input
+   - HTML and string sanitization options
+   - Character counter
+   - Resizable
+   - Auto-announces errors to screen readers
+
+3. **FormSelect** - Dropdown select
+   - Options with disabled support
+   - Placeholder support
+   - Custom chevron icon (lucide-react)
+   - ARIA accessibility
+
+**Specialized Form Inputs** (3):
+4. **FormPhoneInput** - International phone input
+   - Country code selector (8 countries: IN, US, GB, AU, AE, SG, MY, CN)
+   - Auto-formatting for Indian numbers (XXXXX XXXXX)
+   - Sanitization support
+   - Formatted preview display
+
+5. **FormCurrencyInput** - Money amount input
+   - 4 currencies supported: INR (₹), USD ($), EUR (€), GBP (£)
+   - Currency selector dropdown
+   - Auto-formatting with locale (en-IN)
+   - Min/max validation
+   - Negative values support
+
+6. **FormDatePicker** - Calendar date picker
+   - Interactive calendar UI
+   - Month/year navigation
+   - Min/max date constraints
+   - Multiple display formats (YYYY-MM-DD, DD/MM/YYYY, MM/DD/YYYY)
+   - Today highlight
+
+**Form Wrapper Components** (3):
+7. **FormLabel** - Reusable label
+   - Required/optional indicators
+   - Hint text support
+   - Dark mode styling
+
+8. **FormField** - Field wrapper
+   - Auto-generates unique IDs
+   - Connects label htmlFor to input id
+   - ARIA attributes injection
+   - Error and helper text display
+   - Sanitization prop forwarding
+
+9. **FormCheckbox** - Checkbox input
+   - Label and description support
+   - Error state handling
+   - ARIA attributes for accessibility
+   - Screen reader announcements
+
+### Technical Updates
+
+**Import Path Changes**:
+- All `@/lib/*` imports → `../../utils/*`
+- Fixed `Currency` type → `PriceCurrency` alias in FormCurrencyInput
+- All utilities now use relative imports from library structure
+
+**Dependencies Added**:
+- `lucide-react` - For ChevronDown icon in FormSelect
+
+**Build Results**:
+- Build time: 6.61 seconds
+- New bundle: `accessibility-BS56K7mk.js` (104.06 KB, 25.14 KB gzipped)
+- Total exports: Now includes 9 form components + 20 value components
+
+**Files Created**:
+```
+react-library/src/components/forms/
+├── FormInput.tsx          (233 lines)
+├── FormTextarea.tsx       (194 lines)
+├── FormSelect.tsx         (142 lines)
+├── FormPhoneInput.tsx     (310 lines)
+├── FormCurrencyInput.tsx  (393 lines)
+├── FormDatePicker.tsx     (481 lines)
+├── FormLabel.tsx          (60 lines)
+├── FormField.tsx          (105 lines)
+├── FormCheckbox.tsx       (107 lines)
+└── index.ts               (30 lines - exports)
+```
+
+### Usage Examples
+
+**Basic Input**:
+```tsx
+import { FormInput } from '@letitrip/react-library/components';
+
+<FormInput
+  label="Email"
+  type="email"
+  sanitize
+  sanitizeType="email"
+  error={errors.email}
+  required
+/>
+```
+
+**Phone Input with Country Code**:
+```tsx
+import { FormPhoneInput } from '@letitrip/react-library/components';
+
+<FormPhoneInput
+  label="Phone Number"
+  value={phone}
+  countryCode="+91"
+  onChange={(phone, code) => setValue(phone)}
+  required
+/>
+```
+
+**Currency Input**:
+```tsx
+import { FormCurrencyInput } from '@letitrip/react-library/components';
+
+<FormCurrencyInput
+  label="Bid Amount"
+  value={amount}
+  currency="INR"
+  onChange={(value, currency) => setAmount(value)}
+  showCurrencySelector
+  min={0}
+/>
+```
+
+**Form Field Wrapper**:
+```tsx
+import { FormField, FormInput } from '@letitrip/react-library/components';
+
+<FormField
+  label="Username"
+  required
+  error={errors.username}
+  helperText="Choose a unique username"
+  sanitize
+  sanitizeType="string"
+>
+  <FormInput placeholder="johndoe" />
+</FormField>
+```
+
+### Features
+
+**All Form Components Include**:
+- ✅ Dark mode support (dark: classes)
+- ✅ ARIA attributes for accessibility
+- ✅ Error state handling
+- ✅ Required/disabled states
+- ✅ Screen reader error announcements
+- ✅ Consistent styling with Tailwind
+- ✅ Compact mode option
+- ✅ Full TypeScript types
+
+**Accessibility**:
+- Auto-generated unique IDs (useId hook)
+- aria-invalid, aria-required attributes
+- aria-describedby for errors and helper text
+- Screen reader announcements for errors (announceToScreenReader)
+- Proper label associations (htmlFor)
+- Keyboard navigation support
+
+**Input Validation & Sanitization**:
+- Auto-sanitization on blur (optional)
+- Type-specific sanitization (string, email, phone, URL, HTML)
+- Character count limits
+- Min/max value validation (currency, dates)
+- XSS prevention through sanitize utils
+
+### Build Verification
+
+```bash
+npm run build
+# ✓ built in 6.61s
+# Total: 180KB (including forms bundle)
+```
+
+**TypeScript Warnings** (non-blocking):
+- React import "unused" warnings (expected for JSX)
+- formatDiscountBasic unused (internal helper)
+- formatDate unused in FormDatePicker (future use)
+
+All components build successfully with type definitions generated.
+
+### Next Steps
+
+**Task 15.2**: Migrate Common UI Components
+- Button variants
+- Card component
+- Modal/Dialog
+- Tooltip
+- Badge components
+
+**Remaining Week 15**: 5 tasks
+- UI components, picker components, hooks, stories, integration testing
+
+---
+
+## Next Task: 15.2 - Migrate Common UI Components
+
+Status: Ready to start
+Estimate: 150 minutes
