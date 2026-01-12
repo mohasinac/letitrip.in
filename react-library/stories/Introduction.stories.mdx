@@ -12,27 +12,43 @@ This library contains reusable React components, utilities, and hooks extracted 
 
 ## 📦 What's Included
 
-### Utilities
+### Utilities ✅
 
-- **Formatters**: Date, price, phone, number formatting
+- **Formatters**: 20+ formatting functions for currency, dates, numbers, text
+  - Indian numbering system (Lakh, Crore)
+  - Phone, pincode, UPI formatting
+  - File sizes, durations, order IDs
 - **Validators**: Email, phone, pincode, URL validation
-- **Date Utils**: Date manipulation and parsing
-- **String Utils**: cn(), slugify, truncate
-- **Accessibility**: ARIA helpers, keyboard navigation
+  - India-specific: GST, PAN, Aadhar, IFSC
+  - Password strength checking
+- **Date Utils**: Date manipulation with null-safety
+  - ISO string conversion
+  - Date input formatting
+  - Validation helpers
+- **Price Utils**: Price formatting with discount calculations
+- **Sanitize**: XSS prevention and input sanitization
 
-### Components
+### Components ✅
 
-- **Form Components**: 21 accessible form inputs
-- **UI Components**: Button, Card, Modal, etc.
-- **Value Displays**: DateDisplay, Price, Status
-- **Pickers**: DateTimePicker, State, Pincode
+- **Value Displays** (20 components):
+  - DateDisplay, RelativeDate, DateRange
+  - Price with discount badges
+  - Status badges (Auction, Payment, Shipping, Stock)
+  - Address, Currency, Email, Phone
+  - Rating, OrderId, SKU, Quantity
+  - TimeRemaining, TruncatedText, Weight
 
-### Hooks
+### Future Components
 
-- **useMediaQuery**: Responsive design
-- **useDebounce**: Delayed updates
-- **useLocalStorage**: Local storage sync
-- **useClipboard**: Clipboard operations
+- **Form Components**: 21 accessible form inputs (Coming soon)
+- **UI Components**: Button, Card, Modal, etc. (Coming soon)
+- **Pickers**: DateTimePicker, State, Pincode (Coming soon)
+
+### Future Hooks
+
+- **useMediaQuery**: Responsive design (Coming soon)
+- **useDebounce**: Delayed updates (Coming soon)
+- **useLocalStorage**: Local storage sync (Coming soon)
 - And more...
 
 ## 🚀 Getting Started
@@ -44,23 +60,51 @@ Browse the sidebar to explore components and utilities. Each story includes:
 - Code snippets
 - Accessibility information
 
-## 📖 Usage Example
+## 📖 Usage Examples
 
-\`\`\`typescript
-import { formatPrice, FormInput, useDebounce } from '@letitrip/react-library';
+### Utilities
 
-function MyComponent() {
-const price = formatPrice(1000, 'INR'); // ₹1,000.00
+```typescript
+import {
+  formatCompactCurrency,
+  isValidEmail,
+  safeToISOString,
+  cn,
+} from "@letitrip/react-library/utils";
 
-return (
-<FormInput 
-      label="Product Name"
-      required
-      error="This field is required"
-    />
-);
+// Format Indian currency
+formatCompactCurrency(150000); // "₹1.5L"
+
+// Validate email
+isValidEmail("user@example.com"); // true
+
+// Safe date conversion
+safeToISOString(new Date()); // "2026-01-12T..."
+
+// Merge Tailwind classes
+cn("px-4 py-2", isActive && "bg-blue-500");
+```
+
+### Components
+
+```typescript
+import {
+  DateDisplay,
+  Price,
+  StockStatus,
+} from "@letitrip/react-library/components";
+
+function ProductCard({ product }) {
+  return (
+    <div>
+      <h3>{product.name}</h3>
+      <Price amount={product.price} originalPrice={product.mrp} />
+      <StockStatus stock={product.stock} />
+      <DateDisplay date={product.createdAt} format="medium" />
+    </div>
+  );
 }
-\`\`\`
+```
 
 ## ♿ Accessibility
 
