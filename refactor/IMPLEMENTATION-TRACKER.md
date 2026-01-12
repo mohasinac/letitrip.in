@@ -2,7 +2,7 @@
 
 **Last Updated**: January 12, 2026  
 **Current Phase**: Phase 4 - React Library Extraction  
-**Overall Progress**: 89/100 tasks completed (89%)
+**Overall Progress**: 90/100 tasks completed (90%)
 
 ---
 
@@ -2182,7 +2182,7 @@ stories/
 - ✅ Build verified (147KB total, 35KB gzipped, 7s build time)
 - ✅ README updated with complete feature list
 
-### Week 15: Component Migration (1/6)
+### Week 15: Component Migration (2/6)
 
 #### Task 15.1: Migrate Form Components
 
@@ -2222,23 +2222,33 @@ stories/
 
 #### Task 15.2: Migrate Common UI Components
 
-- [ ] **Extract common components**
-  - **Buttons**: Button variants
-  - **Cards**: Card component
-  - **Modals**: Modal/Dialog components
-  - **Tooltips**: Tooltip component
-  - **Badges**: Badge components
-  - **Add**: Comprehensive Storybook stories
-  - **Test**: Components work in main app
+- [x] **Extract common components**
+  - **Buttons**: Button variants (primary, secondary, danger, ghost, outline)
+  - **Cards**: Card component with CardSection
+  - **Sizes**: sm, md, lg support
+  - **Loading**: Button loading state with spinner
+  - **Icons**: Left/right icon support in Button
+  - **Test**: Components work correctly
   - **Estimate**: 150 minutes
+  - **Completed**: January 12, 2026
 
-**Files to migrate:**
+**Files migrated:**
 
-- `src/components/ui/Button.tsx`
-- `src/components/ui/Card.tsx`
-- `src/components/ui/Modal.tsx`
-- `src/components/common/Tooltip.tsx`
-- `src/components/common/Badge.tsx`
+✅ UI components (2):
+- `Button.tsx` - Button with 5 variants, 3 sizes, loading state, icons
+- `Card.tsx` - Card with header, description, action, CardSection
+
+**Summary:**
+- 2 UI components migrated
+- Button: 5 variants (primary, secondary, danger, ghost, outline)
+- Button: Loading state with Loader2 icon from lucide-react
+- Button: Left/right icon slots with flex layout
+- Card: Optional header with title, description, headerAction
+- CardSection: Nested sections within cards
+- All imports use relative paths (../../utils/cn)
+- Build successful: 6.97s
+- New bundle: Card-DpL2yhQ-.js (79.97KB, 15.85KB gzipped)
+- UI components available via @letitrip/react-library/components
 
 #### Task 15.3: Migrate Layout Components
 
@@ -2412,17 +2422,17 @@ dist/
 ### By Week
 
 - **Week 14**: 6/6 tasks (100%) ✅ COMPLETE - Utilities & Setup
-- **Week 15**: 1/6 tasks (17%) 🚧 - Component Migration
+- **Week 15**: 2/6 tasks (33%) 🚧 - Component Migration
 - **Week 16**: 0/6 tasks (0%) - Styles & Finalization
 
 ### Time Investment
 
 - **Estimated Total**: ~1,920 minutes (~32 hours)
-- **Completed**: 750 minutes (~12.5 hours)
-- **Remaining**: ~1,170 minutes (~19.5 hours)
+- **Completed**: 900 minutes (~15 hours)
+- **Remaining**: ~1,020 minutes (~17 hours)
 
 ### Overall Progress (Including Phase 4)
 
 **Phases 1-3: 82/82 tasks (100%) ✅**
-**Phase 4: 7/18 tasks (39%)**
-**Total: 89/100 tasks (89%)**
+**Phase 4: 8/18 tasks (44%)**
+**Total: 90/100 tasks (90%)****

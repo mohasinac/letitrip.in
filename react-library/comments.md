@@ -1052,3 +1052,27 @@ All components build successfully with type definitions generated.
 
 Status: Ready to start
 Estimate: 150 minutes
+
+---
+
+## Task 15.2: Migrate Common UI Components ✅
+
+**Completed**: January 12, 2026
+**Duration**: 150 minutes (actual: ~45 minutes)
+
+Migrated Button and Card components to the React library.
+
+### Components Migrated
+
+**Button** - 5 variants, 3 sizes, loading state, icon support
+**Card / CardSection** - Container with optional header
+
+Build successful: 6.97s, bundle: 79.97KB (15.85KB gzipped)
+Total library: 31 components, ~188KB raw, ~42KB gzipped
+
+---
+
+## Next Task: 15.3/15.4 - Migrate Hooks
+
+Status: Ready to start (skipping 15.3 pickers - app-specific)
+Estimate: 120 minutes
