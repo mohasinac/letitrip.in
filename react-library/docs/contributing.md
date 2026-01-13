@@ -116,6 +116,7 @@ git checkout -b fix/issue-description
 ```
 
 **Branch naming conventions:**
+
 - `feature/` - New features
 - `fix/` - Bug fixes
 - `refactor/` - Code refactoring
@@ -188,6 +189,7 @@ git commit -m "feat: add new FormComponent
 ```
 
 **Commit message format:**
+
 ```
 <type>: <subject>
 
@@ -197,6 +199,7 @@ git commit -m "feat: add new FormComponent
 ```
 
 **Types:**
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `refactor` - Code refactoring
@@ -218,7 +221,7 @@ git commit -m "feat: add new FormComponent
 ```typescript
 // ✅ Good
 interface ButtonProps {
-  variant: 'primary' | 'secondary';
+  variant: "primary" | "secondary";
   onClick: () => void;
 }
 
@@ -242,11 +245,11 @@ export function Button({ variant, onClick }: any) {
 ```typescript
 /**
  * Format a number as Indian Rupees currency.
- * 
+ *
  * @param amount - The amount to format
  * @param options - Formatting options
  * @returns Formatted price string (e.g., "₹1,234.56")
- * 
+ *
  * @example
  * formatPrice(1234.56) // "₹1,234.56"
  * formatPrice(1234.56, { compact: true }) // "₹1.2K"
@@ -261,11 +264,11 @@ export function formatPrice(amount: number, options?: FormatOptions): string {
 ### Component Structure
 
 ```typescript
-import React from 'react';
+import React from "react";
 
 /**
  * Button component with multiple variants and sizes.
- * 
+ *
  * @example
  * <Button variant="primary" size="md" onClick={handleClick}>
  *   Click Me
@@ -273,9 +276,9 @@ import React from 'react';
  */
 export interface ButtonProps {
   /** Button style variant */
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: "primary" | "secondary" | "outline";
   /** Button size */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   /** Disabled state */
   disabled?: boolean;
   /** Click handler */
@@ -287,12 +290,12 @@ export interface ButtonProps {
 }
 
 export function Button({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   disabled = false,
   onClick,
   children,
-  className = '',
+  className = "",
 }: ButtonProps) {
   return (
     <button
@@ -330,19 +333,19 @@ export function Button({
 ### Hook Structure
 
 ```typescript
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Debounce a value with a specified delay.
- * 
+ *
  * @param value - The value to debounce
  * @param delay - Delay in milliseconds (default: 500)
  * @returns Debounced value
- * 
+ *
  * @example
  * const [query, setQuery] = useState('');
  * const debouncedQuery = useDebounce(query, 500);
- * 
+ *
  * useEffect(() => {
  *   // API call with debounced value
  *   searchAPI(debouncedQuery);
@@ -381,11 +384,11 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
 ```typescript
 /**
  * Format a number as Indian Rupees currency.
- * 
+ *
  * @param amount - The amount to format
  * @param options - Optional formatting configuration
  * @returns Formatted currency string
- * 
+ *
  * @example
  * formatPrice(1234.56) // "₹1,234.56"
  * formatPrice(1500000, { compact: true }) // "₹15L"
@@ -404,9 +407,9 @@ export function formatPrice(
     return formatCompactCurrency(amount);
   }
 
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(amount);
@@ -427,31 +430,31 @@ export function formatPrice(
 ### Test Structure
 
 ```typescript
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Button } from "./Button";
 
-describe('Button', () => {
-  it('renders with children', () => {
+describe("Button", () => {
+  it("renders with children", () => {
     render(<Button>Click Me</Button>);
-    expect(screen.getByText('Click Me')).toBeInTheDocument();
+    expect(screen.getByText("Click Me")).toBeInTheDocument();
   });
 
-  it('calls onClick when clicked', () => {
+  it("calls onClick when clicked", () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click Me</Button>);
-    
-    fireEvent.click(screen.getByText('Click Me'));
+
+    fireEvent.click(screen.getByText("Click Me"));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('is disabled when disabled prop is true', () => {
+  it("is disabled when disabled prop is true", () => {
     render(<Button disabled>Click Me</Button>);
-    expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByRole("button")).toBeDisabled();
   });
 
-  it('applies correct variant classes', () => {
+  it("applies correct variant classes", () => {
     render(<Button variant="primary">Click Me</Button>);
-    expect(screen.getByRole('button')).toHaveClass('btn-primary');
+    expect(screen.getByRole("button")).toHaveClass("btn-primary");
   });
 });
 ```
@@ -473,23 +476,23 @@ All exports must have JSDoc comments:
 ```typescript
 /**
  * Brief description of what it does.
- * 
+ *
  * Longer explanation if needed. Can include multiple paragraphs.
- * 
+ *
  * @param paramName - Description of parameter
  * @param options - Optional parameter description
  * @returns Description of return value
- * 
+ *
  * @throws {ErrorType} When this error occurs
- * 
+ *
  * @example
  * // Basic usage
  * const result = myFunction('value');
- * 
+ *
  * @example
  * // Advanced usage
  * const result = myFunction('value', { option: true });
- * 
+ *
  * @see {@link RelatedFunction} for related functionality
  */
 ```
@@ -497,6 +500,7 @@ All exports must have JSDoc comments:
 ### README Updates
 
 Update relevant sections:
+
 - Component list if adding component
 - Hook list if adding hook
 - Utility list if adding utility
@@ -523,6 +527,7 @@ git push origin feature/your-feature-name
 ```
 
 Create pull request on GitHub with:
+
 - Clear title describing the change
 - Description of what changed and why
 - Link to related issues
@@ -533,15 +538,18 @@ Create pull request on GitHub with:
 
 ```markdown
 ## Description
+
 Brief description of changes.
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Checklist
+
 - [ ] Tests pass
 - [ ] Types pass
 - [ ] Linting passes
@@ -550,6 +558,7 @@ Brief description of changes.
 - [ ] CHANGELOG updated
 
 ## Screenshots
+
 If applicable, add screenshots.
 ```
 
@@ -571,24 +580,24 @@ Create a story file for each component:
 
 ```typescript
 // Button.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Button } from "./Button";
 
 const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
+  title: "Components/Button",
   component: Button,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'outline'],
+      control: "select",
+      options: ["primary", "secondary", "outline"],
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
+      control: "select",
+      options: ["sm", "md", "lg"],
     },
   },
 };
@@ -598,22 +607,22 @@ type Story = StoryObj<typeof Button>;
 
 export const Primary: Story = {
   args: {
-    variant: 'primary',
-    children: 'Button',
+    variant: "primary",
+    children: "Button",
   },
 };
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
-    children: 'Button',
+    variant: "secondary",
+    children: "Button",
   },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    children: 'Button',
+    children: "Button",
   },
 };
 ```
@@ -629,6 +638,7 @@ export const Disabled: Story = {
 ## Questions?
 
 If you have questions:
+
 1. Check existing documentation
 2. Search closed issues
 3. Ask in pull request discussion

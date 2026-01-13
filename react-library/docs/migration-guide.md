@@ -5,6 +5,7 @@ Complete guide for migrating from old imports to the new @letitrip/react-library
 ## Why Migrate?
 
 **Benefits of using the library:**
+
 - ✅ **Better Tree-shaking**: Import only what you need
 - ✅ **Type Safety**: Full TypeScript support with generated types
 - ✅ **Consistent API**: Standardized props and patterns
@@ -18,17 +19,19 @@ Complete guide for migrating from old imports to the new @letitrip/react-library
 ### Components
 
 **Old (Direct Path Imports):**
+
 ```typescript
-import FormInput from '@/components/form/FormInput';
-import FormSelect from '@/components/form/FormSelect';
-import FormTextarea from '@/components/form/FormTextarea';
-import FormCheckbox from '@/components/form/FormCheckbox';
-import FormRadio from '@/components/form/FormRadio';
-import Button from '@/components/common/Button';
-import Card from '@/components/common/Card';
+import FormInput from "@/components/form/FormInput";
+import FormSelect from "@/components/form/FormSelect";
+import FormTextarea from "@/components/form/FormTextarea";
+import FormCheckbox from "@/components/form/FormCheckbox";
+import FormRadio from "@/components/form/FormRadio";
+import Button from "@/components/common/Button";
+import Card from "@/components/common/Card";
 ```
 
 **New (Library Import):**
+
 ```typescript
 import {
   FormInput,
@@ -38,23 +41,25 @@ import {
   FormRadio,
   Button,
   Card,
-} from '@letitrip/react-library/components';
+} from "@letitrip/react-library/components";
 ```
 
 ### Hooks
 
 **Old (Direct Path Imports):**
+
 ```typescript
-import useDebounce from '@/hooks/useDebounce';
-import useDebounceCallback from '@/hooks/useDebounceCallback';
-import useThrottledCallback from '@/hooks/useThrottledCallback';
-import useMediaQuery from '@/hooks/useMediaQuery';
-import useIsMobile from '@/hooks/useIsMobile';
-import useBreakpoint from '@/hooks/useBreakpoint';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import useDebounce from "@/hooks/useDebounce";
+import useDebounceCallback from "@/hooks/useDebounceCallback";
+import useThrottledCallback from "@/hooks/useThrottledCallback";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import useIsMobile from "@/hooks/useIsMobile";
+import useBreakpoint from "@/hooks/useBreakpoint";
+import useLocalStorage from "@/hooks/useLocalStorage";
 ```
 
 **New (Library Import):**
+
 ```typescript
 import {
   useDebounce,
@@ -64,21 +69,23 @@ import {
   useIsMobile,
   useBreakpoint,
   useLocalStorage,
-} from '@letitrip/react-library/hooks';
+} from "@letitrip/react-library/hooks";
 ```
 
 ### Utility Functions
 
 **Old (Direct Path Imports):**
+
 ```typescript
-import { formatPrice } from '@/lib/formatters/price';
-import { formatDate } from '@/lib/formatters/date';
-import { validateEmail } from '@/lib/validators/email';
-import { validatePhone } from '@/lib/validators/phone';
-import { sanitizeInput } from '@/lib/sanitize';
+import { formatPrice } from "@/lib/formatters/price";
+import { formatDate } from "@/lib/formatters/date";
+import { validateEmail } from "@/lib/validators/email";
+import { validatePhone } from "@/lib/validators/phone";
+import { sanitizeInput } from "@/lib/sanitize";
 ```
 
 **New (Library Import):**
+
 ```typescript
 import {
   formatPrice,
@@ -86,7 +93,7 @@ import {
   validateEmail,
   validatePhone,
   sanitizeInput,
-} from '@letitrip/react-library/utils';
+} from "@letitrip/react-library/utils";
 ```
 
 ## Component Migrations
@@ -96,8 +103,9 @@ import {
 #### FormInput
 
 **Old:**
+
 ```tsx
-import FormInput from '@/components/form/FormInput';
+import FormInput from "@/components/form/FormInput";
 
 <FormInput
   label="Email"
@@ -105,12 +113,13 @@ import FormInput from '@/components/form/FormInput';
   value={email}
   onChange={(e) => setEmail(e.target.value)}
   error={error}
-/>
+/>;
 ```
 
 **New:**
+
 ```tsx
-import { FormInput } from '@letitrip/react-library/components';
+import { FormInput } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
 <FormInput
@@ -119,26 +128,28 @@ import { FormInput } from '@letitrip/react-library/components';
   value={email}
   onChange={(e) => setEmail(e.target.value)}
   error={error}
-/>
+/>;
 ```
 
 #### FormSelect
 
 **Old:**
+
 ```tsx
-import FormSelect from '@/components/form/FormSelect';
+import FormSelect from "@/components/form/FormSelect";
 
 <FormSelect
   label="Country"
   value={country}
   onChange={(e) => setCountry(e.target.value)}
   options={options}
-/>
+/>;
 ```
 
 **New:**
+
 ```tsx
-import { FormSelect } from '@letitrip/react-library/components';
+import { FormSelect } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
 <FormSelect
@@ -146,7 +157,7 @@ import { FormSelect } from '@letitrip/react-library/components';
   value={country}
   onChange={(e) => setCountry(e.target.value)}
   options={options}
-/>
+/>;
 ```
 
 ### Value Display Components
@@ -154,49 +165,47 @@ import { FormSelect } from '@letitrip/react-library/components';
 #### Price
 
 **Old:**
+
 ```tsx
-import Price from '@/components/values/Price';
+import Price from "@/components/values/Price";
 
 <Price
   amount={product.price}
   originalPrice={product.originalPrice}
   size="lg"
-/>
+/>;
 ```
 
 **New:**
+
 ```tsx
-import { Price } from '@letitrip/react-library/components';
+import { Price } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
 <Price
   amount={product.price}
   originalPrice={product.originalPrice}
   size="lg"
-/>
+/>;
 ```
 
 #### DateDisplay
 
 **Old:**
-```tsx
-import DateDisplay from '@/components/values/DateDisplay';
 
-<DateDisplay
-  date={order.createdAt}
-  format="relative"
-/>
+```tsx
+import DateDisplay from "@/components/values/DateDisplay";
+
+<DateDisplay date={order.createdAt} format="relative" />;
 ```
 
 **New:**
+
 ```tsx
-import { DateDisplay } from '@letitrip/react-library/components';
+import { DateDisplay } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
-<DateDisplay
-  date={order.createdAt}
-  format="relative"
-/>
+<DateDisplay date={order.createdAt} format="relative" />;
 ```
 
 ### UI Components
@@ -204,59 +213,47 @@ import { DateDisplay } from '@letitrip/react-library/components';
 #### Button
 
 **Old:**
-```tsx
-import Button from '@/components/common/Button';
 
-<Button
-  variant="primary"
-  size="md"
-  onClick={handleClick}
-  disabled={loading}
->
+```tsx
+import Button from "@/components/common/Button";
+
+<Button variant="primary" size="md" onClick={handleClick} disabled={loading}>
   Submit
-</Button>
+</Button>;
 ```
 
 **New:**
+
 ```tsx
-import { Button } from '@letitrip/react-library/components';
+import { Button } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
-<Button
-  variant="primary"
-  size="md"
-  onClick={handleClick}
-  disabled={loading}
->
+<Button variant="primary" size="md" onClick={handleClick} disabled={loading}>
   Submit
-</Button>
+</Button>;
 ```
 
 #### Card
 
 **Old:**
-```tsx
-import Card from '@/components/common/Card';
 
-<Card
-  title="Product Details"
-  footer={<Button>View More</Button>}
->
+```tsx
+import Card from "@/components/common/Card";
+
+<Card title="Product Details" footer={<Button>View More</Button>}>
   {children}
-</Card>
+</Card>;
 ```
 
 **New:**
+
 ```tsx
-import { Card } from '@letitrip/react-library/components';
+import { Card } from "@letitrip/react-library/components";
 
 // Same usage - API unchanged
-<Card
-  title="Product Details"
-  footer={<Button>View More</Button>}
->
+<Card title="Product Details" footer={<Button>View More</Button>}>
   {children}
-</Card>
+</Card>;
 ```
 
 ## Hook Migrations
@@ -264,25 +261,27 @@ import { Card } from '@letitrip/react-library/components';
 ### useDebounce
 
 **Old:**
+
 ```tsx
-import useDebounce from '@/hooks/useDebounce';
+import useDebounce from "@/hooks/useDebounce";
 
 function SearchBar() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
-  
+
   // ...
 }
 ```
 
 **New:**
+
 ```tsx
-import { useDebounce } from '@letitrip/react-library/hooks';
+import { useDebounce } from "@letitrip/react-library/hooks";
 
 function SearchBar() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
-  
+
   // Same usage - API unchanged
 }
 ```
@@ -290,21 +289,23 @@ function SearchBar() {
 ### useMediaQuery
 
 **Old:**
+
 ```tsx
-import useMediaQuery from '@/hooks/useMediaQuery';
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 function Component() {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery("(max-width: 768px)");
   // ...
 }
 ```
 
 **New:**
+
 ```tsx
-import { useMediaQuery } from '@letitrip/react-library/hooks';
+import { useMediaQuery } from "@letitrip/react-library/hooks";
 
 function Component() {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery("(max-width: 768px)");
   // Same usage - API unchanged
 }
 ```
@@ -312,21 +313,23 @@ function Component() {
 ### useLocalStorage
 
 **Old:**
+
 ```tsx
-import useLocalStorage from '@/hooks/useLocalStorage';
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 function ThemeSwitcher() {
-  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [theme, setTheme] = useLocalStorage("theme", "light");
   // ...
 }
 ```
 
 **New:**
+
 ```tsx
-import { useLocalStorage } from '@letitrip/react-library/hooks';
+import { useLocalStorage } from "@letitrip/react-library/hooks";
 
 function ThemeSwitcher() {
-  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [theme, setTheme] = useLocalStorage("theme", "light");
   // Same usage - API unchanged
 }
 ```
@@ -336,71 +339,77 @@ function ThemeSwitcher() {
 ### Formatters
 
 **Old:**
+
 ```tsx
-import { formatPrice } from '@/lib/formatters/price';
-import { formatDate } from '@/lib/formatters/date';
-import { formatPhoneNumber } from '@/lib/formatters/phone';
+import { formatPrice } from "@/lib/formatters/price";
+import { formatDate } from "@/lib/formatters/date";
+import { formatPhoneNumber } from "@/lib/formatters/phone";
 
 const price = formatPrice(1234.56);
 const date = formatDate(new Date());
-const phone = formatPhoneNumber('9876543210');
+const phone = formatPhoneNumber("9876543210");
 ```
 
 **New:**
+
 ```tsx
 import {
   formatPrice,
   formatDate,
   formatPhoneNumber,
-} from '@letitrip/react-library/utils';
+} from "@letitrip/react-library/utils";
 
 const price = formatPrice(1234.56);
 const date = formatDate(new Date());
-const phone = formatPhoneNumber('9876543210');
+const phone = formatPhoneNumber("9876543210");
 // Same usage - API unchanged
 ```
 
 ### Validators
 
 **Old:**
-```tsx
-import { validateEmail } from '@/lib/validators/email';
-import { validatePhone } from '@/lib/validators/phone';
-import { validatePincode } from '@/lib/validators/pincode';
 
-const isValidEmail = validateEmail('user@example.com');
-const isValidPhone = validatePhone('9876543210');
-const isValidPincode = validatePincode('110001');
+```tsx
+import { validateEmail } from "@/lib/validators/email";
+import { validatePhone } from "@/lib/validators/phone";
+import { validatePincode } from "@/lib/validators/pincode";
+
+const isValidEmail = validateEmail("user@example.com");
+const isValidPhone = validatePhone("9876543210");
+const isValidPincode = validatePincode("110001");
 ```
 
 **New:**
+
 ```tsx
 import {
   validateEmail,
   validatePhone,
   validatePincode,
-} from '@letitrip/react-library/utils';
+} from "@letitrip/react-library/utils";
 
-const isValidEmail = validateEmail('user@example.com');
-const isValidPhone = validatePhone('9876543210');
-const isValidPincode = validatePincode('110001');
+const isValidEmail = validateEmail("user@example.com");
+const isValidPhone = validatePhone("9876543210");
+const isValidPincode = validatePincode("110001");
 // Same usage - API unchanged
 ```
 
 ### Sanitizers
 
 **Old:**
+
 ```tsx
-import { sanitizeInput } from '@/lib/sanitize';
-import { sanitizeHTML } from '@/lib/sanitize';
+import { sanitizeInput } from "@/lib/sanitize";
+import { sanitizeHTML } from "@/lib/sanitize";
 
 const clean = sanitizeInput(userInput);
 const cleanHTML = sanitizeHTML(richText);
 ```
 
 **New:**
+
 ```tsx
-import { sanitizeInput, sanitizeHTML } from '@letitrip/react-library/utils';
+import { sanitizeInput, sanitizeHTML } from "@letitrip/react-library/utils";
 
 const clean = sanitizeInput(userInput);
 const cleanHTML = sanitizeHTML(richText);
@@ -412,6 +421,7 @@ const cleanHTML = sanitizeHTML(richText);
 ### CSS Token Imports
 
 **Old:**
+
 ```css
 /* Global styles with hardcoded values */
 .button {
@@ -422,9 +432,10 @@ const cleanHTML = sanitizeHTML(richText);
 ```
 
 **New:**
+
 ```css
 /* Import tokens first */
-@import '@letitrip/react-library/styles/tokens';
+@import "@letitrip/react-library/styles/tokens";
 
 /* Use CSS variables */
 .button {
@@ -437,13 +448,14 @@ const cleanHTML = sanitizeHTML(richText);
 ### Tailwind Configuration
 
 **Old (tailwind.config.js):**
+
 ```javascript
 module.exports = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: '#0070f3',
+        primary: "#0070f3",
         // ...
       },
     },
@@ -452,15 +464,13 @@ module.exports = {
 ```
 
 **New (tailwind.config.js):**
+
 ```javascript
-const libraryConfig = require('@letitrip/react-library/tailwind.config.js');
+const libraryConfig = require("@letitrip/react-library/tailwind.config.js");
 
 module.exports = {
   ...libraryConfig,
-  content: [
-    ...libraryConfig.content,
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: [...libraryConfig.content, "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       ...libraryConfig.theme.extend,
@@ -479,6 +489,7 @@ module.exports = {
 ### Props Remain Compatible
 
 All props, types, and behaviors are preserved:
+
 - ✅ All component props unchanged
 - ✅ All hook signatures unchanged
 - ✅ All utility function signatures unchanged
@@ -499,10 +510,10 @@ Replace with library imports:
 
 ```typescript
 // Before
-import { formatPrice } from '@/lib/formatters/price';
+import { formatPrice } from "@/lib/formatters/price";
 
 // After
-import { formatPrice } from '@letitrip/react-library/utils';
+import { formatPrice } from "@letitrip/react-library/utils";
 ```
 
 ### 2. Migrate Hooks
@@ -516,10 +527,10 @@ Replace with library imports:
 
 ```typescript
 // Before
-import useDebounce from '@/hooks/useDebounce';
+import useDebounce from "@/hooks/useDebounce";
 
 // After
-import { useDebounce } from '@letitrip/react-library/hooks';
+import { useDebounce } from "@letitrip/react-library/hooks";
 ```
 
 ### 3. Migrate Components
@@ -533,29 +544,26 @@ Replace with library imports:
 
 ```typescript
 // Before
-import FormInput from '@/components/form/FormInput';
+import FormInput from "@/components/form/FormInput";
 
 // After
-import { FormInput } from '@letitrip/react-library/components';
+import { FormInput } from "@letitrip/react-library/components";
 ```
 
 ### 4. Update CSS/Tailwind
 
 ```typescript
 // app/_app.tsx or layout.tsx
-import '@letitrip/react-library/styles/tokens';
+import "@letitrip/react-library/styles/tokens";
 ```
 
 ```javascript
 // tailwind.config.js
-const libraryConfig = require('@letitrip/react-library/tailwind.config.js');
+const libraryConfig = require("@letitrip/react-library/tailwind.config.js");
 
 module.exports = {
   ...libraryConfig,
-  content: [
-    ...libraryConfig.content,
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: [...libraryConfig.content, "./src/**/*.{js,ts,jsx,tsx}"],
 };
 ```
 
@@ -591,13 +599,15 @@ Create a migration script to automate import updates:
 
 ```javascript
 // scripts/migrate-to-library.js
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const replacements = {
   // Components
-  "from '@/components/form/FormInput'": "from '@letitrip/react-library/components'",
-  "from '@/components/form/FormSelect'": "from '@letitrip/react-library/components'",
+  "from '@/components/form/FormInput'":
+    "from '@letitrip/react-library/components'",
+  "from '@/components/form/FormSelect'":
+    "from '@letitrip/react-library/components'",
   // Hooks
   "from '@/hooks/useDebounce'": "from '@letitrip/react-library/hooks'",
   // Utils
@@ -606,12 +616,12 @@ const replacements = {
 };
 
 function migrateFile(filePath) {
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, "utf8");
   let modified = false;
 
   for (const [old, newPath] of Object.entries(replacements)) {
     if (content.includes(old)) {
-      content = content.replace(new RegExp(old, 'g'), newPath);
+      content = content.replace(new RegExp(old, "g"), newPath);
       modified = true;
     }
   }
@@ -645,6 +655,7 @@ After migration, verify:
 If issues arise:
 
 1. **Git Revert**: Revert migration commits
+
    ```bash
    git revert <commit-hash>
    ```
@@ -654,7 +665,7 @@ If issues arise:
 3. **Dual Imports**: Temporarily support both old and new paths
    ```typescript
    // Old path for gradual migration
-   export { FormInput } from '@letitrip/react-library/components';
+   export { FormInput } from "@letitrip/react-library/components";
    ```
 
 ## Common Issues
@@ -662,12 +673,14 @@ If issues arise:
 ### Issue: Import Not Found
 
 **Error:**
+
 ```
 Module not found: Can't resolve '@letitrip/react-library/components'
 ```
 
 **Solution:**
 Ensure package is built:
+
 ```bash
 cd react-library
 npm run build
@@ -676,12 +689,14 @@ npm run build
 ### Issue: Types Not Recognized
 
 **Error:**
+
 ```
 Could not find a declaration file for module '@letitrip/react-library'
 ```
 
 **Solution:**
 Check TypeScript sees the library:
+
 ```json
 // tsconfig.json
 {
@@ -700,8 +715,9 @@ Variables show as `var(--color-primary)` in browser
 
 **Solution:**
 Import CSS tokens:
+
 ```typescript
-import '@letitrip/react-library/styles/tokens';
+import "@letitrip/react-library/styles/tokens";
 ```
 
 ## Need Help?
