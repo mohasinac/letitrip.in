@@ -16,11 +16,11 @@ In your app's global CSS or `_app.tsx`:
 
 ```css
 /* Import all tokens */
-@import '@letitrip/react-library/styles/tokens';
+@import "@letitrip/react-library/styles/tokens";
 
 /* Or import specific token files */
-@import '@letitrip/react-library/styles/tokens/colors.css';
-@import '@letitrip/react-library/styles/tokens/typography.css';
+@import "@letitrip/react-library/styles/tokens/colors.css";
+@import "@letitrip/react-library/styles/tokens/typography.css";
 ```
 
 ### 2. Use Tailwind Configuration
@@ -28,14 +28,11 @@ In your app's global CSS or `_app.tsx`:
 Extend your `tailwind.config.js` with the library's theme:
 
 ```javascript
-const libraryConfig = require('@letitrip/react-library/tailwind.config.js');
+const libraryConfig = require("@letitrip/react-library/tailwind.config.js");
 
 module.exports = {
   ...libraryConfig,
-  content: [
-    ...libraryConfig.content,
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: [...libraryConfig.content, "./src/**/*.{js,ts,jsx,tsx}"],
 };
 ```
 
@@ -47,8 +44,8 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: 'var(--color-primary)',
-          hover: 'var(--color-primary-hover)',
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)",
           // ... more variants
         },
       },
@@ -95,7 +92,7 @@ module.exports = {
 
 - Standard scale: 0-96 (0rem-24rem)
 - Custom values: 13, 15, 17, 18, 22, 26, 30, etc.
-- Viewport-based: vh-* and vw-* units
+- Viewport-based: vh-_ and vw-_ units
 
 ### Shadows (`shadows.css`)
 
@@ -123,16 +120,16 @@ The theme supports dark mode via CSS class or data attribute:
 ```html
 <!-- Using class -->
 <html class="dark">
-
-<!-- Using data attribute -->
-<html data-theme="dark">
+  <!-- Using data attribute -->
+  <html data-theme="dark"></html>
+</html>
 ```
 
 Configure in Tailwind:
 
 ```javascript
 module.exports = {
-  darkMode: ['class', '[data-theme="dark"]'],
+  darkMode: ["class", '[data-theme="dark"]'],
   // ...
 };
 ```
@@ -240,18 +237,18 @@ With the tokens imported, you can use semantic Tailwind classes:
 ## Example Component
 
 ```tsx
-import { cn } from '@letitrip/react-library/utils';
+import { cn } from "@letitrip/react-library/utils";
 
 function Card({ className, children }) {
   return (
     <div
       className={cn(
-        'bg-surface-primary',
-        'text-content-primary',
-        'border border-line-primary',
-        'rounded-token-lg',
-        'shadow-token-md',
-        'p-4',
+        "bg-surface-primary",
+        "text-content-primary",
+        "border border-line-primary",
+        "rounded-token-lg",
+        "shadow-token-md",
+        "p-4",
         className
       )}
     >
