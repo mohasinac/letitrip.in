@@ -32,6 +32,11 @@
       "require": "./dist/styles/index.cjs",
       "types": "./dist/styles/index.d.ts"
     },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.cjs",
+      "types": "./dist/types/index.d.ts"
+    },
     "./styles/tokens": "./dist/styles/tokens/index.css",
     "./styles/tokens/*": "./dist/styles/tokens/*.css"
   },
