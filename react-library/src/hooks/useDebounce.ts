@@ -7,11 +7,11 @@ const DEFAULT_THROTTLE_INTERVAL = 200;
 /**
  * Debounce hook - delays execution until after wait milliseconds have elapsed
  * since the last time the debounced function was invoked
- * 
+ *
  * @example
  * ```tsx
  * const debouncedSearch = useDebounce(searchTerm, 300);
- * 
+ *
  * useEffect(() => {
  *   // This will only run after user stops typing for 300ms
  *   performSearch(debouncedSearch);
@@ -40,13 +40,13 @@ export function useDebounce<T>(
 /**
  * Debounced callback hook - returns a memoized callback that will only execute
  * after the specified delay has elapsed since the last invocation
- * 
+ *
  * @example
  * ```tsx
  * const debouncedSave = useDebouncedCallback((data) => {
  *   saveToAPI(data);
  * }, 500);
- * 
+ *
  * return <input onChange={(e) => debouncedSave(e.target.value)} />;
  * ```
  */
@@ -83,11 +83,11 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 
 /**
  * Throttle hook - ensures function is called at most once per specified interval
- * 
+ *
  * @example
  * ```tsx
  * const throttledScroll = useThrottle(scrollPosition, 100);
- * 
+ *
  * useEffect(() => {
  *   updateNavbar(throttledScroll);
  * }, [throttledScroll]);
