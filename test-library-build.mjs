@@ -2,10 +2,10 @@
  * Test file to verify library build structure
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 
-const distPath = './react-library/dist';
+const distPath = "./react-library/dist";
 
 console.log("✅ Verifying library build structure...\n");
 
@@ -17,18 +17,18 @@ if (!existsSync(distPath)) {
 
 // Check main entry points
 const entryPoints = [
-  'index.js',
-  'index.cjs',
-  'index.d.ts',
-  'utils/index.js',
-  'utils/index.cjs',
-  'utils/index.d.ts',
-  'components/index.js',
-  'components/index.cjs',
-  'components/index.d.ts',
-  'hooks/index.js',
-  'hooks/index.cjs',
-  'hooks/index.d.ts',
+  "index.js",
+  "index.cjs",
+  "index.d.ts",
+  "utils/index.js",
+  "utils/index.cjs",
+  "utils/index.d.ts",
+  "components/index.js",
+  "components/index.cjs",
+  "components/index.d.ts",
+  "hooks/index.js",
+  "hooks/index.cjs",
+  "hooks/index.d.ts",
 ];
 
 console.log("Entry Points:");
@@ -43,26 +43,37 @@ for (const entry of entryPoints) {
 
 // Check package.json exports
 console.log("\nPackage Exports:");
-const packageJson = JSON.parse(readFileSync('./react-library/package.json', 'utf-8'));
+const packageJson = JSON.parse(
+  readFileSync("./react-library/package.json", "utf-8")
+);
 const exports = packageJson.exports;
-console.log("- Main export:", exports['.'] ? "✓" : "✗");
-console.log("- Utils export:", exports['./utils'] ? "✓" : "✗");
-console.log("- Components export:", exports['./components'] ? "✓" : "✗");
-console.log("- Hooks export:", exports['./hooks'] ? "✓" : "✗");
-console.log("- Styles export:", exports['./styles'] ? "✓" : "✗");
+console.log("- Main export:", exports["."] ? "✓" : "✗");
+console.log("- Utils export:", exports["./utils"] ? "✓" : "✗");
+console.log("- Components export:", exports["./components"] ? "✓" : "✗");
+console.log("- Hooks export:", exports["./hooks"] ? "✓" : "✗");
+console.log("- Styles export:", exports["./styles"] ? "✓" : "✗");
 
 // Read and display type definitions to verify exports
 console.log("\nVerifying TypeScript Definitions:");
 try {
-  const utilsTypes = readFileSync(join(distPath, 'utils/index.d.ts'), 'utf-8');
-  const componentsTypes = readFileSync(join(distPath, 'components/index.d.ts'), 'utf-8');
-  const hooksTypes = readFileSync(join(distPath, 'hooks/index.d.ts'), 'utf-8');
-  
+  const utilsTypes = readFileSync(join(distPath, "utils/index.d.ts"), "utf-8");
+  const componentsTypes = readFileSync(
+    join(distPath, "components/index.d.ts"),
+    "utf-8"
+  );
+  const hooksTypes = readFileSync(join(distPath, "hooks/index.d.ts"), "utf-8");
+
   // Count exports
-  const utilExports = (utilsTypes.match(/export \{/g) || []).length + (utilsTypes.match(/export \*/g) || []).length;
-  const componentExports = (componentsTypes.match(/export \{/g) || []).length + (componentsTypes.match(/export \*/g) || []).length;
-  const hookExports = (hooksTypes.match(/export \{/g) || []).length + (hooksTypes.match(/export \*/g) || []).length;
-  
+  const utilExports =
+    (utilsTypes.match(/export \{/g) || []).length +
+    (utilsTypes.match(/export \*/g) || []).length;
+  const componentExports =
+    (componentsTypes.match(/export \{/g) || []).length +
+    (componentsTypes.match(/export \*/g) || []).length;
+  const hookExports =
+    (hooksTypes.match(/export \{/g) || []).length +
+    (hooksTypes.match(/export \*/g) || []).length;
+
   console.log(`- Utils exports: ${utilExports} found ✓`);
   console.log(`- Component exports: ${componentExports} found ✓`);
   console.log(`- Hook exports: ${hookExports} found ✓`);

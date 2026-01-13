@@ -1,80 +1,174 @@
 # @letitrip/react-library
 
-Reusable React components and utilities for Letitrip platform.
+**Reusable React components, hooks, utilities, and design system for the Letitrip platform.**
 
-## 🚀 Features
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/letitrip/react-library)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18%20%7C%2019-blue.svg)](https://react.dev/)
 
-### ✅ Week 14 Complete (Utilities & Setup)
+## 📦 What's Included
 
-- **Utilities**: 6 utility modules with 60+ functions
-  - **Formatters** (25+ functions): Currency, dates, numbers, text, Indian formats
-  - **Validators** (10+ functions): Email, phone, pincode, GST, PAN validation
-  - **Date utilities** (6 functions): Safe date manipulation, ISO conversion
-  - **Price utilities** (3 functions): Currency formatting with discounts
-  - **Sanitization** (5 functions): XSS prevention, HTML cleaning
-  - **Accessibility** (13 functions): ARIA helpers, keyboard nav, screen reader support
-- **Components**: 20 value display components
-  - **Date Components**: DateDisplay, RelativeDate, DateRange
-  - **Price**: Price with discount badges and multiple sizes
-  - **Status Badges**: Auction, Payment, Shipping, Stock status
-  - **Formatted Values**: Address, Email, Phone, Rating, OrderId, SKU, etc.
-- **Storybook**: Complete documentation with 27+ interactive examples
-  - Utility stories: Formatters, Validators, DateUtils
-  - Component stories: DateDisplay, Price, StatusBadges
-  - Introduction guide with usage examples
-- **Build System**: Vite 5.x with TypeScript 5.3+
-  - Output: ESM + CommonJS with type definitions
-  - Bundle size: ~147KB total (43KB utils, 35KB components, gzipped ~35KB)
-  - Build time: ~7 seconds
-- **TypeScript**: Full type safety with generated .d.ts files
-- **Accessible**: WCAG 2.1 AA compliant utilities and components
+### ✅ Components (31)
 
-### 🚧 Coming Soon (Weeks 15-16)
+- **20 Value Display Components**: DateDisplay, Price, Rating, Status badges, and more
+- **9 Form Components**: FormInput, FormSelect, FormDatePicker, FormPhoneInput, etc.
+- **2 UI Components**: Button (5 variants), Card/CardSection
 
-- **Form Components**: 21 accessible form inputs (Week 15)
-- **UI Components**: Button, Card, Modal, Tabs, etc. (Week 15)
-- **Hooks**: useDebounce, useMediaQuery, useLocalStorage, etc. (Week 15)
-- **Styles**: Theme utilities and global styles (Week 16)
+### ✅ Hooks (18)
 
-## 📦 Installation
+- **Debounce & Throttle** (3): useDebounce, useDebouncedCallback, useThrottle
+- **Storage** (1): useLocalStorage with cross-tab sync
+- **Responsive** (7): useMediaQuery, useIsMobile, useViewport, useBreakpoint, and more
+- **Utilities** (6): useToggle, usePrevious, useClipboard, useCounter, useInterval, useTimeout
 
-This is a workspace package. No installation needed - it's referenced locally.
+### ✅ Utilities (60+)
 
-## 🎯 Usage
+- **Formatters** (25+): Currency, dates, numbers, Indian formats, addresses
+- **Validators** (10+): Email, phone, pincode, GST, PAN validation
+- **Date Utils** (6): Safe date manipulation, ISO conversion
+- **Price Utils** (3): Currency formatting with discounts
+- **Sanitization** (5): XSS prevention, HTML cleaning
+- **Accessibility** (13): ARIA helpers, keyboard nav, screen reader support
+
+### ✅ Design System
+
+- **CSS Tokens** (200+): Colors, typography, spacing, shadows, borders, animations
+- **Tailwind Config**: Complete theme with CSS variables
+- **Dark Mode**: Built-in theme switching support
+
+## 🚀 Quick Start
+
+### Installation
+
+This library is part of the Letitrip workspace and doesn't require separate installation.
+
+### Basic Usage
 
 ```typescript
 // Import utilities
-import { formatPrice, formatDate, isValidEmail } from "@letitrip/react-library";
+import { formatPrice, formatDate, cn } from "@letitrip/react-library/utils";
 
 // Import components
-import { FormInput, Button, DateDisplay } from "@letitrip/react-library";
+import {
+  FormInput,
+  Button,
+  DateDisplay,
+} from "@letitrip/react-library/components";
 
 // Import hooks
-import { useDebounce, useMediaQuery } from "@letitrip/react-library";
+import { useDebounce, useMediaQuery } from "@letitrip/react-library/hooks";
+
+// Import design tokens
+import "@letitrip/react-library/styles/tokens";
 ```
 
-### Alternative: Specific imports for tree-shaking
+### Example: Form with Validation
 
-```typescript
-import { formatPrice } from "@letitrip/react-library/utils";
-import { FormInput } from "@letitrip/react-library/components";
+```tsx
+import { FormInput, Button } from "@letitrip/react-library/components";
+import { validateEmail } from "@letitrip/react-library/utils";
 import { useDebounce } from "@letitrip/react-library/hooks";
+import { useState } from "react";
+
+function ContactForm() {
+  const [email, setEmail] = useState("");
+  const debouncedEmail = useDebounce(email, 300);
+  const isValid = validateEmail(debouncedEmail);
+
+  return (
+    <form>
+      <FormInput
+        label="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        error={!isValid ? "Invalid email address" : undefined}
+      />
+      <Button type="submit" disabled={!isValid}>
+        Submit
+      </Button>
+    </form>
+  );
+}
+```
+
+### Example: Responsive UI
+
+```tsx
+import { useIsMobile, useBreakpoint } from "@letitrip/react-library/hooks";
+
+function ResponsiveNav() {
+  const isMobile = useIsMobile();
+  const breakpoint = useBreakpoint();
+
+  return (
+    <nav>
+      {isMobile ? <MobileMenu /> : <DesktopMenu />}
+      <p>Current breakpoint: {breakpoint}</p>
+    </nav>
+  );
+}
 ```
 
 ## 📚 Documentation
 
-Run Storybook to view complete component documentation:
+- **[Getting Started Guide](docs/getting-started.md)** - Setup and first steps
+- **[Migration Guide](docs/migration-guide.md)** - Migrating from old imports
+- **[Components](docs/components.md)** - Component API documentation
+- **[Hooks](docs/hooks.md)** - Hook usage and examples
+- **[Utilities](docs/utilities.md)** - Utility function reference
+- **[Theme System](src/styles/README.md)** - Design tokens and theming
+- **[Changelog](docs/changelog.md)** - Version history
+
+### Storybook
+
+Interactive component documentation:
 
 ```bash
+cd react-library
 npm run storybook
+```
+
+Open [http://localhost:6006](http://localhost:6006) to view.
+
+## 🎨 Design System
+
+### Import CSS Tokens
+
+```css
+/* In your global CSS or _app.tsx */
+@import "@letitrip/react-library/styles/tokens";
+```
+
+### Use Tailwind Theme
+
+```javascript
+// tailwind.config.js
+const libraryConfig = require("@letitrip/react-library/tailwind.config.js");
+
+module.exports = {
+  ...libraryConfig,
+  content: [...libraryConfig.content, "./src/**/*.{js,ts,jsx,tsx}"],
+};
+```
+
+### CSS Variables
+
+```css
+.my-component {
+  color: var(--color-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+}
 ```
 
 ## 🛠️ Development
 
-```bash
-# Install dependencies
-npm install
+### Build Commands
 
+```bash
 # Build library
 npm run build
 
@@ -84,76 +178,114 @@ npm run dev
 # Run tests
 npm test
 
-# Run Storybook
+# Lint code
+npm run lint
+```
+
+### Storybook Commands
+
+```bash
+# Start Storybook dev server
 npm run storybook
 
-# Build Storybook
+# Build Storybook static site
 npm run build-storybook
 ```
 
-## 📂 Structure
+## 📦 Package Structure
 
 ```
-react-library/
-├── src/
-│   ├── index.ts                    # Main entry point
-│   ├── utils/                      # Utility functions ✅
-│   │   ├── index.ts
-│   │   ├── cn.ts                   # Tailwind class merging
-│   │   ├── formatters.ts           # 25+ formatting functions
-│   │   ├── validators.ts           # 10+ validation functions
-│   │   ├── date-utils.ts           # Date manipulation
-│   │   ├── price.utils.ts          # Price formatting
-│   │   ├── sanitize.ts             # XSS prevention
-│   │   └── accessibility.ts        # A11y helpers
-│   ├── components/                 # React components ✅ (20 components)
-│   │   ├── index.ts
-│   │   └── values/                 # Value display components
-│   ├── hooks/                      # React hooks (Coming soon)
-│   ├── styles/                     # Styles and theme (Coming soon)
-│   └── types/                      # TypeScript types
-├── stories/                        # Storybook documentation ✅
-│   ├── Introduction.stories.mdx
-│   ├── utils/                      # Utility stories
-│   └── components/                 # Component stories
-├── dist/                           # Build output (generated)
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+@letitrip/react-library/
+├── dist/                          # Built output
+│   ├── index.js                   # ESM entry
+│   ├── index.cjs                  # CommonJS entry
+│   ├── index.d.ts                 # TypeScript types
+│   ├── utils/                     # Utility exports
+│   ├── components/                # Component exports
+│   ├── hooks/                     # Hook exports
+│   └── styles/                    # Style exports
+│       └── tokens/                # CSS design tokens
+├── src/                           # Source code
+│   ├── components/                # React components
+│   │   ├── values/                # Value display components (20)
+│   │   ├── forms/                 # Form components (9)
+│   │   └── ui/                    # UI components (2)
+│   ├── hooks/                     # React hooks (18)
+│   ├── utils/                     # Utility functions (60+)
+│   └── styles/                    # Design tokens & theme
+│       └── tokens/                # CSS token files (7)
+├── stories/                       # Storybook stories
+└── docs/                          # Documentation
 ```
 
-## 📊 Bundle Sizes
+## 📊 Bundle Size
 
-- **Utils**: 42.36 KB raw (13.57 KB gzipped)
-- **Components**: 34.84 KB raw (7.97 KB gzipped)
-- **Total**: ~147 KB raw (~35 KB gzipped)
-- **Build time**: ~7 seconds
+- **Total**: ~224KB raw, ~51KB gzipped
+- **Components**: 80KB (15.9KB gzipped)
+- **Hooks**: 7.2KB (2.2KB gzipped)
+- **Utils**: 108KB (26.8KB gzipped)
+- **CSS Tokens**: 29KB (7KB gzipped)
+- **Build Time**: ~7.3 seconds
 
-## 🧪 Testing
+## 🎯 Features
 
-```bash
-npm test
+### Type Safety
+
+- Full TypeScript support with generated `.d.ts` files
+- Strict type checking enabled
+- Comprehensive prop type definitions
+
+### Accessibility
+
+- WCAG 2.1 AA compliant
+- ARIA attributes on all interactive components
+- Keyboard navigation support
+- Screen reader friendly
+
+### Performance
+
+- Tree-shakeable exports
+- Code splitting by module
+- Optimized bundle sizes
+- SSR-safe hooks (Next.js compatible)
+
+### Developer Experience
+
+- Comprehensive Storybook documentation
+- TypeScript autocomplete
+- Inline JSDoc comments
+- Usage examples for all exports
+
+## 🔄 Migration from Old Imports
+
+```typescript
+// Old (direct imports from src)
+import { formatPrice } from "@/lib/formatters";
+import { FormInput } from "@/components/common/FormInput";
+import { useDebounce } from "@/hooks/useDebounce";
+
+// New (library imports)
+import { formatPrice } from "@letitrip/react-library/utils";
+import { FormInput } from "@letitrip/react-library/components";
+import { useDebounce } from "@letitrip/react-library/hooks";
 ```
 
-## 📖 Storybook
+See the [Migration Guide](docs/migration-guide.md) for detailed instructions.
 
-View component documentation and examples:
+## 📝 Contributing
 
-```bash
-npm run storybook
-```
-
-## 🤝 Contributing
-
-This library is part of the Letitrip monorepo. See main repository for contribution guidelines.
+See [CONTRIBUTING.md](docs/contributing.md) for development guidelines.
 
 ## 📄 License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **Storybook**: http://localhost:6006 (when running locally)
+- **Documentation**: [docs/](docs/)
+- **Main App**: [../](../)
 
 ---
 
-**Version**: 1.0.0
-**Status**: In Development
-**Last Updated**: January 12, 2026
+**Built with ❤️ for Letitrip**
