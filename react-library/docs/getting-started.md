@@ -13,6 +13,18 @@ This guide will help you start using the Letitrip React Library in your applicat
 
 Since this is a workspace package, no installation is required. The library is already available in your project.
 
+## Build Performance
+
+The library is optimized for production with:
+- **Tree-shaking**: Import only what you use
+- **Code splitting**: Automatic chunking by feature
+- **Minification**: Terser with 2-pass compression
+- **TypeScript**: Full type safety with exported types
+- **Bundle size**: ~297 KB production code
+- **Build time**: ~7 seconds
+
+For optimal bundle size, use specific entry points (see below).
+
 ## Step 1: Import What You Need
 
 The library provides multiple entry points for optimal tree-shaking:
@@ -23,7 +35,7 @@ The library provides multiple entry points for optimal tree-shaking:
 import { formatPrice, FormInput, useDebounce } from "@letitrip/react-library";
 ```
 
-### Specific Entry Points (Recommended)
+### Specific Entry Points (Recommended for Better Tree-Shaking)
 
 ```typescript
 // Utilities
@@ -42,6 +54,13 @@ import {
 
 // Hooks
 import { useDebounce, useMediaQuery } from "@letitrip/react-library/hooks";
+
+// TypeScript Types
+import type {
+  Size,
+  Variant,
+  FormFieldProps,
+} from "@letitrip/react-library/types";
 
 // Design tokens (in your global CSS)
 import "@letitrip/react-library/styles/tokens";

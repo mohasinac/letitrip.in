@@ -1,58 +1,53 @@
 /**
  * Common TypeScript types and interfaces used across the library.
- * 
+ *
  * @module types/common
  */
 
 /**
  * Size variants for components
  */
-export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 /**
  * Button and component variants
  */
-export type Variant = 
-  | 'primary' 
-  | 'secondary' 
-  | 'outline' 
-  | 'ghost' 
-  | 'link';
+export type Variant = "primary" | "secondary" | "outline" | "ghost" | "link";
 
 /**
  * Status types for badges, indicators, etc.
  */
-export type Status = 
-  | 'success' 
-  | 'warning' 
-  | 'error' 
-  | 'info' 
-  | 'pending' 
-  | 'processing' 
-  | 'shipped' 
-  | 'delivered' 
-  | 'cancelled';
+export type Status =
+  | "success"
+  | "warning"
+  | "error"
+  | "info"
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 /**
  * Color types for components
  */
-export type Color = 
-  | 'primary' 
-  | 'secondary' 
-  | 'success' 
-  | 'warning' 
-  | 'error' 
-  | 'info';
+export type Color =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "warning"
+  | "error"
+  | "info";
 
 /**
  * Auction status types
  */
-export type AuctionStatus = 'active' | 'ending' | 'ended';
+export type AuctionStatus = "active" | "ending" | "ended";
 
 /**
  * RipLimit status types
  */
-export type RipLimitStatus = 'default' | 'blocked' | 'available';
+export type RipLimitStatus = "default" | "blocked" | "available";
 
 /**
  * Common base props for all components
@@ -63,9 +58,9 @@ export interface BaseComponentProps {
   /** Component ID */
   id?: string;
   /** Accessibility label */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Data test ID for testing */
-  'data-testid'?: string;
+  "data-testid"?: string;
 }
 
 /**
@@ -105,7 +100,10 @@ export interface WithError {
 /**
  * Common form field props
  */
-export interface FormFieldProps extends BaseComponentProps, WithDisabled, WithError {
+export interface FormFieldProps
+  extends BaseComponentProps,
+    WithDisabled,
+    WithError {
   /** Field label */
   label?: string;
   /** Field name */
@@ -135,12 +133,7 @@ export interface SelectOption<T = string> {
 /**
  * Date format options
  */
-export type DateFormat = 
-  | 'relative' 
-  | 'short' 
-  | 'long' 
-  | 'full' 
-  | 'custom';
+export type DateFormat = "relative" | "short" | "long" | "full" | "custom";
 
 /**
  * Price display options
@@ -189,22 +182,22 @@ export type SubmitHandler = (data: any) => void | Promise<void>;
 /**
  * Breakpoint types for responsive hooks
  */
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 /**
  * Orientation type
  */
-export type Orientation = 'portrait' | 'landscape';
+export type Orientation = "portrait" | "landscape";
 
 /**
  * Theme type
  */
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = "light" | "dark" | "system";
 
 /**
  * Loading state type
  */
-export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+export type LoadingState = "idle" | "loading" | "success" | "error";
 
 /**
  * Async operation state
@@ -241,7 +234,7 @@ export interface PaginationState {
 /**
  * Sort direction
  */
-export type SortDirection = 'asc' | 'desc';
+export type SortDirection = "asc" | "desc";
 
 /**
  * Sort configuration
@@ -265,7 +258,16 @@ export interface FilterConfig<T = string> {
   /** Field to filter */
   field: T;
   /** Filter operator */
-  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'startsWith' | 'endsWith';
+  operator:
+    | "eq"
+    | "ne"
+    | "gt"
+    | "gte"
+    | "lt"
+    | "lte"
+    | "contains"
+    | "startsWith"
+    | "endsWith";
   /** Filter value */
   value: FilterValue;
 }
