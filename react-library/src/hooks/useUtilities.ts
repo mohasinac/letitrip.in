@@ -2,18 +2,18 @@
  * Utility hooks for common patterns
  */
 
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * useToggle - Toggle boolean state
- * 
+ *
  * @param initialValue - Initial boolean value (default: false)
  * @returns [value, toggle, setTrue, setFalse]
- * 
+ *
  * @example
  * ```tsx
  * const [isOpen, toggle, open, close] = useToggle();
- * 
+ *
  * return (
  *   <>
  *     <button onClick={toggle}>Toggle</button>
@@ -46,15 +46,15 @@ export function useToggle(
 
 /**
  * usePrevious - Get previous value of a state or prop
- * 
+ *
  * @param value - Current value
  * @returns Previous value
- * 
+ *
  * @example
  * ```tsx
  * const [count, setCount] = useState(0);
  * const prevCount = usePrevious(count);
- * 
+ *
  * return (
  *   <div>
  *     Current: {count}, Previous: {prevCount}
@@ -74,14 +74,14 @@ export function usePrevious<T>(value: T): T | undefined {
 
 /**
  * useClipboard - Copy text to clipboard with feedback
- * 
+ *
  * @param timeout - Reset timeout in milliseconds (default: 2000)
  * @returns { copied, copyToClipboard, error }
- * 
+ *
  * @example
  * ```tsx
  * const { copied, copyToClipboard, error } = useClipboard();
- * 
+ *
  * return (
  *   <button onClick={() => copyToClipboard('Hello World')}>
  *     {copied ? 'Copied!' : 'Copy'}
@@ -140,15 +140,15 @@ export function useClipboard(timeout: number = 2000) {
 
 /**
  * useCounter - Counter with increment, decrement, and reset
- * 
+ *
  * @param initialValue - Initial count (default: 0)
  * @param options - Min, max, and step options
  * @returns { count, increment, decrement, reset, set }
- * 
+ *
  * @example
  * ```tsx
  * const { count, increment, decrement, reset } = useCounter(0, { min: 0, max: 10 });
- * 
+ *
  * return (
  *   <div>
  *     Count: {count}
@@ -203,18 +203,18 @@ export function useCounter(
 
 /**
  * useInterval - Declarative interval hook
- * 
+ *
  * @param callback - Function to call on interval
  * @param delay - Delay in milliseconds (null to pause)
- * 
+ *
  * @example
  * ```tsx
  * const [count, setCount] = useState(0);
- * 
+ *
  * useInterval(() => {
  *   setCount(count + 1);
  * }, 1000);
- * 
+ *
  * return <div>Count: {count}</div>;
  * ```
  */
@@ -239,18 +239,18 @@ export function useInterval(callback: () => void, delay: number | null) {
 
 /**
  * useTimeout - Declarative timeout hook
- * 
+ *
  * @param callback - Function to call after timeout
  * @param delay - Delay in milliseconds (null to cancel)
- * 
+ *
  * @example
  * ```tsx
  * const [show, setShow] = useState(true);
- * 
+ *
  * useTimeout(() => {
  *   setShow(false);
  * }, 3000);
- * 
+ *
  * return show ? <div>This will disappear</div> : null;
  * ```
  */

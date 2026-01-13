@@ -13,23 +13,22 @@ export type { UseLocalStorageOptions } from "./useLocalStorage";
 
 // Media query and responsive hooks
 export {
-  useMediaQuery,
+  BREAKPOINTS,
+  useBreakpoint,
+  useIsDesktop,
   useIsMobile,
   useIsTablet,
-  useIsDesktop,
   useIsTouchDevice,
+  useMediaQuery,
   useViewport,
-  useBreakpoint,
-  BREAKPOINTS,
 } from "./useMediaQuery";
 
 // Utility hooks
 export {
-  useToggle,
-  usePrevious,
   useClipboard,
   useCounter,
   useInterval,
+  usePrevious,
   useTimeout,
+  useToggle,
 } from "./useUtilities";
-

@@ -1,11 +1,11 @@
 /**
  * Media query and responsive hooks
- * 
+ *
  * @example
  * ```tsx
  * const isMobile = useMediaQuery('(max-width: 768px)');
  * const isDesktop = useMediaQuery('(min-width: 1024px)');
- * 
+ *
  * return (
  *   <div>
  *     {isMobile && <MobileMenu />}
@@ -17,11 +17,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Hook to match media query
- * 
+ *
  * @param query - CSS media query string
  * @returns boolean indicating if media query matches
  */
@@ -35,7 +35,7 @@ export function useMediaQuery(query: string): boolean {
     }
 
     const mediaQuery = window.matchMedia(query);
-    
+
     // Set initial value
     setMatches(mediaQuery.matches);
 
@@ -68,7 +68,7 @@ export function useMediaQuery(query: string): boolean {
 
 /**
  * Hook to detect if user is on mobile device
- * 
+ *
  * @param breakpoint - Breakpoint in pixels (default: 768)
  * @returns boolean indicating if screen is mobile size
  */
@@ -78,7 +78,7 @@ export function useIsMobile(breakpoint: number = 768): boolean {
 
 /**
  * Hook to detect if user is on tablet device
- * 
+ *
  * @param minBreakpoint - Minimum breakpoint (default: 768)
  * @param maxBreakpoint - Maximum breakpoint (default: 1024)
  * @returns boolean indicating if screen is tablet size
@@ -94,7 +94,7 @@ export function useIsTablet(
 
 /**
  * Hook to detect if user is on desktop device
- * 
+ *
  * @param breakpoint - Breakpoint in pixels (default: 1024)
  * @returns boolean indicating if screen is desktop size
  */
@@ -104,7 +104,7 @@ export function useIsDesktop(breakpoint: number = 1024): boolean {
 
 /**
  * Hook to detect touch device
- * 
+ *
  * @returns boolean indicating if device supports touch
  */
 export function useIsTouchDevice(): boolean {
@@ -114,11 +114,11 @@ export function useIsTouchDevice(): boolean {
     if (typeof window === "undefined") {
       return;
     }
-    
+
     setIsTouch(
       "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0 ||
-      (navigator as any).msMaxTouchPoints > 0
+        navigator.maxTouchPoints > 0 ||
+        (navigator as any).msMaxTouchPoints > 0
     );
   }, []);
 
@@ -127,11 +127,11 @@ export function useIsTouchDevice(): boolean {
 
 /**
  * Get viewport dimensions
- * 
+ *
  * @example
  * ```tsx
  * const { width, height } = useViewport();
- * 
+ *
  * return <div>Screen size: {width}x{height}</div>;
  * ```
  */
@@ -180,7 +180,7 @@ export const BREAKPOINTS = {
 
 /**
  * Hook to get current breakpoint
- * 
+ *
  * @returns Current breakpoint name
  */
 export function useBreakpoint(): keyof typeof BREAKPOINTS | "base" {

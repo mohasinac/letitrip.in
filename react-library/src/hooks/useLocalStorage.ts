@@ -3,11 +3,11 @@
  *
  * Hook for managing state synchronized with localStorage
  * Provides automatic serialization/deserialization and SSR safety
- * 
+ *
  * @example
  * ```tsx
  * const [theme, setTheme, removeTheme] = useLocalStorage('theme', 'light');
- * 
+ *
  * return (
  *   <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
  *     Toggle Theme
