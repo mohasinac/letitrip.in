@@ -225,6 +225,17 @@ The library is integrated into the main monorepo as a workspace:
 - ✅ Bundle sizes verified: ~195KB raw, ~44KB gzipped
 - ✅ Week 15 complete: 4/6 tasks (67% - skipped 2 picker tasks)
 
+**Task 16.1: Migrate Theme System** ✅
+
+- ✅ 7 CSS token files migrated (~29KB, ~7KB gzipped)
+- ✅ Colors, typography, spacing, shadows, borders, animations
+- ✅ Tailwind configuration with CSS variables
+- ✅ Dark mode support (class + data-attribute)
+- ✅ Vite plugin to copy tokens to dist
+- ✅ Package exports for token files
+- ✅ Comprehensive theme README
+- ✅ Build: 7.29s
+
 ## Week 15 Complete! 🎉
 
 All component migration tasks completed:
@@ -241,9 +252,9 @@ All component migration tasks completed:
 
 **Week 16 - Styles & Finalization**
 
-- ⏳ Task 16.1: Migrate Theme System
-- ⏳ Task 16.2: Create Additional Stories
-- ⏳ Task 16.3: Documentation Update
+- ✅ Task 16.1: Migrate Theme System
+- ⏳ Task 16.2: Create Library Documentation
+- ⏳ Task 16.3: TypeScript Types Export
 - ⏳ Task 16.4: Build Optimization
 - ⏳ Task 16.5: Integration Testing
 - ⏳ Task 16.6: Phase 4 Completion
@@ -472,12 +483,14 @@ const { copied, copyToClipboard } = useClipboard();
 - Hooks entry: 0.58KB (0.33KB gzipped)
 - Utilities chunk: 7.20KB (2.18KB gzipped)
 - Utils entry: 4.74KB (1.68KB gzipped)
-- Main entry: 4.13KB (1.64KB gzipped)
+- Main entry: 4.24KB (1.69KB gzipped)
+- CSS tokens: ~29KB (~7KB gzipped)
 
 ### Export Structure
 
 - ✅ All entry points verified (index, utils, components, hooks, styles)
 - ✅ TypeScript definitions: utils (7), components (3), hooks (4)
+- ✅ CSS token files: 7 design token files
 - ✅ ESM + CommonJS formats for all modules
 - ✅ Tree-shaking optimized with multiple entry points
 
