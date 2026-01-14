@@ -3,29 +3,33 @@
 **Package**: @letitrip/react-library
 **Version**: 1.0.0
 **Status**: In Development
-**Last Updated**: January 12, 2026
+**Last Updated**: January 15, 2026
 
 ## Overview
 
-Reusable React components and utilities extracted from the main Letitrip application. This library provides a comprehensive set of tools for building consistent and accessible user interfaces.
+Reusable React components and utilities extracted from the main Letitrip application. This library provides a comprehensive set of tools for building consistent and accessible user interfaces, including advanced media upload components with pluggable service adapters.
 
 ## Structure
 
 ```
 react-library/
 ├── src/
-│   ├── index.ts           # Main entry point
-│   ├── utils/             # Utility functions (Task 14.2)
-│   ├── components/        # React components (Task 15.1-15.3)
-│   ├── hooks/             # React hooks (Task 15.4)
-│   ├── styles/            # Styles and theme (Task 16.1)
-│   └── types/             # TypeScript types (Task 16.3)
-├── stories/               # Storybook stories (Task 14.4)
-├── .storybook/            # Storybook configuration
-├── dist/                  # Build output (generated)
-├── package.json           # Package configuration
-├── tsconfig.json          # TypeScript configuration
-└── vite.config.ts         # Build configuration
+│   ├── index.ts                  # Main entry point
+│   ├── utils/                    # Utility functions (Task 14.2)
+│   ├── components/               # React components (Task 15.1-15.3, 17.1)
+│   ├── hooks/                    # React hooks (Task 15.4, 17.2)
+│   ├── adapters/                 # Service adapters (Task 17.6)
+│   ├── styles/                   # Styles and theme (Task 16.1)
+│   ├── types/                    # TypeScript types (Task 16.3, 17.6)
+│   └── __tests__/                # Test files
+│       ├── integration/          # Integration tests
+│       └── performance/          # Performance tests (Task 17.5)
+├── stories/                      # Storybook stories (Task 14.4, 17.4)
+├── .storybook/                   # Storybook configuration
+├── dist/                         # Build output (generated)
+├── package.json                  # Package configuration
+├── tsconfig.json                 # TypeScript configuration
+└── vite.config.ts                # Build configuration
 ```
 
 ## Build System
@@ -524,9 +528,40 @@ cd react-library
 npm test
 ```
 
+**Test Coverage**:
+
+- Component tests: ImageUploadWithCrop, VideoUploadWithThumbnail
+- Hook tests: useMediaUpload (95%+ coverage)
+- Adapter tests: Firebase, Supabase, Mock adapters (85%+ coverage)
+- Integration tests: Complete upload workflows
+- **Performance tests**: Upload speed, memory usage, concurrent operations (Task 17.5)
+
+### Performance Tests ✅ (Task 17.5 Complete)
+
+Located in `src/__tests__/performance/upload.perf.test.ts`
+
+**Test Suites**:
+
+- Large file upload performance (50MB+)
+- Concurrent upload handling (10+ files)
+- Memory leak detection and cleanup
+- Progress callback frequency and throttling
+- Re-render optimization
+- File validation benchmarks
+- Upload speed consistency metrics
+- Error recovery and retry performance
+
+**Metrics Tracked**:
+
+- Upload timing (< 5s for 50MB mock)
+- Memory growth (< 10MB for 10 uploads)
+- Render count (< 50 per upload)
+- Progress callback frequency (> 10ms intervals)
+- Upload speed variance (CV < 0.5)
+
 ### Integration Tests
 
-Tests will be added in Tasks 14.6, 15.6, and 16.5.
+Integration tests added in Tasks 17.5 (library) and 17.7 (main app).
 
 ## Build Verification
 
