@@ -1,20 +1,24 @@
 # Media Upload Enhancements - Complete ✅
 
 ## Completion Date
+
 January 15, 2026
 
 ## Implementation Summary
 
-All requested media upload enhancements have been successfully implemented with production-ready components and infrastructure.
+All requested media upload enhancements have been successfully implemented with production-ready components and infrastructure. Components have been moved to `@letitrip/react-library` for reuse across projects.
 
 ---
 
 ## ✅ Completed Features
 
 ### 1. Advanced Image Upload Component
-**File**: `src/components/upload/ImageUploadWithCrop.tsx`
+
+**File**: `react-library/src/components/ImageUploadWithCrop.tsx`  
+**Import**: `import { ImageUploadWithCrop, type CropData } from "@letitrip/react-library"`
 
 **Features**:
+
 - ✅ Image preview with live manipulation
 - ✅ Zoom controls (+/- buttons and slider, 0.5x to 3x)
 - ✅ Rotation (90° increments)
@@ -27,8 +31,9 @@ All requested media upload enhancements have been successfully implemented with 
 - ✅ Auto-delete metadata support
 
 **Usage**:
+
 ```typescript
-import { ImageUploadWithCrop, CropData } from "@/components/upload/ImageUploadWithCrop";
+import { ImageUploadWithCrop, type CropData } from "@letitrip/react-library";
 
 <ImageUploadWithCrop
   onUpload={async (file: File, cropData?: CropData) => {
@@ -37,25 +42,28 @@ import { ImageUploadWithCrop, CropData } from "@/components/upload/ImageUploadWi
   }}
   maxSize={5 * 1024 * 1024} // 5MB
   autoDelete={true} // Enable auto-delete after 24 hours
-/>
+/>;
 ```
 
 **Crop Data Structure**:
+
 ```typescript
 interface CropData {
-  x: number;         // Horizontal offset
-  y: number;         // Vertical offset
-  width: number;     // Original image width
-  height: number;    // Original image height
-  zoom: number;      // Zoom level (0.5 - 3.0)
-  rotation: number;  // Rotation angle (0, 90, 180, 270)
+  x: number; // Horizontal offset
+  y: number; // Vertical offset
+  width: number; // Original image width
+  height: number; // Original image height
+  zoom: number; // Zoom level (0.5 - 3.0)
+  rotation: number; // Rotation angle (0, 90, 180, 270)
 }
 ```
 
 ### 2. Video Upload with Thumbnail Generation
+
 **File**: `src/components/upload/VideoUploadWithThumbnail.tsx`
 
 **Features**:
+
 - ✅ Video file upload with preview
 - ✅ Automatic thumbnail generation from first frame
 - ✅ Manual thumbnail frame selection (slider)
@@ -66,9 +74,13 @@ interface CropData {
 - ✅ Error handling
 - ✅ Auto-delete metadata support
 
+**File**: `react-library/src/components/VideoUploadWithThumbnail.tsx`  
+**Import**: `import { VideoUploadWithThumbnail } from "@letitrip/react-library"`
+
 **Usage**:
+
 ```typescript
-import { VideoUploadWithThumbnail } from "@/components/upload/VideoUploadWithThumbnail";
+import { VideoUploadWithThumbnail } from "@letitrip/react-library";
 
 <VideoUploadWithThumbnail
   onUpload={async (file: File, thumbnail?: File) => {
@@ -78,32 +90,36 @@ import { VideoUploadWithThumbnail } from "@/components/upload/VideoUploadWithThu
       const thumbUrl = await uploadThumbnail(thumbnail);
     }
   }}
-  maxSize={50 * 1024 * 1024}  // 50MB
-  maxDuration={300}            // 5 minutes
-  autoDelete={false}           // Keep permanently
-/>
+  maxSize={50 * 1024 * 1024} // 50MB
+  maxDuration={300} // 5 minutes
+  autoDelete={false} // Keep permanently
+/>;
 ```
 
 **Technical Implementation**:
+
 - Uses HTML5 Canvas API for frame extraction
 - Generates JPEG thumbnail at 80% quality
 - Allows seeking to any video timestamp
 - Mobile and desktop compatible
 
 ### 3. Enhanced Upload Hook
+
 **File**: `src/hooks/useMediaUpload.ts`
 
 **New Options**:
+
 ```typescript
 interface MediaUploadOptions {
   // ... existing options
-  autoDelete?: boolean;  // Auto-delete after 24 hours
-  context?: string;      // Upload context (e.g., "product", "profile")
-  contextId?: string;    // Related entity ID
+  autoDelete?: boolean; // Auto-delete after 24 hours
+  context?: string; // Upload context (e.g., "product", "profile")
+  contextId?: string; // Related entity ID
 }
 ```
 
 **Usage**:
+
 ```typescript
 const { upload } = useMediaUpload({
   autoDelete: true,
@@ -116,42 +132,47 @@ await upload(file);
 ```
 
 ### 4. Media Upload API Enhancement
+
 **File**: `src/app/api/media/upload/route.ts`
 
 **Changes**:
+
 - ✅ Accepts `autoDelete` metadata in FormData
 - ✅ Stores upload record in Firestore `temporaryUploads` collection
 - ✅ Tracks context and contextId for categorization
 - ✅ Compatible with existing upload flow
 
 **Firestore Document Structure**:
+
 ```typescript
 {
-  filePath: string;      // Storage path
-  url: string;           // Public URL
-  autoDelete: boolean;   // Auto-delete flag
+  filePath: string; // Storage path
+  url: string; // Public URL
+  autoDelete: boolean; // Auto-delete flag
   uploadedAt: Timestamp; // Upload timestamp
-  context: string;       // Upload context
-  contextId: string;     // Related entity ID
+  context: string; // Upload context
+  contextId: string; // Related entity ID
 }
 ```
 
 ### 5. Firebase Firestore Rules
+
 **File**: `firestore.rules`
 
 **Added Rules**:
+
 ```javascript
 match /temporaryUploads/{uploadId} {
   // Users can read their own temporary uploads
   allow read: if isAuthenticated() && resource.data.userId == userId();
-  
+
   // Users can create temporary uploads with their own userId
   allow create: if isAuthenticated()
     && request.resource.data.userId == userId()
     && request.resource.data.keys().hasAll(['filePath', 'url', 'autoDelete', 'uploadedAt'])
     && request.resource.data.autoDelete is bool
     && request.resource.data.uploadedAt is timestamp;
-  
+
   // Only Cloud Functions can delete (for cleanup cron)
   allow update, delete: if false;
 }
@@ -160,9 +181,11 @@ match /temporaryUploads/{uploadId} {
 **Status**: ✅ Deployed to production
 
 ### 6. Temporary File Cleanup Function
+
 **File**: `functions/src/triggers/temporaryFileCleanup.ts`
 
 **Configuration**:
+
 - Schedule: Daily at 2 AM IST (`0 2 * * *`)
 - Query: Files with `autoDelete: true` older than 24 hours
 - Actions:
@@ -173,6 +196,7 @@ match /temporaryUploads/{uploadId} {
 **Status**: ⏳ Created but not deployed (due to linting errors in other functions)
 
 **Manual Deployment Command**:
+
 ```bash
 cd functions
 npm run lint:fix  # Fix linting errors first
@@ -184,19 +208,20 @@ firebase deploy --only functions:cleanupTemporaryFiles
 
 ## 📊 Implementation Statistics
 
-| Category | Count |
-|----------|-------|
-| New Components | 2 |
-| Modified Files | 3 |
-| Lines of Code Added | ~697 |
-| Firebase Rules Updated | 1 |
-| New Functions Created | 1 |
+| Category               | Count |
+| ---------------------- | ----- |
+| New Components         | 2     |
+| Modified Files         | 3     |
+| Lines of Code Added    | ~697  |
+| Firebase Rules Updated | 1     |
+| New Functions Created  | 1     |
 
 ---
 
 ## 🎨 Component Features Summary
 
 ### ImageUploadWithCrop
+
 - **Controls**: Zoom slider, +/- buttons, rotate, reset position
 - **Interaction**: Mouse drag (desktop), touch drag (mobile)
 - **Validation**: File type, file size
@@ -204,6 +229,7 @@ firebase deploy --only functions:cleanupTemporaryFiles
 - **Accessibility**: Mobile-responsive, touch-friendly
 
 ### VideoUploadWithThumbnail
+
 - **Controls**: Timeline slider for thumbnail selection
 - **Features**: Auto thumbnail generation, manual frame selection
 - **Validation**: File type, file size, duration
@@ -215,9 +241,10 @@ firebase deploy --only functions:cleanupTemporaryFiles
 ## 🔄 Integration Guide
 
 ### For Product Upload Forms
+
 ```typescript
-import { ImageUploadWithCrop } from "@/components/upload/ImageUploadWithCrop";
-import { useMediaUpload } from "@/hooks/useMediaUpload";
+import { ImageUploadWithCrop } from "@letitrip/react-library";
+import { useMediaUpload } from "@letitrip/react-library";
 
 function ProductImageUpload() {
   const { upload } = useMediaUpload({
@@ -239,6 +266,7 @@ function ProductImageUpload() {
 ```
 
 ### For Temporary Uploads
+
 ```typescript
 // For draft/preview uploads that should auto-delete
 const { upload } = useMediaUpload({
@@ -248,18 +276,19 @@ const { upload } = useMediaUpload({
 ```
 
 ### For Video Content
+
 ```typescript
-import { VideoUploadWithThumbnail } from "@/components/upload/VideoUploadWithThumbnail";
+import { VideoUploadWithThumbnail } from "@letitrip/react-library";
 
 function VideoUpload() {
   return (
     <VideoUploadWithThumbnail
       onUpload={async (videoFile, thumbnailFile) => {
         const videoUrl = await uploadVideo(videoFile);
-        const thumbUrl = thumbnailFile 
+        const thumbUrl = thumbnailFile
           ? await uploadThumbnail(thumbnailFile)
           : null;
-        
+
         // Save both URLs
       }}
       maxSize={50 * 1024 * 1024}
@@ -274,9 +303,11 @@ function VideoUpload() {
 ## 📋 Remaining Tasks
 
 ### Firebase Functions Deployment
+
 **Issue**: Linting errors in existing Firebase Functions preventing deployment
 
 **Solution Options**:
+
 1. **Run auto-fix**: `cd functions && npm run lint:fix`
 2. **Manual deployment** (bypass predeploy):
    ```bash
@@ -292,6 +323,7 @@ function VideoUpload() {
 ## ✅ Testing Checklist
 
 ### Image Upload Component
+
 - [ ] Upload image file
 - [ ] Zoom in/out with buttons
 - [ ] Zoom with slider
@@ -306,6 +338,7 @@ function VideoUpload() {
 - [ ] Test desktop mouse controls
 
 ### Video Upload Component
+
 - [ ] Upload video file
 - [ ] Auto-generate thumbnail
 - [ ] Change thumbnail frame
@@ -317,6 +350,7 @@ function VideoUpload() {
 - [ ] Test video preview
 
 ### Auto-Delete Functionality
+
 - [ ] Upload file with `autoDelete: true`
 - [ ] Verify Firestore record created
 - [ ] Wait 24 hours (or modify `uploadedAt`)
@@ -328,14 +362,14 @@ function VideoUpload() {
 
 ## 🚀 Deployment Status
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| ImageUploadWithCrop | ✅ Ready | Committed to main |
-| VideoUploadWithThumbnail | ✅ Ready | Committed to main |
-| useMediaUpload hook | ✅ Updated | With autoDelete metadata |
-| Media upload API | ✅ Updated | Stores temporary uploads |
-| Firestore rules | ✅ Deployed | temporaryUploads collection |
-| Cleanup function | ⏳ Pending | Needs lint fix + deployment |
+| Component                | Status      | Notes                       |
+| ------------------------ | ----------- | --------------------------- |
+| ImageUploadWithCrop      | ✅ Ready    | Committed to main           |
+| VideoUploadWithThumbnail | ✅ Ready    | Committed to main           |
+| useMediaUpload hook      | ✅ Updated  | With autoDelete metadata    |
+| Media upload API         | ✅ Updated  | Stores temporary uploads    |
+| Firestore rules          | ✅ Deployed | temporaryUploads collection |
+| Cleanup function         | ⏳ Pending  | Needs lint fix + deployment |
 
 ---
 

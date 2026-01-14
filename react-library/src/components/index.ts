@@ -12,3 +12,7 @@ export * from "./forms";
 
 // UI Components (Task 15.2)
 export * from "./ui";
+
+// Upload Components (Task 17.1)
+export { ImageUploadWithCrop, type CropData } from "./ImageUploadWithCrop";
+export { VideoUploadWithThumbnail } from "./VideoUploadWithThumbnail";

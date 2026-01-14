@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
+import {
+  getFirestoreAdmin,
+  getStorageAdmin,
+} from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { STORAGE_PATHS } from "@/constants/storage";
-import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -22,7 +24,7 @@ export async function POST(request: NextRequest) {
       console.error("[Media Upload] No file provided");
       return NextResponse.json(
         { success: false, error: "No file provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
       "[Media Upload] File received:",
       file.name,
       file.type,
-      file.size,
+      file.size
     );
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -39,7 +41,10 @@ export async function POST(request: NextRequest) {
 
     // Build storage path
     let path = "";
-    const safeName = `${Date.now()}-${originalName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const safeName = `${Date.now()}-${originalName.replace(
+      /[^a-zA-Z0-9._-]/g,
+      "_"
+    )}`;
 
     if (context === "product" && contextId) {
       // Lookup product to get shop_id
@@ -47,7 +52,7 @@ export async function POST(request: NextRequest) {
       if (!prodSnap.exists) {
         return NextResponse.json(
           { success: false, error: "Product not found" },
-          { status: 404 },
+          { status: 404 }
         );
       }
       const prod: any = prodSnap.data();
@@ -72,7 +77,7 @@ export async function POST(request: NextRequest) {
       console.error("[Media Upload] Storage bucket not configured");
       return NextResponse.json(
         { success: false, error: "Storage bucket not configured" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -97,7 +102,9 @@ export async function POST(request: NextRequest) {
       console.warn("[Media Upload] Could not make file public:", err);
     }
 
-    const url = `https://storage.googleapis.com/${bucket.name}/${encodeURI(path)}`;
+    const url = `https://storage.googleapis.com/${bucket.name}/${encodeURI(
+      path
+    )}`;
 
     console.log("[Media Upload] Upload successful:", url);
 
@@ -115,7 +122,10 @@ export async function POST(request: NextRequest) {
         });
         console.log("[Media Upload] Auto-delete metadata stored");
       } catch (err) {
-        console.error("[Media Upload] Failed to store auto-delete metadata:", err);
+        console.error(
+          "[Media Upload] Failed to store auto-delete metadata:",
+          err
+        );
         // Don't fail the upload if metadata storage fails
       }
     }
@@ -127,7 +137,7 @@ export async function POST(request: NextRequest) {
       error instanceof Error ? error.message : "Upload failed";
     return NextResponse.json(
       { success: false, error: errorMessage },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

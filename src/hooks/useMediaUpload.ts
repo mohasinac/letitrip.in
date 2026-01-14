@@ -152,7 +152,7 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
         // Create form data
         const formData = new FormData();
         formData.append("file", file);
-        
+
         // Add metadata for auto-delete and context
         if (autoDelete) {
           formData.append("autoDelete", "true");

@@ -9,17 +9,19 @@
 
 ## 📦 What's Included
 
-### ✅ Components (31)
+### ✅ Components (33)
 
 - **20 Value Display Components**: DateDisplay, Price, Rating, Status badges, and more
 - **9 Form Components**: FormInput, FormSelect, FormDatePicker, FormPhoneInput, etc.
 - **2 UI Components**: Button (5 variants), Card/CardSection
+- **2 Upload Components**: ImageUploadWithCrop, VideoUploadWithThumbnail
 
-### ✅ Hooks (18)
+### ✅ Hooks (19)
 
 - **Debounce & Throttle** (3): useDebounce, useDebouncedCallback, useThrottle
 - **Storage** (1): useLocalStorage with cross-tab sync
 - **Responsive** (7): useMediaQuery, useIsMobile, useViewport, useBreakpoint, and more
+- **Upload** (1): useMediaUpload with progress tracking and validation
 - **Utilities** (6): useToggle, usePrevious, useClipboard, useCounter, useInterval, useTimeout
 
 ### ✅ Utilities (60+)
@@ -106,6 +108,69 @@ function ResponsiveNav() {
       {isMobile ? <MobileMenu /> : <DesktopMenu />}
       <p>Current breakpoint: {breakpoint}</p>
     </nav>
+  );
+}
+```
+
+### Example: Image Upload with Crop
+
+```tsx
+import {
+  ImageUploadWithCrop,
+  type CropData,
+} from "@letitrip/react-library/components";
+import { useMediaUpload } from "@letitrip/react-library/hooks";
+
+function ProductImageUpload() {
+  const { upload, isUploading, progress } = useMediaUpload({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ["image/jpeg", "image/png"],
+    context: "product",
+  });
+
+  return (
+    <ImageUploadWithCrop
+      onUpload={async (file, cropData) => {
+        const url = await upload(file);
+        // Save url and cropData to your backend
+        console.log("Uploaded:", url, cropData);
+      }}
+      maxSize={5 * 1024 * 1024}
+      aspectRatio={4 / 3}
+    />
+  );
+}
+```
+
+### Example: Video Upload with Thumbnail
+
+```tsx
+import { VideoUploadWithThumbnail } from "@letitrip/react-library/components";
+import { useMediaUpload } from "@letitrip/react-library/hooks";
+
+function ProductVideoUpload() {
+  const videoUpload = useMediaUpload({
+    maxSize: 50 * 1024 * 1024, // 50MB
+    context: "product-video",
+  });
+
+  const thumbnailUpload = useMediaUpload({
+    maxSize: 2 * 1024 * 1024, // 2MB
+    context: "product-thumbnail",
+  });
+
+  return (
+    <VideoUploadWithThumbnail
+      onUpload={async (videoFile, thumbnailFile) => {
+        const videoUrl = await videoUpload.upload(videoFile);
+        const thumbUrl = thumbnailFile
+          ? await thumbnailUpload.upload(thumbnailFile)
+          : null;
+        console.log("Video:", videoUrl, "Thumbnail:", thumbUrl);
+      }}
+      maxSize={50 * 1024 * 1024}
+      maxDuration={300}
+    />
   );
 }
 ```
