@@ -11,10 +11,10 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
 import { MapPin } from "lucide-react";
-import { formatAddress } from "../../utils/formatters";
 import { cn } from "../../utils/cn";
+import { formatAddress } from "../../utils/formatters";
 
 interface AddressData {
   line1: string;
@@ -43,7 +43,7 @@ export function Address({
       <span
         className={cn(
           "text-gray-600 dark:text-gray-400 inline-flex items-start gap-2",
-          className,
+          className
         )}
       >
         {showIcon && <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />}
@@ -57,7 +57,7 @@ export function Address({
       <span
         className={cn(
           "text-gray-600 dark:text-gray-400 inline-flex items-start gap-2",
-          className,
+          className
         )}
       >
         {showIcon && <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />}

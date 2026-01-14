@@ -16,6 +16,7 @@ Since this is a workspace package, no installation is required. The library is a
 ## Build Performance
 
 The library is optimized for production with:
+
 - **Tree-shaking**: Import only what you use
 - **Code splitting**: Automatic chunking by feature
 - **Minification**: Terser with 2-pass compression

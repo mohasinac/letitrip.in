@@ -11,10 +11,10 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
 import { Star } from "lucide-react";
-import { formatCompactNumber } from "../../utils/formatters";
 import { cn } from "../../utils/cn";
+import { formatCompactNumber } from "../../utils/formatters";
 
 interface RatingProps {
   value: number;
@@ -58,7 +58,7 @@ export function Rating({
             size={starSize}
             className="text-yellow-500 fill-yellow-500"
           />
-        ),
+        )
       )}
 
       {/* Half star */}
@@ -85,7 +85,7 @@ export function Rating({
         <span
           className={cn(
             "ml-1 font-medium text-gray-900 dark:text-white",
-            textClass,
+            textClass
           )}
         >
           {value.toFixed(1)}

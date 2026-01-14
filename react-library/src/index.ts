@@ -13,5 +13,4 @@ export * from "./hooks";
 // Styles
 export * from "./styles";
 
-// Types
-export * from "./types";
+// Types - import from './types' subpath to avoid conflicts

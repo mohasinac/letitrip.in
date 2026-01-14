@@ -11,14 +11,14 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
 import {
-  Clock,
-  CheckCircle,
-  XCircle,
   AlertCircle,
+  CheckCircle,
+  Clock,
   Eye,
   Gavel,
+  XCircle,
 } from "lucide-react";
 import { cn } from "../../utils/cn";
 
@@ -119,7 +119,7 @@ export function AuctionStatus({
         config.bgClass,
         config.textClass,
         sizeClasses[size],
-        className,
+        className
       )}
     >
       {showIcon && (

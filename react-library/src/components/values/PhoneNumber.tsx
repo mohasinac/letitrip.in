@@ -10,10 +10,10 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
 import { Phone } from "lucide-react";
-import { formatPhoneNumber } from "../../utils/formatters";
 import { cn } from "../../utils/cn";
+import { formatPhoneNumber } from "../../utils/formatters";
 
 interface PhoneNumberProps {
   value: string;
@@ -49,7 +49,7 @@ export function PhoneNumber({
         href={`tel:${telNumber}`}
         className={cn(
           "text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center",
-          className,
+          className
         )}
       >
         {content}
@@ -61,7 +61,7 @@ export function PhoneNumber({
     <span
       className={cn(
         "text-gray-900 dark:text-white inline-flex items-center",
-        className,
+        className
       )}
     >
       {content}
