@@ -14,6 +14,9 @@ export interface MediaUploadOptions {
   onProgress?: (progress: number) => void;
   onSuccess?: (url: string) => void;
   onError?: (error: string) => void;
+  autoDelete?: boolean; // Auto-delete after 24 hours
+  context?: string; // Upload context (e.g., "product", "profile")
+  contextId?: string; // Related entity ID
 }
 
 // Simple validation function
@@ -90,6 +93,9 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
     onProgress,
     onSuccess,
     onError,
+    autoDelete = false,
+    context,
+    contextId,
   } = options;
 
   const { addUpload, updateUpload, removeUpload, retryUpload } =
@@ -146,6 +152,17 @@ export function useMediaUpload(options: MediaUploadOptions = {}) {
         // Create form data
         const formData = new FormData();
         formData.append("file", file);
+        
+        // Add metadata for auto-delete and context
+        if (autoDelete) {
+          formData.append("autoDelete", "true");
+        }
+        if (context) {
+          formData.append("context", context);
+        }
+        if (contextId) {
+          formData.append("contextId", contextId);
+        }
 
         // Upload with XMLHttpRequest for progress tracking
         const xhr = new XMLHttpRequest();
