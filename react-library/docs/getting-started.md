@@ -447,13 +447,49 @@ function Dashboard() {
 - **[Hook Documentation](hooks.md)** - Learn about all hooks
 - **[Utility Documentation](utilities.md)** - Reference for utility functions
 - **[Theme System](../src/styles/README.md)** - Customize the design system
+- **[Build Configuration](build-configuration.md)** - Build optimization details
+- **[Testing Guide](testing.md)** - Testing infrastructure and best practices
 - **[Migration Guide](migration-guide.md)** - Migrate existing code
+
+## Development
+
+### Running Tests
+
+```bash
+# Run tests once
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Type checking
+npm run type-check
+```
+
+### Building the Library
+
+```bash
+# Development build with watch
+npm run dev
+
+# Production build
+npm run build
+
+# Build with bundle analysis
+npm run build:analyze
+```
+
+See the [Testing Guide](testing.md) for comprehensive testing documentation.
 
 ## Need Help?
 
 - Check the [Storybook documentation](http://localhost:6006)
 - Review inline JSDoc comments in your IDE
 - See example usage in component stories
+- Read the [Testing Guide](testing.md) for testing examples
 - Consult the migration guide for converting old imports
 
 ---

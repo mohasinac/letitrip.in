@@ -188,7 +188,7 @@ export function useCounter(
 
   const set = useCallback(
     (value: number) => {
-      setCount((c) => {
+      setCount(() => {
         let newValue = value;
         if (min !== undefined && newValue < min) newValue = min;
         if (max !== undefined && newValue > max) newValue = max;

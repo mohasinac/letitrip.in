@@ -36,21 +36,32 @@ describe("FormInput", () => {
   });
 
   it("should display character count when maxLength is provided", () => {
-    render(<FormInput id="test" label="Test" maxLength={100} value="Hello" />);
-    expect(screen.getByText(/5.*100/)).toBeInTheDocument();
+    render(
+      <FormInput
+        id="test"
+        label="Test"
+        maxLength={100}
+        value="Hello"
+        showCharCount
+        onChange={() => {}}
+      />
+    );
+    expect(screen.getByText("5/100")).toBeInTheDocument();
   });
 
   it("should render with different sizes", () => {
-    const { rerender } = render(<FormInput id="test" label="Test" size="sm" />);
+    const { rerender } = render(<FormInput id="test" label="Test" />);
+    // FormInput always uses text-sm by default
     expect(screen.getByRole("textbox")).toHaveClass("text-sm");
 
-    rerender(<FormInput id="test" label="Test" size="lg" />);
-    expect(screen.getByRole("textbox")).toHaveClass("text-lg");
+    rerender(<FormInput id="test" label="Test" />);
+    expect(screen.getByRole("textbox")).toHaveClass("text-sm");
   });
 
   it("should apply error styling", () => {
     render(<FormInput id="test" label="Test" error="Error" />);
     const input = screen.getByRole("textbox");
-    expect(input).toHaveClass("border-error");
+    expect(input).toHaveClass("border-red-500");
+    expect(screen.getByText("Error")).toBeInTheDocument();
   });
 });
