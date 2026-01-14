@@ -3,21 +3,21 @@
  * Creates and configures all services with proper adapters
  */
 
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
 import { app } from "@/app/api/lib/firebase/app";
 import {
+  ApiUploadService,
+  FirebaseAuthAdapter,
   FirebaseFirestoreAdapter,
   FirebaseStorageAdapter,
-  FirebaseAuthAdapter,
   StorageUploadService,
-  ApiUploadService,
-  type UploadService,
+  type AuthAdapter,
   type DatabaseAdapter,
   type StorageAdapter,
-  type AuthAdapter,
+  type UploadService,
 } from "@letitrip/react-library";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Firebase instances
 const firestore = getFirestore(app);
@@ -25,13 +25,21 @@ const storage = getStorage(app);
 const auth = getAuth(app);
 
 // Adapters
-export const databaseAdapter: DatabaseAdapter = new FirebaseFirestoreAdapter(firestore);
-export const storageAdapter: StorageAdapter = new FirebaseStorageAdapter(storage);
+export const databaseAdapter: DatabaseAdapter = new FirebaseFirestoreAdapter(
+  firestore
+);
+export const storageAdapter: StorageAdapter = new FirebaseStorageAdapter(
+  storage
+);
 export const authAdapter: AuthAdapter = new FirebaseAuthAdapter(auth);
 
 // Upload Services
-export const apiUploadService: UploadService = new ApiUploadService("/api/media/upload");
-export const storageUploadService: UploadService = new StorageUploadService(storageAdapter);
+export const apiUploadService: UploadService = new ApiUploadService(
+  "/api/media/upload"
+);
+export const storageUploadService: UploadService = new StorageUploadService(
+  storageAdapter
+);
 
 // Default upload service (use API route)
 export const defaultUploadService = apiUploadService;

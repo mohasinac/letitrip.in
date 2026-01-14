@@ -4,6 +4,7 @@
  * Framework-agnostic base class for building service layers
  */
 
+import { logServiceError } from "./error-logger";
 import {
   AppError,
   ErrorCode,
@@ -11,7 +12,6 @@ import {
   NotFoundError,
   ValidationError,
 } from "./errors";
-import { logServiceError } from "./error-logger";
 
 /**
  * HTTP Client interface for pluggable implementations
@@ -421,7 +421,10 @@ export class FetchHttpClient implements HttpClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(baseUrl: string = "", defaultHeaders: Record<string, string> = {}) {
+  constructor(
+    baseUrl: string = "",
+    defaultHeaders: Record<string, string> = {}
+  ) {
     this.baseUrl = baseUrl;
     this.defaultHeaders = defaultHeaders;
   }
@@ -430,15 +433,27 @@ export class FetchHttpClient implements HttpClient {
     return this.request<T>("GET", url, undefined, options);
   }
 
-  async post<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+  async post<T = any>(
+    url: string,
+    data?: any,
+    options?: RequestOptions
+  ): Promise<T> {
     return this.request<T>("POST", url, data, options);
   }
 
-  async put<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+  async put<T = any>(
+    url: string,
+    data?: any,
+    options?: RequestOptions
+  ): Promise<T> {
     return this.request<T>("PUT", url, data, options);
   }
 
-  async patch<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+  async patch<T = any>(
+    url: string,
+    data?: any,
+    options?: RequestOptions
+  ): Promise<T> {
     return this.request<T>("PATCH", url, data, options);
   }
 

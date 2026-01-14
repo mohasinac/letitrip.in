@@ -170,7 +170,10 @@ export class RateLimitError extends AppError {
  * Internal server error (500)
  */
 export class InternalServerError extends AppError {
-  constructor(message: string = "Internal server error", context?: Record<string, any>) {
+  constructor(
+    message: string = "Internal server error",
+    context?: Record<string, any>
+  ) {
     super(message, ErrorCode.INTERNAL_ERROR, 500, context, false);
   }
 }

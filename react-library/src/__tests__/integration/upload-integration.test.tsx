@@ -3,13 +3,22 @@
  * Tests complete workflows across multiple components
  */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  InMemoryCacheAdapter,
+  MockUploadService,
+} from "../../adapters/examples";
 import { ImageUploadWithCrop } from "../../components/ImageUploadWithCrop";
 import { VideoUploadWithThumbnail } from "../../components/VideoUploadWithThumbnail";
 import { useMediaUpload } from "../../hooks/useMediaUpload";
-import { MockUploadService, InMemoryCacheAdapter } from "../../adapters/examples";
 
 describe("Integration Tests", () => {
   beforeEach(() => {
@@ -78,7 +87,9 @@ describe("Integration Tests", () => {
       });
 
       // 3. Upload
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       // 4. Wait for completion
@@ -154,9 +165,13 @@ describe("Integration Tests", () => {
       );
 
       // Select oversized file
-      const largeFile = new File([new ArrayBuffer(2 * 1024 * 1024)], "large.jpg", {
-        type: "image/jpeg",
-      });
+      const largeFile = new File(
+        [new ArrayBuffer(2 * 1024 * 1024)],
+        "large.jpg",
+        {
+          type: "image/jpeg",
+        }
+      );
 
       const input = screen.getByLabelText(/upload.*image/i) as HTMLInputElement;
       fireEvent.change(input, { target: { files: [largeFile] } });
@@ -208,7 +223,9 @@ describe("Integration Tests", () => {
       const cacheAdapter = new InMemoryCacheAdapter();
       const mockUploadService = new MockUploadService();
 
-      const { result } = renderHook(() => useMediaUpload({ uploadService: mockUploadService }));
+      const { result } = renderHook(() =>
+        useMediaUpload({ uploadService: mockUploadService })
+      );
 
       const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 
@@ -232,7 +249,9 @@ describe("Integration Tests", () => {
   describe("Concurrent Operations", () => {
     it("handles multiple sequential uploads", async () => {
       const mockUploadService = new MockUploadService(50);
-      const { result } = renderHook(() => useMediaUpload({ uploadService: mockUploadService }));
+      const { result } = renderHook(() =>
+        useMediaUpload({ uploadService: mockUploadService })
+      );
 
       const file1 = new File(["test1"], "file1.jpg", { type: "image/jpeg" });
       const file2 = new File(["test2"], "file2.jpg", { type: "image/jpeg" });
@@ -277,7 +296,9 @@ describe("Integration Tests", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
@@ -292,7 +313,9 @@ describe("Integration Tests", () => {
   describe("Performance", () => {
     it("completes upload within reasonable time", async () => {
       const mockUploadService = new MockUploadService(200); // 200ms delay
-      const { result } = renderHook(() => useMediaUpload({ uploadService: mockUploadService }));
+      const { result } = renderHook(() =>
+        useMediaUpload({ uploadService: mockUploadService })
+      );
 
       const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 
@@ -310,7 +333,9 @@ describe("Integration Tests", () => {
 
     it("handles rapid state updates", async () => {
       const mockUploadService = new MockUploadService(100);
-      const { result } = renderHook(() => useMediaUpload({ uploadService: mockUploadService }));
+      const { result } = renderHook(() =>
+        useMediaUpload({ uploadService: mockUploadService })
+      );
 
       const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 
@@ -354,7 +379,9 @@ describe("Integration Tests", () => {
 
     it("releases file references", async () => {
       const mockUploadService = new MockUploadService();
-      const { result } = renderHook(() => useMediaUpload({ uploadService: mockUploadService }));
+      const { result } = renderHook(() =>
+        useMediaUpload({ uploadService: mockUploadService })
+      );
 
       const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 

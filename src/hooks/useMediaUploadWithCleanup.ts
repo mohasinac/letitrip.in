@@ -9,9 +9,11 @@
  */
 
 import { useState, useCallback, useRef } from "react";
+import { useMediaUpload, type UploadService } from "@letitrip/react-library";
 import { mediaService } from "@/services/media.service";
 import { logError } from "@/lib/firebase-error-logger";
 import { useNavigationGuard } from "./useNavigationGuard";
+import { useUploadService } from "@/contexts/ServicesContext";
 
 export interface UploadedMedia {
   url: string;
@@ -21,6 +23,10 @@ export interface UploadedMedia {
 }
 
 export interface MediaUploadWithCleanupOptions {
+  /**
+   * Upload service to use (optional - defaults to API upload service from context)
+   */
+  uploadService?: UploadService;
   onUploadSuccess?: (url: string) => void;
   onUploadError?: (error: string) => void;
   onCleanupComplete?: () => void;
@@ -39,12 +45,17 @@ export function useMediaUploadWithCleanup(
   options: MediaUploadWithCleanupOptions = {},
 ) {
   const {
+    uploadService: customUploadService,
     onUploadSuccess,
     onUploadError,
     onCleanupComplete,
     enableNavigationGuard = true,
     navigationGuardMessage = "You have uploaded media that will be deleted if you leave. Are you sure you want to leave?",
   } = options;
+
+  // Get upload service from context if not provided
+  const defaultUploadService = useUploadService("default");
+  const uploadService = customUploadService || defaultUploadService;
 
   const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
   const [isUploading, setIsUploading] = useState(false);

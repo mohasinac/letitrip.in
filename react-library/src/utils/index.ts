@@ -27,6 +27,6 @@ export * from "./price.utils";
 export * from "./accessibility";
 
 // Error handling
+export * from "./base-service";
 export * from "./error-logger";
 export * from "./errors";
-export * from "./base-service";
