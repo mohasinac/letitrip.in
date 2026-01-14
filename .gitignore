@@ -36,7 +36,23 @@ yarn-error.log*
 .env.production
 .env.production.new
 .env
+.env.development
+.env.test
 !.env.example
+
+# API Keys and Secrets
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+secrets/
+.secrets/
+credentials.json
+config/secrets.json
+google-credentials.json
+serviceAccountKey.json
 
 # Firebase
 *firebase*adminsdk*.json
