@@ -5,10 +5,10 @@
 
 "use client";
 
-import React, { createContext, useContext, type ReactNode } from "react";
+import { logError as firebaseLogError } from "@/lib/firebase-error-logger";
 import { services, type Services } from "@/lib/services/factory";
 import { ErrorLogger, LoggerAdapter } from "@letitrip/react-library";
-import { logError as firebaseLogError } from "@/lib/firebase-error-logger";
+import { createContext, useContext, type ReactNode } from "react";
 
 /**
  * Firebase Logger Adapter for ErrorLogger
@@ -41,13 +41,20 @@ export interface ServicesProviderProps {
  * Services Provider Component
  * Wraps the app to provide services via context
  */
-export function ServicesProvider({ children, services: customServices }: ServicesProviderProps) {
+export function ServicesProvider({
+  children,
+  services: customServices,
+}: ServicesProviderProps) {
   const value = {
     ...services,
     ...customServices,
   } as Services;
 
-  return <ServicesContext.Provider value={value}>{children}</ServicesContext.Provider>;
+  return (
+    <ServicesContext.Provider value={value}>
+      {children}
+    </ServicesContext.Provider>
+  );
 }
 
 /**
@@ -67,7 +74,9 @@ export function useServices(): Services {
 /**
  * Hook to access upload service
  */
-export function useUploadService(type: "api" | "storage" | "default" = "default") {
+export function useUploadService(
+  type: "api" | "storage" | "default" = "default"
+) {
   const { upload } = useServices();
 
   return upload[type];

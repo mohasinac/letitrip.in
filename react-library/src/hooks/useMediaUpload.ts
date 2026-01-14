@@ -3,7 +3,7 @@
  *
  * Generic hook for media uploads with retry logic, progress tracking, and validation.
  * Designed for use with the ImageUploadWithCrop and VideoUploadWithThumbnail components.
- * 
+ *
  * Supports pluggable upload services (API-based, Storage-based, or custom implementations).
  */
 
@@ -130,12 +130,12 @@ function generateUploadId(): string {
  * };
  * ```
  */
-export function useMediaUpload(
-  options: MediaUploadOptions
-): MediaUploadReturn {
+export function useMediaUpload(options: MediaUploadOptions): MediaUploadReturn {
   // Validate required options
   if (!options.uploadService) {
-    throw new Error("uploadService is required. Provide an UploadService implementation (ApiUploadService, StorageUploadService, or custom)");
+    throw new Error(
+      "uploadService is required. Provide an UploadService implementation (ApiUploadService, StorageUploadService, or custom)"
+    );
   }
 
   // Validate optional options
@@ -232,10 +232,10 @@ export function useMediaUpload(
         let uploadPath: string | undefined;
         if (pathPattern) {
           uploadPath = pathPattern
-            .replace('{context}', context || 'default')
-            .replace('{contextId}', contextId || '')
-            .replace('{timestamp}', Date.now().toString())
-            .replace('{filename}', file.name);
+            .replace("{context}", context || "default")
+            .replace("{contextId}", contextId || "")
+            .replace("{timestamp}", Date.now().toString())
+            .replace("{filename}", file.name);
         }
 
         // Use the provided upload service

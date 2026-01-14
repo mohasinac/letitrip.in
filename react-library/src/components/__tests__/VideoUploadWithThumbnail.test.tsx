@@ -2,10 +2,10 @@
  * VideoUploadWithThumbnail Component Tests
  */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { VideoUploadWithThumbnail } from "../VideoUploadWithThumbnail";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockUploadService } from "../../adapters/examples";
+import { VideoUploadWithThumbnail } from "../VideoUploadWithThumbnail";
 
 describe("VideoUploadWithThumbnail", () => {
   const mockUploadService = new MockUploadService();
@@ -136,7 +136,9 @@ describe("VideoUploadWithThumbnail", () => {
       fireEvent.change(input, { target: { files: [file] } });
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /play/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /play/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -211,7 +213,9 @@ describe("VideoUploadWithThumbnail", () => {
       fireEvent.change(input, { target: { files: [file] } });
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /upload/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /upload/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -230,7 +234,9 @@ describe("VideoUploadWithThumbnail", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
@@ -251,7 +257,9 @@ describe("VideoUploadWithThumbnail", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
@@ -280,7 +288,9 @@ describe("VideoUploadWithThumbnail", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
@@ -343,11 +353,15 @@ describe("VideoUploadWithThumbnail", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /cancel/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -366,10 +380,14 @@ describe("VideoUploadWithThumbnail", () => {
 
       fireEvent.change(input, { target: { files: [file] } });
 
-      const uploadButton = await screen.findByRole("button", { name: /upload/i });
+      const uploadButton = await screen.findByRole("button", {
+        name: /upload/i,
+      });
       fireEvent.click(uploadButton);
 
-      const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+      const cancelButton = await screen.findByRole("button", {
+        name: /cancel/i,
+      });
       fireEvent.click(cancelButton);
 
       await waitFor(() => {

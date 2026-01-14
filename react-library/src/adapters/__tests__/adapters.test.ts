@@ -2,18 +2,18 @@
  * Adapter Tests - Firebase, Examples, and Types
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  FirebaseFirestoreAdapter,
-  FirebaseStorageAdapter,
-  FirebaseAuthAdapter,
-} from "../firebase";
-import {
-  LocalStorageCacheAdapter,
   InMemoryCacheAdapter,
+  LocalStorageCacheAdapter,
   MockUploadService,
   SupabaseStorageAdapter,
 } from "../examples";
+import {
+  FirebaseAuthAdapter,
+  FirebaseFirestoreAdapter,
+  FirebaseStorageAdapter,
+} from "../firebase";
 
 describe("Firebase Adapters", () => {
   describe("FirebaseFirestoreAdapter", () => {
@@ -260,8 +260,12 @@ describe("Supabase Adapter", () => {
     it("uses correct bucket name", async () => {
       const mockStorage = {
         from: vi.fn().mockReturnValue({
-          upload: vi.fn().mockResolvedValue({ data: { path: "test-path" }, error: null }),
-          getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: "public-url" } }),
+          upload: vi
+            .fn()
+            .mockResolvedValue({ data: { path: "test-path" }, error: null }),
+          getPublicUrl: vi
+            .fn()
+            .mockReturnValue({ data: { publicUrl: "public-url" } }),
         }),
       } as any;
 
@@ -275,7 +279,9 @@ describe("Supabase Adapter", () => {
 
     it("handles upload success", async () => {
       const mockBucket = {
-        upload: vi.fn().mockResolvedValue({ data: { path: "test-path" }, error: null }),
+        upload: vi
+          .fn()
+          .mockResolvedValue({ data: { path: "test-path" }, error: null }),
         getPublicUrl: vi.fn().mockReturnValue({
           data: { publicUrl: "https://example.com/test.jpg" },
         }),
@@ -298,7 +304,10 @@ describe("Supabase Adapter", () => {
       const mockBucket = {
         upload: vi
           .fn()
-          .mockResolvedValue({ data: null, error: { message: "Upload failed" } }),
+          .mockResolvedValue({
+            data: null,
+            error: { message: "Upload failed" },
+          }),
       };
 
       const mockStorage = {
@@ -308,7 +317,9 @@ describe("Supabase Adapter", () => {
       const adapter = new SupabaseStorageAdapter(mockStorage, "test-bucket");
       const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
 
-      await expect(adapter.upload(file, "test-path")).rejects.toThrow("Upload failed");
+      await expect(adapter.upload(file, "test-path")).rejects.toThrow(
+        "Upload failed"
+      );
     });
 
     it("handles delete success", async () => {
@@ -329,7 +340,12 @@ describe("Supabase Adapter", () => {
 
     it("handles delete error", async () => {
       const mockBucket = {
-        remove: vi.fn().mockResolvedValue({ data: null, error: { message: "Delete failed" } }),
+        remove: vi
+          .fn()
+          .mockResolvedValue({
+            data: null,
+            error: { message: "Delete failed" },
+          }),
       };
 
       const mockStorage = {
@@ -338,7 +354,9 @@ describe("Supabase Adapter", () => {
 
       const adapter = new SupabaseStorageAdapter(mockStorage, "test-bucket");
 
-      await expect(adapter.delete("test-path")).rejects.toThrow("Delete failed");
+      await expect(adapter.delete("test-path")).rejects.toThrow(
+        "Delete failed"
+      );
     });
   });
 });

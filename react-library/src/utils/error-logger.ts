@@ -31,7 +31,11 @@ export interface LoggedError {
  * Logger adapter interface for pluggable backends
  */
 export interface LoggerAdapter {
-  log(error: Error | string, context: ErrorContext, severity: ErrorSeverity): Promise<void> | void;
+  log(
+    error: Error | string,
+    context: ErrorContext,
+    severity: ErrorSeverity
+  ): Promise<void> | void;
 }
 
 class ErrorLoggerClass {
@@ -72,7 +76,10 @@ class ErrorLoggerClass {
     }
 
     // Log to console in development
-    if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+    if (
+      typeof process !== "undefined" &&
+      process.env?.NODE_ENV === "development"
+    ) {
       const prefix = this.getSeverityPrefix(severity);
 
       // Use appropriate console method based on severity
@@ -117,7 +124,10 @@ class ErrorLoggerClass {
         adapter.log(error as Error, context, severity);
       } catch (adapterError) {
         // Fail silently to avoid infinite loops
-        if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+        if (
+          typeof process !== "undefined" &&
+          process.env?.NODE_ENV === "development"
+        ) {
           console.warn("Failed to log to adapter:", adapterError);
         }
       }
@@ -128,7 +138,10 @@ class ErrorLoggerClass {
    * Log info message (non-error)
    */
   info(message: string, context: ErrorContext = {}): void {
-    if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+    if (
+      typeof process !== "undefined" &&
+      process.env?.NODE_ENV === "development"
+    ) {
       console.log(
         `[INFO] [${context.component || "Unknown"}]`,
         message,
@@ -141,7 +154,10 @@ class ErrorLoggerClass {
    * Log warning
    */
   warn(message: string, context: ErrorContext = {}): void {
-    if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+    if (
+      typeof process !== "undefined" &&
+      process.env?.NODE_ENV === "development"
+    ) {
       console.warn(
         `[WARN] [${context.component || "Unknown"}]`,
         message,
