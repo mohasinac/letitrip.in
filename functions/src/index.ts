@@ -31,6 +31,7 @@ export {
   onReviewCreated,
   updateReviewStatus,
 } from "./triggers/reviewModeration";
+export { cleanupTemporaryFiles } from "./triggers/temporaryFileCleanup";
 export {
   aggregateUserActivity,
   onOrderComplete,
