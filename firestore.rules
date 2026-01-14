@@ -500,6 +500,26 @@ service cloud.firestore {
     }
     
     // ============================================
+    // TEMPORARY UPLOADS COLLECTION
+    // ============================================
+    
+    match /temporaryUploads/{uploadId} {
+      // Users can read their own temporary uploads
+      allow read: if isAuthenticated() && resource.data.userId == userId();
+      
+      // Users can create temporary uploads with their own userId
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == userId()
+        && request.resource.data.keys().hasAll(['filePath', 'url', 'autoDelete', 'uploadedAt'])
+        && request.resource.data.autoDelete is bool
+        && request.resource.data.uploadedAt is timestamp;
+      
+      // Only Cloud Functions can delete (for cleanup cron)
+      // Users cannot update or delete their uploads
+      allow update, delete: if false;
+    }
+    
+    // ============================================
     // FALLBACK RULE (Deny all other access)
     // ============================================
     

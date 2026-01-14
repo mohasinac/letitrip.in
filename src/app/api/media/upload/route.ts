@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStorageAdmin } from "@/app/api/lib/firebase/admin";
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { STORAGE_PATHS } from "@/constants/storage";
+import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,7 @@ export async function POST(request: NextRequest) {
     const file = form.get("file") as File | null;
     const context = (form.get("context") as string) || "product";
     const contextId = form.get("contextId") as string | null;
+    const autoDelete = form.get("autoDelete") === "true";
 
     console.log("[Media Upload] Context:", context, "ContextId:", contextId);
 
@@ -98,6 +100,25 @@ export async function POST(request: NextRequest) {
     const url = `https://storage.googleapis.com/${bucket.name}/${encodeURI(path)}`;
 
     console.log("[Media Upload] Upload successful:", url);
+
+    // Store metadata in Firestore if autoDelete is enabled
+    if (autoDelete) {
+      try {
+        const firestore = getFirestoreAdmin();
+        await firestore.collection("temporaryUploads").add({
+          filePath: path,
+          url,
+          autoDelete: true,
+          uploadedAt: new Date(),
+          context,
+          contextId: contextId || null,
+        });
+        console.log("[Media Upload] Auto-delete metadata stored");
+      } catch (err) {
+        console.error("[Media Upload] Failed to store auto-delete metadata:", err);
+        // Don't fail the upload if metadata storage fails
+      }
+    }
 
     return NextResponse.json({ success: true, url, id: path });
   } catch (error) {
