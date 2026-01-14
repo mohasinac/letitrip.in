@@ -32,3 +32,7 @@ export {
   useTimeout,
   useToggle,
 } from "./useUtilities";
+
+// Upload hooks (Task 17.2)
+export { useMediaUpload } from "./useMediaUpload";
+export type { MediaUploadOptions, MediaUploadReturn } from "./useMediaUpload";

@@ -54,6 +54,45 @@ export type {
 } from "./common";
 
 /**
+ * Service adapters and interfaces for pluggable backends
+ */
+export type {
+  // Analytics adapters
+  AnalyticsAdapter,
+  AnalyticsEvent,
+  // Auth adapters
+  AuthAdapter,
+  AuthCredentials,
+  AuthUser,
+  // Cache adapters
+  CacheAdapter,
+  // Database adapters
+  DatabaseAdapter,
+  DatabaseBatch,
+  DatabaseCollection,
+  DatabaseDocument,
+  DatabaseDocumentRef,
+  DatabaseQuery,
+  DatabaseQueryResult,
+  DatabaseTransaction,
+  // HTTP client
+  HttpClient,
+  HttpResponse,
+  // Service configuration
+  ServiceConfig,
+  // Storage adapters
+  StorageAdapter,
+  StorageFileRef,
+  StorageUploadResult,
+  UploadService,
+} from "./adapters";
+
+/**
+ * Adapter implementations
+ */
+export { ApiUploadService, StorageUploadService } from "./adapters";
+
+/**
  * Utility type: Extract prop type from component
  *
  * @example
