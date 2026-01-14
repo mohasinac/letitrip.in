@@ -12,13 +12,13 @@ describe("Button", () => {
 
   it("should render different variants", () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-primary");
+    expect(screen.getByRole("button")).toHaveClass("bg-blue-600");
 
     rerender(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-secondary");
+    expect(screen.getByRole("button")).toHaveClass("bg-gray-200");
 
     rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole("button")).toHaveClass("border");
+    expect(screen.getByRole("button")).toHaveClass("border-2");
   });
 
   it("should render different sizes", () => {
@@ -35,9 +35,9 @@ describe("Button", () => {
   });
 
   it("should show loading state", () => {
-    render(<Button loading>Loading</Button>);
+    render(<Button isLoading>Loading</Button>);
     expect(screen.getByRole("button")).toBeDisabled();
-    expect(screen.getByRole("button")).toHaveClass("cursor-not-allowed");
+    expect(screen.getByRole("button")).toHaveAttribute("aria-busy", "true");
   });
 
   it("should render as full width", () => {
