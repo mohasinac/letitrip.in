@@ -12,13 +12,13 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
+import { cn } from "../../utils/cn";
 import {
   formatDate,
-  formatRelativeTime,
   formatDateRange,
+  formatRelativeTime,
 } from "../../utils/formatters";
-import { cn } from "../../utils/cn";
 
 interface DateDisplayProps {
   date: Date | string | number | null | undefined;
@@ -94,7 +94,7 @@ export function RelativeDate({
       title={showFullOnHover ? full : undefined}
       className={cn(
         "text-gray-600 dark:text-gray-400 cursor-default",
-        className,
+        className
       )}
     >
       {relative}

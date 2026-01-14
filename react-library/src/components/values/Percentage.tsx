@@ -12,8 +12,8 @@
 
 "use client";
 
-import React from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
+// React import not needed in React 17+ JSX transform
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "../../utils/cn";
 
 interface PercentageProps {
@@ -65,7 +65,7 @@ export function Percentage({
       className={cn(
         "inline-flex items-center gap-1 font-medium",
         colorClasses[type],
-        className,
+        className
       )}
     >
       {showIcon && (

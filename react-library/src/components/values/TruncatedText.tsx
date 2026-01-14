@@ -10,7 +10,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { cn } from "../../utils/cn";
 
 interface TruncatedTextProps {
@@ -63,7 +63,7 @@ export function TruncatedText({
       className={cn(
         "text-gray-700 dark:text-gray-300",
         !expanded && lineClampClass,
-        className,
+        className
       )}
     >
       {text}

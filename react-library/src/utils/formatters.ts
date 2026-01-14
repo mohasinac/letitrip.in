@@ -268,21 +268,6 @@ export function slugToTitle(slug: string): string {
 }
 
 /**
- * Format discount percentage
- * Returns positive percentage (e.g., "25%" not "-25%")
- * Note: Not exported to avoid conflict with price.utils formatDiscount
- * Use formatDiscountPercentage from price.utils for null-safe version
- */
-function formatDiscountBasic(
-  originalPrice: number,
-  currentPrice: number
-): string {
-  if (originalPrice <= currentPrice) return "0%";
-  const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
-  return `${Math.round(discount)}%`;
-}
-
-/**
  * Format rating (e.g., "4.5 out of 5")
  */
 export function formatRating(rating: number, maxRating: number = 5): string {

@@ -14,12 +14,14 @@ The React Library uses Vite for building with advanced optimization techniques i
 Located in `vite.config.ts`, the build configuration includes:
 
 #### 1. **Tree-Shaking**
+
 - Automatic dead code elimination
 - External dependencies properly marked
 - Preserved module structure for optimal tree-shaking
 - Multiple entry points for granular imports
 
 #### 2. **Code Splitting**
+
 - Automatic chunk splitting by feature
 - Organized chunk structure:
   - `vendor/` - Third-party dependencies
@@ -29,6 +31,7 @@ Located in `vite.config.ts`, the build configuration includes:
 - Manual chunks disabled to let Rollup optimize
 
 #### 3. **Minification**
+
 - Terser minification with 2-pass compression
 - Removes `console.debug` calls
 - Removes debugger statements
@@ -37,12 +40,15 @@ Located in `vite.config.ts`, the build configuration includes:
 - Target: ES2020 for modern browsers
 
 #### 4. **Source Maps**
+
 - Generated for all bundles
 - Enables debugging in production
 - ~280% overhead (acceptable for debugging)
 
 #### 5. **External Dependencies**
+
 Properly externalized to avoid bundling:
+
 - `react` and `react-dom` (peer dependencies)
 - `date-fns` (date utilities)
 - `clsx` and `tailwind-merge` (CSS utilities)
@@ -87,14 +93,14 @@ dist/
 
 ### Total Bundle Sizes
 
-| Type | Size | Files | Percentage |
-|------|------|-------|------------|
-| **ESM Bundles** | 269.26 KB | 14 | 23.4% |
-| **CommonJS Bundles** | 7.49 KB | 6 | 0.7% |
-| **TypeScript Definitions** | 62.63 KB | 52 | 5.5% |
-| **CSS Files** | 27.94 KB | 7 | 2.4% |
-| **Source Maps** | 780.70 KB | 72 | 68.0% |
-| **Total** | **1,148.02 KB** | **151** | **100%** |
+| Type                       | Size            | Files   | Percentage |
+| -------------------------- | --------------- | ------- | ---------- |
+| **ESM Bundles**            | 269.26 KB       | 14      | 23.4%      |
+| **CommonJS Bundles**       | 7.49 KB         | 6       | 0.7%       |
+| **TypeScript Definitions** | 62.63 KB        | 52      | 5.5%       |
+| **CSS Files**              | 27.94 KB        | 7       | 2.4%       |
+| **Source Maps**            | 780.70 KB       | 72      | 68.0%      |
+| **Total**                  | **1,148.02 KB** | **151** | **100%**   |
 
 ### Bundle Distribution
 
@@ -105,18 +111,19 @@ dist/
 
 ### Largest Chunks
 
-| Chunk | Size | Purpose |
-|-------|------|---------|
-| `Card-*.js` | 93.39 KB | Card component with all features |
+| Chunk                | Size     | Purpose                           |
+| -------------------- | -------- | --------------------------------- |
+| `Card-*.js`          | 93.39 KB | Card component with all features  |
 | `accessibility-*.js` | 67.09 KB | WCAG 2.1 AA accessibility helpers |
-| `useUtilities-*.js` | 11.43 KB | Custom React hooks utilities |
-| `validators-*.js` | 3.73 KB | Input validation functions |
+| `useUtilities-*.js`  | 11.43 KB | Custom React hooks utilities      |
+| `validators-*.js`    | 3.73 KB  | Input validation functions        |
 
 ## Optimization Recommendations
 
 ### Current Status
 
 ✅ **Strengths:**
+
 - Excellent tree-shaking support
 - Small entry point files (< 4 KB)
 - Good ESM/CJS ratio (97.3% modern)
@@ -124,6 +131,7 @@ dist/
 - Source maps for debugging
 
 ⚠️ **Areas for Improvement:**
+
 - 2 chunks > 50KB (Card: 93KB, Accessibility: 67KB)
 - Consider further splitting large chunks
 - Possible lazy loading for heavy components
@@ -131,11 +139,13 @@ dist/
 ### Future Optimizations
 
 1. **Code Splitting Enhancement**
+
    - Split Card component into smaller pieces
    - Separate accessibility utilities by feature
    - Lazy load heavy components
 
 2. **Bundle Size Reduction**
+
    - Analyze and optimize large dependencies
    - Remove unused code paths
    - Consider alternative smaller libraries
@@ -211,7 +221,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
       - run: npm ci
       - run: npm run type-check
       - run: npm run build
@@ -243,7 +253,8 @@ jobs:
 ### Large Bundle Size
 
 **Issue**: Bundle size increased unexpectedly  
-**Solution**: 
+**Solution**:
+
 1. Run `npm run build:analyze` to identify large chunks
 2. Check for accidentally bundled dependencies
 3. Verify external dependencies configuration
@@ -266,19 +277,21 @@ jobs:
 ### For Library Consumers
 
 1. **Import Specifically**: Use specific imports for better tree-shaking
+
    ```typescript
    // ✅ Good - tree-shakeable
-   import { FormInput } from '@letitrip/react-library/components';
-   
+   import { FormInput } from "@letitrip/react-library/components";
+
    // ❌ Avoid - bundles everything
-   import { FormInput } from '@letitrip/react-library';
+   import { FormInput } from "@letitrip/react-library";
    ```
 
 2. **Use ESM**: Import ESM version for modern bundlers
+
    ```json
    {
-     "module": "./dist/index.js",  // ESM
-     "main": "./dist/index.cjs"    // CJS fallback
+     "module": "./dist/index.js", // ESM
+     "main": "./dist/index.cjs" // CJS fallback
    }
    ```
 

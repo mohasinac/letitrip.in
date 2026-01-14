@@ -2,19 +2,18 @@
 
 /**
  * Bundle Size Analysis Script
- * 
+ *
  * Analyzes the library bundle sizes and provides optimization recommendations.
  */
 
-import { readdirSync, statSync } from 'fs';
-import { join } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { readdirSync, statSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const distPath = join(__dirname, '../dist');
+const distPath = join(__dirname, "../dist");
 
 /**
  * Get file size in KB
@@ -46,8 +45,8 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
  * Analyze bundle
  */
 function analyzeBundleSize() {
-  console.log('\n📦 Bundle Size Analysis\n');
-  console.log('=' .repeat(80));
+  console.log("\n📦 Bundle Size Analysis\n");
+  console.log("=".repeat(80));
 
   const allFiles = getAllFiles(distPath);
 
@@ -61,18 +60,18 @@ function analyzeBundleSize() {
   };
 
   allFiles.forEach((file) => {
-    const relativePath = file.replace(distPath, '');
+    const relativePath = file.replace(distPath, "");
     const size = getFileSize(file);
 
-    if (file.endsWith('.js') && !file.endsWith('.cjs')) {
+    if (file.endsWith(".js") && !file.endsWith(".cjs")) {
       fileGroups.esm.push({ path: relativePath, size: parseFloat(size) });
-    } else if (file.endsWith('.cjs')) {
+    } else if (file.endsWith(".cjs")) {
       fileGroups.cjs.push({ path: relativePath, size: parseFloat(size) });
-    } else if (file.endsWith('.d.ts')) {
+    } else if (file.endsWith(".d.ts")) {
       fileGroups.dts.push({ path: relativePath, size: parseFloat(size) });
-    } else if (file.endsWith('.css')) {
+    } else if (file.endsWith(".css")) {
       fileGroups.css.push({ path: relativePath, size: parseFloat(size) });
-    } else if (file.endsWith('.map')) {
+    } else if (file.endsWith(".map")) {
       fileGroups.map.push({ path: relativePath, size: parseFloat(size) });
     }
   });
@@ -89,50 +88,88 @@ function analyzeBundleSize() {
   const grandTotal = Object.values(totals).reduce((sum, val) => sum + val, 0);
 
   // Print summary
-  console.log('\n📊 Summary by Type:\n');
-  console.log(`ESM Bundles:        ${totals.esm.toFixed(2)} KB (${fileGroups.esm.length} files)`);
-  console.log(`CommonJS Bundles:   ${totals.cjs.toFixed(2)} KB (${fileGroups.cjs.length} files)`);
-  console.log(`TypeScript Defs:    ${totals.dts.toFixed(2)} KB (${fileGroups.dts.length} files)`);
-  console.log(`CSS Files:          ${totals.css.toFixed(2)} KB (${fileGroups.css.length} files)`);
-  console.log(`Source Maps:        ${totals.map.toFixed(2)} KB (${fileGroups.map.length} files)`);
-  console.log('-'.repeat(80));
-  console.log(`Total Size:         ${grandTotal.toFixed(2)} KB (${allFiles.length} files)`);
+  console.log("\n📊 Summary by Type:\n");
+  console.log(
+    `ESM Bundles:        ${totals.esm.toFixed(2)} KB (${
+      fileGroups.esm.length
+    } files)`
+  );
+  console.log(
+    `CommonJS Bundles:   ${totals.cjs.toFixed(2)} KB (${
+      fileGroups.cjs.length
+    } files)`
+  );
+  console.log(
+    `TypeScript Defs:    ${totals.dts.toFixed(2)} KB (${
+      fileGroups.dts.length
+    } files)`
+  );
+  console.log(
+    `CSS Files:          ${totals.css.toFixed(2)} KB (${
+      fileGroups.css.length
+    } files)`
+  );
+  console.log(
+    `Source Maps:        ${totals.map.toFixed(2)} KB (${
+      fileGroups.map.length
+    } files)`
+  );
+  console.log("-".repeat(80));
+  console.log(
+    `Total Size:         ${grandTotal.toFixed(2)} KB (${allFiles.length} files)`
+  );
 
   // Print largest ESM bundles
-  console.log('\n📦 Largest ESM Bundles:\n');
-  const sortedEsm = [...fileGroups.esm].sort((a, b) => b.size - a.size).slice(0, 10);
+  console.log("\n📦 Largest ESM Bundles:\n");
+  const sortedEsm = [...fileGroups.esm]
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 10);
   sortedEsm.forEach((file, index) => {
-    console.log(`${(index + 1).toString().padStart(2)}. ${file.path.padEnd(50)} ${file.size.toFixed(2).padStart(8)} KB`);
+    console.log(
+      `${(index + 1).toString().padStart(2)}. ${file.path.padEnd(
+        50
+      )} ${file.size.toFixed(2).padStart(8)} KB`
+    );
   });
 
   // Print largest CJS bundles
-  console.log('\n📦 Largest CommonJS Bundles:\n');
-  const sortedCjs = [...fileGroups.cjs].sort((a, b) => b.size - a.size).slice(0, 10);
+  console.log("\n📦 Largest CommonJS Bundles:\n");
+  const sortedCjs = [...fileGroups.cjs]
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 10);
   sortedCjs.forEach((file, index) => {
-    console.log(`${(index + 1).toString().padStart(2)}. ${file.path.padEnd(50)} ${file.size.toFixed(2).padStart(8)} KB`);
+    console.log(
+      `${(index + 1).toString().padStart(2)}. ${file.path.padEnd(
+        50
+      )} ${file.size.toFixed(2).padStart(8)} KB`
+    );
   });
 
   // Optimization recommendations
-  console.log('\n💡 Optimization Recommendations:\n');
+  console.log("\n💡 Optimization Recommendations:\n");
 
-  const largeChunks = fileGroups.esm.filter(f => f.size > 50);
+  const largeChunks = fileGroups.esm.filter((f) => f.size > 50);
   if (largeChunks.length > 0) {
-    console.log(`⚠️  ${largeChunks.length} chunk(s) > 50KB detected. Consider code splitting:`);
-    largeChunks.forEach(chunk => {
+    console.log(
+      `⚠️  ${largeChunks.length} chunk(s) > 50KB detected. Consider code splitting:`
+    );
+    largeChunks.forEach((chunk) => {
       console.log(`   - ${chunk.path}: ${chunk.size.toFixed(2)} KB`);
     });
   } else {
-    console.log('✓ All chunks are under 50KB - good for loading performance');
+    console.log("✓ All chunks are under 50KB - good for loading performance");
   }
 
   const esmRatio = ((totals.esm / (totals.esm + totals.cjs)) * 100).toFixed(1);
-  console.log(`\n✓ ESM/CJS ratio: ${esmRatio}% ESM, ${(100 - esmRatio).toFixed(1)}% CJS`);
+  console.log(
+    `\n✓ ESM/CJS ratio: ${esmRatio}% ESM, ${(100 - esmRatio).toFixed(1)}% CJS`
+  );
 
   const mapRatio = ((totals.map / (totals.esm + totals.cjs)) * 100).toFixed(1);
   console.log(`✓ Source map overhead: ${mapRatio}% of bundle size`);
 
-  console.log('\n' + '='.repeat(80));
-  console.log('✅ Analysis complete!\n');
+  console.log("\n" + "=".repeat(80));
+  console.log("✅ Analysis complete!\n");
 
   // Return data for potential programmatic use
   return {
@@ -146,6 +183,6 @@ function analyzeBundleSize() {
 try {
   analyzeBundleSize();
 } catch (error) {
-  console.error('❌ Error analyzing bundle:', error.message);
+  console.error("❌ Error analyzing bundle:", error.message);
   process.exit(1);
 }

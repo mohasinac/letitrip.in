@@ -19,8 +19,8 @@ The first stable release of @letitrip/react-library, a comprehensive component a
   - Intelligent code splitting by feature (vendor, components, utils, hooks)
   - Source maps generated for debugging
   - ES2020 target for modern browsers
-  
 - **Bundle Statistics**:
+
   - Production bundle: 297 KB (without source maps)
   - ESM bundles: 269.26 KB (97.3% of code)
   - CommonJS bundles: 7.49 KB (2.7% of code)

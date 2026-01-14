@@ -11,8 +11,8 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Clock, AlertCircle } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 import { cn } from "../../utils/cn";
 
 interface TimeRemainingProps {
@@ -70,7 +70,7 @@ function getTimeBreakdown(endTime: Date | string | number): TimeBreakdown {
 
 function formatTimeRemaining(
   breakdown: TimeBreakdown,
-  format: "compact" | "full" | "countdown",
+  format: "compact" | "full" | "countdown"
 ): string {
   if (breakdown.isEnded) {
     return "Ended";
@@ -146,7 +146,7 @@ export function TimeRemaining({
       <span
         className={cn(
           "inline-flex items-center gap-1 text-gray-500 dark:text-gray-500",
-          className,
+          className
         )}
       >
         {showIcon && <Clock className="w-4 h-4" />}
@@ -162,7 +162,7 @@ export function TimeRemaining({
         isUrgent
           ? "text-orange-600 dark:text-orange-400 font-medium"
           : "text-gray-700 dark:text-gray-300",
-        className,
+        className
       )}
     >
       {showIcon &&

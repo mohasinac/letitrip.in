@@ -12,7 +12,7 @@
 
 "use client";
 
-import React from "react";
+// React import not needed in React 17+ JSX transform
 import { cn } from "../../utils/cn";
 
 interface QuantityProps {
