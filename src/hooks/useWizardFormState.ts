@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useWizardFormState Hook
  * Manages multi-step wizard form state including validation
@@ -28,15 +30,15 @@
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 
-export interface StepState {
+export type StepState = {
   isComplete: boolean;
   isValid: boolean;
   hasErrors: boolean;
   errorCount: number;
   errors?: Record<string, string>;
-}
+};
 
-export interface UseWizardFormStateConfig<T> {
+export type UseWizardFormStateConfig<T> = {
   steps: string[];
   initialData?: Partial<T>;
   onStepChange?: (stepIndex: number) => void;
@@ -48,9 +50,9 @@ export interface UseWizardFormStateConfig<T> {
   validateBeforeNext?: boolean;
   /** Auto-mark step complete after successful validation (default: true) */
   autoMarkComplete?: boolean;
-}
+};
 
-export interface UseWizardFormStateReturn<T> {
+export type UseWizardFormStateReturn<T> = {
   // Step management
   currentStep: number;
   currentStepName: string;
