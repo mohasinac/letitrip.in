@@ -123,6 +123,7 @@ function ResponsiveNav() {
 ## 📊 Performance & Quality
 
 ### Bundle Sizes (Production)
+
 - **Total**: ~297 KB (without source maps)
 - **ESM**: 269 KB (97.3% of code)
 - **CommonJS**: 7.5 KB (compatibility)
@@ -130,12 +131,14 @@ function ResponsiveNav() {
 - **CSS Tokens**: 28 KB
 
 ### Build Metrics
+
 - Build time: ~6.3 seconds
 - Tree-shaking: Enabled
 - Code splitting: Automatic
 - Minification: Terser (2-pass)
 
 ### Testing & Quality
+
 - Test coverage: 21 tests passing (100%)
 - Type checking: Pass (0 errors)
 - TypeScript: Strict mode
