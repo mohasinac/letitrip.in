@@ -111,7 +111,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Build Storybook
-        run: npm run build-storybook
+        run: npm run build:storybook
 
       - name: Upload Storybook artifacts
         uses: actions/upload-artifact@v4
