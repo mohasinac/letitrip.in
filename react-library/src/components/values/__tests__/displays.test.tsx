@@ -8,12 +8,12 @@ import { Rating } from "../Rating";
 describe("Value Display Components", () => {
   describe("Price", () => {
     it("should render price component", () => {
-      const { container } = render(<Price value={1000} />);
+      const { container } = render(<Price amount={1000} />);
       expect(container.firstChild).toBeInTheDocument();
     });
 
     it("should render with zero value", () => {
-      const { container } = render(<Price value={0} />);
+      const { container } = render(<Price amount={0} />);
       expect(container.firstChild).toBeInTheDocument();
     });
   });
@@ -21,12 +21,12 @@ describe("Value Display Components", () => {
   describe("DateDisplay", () => {
     it("should render formatted date", () => {
       const date = new Date("2024-01-15");
-      const { container } = render(<DateDisplay value={date} />);
+      const { container } = render(<DateDisplay date={date} />);
       expect(container.firstChild).toBeInTheDocument();
     });
 
     it("should handle invalid date", () => {
-      const { container } = render(<DateDisplay value={new Date("invalid")} />);
+      const { container } = render(<DateDisplay date={new Date("invalid")} />);
       expect(screen.getByText("N/A")).toBeInTheDocument();
     });
   });
