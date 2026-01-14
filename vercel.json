@@ -5,12 +5,11 @@
   "installCommand": "npm install",
   "github": {
     "silent": true,
-    "autoJobCancelation": true
+    "autoJobCancelation": true,
+    "enabled": false
   },
   "git": {
-    "deploymentEnabled": {
-      "main": true
-    }
+    "deploymentEnabled": false
   },
   "regions": ["bom1"],
   "functions": {
