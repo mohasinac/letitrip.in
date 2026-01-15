@@ -102,6 +102,7 @@
     "vitest": "^1.0.0"
   },
   "dependencies": {
+    "@tanstack/react-virtual": "^3.13.18",
     "clsx": "^2.1.0",
     "date-fns": "^3.0.0",
     "libphonenumber-js": "^1.10.0",
