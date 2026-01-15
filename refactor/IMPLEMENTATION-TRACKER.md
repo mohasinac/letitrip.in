@@ -807,7 +807,7 @@ class MyUploadService implements UploadService {
 
 - [x] DataTable component + types
 - [x] ResponsiveTable component
-- [ ] TableCheckbox component
+- [x] TableCheckbox component
 - [ ] BulkActionBar component
 - [ ] InlineEditRow component
 - [ ] QuickCreateRow component
