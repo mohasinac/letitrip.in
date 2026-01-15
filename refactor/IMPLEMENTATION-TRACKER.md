@@ -857,10 +857,10 @@ class MyUploadService implements UploadService {
 - [x] SearchInput component ✅
 - [x] SearchableDropdown component ✅
 - [x] ContentTypeFilter component ✅
-- [ ] AuctionFilters component
+- [x] AuctionFilters component ✅
 - [ ] ProductFilters component
-- [ ] CategoryFilters component
-- [ ] ShopFilters component
+- [x] CategoryFilters component ✅
+- [x] ShopFilters component ✅
 - [ ] OrderFilters component
 - [ ] CouponFilters component
 - [ ] ReturnFilters component
