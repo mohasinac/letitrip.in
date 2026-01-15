@@ -926,10 +926,10 @@ class MyUploadService implements UploadService {
 - [ ] InlineFormModal component
 - [ ] RichTextEditor component
 - [ ] DateTimePicker component
-- [ ] SlugInput component ✅
+- [x] SlugInput component ✅
 - [x] TagInput component ✅
-- [ ] PincodeInput component
-- [ ] LinkInput component
+- [x] PincodeInput component ✅
+- [x] LinkInput component ✅
 
 **Associated Hooks**:
 
