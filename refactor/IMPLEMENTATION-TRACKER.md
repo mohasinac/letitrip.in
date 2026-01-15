@@ -809,7 +809,7 @@ class MyUploadService implements UploadService {
 - [x] ResponsiveTable component
 - [x] TableCheckbox component
 - [x] BulkActionBar component
-- [ ] InlineEditRow component
+- [x] InlineEditRow component
 - [ ] QuickCreateRow component
 - [ ] InlineEditor component
 - [ ] ActionMenu component
@@ -831,7 +831,7 @@ class MyUploadService implements UploadService {
 - [x] DataTable.stories.tsx
 - [x] ResponsiveTable.stories.tsx
 - [x] BulkActionBar.stories.tsx
-- [ ] InlineEditRow.stories.tsx
+- [x] InlineEditRow.stories.tsx
 - [ ] QuickCreateRow.stories.tsx
 - [ ] StatusBadge.stories.tsx
 - [ ] EmptyState.stories.tsx
