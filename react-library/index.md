@@ -542,6 +542,20 @@ All component migration tasks completed:
 - `useInterval(callback, delay)` - Declarative setInterval with cleanup
 - `useTimeout(callback, delay)` - Declarative setTimeout with cleanup
 
+**Table & Data Hooks** (2 hooks - Task 18.1 Partial)
+
+- `useBulkSelection<T>(options)` - Manage bulk selection state for lists with checkboxes
+  - Select all / none / individual / multiple items
+  - Selection states (isAllSelected, isSomeSelected)
+  - Get selected items with custom key property
+  - Callbacks for selection changes
+- `useLoadingState<T>(options)` - Consolidate loading/error/data state patterns
+  - Execute async operations with automatic state management
+  - Retry failed operations
+  - Auto-reset errors after timeout
+  - Refresh vs initial load tracking
+- `useMultiLoadingState(loaders)` - Manage multiple loading states simultaneously
+
 **Usage Examples:**
 
 ```typescript
@@ -557,6 +571,21 @@ const breakpoint = useBreakpoint();
 
 // Copy to clipboard
 const { copied, copyToClipboard } = useClipboard();
+
+// Bulk selection
+const {
+  selectedIds,
+  toggleSelection,
+  selectAll,
+  clearSelection,
+  getSelectedItems,
+} = useBulkSelection({ items: products });
+
+// Loading state
+const { data, isLoading, error, execute, retry } = useLoadingState<User[]>();
+useEffect(() => {
+  execute(() => userService.getUsers());
+}, []);
 ```
 
 ### Styles (Task 16.1)
