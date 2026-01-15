@@ -980,24 +980,24 @@ class MyUploadService implements UploadService {
 
 **Move to React Library**:
 
-- [ ] ConfirmDialog component
-- [ ] ErrorMessage component
-- [ ] FieldError component
+- [x] ConfirmDialog component ✅
+- [x] ErrorMessage component ✅
+- [x] FieldError component ✅
 - [ ] Toast component
-- [ ] StatCard/StatsCard component
-- [ ] FavoriteButton component (make framework-agnostic)
-- [ ] ThemeToggle component (extract theme logic)
+- [x] StatCard/StatsCard component ✅
+- [x] FavoriteButton component (make framework-agnostic) ✅
+- [x] ThemeToggle component (extract theme logic) ✅
 - [ ] DynamicIcon component
-- [ ] PaymentLogo component
+- [x] PaymentLogo component ✅
 - [ ] OptimizedImage component (make framework-agnostic)
 - [ ] SmartLink component (make framework-agnostic)
-- [ ] HorizontalScrollContainer component
-- [ ] MobileStickyBar component
+- [x] HorizontalScrollContainer component ✅
+- [x] MobileStickyBar component ✅
 - [ ] MobileInput component
 - [ ] UploadProgress component
 - [ ] InlineImageUpload component
 - [ ] PendingUploadsWarning component
-- [ ] GPSButton component
+- [x] GPSButton component ✅
 - [ ] Accessibility component
 
 **Storybook Stories**:
