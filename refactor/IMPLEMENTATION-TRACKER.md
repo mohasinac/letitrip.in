@@ -853,7 +853,7 @@ class MyUploadService implements UploadService {
 - [x] CollapsibleFilter component ✅
 - [x] MobileFilterSidebar component ✅
 - [x] MobileFilterDrawer component ✅
-- [ ] SearchBar component (make Next.js independent)
+- [x] SearchBar component ✅
 - [x] SearchInput component ✅
 - [x] SearchableDropdown component ✅
 - [x] ContentTypeFilter component ✅
