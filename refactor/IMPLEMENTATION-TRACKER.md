@@ -869,9 +869,9 @@ class MyUploadService implements UploadService {
 
 **Associated Hooks**:
 
-- [ ] useFilters
-- [ ] useUrlFilters (make framework-agnostic)
-- [ ] useDebounce (already in library, verify complete)
+- [x] useFilters ✅
+- [x] useUrlFilters ✅
+- [x] useDebounce ✅
 
 **Storybook Stories**:
 
