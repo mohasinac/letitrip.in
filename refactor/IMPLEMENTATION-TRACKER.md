@@ -914,18 +914,18 @@ class MyUploadService implements UploadService {
 - [x] FormFieldset component ✅
 - [x] FormSection component ✅ (includes FormRow, FormActions)
 - [x] FormNumberInput component ✅
-- [ ] FormRichText component
+- [x] FormRichText component ✅
 - [x] FormRadio component ✅ (includes FormRadioGroup)
 - [x] FormKeyValueInput component ✅
 - [x] FormListInput component ✅
-- [ ] FormFileUpload component
-- [ ] WizardForm component
-- [ ] WizardSteps component
-- [ ] WizardActionBar component
-- [ ] FormModal component
-- [ ] InlineFormModal component
-- [ ] RichTextEditor component
-- [ ] DateTimePicker component
+- [x] FormFileUpload component ✅
+- [x] WizardForm component ✅
+- [x] WizardSteps component ✅
+- [x] WizardActionBar component ✅
+- [x] FormModal component ✅
+- [x] InlineFormModal component ✅
+- [x] RichTextEditor component ✅
+- [x] DateTimePicker component ✅
 - [x] SlugInput component ✅
 - [x] TagInput component ✅
 - [x] PincodeInput component ✅
