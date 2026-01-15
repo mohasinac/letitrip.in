@@ -288,9 +288,10 @@
 
 **Task 18.1 Complete!** All 13 table components migrated to react-library.
 
-### Associated Hooks (Partial - 2/5)
+### Associated Hooks (Complete - 5/5) ✅
 
 1. **useBulkSelection Hook** ✅
+
    - **Status**: Complete
    - **Source**: `src/hooks/useBulkSelection.ts`
    - **Migration**: 185 lines, already framework-agnostic
@@ -307,7 +308,7 @@
 2. **useLoadingState Hook** ✅
    - **Status**: Complete
    - **Source**: `src/hooks/useLoadingState.ts`
-   - **Migration**: 314 lines, already framework-agnostic
+   - **Migration**: 314 lines, already framework-agnostic (fixed arrow function syntax)
    - **Features**:
      - Execute async operations with automatic state management
      - Loading, error, and data state tracking
@@ -319,10 +320,62 @@
    - **Tests**: No tests migrated yet (exists in main app)
    - **Main app integration**: Skipped (will be rewritten later)
 
-**Remaining Hooks (3/5)**:
-- [ ] useResourceList - Needs logError removed
-- [ ] useResourceListState - Depends on usePaginationState
-- [ ] useFetchResourceList - Depends on useResourceListState
+3. **usePaginationState Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/usePaginationState.ts`
+   - **Migration**: 147 lines, removed "use client" directive
+   - **Features**:
+     - Cursor-based and offset-based pagination
+     - Page and loadMore modes
+     - Navigation (goToPage, nextPage, previousPage, loadMore)
+     - Cursor management (setCursors, addCursor, getCurrentCursor, getNextCursor)
+     - Offset calculation
+   - **Tests**: No tests migrated yet
+   - **Main app integration**: Skipped (will be rewritten later)
+
+4. **useResourceList Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/useResourceList.ts`
+   - **Migration**: 503 lines, removed logError dependency (framework-agnostic)
+   - **Features**:
+     - Sieve-style pagination with filtering, sorting, and search
+     - URL building with query parameters
+     - API fetching with automatic refetch on param changes
+     - Sieve filter format (key==value)
+     - Pagination/filter/sort/search state management
+   - **Dependencies**: useLoadingState (already migrated)
+   - **Tests**: 8 comprehensive tests covering initialization, fetching, error handling (all passing)
+   - **Main app integration**: Skipped (will be rewritten later)
+
+5. **useResourceListState Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/useResourceListState.ts`
+   - **Migration**: 199 lines, removed "use client" directive
+   - **Features**:
+     - Complete list/table state management (items, loading, error)
+     - View mode (table/grid/list)
+     - Filter values and search query
+     - Selection with Set<string> and selectAll boolean
+     - Pagination integration via usePaginationState
+     - CRUD operations (addItems, removeItem, updateItem)
+     - Reset functionality
+   - **Dependencies**: usePaginationState (already migrated)
+   - **Tests**: No tests migrated yet
+   - **Main app integration**: Skipped (will be rewritten later)
+
+6. **useFetchResourceList Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/useFetchResourceList.ts`
+   - **Migration**: 124 lines, already framework-agnostic
+   - **Features**:
+     - Combines useResourceListState with async data fetching
+     - Auto-fetch on mount (configurable)
+     - Refetch when filters or search changes
+     - Refetch when page changes
+     - Loading states (isFetching, isFetchingMore)
+   - **Dependencies**: useLoadingState, useResourceListState (already migrated)
+   - **Tests**: No tests migrated yet
+   - **Main app integration**: Skipped (will be rewritten later)
 
 ## Task 14.1: Create React Library Submodule ✅
 

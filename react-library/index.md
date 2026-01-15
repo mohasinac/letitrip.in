@@ -542,7 +542,7 @@ All component migration tasks completed:
 - `useInterval(callback, delay)` - Declarative setInterval with cleanup
 - `useTimeout(callback, delay)` - Declarative setTimeout with cleanup
 
-**Table & Data Hooks** (2 hooks - Task 18.1 Partial)
+**Table & Data Hooks** (7 hooks - Task 18.1 Complete ✅)
 
 - `useBulkSelection<T>(options)` - Manage bulk selection state for lists with checkboxes
   - Select all / none / individual / multiple items
@@ -555,6 +555,24 @@ All component migration tasks completed:
   - Auto-reset errors after timeout
   - Refresh vs initial load tracking
 - `useMultiLoadingState(loaders)` - Manage multiple loading states simultaneously
+- `usePaginationState(config)` - Cursor-based and offset-based pagination
+  - Page and loadMore modes
+  - Navigation (goToPage, nextPage, previousPage, loadMore)
+  - Cursor management
+- `useResourceList<T>(options)` - Sieve-style pagination with filters/sort/search
+  - URL building with query parameters
+  - API fetching with automatic refetch
+  - Sieve filter format (key==value)
+- `useResourceListState<T>(config)` - Complete list/table state management
+  - Items, loading, error state
+  - View mode (table/grid/list)
+  - Filter values and search query
+  - Selection with Set and selectAll
+  - CRUD operations (addItems, removeItem, updateItem)
+- `useFetchResourceList<T>(config)` - Combines list state with async fetching
+  - Auto-fetch on mount
+  - Refetch on filter/search/page changes
+  - Loading states (isFetching, isFetchingMore)
 
 **Usage Examples:**
 
@@ -586,6 +604,22 @@ const { data, isLoading, error, execute, retry } = useLoadingState<User[]>();
 useEffect(() => {
   execute(() => userService.getUsers());
 }, []);
+
+// Pagination
+const pagination = usePaginationState({ pageSize: 20 });
+pagination.nextPage();
+
+// Resource list with filters
+const list = useResourceList<Product>({
+  endpoint: "/api/products",
+  initialFilters: { status: "active" },
+});
+
+// Fetch resource list
+const fetchList = useFetchResourceList<Order>({
+  fetchFn: (options) => orderService.list(options),
+  pageSize: 10,
+});
 ```
 
 ### Styles (Task 16.1)
@@ -615,7 +649,7 @@ useEffect(() => {
 ### Contents Summary
 
 - **36 Components**: 20 values + 9 forms + 2 UI + 2 upload + 3 table
-- **18 Hooks**: 3 debounce + 1 storage + 7 responsive + 6 utilities + 1 media upload
+- **23 Hooks**: 3 debounce + 1 storage + 7 responsive + 6 utilities + 1 media upload + 5 table/data
 - **60+ Utilities**: formatters, validators, date, sanitize, accessibility
 - **13 Accessibility Helpers**: WCAG 2.1 AA compliant
 
