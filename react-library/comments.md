@@ -1,6 +1,52 @@
 # React Library - Implementation Comments
 
-**Last Updated**: January 12, 2026
+**Last Updated**: January 15, 2026
+
+## Task 18.1: Table & Data Display Components ⏳
+
+**Started**: January 15, 2026
+
+### Implementation Progress
+
+**Completed:**
+
+1. **DataTable Component Migration**
+   - Moved from `src/components/common/DataTable.tsx` to `react-library/src/components/tables/DataTable.tsx`
+   - Component is already framework-agnostic (no Next.js dependencies)
+   - Features:
+     - Generic type support with TypeScript
+     - Sortable columns (local and controlled sorting)
+     - Loading skeleton with 5 placeholder rows
+     - Empty state with custom message
+     - Custom cell rendering via render functions
+     - Row click handlers
+     - Custom row className function
+     - Column width control
+     - Sort indicators (↑↓↕)
+     - Dark mode support
+   - Created comprehensive tests (17 test cases, all passing)
+   - Created Storybook story with 9 variations
+   - Updated main app import in ProductTable component
+   - Removed old component from main app
+
+**Pending:**
+
+- [ ] ResponsiveTable component
+- [ ] TableCheckbox component  
+- [ ] BulkActionBar component
+- [ ] InlineEditRow component
+- [ ] QuickCreateRow component
+- [ ] InlineEditor component
+- [ ] ActionMenu component
+- [ ] StatusBadge component (might already be in library)
+- [ ] Skeleton/LoadingSkeleton components
+- [ ] EmptyState component
+- [ ] ErrorState component
+- [ ] PageState component
+
+### Next Steps
+
+Continue migrating table-related components from main app to library, following the same pattern as DataTable.
 
 ## Task 14.1: Create React Library Submodule ✅
 
