@@ -849,8 +849,8 @@ class MyUploadService implements UploadService {
 
 - [ ] UnifiedFilterSidebar component
 - [ ] FilterSidebar component
-- [ ] FilterBar component
-- [ ] CollapsibleFilter component
+- [x] FilterBar component ✅
+- [x] CollapsibleFilter component ✅
 - [ ] MobileFilterSidebar component
 - [ ] MobileFilterDrawer component
 - [ ] SearchBar component (make Next.js independent)
@@ -879,7 +879,8 @@ class MyUploadService implements UploadService {
 - [ ] SearchBar.stories.tsx
 - [x] SearchInput.stories.tsx ✅
 - [x] SearchableDropdown.stories.tsx ✅
-- [ ] FilterBar.stories.tsx
+- [x] FilterBar.stories.tsx ✅
+- [x] CollapsibleFilter.stories.tsx ✅
 
 #### Task 18.3: Pagination Components
 
