@@ -823,9 +823,10 @@ class MyUploadService implements UploadService {
 
 - [x] useBulkSelection ✅
 - [x] useLoadingState (dependency for useResourceList) ✅
-- [ ] useResourceList
-- [ ] useResourceListState
-- [ ] useFetchResourceList
+- [x] usePaginationState ✅
+- [x] useResourceList ✅
+- [x] useResourceListState ✅
+- [x] useFetchResourceList ✅
 
 **Storybook Stories**:
 
