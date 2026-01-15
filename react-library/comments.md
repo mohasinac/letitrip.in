@@ -187,6 +187,7 @@
    - Main app integration: Skipped (will be rewritten later)
 
 10. **Skeleton Components Migration**
+
     - Moved from `src/components/common/Skeleton.tsx` and `src/components/common/LoadingSkeleton.tsx` to `react-library/src/components/tables/Skeleton.tsx`
     - Combined both files into single module for better organization
     - Made framework-agnostic by removing dependencies:
@@ -210,6 +211,7 @@
     - Main app integration: Skipped (will be rewritten later)
 
 11. **EmptyState Component Migration**
+
     - Moved from `src/components/common/EmptyState.tsx` to `react-library/src/components/tables/EmptyState.tsx`
     - Made framework-agnostic by removing dependencies:
       - Removed lucide-react icon imports (icons now injectable via props)
@@ -229,6 +231,7 @@
     - Main app integration: Skipped (will be rewritten later)
 
 12. **ErrorState Component Migration**
+
     - Moved from `src/components/common/ErrorState.tsx` to `react-library/src/components/tables/ErrorState.tsx`
     - Made framework-agnostic by removing dependencies:
       - Removed lucide-react icon imports (AlertTriangle, RefreshCw)
@@ -284,6 +287,42 @@
     - Main app integration: Skipped (will be rewritten later)
 
 **Task 18.1 Complete!** All 13 table components migrated to react-library.
+
+### Associated Hooks (Partial - 2/5)
+
+1. **useBulkSelection Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/useBulkSelection.ts`
+   - **Migration**: 185 lines, already framework-agnostic
+   - **Features**:
+     - Generic type support with TypeScript
+     - Select all / none / individual / multiple items
+     - Selection state tracking (isAllSelected, isSomeSelected)
+     - Get selected items with custom key property
+     - Callbacks for selection changes
+     - Dynamic item list support
+   - **Tests**: 28 comprehensive tests covering all features (all passing)
+   - **Main app integration**: Skipped (will be rewritten later)
+
+2. **useLoadingState Hook** ✅
+   - **Status**: Complete
+   - **Source**: `src/hooks/useLoadingState.ts`
+   - **Migration**: 314 lines, already framework-agnostic
+   - **Features**:
+     - Execute async operations with automatic state management
+     - Loading, error, and data state tracking
+     - Retry failed operations
+     - Auto-reset errors after configurable timeout
+     - Refresh vs initial load tracking (isRefreshing, isInitialized)
+     - Manual state setters
+   - **Includes**: useMultiLoadingState for managing multiple independent loading states
+   - **Tests**: No tests migrated yet (exists in main app)
+   - **Main app integration**: Skipped (will be rewritten later)
+
+**Remaining Hooks (3/5)**:
+- [ ] useResourceList - Needs logError removed
+- [ ] useResourceListState - Depends on usePaginationState
+- [ ] useFetchResourceList - Depends on useResourceListState
 
 ## Task 14.1: Create React Library Submodule ✅
 
