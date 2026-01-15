@@ -815,7 +815,7 @@ class MyUploadService implements UploadService {
 - [x] ActionMenu component
 - [x] StatusBadge component
 - [x] Skeleton/LoadingSkeleton components
-- [ ] EmptyState component
+- [x] EmptyState component
 - [ ] ErrorState component
 - [ ] PageState component
 
