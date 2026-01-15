@@ -808,7 +808,7 @@ class MyUploadService implements UploadService {
 - [x] DataTable component + types
 - [x] ResponsiveTable component
 - [x] TableCheckbox component
-- [ ] BulkActionBar component
+- [x] BulkActionBar component
 - [ ] InlineEditRow component
 - [ ] QuickCreateRow component
 - [ ] InlineEditor component
@@ -828,9 +828,9 @@ class MyUploadService implements UploadService {
 
 **Storybook Stories**:
 
-- [ ] DataTable.stories.tsx
-- [ ] ResponsiveTable.stories.tsx
-- [ ] BulkActionBar.stories.tsx
+- [x] DataTable.stories.tsx
+- [x] ResponsiveTable.stories.tsx
+- [x] BulkActionBar.stories.tsx
 - [ ] InlineEditRow.stories.tsx
 - [ ] QuickCreateRow.stories.tsx
 - [ ] StatusBadge.stories.tsx
