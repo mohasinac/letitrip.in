@@ -847,7 +847,7 @@ class MyUploadService implements UploadService {
 
 **Move to React Library**:
 
-- [ ] UnifiedFilterSidebar component
+- [x] UnifiedFilterSidebar component ✅
 - [x] FilterSidebar component ✅
 - [x] FilterBar component ✅
 - [x] CollapsibleFilter component ✅
