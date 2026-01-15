@@ -811,7 +811,7 @@ class MyUploadService implements UploadService {
 - [x] BulkActionBar component
 - [x] InlineEditRow component
 - [x] QuickCreateRow component
-- [ ] InlineEditor component
+- [x] InlineEditor component
 - [ ] ActionMenu component
 - [ ] StatusBadge component
 - [ ] Skeleton/LoadingSkeleton components
@@ -833,6 +833,7 @@ class MyUploadService implements UploadService {
 - [x] BulkActionBar.stories.tsx
 - [x] InlineEditRow.stories.tsx
 - [x] QuickCreateRow.stories.tsx
+- [x] InlineEditor.stories.tsx
 - [ ] StatusBadge.stories.tsx
 - [ ] EmptyState.stories.tsx
 
