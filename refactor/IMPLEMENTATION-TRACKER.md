@@ -806,7 +806,7 @@ class MyUploadService implements UploadService {
 **Move to React Library**:
 
 - [x] DataTable component + types
-- [ ] ResponsiveTable component
+- [x] ResponsiveTable component
 - [ ] TableCheckbox component
 - [ ] BulkActionBar component
 - [ ] InlineEditRow component

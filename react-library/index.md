@@ -244,7 +244,7 @@ The library is integrated into the main monorepo as a workspace:
 
 All component migration tasks completed:
 
-- 34 components (20 values + 9 forms + 2 UI + 2 upload + 1 table)
+- 35 components (20 values + 9 forms + 2 UI + 2 upload + 2 table)
 - 18 React hooks (SSR-safe, fully typed)
 - 60+ utilities (formatters, validators, date utils)
 - 13 accessibility helpers
@@ -396,7 +396,7 @@ All component migration tasks completed:
 - `Button` - 5 variants (primary, secondary, outline, ghost, danger), 3 sizes, loading state, icon support
 - `Card` / `CardSection` - Container components with optional header
 
-### Table Components ✅ (Task 18.1 Started - 1 Component)
+### Table Components ✅ (Task 18.1 Started - 2 Components)
 
 - `DataTable` - Generic data table with sorting, loading states, custom rendering, row interactions
   - Sortable columns (local or controlled)
@@ -406,6 +406,12 @@ All component migration tasks completed:
   - Row click handlers
   - Custom row styling
   - Responsive overflow scrolling
+- `ResponsiveTable` - Responsive table wrapper with horizontal scroll and sticky first column
+  - Horizontal scroll on mobile
+  - Optional sticky first column
+  - Dark mode support
+  - Touch-friendly checkboxes
+  - Shadow effect on sticky column
 
 ### Upload Components ✅ (Task 17.1 Complete - 2 Components)
 
@@ -491,7 +497,7 @@ const { copied, copyToClipboard } = useClipboard();
 
 ### Contents Summary
 
-- **34 Components**: 20 values + 9 forms + 2 UI + 2 upload + 1 table
+- **35 Components**: 20 values + 9 forms + 2 UI + 2 upload + 2 table
 - **18 Hooks**: 3 debounce + 1 storage + 7 responsive + 6 utilities + 1 media upload
 - **60+ Utilities**: formatters, validators, date, sanitize, accessibility
 - **13 Accessibility Helpers**: WCAG 2.1 AA compliant

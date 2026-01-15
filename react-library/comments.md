@@ -11,6 +11,7 @@
 **Completed:**
 
 1. **DataTable Component Migration**
+
    - Moved from `src/components/common/DataTable.tsx` to `react-library/src/components/tables/DataTable.tsx`
    - Component is already framework-agnostic (no Next.js dependencies)
    - Features:
@@ -29,10 +30,25 @@
    - Updated main app import in ProductTable component
    - Removed old component from main app
 
+2. **ResponsiveTable Component Migration**
+   - Moved from `src/components/common/ResponsiveTable.tsx` to `react-library/src/components/tables/ResponsiveTable.tsx`
+   - Component is already framework-agnostic (no Next.js dependencies)
+   - Features:
+     - Responsive table wrapper with horizontal scroll
+     - Optional sticky first column (enabled by default)
+     - Dark mode support with proper color transitions
+     - Touch-friendly checkboxes on mobile
+     - Shadow effect on sticky column for depth
+     - Rounded border container with overflow handling
+   - Created comprehensive tests (12 test cases, all passing)
+   - Created Storybook story with 6 variations
+   - No main app usage (component not imported anywhere)
+   - Removed old component from main app
+
 **Pending:**
 
 - [ ] ResponsiveTable component
-- [ ] TableCheckbox component  
+- [ ] TableCheckbox component
 - [ ] BulkActionBar component
 - [ ] InlineEditRow component
 - [ ] QuickCreateRow component
