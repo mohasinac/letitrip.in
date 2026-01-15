@@ -955,14 +955,14 @@ class MyUploadService implements UploadService {
 
 **Move to React Library**:
 
-- [ ] CategorySelector component
-- [ ] AddressSelectorWithCreate component
+- [x] ✅ CategorySelector component
+- [x] ✅ AddressSelectorWithCreate component
 - [ ] ContactSelectorWithCreate component
 - [ ] TagSelectorWithCreate component
-- [ ] ProductVariantSelector component
-- [ ] LanguageSelector component
-- [ ] StateSelector component
-- [ ] PeriodSelector component
+- [x] ✅ ProductVariantSelector component
+- [x] ✅ LanguageSelector component
+- [x] ✅ StateSelector component
+- [x] ✅ PeriodSelector component
 - [ ] DocumentSelectorWithUpload component
 
 **Storybook Stories**:
