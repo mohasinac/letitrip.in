@@ -957,13 +957,13 @@ class MyUploadService implements UploadService {
 
 - [x] ✅ CategorySelector component
 - [x] ✅ AddressSelectorWithCreate component
-- [ ] ContactSelectorWithCreate component
-- [ ] TagSelectorWithCreate component
+- [x] ✅ ContactSelectorWithCreate component
+- [x] ✅ TagSelectorWithCreate component
 - [x] ✅ ProductVariantSelector component
 - [x] ✅ LanguageSelector component
 - [x] ✅ StateSelector component
 - [x] ✅ PeriodSelector component
-- [ ] DocumentSelectorWithUpload component
+- [x] ✅ DocumentSelectorWithUpload component
 
 **Storybook Stories**:
 
