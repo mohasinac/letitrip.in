@@ -1017,19 +1017,34 @@ class MyUploadService implements UploadService {
 
 **Move to React Library**:
 
-- [ ] useLoadingState
-- [ ] useSafeLoad
-- [ ] useWindowResize
-- [ ] useMobile (useMediaQuery variants)
-- [ ] useAuthState (framework-agnostic)
-- [ ] useAuthActions (framework-agnostic)
-- [ ] useCart (framework-agnostic core)
-- [ ] useCheckoutState
-- [ ] useConversationState
-- [ ] useHeaderStats
-- [ ] useNavigationGuard (make framework-agnostic)
+- [x] ✅ useLoadingState (already exists in library)
+- [x] ✅ useSafeLoad
+- [x] ✅ useWindowResize
+- [x] ✅ useMobile (useMediaQuery variants)
+- [x] ✅ useAuthState (framework-agnostic)
+- [x] ✅ useAuthActions (framework-agnostic)
+- [x] ✅ useCart (framework-agnostic core)
+- [x] ✅ useCheckoutState
+- [x] ✅ useConversationState
+- [x] ✅ useHeaderStats
+- [x] ✅ useNavigationGuard (make framework-agnostic)
 
-**Note**: These hooks should be extracted to have no Next.js dependencies (no direct router usage, no Next.js specific APIs)
+**Status**: 10/10 hooks complete (useLoadingState already existed)
+**Date Completed**: January 15, 2026
+
+**Implementation Details**:
+- useSafeLoad: Prevents infinite API calls with injectable error handler
+- useWindowResize: Window resize with debounce and breakpoint detection
+- useMobile: Comprehensive mobile detection (device type, touch, viewport, iOS/Android)
+- useCheckoutState: Multi-step checkout state management
+- useConversationState: Messaging/chat state management
+- useNavigationGuard: Prevent navigation with unsaved changes
+- useAuthState: Generic auth state with injectable context
+- useAuthActions: Generic auth actions with injectable context
+- useCart: Cart management with injectable service
+- useHeaderStats: Header stats polling with injectable fetch function
+
+**Note**: All hooks are framework-agnostic with injectable dependencies
 
 #### Task 19.3: Wrapper & Layout Components
 
