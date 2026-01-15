@@ -812,7 +812,7 @@ class MyUploadService implements UploadService {
 - [x] InlineEditRow component
 - [x] QuickCreateRow component
 - [x] InlineEditor component
-- [ ] ActionMenu component
+- [x] ActionMenu component
 - [ ] StatusBadge component
 - [ ] Skeleton/LoadingSkeleton components
 - [ ] EmptyState component
