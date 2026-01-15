@@ -816,7 +816,7 @@ class MyUploadService implements UploadService {
 - [x] StatusBadge component
 - [x] Skeleton/LoadingSkeleton components
 - [x] EmptyState component
-- [ ] ErrorState component
+- [x] ErrorState component
 - [ ] PageState component
 
 **Associated Hooks**:
