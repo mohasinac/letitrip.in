@@ -1,7 +1,7 @@
 "use client";
 
 import { BulkActionBar } from "@/components/common/BulkActionBar";
-import { TableCheckbox } from "@/components/common/TableCheckbox";
+import { TableCheckbox } from "@letitrip/react-library";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";

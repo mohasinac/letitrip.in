@@ -45,6 +45,21 @@
    - No main app usage (component not imported anywhere)
    - Removed old component from main app
 
+3. **TableCheckbox Component Migration**
+   - Moved from `src/components/common/TableCheckbox.tsx` to `react-library/src/components/tables/TableCheckbox.tsx`
+   - Component is already framework-agnostic (no Next.js dependencies)
+   - Features:
+     - Checkbox for data tables with indeterminate state support
+     - Touch-friendly with 44x44px minimum touch target (WCAG 2.1)
+     - Disabled state support
+     - Custom aria-labels with smart defaults
+     - Dark mode support
+     - Focus ring for keyboard navigation
+   - Created comprehensive tests (20 test cases, all passing)
+   - Created Storybook story with 9 variations including interactive examples
+   - Updated main app imports: SellerResourcePage, AdminResourcePage
+   - Removed old component from main app
+
 **Pending:**
 
 - [ ] ResponsiveTable component

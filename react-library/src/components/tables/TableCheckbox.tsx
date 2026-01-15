@@ -1,8 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { TableCheckboxProps } from "@/types/inline-edit";
 
+export interface TableCheckboxProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  indeterminate?: boolean;
+  disabled?: boolean;
+  label?: string;
+}
+
+/**
+ * TableCheckbox component for use in data tables
+ * Supports indeterminate state for "select all" functionality
+ * Touch-friendly with minimum 44x44px touch target
+ */
 export function TableCheckbox({
   checked,
   onChange,
