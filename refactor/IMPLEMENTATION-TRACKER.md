@@ -911,13 +911,13 @@ class MyUploadService implements UploadService {
 
 **Move to React Library** (beyond what's already there):
 
-- [ ] FormFieldset component
-- [ ] FormSection component
-- [ ] FormNumberInput component
+- [x] FormFieldset component ✅
+- [x] FormSection component ✅ (includes FormRow, FormActions)
+- [x] FormNumberInput component ✅
 - [ ] FormRichText component
-- [ ] FormRadio component
-- [ ] FormKeyValueInput component
-- [ ] FormListInput component
+- [x] FormRadio component ✅ (includes FormRadioGroup)
+- [x] FormKeyValueInput component ✅
+- [x] FormListInput component ✅
 - [ ] FormFileUpload component
 - [ ] WizardForm component
 - [ ] WizardSteps component
@@ -926,8 +926,8 @@ class MyUploadService implements UploadService {
 - [ ] InlineFormModal component
 - [ ] RichTextEditor component
 - [ ] DateTimePicker component
-- [ ] SlugInput component
-- [ ] TagInput component
+- [ ] SlugInput component ✅
+- [x] TagInput component ✅
 - [ ] PincodeInput component
 - [ ] LinkInput component
 
