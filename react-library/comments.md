@@ -6,7 +6,7 @@
 
 **Started**: January 15, 2026
 
-### Implementation Progress
+### Implementation Progress (13/13 Completed - 100%) ✅
 
 **Completed:**
 
@@ -31,6 +31,7 @@
    - Removed old component from main app
 
 2. **ResponsiveTable Component Migration**
+
    - Moved from `src/components/common/ResponsiveTable.tsx` to `react-library/src/components/tables/ResponsiveTable.tsx`
    - Component is already framework-agnostic (no Next.js dependencies)
    - Features:
@@ -46,6 +47,7 @@
    - Removed old component from main app
 
 3. **TableCheckbox Component Migration**
+
    - Moved from `src/components/common/TableCheckbox.tsx` to `react-library/src/components/tables/TableCheckbox.tsx`
    - Component is already framework-agnostic (no Next.js dependencies)
    - Features:
@@ -60,24 +62,228 @@
    - Updated main app imports: SellerResourcePage, AdminResourcePage
    - Removed old component from main app
 
-**Pending:**
+4. **BulkActionBar Component Migration**
 
-- [ ] ResponsiveTable component
-- [ ] TableCheckbox component
-- [ ] BulkActionBar component
-- [ ] InlineEditRow component
-- [ ] QuickCreateRow component
-- [ ] InlineEditor component
-- [ ] ActionMenu component
-- [ ] StatusBadge component (might already be in library)
-- [ ] Skeleton/LoadingSkeleton components
-- [ ] EmptyState component
-- [ ] ErrorState component
-- [ ] PageState component
+   - Moved from `src/components/common/BulkActionBar.tsx` to `react-library/src/components/tables/BulkActionBar.tsx`
+   - Made framework-agnostic by removing dependencies:
+     - Accepts `ConfirmDialog` as prop (not hardcoded import)
+     - Accepts `onError` callback instead of logError/toast
+     - Accepts `XIcon` and `LoaderIcon` props instead of lucide-react
+     - Inline type definitions (BulkAction, BulkActionBarProps)
+   - Features:
+     - Desktop (top) and mobile (bottom) sticky layouts
+     - Confirmation dialogs for destructive actions
+     - Action variants (default, danger, warning, success)
+     - Loading states during action execution
+     - Custom icons and error handling
+     - Custom resource names and total count display
+   - Created comprehensive tests (18 test cases, all passing)
+   - Created Storybook story with 10 variations including interactive example
+   - Main app integration: Skipped (will be rewritten later)
 
-### Next Steps
+5. **InlineEditRow Component Migration**
 
-Continue migrating table-related components from main app to library, following the same pattern as DataTable.
+   - Moved from `src/components/common/InlineEditRow.tsx` to `react-library/src/components/tables/InlineEditRow.tsx`
+   - Made framework-agnostic by removing dependencies:
+     - Removed InlineCategorySelectorWithCreate (app-specific, use custom render)
+     - Removed InlineImageUpload (app-specific, use custom render)
+     - Removed logError (use onError callback)
+     - Removed lucide-react icons (injectable via props)
+     - Added custom render function support for complex fields
+   - Features:
+     - Multiple field types (text, number, select, checkbox, date, textarea, custom)
+     - Real-time validation with error messages
+     - Keyboard shortcuts (Enter to save, Escape to cancel)
+     - Custom validation functions (per-field and cross-field)
+     - Number constraints (min/max)
+     - Custom render functions for complex fields
+     - Loading states and disabled fields
+     - Custom row and cell styling
+   - Created comprehensive tests (24 test cases, all passing)
+   - Created Storybook story with 6 variations including interactive example
+   - Main app integration: Skipped (will be rewritten later)
+
+6. **QuickCreateRow Component Migration**
+
+   - Moved from `src/components/common/QuickCreateRow.tsx` to `react-library/src/components/tables/QuickCreateRow.tsx`
+   - Made framework-agnostic by removing dependencies (same as InlineEditRow):
+     - Removed InlineCategorySelectorWithCreate (app-specific, use custom render)
+     - Removed InlineImageUpload (app-specific, use custom render)
+     - Removed logError (use onError callback)
+     - Removed lucide-react icons (injectable via props: PlusIcon, XIcon, LoaderIcon)
+     - Added custom render function support for complex fields
+   - Features:
+     - Collapsible interface (starts collapsed with "Add {resourceName}" button)
+     - Expands to show form fields when clicked
+     - Same field types as InlineEditRow (reuses InlineField type)
+     - Real-time validation with error messages
+     - Keyboard shortcuts (Enter to save, Escape to cancel)
+     - Auto-reset and collapse after successful save
+     - Custom validation functions
+     - Custom render functions for complex fields
+     - Loading states and disabled fields
+     - Custom row and cell styling (green color scheme vs InlineEditRow's blue)
+   - Created comprehensive tests (24 test cases, all passing)
+     - Fixed test selector: button accessible name is "Add new item" not "Add item"
+   - Created Storybook story with 7 variations including interactive example
+   - Main app integration: Skipped (will be rewritten later)
+
+7. **InlineEditor Component Migration**
+
+   - Moved from `src/components/common/InlineEditor.tsx` to `react-library/src/components/tables/InlineEditor.tsx`
+   - Made framework-agnostic by removing dependencies:
+     - Removed hardcoded SVG icons (injectable via props: EditIcon, SaveIcon, CancelIcon)
+     - Added onError callback for error handling
+     - Added custom className props for styling
+   - Features:
+     - Click-to-edit interface (display mode with edit icon)
+     - Multiple input types (text, number, textarea, select)
+     - Required field validation
+     - Keyboard shortcuts (Enter/Esc, Ctrl+Enter for textarea)
+     - Custom display renderer for formatted values
+     - Character count display for text inputs
+     - Error message display
+     - Auto-focus and select on edit
+     - Loading states during save
+   - Created comprehensive tests (26 test cases, all passing)
+   - Created Storybook story with 12 variations including interactive examples
+   - Main app integration: Skipped (will be rewritten later)
+
+8. **ActionMenu Component Migration**
+
+   - Moved from `src/components/common/ActionMenu.tsx` to `react-library/src/components/tables/ActionMenu.tsx`
+   - Made framework-agnostic by removing dependencies:
+     - Removed hardcoded SVG icons (injectable via props: DefaultIcon, ChevronIcon)
+     - Added custom className props (triggerClassName, menuClassName)
+   - Features:
+     - Dropdown menu with click-to-open/close
+     - Keyboard support (Escape to close)
+     - Click outside to close
+     - Variant styles for items (default, danger, success)
+     - Disabled item states
+     - Custom icons for items and trigger button
+     - Left/right menu alignment
+     - Accessible with ARIA attributes
+   - Created comprehensive tests (26 test cases, all passing)
+   - Created Storybook story with 7 variations including table context example
+   - Main app integration: Skipped (will be rewritten later)
+
+9. **StatusBadge Component Migration**
+
+   - Moved from `src/components/common/StatusBadge.tsx` to `react-library/src/components/tables/StatusBadge.tsx`
+   - Made framework-agnostic by adding customization:
+     - Added statusStyles prop for custom status definitions
+     - Removed "use client" directive
+   - Features:
+     - 17 predefined status types with color schemes
+     - Three visual variants (default, outline, solid)
+     - Three sizes (sm, md, lg)
+     - Custom status styles support via prop
+     - Dark mode compatible
+     - Automatic text capitalization
+     - Fallback to info style for unknown statuses
+   - Created comprehensive tests (37 test cases, all passing)
+   - Created Storybook story with 8 variations including table context and color scheme examples
+   - Main app integration: Skipped (will be rewritten later)
+
+10. **Skeleton Components Migration**
+    - Moved from `src/components/common/Skeleton.tsx` and `src/components/common/LoadingSkeleton.tsx` to `react-library/src/components/tables/Skeleton.tsx`
+    - Combined both files into single module for better organization
+    - Made framework-agnostic by removing dependencies:
+      - Implemented simple cn utility instead of importing from @/lib/utils
+      - Added accessibility attributes (role, aria-busy, aria-label)
+    - Components included:
+      - Skeleton: Base skeleton with optional animation
+      - SkeletonText: Multi-line text placeholder
+      - SkeletonAvatar: Circular avatar placeholder (4 sizes)
+      - SkeletonButton: Button placeholder (3 sizes)
+      - SkeletonImage: Image placeholder (3 aspect ratios)
+      - LoadingSkeleton: Complex layouts (card, list, detail, grid, table)
+    - Features:
+      - Pulse animation (optional)
+      - Dark mode compatible
+      - Fully customizable via className
+      - 5 complex layout types
+      - Default export for LoadingSkeleton
+    - Created comprehensive tests (48 test cases, all passing)
+    - Created Storybook story with 13 variations including composed examples and dark mode
+    - Main app integration: Skipped (will be rewritten later)
+
+11. **EmptyState Component Migration**
+    - Moved from `src/components/common/EmptyState.tsx` to `react-library/src/components/tables/EmptyState.tsx`
+    - Made framework-agnostic by removing dependencies:
+      - Removed lucide-react icon imports (icons now injectable via props)
+      - Removed "use client" directive
+      - Removed predefined EmptyStates helper object (moved to stories as examples)
+    - Added customization options:
+      - Custom className props for all sub-elements (icon, title, description, actions)
+      - Full control over styling while maintaining sensible defaults
+    - Features:
+      - Optional custom icon display (any ReactNode)
+      - Primary and secondary action buttons
+      - Fully responsive layout (flex column/row)
+      - Dark mode compatible
+      - Semantic HTML (h3 for title, p for description, button elements)
+    - Created comprehensive tests (37 test cases, all passing)
+    - Created Storybook story with 16 variations including real-world examples
+    - Main app integration: Skipped (will be rewritten later)
+
+12. **ErrorState Component Migration**
+    - Moved from `src/components/common/ErrorState.tsx` to `react-library/src/components/tables/ErrorState.tsx`
+    - Made framework-agnostic by removing dependencies:
+      - Removed lucide-react icon imports (AlertTriangle, RefreshCw)
+      - Implemented inline SVG icons (AlertTriangleIcon, RefreshIcon)
+      - Made icons injectable via props with sensible defaults
+    - Enhanced functionality:
+      - Added 2 new error types: unauthorized, server (now 5 total)
+      - Added custom icon, title, and retryIcon props
+      - Added 6 className props for full styling control
+      - Added retryLabel prop for custom button text
+    - Features:
+      - 5 error types with default messages and titles
+      - Optional retry button with custom label and icon
+      - Fully customizable styling for all sub-elements
+      - Dark mode compatible
+      - Semantic HTML (h3, p, button)
+      - Default export for backward compatibility
+    - Created comprehensive tests (44 test cases, all passing)
+    - Created Storybook story with 18 variations including comparisons and real-world scenarios
+    - Main app integration: Skipped (will be rewritten later)
+
+13. **PageState Component Migration** ✅
+    - Moved from `src/components/common/PageState.tsx` to `react-library/src/components/tables/PageState.tsx`
+    - Made framework-agnostic by removing dependencies:
+      - Removed lucide-react icon imports (Loader2, AlertCircle, RefreshCw)
+      - Implemented inline SVG icons (SpinnerIcon, AlertCircleIcon, RefreshIcon)
+      - Made icons injectable via props with sensible defaults
+    - Enhanced functionality:
+      - Added granular className props for each sub-component
+      - Added injectable icons for all sub-components (spinnerIcon, errorIcon, retryIcon, icon)
+      - Added retryLabel prop for Error component
+      - Maintained compound component pattern (PageState.Loading, PageState.Error, PageState.Empty, PageState.FullPageWrapper)
+    - Features:
+      - PageState.Loading - Loading spinner with custom message and full/inline modes
+      - PageState.Error - Error display with optional retry and full/inline modes
+      - PageState.Empty - Empty state with icon, title, description, action button
+      - PageState.FullPageWrapper - Reusable full-page container
+      - Full page and inline display modes for all states
+      - Dark mode compatible
+      - Semantic HTML throughout
+      - Default export for backward compatibility
+    - Created comprehensive tests (59 test cases, all passing)
+      - 9 Loading tests
+      - 15 Error tests
+      - 15 Empty tests
+      - 4 FullPageWrapper tests
+      - 4 Integration tests
+      - 3 Dark mode tests
+      - 4 Accessibility tests
+      - 4 Edge cases
+      - 1 Default export test
+    - Created Storybook story with 19 variations including interactive state management
+    - Main app integration: Skipped (will be rewritten later)
+
+**Task 18.1 Complete!** All 13 table components migrated to react-library.
 
 ## Task 14.1: Create React Library Submodule ✅
 
