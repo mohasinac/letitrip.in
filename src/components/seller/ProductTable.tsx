@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { toast } from "sonner";
-import { logError } from "@/lib/firebase-error-logger";
-import { Eye, Edit, Trash2, ExternalLink } from "lucide-react";
-import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { DataTable, Column } from "@/components/common/DataTable";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { Price } from "@/components/common/values/Price";
 import { FormModal } from "@/components/common/FormModal";
-import { ProductInlineForm } from "./ProductInlineForm";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { Price } from "@/components/common/values/Price";
+import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { Column, DataTable } from "@letitrip/react-library";
+import { Edit, ExternalLink, Eye, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ProductInlineForm } from "./ProductInlineForm";
 
 interface ProductTableProps {
   products: ProductCardFE[];
@@ -29,7 +29,7 @@ export default function ProductTable({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductCardFE | null>(
-    null,
+    null
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -152,8 +152,8 @@ export default function ProductTable({
                 isOutOfStock
                   ? "text-red-600 dark:text-red-400"
                   : isLowStock
-                    ? "text-yellow-600 dark:text-yellow-400"
-                    : "text-gray-900 dark:text-white"
+                  ? "text-yellow-600 dark:text-yellow-400"
+                  : "text-gray-900 dark:text-white"
               }`}
             >
               {stockCount}

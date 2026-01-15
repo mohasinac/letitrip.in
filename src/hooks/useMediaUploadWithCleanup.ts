@@ -8,12 +8,12 @@
  * Also prevents navigation when unsaved media exists.
  */
 
-import { useState, useCallback, useRef } from "react";
-import { useMediaUpload, type UploadService } from "@letitrip/react-library";
-import { mediaService } from "@/services/media.service";
-import { logError } from "@/lib/firebase-error-logger";
-import { useNavigationGuard } from "./useNavigationGuard";
 import { useUploadService } from "@/contexts/ServicesContext";
+import { logError } from "@/lib/firebase-error-logger";
+import { mediaService } from "@/services/media.service";
+import { type UploadService } from "@letitrip/react-library";
+import { useCallback, useRef, useState } from "react";
+import { useNavigationGuard } from "./useNavigationGuard";
 
 export interface UploadedMedia {
   url: string;
@@ -42,7 +42,7 @@ export interface MediaUploadWithCleanupOptions {
 }
 
 export function useMediaUploadWithCleanup(
-  options: MediaUploadWithCleanupOptions = {},
+  options: MediaUploadWithCleanupOptions = {}
 ) {
   const {
     uploadService: customUploadService,
@@ -79,7 +79,7 @@ export function useMediaUploadWithCleanup(
         | "return"
         | "avatar"
         | "category",
-      contextId?: string,
+      contextId?: string
     ): Promise<string> => {
       setIsUploading(true);
 
@@ -110,7 +110,7 @@ export function useMediaUploadWithCleanup(
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError],
+    [onUploadSuccess, onUploadError]
   );
 
   /**
@@ -127,13 +127,13 @@ export function useMediaUploadWithCleanup(
         | "return"
         | "avatar"
         | "category",
-      contextId?: string,
+      contextId?: string
     ): Promise<string[]> => {
       setIsUploading(true);
 
       try {
         const uploadPromises = files.map((file) =>
-          mediaService.upload({ file, context, contextId }),
+          mediaService.upload({ file, context, contextId })
         );
 
         const results = await Promise.all(uploadPromises);
@@ -161,7 +161,7 @@ export function useMediaUploadWithCleanup(
         setIsUploading(false);
       }
     },
-    [onUploadSuccess, onUploadError],
+    [onUploadSuccess, onUploadError]
   );
 
   /**
@@ -185,7 +185,7 @@ export function useMediaUploadWithCleanup(
             metadata: { url: media.url },
           });
           // Don't throw, continue with other deletions
-        }),
+        })
       );
 
       await Promise.allSettled(deletePromises);

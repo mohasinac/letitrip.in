@@ -23,28 +23,28 @@ import { ImageUploadWithCrop, type CropData } from "@letitrip/react-library";
 
 ### Props
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `uploadService` | `IUploadService` | Yes | - | Upload service implementation (Firebase, API, Mock) |
-| `onUploadComplete` | `(url: string) => void` | No | - | Callback when upload succeeds |
-| `onError` | `(error: string) => void` | No | - | Callback when upload fails |
-| `maxSize` | `number` | No | `5MB` | Maximum file size in bytes |
-| `allowedTypes` | `string[]` | No | `['image/jpeg', 'image/png', 'image/webp']` | Allowed MIME types |
-| `context` | `string` | No | - | Upload context (e.g., "product", "avatar") |
-| `contextId` | `string` | No | - | Context identifier (e.g., product ID) |
-| `autoDelete` | `boolean` | No | `false` | Enable auto-delete after 24 hours |
-| `className` | `string` | No | - | Additional CSS classes |
+| Prop               | Type                      | Required | Default                                     | Description                                         |
+| ------------------ | ------------------------- | -------- | ------------------------------------------- | --------------------------------------------------- |
+| `uploadService`    | `IUploadService`          | Yes      | -                                           | Upload service implementation (Firebase, API, Mock) |
+| `onUploadComplete` | `(url: string) => void`   | No       | -                                           | Callback when upload succeeds                       |
+| `onError`          | `(error: string) => void` | No       | -                                           | Callback when upload fails                          |
+| `maxSize`          | `number`                  | No       | `5MB`                                       | Maximum file size in bytes                          |
+| `allowedTypes`     | `string[]`                | No       | `['image/jpeg', 'image/png', 'image/webp']` | Allowed MIME types                                  |
+| `context`          | `string`                  | No       | -                                           | Upload context (e.g., "product", "avatar")          |
+| `contextId`        | `string`                  | No       | -                                           | Context identifier (e.g., product ID)               |
+| `autoDelete`       | `boolean`                 | No       | `false`                                     | Enable auto-delete after 24 hours                   |
+| `className`        | `string`                  | No       | -                                           | Additional CSS classes                              |
 
 ### CropData Interface
 
 ```typescript
 interface CropData {
-  x: number;          // Horizontal offset in pixels
-  y: number;          // Vertical offset in pixels
-  width: number;      // Original image width
-  height: number;     // Original image height
-  zoom: number;       // Zoom level (0.5 - 3.0)
-  rotation: number;   // Rotation angle (0, 90, 180, 270)
+  x: number; // Horizontal offset in pixels
+  y: number; // Vertical offset in pixels
+  width: number; // Original image width
+  height: number; // Original image height
+  zoom: number; // Zoom level (0.5 - 3.0)
+  rotation: number; // Rotation angle (0, 90, 180, 270)
 }
 ```
 
@@ -66,7 +66,7 @@ function ProductImageUpload() {
       onError={(error) => {
         console.error("Upload failed:", error);
       }}
-      maxSize={5 * 1024 * 1024}  // 5MB
+      maxSize={5 * 1024 * 1024} // 5MB
       context="product"
       contextId="product-123"
       autoDelete={true}
@@ -87,7 +87,7 @@ function ProductForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!imageUrl) {
       alert("Please upload an image");
       return;
@@ -104,11 +104,9 @@ function ProductForm() {
         onUploadComplete={setImageUrl}
         context="product"
       />
-      
-      {imageUrl && (
-        <img src={imageUrl} alt="Preview" className="mt-4" />
-      )}
-      
+
+      {imageUrl && <img src={imageUrl} alt="Preview" className="mt-4" />}
+
       <button type="submit">Create Product</button>
     </form>
   );
@@ -148,18 +146,18 @@ import { VideoUploadWithThumbnail } from "@letitrip/react-library";
 
 ### Props
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `uploadService` | `IUploadService` | Yes | - | Upload service implementation |
-| `onUploadComplete` | `(videoUrl: string, thumbnailUrl: string) => void` | No | - | Callback with both URLs |
-| `onError` | `(error: string) => void` | No | - | Callback when upload fails |
-| `maxSize` | `number` | No | `50MB` | Maximum file size in bytes |
-| `maxDuration` | `number` | No | `300` | Maximum duration in seconds |
-| `allowedTypes` | `string[]` | No | `['video/mp4', 'video/webm', 'video/quicktime']` | Allowed MIME types |
-| `context` | `string` | No | - | Upload context (e.g., "auction") |
-| `contextId` | `string` | No | - | Context identifier |
-| `autoDelete` | `boolean` | No | `false` | Enable auto-delete after 24 hours |
-| `className` | `string` | No | - | Additional CSS classes |
+| Prop               | Type                                               | Required | Default                                          | Description                       |
+| ------------------ | -------------------------------------------------- | -------- | ------------------------------------------------ | --------------------------------- |
+| `uploadService`    | `IUploadService`                                   | Yes      | -                                                | Upload service implementation     |
+| `onUploadComplete` | `(videoUrl: string, thumbnailUrl: string) => void` | No       | -                                                | Callback with both URLs           |
+| `onError`          | `(error: string) => void`                          | No       | -                                                | Callback when upload fails        |
+| `maxSize`          | `number`                                           | No       | `50MB`                                           | Maximum file size in bytes        |
+| `maxDuration`      | `number`                                           | No       | `300`                                            | Maximum duration in seconds       |
+| `allowedTypes`     | `string[]`                                         | No       | `['video/mp4', 'video/webm', 'video/quicktime']` | Allowed MIME types                |
+| `context`          | `string`                                           | No       | -                                                | Upload context (e.g., "auction")  |
+| `contextId`        | `string`                                           | No       | -                                                | Context identifier                |
+| `autoDelete`       | `boolean`                                          | No       | `false`                                          | Enable auto-delete after 24 hours |
+| `className`        | `string`                                           | No       | -                                                | Additional CSS classes            |
 
 ### Basic Usage
 
@@ -177,8 +175,8 @@ function AuctionVideoUpload() {
         console.log("Video:", videoUrl);
         console.log("Thumbnail:", thumbnailUrl);
       }}
-      maxSize={50 * 1024 * 1024}  // 50MB
-      maxDuration={300}  // 5 minutes
+      maxSize={50 * 1024 * 1024} // 50MB
+      maxDuration={300} // 5 minutes
       context="auction"
       contextId="auction-456"
     />
@@ -209,14 +207,14 @@ function AuctionForm() {
         onUploadComplete={handleVideoUpload}
         context="auction"
       />
-      
+
       {videoUrl && (
         <div className="mt-4">
           <video src={videoUrl} controls className="w-full" />
           <img src={thumbnailUrl} alt="Thumbnail" className="mt-2" />
         </div>
       )}
-      
+
       <button type="submit">Create Auction</button>
     </form>
   );
@@ -264,12 +262,14 @@ function App() {
 ### Available Upload Services
 
 1. **Firebase Storage** (default):
+
    ```typescript
    import { services } from "@/lib/services/factory";
    const uploadService = services.upload.storage;
    ```
 
 2. **API Endpoint**:
+
    ```typescript
    const uploadService = services.upload.api;
    ```
@@ -321,7 +321,7 @@ function MultipleImageUpload() {
   const uploadService = useUploadService();
 
   const handleUpload = (url: string) => {
-    setImages(prev => [...prev, url]);
+    setImages((prev) => [...prev, url]);
   };
 
   return (
@@ -329,7 +329,7 @@ function MultipleImageUpload() {
       {images.map((url, i) => (
         <img key={i} src={url} alt={`Image ${i + 1}`} />
       ))}
-      
+
       <ImageUploadWithCrop
         uploadService={uploadService}
         onUploadComplete={handleUpload}
@@ -360,15 +360,13 @@ function UploadWithCustomErrors() {
 
   return (
     <div>
-      {errorMessage && (
-        <div className="alert alert-error">{errorMessage}</div>
-      )}
-      
+      {errorMessage && <div className="alert alert-error">{errorMessage}</div>}
+
       <ImageUploadWithCrop
         uploadService={uploadService}
         onError={handleError}
         maxSize={5 * 1024 * 1024}
-        allowedTypes={['image/jpeg', 'image/png', 'image/webp']}
+        allowedTypes={["image/jpeg", "image/png", "image/webp"]}
       />
     </div>
   );
@@ -455,23 +453,25 @@ test("product form with image upload", () => {
 ### From Old Upload Components
 
 **Before** (old components):
+
 ```typescript
 import ImageUploadWithCrop from "@/components/upload/ImageUploadWithCrop";
 
-<ImageUploadWithCrop onUpload={handleUpload} />
+<ImageUploadWithCrop onUpload={handleUpload} />;
 ```
 
 **After** (library components):
+
 ```typescript
 import { ImageUploadWithCrop } from "@letitrip/react-library";
 import { useUploadService } from "@/contexts/ServicesContext";
 
 const uploadService = useUploadService();
 
-<ImageUploadWithCrop 
+<ImageUploadWithCrop
   uploadService={uploadService}
   onUploadComplete={handleUpload}
-/>
+/>;
 ```
 
 ### Key Changes

@@ -16,3 +16,6 @@ export * from "./ui";
 // Upload Components (Task 17.1)
 export { ImageUploadWithCrop, type CropData } from "./ImageUploadWithCrop";
 export { VideoUploadWithThumbnail } from "./VideoUploadWithThumbnail";
+
+// Table Components (Task 18.1)
+export * from "./tables";
