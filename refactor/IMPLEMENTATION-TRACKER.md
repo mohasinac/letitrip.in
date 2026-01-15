@@ -933,11 +933,11 @@ class MyUploadService implements UploadService {
 
 **Associated Hooks**:
 
-- [ ] useFormState
-- [ ] useWizardFormState
-- [ ] useDialogState
-- [ ] usePasswordFieldState
-- [ ] useSlugValidation
+- [x] useFormState ✅
+- [x] useWizardFormState ✅
+- [x] useDialogState ✅ (includes useMultipleDialogs)
+- [x] usePasswordFieldState ✅
+- [x] useSlugValidation ✅
 
 **Storybook Stories**:
 
