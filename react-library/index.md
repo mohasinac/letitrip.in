@@ -396,7 +396,7 @@ All component migration tasks completed:
 - `Button` - 5 variants (primary, secondary, outline, ghost, danger), 3 sizes, loading state, icon support
 - `Card` / `CardSection` - Container components with optional header
 
-### Table Components ✅ (Task 18.1 Started - 3 Components)
+### Table Components ✅ (Task 18.1 Complete - 13 Components)
 
 - `DataTable` - Generic data table with sorting, loading states, custom rendering, row interactions
   - Sortable columns (local or controlled)
@@ -418,6 +418,88 @@ All component migration tasks completed:
   - Disabled state
   - Custom aria-labels
   - Dark mode support
+- `BulkActionBar` - Sticky action bar for bulk operations on selected items
+  - Desktop (top) and mobile (bottom) layouts
+  - Confirmation dialogs for destructive actions
+  - Action variants (default, danger, warning, success)
+  - Loading states during action execution
+  - Custom icons and error handling
+  - Framework-agnostic with dependency injection
+- `InlineEditRow` - Editable table row for inline editing with validation
+  - Multiple field types (text, number, select, checkbox, date, textarea, custom)
+  - Real-time validation with error messages
+  - Keyboard shortcuts (Enter to save, Escape to cancel)
+  - Custom render functions for complex fields
+  - Loading states and disabled fields
+  - Framework-agnostic with dependency injection
+- `QuickCreateRow` - Collapsible table row for quick item creation
+  - Starts collapsed with "Add item" button
+  - Expands to show form fields when clicked
+  - Same field types as InlineEditRow
+  - Real-time validation
+  - Keyboard shortcuts (Enter to save, Escape to cancel)
+  - Auto-reset and collapse after successful save
+  - Custom render functions for complex fields
+  - Framework-agnostic with dependency injection
+- `InlineEditor` - Click-to-edit component for inline value editing
+  - Display mode with edit icon
+  - Multiple input types (text, number, textarea, select)
+  - Required validation
+  - Keyboard shortcuts (Enter/Esc, Ctrl+Enter for textarea)
+  - Custom display renderer
+  - Character count for text inputs
+  - Error handling with display
+  - Framework-agnostic with injectable icons
+- `ActionMenu` - Dropdown menu for table row actions
+  - Click to open/close dropdown
+  - Keyboard support (Escape key)
+  - Click outside to close
+  - Variant styles (default, danger, success)
+  - Disabled item states
+  - Custom icons for items and trigger
+  - Left/right alignment
+  - Framework-agnostic with injectable icons
+- `StatusBadge` - Status indicator with predefined color schemes
+  - 17 predefined status types (active, pending, approved, etc.)
+  - Multiple visual variants (default, outline, solid)
+  - Three sizes (sm, md, lg)
+  - Custom status styles support
+  - Dark mode support
+  - Framework-agnostic with customizable styles
+- `Skeleton` - Loading state components (Base, Text, Avatar, Button, Image, LoadingSkeleton)
+  - Base skeleton with optional pulse animation
+  - Text skeleton with configurable lines
+  - Avatar skeleton in 4 sizes
+  - Button skeleton in 3 sizes
+  - Image skeleton with aspect ratios
+  - Complex layouts (card, list, detail, grid, table)
+  - Dark mode support
+  - Framework-agnostic with full customization
+- `EmptyState` - Empty state component for data-less views
+  - Optional custom icon display
+  - Primary and secondary action buttons
+  - Fully customizable styling (icon, title, description, actions)
+  - Responsive flex layout
+  - Dark mode support
+  - Framework-agnostic (no icon dependencies)
+- `ErrorState` - Error state component with retry functionality
+  - 5 error types with default messages (error, not-found, network, unauthorized, server)
+  - Optional retry button with callback
+  - Custom icons, titles, and messages
+  - Fully customizable styling (6 className props)
+  - Dark mode support
+  - Framework-agnostic with default SVG icons
+  - Default export for backward compatibility
+- `PageState` - Unified page state component (compound component with 3 sub-components)
+  - PageState.Loading - Loading spinner with custom message
+  - PageState.Error - Error display with optional retry button
+  - PageState.Empty - Empty state with icon, title, description, and action
+  - PageState.FullPageWrapper - Full page container for custom states
+  - Full page and inline display modes
+  - Injectable icons for all sub-components (spinnerIcon, errorIcon, retryIcon, icon)
+  - Granular className props for each element
+  - Dark mode support
+  - Framework-agnostic with default SVG icons
 
 ### Upload Components ✅ (Task 17.1 Complete - 2 Components)
 
