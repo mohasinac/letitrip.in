@@ -30,3 +30,7 @@ export * from "./accessibility";
 export * from "./base-service";
 export * from "./error-logger";
 export * from "./errors";
+
+// Data fetching (Task 19.4)
+export * from "./query-helpers";
+export * from "./data-fetching-adapters";

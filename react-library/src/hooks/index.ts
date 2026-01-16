@@ -40,7 +40,72 @@ export {
   useViewport,
 } from "./useMediaQuery";
 
-// Utility hooks
+// Utility hooks (Task 19.2)
+export { useSafeLoad } from "./useSafeLoad";
+export type { UseSafeLoadOptions, UseSafeLoadReturn } from "./useSafeLoad";
+
+export { useWindowResize } from "./useWindowResize";
+export type {
+  UseWindowResizeOptions,
+  UseWindowResizeReturn,
+  WindowSize,
+} from "./useWindowResize";
+
+// Mobile detection utilities from useMobile (additional utilities)
+export {
+  breakpoints,
+  getDeviceType,
+  isAndroid,
+  isIOS,
+  useDeviceType,
+} from "./useMobile";
+
+// State management hooks (Task 19.2)
+export { useCheckoutState } from "./useCheckoutState";
+export type {
+  CheckoutAddress,
+  CheckoutStep,
+  UseCheckoutStateReturn,
+} from "./useCheckoutState";
+
+export { useConversationState } from "./useConversationState";
+export type {
+  Conversation,
+  ConversationStateOptions,
+  Message,
+  UseConversationStateReturn,
+} from "./useConversationState";
+
+export { useNavigationGuard } from "./useNavigationGuard";
+export type { NavigationGuardOptions } from "./useNavigationGuard";
+
+// Context-based hooks (Task 19.2)
+export { createUseAuthState, useAuthState } from "./useAuthState";
+export type { AuthState, User } from "./useAuthState";
+
+export { createUseAuthActions, useAuthActions } from "./useAuthActions";
+export type {
+  AuthActions,
+  LoginCredentials,
+  RegisterData,
+} from "./useAuthActions";
+
+export { useCart } from "./useCart";
+export type {
+  Cart,
+  CartItem,
+  CartService,
+  UseCartOptions,
+  UseCartReturn,
+} from "./useCart";
+
+export { useHeaderStats } from "./useHeaderStats";
+export type {
+  HeaderStats,
+  UseHeaderStatsOptions,
+  UseHeaderStatsReturn,
+} from "./useHeaderStats";
+
 export {
   useClipboard,
   useCounter,
@@ -145,3 +210,13 @@ export type {
   UseWizardFormStateConfig,
   UseWizardFormStateReturn,
 } from "./useWizardFormState";
+
+// Data fetching hooks (Task 19.4)
+export { useQuery } from "./useQuery";
+export type { UseQueryOptions, UseQueryResult } from "./useQuery";
+
+export { useMutation } from "./useMutation";
+export type {
+  UseMutationOptions,
+  UseMutationResult,
+} from "./useMutation";
