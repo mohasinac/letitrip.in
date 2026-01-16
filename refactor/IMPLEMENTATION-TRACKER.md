@@ -1350,160 +1350,160 @@ react-library/src/
 
 ### Components Currently in Main App (src/components/common)
 
-**Table & Data Display** (13 files):
+**Table & Data Display** (13 files): ✅ COMPLETE
 
-- [ ] `DataTable.tsx` → `react-library/src/components/tables/`
-- [ ] `ResponsiveTable.tsx` → `react-library/src/components/tables/`
-- [ ] `TableCheckbox.tsx` → `react-library/src/components/tables/`
-- [ ] `BulkActionBar.tsx` → `react-library/src/components/tables/`
-- [ ] `InlineEditRow.tsx` → `react-library/src/components/tables/`
-- [ ] `QuickCreateRow.tsx` → `react-library/src/components/tables/`
-- [ ] `InlineEditor.tsx` → `react-library/src/components/tables/`
-- [ ] `ActionMenu.tsx` → `react-library/src/components/tables/`
-- [ ] `StatusBadge.tsx` → `react-library/src/components/ui/`
-- [ ] `Skeleton.tsx` + `LoadingSkeleton.tsx` → `react-library/src/components/ui/`
-- [ ] `EmptyState.tsx` → `react-library/src/components/ui/`
-- [ ] `ErrorState.tsx` → `react-library/src/components/ui/`
-- [ ] `PageState.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `DataTable.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `ResponsiveTable.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `TableCheckbox.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `BulkActionBar.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `InlineEditRow.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `QuickCreateRow.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `InlineEditor.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `ActionMenu.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `StatusBadge.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `Skeleton.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `EmptyState.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `ErrorState.tsx` → `react-library/src/components/tables/`
+- [x] ✅ `PageState.tsx` → `react-library/src/components/tables/`
 
-**Filter & Search** (19 files):
+**Filter & Search** (19 files): ✅ COMPLETE
 
-- [ ] `UnifiedFilterSidebar.tsx` → `react-library/src/components/filters/`
-- [ ] `FilterSidebar.tsx` → `react-library/src/components/filters/`
-- [ ] `FilterBar.tsx` → `react-library/src/components/filters/`
-- [ ] `CollapsibleFilter.tsx` → `react-library/src/components/filters/`
-- [ ] `MobileFilterSidebar.tsx` → `react-library/src/components/filters/`
-- [ ] `MobileFilterDrawer.tsx` → `react-library/src/components/filters/`
-- [ ] `SearchBar.tsx` → `react-library/src/components/filters/` (remove Next.js deps)
-- [ ] `SearchInput.tsx` → `react-library/src/components/filters/`
-- [ ] `SearchableDropdown.tsx` → `react-library/src/components/filters/`
-- [ ] `ContentTypeFilter.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/AuctionFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/ProductFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/CategoryFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/ShopFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/OrderFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/CouponFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/ReturnFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/ReviewFilters.tsx` → `react-library/src/components/filters/`
-- [ ] `filters/UserFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `UnifiedFilterSidebar.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `FilterSidebar.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `FilterBar.tsx` → `react-library/src/components/search/`
+- [x] ✅ `CollapsibleFilter.tsx` → `react-library/src/components/search/`
+- [x] ✅ `MobileFilterSidebar.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `MobileFilterDrawer.tsx` → `react-library/src/components/search/`
+- [x] ✅ `SearchBar.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `SearchInput.tsx` → `react-library/src/components/search/`
+- [x] ✅ `SearchableDropdown.tsx` → `react-library/src/components/search/`
+- [x] ✅ `ContentTypeFilter.tsx` → `react-library/src/components/search/`
+- [x] ✅ `filters/AuctionFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/ProductFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/CategoryFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/ShopFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/OrderFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/CouponFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/ReturnFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/ReviewFilters.tsx` → `react-library/src/components/filters/`
+- [x] ✅ `filters/UserFilters.tsx` → `react-library/src/components/filters/`
 
-**Pagination** (3 files):
+**Pagination** (3 files): ✅ COMPLETE
 
-- [ ] `AdvancedPagination.tsx` → `react-library/src/components/pagination/`
-- [ ] `Pagination.tsx` → `react-library/src/components/pagination/SimplePagination.tsx`
-- [ ] (CursorPagination - find or verify doesn't exist)
+- [x] ✅ `AdvancedPagination.tsx` → `react-library/src/components/pagination/`
+- [x] ✅ `Pagination.tsx` → `react-library/src/components/pagination/SimplePagination.tsx`
+- [x] ✅ `CursorPagination.tsx` → `react-library/src/components/pagination/`
 
-**Additional Form Components** (19 files):
+**Additional Form Components** (19 files): ✅ 17/19 COMPLETE (FormModal, InlineFormModal not applicable)
 
-- [ ] `FormFieldset.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormSection.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormNumberInput.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormRichText.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormRadio.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormKeyValueInput.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormListInput.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `FormFileUpload.tsx` → `react-library/src/components/forms/` (if exists)
-- [ ] `forms/WizardForm.tsx` → `react-library/src/components/forms/`
-- [ ] `forms/WizardSteps.tsx` → `react-library/src/components/forms/`
-- [ ] `forms/WizardActionBar.tsx` → `react-library/src/components/forms/`
-- [ ] `FormModal.tsx` → `react-library/src/components/dialogs/`
-- [ ] `InlineFormModal.tsx` → `react-library/src/components/dialogs/`
-- [ ] `RichTextEditor.tsx` → `react-library/src/components/forms/`
-- [ ] `DateTimePicker.tsx` → `react-library/src/components/forms/`
-- [ ] `SlugInput.tsx` → `react-library/src/components/forms/`
-- [ ] `TagInput.tsx` → `react-library/src/components/forms/`
-- [ ] `PincodeInput.tsx` → `react-library/src/components/forms/`
-- [ ] `LinkInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormFieldset.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormSection.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormNumberInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormRichText.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormRadio.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormKeyValueInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormListInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `FormFileUpload.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `forms/WizardForm.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `forms/WizardSteps.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `forms/WizardActionBar.tsx` → `react-library/src/components/forms/`
+- [x] ⏭️ `FormModal.tsx` → Not created (modals handled by ConfirmDialog in ui/)
+- [x] ⏭️ `InlineFormModal.tsx` → Not created (modals handled by ConfirmDialog in ui/)
+- [x] ✅ `RichTextEditor.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `DateTimePicker.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `SlugInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `TagInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `PincodeInput.tsx` → `react-library/src/components/forms/`
+- [x] ✅ `LinkInput.tsx` → `react-library/src/components/forms/`
 
-**Selector Components** (9 files):
+**Selector Components** (9 files): ✅ COMPLETE
 
-- [ ] `CategorySelector.tsx` → `react-library/src/components/selectors/`
-- [ ] `AddressSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
-- [ ] `ContactSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
-- [ ] `TagSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
-- [ ] `ProductVariantSelector.tsx` → `react-library/src/components/selectors/`
-- [ ] `LanguageSelector.tsx` → `react-library/src/components/selectors/`
-- [ ] `StateSelector.tsx` → `react-library/src/components/selectors/`
-- [ ] `PeriodSelector.tsx` → `react-library/src/components/selectors/`
-- [ ] `DocumentSelectorWithUpload.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `CategorySelector.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `AddressSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `ContactSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `TagSelectorWithCreate.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `ProductVariantSelector.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `LanguageSelector.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `StateSelector.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `PeriodSelector.tsx` → `react-library/src/components/selectors/`
+- [x] ✅ `DocumentSelectorWithUpload.tsx` → `react-library/src/components/selectors/`
 
-**UI & Display** (19 files):
+**UI & Display** (19 files): ✅ COMPLETE
 
-- [ ] `ConfirmDialog.tsx` → `react-library/src/components/dialogs/`
-- [ ] `ErrorMessage.tsx` → `react-library/src/components/ui/`
-- [ ] `FieldError.tsx` → `react-library/src/components/ui/`
-- [ ] `Toast.tsx` → `react-library/src/components/ui/`
-- [ ] `StatCard.tsx` / `StatsCard.tsx` → `react-library/src/components/ui/`
-- [ ] `FavoriteButton.tsx` → `react-library/src/components/ui/` (remove Next.js deps)
-- [ ] `ThemeToggle.tsx` → `react-library/src/components/ui/` (extract theme logic)
-- [ ] `DynamicIcon.tsx` → `react-library/src/components/ui/`
-- [ ] `PaymentLogo.tsx` → `react-library/src/components/ui/`
-- [ ] `OptimizedImage.tsx` → `react-library/src/components/ui/` (remove Next.js Image)
-- [ ] `SmartLink.tsx` → `react-library/src/components/ui/` (remove Next.js Link)
-- [ ] `HorizontalScrollContainer.tsx` → `react-library/src/components/layouts/`
-- [ ] `MobileStickyBar.tsx` → `react-library/src/components/ui/`
-- [ ] `MobileInput.tsx` → `react-library/src/components/forms/`
-- [ ] `UploadProgress.tsx` → `react-library/src/components/ui/`
-- [ ] `InlineImageUpload.tsx` → `react-library/src/components/ui/`
-- [ ] `PendingUploadsWarning.tsx` → `react-library/src/components/ui/`
-- [ ] `GPSButton.tsx` → `react-library/src/components/ui/`
-- [ ] `Accessibility.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `ConfirmDialog.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `ErrorMessage.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `FieldError.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `Toast.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `StatCard.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `FavoriteButton.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `ThemeToggle.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `DynamicIcon.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `PaymentLogo.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `OptimizedImage.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `SmartLink.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `HorizontalScrollContainer.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `MobileStickyBar.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `MobileInput.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `UploadProgress.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `InlineImageUpload.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `PendingUploadsWarning.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `GPSButton.tsx` → `react-library/src/components/ui/`
+- [x] ✅ `Accessibility.tsx` → `react-library/src/components/ui/`
 
-**Wrapper & Layout** (4 files):
+**Wrapper & Layout** (4 files): ✅ COMPLETE
 
-- [ ] `ResourceListWrapper.tsx` → `react-library/src/components/layouts/`
-- [ ] `ResourceDetailWrapper.tsx` → `react-library/src/components/layouts/`
-- [ ] `SettingsSection.tsx` → `react-library/src/components/layouts/`
-- [ ] `SmartAddressForm.tsx` → `react-library/src/components/forms/` (remove Next.js deps)
+- [x] ✅ `ResourceListWrapper.tsx` → `react-library/src/components/wrappers/`
+- [x] ✅ `ResourceDetailWrapper.tsx` → `react-library/src/components/wrappers/`
+- [x] ✅ `SettingsSection.tsx` → `react-library/src/components/wrappers/`
+- [x] ✅ `SmartAddressForm.tsx` → `react-library/src/components/wrappers/`
 
 ### Hooks Currently in Main App (src/hooks)
 
-**State Management** (8 files):
+**State Management** (8 files): ✅ COMPLETE
 
-- [ ] `useBulkSelection.ts` → `react-library/src/hooks/state/`
-- [ ] `useResourceList.ts` → `react-library/src/hooks/state/`
-- [ ] `useResourceListState.ts` → `react-library/src/hooks/state/`
-- [ ] `useFetchResourceList.ts` → `react-library/src/hooks/state/`
-- [ ] `useLoadingState.ts` → `react-library/src/hooks/state/`
-- [ ] `useSafeLoad.ts` → `react-library/src/hooks/state/`
-- [ ] `useCheckoutState.ts` → `react-library/src/hooks/state/`
-- [ ] `useConversationState.ts` → `react-library/src/hooks/state/`
+- [x] ✅ `useBulkSelection.ts` → `react-library/src/hooks/`
+- [x] ✅ `useResourceList.ts` → `react-library/src/hooks/`
+- [x] ✅ `useResourceListState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useFetchResourceList.ts` → `react-library/src/hooks/`
+- [x] ✅ `useLoadingState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useSafeLoad.ts` → `react-library/src/hooks/`
+- [x] ✅ `useCheckoutState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useConversationState.ts` → `react-library/src/hooks/`
 
-**Filter & Pagination** (4 files):
+**Filter & Pagination** (4 files): ✅ COMPLETE
 
-- [ ] `useFilters.ts` → `react-library/src/hooks/state/`
-- [ ] `useUrlFilters.ts` → `react-library/src/hooks/state/` (make framework-agnostic)
-- [ ] `usePaginationState.ts` → `react-library/src/hooks/state/`
-- [ ] `useUrlPagination.ts` → `react-library/src/hooks/state/` (make framework-agnostic)
+- [x] ✅ `useFilters.ts` → `react-library/src/hooks/`
+- [x] ✅ `useUrlFilters.ts` → `react-library/src/hooks/`
+- [x] ✅ `usePaginationState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useUrlPagination.ts` → `react-library/src/hooks/`
 
-**UI Hooks** (6 files):
+**UI Hooks** (6 files): ✅ COMPLETE
 
-- [ ] `useInfiniteScroll.ts` → `react-library/src/hooks/ui/`
-- [ ] `useVirtualList.ts` → `react-library/src/hooks/ui/`
-- [ ] `useWindowResize.ts` → `react-library/src/hooks/ui/`
-- [ ] `useMobile.ts` → `react-library/src/hooks/ui/` (or merge with useMediaQuery)
-- [ ] `useDialogState.ts` → `react-library/src/hooks/ui/`
-- [ ] `useHeaderStats.ts` → `react-library/src/hooks/ui/`
+- [x] ✅ `useInfiniteScroll.ts` → `react-library/src/hooks/`
+- [x] ✅ `useVirtualList.ts` → `react-library/src/hooks/`
+- [x] ✅ `useWindowResize.ts` → `react-library/src/hooks/`
+- [x] ✅ `useMobile.ts` → `react-library/src/hooks/`
+- [x] ✅ `useDialogState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useHeaderStats.ts` → `react-library/src/hooks/`
 
-**Form Hooks** (4 files):
+**Form Hooks** (4 files): ✅ COMPLETE
 
-- [ ] `useFormState.ts` → `react-library/src/hooks/forms/`
-- [ ] `useWizardFormState.ts` → `react-library/src/hooks/forms/`
-- [ ] `usePasswordFieldState.ts` → `react-library/src/hooks/forms/`
-- [ ] `useSlugValidation.ts` → `react-library/src/hooks/forms/`
+- [x] ✅ `useFormState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useWizardFormState.ts` → `react-library/src/hooks/`
+- [x] ✅ `usePasswordFieldState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useSlugValidation.ts` → `react-library/src/hooks/`
 
-**Auth & Cart** (4 files):
+**Auth & Cart** (4 files): ✅ COMPLETE
 
-- [ ] `useAuthState.ts` → `react-library/src/hooks/state/` (make framework-agnostic)
-- [ ] `useAuthActions.ts` → `react-library/src/hooks/state/` (make framework-agnostic)
-- [ ] `useCart.ts` → `react-library/src/hooks/state/` (extract core logic)
-- [ ] `useNavigationGuard.ts` → `react-library/src/hooks/ui/` (make framework-agnostic)
+- [x] ✅ `useAuthState.ts` → `react-library/src/hooks/`
+- [x] ✅ `useAuthActions.ts` → `react-library/src/hooks/`
+- [x] ✅ `useCart.ts` → `react-library/src/hooks/`
+- [x] ✅ `useNavigationGuard.ts` → `react-library/src/hooks/`
 
-**Media & Upload** (2 files):
+**Media & Upload** (2 files): ✅ COMPLETE
 
-- [ ] `useMediaUpload.ts` → Already in library, remove from main app
-- [ ] `useMediaUploadWithCleanup.ts` → Keep in main app (Next.js specific wrapper)
+- [x] ✅ `useMediaUpload.ts` → `react-library/src/hooks/` (already in library)
+- [x] ⏭️ `useMediaUploadWithCleanup.ts` → Remains in main app (Next.js specific wrapper)
 
 ### Hooks Already in Library (react-library/src/hooks)
 
