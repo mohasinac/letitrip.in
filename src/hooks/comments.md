@@ -1,5 +1,33 @@
 # Custom Hooks - Future Refactoring Notes
 
+## ⚠️ MIGRATION NOTICE (January 16, 2026)
+
+**Most hooks have been migrated to `@letitrip/react-library`**
+
+Before modifying hooks in this directory, check if they exist in react-library:
+
+**Migrated to Library** (26 hooks - 100%):
+- State Management: useQuery, useMutation, useLoadingState, useOptimisticUpdate, useResourceList, useQueryCache, useInfiniteScroll, useCursorPagination
+- Filters & Pagination: useFilters, usePagination, useSort, useUrlFilters
+- UI Hooks: useDebounce, useLocalStorage, useMediaQuery, useMobile, useWindowResize, useUtilities
+- Form Hooks: useFormState, useFormValidation, useAsyncValidation, useDynamicFields
+- Auth & Cart: useAuthState, useAuthActions, useCart, useCheckoutState
+- Upload: useMediaUpload, useMediaUploadWithCleanup
+
+**Remaining in Main App** (Next.js-specific):
+- useHeaderStats (uses Next.js API routes)
+- useNavigationGuard (uses Next.js router)
+- useSafeLoad (uses Next.js router)
+- useConversationState (uses Firebase/Context)
+- Any hooks that depend on Next.js features
+
+**If you need a new hook**:
+1. Check if similar hook exists in react-library
+2. If framework-agnostic → Add to react-library
+3. If Next.js-specific → Keep in main app
+
+---
+
 ## General Improvements
 
 ### 1. Testing
