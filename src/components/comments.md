@@ -7,6 +7,7 @@
 Before creating new components, check if they already exist in the library:
 
 **Migrated Components** (82 files):
+
 - Tables & Data Display: DataTable, ResponsiveTable, TableCheckbox, BulkActionBar, InlineEditRow, QuickCreateRow, InlineEditor, ActionMenu, StatusBadge, Skeleton, EmptyState, ErrorState, PageState (13 files)
 - Filters & Search: UnifiedFilterSidebar, FilterSidebar, MobileFilterSidebar, SearchBar, FilterBar, CollapsibleFilter, SearchInput, SearchableDropdown, ContentTypeFilter, MobileFilterDrawer + specialized filters (19 files)
 - Pagination: AdvancedPagination, SimplePagination, CursorPagination (3 files)
@@ -17,12 +18,14 @@ Before creating new components, check if they already exist in the library:
 - Media Upload: ImageUploadWithCrop, VideoUploadWithThumbnail (2 files)
 
 **Remaining in Main App** (Next.js-specific components):
+
 - Layout components (Header, Footer, Sidebar)
 - Page-specific components
 - Components using Next.js Image, Link, Router
 - Components tightly coupled to Firebase/Context
 
 **Guidelines**:
+
 1. **Import from library**: `import { Button, DataTable } from '@letitrip/react-library'`
 2. **New components**: If framework-agnostic → Add to library, else keep in main
 3. **Avoid duplication**: Always check library first
