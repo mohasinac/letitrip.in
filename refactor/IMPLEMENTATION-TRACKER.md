@@ -1004,6 +1004,7 @@ class MyUploadService implements UploadService {
 **Date Completed**: January 16, 2026
 
 **Toast Component Details**:
+
 - Context-based provider with ToastProvider
 - Queue management with configurable max toasts (default: 5)
 - Auto-dismiss with configurable duration
@@ -1093,16 +1094,81 @@ All framework-agnostic with:
 - [ ] ResourceListWrapper.stories.tsx
 - [ ] SettingsSection.stories.tsx
 
-#### Task 19.4: Queries/Data Fetching Hooks
+#### Task 19.4: Queries/Data Fetching Hooks ✅
 
 **Extract Framework-Agnostic Patterns**:
 
-- [ ] Review hooks/queries/\* folder
-- [ ] Extract reusable query patterns
-- [ ] Create generic data fetching utilities
-- [ ] Document integration patterns for different frameworks
+- [x] Review hooks/queries/\* folder ✅
+- [x] Extract reusable query patterns ✅
+- [x] Create generic data fetching utilities ✅
+- [x] Document integration patterns for different frameworks ✅
 
-**Note**: These may need adapter patterns for framework-specific implementations
+**Status**: Complete
+**Date Completed**: January 16, 2026
+
+**Implementation Details**:
+
+**Generic Hooks Created** (~900 lines):
+1. **useQuery** - Generic query hook with caching, retries, polling
+   - In-memory cache with configurable staleTime/cacheTime
+   - Automatic retry with exponential backoff
+   - Refetch on window focus/reconnect
+   - Refetch interval (polling)
+   - Initial data support
+   - Success/error/settled callbacks
+   - Framework-agnostic (React-only)
+
+2. **useMutation** - Generic mutation hook with optimistic updates
+   - Optimistic updates with rollback on error
+   - onMutate callback for pre-mutation logic
+   - Automatic retry support
+   - Success/error/settled callbacks
+   - mutate (fire and forget) and mutateAsync (promise)
+   - Reset mutation state
+
+**Query Utilities Created**:
+1. **Query Key Factories** - Consistent, type-safe cache keys
+   - `createQueryKeys(resource)` - Standard patterns (all, list, detail, bySlug, search, infinite)
+   - `createCustomQueryKeys(resource, custom)` - Custom key patterns
+   - Hierarchical structure for efficient invalidation
+
+2. **Optimistic Update Helpers** - Automatic rollback on error
+   - `createOptimisticUpdate()` - Pre-built mutation callbacks
+   - Cancel queries, snapshot, update, rollback pattern
+   - Works with any query client (TanStack Query, SWR, custom)
+
+3. **Cache Management**
+   - `invalidateQueries()` - Invalidate and refetch
+   - `prefetchQuery()` - Prefetch on hover/before navigation
+   - `createDependentQuery()` - Sequential queries
+
+**Data Fetching Adapters** (~450 lines):
+- `createTanStackAdapter()` - For TanStack Query (React Query)
+- `createSWRAdapter()` - For SWR
+- `createCustomAdapter()` - For custom implementations
+- Makes components work with any query library
+- Unified interface across different libraries
+
+**Documentation**:
+- Comprehensive guide: `react-library/docs/DATA-FETCHING.md`
+- Usage examples for TanStack Query, SWR, custom
+- Best practices and migration guide
+- TypeScript examples
+- Framework integration (Next.js, React Native)
+
+**Architecture Decision**:
+- Domain-specific hooks (useCart, useProduct, useOrder, etc.) **remain in main app**
+- They are application-specific, not reusable patterns
+- Library provides **patterns**, app provides **domain logic**
+- App hooks use these patterns + app services + app types
+
+**Note**: These hooks use TanStack Query patterns but are simpler implementations.
+For production, we recommend using TanStack Query directly for:
+- Better performance
+- Request deduplication
+- DevTools
+- SSR support
+- More robust retry logic
 
 #### Task 19.5: Main App Dependency Audit
 
