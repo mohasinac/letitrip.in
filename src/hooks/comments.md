@@ -7,6 +7,7 @@
 Before modifying hooks in this directory, check if they exist in react-library:
 
 **Migrated to Library** (26 hooks - 100%):
+
 - State Management: useQuery, useMutation, useLoadingState, useOptimisticUpdate, useResourceList, useQueryCache, useInfiniteScroll, useCursorPagination
 - Filters & Pagination: useFilters, usePagination, useSort, useUrlFilters
 - UI Hooks: useDebounce, useLocalStorage, useMediaQuery, useMobile, useWindowResize, useUtilities
@@ -15,6 +16,7 @@ Before modifying hooks in this directory, check if they exist in react-library:
 - Upload: useMediaUpload, useMediaUploadWithCleanup
 
 **Remaining in Main App** (Next.js-specific):
+
 - useHeaderStats (uses Next.js API routes)
 - useNavigationGuard (uses Next.js router)
 - useSafeLoad (uses Next.js router)
@@ -22,6 +24,7 @@ Before modifying hooks in this directory, check if they exist in react-library:
 - Any hooks that depend on Next.js features
 
 **If you need a new hook**:
+
 1. Check if similar hook exists in react-library
 2. If framework-agnostic → Add to react-library
 3. If Next.js-specific → Keep in main app
