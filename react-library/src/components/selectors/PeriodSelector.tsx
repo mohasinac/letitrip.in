@@ -1,9 +1,9 @@
 /**
  * PeriodSelector Component
- * 
+ *
  * A framework-agnostic time period selector for analytics and reports.
  * Provides segmented button group for easy period filtering.
- * 
+ *
  * @example
  * ```tsx
  * <PeriodSelector
@@ -40,15 +40,15 @@ export interface PeriodSelectorProps {
 
 // Default periods
 const DEFAULT_PERIODS: Period[] = [
-  { label: 'Today', value: 'day' },
-  { label: 'This Week', value: 'week' },
-  { label: 'This Month', value: 'month' },
-  { label: 'This Year', value: 'year' },
+  { label: "Today", value: "day" },
+  { label: "This Week", value: "week" },
+  { label: "This Month", value: "month" },
+  { label: "This Year", value: "year" },
 ];
 
 // Inline cn utility
 function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 export function PeriodSelector({
@@ -56,14 +56,14 @@ export function PeriodSelector({
   onChange,
   periods = DEFAULT_PERIODS,
   disabled = false,
-  className = '',
+  className = "",
 }: PeriodSelectorProps) {
   return (
     <div
       className={cn(
-        'inline-flex rounded-lg border border-gray-200 dark:border-gray-700',
-        'bg-white dark:bg-gray-800 p-1',
-        disabled && 'opacity-50 cursor-not-allowed',
+        "inline-flex rounded-lg border border-gray-200 dark:border-gray-700",
+        "bg-white dark:bg-gray-800 p-1",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     >
@@ -74,12 +74,12 @@ export function PeriodSelector({
           onClick={() => !disabled && onChange(period.value)}
           disabled={disabled}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+            "px-4 py-2 text-sm font-medium rounded-md transition-colors",
             value === period.value
-              ? 'bg-indigo-600 text-white'
+              ? "bg-indigo-600 text-white"
               : cn(
-                  'text-gray-700 dark:text-gray-300',
-                  !disabled && 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  "text-gray-700 dark:text-gray-300",
+                  !disabled && "hover:bg-gray-100 dark:hover:bg-gray-700"
                 )
           )}
           aria-pressed={value === period.value}

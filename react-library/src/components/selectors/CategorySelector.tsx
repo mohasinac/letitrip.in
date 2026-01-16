@@ -1,9 +1,9 @@
 /**
  * CategorySelector Component
- * 
+ *
  * Framework-agnostic tree-based category selector with search functionality.
  * Supports leaf-only selection (seller mode) or full hierarchy selection (admin mode).
- * 
+ *
  * @example
  * ```tsx
  * <CategorySelector
@@ -15,7 +15,7 @@
  * ```
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from "react";
 
 export interface Category {
   id: string;
@@ -50,12 +50,15 @@ export interface CategorySelectorProps {
   /** Additional CSS classes */
   className?: string;
   /** Custom debounce function */
-  debounce?: <T extends (...args: any[]) => any>(func: T, wait: number) => (...args: Parameters<T>) => void;
+  debounce?: <T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+  ) => (...args: Parameters<T>) => void;
 }
 
 // Inline cn utility
 function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 // Simple inline debounce (if not provided)
@@ -74,18 +77,20 @@ export function CategorySelector({
   categories,
   value,
   onChange,
-  placeholder = 'Select a category',
+  placeholder = "Select a category",
   disabled = false,
   error,
   showProductCount = false,
   allowParentSelection = false,
-  className = '',
+  className = "",
   debounce = defaultDebounce,
 }: CategorySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
 
   // Debounce search query
   const handleSearchChange = useMemo(
@@ -169,7 +174,7 @@ export function CategorySelector({
             ? categories.find((cat) => cat.id === currentParentIds[0])
             : undefined;
       }
-      return path.join(' > ');
+      return path.join(" > ");
     },
     [categories]
   );
@@ -196,8 +201,8 @@ export function CategorySelector({
       }
       onChange(category.id, category);
       setIsOpen(false);
-      setSearchQuery('');
-      setDebouncedQuery('');
+      setSearchQuery("");
+      setDebouncedQuery("");
     },
     [allowParentSelection, onChange, toggleExpand]
   );
@@ -219,18 +224,18 @@ export function CategorySelector({
             <div
               onClick={() => handleSelect(category)}
               className={cn(
-                'flex items-center gap-2 py-2.5 transition-colors',
+                "flex items-center gap-2 py-2.5 transition-colors",
                 canSelect
-                  ? 'cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/30'
-                  : 'cursor-default',
+                  ? "cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/30"
+                  : "cursor-default",
                 isSelected &&
-                  'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-900 dark:text-yellow-200 font-medium',
-                !isSelected && 'text-gray-900 dark:text-gray-100',
-                !category.is_active && 'opacity-50'
+                  "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-900 dark:text-yellow-200 font-medium",
+                !isSelected && "text-gray-900 dark:text-gray-100",
+                !category.is_active && "opacity-50"
               )}
               style={{
                 paddingLeft: `${16 + level * 20}px`,
-                paddingRight: '16px',
+                paddingRight: "16px",
               }}
             >
               {/* Expand/Collapse icon */}
@@ -245,8 +250,8 @@ export function CategorySelector({
                 >
                   <svg
                     className={cn(
-                      'w-4 h-4 text-gray-600 dark:text-gray-400 transition-transform',
-                      isExpanded && 'rotate-90'
+                      "w-4 h-4 text-gray-600 dark:text-gray-400 transition-transform",
+                      isExpanded && "rotate-90"
                     )}
                     fill="none"
                     stroke="currentColor"
@@ -265,8 +270,8 @@ export function CategorySelector({
               {/* Category name */}
               <span
                 className={cn(
-                  'flex-1 text-sm',
-                  !canSelect && 'font-semibold text-gray-700 dark:text-gray-300'
+                  "flex-1 text-sm",
+                  !canSelect && "font-semibold text-gray-700 dark:text-gray-300"
                 )}
               >
                 {category.name}
@@ -305,14 +310,14 @@ export function CategorySelector({
   );
 
   return (
-    <div className={cn('category-selector relative', className)}>
+    <div className={cn("category-selector relative", className)}>
       {/* Trigger */}
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center gap-2 px-3 lg:px-4 h-full cursor-pointer',
-          'bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors',
-          disabled && 'opacity-50 cursor-not-allowed'
+          "flex items-center gap-2 px-3 lg:px-4 h-full cursor-pointer",
+          "bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors",
+          disabled && "opacity-50 cursor-not-allowed"
         )}
       >
         <div className="flex-1 truncate">
@@ -330,8 +335,8 @@ export function CategorySelector({
         {/* Dropdown icon */}
         <svg
           className={cn(
-            'w-4 h-4 flex-shrink-0 text-gray-600 dark:text-gray-400 transition-transform',
-            isOpen && 'rotate-180'
+            "w-4 h-4 flex-shrink-0 text-gray-600 dark:text-gray-400 transition-transform",
+            isOpen && "rotate-180"
           )}
           fill="none"
           stroke="currentColor"
@@ -383,16 +388,18 @@ export function CategorySelector({
                         key={category.id}
                         onClick={() => canSelect && handleSelect(category)}
                         className={cn(
-                          'px-4 py-2.5 transition-colors',
+                          "px-4 py-2.5 transition-colors",
                           canSelect
-                            ? 'cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/30'
-                            : 'cursor-default opacity-50',
+                            ? "cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/30"
+                            : "cursor-default opacity-50",
                           isSelected
-                            ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-900 dark:text-yellow-200 font-medium'
-                            : 'text-gray-900 dark:text-gray-100'
+                            ? "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-900 dark:text-yellow-200 font-medium"
+                            : "text-gray-900 dark:text-gray-100"
                         )}
                       >
-                        <div className="font-medium text-sm">{category.name}</div>
+                        <div className="font-medium text-sm">
+                          {category.name}
+                        </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                           {getCategoryPath(category)}
                         </div>

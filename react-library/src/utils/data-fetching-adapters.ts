@@ -1,23 +1,23 @@
 /**
  * Data Fetching Adapters
- * 
+ *
  * Framework-agnostic adapters for different data fetching libraries.
  * Allows components to work with TanStack Query, SWR, Apollo, or custom solutions.
- * 
+ *
  * @example
  * ```tsx
  * // With TanStack Query
  * import { useQuery } from '@tanstack/react-query';
  * import { createTanStackAdapter } from './data-fetching-adapters';
- * 
+ *
  * const adapter = createTanStackAdapter(useQuery);
- * 
+ *
  * // With SWR
  * import useSWR from 'swr';
  * import { createSWRAdapter } from './data-fetching-adapters';
- * 
+ *
  * const adapter = createSWRAdapter(useSWR);
- * 
+ *
  * // Use adapter in components
  * function MyComponent({ adapter }) {
  *   const { data, isLoading } = adapter.useQuery({
@@ -81,14 +81,14 @@ export interface DataFetchingAdapter {
 
 /**
  * Create adapter for TanStack Query (React Query)
- * 
+ *
  * @example
  * ```tsx
  * import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
  * import { createTanStackAdapter } from './adapters';
- * 
+ *
  * const adapter = createTanStackAdapter({ useQuery, useMutation, useQueryClient });
- * 
+ *
  * // Use in component
  * const { data, isLoading } = adapter.useQuery({
  *   key: ['products'],
@@ -173,14 +173,14 @@ export function createTanStackAdapter(hooks: {
 
 /**
  * Create adapter for SWR
- * 
+ *
  * @example
  * ```tsx
  * import useSWR, { useSWRConfig } from 'swr';
  * import { createSWRAdapter } from './adapters';
- * 
+ *
  * const adapter = createSWRAdapter({ useSWR, useSWRConfig });
- * 
+ *
  * // Use in component
  * const { data, isLoading } = adapter.useQuery({
  *   key: ['products'],
@@ -250,7 +250,12 @@ export function createSWRAdapter(hooks: {
 
       const mutateAsync = useCallback(
         async (variables: TVariables): Promise<TData> => {
-          setState((prev) => ({ ...prev, isLoading: true, isError: false, error: null }));
+          setState((prev) => ({
+            ...prev,
+            isLoading: true,
+            isError: false,
+            error: null,
+          }));
 
           try {
             const data = await options.mutationFn(variables);
@@ -259,7 +264,12 @@ export function createSWRAdapter(hooks: {
             return data;
           } catch (error) {
             const err = error as Error;
-            setState((prev) => ({ ...prev, isLoading: false, isError: true, error: err }));
+            setState((prev) => ({
+              ...prev,
+              isLoading: false,
+              isError: true,
+              error: err,
+            }));
             options.onError?.(err);
             throw err;
           }
@@ -291,12 +301,12 @@ export function createSWRAdapter(hooks: {
 
 /**
  * Create adapter for custom fetch implementation
- * 
+ *
  * @example
  * ```tsx
  * import { useQuery, useMutation } from './custom-hooks';
  * import { createCustomAdapter } from './adapters';
- * 
+ *
  * const adapter = createCustomAdapter({ useQuery, useMutation });
  * ```
  */
@@ -349,7 +359,7 @@ export function createCustomAdapter(hooks: {
 }
 
 // Helper imports for SWR adapter
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from "react";
 
 export default {
   createTanStackAdapter,

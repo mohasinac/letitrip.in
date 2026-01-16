@@ -1,9 +1,9 @@
 /**
  * ProductVariantSelector Component
- * 
+ *
  * Framework-agnostic product variant selector showing other sellers for the same product.
  * Displays product price, seller info, ratings, and stock status.
- * 
+ *
  * @example
  * ```tsx
  * <ProductVariantSelector
@@ -16,7 +16,7 @@
  * ```
  */
 
-import React from 'react';
+import React from "react";
 
 export interface ProductVariant {
   id: string;
@@ -29,7 +29,7 @@ export interface ProductVariant {
   rating: number;
   reviewCount: number;
   inStock: boolean;
-  condition?: 'new' | 'used' | 'refurbished';
+  condition?: "new" | "used" | "refurbished";
 }
 
 export interface ProductVariantSelectorProps {
@@ -67,12 +67,12 @@ export interface ProductVariantSelectorProps {
 
 // Inline cn utility
 function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 // Default price formatter
 const defaultFormatPrice = (amount: number): string => {
-  return `₹${amount.toLocaleString('en-IN')}`;
+  return `₹${amount.toLocaleString("en-IN")}`;
 };
 
 // Default Image Component
@@ -173,7 +173,7 @@ export function ProductVariantSelector({
   products,
   loading = false,
   onSelect,
-  className = '',
+  className = "",
   limit = 5,
   formatPrice = defaultFormatPrice,
   ImageComponent = DefaultImageComponent,
@@ -195,7 +195,7 @@ export function ProductVariantSelector({
 
   if (loading) {
     return (
-      <div className={cn('space-y-3', className)}>
+      <div className={cn("space-y-3", className)}>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Other Sellers
         </h3>
@@ -222,7 +222,7 @@ export function ProductVariantSelector({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -230,8 +230,8 @@ export function ProductVariantSelector({
         </h3>
         {filteredProducts.length > 0 && (
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            {filteredProducts.length}{' '}
-            {filteredProducts.length === 1 ? 'seller' : 'sellers'}
+            {filteredProducts.length}{" "}
+            {filteredProducts.length === 1 ? "seller" : "sellers"}
           </span>
         )}
       </div>
@@ -258,7 +258,7 @@ export function ProductVariantSelector({
               {/* Product Image */}
               <div className="relative w-16 h-16 flex-shrink-0 rounded overflow-hidden">
                 <ImageComponent
-                  src={variant.images?.[0] || '/placeholder-product.png'}
+                  src={variant.images?.[0] || "/placeholder-product.png"}
                   alt={variant.name}
                   className="w-full h-full object-cover"
                 />
@@ -293,7 +293,7 @@ export function ProductVariantSelector({
                 <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
                   <StoreIcon className="w-3.5 h-3.5 flex-shrink-0" />
                   <span className="truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {variant.shopName || 'Unknown Seller'}
+                    {variant.shopName || "Unknown Seller"}
                   </span>
                 </div>
 
@@ -331,9 +331,9 @@ export function ProductVariantSelector({
                   <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                     <TruckIcon className="w-3 h-3" />
                     <span>
-                      {variant.condition === 'new'
-                        ? 'Free shipping available'
-                        : 'Shipping calculated at checkout'}
+                      {variant.condition === "new"
+                        ? "Free shipping available"
+                        : "Shipping calculated at checkout"}
                     </span>
                   </div>
                 )}

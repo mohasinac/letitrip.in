@@ -1,9 +1,9 @@
 /**
  * StateSelector Component
- * 
+ *
  * A framework-agnostic state selector for Indian states.
  * Uses a searchable dropdown for easy state selection.
- * 
+ *
  * @example
  * ```tsx
  * <StateSelector
@@ -14,7 +14,7 @@
  * ```
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 export interface StateSelectorProps {
   /** Currently selected state */
@@ -47,11 +47,13 @@ export interface StateSelectorProps {
 
 // Inline cn utility
 function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 // Default Chevron Down Icon
-const DefaultChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const DefaultChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props
+) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="16"
@@ -94,16 +96,16 @@ export function StateSelector({
   disabled = false,
   required = false,
   error,
-  label = 'State',
-  placeholder = 'Select state',
-  className = '',
+  label = "State",
+  placeholder = "Select state",
+  className = "",
   id,
   name,
   ChevronDownIcon = DefaultChevronDownIcon,
   SearchIcon = DefaultSearchIcon,
 }: StateSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,12 +124,12 @@ export function StateSelector({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setSearchQuery('');
+        setSearchQuery("");
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   // Focus search input when dropdown opens
@@ -140,15 +142,15 @@ export function StateSelector({
   const handleSelect = (state: string) => {
     onChange(state);
     setIsOpen(false);
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
   const handleClear = () => {
-    onChange('');
+    onChange("");
   };
 
   return (
-    <div className={cn('relative', className)} ref={dropdownRef}>
+    <div className={cn("relative", className)} ref={dropdownRef}>
       {/* Label */}
       {label && (
         <label
@@ -167,28 +169,34 @@ export function StateSelector({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          'w-full flex items-center justify-between px-3 py-2 border rounded-lg',
-          'bg-white dark:bg-gray-800',
-          'text-gray-900 dark:text-white',
-          'transition-colors',
+          "w-full flex items-center justify-between px-3 py-2 border rounded-lg",
+          "bg-white dark:bg-gray-800",
+          "text-gray-900 dark:text-white",
+          "transition-colors",
           error
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500',
+            ? "border-red-500 focus:ring-red-500"
+            : "border-gray-300 dark:border-gray-600 focus:ring-blue-500",
           disabled
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:border-gray-400 dark:hover:border-gray-500',
-          isOpen && 'ring-2 ring-blue-500'
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:border-gray-400 dark:hover:border-gray-500",
+          isOpen && "ring-2 ring-blue-500"
         )}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className={cn(value ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400')}>
+        <span
+          className={cn(
+            value
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400"
+          )}
+        >
           {value || placeholder}
         </span>
         <ChevronDownIcon
           className={cn(
-            'w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform',
-            isOpen && 'transform rotate-180'
+            "w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform",
+            isOpen && "transform rotate-180"
           )}
         />
       </button>
@@ -207,12 +215,12 @@ export function StateSelector({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search states..."
                 className={cn(
-                  'w-full pl-9 pr-3 py-2 text-sm',
-                  'bg-gray-50 dark:bg-gray-900',
-                  'border border-gray-300 dark:border-gray-600',
-                  'rounded-md',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500',
-                  'text-gray-900 dark:text-white'
+                  "w-full pl-9 pr-3 py-2 text-sm",
+                  "bg-gray-50 dark:bg-gray-900",
+                  "border border-gray-300 dark:border-gray-600",
+                  "rounded-md",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                  "text-gray-900 dark:text-white"
                 )}
               />
             </div>
@@ -232,12 +240,12 @@ export function StateSelector({
                     type="button"
                     onClick={() => handleSelect(state)}
                     className={cn(
-                      'w-full text-left px-4 py-2 text-sm',
-                      'hover:bg-gray-100 dark:hover:bg-gray-700',
-                      'transition-colors',
+                      "w-full text-left px-4 py-2 text-sm",
+                      "hover:bg-gray-100 dark:hover:bg-gray-700",
+                      "transition-colors",
                       value === state
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
-                        : 'text-gray-900 dark:text-white'
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                        : "text-gray-900 dark:text-white"
                     )}
                   >
                     {state}
