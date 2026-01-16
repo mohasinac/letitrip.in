@@ -1033,6 +1033,7 @@ class MyUploadService implements UploadService {
 **Date Completed**: January 15, 2026
 
 **Implementation Details**:
+
 - useSafeLoad: Prevents infinite API calls with injectable error handler
 - useWindowResize: Window resize with debounce and breakpoint detection
 - useMobile: Comprehensive mobile detection (device type, touch, viewport, iOS/Android)
@@ -1050,12 +1051,28 @@ class MyUploadService implements UploadService {
 
 **Move to React Library**:
 
-- [ ] ResourceListWrapper component
-- [ ] ResourceDetailWrapper component
-- [ ] SettingsSection component
-- [ ] SmartAddressForm component (without Next.js dependencies)
+- [x] ✅ ResourceListWrapper component
+- [x] ✅ ResourceDetailWrapper component
+- [x] ✅ SettingsSection component
+- [x] ✅ SmartAddressForm component (without Next.js dependencies)
 
-**Storybook Stories**:
+**Status**: 4/4 components complete
+**Date Completed**: January 16, 2026
+
+**Implementation Details**:
+- ResourceListWrapper: List page wrapper with stats cards, filters, search, view toggle (grid/table), export
+- ResourceDetailWrapper: Detail page wrapper with breadcrumbs, header, tabs, stats, actions
+- SettingsSection: Settings components (SettingsSection, SettingsGroup, SettingsRow)
+- SmartAddressForm: Address form with pincode lookup service, GPS service, validation
+
+All framework-agnostic with:
+- Injectable navigation handlers (onBreadcrumbClick)
+- Injectable services (pincodeService, gpsService)
+- Injectable icons for customization
+- No Next.js Link or router dependencies
+- Inline SVG icons with injectable customization
+
+**Storybook Stories**: Deferred
 
 - [ ] ResourceListWrapper.stories.tsx
 - [ ] SettingsSection.stories.tsx
