@@ -1,12 +1,12 @@
 /**
  * Generic Query Hook
- * 
+ *
  * Framework-agnostic hook for data fetching with caching.
  * Can be used with any query library (React Query, SWR, Apollo, etc.) or custom implementation.
- * 
+ *
  * This is a reference implementation. In production, use it with TanStack Query,
  * SWR, or your preferred data fetching library.
- * 
+ *
  * @example
  * ```tsx
  * // With custom fetcher
@@ -15,7 +15,7 @@
  *   queryFn: () => api.getProducts(filters),
  *   staleTime: 5000,
  * });
- * 
+ *
  * // With TanStack Query (recommended)
  * import { useQuery as useTanStackQuery } from '@tanstack/react-query';
  * const query = useTanStackQuery({
@@ -25,80 +25,80 @@
  * ```
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface UseQueryOptions<TData = unknown, TError = Error> {
   /**
    * Unique key for the query (used for caching)
    */
   queryKey: readonly unknown[];
-  
+
   /**
    * Function that returns the data
    */
   queryFn: () => Promise<TData>;
-  
+
   /**
    * Whether the query should run
    * @default true
    */
   enabled?: boolean;
-  
+
   /**
    * Time in milliseconds after which data is considered stale
    * @default 0
    */
   staleTime?: number;
-  
+
   /**
    * Time in milliseconds after which unused data is garbage collected
    * @default 5 * 60 * 1000 (5 minutes)
    */
   cacheTime?: number;
-  
+
   /**
    * Number of retry attempts
    * @default 0
    */
   retry?: number;
-  
+
   /**
    * Delay in milliseconds between retries
    * @default 1000
    */
   retryDelay?: number;
-  
+
   /**
    * Callback when query succeeds
    */
   onSuccess?: (data: TData) => void;
-  
+
   /**
    * Callback when query fails
    */
   onError?: (error: TError) => void;
-  
+
   /**
    * Callback when query settles (success or error)
    */
   onSettled?: (data: TData | undefined, error: TError | null) => void;
-  
+
   /**
    * Initial data
    */
   initialData?: TData;
-  
+
   /**
    * Refetch interval in milliseconds (for polling)
    */
   refetchInterval?: number;
-  
+
   /**
    * Whether to refetch on window focus
    * @default false
    */
   refetchOnWindowFocus?: boolean;
-  
+
   /**
    * Whether to refetch on reconnect
    * @default false
@@ -114,7 +114,7 @@ export interface UseQueryResult<TData = unknown, TError = Error> {
   isSuccess: boolean;
   isFetching: boolean;
   refetch: () => Promise<void>;
-  status: 'idle' | 'loading' | 'error' | 'success';
+  status: "idle" | "loading" | "error" | "success";
 }
 
 // Simple in-memory cache (for demo purposes)
@@ -127,7 +127,7 @@ function getCacheKey(queryKey: readonly unknown[]): string {
 
 /**
  * Generic query hook (reference implementation)
- * 
+ *
  * **Note**: This is a basic implementation for demonstration.
  * For production use, we recommend using TanStack Query (@tanstack/react-query)
  * or SWR (swr) which provide more robust features like:
@@ -162,7 +162,7 @@ export function useQuery<TData = unknown, TError = Error>(
   const [error, setError] = useState<TError | null>(null);
   const [isLoading, setIsLoading] = useState(!initialData && enabled);
   const [isFetching, setIsFetching] = useState(false);
-  
+
   const retryCountRef = useRef(0);
   const mountedRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -193,7 +193,7 @@ export function useQuery<TData = unknown, TError = Error>(
 
     try {
       const result = await queryFn();
-      
+
       if (!mountedRef.current) return;
 
       // Update cache
@@ -233,7 +233,18 @@ export function useQuery<TData = unknown, TError = Error>(
       onError?.(error);
       onSettled?.(undefined, error);
     }
-  }, [enabled, queryFn, cacheKey, staleTime, data, retry, retryDelay, onSuccess, onError, onSettled]);
+  }, [
+    enabled,
+    queryFn,
+    cacheKey,
+    staleTime,
+    data,
+    retry,
+    retryDelay,
+    onSuccess,
+    onError,
+    onSettled,
+  ]);
 
   const refetch = useCallback(async () => {
     queryCache.delete(cacheKey);
@@ -258,9 +269,9 @@ export function useQuery<TData = unknown, TError = Error>(
     if (!refetchOnWindowFocus || !enabled) return;
 
     const handleFocus = () => refetch();
-    if (typeof globalThis.window !== 'undefined') {
-      globalThis.window.addEventListener('focus', handleFocus);
-      return () => globalThis.window.removeEventListener('focus', handleFocus);
+    if (typeof globalThis.window !== "undefined") {
+      globalThis.window.addEventListener("focus", handleFocus);
+      return () => globalThis.window.removeEventListener("focus", handleFocus);
     }
   }, [refetchOnWindowFocus, enabled, refetch]);
 
@@ -269,9 +280,10 @@ export function useQuery<TData = unknown, TError = Error>(
     if (!refetchOnReconnect || !enabled) return;
 
     const handleOnline = () => refetch();
-    if (typeof globalThis.window !== 'undefined') {
-      globalThis.window.addEventListener('online', handleOnline);
-      return () => globalThis.window.removeEventListener('online', handleOnline);
+    if (typeof globalThis.window !== "undefined") {
+      globalThis.window.addEventListener("online", handleOnline);
+      return () =>
+        globalThis.window.removeEventListener("online", handleOnline);
     }
   }, [refetchOnReconnect, enabled, refetch]);
 
@@ -296,7 +308,13 @@ export function useQuery<TData = unknown, TError = Error>(
 
   const isError = !!error;
   const isSuccess = !!data && !error;
-  const status = isLoading ? 'loading' : isError ? 'error' : isSuccess ? 'success' : 'idle';
+  const status = isLoading
+    ? "loading"
+    : isError
+    ? "error"
+    : isSuccess
+    ? "success"
+    : "idle";
 
   return {
     data,

@@ -1,9 +1,9 @@
 /**
  * Query Key Factory
- * 
+ *
  * Utility for creating consistent, type-safe query keys.
  * Query keys are used for caching, invalidation, and deduplication.
- * 
+ *
  * @example
  * ```tsx
  * // Create a query key factory for a resource
@@ -14,19 +14,19 @@
  *   details: () => [...productKeys.all, 'detail'] as const,
  *   detail: (id: string) => [...productKeys.details(), id] as const,
  * };
- * 
+ *
  * // Usage
  * useQuery({
  *   queryKey: productKeys.detail('123'),
  *   queryFn: () => fetchProduct('123')
  * });
- * 
+ *
  * // Invalidate all product queries
  * queryClient.invalidateQueries({ queryKey: productKeys.all });
- * 
+ *
  * // Invalidate all product lists
  * queryClient.invalidateQueries({ queryKey: productKeys.lists() });
- * 
+ *
  * // Invalidate specific product
  * queryClient.invalidateQueries({ queryKey: productKeys.detail('123') });
  * ```
@@ -34,29 +34,29 @@
 
 /**
  * Create a query key factory for a resource
- * 
+ *
  * @param resource - Resource name (e.g., 'products', 'users')
  * @returns Query key factory with common patterns
- * 
+ *
  * @example
  * ```tsx
  * const productKeys = createQueryKeys('products');
- * 
+ *
  * // Keys: ['products']
  * productKeys.all;
- * 
+ *
  * // Keys: ['products', 'list']
  * productKeys.lists();
- * 
+ *
  * // Keys: ['products', 'list', { status: 'active' }]
  * productKeys.list({ status: 'active' });
- * 
+ *
  * // Keys: ['products', 'detail']
  * productKeys.details();
- * 
+ *
  * // Keys: ['products', 'detail', '123']
  * productKeys.detail('123');
- * 
+ *
  * // Keys: ['products', 'bySlug', 'my-product']
  * productKeys.bySlug('my-product');
  * ```
@@ -64,23 +64,25 @@
 export function createQueryKeys(resource: string) {
   return {
     all: [resource] as const,
-    lists: () => [resource, 'list'] as const,
-    list: (filters?: Record<string, any>) => [resource, 'list', filters] as const,
-    details: () => [resource, 'detail'] as const,
-    detail: (id: string) => [resource, 'detail', id] as const,
-    bySlug: (slug: string) => [resource, 'bySlug', slug] as const,
-    search: (query: string) => [resource, 'search', query] as const,
-    infinite: (filters?: Record<string, any>) => [resource, 'infinite', filters] as const,
+    lists: () => [resource, "list"] as const,
+    list: (filters?: Record<string, any>) =>
+      [resource, "list", filters] as const,
+    details: () => [resource, "detail"] as const,
+    detail: (id: string) => [resource, "detail", id] as const,
+    bySlug: (slug: string) => [resource, "bySlug", slug] as const,
+    search: (query: string) => [resource, "search", query] as const,
+    infinite: (filters?: Record<string, any>) =>
+      [resource, "infinite", filters] as const,
   };
 }
 
 /**
  * Create a custom query key factory with specific patterns
- * 
+ *
  * @param resource - Resource name
  * @param customKeys - Custom key generators
  * @returns Query key factory with custom patterns
- * 
+ *
  * @example
  * ```tsx
  * const orderKeys = createCustomQueryKeys('orders', {
@@ -88,7 +90,7 @@ export function createQueryKeys(resource: string) {
  *   byUser: (userId: string) => ['orders', 'user', userId] as const,
  *   recent: () => ['orders', 'recent'] as const,
  * });
- * 
+ *
  * // Usage
  * orderKeys.all; // ['orders']
  * orderKeys.byStatus('pending'); // ['orders', 'status', 'pending']
@@ -96,10 +98,9 @@ export function createQueryKeys(resource: string) {
  * orderKeys.recent(); // ['orders', 'recent']
  * ```
  */
-export function createCustomQueryKeys<T extends Record<string, (...args: any[]) => readonly any[]>>(
-  resource: string,
-  customKeys: T
-) {
+export function createCustomQueryKeys<
+  T extends Record<string, (...args: any[]) => readonly any[]>
+>(resource: string, customKeys: T) {
   return {
     all: [resource] as const,
     ...customKeys,
@@ -108,9 +109,9 @@ export function createCustomQueryKeys<T extends Record<string, (...args: any[]) 
 
 /**
  * Optimistic Update Helper
- * 
+ *
  * Helper for performing optimistic updates with rollback on error.
- * 
+ *
  * @example
  * ```tsx
  * const updateProduct = useMutation({
@@ -118,13 +119,13 @@ export function createCustomQueryKeys<T extends Record<string, (...args: any[]) 
  *   onMutate: async (newProduct) => {
  *     // Cancel outgoing refetches
  *     await queryClient.cancelQueries({ queryKey: productKeys.detail(newProduct.id) });
- *     
+ *
  *     // Snapshot previous value
  *     const previousProduct = queryClient.getQueryData(productKeys.detail(newProduct.id));
- *     
+ *
  *     // Optimistically update
  *     queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct);
- *     
+ *
  *     // Return context for rollback
  *     return { previousProduct };
  *   },
@@ -151,11 +152,11 @@ export interface OptimisticUpdateContext<TData = unknown> {
 
 /**
  * Create optimistic update handlers
- * 
+ *
  * @param queryKey - Query key to update
  * @param getOptimisticData - Function to generate optimistic data
  * @returns Mutation callbacks for optimistic updates
- * 
+ *
  * @example
  * ```tsx
  * // With a query client (TanStack Query, etc.)
@@ -168,7 +169,7 @@ export interface OptimisticUpdateContext<TData = unknown> {
  *   }),
  *   queryClient
  * );
- * 
+ *
  * const updateProduct = useMutation({
  *   mutationFn: updateProductApi,
  *   onMutate,
@@ -179,7 +180,10 @@ export interface OptimisticUpdateContext<TData = unknown> {
  */
 export function createOptimisticUpdate<TData, TVariables>(
   queryKey: readonly unknown[],
-  getOptimisticData: (variables: TVariables, previous: TData | undefined) => TData,
+  getOptimisticData: (
+    variables: TVariables,
+    previous: TData | undefined
+  ) => TData,
   queryClient: {
     cancelQueries: (key: { queryKey: readonly unknown[] }) => Promise<void>;
     getQueryData: (key: readonly unknown[]) => TData | undefined;
@@ -205,7 +209,11 @@ export function createOptimisticUpdate<TData, TVariables>(
       return { previous };
     },
 
-    onError: (_error: unknown, _variables: TVariables, context?: { previous: TData | undefined }) => {
+    onError: (
+      _error: unknown,
+      _variables: TVariables,
+      context?: { previous: TData | undefined }
+    ) => {
       // Rollback on error
       if (context?.previous !== undefined) {
         queryClient.setQueryData(queryKey, context.previous);
@@ -221,7 +229,7 @@ export function createOptimisticUpdate<TData, TVariables>(
 
 /**
  * Cache Invalidation Helper
- * 
+ *
  * @example
  * ```tsx
  * // Invalidate specific patterns
@@ -231,7 +239,9 @@ export function createOptimisticUpdate<TData, TVariables>(
  * ```
  */
 export async function invalidateQueries(
-  queryClient: { invalidateQueries: (key: { queryKey: readonly unknown[] }) => Promise<void> },
+  queryClient: {
+    invalidateQueries: (key: { queryKey: readonly unknown[] }) => Promise<void>;
+  },
   queryKey: readonly unknown[]
 ): Promise<void> {
   await queryClient.invalidateQueries({ queryKey });
@@ -239,7 +249,7 @@ export async function invalidateQueries(
 
 /**
  * Prefetch Helper
- * 
+ *
  * @example
  * ```tsx
  * // Prefetch data on hover
@@ -259,7 +269,10 @@ export async function invalidateQueries(
  */
 export async function prefetchQuery<TData>(
   queryClient: {
-    prefetchQuery?: (options: { queryKey: readonly unknown[]; queryFn: () => Promise<TData> }) => Promise<void>;
+    prefetchQuery?: (options: {
+      queryKey: readonly unknown[];
+      queryFn: () => Promise<TData>;
+    }) => Promise<void>;
     setQueryData?: (key: readonly unknown[], data: TData) => void;
   },
   queryKey: readonly unknown[],
@@ -276,7 +289,7 @@ export async function prefetchQuery<TData>(
 
 /**
  * Paginated Query Helper
- * 
+ *
  * @example
  * ```tsx
  * const paginatedQuery = usePaginatedQuery({
@@ -285,7 +298,7 @@ export async function prefetchQuery<TData>(
  *   initialPage: 1,
  *   pageSize: 20,
  * });
- * 
+ *
  * const {
  *   data,
  *   isLoading,
@@ -300,7 +313,10 @@ export async function prefetchQuery<TData>(
  */
 export interface PaginatedQueryOptions<TData> {
   queryKey: (page: number, limit: number) => readonly unknown[];
-  queryFn: (page: number, limit: number) => Promise<{ data: TData[]; total: number; page: number; limit: number }>;
+  queryFn: (
+    page: number,
+    limit: number
+  ) => Promise<{ data: TData[]; total: number; page: number; limit: number }>;
   initialPage?: number;
   pageSize?: number;
   enabled?: boolean;
@@ -308,7 +324,7 @@ export interface PaginatedQueryOptions<TData> {
 
 /**
  * Infinite Query Helper
- * 
+ *
  * @example
  * ```tsx
  * const infiniteQuery = useInfiniteQuery({
@@ -316,7 +332,7 @@ export interface PaginatedQueryOptions<TData> {
  *   queryFn: ({ pageParam = 1 }) => fetchProducts({ page: pageParam }),
  *   getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.page + 1 : undefined,
  * });
- * 
+ *
  * const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = infiniteQuery;
  * ```
  */
@@ -331,9 +347,9 @@ export interface InfiniteQueryOptions<TData> {
 
 /**
  * Dependent Query Helper
- * 
+ *
  * Execute queries in sequence where each depends on the previous.
- * 
+ *
  * @example
  * ```tsx
  * // User query
@@ -341,7 +357,7 @@ export interface InfiniteQueryOptions<TData> {
  *   queryKey: userKeys.me(),
  *   queryFn: fetchCurrentUser,
  * });
- * 
+ *
  * // Shop query (depends on user)
  * const { data: shop } = useQuery({
  *   queryKey: shopKeys.detail(user?.shopId),
@@ -354,11 +370,15 @@ export function createDependentQuery<TData, TDependency>(
   dependentData: TDependency | undefined,
   queryKey: (dep: TDependency) => readonly unknown[],
   queryFn: (dep: TDependency) => Promise<TData>,
-  enabled: (dep: TDependency | undefined) => boolean = (dep) => dep !== undefined
+  enabled: (dep: TDependency | undefined) => boolean = (dep) =>
+    dep !== undefined
 ) {
   return {
     queryKey: dependentData ? queryKey(dependentData) : [],
-    queryFn: () => (dependentData ? queryFn(dependentData) : Promise.reject(new Error('Dependency not ready'))),
+    queryFn: () =>
+      dependentData
+        ? queryFn(dependentData)
+        : Promise.reject(new Error("Dependency not ready")),
     enabled: enabled(dependentData),
   };
 }

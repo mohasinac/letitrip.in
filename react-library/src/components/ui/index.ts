@@ -84,16 +84,16 @@ export type {
 
 // Notifications
 export {
-  ToastProvider,
   ToastContainer,
+  ToastProvider,
+  toast,
   useToast,
   useToastGlobalHandler,
-  toast,
 } from "./Toast";
 export type {
   Toast,
-  ToastVariant,
+  ToastContainerProps,
   ToastPosition,
   ToastProviderProps,
-  ToastContainerProps,
+  ToastVariant,
 } from "./Toast";

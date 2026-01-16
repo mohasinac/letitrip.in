@@ -1109,7 +1109,9 @@ All framework-agnostic with:
 **Implementation Details**:
 
 **Generic Hooks Created** (~900 lines):
+
 1. **useQuery** - Generic query hook with caching, retries, polling
+
    - In-memory cache with configurable staleTime/cacheTime
    - Automatic retry with exponential backoff
    - Refetch on window focus/reconnect
@@ -1127,12 +1129,15 @@ All framework-agnostic with:
    - Reset mutation state
 
 **Query Utilities Created**:
+
 1. **Query Key Factories** - Consistent, type-safe cache keys
+
    - `createQueryKeys(resource)` - Standard patterns (all, list, detail, bySlug, search, infinite)
    - `createCustomQueryKeys(resource, custom)` - Custom key patterns
    - Hierarchical structure for efficient invalidation
 
 2. **Optimistic Update Helpers** - Automatic rollback on error
+
    - `createOptimisticUpdate()` - Pre-built mutation callbacks
    - Cancel queries, snapshot, update, rollback pattern
    - Works with any query client (TanStack Query, SWR, custom)
@@ -1143,6 +1148,7 @@ All framework-agnostic with:
    - `createDependentQuery()` - Sequential queries
 
 **Data Fetching Adapters** (~450 lines):
+
 - `createTanStackAdapter()` - For TanStack Query (React Query)
 - `createSWRAdapter()` - For SWR
 - `createCustomAdapter()` - For custom implementations
@@ -1150,6 +1156,7 @@ All framework-agnostic with:
 - Unified interface across different libraries
 
 **Documentation**:
+
 - Comprehensive guide: `react-library/docs/DATA-FETCHING.md`
 - Usage examples for TanStack Query, SWR, custom
 - Best practices and migration guide
@@ -1157,6 +1164,7 @@ All framework-agnostic with:
 - Framework integration (Next.js, React Native)
 
 **Architecture Decision**:
+
 - Domain-specific hooks (useCart, useProduct, useOrder, etc.) **remain in main app**
 - They are application-specific, not reusable patterns
 - Library provides **patterns**, app provides **domain logic**
@@ -1164,6 +1172,7 @@ All framework-agnostic with:
 
 **Note**: These hooks use TanStack Query patterns but are simpler implementations.
 For production, we recommend using TanStack Query directly for:
+
 - Better performance
 - Request deduplication
 - DevTools

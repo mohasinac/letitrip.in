@@ -1,9 +1,9 @@
 /**
  * LanguageSelector Component
- * 
+ *
  * A framework-agnostic language selector dropdown component.
  * Displays language options with native names and allows selection.
- * 
+ *
  * @example
  * ```tsx
  * <LanguageSelector
@@ -14,7 +14,7 @@
  * ```
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 export interface Language {
   code: string;
@@ -28,7 +28,7 @@ export interface LanguageSelectorProps {
   /** Callback when language changes */
   onChange: (languageCode: string) => void;
   /** Available languages */
-  languages: Record<string, Omit<Language, 'code'>>;
+  languages: Record<string, Omit<Language, "code">>;
   /** Label text */
   label?: string;
   /** Disabled state */
@@ -85,7 +85,7 @@ export function LanguageSelector({
   languages,
   label,
   disabled = false,
-  className = '',
+  className = "",
   GlobeIcon = DefaultGlobeIcon,
   CheckIcon = DefaultCheckIcon,
 }: LanguageSelectorProps) {
@@ -107,8 +107,8 @@ export function LanguageSelector({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   const handleSelect = (code: string) => {
@@ -123,7 +123,7 @@ export function LanguageSelector({
           {label}
         </label>
       )}
-      
+
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -133,8 +133,8 @@ export function LanguageSelector({
           transition-colors
           ${
             disabled
-              ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              ? "opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800"
+              : "hover:bg-gray-100 dark:hover:bg-gray-800"
           }
         `}
         aria-label="Select language"
@@ -143,7 +143,7 @@ export function LanguageSelector({
       >
         <GlobeIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {currentLanguage?.nativeName || 'Select Language'}
+          {currentLanguage?.nativeName || "Select Language"}
         </span>
       </button>
 
@@ -160,8 +160,8 @@ export function LanguageSelector({
                   hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
                   ${
                     value === code
-                      ? 'text-yellow-600 dark:text-yellow-500 font-medium'
-                      : 'text-gray-700 dark:text-gray-300'
+                      ? "text-yellow-600 dark:text-yellow-500 font-medium"
+                      : "text-gray-700 dark:text-gray-300"
                   }
                 `}
               >

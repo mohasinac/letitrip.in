@@ -31,3 +31,6 @@ export * from "./pagination";
 
 // Selector Components (Task 18.5)
 export * from "./selectors";
+
+// Wrapper & Layout Components (Task 19.3)
+export * from "./wrappers";

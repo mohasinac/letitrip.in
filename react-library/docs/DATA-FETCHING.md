@@ -5,6 +5,7 @@ Generic, framework-agnostic patterns for data fetching with React.
 ## Overview
 
 This library provides generic data fetching utilities that work with **any** query library:
+
 - TanStack Query (React Query)
 - SWR
 - Apollo Client
@@ -15,42 +16,43 @@ This library provides generic data fetching utilities that work with **any** que
 ### Option 1: Use with TanStack Query (Recommended)
 
 ```tsx
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 // Simple query
 const { data, isLoading } = useQuery({
-  queryKey: ['products'],
-  queryFn: () => api.getProducts()
+  queryKey: ["products"],
+  queryFn: () => api.getProducts(),
 });
 
 // With filters
 const { data } = useQuery({
-  queryKey: ['products', filters],
-  queryFn: () => api.getProducts(filters)
+  queryKey: ["products", filters],
+  queryFn: () => api.getProducts(filters),
 });
 
 // Mutation
 const updateProduct = useMutation({
   mutationFn: (product) => api.updateProduct(product),
   onSuccess: () => {
-    toast.success('Updated!');
-  }
+    toast.success("Updated!");
+  },
 });
 ```
 
 ### Option 2: Use Generic Hooks from Library
 
 ```tsx
-import { useQuery, useMutation } from '@letitrip/react-library';
+import { useQuery, useMutation } from "@letitrip/react-library";
 
 // Works the same way as TanStack Query
 const { data, isLoading } = useQuery({
-  queryKey: ['products'],
-  queryFn: () => api.getProducts()
+  queryKey: ["products"],
+  queryFn: () => api.getProducts(),
 });
 ```
 
 **Note**: The generic hooks are basic implementations. For production, we strongly recommend using TanStack Query which provides:
+
 - Automatic retries with exponential backoff
 - Request deduplication
 - Pagination support
@@ -63,49 +65,49 @@ const { data, isLoading } = useQuery({
 Create consistent, type-safe query keys for caching and invalidation.
 
 ```tsx
-import { createQueryKeys } from '@letitrip/react-library';
+import { createQueryKeys } from "@letitrip/react-library";
 
 // Create keys for a resource
-const productKeys = createQueryKeys('products');
+const productKeys = createQueryKeys("products");
 
 // Usage
-productKeys.all;                      // ['products']
-productKeys.lists();                  // ['products', 'list']
-productKeys.list({ status: 'active' }); // ['products', 'list', { status: 'active' }]
-productKeys.details();                // ['products', 'detail']
-productKeys.detail('123');            // ['products', 'detail', '123']
-productKeys.bySlug('my-product');     // ['products', 'bySlug', 'my-product']
-productKeys.search('laptop');         // ['products', 'search', 'laptop']
+productKeys.all; // ['products']
+productKeys.lists(); // ['products', 'list']
+productKeys.list({ status: "active" }); // ['products', 'list', { status: 'active' }]
+productKeys.details(); // ['products', 'detail']
+productKeys.detail("123"); // ['products', 'detail', '123']
+productKeys.bySlug("my-product"); // ['products', 'bySlug', 'my-product']
+productKeys.search("laptop"); // ['products', 'search', 'laptop']
 
 // Use in queries
 const { data } = useQuery({
-  queryKey: productKeys.detail('123'),
-  queryFn: () => api.getProduct('123')
+  queryKey: productKeys.detail("123"),
+  queryFn: () => api.getProduct("123"),
 });
 
 // Invalidate all product queries
 await queryClient.invalidateQueries({ queryKey: productKeys.all });
 
 // Invalidate specific product
-await queryClient.invalidateQueries({ queryKey: productKeys.detail('123') });
+await queryClient.invalidateQueries({ queryKey: productKeys.detail("123") });
 ```
 
 ### Custom Query Keys
 
 ```tsx
-import { createCustomQueryKeys } from '@letitrip/react-library';
+import { createCustomQueryKeys } from "@letitrip/react-library";
 
-const orderKeys = createCustomQueryKeys('orders', {
-  byStatus: (status: string) => ['orders', 'status', status] as const,
-  byUser: (userId: string) => ['orders', 'user', userId] as const,
-  recent: () => ['orders', 'recent'] as const,
+const orderKeys = createCustomQueryKeys("orders", {
+  byStatus: (status: string) => ["orders", "status", status] as const,
+  byUser: (userId: string) => ["orders", "user", userId] as const,
+  recent: () => ["orders", "recent"] as const,
 });
 
 // Usage
-orderKeys.all;              // ['orders']
-orderKeys.byStatus('pending'); // ['orders', 'status', 'pending']
-orderKeys.byUser('user123');   // ['orders', 'user', 'user123']
-orderKeys.recent();            // ['orders', 'recent']
+orderKeys.all; // ['orders']
+orderKeys.byStatus("pending"); // ['orders', 'status', 'pending']
+orderKeys.byUser("user123"); // ['orders', 'user', 'user123']
+orderKeys.recent(); // ['orders', 'recent']
 ```
 
 ## Optimistic Updates
@@ -113,8 +115,8 @@ orderKeys.recent();            // ['orders', 'recent']
 Immediately update UI while waiting for server response, with automatic rollback on error.
 
 ```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createOptimisticUpdate } from '@letitrip/react-library';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createOptimisticUpdate } from "@letitrip/react-library";
 
 const queryClient = useQueryClient();
 
@@ -125,10 +127,10 @@ const updateProduct = useMutation({
     (newData, previousData) => ({
       ...previousData,
       ...newData,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }),
     queryClient
-  )
+  ),
 });
 
 // Or manually
@@ -136,34 +138,43 @@ const updateProduct = useMutation({
   mutationFn: (product) => api.updateProduct(product),
   onMutate: async (newProduct) => {
     // Cancel outgoing refetches
-    await queryClient.cancelQueries({ queryKey: productKeys.detail(newProduct.id) });
-    
+    await queryClient.cancelQueries({
+      queryKey: productKeys.detail(newProduct.id),
+    });
+
     // Snapshot previous value
-    const previousProduct = queryClient.getQueryData(productKeys.detail(newProduct.id));
-    
+    const previousProduct = queryClient.getQueryData(
+      productKeys.detail(newProduct.id)
+    );
+
     // Optimistically update
     queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct);
-    
+
     // Return context for rollback
     return { previousProduct };
   },
   onError: (err, newProduct, context) => {
     // Rollback on error
     if (context?.previousProduct) {
-      queryClient.setQueryData(productKeys.detail(newProduct.id), context.previousProduct);
+      queryClient.setQueryData(
+        productKeys.detail(newProduct.id),
+        context.previousProduct
+      );
     }
   },
   onSettled: (newProduct) => {
     // Refetch to ensure consistency
-    queryClient.invalidateQueries({ queryKey: productKeys.detail(newProduct.id) });
-  }
+    queryClient.invalidateQueries({
+      queryKey: productKeys.detail(newProduct.id),
+    });
+  },
 });
 ```
 
 ## Cache Invalidation
 
 ```tsx
-import { invalidateQueries } from '@letitrip/react-library';
+import { invalidateQueries } from "@letitrip/react-library";
 
 // Invalidate all products
 await invalidateQueries(queryClient, productKeys.all);
@@ -172,7 +183,7 @@ await invalidateQueries(queryClient, productKeys.all);
 await invalidateQueries(queryClient, productKeys.lists());
 
 // Invalidate specific product
-await invalidateQueries(queryClient, productKeys.detail('123'));
+await invalidateQueries(queryClient, productKeys.detail("123"));
 ```
 
 ## Prefetching
@@ -180,20 +191,18 @@ await invalidateQueries(queryClient, productKeys.detail('123'));
 Prefetch data on hover or before navigation for instant UX.
 
 ```tsx
-import { prefetchQuery } from '@letitrip/react-library';
+import { prefetchQuery } from "@letitrip/react-library";
 
 <Link
   to="/products/123"
   onMouseEnter={() => {
-    prefetchQuery(
-      queryClient,
-      productKeys.detail('123'),
-      () => api.getProduct('123')
+    prefetchQuery(queryClient, productKeys.detail("123"), () =>
+      api.getProduct("123")
     );
   }}
 >
   View Product
-</Link>
+</Link>;
 ```
 
 ## Dependent Queries
@@ -201,12 +210,12 @@ import { prefetchQuery } from '@letitrip/react-library';
 Execute queries in sequence where each depends on the previous.
 
 ```tsx
-import { createDependentQuery } from '@letitrip/react-library';
+import { createDependentQuery } from "@letitrip/react-library";
 
 // First query
 const { data: user } = useQuery({
   queryKey: userKeys.me(),
-  queryFn: () => api.getCurrentUser()
+  queryFn: () => api.getCurrentUser(),
 });
 
 // Second query (depends on first)
@@ -223,7 +232,7 @@ const { data: shop } = useQuery(shopQueryOptions);
 const { data: shop } = useQuery({
   queryKey: shopKeys.detail(user?.shopId),
   queryFn: () => api.getShop(user!.shopId),
-  enabled: !!user?.shopId
+  enabled: !!user?.shopId,
 });
 ```
 
@@ -234,22 +243,26 @@ Use the same component code with different query libraries.
 ### With TanStack Query
 
 ```tsx
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createTanStackAdapter } from '@letitrip/react-library';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTanStackAdapter } from "@letitrip/react-library";
 
-const adapter = createTanStackAdapter({ useQuery, useMutation, useQueryClient });
+const adapter = createTanStackAdapter({
+  useQuery,
+  useMutation,
+  useQueryClient,
+});
 
 function MyComponent() {
   const { data, isLoading } = adapter.useQuery({
-    key: ['products'],
-    fetcher: () => api.getProducts()
+    key: ["products"],
+    fetcher: () => api.getProducts(),
   });
 
   const updateProduct = adapter.useMutation({
     mutationFn: (product) => api.updateProduct(product),
     onSuccess: () => {
-      adapter.invalidateQueries?.(['products']);
-    }
+      adapter.invalidateQueries?.(["products"]);
+    },
   });
 
   return <ProductList data={data} onUpdate={updateProduct.mutate} />;
@@ -259,16 +272,16 @@ function MyComponent() {
 ### With SWR
 
 ```tsx
-import useSWR, { useSWRConfig } from 'swr';
-import { createSWRAdapter } from '@letitrip/react-library';
+import useSWR, { useSWRConfig } from "swr";
+import { createSWRAdapter } from "@letitrip/react-library";
 
 const adapter = createSWRAdapter({ useSWR, useSWRConfig });
 
 // Same component code works!
 function MyComponent() {
   const { data, isLoading } = adapter.useQuery({
-    key: ['products'],
-    fetcher: () => api.getProducts()
+    key: ["products"],
+    fetcher: () => api.getProducts(),
   });
 
   return <ProductList data={data} />;
@@ -286,8 +299,8 @@ interface ProductListProps {
 
 export function ProductList({ adapter }: ProductListProps) {
   const { data, isLoading } = adapter.useQuery({
-    key: ['products'],
-    fetcher: () => api.getProducts()
+    key: ["products"],
+    fetcher: () => api.getProducts(),
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -295,14 +308,18 @@ export function ProductList({ adapter }: ProductListProps) {
 }
 
 // Usage in Next.js with TanStack Query
-import { createTanStackAdapter } from '@letitrip/react-library';
-const adapter = createTanStackAdapter({ useQuery, useMutation, useQueryClient });
-<ProductList adapter={adapter} />
+import { createTanStackAdapter } from "@letitrip/react-library";
+const adapter = createTanStackAdapter({
+  useQuery,
+  useMutation,
+  useQueryClient,
+});
+<ProductList adapter={adapter} />;
 
 // Usage in React Native with SWR
-import { createSWRAdapter } from '@letitrip/react-library';
+import { createSWRAdapter } from "@letitrip/react-library";
 const adapter = createSWRAdapter({ useSWR, useSWRConfig });
-<ProductList adapter={adapter} />
+<ProductList adapter={adapter} />;
 ```
 
 ## Framework Integration
@@ -311,9 +328,9 @@ const adapter = createSWRAdapter({ useSWR, useSWRConfig });
 
 ```tsx
 // app/providers.tsx
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -326,14 +343,12 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 
 // app/layout.tsx
-import { Providers } from './providers';
+import { Providers } from "./providers";
 
 export default function RootLayout({ children }) {
   return (
@@ -350,7 +365,7 @@ export default function RootLayout({ children }) {
 
 ```tsx
 // App.tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -368,12 +383,14 @@ export default function App() {
 ### 1. Use Query Key Factories
 
 ✅ **Do**: Use factories for consistency
+
 ```tsx
 const productKeys = createQueryKeys('products');
 useQuery({ queryKey: productKeys.detail('123'), ... });
 ```
 
 ❌ **Don't**: Hardcode keys
+
 ```tsx
 useQuery({ queryKey: ['products', '123'], ... });
 ```
@@ -382,10 +399,10 @@ useQuery({ queryKey: ['products', '123'], ... });
 
 ```tsx
 const keys = {
-  all: ['products'] as const,
-  lists: () => [...keys.all, 'list'] as const,
+  all: ["products"] as const,
+  lists: () => [...keys.all, "list"] as const,
   list: (filters) => [...keys.lists(), filters] as const,
-  details: () => [...keys.all, 'detail'] as const,
+  details: () => [...keys.all, "detail"] as const,
   detail: (id) => [...keys.details(), id] as const,
 };
 
@@ -403,7 +420,7 @@ Keep query hooks close to where they're used:
 export function useProducts(filters) {
   return useQuery({
     queryKey: productKeys.list(filters),
-    queryFn: () => api.getProducts(filters)
+    queryFn: () => api.getProducts(filters),
   });
 }
 
@@ -411,7 +428,7 @@ export function useProduct(id) {
   return useQuery({
     queryKey: productKeys.detail(id),
     queryFn: () => api.getProduct(id),
-    enabled: !!id
+    enabled: !!id,
   });
 }
 ```
@@ -424,16 +441,16 @@ const addToCart = useMutation({
   onMutate: async (newItem) => {
     // Cancel queries
     await queryClient.cancelQueries({ queryKey: cartKeys.current() });
-    
+
     // Get previous cart
     const previous = queryClient.getQueryData(cartKeys.current());
-    
+
     // Optimistically update
     queryClient.setQueryData(cartKeys.current(), (old) => ({
       ...old,
-      items: [...old.items, newItem]
+      items: [...old.items, newItem],
     }));
-    
+
     return { previous };
   },
   onError: (err, newItem, context) => {
@@ -443,7 +460,7 @@ const addToCart = useMutation({
   onSettled: () => {
     // Refetch
     queryClient.invalidateQueries({ queryKey: cartKeys.current() });
-  }
+  },
 });
 ```
 
@@ -452,13 +469,13 @@ const addToCart = useMutation({
 ```tsx
 const { data: user } = useQuery({
   queryKey: userKeys.me(),
-  queryFn: fetchUser
+  queryFn: fetchUser,
 });
 
 const { data: orders } = useQuery({
   queryKey: orderKeys.byUser(user?.id),
   queryFn: () => fetchOrders(user!.id),
-  enabled: !!user?.id // Only fetch if user exists
+  enabled: !!user?.id, // Only fetch if user exists
 });
 ```
 
@@ -468,15 +485,15 @@ If you have app-specific query hooks (like `useCart`, `useProduct`), they should
 
 ```tsx
 // src/hooks/queries/useProduct.ts (stays in main app)
-import { useQuery } from '@tanstack/react-query';
-import { productKeys } from '@/lib/query-keys'; // Your app's keys
-import { productsService } from '@/services'; // Your app's service
+import { useQuery } from "@tanstack/react-query";
+import { productKeys } from "@/lib/query-keys"; // Your app's keys
+import { productsService } from "@/services"; // Your app's service
 
 export function useProduct(id: string) {
   return useQuery({
     queryKey: productKeys.detail(id),
     queryFn: () => productsService.getById(id),
-    enabled: !!id
+    enabled: !!id,
   });
 }
 ```
@@ -488,7 +505,7 @@ The library provides the **patterns** (key factories, optimistic updates, adapte
 All utilities are fully typed:
 
 ```tsx
-import { useQuery, UseMutationOptions } from '@letitrip/react-library';
+import { useQuery, UseMutationOptions } from "@letitrip/react-library";
 
 interface Product {
   id: string;
@@ -497,8 +514,8 @@ interface Product {
 
 // Typed query
 const { data } = useQuery<Product>({
-  queryKey: ['products', '123'],
-  queryFn: () => api.getProduct('123')
+  queryKey: ["products", "123"],
+  queryFn: () => api.getProduct("123"),
 });
 
 // data is typed as Product | undefined
@@ -508,7 +525,7 @@ const options: UseMutationOptions<Product, Error, Partial<Product>> = {
   mutationFn: (updates) => api.updateProduct(updates),
   onSuccess: (product) => {
     // product is typed as Product
-  }
+  },
 };
 ```
 
