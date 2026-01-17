@@ -88,11 +88,7 @@ export function CartSummary({
   const LoaderIcon =
     icons?.loader ||
     (() => (
-      <svg
-        className="h-5 w-5 animate-spin"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
+      <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle
           className="opacity-25"
           cx="12"
@@ -112,7 +108,12 @@ export function CartSummary({
   const ShoppingBagIcon =
     icons?.shoppingBag ||
     (() => (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -125,7 +126,12 @@ export function CartSummary({
   const TagIcon =
     icons?.tag ||
     (() => (
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -138,7 +144,12 @@ export function CartSummary({
   const CloseIcon =
     icons?.close ||
     (() => (
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -174,7 +185,7 @@ export function CartSummary({
               style={{
                 width: `${Math.min(
                   (subtotal / freeShippingThreshold) * 100,
-                  100
+                  100,
                 )}%`,
               }}
             />

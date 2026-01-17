@@ -1,6 +1,6 @@
 export { ShopOrderSummary } from "./ShopOrderSummary";
 export type {
-  ShopOrderSummaryProps,
-  ShopOrderItem,
   AppliedCoupon,
+  ShopOrderItem,
+  ShopOrderSummaryProps,
 } from "./ShopOrderSummary";

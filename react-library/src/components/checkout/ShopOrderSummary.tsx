@@ -65,7 +65,7 @@ export function ShopOrderSummary({
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const discount = appliedCoupon?.discountAmount || 0;
   const shipping = subtotal >= freeShippingThreshold ? 0 : shippingCost;
@@ -105,7 +105,12 @@ export function ShopOrderSummary({
   const StoreIcon =
     icons?.store ||
     (() => (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -118,7 +123,12 @@ export function ShopOrderSummary({
   const TagIcon =
     icons?.tag ||
     (() => (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -131,7 +141,12 @@ export function ShopOrderSummary({
   const CloseIcon =
     icons?.close ||
     (() => (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -342,9 +357,8 @@ export function ShopOrderSummary({
 
         {shipping > 0 && (
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            💡 Add{" "}
-            <PriceComponent amount={freeShippingThreshold - subtotal} /> more
-            for FREE shipping
+            💡 Add <PriceComponent amount={freeShippingThreshold - subtotal} />{" "}
+            more for FREE shipping
           </p>
         )}
       </div>

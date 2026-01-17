@@ -4,8 +4,8 @@ import {
   OptimizedImage,
   Price,
   ShopOrderSummary as ShopOrderSummaryBase,
-  type ShopOrderItem,
   type AppliedCoupon,
+  type ShopOrderItem,
 } from "@letitrip/react-library";
 import { Loader2, Store, Tag, X } from "lucide-react";
 

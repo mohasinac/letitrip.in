@@ -81,7 +81,7 @@ export function CartItem({
   const hasDiscount = item.originalPrice && item.originalPrice > item.price;
   const discountPercent = hasDiscount
     ? Math.round(
-        ((item.originalPrice! - item.price) / item.originalPrice!) * 100
+        ((item.originalPrice! - item.price) / item.originalPrice!) * 100,
       )
     : 0;
 
@@ -298,11 +298,7 @@ export function CartItem({
                 title="Remove from cart"
                 aria-label="Remove"
               >
-                {typeof TrashIcon === "function" ? (
-                  <TrashIcon />
-                ) : (
-                  TrashIcon
-                )}
+                {typeof TrashIcon === "function" ? <TrashIcon /> : TrashIcon}
               </button>
             )}
           </div>
