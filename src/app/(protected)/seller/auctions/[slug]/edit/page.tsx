@@ -1,11 +1,10 @@
 "use client";
 
-import { PageState } from "@/components/common/PageState";
 import AuctionForm from "@/components/seller/AuctionForm";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionFE } from "@/types/frontend/auction.types";
+import { PageState, useLoadingState } from "@letitrip/react-library";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

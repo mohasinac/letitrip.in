@@ -1,6 +1,6 @@
 "use client";
 
-import { FormDatePicker } from "@/components/forms/FormDatePicker";
+import { FormDatePicker } from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
@@ -289,7 +289,7 @@ export default function FormDatePickerDemo() {
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Usage Example:</h3>
           <pre className="text-xs text-gray-800 overflow-x-auto">
-            {`import { FormDatePicker } from "@/components/forms/FormDatePicker";
+            {`import { FormDatePicker } from "@letitrip/react-library";
 
 function BookingForm() {
   const [date, setDate] = useState<Date | null>(null);

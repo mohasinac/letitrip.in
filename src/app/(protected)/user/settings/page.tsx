@@ -1,15 +1,17 @@
 "use client";
 
-import { SettingsSection } from "@/components/common/SettingsSection";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { authService } from "@/services/auth.service";
 import { MediaFile } from "@/types/media";
+import {
+  FormField,
+  FormInput,
+  FormPhoneInput,
+  SettingsSection,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { Camera, MapPin, Save } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

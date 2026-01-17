@@ -1,11 +1,11 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversationState } from "@/hooks/useConversationState";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
 import {

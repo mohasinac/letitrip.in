@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Camera, X, RotateCw, Check } from "lucide-react";
 import { logError } from "@/lib/error-logger";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { MediaFile } from "@/types/media";
 
 interface CameraCaptureProps {

@@ -1,12 +1,5 @@
-"use client";
-
-import { useState } from "react";
-
-interface ProductDescriptionProps {
-  description: string;
-  specifications?: Record<string, string>;
-  shipping?: string;
-}
+export { ProductDescription } from "@letitrip/react-library";
+export type { ProductDescriptionProps } from "@letitrip/react-library";
 
 export function ProductDescription({
   description,

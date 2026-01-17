@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Button } from "@letitrip/react-library";
+import { Card } from "@letitrip/react-library";
 import { Edit, Eye, Loader2, Search, Users } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";

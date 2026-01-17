@@ -3,7 +3,7 @@
  * Reusable bulk action definitions for different resource types
  */
 
-import { BulkAction } from "@/components/common/inline-edit";
+import { BulkAction } from "@letitrip/react-library";
 
 /**
  * Get bulk actions for products (admin/seller)

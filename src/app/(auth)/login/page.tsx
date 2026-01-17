@@ -1,9 +1,9 @@
 "use client";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
+import { FormCheckbox } from "@letitrip/react-library";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoginRegister } from "@/contexts/LoginRegisterContext";

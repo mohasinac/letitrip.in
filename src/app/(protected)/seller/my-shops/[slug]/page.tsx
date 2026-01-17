@@ -1,12 +1,14 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { PageState } from "@/components/common/PageState";
-import { Price } from "@/components/common/values/Price";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import {
+  OptimizedImage,
+  PageState,
+  Price,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   ArrowLeft,
   Edit,

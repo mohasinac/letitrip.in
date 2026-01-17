@@ -1,16 +1,16 @@
 "use client";
 
-import RichTextEditor from "@/components/common/RichTextEditor";
-import SlugInput from "@/components/common/SlugInput";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { FormActions } from "@/components/ui/FormActions";
+import { RichTextEditor } from "@letitrip/react-library";
+import { SlugInput } from "@letitrip/react-library";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormPhoneInput } from "@letitrip/react-library";
+import { Button } from "@letitrip/react-library";
+import { Card } from "@letitrip/react-library";
 import { useShopSlugValidation } from "@/lib/validation/slug";
 import type { ShopFE } from "@/types/frontend/shop.types";
+import { FormActions } from "@letitrip/react-library";
 import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 

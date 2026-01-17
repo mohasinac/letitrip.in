@@ -1,9 +1,9 @@
 "use client";
 
-import SlugInput from "@/components/common/SlugInput";
-import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { SlugInput } from "@letitrip/react-library";
+import { FormCurrencyInput } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE, ProductFE } from "@/types/frontend/product.types";

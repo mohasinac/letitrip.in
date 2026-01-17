@@ -13,12 +13,15 @@
  * - Popular categories
  */
 
-import { PeriodSelector } from "@/components/common/PeriodSelector";
-import { StatCard } from "@/components/common/StatCard";
-import { CompactPrice, Price } from "@/components/common/values/Price";
-import { Quantity } from "@/components/common/values/Quantity";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard } from "@/components/common/StatsCard";
 import { logError } from "@/lib/firebase-error-logger";
+import {
+  CompactPrice,
+  PeriodSelector,
+  Price,
+  Quantity,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Activity,
   ArrowLeft,
@@ -438,33 +441,38 @@ export default function AdminAuctionsAnalyticsPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
+        <StatsCard
           title="Total Auctions"
           value={stats.totalAuctions}
-          change={stats.auctionsGrowth}
-          icon={Gavel}
-          color="blue"
+          trend={{
+            value: stats.auctionsGrowth,
+            isPositive: stats.auctionsGrowth >= 0,
+          }}
+          icon={<Gavel />}
         />
-        <StatCard
+        <StatsCard
           title="Active Auctions"
           value={stats.activeAuctions}
-          change={stats.activeGrowth}
-          icon={Activity}
-          color="green"
+          trend={{
+            value: stats.activeGrowth,
+            isPositive: stats.activeGrowth >= 0,
+          }}
+          icon={<Activity />}
         />
-        <StatCard
+        <StatsCard
           title="Success Rate"
           value={`${stats.successRate}%`}
-          change={stats.successGrowth}
-          icon={CheckCircle}
-          color="purple"
+          trend={{
+            value: stats.successGrowth,
+            isPositive: stats.successGrowth >= 0,
+          }}
+          icon={<CheckCircle />}
         />
-        <StatCard
+        <StatsCard
           title="Total Bids"
           value={stats.totalBids}
-          change={stats.bidsGrowth}
-          icon={Users}
-          color="orange"
+          trend={{ value: stats.bidsGrowth, isPositive: stats.bidsGrowth >= 0 }}
+          icon={<Users />}
         />
       </div>
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import {
   ADMIN_MENU_ITEMS,
   SELLER_MENU_ITEMS,

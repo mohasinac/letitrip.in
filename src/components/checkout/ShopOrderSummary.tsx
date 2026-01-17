@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Tag, X, Loader2, Store } from "lucide-react";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price } from "@/components/common/values/Price";
+import { OptimizedImage } from "@letitrip/react-library"
+import { Price } from "@letitrip/react-library";
 
 interface ShopOrderSummaryProps {
   shopId: string;

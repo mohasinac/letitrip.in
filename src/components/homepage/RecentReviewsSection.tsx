@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { logError } from "@/lib/error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { ReviewCard } from "@/components/cards/ReviewCard";
 import { homepageService } from "@/services/homepage.service";
 import { analyticsService } from "@/services/analytics.service";

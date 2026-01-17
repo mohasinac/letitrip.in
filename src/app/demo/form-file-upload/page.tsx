@@ -1,6 +1,6 @@
 "use client";
 
-import { FormFileUpload } from "@/components/forms/FormFileUpload";
+import { FormFileUpload } from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
@@ -281,7 +281,7 @@ export default function FormFileUploadDemo() {
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Usage Example:</h3>
           <pre className="text-xs text-gray-800 overflow-x-auto">
-            {`import { FormFileUpload } from "@/components/forms/FormFileUpload";
+            {`import { FormFileUpload } from "@letitrip/react-library";
 
 function ProductForm() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * WizardSteps Component
  * Framework-agnostic horizontal step indicator

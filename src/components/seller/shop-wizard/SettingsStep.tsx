@@ -1,8 +1,8 @@
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormCheckbox } from "@letitrip/react-library";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface SettingsStepProps {

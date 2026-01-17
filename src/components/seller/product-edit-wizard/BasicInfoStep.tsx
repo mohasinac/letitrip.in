@@ -1,9 +1,9 @@
 "use client";
 
-import SlugInput from "@/components/common/SlugInput";
-import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { SlugInput } from "@letitrip/react-library";
+import { FormCurrencyInput } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { StepProps } from "./types";
 

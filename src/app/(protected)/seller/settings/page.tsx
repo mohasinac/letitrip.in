@@ -15,14 +15,14 @@ import { logError } from "@/lib/firebase-error-logger";
  * - Business information
  */
 
-import { PageState } from "@/components/common/PageState";
-import { Price } from "@/components/common/values/Price";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { PageState } from '@letitrip/react-library';
+import { Price } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { apiService } from "@/services/api.service";
 import {
   ArrowLeft,

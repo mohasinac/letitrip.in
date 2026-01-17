@@ -2,9 +2,9 @@
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";

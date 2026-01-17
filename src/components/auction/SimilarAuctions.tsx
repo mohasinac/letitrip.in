@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState } from '@letitrip/react-library';
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 
 export interface SimilarAuctionsProps {

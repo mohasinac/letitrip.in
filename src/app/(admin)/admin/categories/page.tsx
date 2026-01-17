@@ -2,12 +2,12 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { CategoryTree } from "@/components/category/CategoryTree";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { OptimizedImage } from "@letitrip/react-library"
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
 import { getCategoryBulkActions } from "@/constants/bulk-actions";
 import { CATEGORY_FIELDS, toInlineFields } from "@/constants/form-fields";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { categoriesService } from "@/services/categories.service";
 import type {
   CategoryCardFE,

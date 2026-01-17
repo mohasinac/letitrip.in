@@ -7,14 +7,14 @@ import {
   UnifiedFilterSidebar,
   BulkActionBar,
   TableCheckbox,
-} from "@/components/common/inline-edit";
+} from "@letitrip/react-library";
 import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
-import { SimplePagination } from "@/components/common/Pagination";
+import { SimplePagination } from '@letitrip/react-library';
 import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { useLoadingState } from "@letitrip/react-library";
+import { DateDisplay } from "@letitrip/react-library";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();

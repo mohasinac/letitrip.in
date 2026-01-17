@@ -1,9 +1,9 @@
 "use client";
 
-import { PageState } from "@/components/common/PageState";
+import { PageState } from '@letitrip/react-library';
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";

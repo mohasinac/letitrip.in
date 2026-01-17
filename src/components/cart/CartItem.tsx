@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
+import {
+  ConfirmDialog,
+  MobileSwipeActions,
+  Price,
+  createDeleteAction,
+} from "@letitrip/react-library";
+import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import {
-  MobileSwipeActions,
-  createDeleteAction,
-} from "@/components/mobile/MobileSwipeActions";
-import { Price } from "@/components/common/values/Price";
-import type { CartItemFE as CartItemType } from "@/types/frontend/cart.types";
 
 interface CartItemProps {
   item: CartItemType & {
@@ -62,7 +62,7 @@ export function CartItem({
   const hasDiscount = item.originalPrice && item.originalPrice > item.price;
   const discountPercent = hasDiscount
     ? Math.round(
-        ((item.originalPrice! - item.price) / item.originalPrice!) * 100,
+        ((item.originalPrice! - item.price) / item.originalPrice!) * 100
       )
     : 0;
 

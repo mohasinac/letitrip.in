@@ -1,9 +1,9 @@
-import { Metadata } from "next";
-import FAQSection from "@/components/faq/FAQSection";
-import { HelpCircle, Mail, MessageCircle } from "lucide-react";
-import Link from "next/link";
 import { FAQ_ITEMS } from "@/constants/faq";
 import { generateFAQSchema, generateJSONLD } from "@/lib/seo/schema";
+import { FAQSection } from "@letitrip/react-library";
+import { HelpCircle, Mail, MessageCircle } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions - Let It Rip",
@@ -34,7 +34,7 @@ export default function FAQPage() {
     FAQ_ITEMS.map((item) => ({
       question: item.question,
       answer: item.answer,
-    })),
+    }))
   );
 
   return (

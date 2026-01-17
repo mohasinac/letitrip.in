@@ -14,16 +14,18 @@
  * - Maintenance mode
  */
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useFormState } from "@/hooks/useFormState";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   settingsService,
   type GeneralSettings,
 } from "@/services/settings.service";
+import {
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  useFormState,
+  useLoadingState,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

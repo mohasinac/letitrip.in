@@ -1,8 +1,8 @@
 "use client";
 
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";

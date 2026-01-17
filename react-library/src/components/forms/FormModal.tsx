@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * FormModal Component
  * Framework-agnostic modal dialog for forms

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * usePasswordFieldState Hook
  * Framework-agnostic password field state management

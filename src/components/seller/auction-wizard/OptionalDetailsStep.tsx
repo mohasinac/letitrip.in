@@ -1,13 +1,13 @@
 "use client";
 
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
-import DateTimePicker from "@/components/common/DateTimePicker";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { Price } from "@/components/common/values/Price";
+import { DateTimePicker } from '@letitrip/react-library';
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormCheckbox } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
 import type { OptionalStepProps } from "./types";
 
 export function OptionalDetailsStep({

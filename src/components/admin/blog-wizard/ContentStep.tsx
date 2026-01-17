@@ -1,5 +1,5 @@
-import { FormLabel } from "@/components/forms/FormLabel";
-import RichTextEditor from "@/components/common/RichTextEditor";
+import { FormLabel } from "@letitrip/react-library";
+import { RichTextEditor } from "@letitrip/react-library";
 import type { BlogFormData, OnBlogChange } from "./types";
 
 interface ContentStepProps {

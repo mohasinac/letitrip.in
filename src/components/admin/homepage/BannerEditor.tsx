@@ -1,9 +1,9 @@
 "use client";
 
 import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
-import RichTextEditor from "@/components/common/RichTextEditor";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { RichTextEditor } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
 
 interface BannerSettings {
   enabled: boolean;

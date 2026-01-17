@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useWizardFormState Hook
  * Framework-agnostic multi-step wizard form state management

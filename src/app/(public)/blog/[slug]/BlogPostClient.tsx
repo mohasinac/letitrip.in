@@ -1,11 +1,11 @@
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { safeToISOString } from "@/lib/date-utils";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatDate } from "@/lib/formatters";
 import { blogService, type BlogPost } from "@/services/blog.service";
+import { useLoadingState } from "@letitrip/react-library";
 import {
   ArrowLeft,
   Calendar,

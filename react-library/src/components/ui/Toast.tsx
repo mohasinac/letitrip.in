@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Toast Notification System
  *
@@ -363,7 +365,7 @@ export function ToastContainer({
 let globalShowToast: ((toast: Omit<Toast, "id">) => void) | null = null;
 
 export function setGlobalToastHandler(
-  handler: (toast: Omit<Toast, "id">) => void
+  handler: ((toast: Omit<Toast, "id">) => void) | null
 ) {
   globalShowToast = handler;
 }

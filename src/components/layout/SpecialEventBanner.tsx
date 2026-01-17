@@ -4,7 +4,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { homepageService } from "@/services/homepage.service";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { logError } from "@/lib/firebase-error-logger";
 
 export default function SpecialEventBanner() {

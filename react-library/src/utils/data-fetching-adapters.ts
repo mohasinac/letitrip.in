@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Data Fetching Adapters
  *
@@ -151,7 +153,7 @@ export function createTanStackAdapter(hooks: {
 
     invalidateQueries: hooks.useQueryClient
       ? async (key: readonly unknown[]) => {
-          const queryClient = hooks.useQueryClient();
+          const queryClient = hooks.useQueryClient!();
           await queryClient.invalidateQueries({ queryKey: key });
         }
       : undefined,
@@ -161,7 +163,7 @@ export function createTanStackAdapter(hooks: {
           key: readonly unknown[];
           fetcher: () => Promise<TData>;
         }) => {
-          const queryClient = hooks.useQueryClient();
+          const queryClient = hooks.useQueryClient!();
           await queryClient.prefetchQuery({
             queryKey: options.key,
             queryFn: options.fetcher,
@@ -189,7 +191,11 @@ export function createTanStackAdapter(hooks: {
  * ```
  */
 export function createSWRAdapter(hooks: {
-  useSWR: any;
+  useSWR: <T>(
+    key: string | null,
+    fetcher: () => Promise<T>,
+    config?: any
+  ) => any;
   useSWRConfig?: () => any;
 }): DataFetchingAdapter {
   return {
@@ -289,7 +295,7 @@ export function createSWRAdapter(hooks: {
 
     invalidateQueries: hooks.useSWRConfig
       ? async (key: readonly unknown[]) => {
-          const { mutate } = hooks.useSWRConfig();
+          const { mutate } = hooks.useSWRConfig!();
           const keyString = JSON.stringify(key);
           await mutate(keyString);
         }

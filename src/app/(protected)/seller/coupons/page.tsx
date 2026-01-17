@@ -2,19 +2,21 @@
 
 import { toast } from "@/components/admin/Toast";
 import type { FilterSection } from "@/components/common/FilterSidebar";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { PageState } from "@/components/common/PageState";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Percentage } from "@/components/common/values/Percentage";
-import { Price } from "@/components/common/values/Price";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
+import {
+  DateDisplay,
+  PageState,
+  Percentage,
+  Price,
+  StatusBadge,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { Copy, Edit, Filter, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -103,7 +105,7 @@ export default function CouponsPage() {
     (coupon) =>
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {

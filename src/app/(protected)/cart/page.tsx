@@ -2,8 +2,6 @@
 
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { EmptyState } from "@/components/common/EmptyState";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useApplyCoupon,
@@ -13,6 +11,7 @@ import {
   useRemoveFromCart,
   useUpdateCartItem,
 } from "@/hooks/queries/useCart";
+import { ConfirmDialog, EmptyState } from "@letitrip/react-library";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -70,15 +69,15 @@ export default function CartPage() {
     applyCouponMutation.mutate(code);
   };
 
-  const handleRemoveCoupon = () => {
+  const handleRemoveCoupon = async () => {
     removeCouponMutation.mutate();
   };
 
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
+  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
     updateCartItem.mutate({ itemId, quantity });
   };
 
-  const handleRemoveItem = (itemId: string) => {
+  const handleRemoveItem = async (itemId: string) => {
     removeFromCart.mutate(itemId);
   };
 

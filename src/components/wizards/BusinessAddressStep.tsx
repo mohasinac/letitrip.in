@@ -4,8 +4,8 @@ import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { logError } from "@/lib/error-logger";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import { INDIAN_STATES } from "@/constants/location";
 
 export interface BusinessAddressStepProps {

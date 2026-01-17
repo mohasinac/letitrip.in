@@ -1,20 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import AuthGuard from "@/components/auth/AuthGuard";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
-import { SimplePagination } from "@/components/common/Pagination";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
-import { Eye, CheckCircle, XCircle, Edit, Flag, Clock } from "lucide-react";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import {
+  DateDisplay,
+  OptimizedImage,
+  Price,
+  SimplePagination,
+  UnifiedFilterSidebar,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { CheckCircle, Clock, Edit, Eye, Flag, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AuctionModerationPage() {
   const router = useRouter();
@@ -236,7 +238,9 @@ export default function AuctionModerationPage() {
                                 <OptimizedImage
                                   src={auction.images[0]}
                                   alt={auction.name || "Auction"}
-                                  fill
+                                  width={48}
+                                  height={48}
+                                  objectFit="cover"
                                   className="object-cover rounded"
                                 />
                               </div>
@@ -263,7 +267,7 @@ export default function AuctionModerationPage() {
                             {auction.status === "pending" ||
                             auction.status === "scheduled" ? (
                               `Starts in ${getTimeUntilStart(
-                                auction.startTime,
+                                auction.startTime
                               )}`
                             ) : (
                               <DateDisplay
@@ -283,7 +287,7 @@ export default function AuctionModerationPage() {
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                              auction.status,
+                              auction.status
                             )}`}
                           >
                             {auction.status}
@@ -312,7 +316,7 @@ export default function AuctionModerationPage() {
                                 <button
                                   onClick={() =>
                                     router.push(
-                                      `/admin/auctions/${auction.id}/edit`,
+                                      `/admin/auctions/${auction.id}/edit`
                                     )
                                   }
                                   className="text-blue-600 hover:text-blue-900"

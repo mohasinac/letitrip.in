@@ -31,9 +31,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { returnsService } from "@/services/returns.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { SimplePagination } from "@/components/common/Pagination";
-import { PageState } from "@/components/common/PageState";
+import { useLoadingState } from "@letitrip/react-library";
+import { SimplePagination } from '@letitrip/react-library';
+import { PageState } from '@letitrip/react-library';
 import type { ReturnCardFE } from "@/types/frontend/return.types";
 import { formatDistanceToNow } from "date-fns";
 

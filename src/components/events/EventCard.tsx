@@ -1,7 +1,7 @@
 "use client";
 
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import Link from "next/link";
 

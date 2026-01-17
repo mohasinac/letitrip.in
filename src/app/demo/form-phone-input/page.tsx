@@ -1,6 +1,6 @@
 "use client";
 
-import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+import { FormPhoneInput } from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
@@ -250,7 +250,7 @@ export default function FormPhoneInputDemo() {
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Usage Example:</h3>
           <pre className="text-xs text-gray-800 overflow-x-auto">
-            {`import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+            {`import { FormPhoneInput } from "@letitrip/react-library";
 
 function MyForm() {
   const [phone, setPhone] = useState("");

@@ -1,7 +1,7 @@
 "use client";
 
 import AuctionCard from "@/components/cards/AuctionCard";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { logError } from "@/lib/error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";

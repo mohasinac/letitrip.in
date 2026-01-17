@@ -1,13 +1,13 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { EmptyState } from "@/components/common/EmptyState";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { PageState } from "@/components/common/PageState";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { FormInput } from "@/components/forms/FormInput";
+import { ConfirmDialog } from "@letitrip/react-library";
+import { EmptyState } from '@letitrip/react-library';
+import { OptimizedImage } from "@letitrip/react-library"
+import { PageState } from '@letitrip/react-library';
+import { StatusBadge } from '@letitrip/react-library';
+import { FormInput } from "@letitrip/react-library";
 import { ViewToggle } from "@/components/seller/ViewToggle";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { shopsService } from "@/services/shops.service";
 import type { ShopFE } from "@/types/frontend/shop.types";

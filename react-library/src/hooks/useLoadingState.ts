@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useLoadingState Hook
  * Consolidates common loading/error state patterns across components

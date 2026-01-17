@@ -6,10 +6,9 @@ import { ContentStep } from "@/components/admin/blog-wizard/ContentStep";
 import { MediaStep } from "@/components/admin/blog-wizard/MediaStep";
 import type { BlogFormData } from "@/components/admin/blog-wizard/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
 import { blogService } from "@/services/blog.service";
+import { useLoadingState } from "@letitrip/react-library";
 import {
   ArrowLeft,
   ArrowRight,
@@ -64,10 +63,12 @@ export default function CreateBlogPostPage() {
     featured: false,
   });
 
-  // Media upload
-  const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
-    useMediaUploadWithCleanup();
-  const uploadedUrls = getUploadedUrls();
+  // TODO: Refactor media upload to use new useMediaUpload API
+  // Media upload - TEMPORARILY DISABLED (API incompatible)
+  // const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
+  //   useMediaUpload();
+  // const uploadedUrls = getUploadedUrls();
+  const uploadedUrls: string[] = [];
 
   const handleChange = (field: keyof BlogFormData, value: unknown) => {
     setFormData((prev: BlogFormData) => ({
@@ -101,7 +102,9 @@ export default function CreateBlogPostPage() {
     }
 
     try {
-      await uploadMedia(file, "product"); // Use product context for blog images
+      // TODO: Implement with new useMediaUpload API
+      // await uploadMedia(file, "product"); // Use product context for blog images
+      toast.error("Image upload temporarily disabled - needs refactoring");
       setErrors((prev) => ({ ...prev, featuredImage: "" }));
     } catch (error) {
       setErrors((prev) => ({
@@ -176,7 +179,7 @@ export default function CreateBlogPostPage() {
           "Are you sure you want to cancel? All unsaved changes will be lost."
         )
       ) {
-        cleanupUploadedMedia();
+        // cleanupUploadedMedia(); // TODO: Implement with new API
         router.push("/admin/blog");
       }
     } else {
@@ -269,9 +272,9 @@ export default function CreateBlogPostPage() {
           {currentStep === 2 && (
             <MediaStep
               featuredImage={uploadedUrls[0]}
-              isUploading={isUploading}
+              isUploading={false}
               onImageUpload={handleImageUpload}
-              onImageRemove={cleanupUploadedMedia}
+              onImageRemove={() => {}} // TODO: Implement with new API
               error={errors.featuredImage}
             />
           )}

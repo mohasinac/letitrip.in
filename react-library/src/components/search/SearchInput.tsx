@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * SearchInput Component
  *

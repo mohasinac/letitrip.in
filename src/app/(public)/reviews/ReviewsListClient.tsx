@@ -1,7 +1,7 @@
 "use client";
 
 import { ReviewCard } from "@/components/cards/ReviewCard";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import type { ReviewFE, ReviewFiltersFE } from "@/types/frontend/review.types";

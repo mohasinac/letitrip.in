@@ -1,9 +1,9 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { WizardForm, WizardFormStep } from "@/components/forms/WizardForm";
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { WizardForm, WizardFormStep } from "@letitrip/react-library";
 import { useState } from "react";
 
 interface FormData {

@@ -1,35 +1,8 @@
-/**
- * StatsCard Component
- *
- * A simple statistics card for dashboards. Supports dark mode.
- *
- * @example
- * ```tsx
- * <StatsCard
- *   title="Total Orders"
- *   value={1234}
- *   icon={<ShoppingCart className="w-5 h-5" />}
- *   trend={{ value: 12.5, isPositive: true }}
- * />
- * ```
- */
-
-"use client";
-
-import { ReactNode } from "react";
-
-export interface StatsCardProps {
-  title: string;
-  value: string | number | ReactNode;
-  icon?: ReactNode;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
-  description?: string;
-  className?: string;
-  onClick?: () => void;
-}
+export { StatsCard, StatsCardGrid } from "@letitrip/react-library";
+export type {
+  StatsCardGridProps,
+  StatsCardProps,
+} from "@letitrip/react-library";
 
 export function StatsCard({
   title,

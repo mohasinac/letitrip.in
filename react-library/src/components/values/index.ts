@@ -15,7 +15,7 @@ export { OrderId } from "./OrderId";
 export { PaymentStatus } from "./PaymentStatus";
 export { Percentage } from "./Percentage";
 export { PhoneNumber } from "./PhoneNumber";
-export { Price } from "./Price";
+export { CompactPrice, Price } from "./Price";
 export { Quantity } from "./Quantity";
 export { Rating } from "./Rating";
 export { ShippingStatus } from "./ShippingStatus";

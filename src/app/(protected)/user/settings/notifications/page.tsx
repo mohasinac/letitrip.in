@@ -10,7 +10,7 @@
  */
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   Bell,

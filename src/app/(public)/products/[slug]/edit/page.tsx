@@ -2,14 +2,13 @@
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
 import type { ProductFE, ProductFormFE } from "@/types/frontend/product.types";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { Card, useLoadingState } from "@letitrip/react-library";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

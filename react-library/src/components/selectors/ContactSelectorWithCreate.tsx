@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * ContactSelectorWithCreate Component
  *

@@ -1,10 +1,10 @@
 "use client";
 
-import { PageState } from "@/components/common/PageState";
+import { PageState } from '@letitrip/react-library';
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { CompactPrice, Price } from "@/components/common/values/Price";
+import { CompactPrice, Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { analyticsService } from "@/services/analytics.service";
 import {
   AlertCircle,

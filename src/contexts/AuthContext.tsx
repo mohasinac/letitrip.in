@@ -26,8 +26,7 @@
  * ```
  */
 
-import { useAuthActions } from "@/hooks/useAuthActions";
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthActions, useAuthState } from "@letitrip/react-library";
 
 // Re-export provider for backward compatibility
 export { AuthProvider } from "@/contexts/auth";

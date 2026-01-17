@@ -1,5 +1,5 @@
-import { FormLabel } from "@/components/forms/FormLabel";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormLabel } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { Upload, X } from "lucide-react";
 
 interface MediaStepProps {

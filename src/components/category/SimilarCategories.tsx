@@ -1,6 +1,6 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";

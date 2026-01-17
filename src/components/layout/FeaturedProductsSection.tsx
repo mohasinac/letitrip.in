@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { logError } from "@/lib/firebase-error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { productsService } from "@/services/products.service";
 import { homepageSettingsService } from "@/services/homepage-settings.service";
 import { apiService } from "@/services/api.service";

@@ -1,15 +1,17 @@
 "use client";
 
-import { EmptyState } from "@/components/common/EmptyState";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormSelect } from "@/components/forms/FormSelect";
 import { CATEGORY_FILTERS } from "@/constants/filters";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import {
+  EmptyState,
+  FormSelect,
+  OptimizedImage,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   ChevronLeft,
   ChevronRight,

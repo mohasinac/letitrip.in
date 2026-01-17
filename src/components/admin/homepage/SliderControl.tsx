@@ -1,6 +1,6 @@
 "use client";
 
-import { FormLabel } from "@/components/forms/FormLabel";
+import { FormLabel } from "@letitrip/react-library";
 
 interface SliderControlProps {
   label: string;

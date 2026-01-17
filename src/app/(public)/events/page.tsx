@@ -1,7 +1,7 @@
 "use client";
 
 import { EventCard } from "@/components/events/EventCard";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { eventsService, type Event } from "@/services/events.service";
 import { Loader2 } from "lucide-react";

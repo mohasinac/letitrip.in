@@ -3,14 +3,16 @@
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { toast } from "@/components/admin/Toast";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import OptimizedImage from "@/components/common/OptimizedImage";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  ConfirmDialog,
+  OptimizedImage,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Activity,
   AlertCircle,
@@ -156,7 +158,9 @@ function LiveAuctionRow({
               <OptimizedImage
                 src={auction.images[0]}
                 alt={auction.name || "Auction image"}
-                fill
+                width={48}
+                height={48}
+                objectFit="cover"
                 className="object-cover"
               />
             ) : (
@@ -190,7 +194,7 @@ function LiveAuctionRow({
       <td className="px-4 py-3">
         <div className="font-semibold text-gray-900">
           {formatPrice(
-            auction.currentBid || auction.startingBid || auction.currentPrice,
+            auction.currentBid || auction.startingBid || auction.currentPrice
           )}
         </div>
         {auction.reservePrice && (
@@ -303,10 +307,10 @@ export default function LiveAuctionsPage() {
         totalValue: liveAuctions.reduce(
           (sum, a) =>
             sum + (a.currentBid || a.startingBid || a.currentPrice || 0),
-          0,
+          0
         ),
         endingSoon: liveAuctions.filter(
-          (a) => new Date(a.endTime).getTime() - now < oneHour,
+          (a) => new Date(a.endTime).getTime() - now < oneHour
         ).length,
         scheduledCount: 0,
       });

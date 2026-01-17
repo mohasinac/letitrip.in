@@ -1,11 +1,6 @@
 "use client";
 
-import { PeriodSelector } from "@/components/common/PeriodSelector";
-import { StatCard } from "@/components/common/StatCard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import { Quantity } from "@/components/common/values/Quantity";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard } from "@/components/common/StatsCard";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type {
@@ -13,6 +8,13 @@ import type {
   SalesDataPointFE,
   TopProductFE,
 } from "@/types/frontend/analytics.types";
+import {
+  DateDisplay,
+  PeriodSelector,
+  Price,
+  Quantity,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   ArrowRight,
   BarChart2,
@@ -216,32 +218,33 @@ export default function AdminAnalyticsPage() {
           <>
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard
+              <StatsCard
                 title="Total Revenue"
                 value={overview.totalRevenue}
-                change={overview.revenueGrowth}
-                icon={DollarSign}
-                color="green"
-                prefix="₹"
+                trend={{
+                  value: overview.revenueGrowth,
+                  isPositive: overview.revenueGrowth >= 0,
+                }}
+                icon={<DollarSign />}
               />
-              <StatCard
+              <StatsCard
                 title="Total Orders"
                 value={overview.totalOrders}
-                change={overview.ordersGrowth}
-                icon={ShoppingCart}
-                color="blue"
+                trend={{
+                  value: overview.ordersGrowth,
+                  isPositive: overview.ordersGrowth >= 0,
+                }}
+                icon={<ShoppingCart />}
               />
-              <StatCard
+              <StatsCard
                 title="Active Products"
                 value={overview.totalProducts}
-                icon={Package}
-                color="purple"
+                icon={<Package />}
               />
-              <StatCard
+              <StatsCard
                 title="Total Customers"
                 value={overview.totalCustomers}
-                icon={Users}
-                color="indigo"
+                icon={<Users />}
               />
             </div>
 

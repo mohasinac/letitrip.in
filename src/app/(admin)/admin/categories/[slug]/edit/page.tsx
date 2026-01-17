@@ -2,10 +2,10 @@
 
 import CategoryForm from "@/components/admin/CategoryForm";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
+import { useLoadingState } from "@letitrip/react-library";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

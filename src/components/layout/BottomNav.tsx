@@ -1,11 +1,11 @@
 "use client";
 
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@letitrip/react-library";
+import { Gavel, Home, ShoppingBag, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { Home, ShoppingCart, Gavel, ShoppingBag } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
 
 export default function BottomNav() {
   const pathname = usePathname();

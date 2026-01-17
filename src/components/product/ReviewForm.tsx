@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Star, Image as ImageIcon } from "lucide-react";
-import { toast } from "sonner";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import MediaUploader from "@/components/media/MediaUploader";
 import { logError } from "@/lib/error-logger";
 import { reviewsService } from "@/services/reviews.service";
-import MediaUploader from "@/components/media/MediaUploader";
 import { MediaFile } from "@/types/media";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
+import {
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  useMediaUpload,
+} from "@letitrip/react-library";
+import { Image as ImageIcon, Star } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface ReviewFormProps {
   productId: string;
@@ -40,7 +42,7 @@ export default function ReviewForm({
     isUploading,
     getUploadedUrls,
     hasUploadedMedia,
-  } = useMediaUploadWithCleanup({
+  } = useMediaUpload({
     enableNavigationGuard: true,
     navigationGuardMessage: "You have uploaded media. Leave and delete?",
     onUploadError: (error) => {
@@ -56,7 +58,7 @@ export default function ReviewForm({
       await uploadMultipleMedia(
         files.map((f) => f.file),
         "review",
-        productId,
+        productId
       );
       toast.success("Images uploaded successfully");
     } catch (err) {

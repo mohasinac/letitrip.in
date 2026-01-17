@@ -2,21 +2,23 @@
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { SimplePagination } from "@/components/common/Pagination";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
 import { RETURN_FILTERS } from "@/constants/filters";
-import { useFilters } from "@/hooks/useFilters";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
 import { logComponentError } from "@/lib/error-logger";
 import { returnsService } from "@/services/returns.service";
 import type {
   ReturnCardFE,
   ReturnFiltersFE,
 } from "@/types/frontend/return.types";
+import {
+  DateDisplay,
+  Price,
+  SimplePagination,
+  UnifiedFilterSidebar,
+  useFilters,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { AlertTriangle, CheckCircle, Eye, Filter, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";

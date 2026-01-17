@@ -13,15 +13,17 @@
  * - User activity metrics
  */
 
-import { PeriodSelector } from "@/components/common/PeriodSelector";
-import { StatCard } from "@/components/common/StatCard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import { Quantity } from "@/components/common/values/Quantity";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard } from "@/components/common/StatsCard";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
+import {
+  DateDisplay,
+  PeriodSelector,
+  Price,
+  Quantity,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Activity,
   ArrowLeft,
@@ -190,8 +192,8 @@ function TopCustomersTable({
                             index === 0
                               ? "text-yellow-500"
                               : index === 1
-                                ? "text-gray-400"
-                                : "text-orange-400"
+                              ? "text-gray-400"
+                              : "text-orange-400"
                           }`}
                         />
                       ) : (
@@ -407,33 +409,38 @@ export default function AdminUsersAnalyticsPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
+        <StatsCard
           title="Total Users"
           value={stats.totalUsers.toLocaleString()}
-          change={stats.userGrowth}
-          icon={Users}
-          color="blue"
+          trend={{ value: stats.userGrowth, isPositive: stats.userGrowth >= 0 }}
+          icon={<Users />}
         />
-        <StatCard
+        <StatsCard
           title="New Users"
           value={stats.newUsers.toLocaleString()}
-          change={stats.newUsersGrowth}
-          icon={UserPlus}
-          color="green"
+          trend={{
+            value: stats.newUsersGrowth,
+            isPositive: stats.newUsersGrowth >= 0,
+          }}
+          icon={<UserPlus />}
         />
-        <StatCard
+        <StatsCard
           title="Active Users"
           value={stats.activeUsers.toLocaleString()}
-          change={stats.activeUsersGrowth}
-          icon={Activity}
-          color="purple"
+          trend={{
+            value: stats.activeUsersGrowth,
+            isPositive: stats.activeUsersGrowth >= 0,
+          }}
+          icon={<Activity />}
         />
-        <StatCard
+        <StatsCard
           title="Churn Rate"
           value={`${stats.churnRate}%`}
-          change={stats.churnRateChange}
-          icon={TrendingDown}
-          color="orange"
+          trend={{
+            value: stats.churnRateChange,
+            isPositive: stats.churnRateChange <= 0,
+          }}
+          icon={<TrendingDown />}
         />
       </div>
 

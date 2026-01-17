@@ -1,7 +1,7 @@
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { logError } from "@/lib/error-logger";
 import type { BlogPost } from "@/services/blog.service";
 import { blogService } from "@/services/blog.service";

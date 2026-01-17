@@ -1,15 +1,17 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { PageState } from "@/components/common/PageState";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { ordersService } from "@/services/orders.service";
 import type { OrderFE } from "@/types/frontend/order.types";
+import {
+  DateDisplay,
+  OptimizedImage,
+  PageState,
+  Price,
+  StatusBadge,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   CheckCircle,
   ChevronLeft,
@@ -374,8 +376,8 @@ function OrderTimeline({ status }: { status: string }) {
                   isCurrent
                     ? "text-primary"
                     : isCompleted
-                      ? "text-gray-900 dark:text-white"
-                      : "text-gray-400 dark:text-gray-500"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {step.label}

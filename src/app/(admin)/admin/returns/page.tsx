@@ -1,26 +1,28 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { toast } from "@/components/admin/Toast";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
-import { toast } from "@/components/admin/Toast";
 import {
-  Eye,
-  CheckCircle,
-  XCircle,
-  Package,
-  User,
+  DateDisplay,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
+import {
   Calendar,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  Package,
+  User,
+  XCircle,
 } from "lucide-react";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AdminReturnsPage() {
   const router = useRouter();
@@ -163,10 +165,10 @@ export default function AdminReturnsPage() {
                               returnItem.status === "approved"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : returnItem.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                                  : returnItem.status === "completed"
-                                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400"
-                                    : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                : returnItem.status === "completed"
+                                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {returnItem.status}
@@ -348,10 +350,10 @@ export default function AdminReturnsPage() {
                               returnItem.status === "approved"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : returnItem.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                                  : returnItem.status === "completed"
-                                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400"
-                                    : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                : returnItem.status === "completed"
+                                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {returnItem.status}

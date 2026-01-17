@@ -9,7 +9,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState } from '@letitrip/react-library';
 import { logError } from "@/lib/error-logger";
 import type { ShopFE } from "@/types/frontend/shop.types";
 

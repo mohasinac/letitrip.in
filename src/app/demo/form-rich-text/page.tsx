@@ -1,6 +1,6 @@
 "use client";
 
-import { FormRichText } from "@/components/forms/FormRichText";
+import { FormRichText } from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
@@ -298,7 +298,7 @@ export default function FormRichTextDemo() {
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Usage Example:</h3>
           <pre className="text-xs text-gray-800 overflow-x-auto">
-            {`import { FormRichText } from "@/components/forms/FormRichText";
+            {`import { FormRichText } from "@letitrip/react-library";
 
 function BlogEditor() {
   const [content, setContent] = useState("");

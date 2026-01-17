@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { logError } from "@/lib/firebase-error-logger";
 import { useRouter } from "next/navigation";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import {
   Star,
   Edit,
@@ -20,13 +20,13 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { DateDisplay } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import { reviewsService } from "@/services/reviews.service";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
+import { ConfirmDialog } from "@letitrip/react-library";
+import { useLoadingState } from "@letitrip/react-library";
+import { PageState } from '@letitrip/react-library';
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import type { ReviewFE } from "@/types/frontend/review.types";
 

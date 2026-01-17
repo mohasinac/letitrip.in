@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { DateDisplay } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supportService } from "@/services/support.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 
 const statusColors = {

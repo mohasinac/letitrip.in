@@ -13,8 +13,8 @@
 
 "use client";
 
-import { FavoriteButton } from "@/components/common/FavoriteButton";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { FavoriteButton } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { formatTimeRemaining } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { cn } from "@/lib/utils";

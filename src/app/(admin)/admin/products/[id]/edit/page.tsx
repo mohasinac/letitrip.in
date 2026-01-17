@@ -1,16 +1,7 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
 import MediaUploader from "@/components/media/MediaUploader";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
@@ -23,6 +14,16 @@ import {
   ProductStatus,
   ShippingClass,
 } from "@/types/shared/common.types";
+import {
+  ConfirmDialog,
+  FormInput,
+  FormLabel,
+  FormSelect,
+  FormTextarea,
+  OptimizedImage,
+  SlugInput,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   ArrowLeft,
@@ -99,21 +100,24 @@ export default function AdminEditProductPage() {
   const [newSpec, setNewSpec] = useState({ name: "", value: "" });
   const [tagInput, setTagInput] = useState("");
 
-  // Media upload
-  const {
-    uploadMedia,
-    isUploading,
-    clearTracking,
-    confirmNavigation,
-    hasUploadedMedia,
-  } = useMediaUploadWithCleanup({
-    onUploadSuccess: (url) => {
-      setFormData((prev) => ({
-        ...prev,
-        images: [...(product?.images || []), url],
-      }));
-    },
-  });
+  // TODO: Refactor media upload to use new useMediaUpload API
+  // Media upload - TEMPORARILY DISABLED (API incompatible)
+  // const {
+  //   uploadMedia,
+  //   isUploading,
+  //   clearTracking,
+  //   confirmNavigation,
+  //   hasUploadedMedia,
+  // } = useMediaUpload({
+  //   onUploadSuccess: (url) => {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       images: [...(product?.images || []), url],
+  //     }));
+  //   },
+  // });
+  const hasUploadedMedia = false;
+  const isUploading = false;
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -211,7 +215,9 @@ export default function AdminEditProductPage() {
 
   const handleImageUpload = async (files: any[]) => {
     if (files.length > 0) {
-      await uploadMedia(files[0].file, "product", productId);
+      // TODO: Implement with new useMediaUpload API
+      // await uploadMedia(files[0].file, "product", productId);
+      toast.error("Image upload temporarily disabled - needs refactoring");
     }
   };
 
@@ -236,7 +242,7 @@ export default function AdminEditProductPage() {
 
       await productsService.update(product!.slug, updateData);
 
-      clearTracking();
+      // clearTracking(); // TODO: Implement with new API
       router.push("/admin/products");
     } catch (error) {
       console.error("Failed to update product:", error);
@@ -262,7 +268,8 @@ export default function AdminEditProductPage() {
 
   const handleCancel = async () => {
     if (hasUploadedMedia) {
-      await confirmNavigation(() => router.back());
+      // await confirmNavigation(() => router.back()); // TODO: Implement with new API
+      router.back();
     } else {
       router.back();
     }
@@ -432,7 +439,9 @@ export default function AdminEditProductPage() {
                         <OptimizedImage
                           src={url}
                           alt={`Product ${index + 1}`}
-                          fill
+                          width={128}
+                          height={128}
+                          objectFit="cover"
                           className="object-cover rounded-lg border border-gray-200"
                         />
                         <button

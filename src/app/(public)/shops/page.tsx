@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2, Filter, Grid, List, AlertCircle } from "lucide-react";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { AdvancedPagination } from "@/components/common/AdvancedPagination";
 import { ShopCard } from "@/components/cards/ShopCard";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { SHOP_FILTERS } from "@/constants/filters";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { shopsService } from "@/services/shops.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
+import {
+  AdvancedPagination,
+  FormSelect,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+  useUrlFilters,
+} from "@letitrip/react-library";
+import { AlertCircle, Filter, Grid, List, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 function ShopsContent() {
   const router = useRouter();

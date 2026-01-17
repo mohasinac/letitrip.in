@@ -1,15 +1,17 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { TICKET_FILTERS } from "@/constants/filters";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
 import { logError } from "@/lib/firebase-error-logger";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
+import {
+  StatusBadge,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   CheckCircle,
@@ -143,7 +145,7 @@ function SellerSupportTicketsContent() {
     const now = new Date();
     const ticketDate = new Date(date);
     const diffInMinutes = Math.floor(
-      (now.getTime() - ticketDate.getTime()) / 60000,
+      (now.getTime() - ticketDate.getTime()) / 60000
     );
 
     if (diffInMinutes < 1) return "Just now";
@@ -373,7 +375,7 @@ function SellerSupportTicketsContent() {
                       <StatusBadge status={ticket.status} />
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getPriorityColor(
-                          ticket.priority,
+                          ticket.priority
                         )}`}
                       >
                         {ticket.priority}

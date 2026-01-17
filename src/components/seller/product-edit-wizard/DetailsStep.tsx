@@ -1,7 +1,7 @@
 "use client";
 
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { FormTextarea } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import type { StepProps } from "./types";
 
 export function DetailsStep({ formData, setFormData }: StepProps) {

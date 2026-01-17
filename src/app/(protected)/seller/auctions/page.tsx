@@ -1,12 +1,14 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
 import { SellerResourcePage } from "@/components/seller/SellerResourcePage";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import {
+  DateDisplay,
+  OptimizedImage,
+  Price,
+  StatusBadge,
+} from "@letitrip/react-library";
 import { formatDistanceToNow } from "date-fns";
 import { Clock, ExternalLink, Eye } from "lucide-react";
 import Link from "next/link";
@@ -252,7 +254,9 @@ export default function SellerAuctionsPage() {
             <OptimizedImage
               src={auction.productImage || "/placeholder-product.jpg"}
               alt={auction.productName}
-              fill
+              width={300}
+              height={300}
+              objectFit="cover"
               className="object-cover"
             />
           </div>

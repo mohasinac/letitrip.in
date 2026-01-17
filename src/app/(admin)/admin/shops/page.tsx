@@ -2,9 +2,9 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { shopsService } from "@/services/shops.service";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { Store, CheckCircle, XCircle } from "lucide-react";
 import { getShopBulkActions } from "@/constants/bulk-actions";
 import { SHOP_FIELDS, toInlineFields } from "@/constants/form-fields";

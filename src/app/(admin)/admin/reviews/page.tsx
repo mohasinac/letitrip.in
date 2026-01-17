@@ -7,15 +7,15 @@ import {
   UnifiedFilterSidebar,
   BulkActionBar,
   TableCheckbox,
-} from "@/components/common/inline-edit";
+} from "@letitrip/react-library";
 import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
-import { SimplePagination } from "@/components/common/Pagination";
+import { SimplePagination } from '@letitrip/react-library';
 import { REVIEW_FILTERS } from "@/constants/filters";
 import { getReviewBulkActions } from "@/constants/bulk-actions";
 import { reviewsService } from "@/services/reviews.service";
 import { toast } from "@/components/admin/Toast";
 import { Star, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 
 export default function AdminReviewsPage() {
   const router = useRouter();

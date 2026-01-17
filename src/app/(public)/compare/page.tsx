@@ -1,6 +1,6 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { COMPARISON_FIELDS } from "@/constants/comparison";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { formatPrice } from "@/lib/price.utils";

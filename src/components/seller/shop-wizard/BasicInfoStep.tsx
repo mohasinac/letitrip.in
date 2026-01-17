@@ -1,10 +1,10 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import SlugInput from "@/components/common/SlugInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import MobileInput from "@/components/common/MobileInput";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { SlugInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { MobileInput } from '@letitrip/react-library';
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import type { ShopFormData, OnChange } from "./types";
 

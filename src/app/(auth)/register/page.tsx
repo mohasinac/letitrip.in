@@ -1,10 +1,10 @@
 "use client";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormPhoneInput } from "@/components/forms/FormPhoneInput";
+import { FormCheckbox } from "@letitrip/react-library";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormPhoneInput } from "@letitrip/react-library";
 import { COMPANY_NAME } from "@/constants/navigation";
 import { useLoginRegister } from "@/contexts/LoginRegisterContext";
 import { Eye, EyeOff } from "lucide-react";

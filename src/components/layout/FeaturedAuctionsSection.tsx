@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import AuctionCard from "@/components/cards/AuctionCard";
 import { logError } from "@/lib/firebase-error-logger";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";

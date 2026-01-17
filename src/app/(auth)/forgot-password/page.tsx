@@ -1,6 +1,6 @@
 "use client";
 
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { authService } from "@/services/auth.service";
 import { ArrowLeft, CheckCircle, Loader2, Mail } from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
-import { FormLabel } from "@/components/forms/FormLabel";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { FormLabel } from "@letitrip/react-library";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
 import {

@@ -1,18 +1,20 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
 import { ordersService } from "@/services/orders.service";
 import type { OrderFE } from "@/types/frontend/order.types";
 import { OrderStatus } from "@/types/shared/common.types";
+import {
+  ConfirmDialog,
+  DateDisplay,
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  OptimizedImage,
+  StatusBadge,
+  useLoadingState,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -68,7 +70,7 @@ export default function OrderDetailPage() {
       const updated = await ordersService.updateStatus(
         order.id,
         newStatus,
-        internalNotes || undefined,
+        internalNotes || undefined
       );
       setOrder(updated);
       setShowStatusDialog(false);
@@ -95,7 +97,7 @@ export default function OrderDetailPage() {
         order.id,
         trackingNumber.trim(),
         shippingProvider.trim(),
-        estimatedDelivery ? new Date(estimatedDelivery) : undefined,
+        estimatedDelivery ? new Date(estimatedDelivery) : undefined
       );
       setOrder(updated);
       setShowShipmentDialog(false);
@@ -219,11 +221,11 @@ export default function OrderDetailPage() {
   }
 
   const canUpdateStatus = !["cancelled", "delivered", "refunded"].includes(
-    order.status,
+    order.status
   );
   const canShip = order.status === "confirmed" || order.status === "processing";
   const canCancel = !["shipped", "delivered", "cancelled", "refunded"].includes(
-    order.status,
+    order.status
   );
 
   return (
@@ -373,7 +375,9 @@ export default function OrderDetailPage() {
                     <OptimizedImage
                       src={item.productImage || "/placeholder.png"}
                       alt={item.productName}
-                      fill
+                      width={80}
+                      height={80}
+                      objectFit="cover"
                       className="object-cover rounded"
                     />
                   </div>

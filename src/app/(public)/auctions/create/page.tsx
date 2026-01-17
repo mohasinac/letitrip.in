@@ -3,9 +3,9 @@
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import AuctionForm from "@/components/seller/AuctionForm";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import { productsService } from "@/services/products.service";

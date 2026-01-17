@@ -7,7 +7,7 @@
 
 "use client";
 
-import { FormLabel } from "@/components/forms/FormLabel";
+import { FormLabel } from "@letitrip/react-library";
 import { formatTimeRemaining } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { getNextMinimumBid, getTimeRemaining } from "@/lib/validation/auction";

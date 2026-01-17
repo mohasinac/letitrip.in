@@ -4,11 +4,11 @@ import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, Loader2, Store } from "lucide-react";
 import { shopsService } from "@/services/shops.service";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { PageState } from "@/components/common/PageState";
+import { useLoadingState } from "@letitrip/react-library";
+import { PageState } from '@letitrip/react-library';
 import { ShopCard } from "@/components/cards/ShopCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState } from '@letitrip/react-library';
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 
 export default function FollowingPage() {

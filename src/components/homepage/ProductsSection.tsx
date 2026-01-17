@@ -2,7 +2,7 @@
 
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { logError } from "@/lib/error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import { homepageService } from "@/services/homepage.service";

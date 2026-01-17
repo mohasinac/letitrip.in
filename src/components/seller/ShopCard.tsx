@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import {
   Store,
   Package,

@@ -1,9 +1,9 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { FormLabel } from "@/components/forms/FormLabel";
-import SlugInput from "@/components/common/SlugInput";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { SlugInput } from "@letitrip/react-library";
 import type { CategoryFormData, OnChange } from "./types";
 
 interface SeoStepProps {

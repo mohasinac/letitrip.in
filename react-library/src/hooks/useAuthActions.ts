@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Generic Auth Actions Hook
  *

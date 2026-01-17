@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { useInfiniteScroll } from "@letitrip/react-library";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 /**

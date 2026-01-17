@@ -1,20 +1,20 @@
 "use client";
 
-import DateTimePicker from "@/components/common/DateTimePicker";
-import RichTextEditor from "@/components/common/RichTextEditor";
-import SlugInput from "@/components/common/SlugInput";
-import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { Card } from "@/components/ui/Card";
-import { FormActions } from "@/components/ui/FormActions";
+import { DateTimePicker } from '@letitrip/react-library';
+import { RichTextEditor } from "@letitrip/react-library";
+import { SlugInput } from "@letitrip/react-library";
+import { FormCurrencyInput } from "@letitrip/react-library";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { Card } from "@letitrip/react-library";
 import { logError } from "@/lib/error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import type { ProductAuctionFormFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import { FormActions } from "@letitrip/react-library";
 import { useState } from "react";
 import { toast } from "sonner";
 

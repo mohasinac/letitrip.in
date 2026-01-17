@@ -4,14 +4,8 @@ import { AuctionDescription } from "@/components/auction/AuctionDescription";
 import { AuctionGallery } from "@/components/auction/AuctionGallery";
 import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import OptimizedImage from "@/components/common/OptimizedImage";
 import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import { FormInput } from "@/components/forms/FormInput";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatINR } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
@@ -23,6 +17,14 @@ import type {
 } from "@/types/frontend/auction.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  DateDisplay,
+  ErrorMessage,
+  FormInput,
+  OptimizedImage,
+  Price,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { formatDistanceToNow } from "date-fns";
 import {
   Calendar,
@@ -96,7 +98,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
           );
         } catch (error) {
           logError(error as Error, {
@@ -114,7 +116,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.slug !== slug),
+          (similarData.data || []).filter((a) => a.slug !== slug)
         );
       } catch (error) {
         logError(error as Error, {
@@ -393,7 +395,9 @@ export default function AuctionDetailPage() {
                         <OptimizedImage
                           src={a.images[0]}
                           alt={a.name || "Auction"}
-                          fill
+                          width={300}
+                          height={300}
+                          objectFit="cover"
                           className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       )}

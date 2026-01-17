@@ -4,8 +4,6 @@ import BottomNav from "@/components/layout/BottomNav";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { MobileInstallPrompt } from "@/components/mobile/MobileInstallPrompt";
-import { MobileOfflineIndicator } from "@/components/mobile/MobileOfflineIndicator";
 import { ComparisonBar } from "@/components/products/ComparisonBar";
 import {
   ComparisonProvider,
@@ -23,6 +21,10 @@ import {
   generateOrganizationSchema,
   generateWebSiteSchema,
 } from "@/lib/seo/schema";
+import {
+  MobileInstallPrompt,
+  MobileOfflineIndicator,
+} from "@letitrip/react-library";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

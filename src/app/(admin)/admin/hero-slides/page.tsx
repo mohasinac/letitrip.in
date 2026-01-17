@@ -1,24 +1,24 @@
 "use client";
 
-import { EmptyState } from "@/components/common/EmptyState";
-import {
-  BulkActionBar,
-  InlineEditRow,
-  QuickCreateRow,
-  TableCheckbox,
-} from "@/components/common/inline-edit";
-import OptimizedImage from "@/components/common/OptimizedImage";
 import { getHeroSlideBulkActions } from "@/constants/bulk-actions";
 import {
   HERO_SLIDE_FIELDS,
   getFieldsForContext,
   toInlineFields,
 } from "@/constants/form-fields";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { validateForm } from "@/lib/form-validation";
 import { HeroSlide, heroSlidesService } from "@/services/hero-slides.service";
 import { InlineField } from "@/types/inline-edit";
+import {
+  BulkActionBar,
+  EmptyState,
+  InlineEditRow,
+  OptimizedImage,
+  QuickCreateRow,
+  TableCheckbox,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Edit,
   ExternalLink,
@@ -409,7 +409,9 @@ export default function HeroSlidesPage() {
                             <OptimizedImage
                               src={slide.image}
                               alt={slide.title}
-                              fill
+                              width={64}
+                              height={64}
+                              objectFit="cover"
                               className="object-cover rounded"
                             />
                           </div>

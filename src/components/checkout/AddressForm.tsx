@@ -1,7 +1,7 @@
 "use client";
 
-import { SmartAddressForm } from "@/components/common/SmartAddressForm";
 import type { AddressFE } from "@/types/frontend/address.types";
+import { SmartAddressForm } from "@letitrip/react-library";
 
 interface AddressFormProps {
   addressId?: string | null;

@@ -1,8 +1,8 @@
 "use client";
 
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { Price } from "@/components/common/values/Price";
+import { ErrorMessage } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { checkoutService } from "@/services/checkout.service";

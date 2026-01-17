@@ -1,10 +1,10 @@
+import { cn } from "@/lib/utils";
 import {
   Skeleton,
+  SkeletonButton,
   SkeletonImage,
   SkeletonText,
-  SkeletonButton,
-} from "../Skeleton";
-import { cn } from "@/lib/utils";
+} from "@letitrip/react-library";
 
 interface AuctionCardSkeletonProps {
   className?: string;
@@ -19,7 +19,7 @@ export function AuctionCardSkeleton({ className }: AuctionCardSkeletonProps) {
     <div
       className={cn(
         "bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden",
-        className,
+        className
       )}
     >
       {/* Auction Image/Video */}
@@ -88,7 +88,7 @@ export function AuctionCardSkeletonGrid({
     <div
       className={cn(
         "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
-        className,
+        className
       )}
     >
       {Array.from({ length: count }).map((_, i) => (

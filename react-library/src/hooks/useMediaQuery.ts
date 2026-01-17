@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Media query and responsive hooks
  *

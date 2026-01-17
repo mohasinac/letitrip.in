@@ -2,23 +2,25 @@
 
 import { toast } from "@/components/admin/Toast";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { AdvancedPagination } from "@/components/common/AdvancedPagination";
-import { EmptyStates } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { FavoriteButton } from "@/components/common/FavoriteButton";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
-import { Price } from "@/components/common/values/Price";
-import { FormSelect } from "@/components/forms/FormSelect";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useProducts } from "@/hooks/queries/useProduct";
-import { useCart } from "@/hooks/useCart";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { shopsService } from "@/services/shops.service";
+import {
+  AdvancedPagination,
+  EmptyState,
+  FavoriteButton,
+  FormSelect,
+  OptimizedImage,
+  Price,
+  ProductCardSkeletonGrid,
+  UnifiedFilterSidebar,
+  useCart,
+  useIsMobile,
+  useUrlFilters,
+} from "@letitrip/react-library";
 import { Filter, Grid, List, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
@@ -314,7 +316,9 @@ function ProductsContent() {
               <ProductCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : products.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <EmptyStates.NoProducts
+                <EmptyState
+                  title="No Products Found"
+                  description="We couldn't find any products matching your criteria. Try adjusting your filters or search terms."
                   action={{
                     label: "Clear filters",
                     onClick: handleResetFilters,

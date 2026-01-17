@@ -1,6 +1,6 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { formatPrice } from "@/lib/price.utils";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * RichTextEditor Component
  * Framework-agnostic basic rich text editor

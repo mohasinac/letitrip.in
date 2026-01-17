@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { toast } from "sonner";
 import { logError } from "@/lib/firebase-error-logger";
-import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { SlugInput } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import ShopSelector from "@/components/seller/ShopSelector";
 import { mediaService } from "@/services/media.service";

@@ -1,7 +1,7 @@
 "use client";
 
-import { Quantity } from "@/components/common/values/Quantity";
-import { Card } from "@/components/ui/Card";
+import { Quantity } from "@letitrip/react-library";
+import { Card } from "@letitrip/react-library";
 import { AlertTriangle, DollarSign, Users, Wallet } from "lucide-react";
 
 interface RipLimitStats {

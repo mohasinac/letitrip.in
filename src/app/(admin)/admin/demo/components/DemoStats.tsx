@@ -17,7 +17,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { DateDisplay } from "@letitrip/react-library";
 import { ExtendedSummary } from "./types";
 
 interface MiniStatCardProps {

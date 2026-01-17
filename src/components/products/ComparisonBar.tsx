@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { X, GitCompare, Trash2 } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 
 export function ComparisonBar() {
   const { products, removeFromComparison, clearComparison, canCompare, count } =

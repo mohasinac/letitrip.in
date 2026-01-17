@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Plus, X, Loader2 } from "lucide-react";
-import CategorySelector, {
-  Category as CategoryType,
-} from "@/components/common/CategorySelector";
-import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { categoriesService } from "@/services/categories.service";
 import { logError } from "@/lib/firebase-error-logger";
+import { categoriesService } from "@/services/categories.service";
 import {
-  VALIDATION_RULES,
-  VALIDATION_MESSAGES,
-} from "@/constants/validation-messages";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useDebounce } from "@/hooks/useDebounce";
+  CategorySelector,
+  Category as CategoryType,
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  SlugInput,
+  useDebounce,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { Loader2, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface CategorySelectorWithCreateProps {
   value: string | null;

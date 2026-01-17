@@ -1,10 +1,6 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { supportService } from "@/services/support.service";
 import type {
@@ -12,6 +8,12 @@ import type {
   SupportTicketMessageFE,
 } from "@/types/frontend/support-ticket.types";
 import { TicketStatus } from "@/types/shared/common.types";
+import {
+  DateDisplay,
+  FormInput,
+  FormTextarea,
+  useLoadingState,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

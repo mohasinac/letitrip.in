@@ -1,7 +1,7 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Price } from "@/components/common/values/Price";
+import { Price } from "@letitrip/react-library";
 import type { StepProps } from "./types";
 
 export function ReviewStep({ formData }: StepProps) {

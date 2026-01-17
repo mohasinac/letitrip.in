@@ -1,7 +1,7 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import MobileInput from "@/components/common/MobileInput";
+import { FormInput } from "@letitrip/react-library";
+import { MobileInput } from '@letitrip/react-library';
 
 export interface ContactInfoStepProps {
   phone: string;

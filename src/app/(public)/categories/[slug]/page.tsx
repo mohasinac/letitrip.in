@@ -7,22 +7,24 @@ import { CategoryHeader } from "@/components/category/CategoryHeader";
 import { CategoryStats } from "@/components/category/CategoryStats";
 import { SimilarCategories } from "@/components/category/SimilarCategories";
 import { SubcategoryGrid } from "@/components/category/SubcategoryGrid";
-import { AdvancedPagination } from "@/components/common/AdvancedPagination";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { Price } from "@/components/common/values/Price";
-import { FormSelect } from "@/components/forms/FormSelect";
 import { PRODUCT_FILTERS } from "@/constants/filters";
-import { useCart } from "@/hooks/useCart";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { notFound } from "@/lib/error-redirects";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { productsService } from "@/services/products.service";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import {
+  AdvancedPagination,
+  FormSelect,
+  OptimizedImage,
+  Price,
+  UnifiedFilterSidebar,
+  useCart,
+  useIsMobile,
+  useLoadingState,
+  useUrlFilters,
+} from "@letitrip/react-library";
 import { Filter, Grid as GridIcon, List, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use, useEffect, useState } from "react";

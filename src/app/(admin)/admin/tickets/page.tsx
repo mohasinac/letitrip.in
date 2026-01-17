@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { supportService } from "@/services/support.service";
-import { useIsMobile } from "@/hooks/useMobile";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { supportService } from "@/services/support.service";
+import {
+  DateDisplay,
+  FormSelect,
+  useIsMobile,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 const statusColors = {
   open: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -46,7 +48,7 @@ export default function AdminTicketsPage() {
         status: filter.status as any,
         category: filter.category as any,
         priority: filter.priority as any,
-      }),
+      })
     );
   }, [filter, execute]);
 
@@ -193,10 +195,10 @@ export default function AdminTicketsPage() {
                             ticket.priority === "urgent"
                               ? "text-red-600"
                               : ticket.priority === "high"
-                                ? "text-orange-600"
-                                : ticket.priority === "medium"
-                                  ? "text-yellow-600"
-                                  : "text-gray-600"
+                              ? "text-orange-600"
+                              : ticket.priority === "medium"
+                              ? "text-yellow-600"
+                              : "text-gray-600"
                           }`}
                         >
                           {ticket.priority}

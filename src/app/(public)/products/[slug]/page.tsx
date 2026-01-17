@@ -1,8 +1,6 @@
 "use client";
 
 import { toast } from "@/components/admin/Toast";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { ProductCardSkeletonGrid } from "@/components/common/skeletons/ProductCardSkeleton";
 import { ProductDescription } from "@/components/product/ProductDescription";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductReviews } from "@/components/product/ProductReviews";
@@ -13,8 +11,12 @@ import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { useProductBySlug } from "@/hooks/queries/useProduct";
 import { useShop } from "@/hooks/queries/useShop";
-import { useCart } from "@/hooks/useCart";
 import { formatDiscount, formatINR } from "@/lib/price.utils";
+import {
+  ErrorMessage,
+  ProductCardSkeletonGrid,
+  useCart,
+} from "@letitrip/react-library";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
