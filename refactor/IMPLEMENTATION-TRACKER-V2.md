@@ -11,10 +11,10 @@
 
 - [x] **Phase 1**: Quick Wins - Fully Migratable Components (9/35 complete) ✅
 - [x] **Phase 2**: Pure UI Components with Injection (20/20 complete) ✅
-- [ ] **Phase 3**: Business Logic Extraction (17/35 started)
+- [ ] **Phase 3**: Business Logic Extraction (18/35 started)
 - [ ] **Phase 4**: Complex Refactoring (0/25 complete)
 
-**Total**: 47/115 components migrated (40.9%)
+**Total**: 48/115 components migrated (41.7%)
 
 **Status Notes**:
 
@@ -24,7 +24,7 @@
 - Auction components: LiveCountdown ✅, LiveBidHistory ✅ Migrated!
 - Common components: NotImplemented ✅, NotImplementedPage ✅, StatsCard ✅, StatsCardGrid ✅ Migrated!
 - Category components: CategoryStats ✅ Migrated!
-- Shop components: ShopStats ✅, ShopPolicies ✅, ShopAbout ✅, ShopTabs ✅ Migrated!
+- Shop components: ShopStats ✅, ShopPolicies ✅, ShopAbout ✅, ShopTabs ✅, ShopHeader ✅ Migrated!
 - Product components: ProductDescription ✅ Migrated!
 - Layout components: CardGrid ✅ Migrated!
 - Homepage components: ValueProposition ✅ Migrated!
@@ -918,7 +918,7 @@ export type { ValuePropositionProps } from "@letitrip/react-library";
 
 **Files**:
 
-- [ ] ShopHeader (layout, accept shop data)
+- [x] ShopHeader (layout with follow/share callbacks) ✅
 - [x] ShopAbout (display) ✅
 - [x] ShopStats (stats display) ✅
 - [ ] ShopReviews (use library ReviewList)

@@ -9,3 +9,6 @@ export type { ShopAboutData, ShopAboutProps } from "./ShopAbout";
 
 export { ShopTabs } from "./ShopTabs";
 export type { ShopTab, ShopTabType, ShopTabsProps } from "./ShopTabs";
+
+export { ShopHeader } from "./ShopHeader";
+export type { ShopHeaderProps } from "./ShopHeader";
