@@ -1,7 +1,7 @@
 "use client";
 
 import { VerificationGate } from "@/components/auth/VerificationGate";
-import { Price } from "@/components/common/values/Price";
+import { Price } from "@letitrip/react-library";
 import { AlertCircle, Clock, Eye, Gavel, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

@@ -3,20 +3,22 @@
 import { VerificationGate } from "@/components/auth/VerificationGate";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
-import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { ErrorMessage } from "@/components/common/ErrorMessage";
-import { Price } from "@/components/common/values/Price";
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { FormField } from "@/components/forms/FormField";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
-import { useCheckoutState } from "@/hooks/useCheckoutState";
 import { logError } from "@/lib/firebase-error-logger";
 import { isInternationalAddress } from "@/lib/validators/address.validator";
 import { checkoutService } from "@/services/checkout.service";
+import {
+  AddressSelectorWithCreate,
+  ErrorMessage,
+  FormCheckbox,
+  FormField,
+  FormSelect,
+  FormTextarea,
+  Price,
+  useCart,
+  useCheckoutState,
+} from "@letitrip/react-library";
 import {
   Check,
   ChevronLeft,

@@ -2,12 +2,14 @@
 
 import { toast } from "@/components/admin/Toast";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { ArrowLeft, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -98,7 +100,7 @@ export default function EditCouponPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
 

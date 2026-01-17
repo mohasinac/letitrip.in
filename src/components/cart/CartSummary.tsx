@@ -1,7 +1,7 @@
 "use client";
 
-import { Price } from "@/components/common/values/Price";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { Price } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
 import { useRouter } from "next/navigation";

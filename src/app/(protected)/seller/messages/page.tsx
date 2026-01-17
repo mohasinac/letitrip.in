@@ -16,11 +16,11 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { FormInput } from "@/components/forms/FormInput";
+import { FormInput } from "@letitrip/react-library";
 import { messagesService } from "@/services/messages.service";
 import type { ConversationFE } from "@/types/frontend/message.types";
 import { formatDistanceToNow } from "date-fns";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import {
   MessageSquare,
   Search,

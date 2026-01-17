@@ -10,9 +10,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Price } from "@/components/common/values/Price";
+import { Price } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 
 // Shipping Method Interface
 export interface ShippingMethod {

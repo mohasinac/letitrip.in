@@ -7,9 +7,9 @@
 
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { useState } from "react";
 
 export default function FormSanitizationTest() {

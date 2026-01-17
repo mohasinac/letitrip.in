@@ -22,7 +22,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { mediaService } from "@/services/media.service";
 import CameraCapture from "@/components/media/CameraCapture";
 import { MediaFile } from "@/types/media";

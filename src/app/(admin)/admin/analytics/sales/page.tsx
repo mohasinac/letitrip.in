@@ -1,11 +1,6 @@
 "use client";
 
-import { PeriodSelector } from "@/components/common/PeriodSelector";
-import { StatCard } from "@/components/common/StatCard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import { Quantity } from "@/components/common/values/Quantity";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { StatsCard } from "@/components/common/StatsCard";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type {
@@ -13,6 +8,13 @@ import type {
   SalesDataPointFE,
   TopProductFE,
 } from "@/types/frontend/analytics.types";
+import {
+  DateDisplay,
+  PeriodSelector,
+  Price,
+  Quantity,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   ArrowLeft,
   BarChart3,
@@ -216,8 +218,8 @@ function DetailedProductsTable({ products }: { products: TopProductFE[] }) {
                       conversionRate >= 5
                         ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400"
                         : conversionRate >= 2
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {conversionRate.toFixed(1)}%
@@ -347,27 +349,22 @@ export default function AdminAnalyticsSalesPage() {
           <>
             {/* Summary Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <StatCard
+              <StatsCard
                 title="Total Revenue"
                 value={totalRevenue}
-                change={revenueGrowth}
-                icon={DollarSign}
-                color="green"
-                prefix="₹"
+                trend={{ value: revenueGrowth, isPositive: revenueGrowth >= 0 }}
+                icon={<DollarSign />}
               />
-              <StatCard
+              <StatsCard
                 title="Total Orders"
                 value={totalOrders}
-                change={ordersGrowth}
-                icon={ShoppingCart}
-                color="blue"
+                trend={{ value: ordersGrowth, isPositive: ordersGrowth >= 0 }}
+                icon={<ShoppingCart />}
               />
-              <StatCard
+              <StatsCard
                 title="Avg Order Value"
                 value={Math.round(avgOrderValue)}
-                icon={TrendingUp}
-                color="indigo"
-                prefix="₹"
+                icon={<TrendingUp />}
               />
             </div>
 
@@ -409,8 +406,8 @@ export default function AdminAnalyticsSalesPage() {
                             date={
                               new Date(
                                 salesData.reduce((best, day) =>
-                                  day.revenue > best.revenue ? day : best,
-                                ).date,
+                                  day.revenue > best.revenue ? day : best
+                                ).date
                               )
                             }
                             format="full"

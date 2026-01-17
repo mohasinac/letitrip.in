@@ -1,6 +1,6 @@
 "use client";
 
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { otpService } from "@/services/otp.service";
 import { useEffect, useState } from "react";

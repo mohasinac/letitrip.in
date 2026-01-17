@@ -2,18 +2,20 @@
 
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { AdvancedPagination } from "@/components/common/AdvancedPagination";
-import { EmptyStates } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
 import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
 import { AUCTION_FILTERS } from "@/constants/filters";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  AdvancedPagination,
+  EmptyState,
+  UnifiedFilterSidebar,
+  useIsMobile,
+  useLoadingState,
+  useUrlFilters,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   Clock,
@@ -279,7 +281,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE,
+                          (a) => a.status === AuctionStatus.ACTIVE
                         ).length
                       }
                     </p>
@@ -333,7 +335,9 @@ function AuctionsContent() {
               <AuctionCardSkeletonGrid count={view === "grid" ? 12 : 8} />
             ) : auctions.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                <EmptyStates.NoAuctions
+                <EmptyState
+                  title="No Auctions Found"
+                  description="We couldn't find any auctions matching your criteria. Try adjusting your filters."
                   action={{
                     label: "Browse All",
                     onClick: () => router.push("/auctions"),

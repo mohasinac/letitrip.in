@@ -1,11 +1,13 @@
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { eventsService, type Event } from "@/services/events.service";
+import {
+  FormField,
+  FormInput,
+  FormTextarea,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

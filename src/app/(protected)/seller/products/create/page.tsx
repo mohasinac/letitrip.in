@@ -1,11 +1,11 @@
 "use client";
 
-import { WizardActionBar } from "@/components/forms/WizardActionBar";
-import { WizardSteps } from "@/components/forms/WizardSteps";
+import { WizardActionBar } from "@letitrip/react-library";
+import { WizardSteps } from "@letitrip/react-library";
 import { OptionalDetailsStep } from "@/components/seller/product-wizard/OptionalDetailsStep";
 import { RequiredInfoStep } from "@/components/seller/product-wizard/RequiredInfoStep";
 import type { ProductFormData } from "@/components/seller/product-wizard/types";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { ArrowLeft, ArrowRight } from "lucide-react";

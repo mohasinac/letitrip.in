@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useFormState Hook
  * Framework-agnostic form state management with validation

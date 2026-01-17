@@ -13,8 +13,8 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
 import {
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
@@ -22,7 +22,7 @@ import {
   isValidPAN,
 } from "@/constants/validation-messages";
 import { logError } from "@/lib/firebase-error-logger";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 
 // Tax Details Interface
 export interface TaxDetails {

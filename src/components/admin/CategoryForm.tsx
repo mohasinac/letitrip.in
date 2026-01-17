@@ -1,23 +1,24 @@
 "use client";
 
-import CategorySelector, {
-  Category as CategoryType,
-} from "@/components/common/CategorySelector";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import RichTextEditor from "@/components/common/RichTextEditor";
-import SlugInput from "@/components/common/SlugInput";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormTextarea } from "@/components/forms/FormTextarea";
 import MediaUploader from "@/components/media/MediaUploader";
-import { Card } from "@/components/ui/Card";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { FormActions } from "@/components/ui/FormActions";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { MediaFile } from "@/types/media";
+import {
+  Card,
+  CategorySelector,
+  Category as CategoryType,
+  FormActions,
+  FormCheckbox,
+  FormField,
+  FormInput,
+  FormLabel,
+  FormTextarea,
+  OptimizedImage,
+  RichTextEditor,
+  SlugInput,
+  useMediaUpload,
+} from "@letitrip/react-library";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -67,7 +68,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     isUploading,
     isCleaning,
     hasUploadedMedia,
-  } = useMediaUploadWithCleanup({
+  } = useMediaUpload({
     enableNavigationGuard: true,
     navigationGuardMessage: "You have uploaded an image. Leave and delete?",
     onUploadSuccess: (url) => {
@@ -134,7 +135,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any,
+          formData as any
         );
       }
 
@@ -329,7 +330,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       {/* Display Options */}
       <Card title="Display Options">
         <div className="space-y-4">
-          <Checkbox
+          <FormCheckbox
             label="Active"
             description="Make this category visible to customers"
             checked={formData.is_active}
@@ -342,7 +343,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
             disabled={loading}
           />
 
-          <Checkbox
+          <FormCheckbox
             label="Featured"
             description="Highlight this category in featured sections"
             checked={formData.is_featured}
@@ -355,7 +356,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
             disabled={loading}
           />
 
-          <Checkbox
+          <FormCheckbox
             label="Show on Homepage"
             description="Display this category on the homepage"
             checked={formData.show_on_homepage}

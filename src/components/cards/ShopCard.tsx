@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import {
   Star,
   MapPin,
@@ -13,7 +13,7 @@ import {
   Eye,
   CheckCircle,
 } from "lucide-react";
-import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { FavoriteButton } from "@letitrip/react-library";
 import { formatCompactNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 

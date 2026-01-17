@@ -1,10 +1,10 @@
 "use client";
 
-import { FormCheckbox } from "@/components/forms/FormCheckbox";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormRadio } from "@/components/forms/FormRadio";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormCheckbox } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormRadio } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import {
   AlertCircle,
   CheckCircle2,

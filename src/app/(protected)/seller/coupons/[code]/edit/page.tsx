@@ -1,14 +1,16 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { PageState } from "@/components/common/PageState";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import CouponForm from "@/components/seller/CouponForm";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
+import {
+  ConfirmDialog,
+  PageState,
+  StatusBadge,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -65,7 +67,7 @@ export default function EditCouponPage() {
         metadata: { code },
       });
       toast.error(
-        error.message || "Failed to update coupon. Please try again.",
+        error.message || "Failed to update coupon. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -197,7 +199,7 @@ export default function EditCouponPage() {
                     style={{
                       width: `${Math.min(
                         (coupon.usageCount / coupon.usageLimit) * 100,
-                        100,
+                        100
                       )}%`,
                     }}
                   />

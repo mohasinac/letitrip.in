@@ -14,13 +14,13 @@ import { logError } from "@/lib/firebase-error-logger";
  * - View review analytics
  */
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { PageState } from "@/components/common/PageState";
-import { SimplePagination } from "@/components/common/Pagination";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { OptimizedImage } from "@letitrip/react-library"
+import { PageState } from '@letitrip/react-library';
+import { SimplePagination } from '@letitrip/react-library';
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { apiService } from "@/services/api.service";
 import { productsService } from "@/services/products.service";
 import { reviewsService } from "@/services/reviews.service";

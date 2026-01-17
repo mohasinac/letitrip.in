@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useFetchResourceList Hook
  * Combines resource list state with async data fetching

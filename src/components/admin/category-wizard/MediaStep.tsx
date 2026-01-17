@@ -1,7 +1,7 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { FormInput } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import type { CategoryFormData, OnChange } from "./types";
 
 interface MediaStepProps {

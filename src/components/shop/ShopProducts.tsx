@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { EmptyState } from "@/components/common/EmptyState";
-import { Price } from "@/components/common/values/Price";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { ProductCard } from "@/components/cards/ProductCard";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 import {
+  EmptyState,
+  FormSelect,
+  OptimizedImage,
+  Price,
   ProductFilters,
   ProductFilterValues,
-} from "@/components/filters/ProductFilters";
-import type { ProductCardFE } from "@/types/frontend/product.types";
+} from "@letitrip/react-library";
+import { Filter as FilterIcon, Grid, List, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export interface ShopProductsProps {
   products: ProductCardFE[];

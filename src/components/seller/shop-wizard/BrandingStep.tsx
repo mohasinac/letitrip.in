@@ -1,9 +1,9 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { OptimizedImage } from "@letitrip/react-library"
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface BrandingStepProps {

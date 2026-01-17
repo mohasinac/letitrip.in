@@ -2,9 +2,9 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { blogService } from "@/services/blog.service";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { FileText, Eye } from "lucide-react";
 import { getBlogBulkActions } from "@/constants/bulk-actions";
 import { toInlineFields } from "@/constants/form-fields";

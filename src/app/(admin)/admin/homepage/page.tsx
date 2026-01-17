@@ -7,10 +7,10 @@ import { toast } from "@/components/admin/Toast";
 import { BannerEditor } from "@/components/admin/homepage/BannerEditor";
 import { SectionCard } from "@/components/admin/homepage/SectionCard";
 import { SliderControl } from "@/components/admin/homepage/SliderControl";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { ConfirmDialog } from "@letitrip/react-library";
+import { DateDisplay } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   HomepageSettings,

@@ -1,9 +1,9 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { UnifiedFilterSidebar } from "@/components/common/inline-edit";
+import { UnifiedFilterSidebar } from "@letitrip/react-library";
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { DateDisplay } from "@letitrip/react-library";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";

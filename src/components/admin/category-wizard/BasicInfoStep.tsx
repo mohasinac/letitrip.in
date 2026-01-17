@@ -1,8 +1,8 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormInput } from "@letitrip/react-library";
+import { FormSelect } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { CategoryFormData, OnChange } from "./types";
 

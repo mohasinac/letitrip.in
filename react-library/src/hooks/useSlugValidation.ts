@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useSlugValidation Hook
  * Framework-agnostic slug validation with debouncing

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePaginationState } from "@/hooks/usePaginationState";
+import { usePaginationState } from "@letitrip/react-library";
 import { useEffect, useState } from "react";
 
 /**

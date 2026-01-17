@@ -1,6 +1,6 @@
 "use client";
 
-import { WizardActionBar } from "@/components/forms/WizardActionBar";
+import { WizardActionBar } from "@letitrip/react-library";
 import BasicInfoStep from "@/components/seller/shop-wizard/BasicInfoStep";
 import BrandingStep from "@/components/seller/shop-wizard/BrandingStep";
 import ContactLegalStep from "@/components/seller/shop-wizard/ContactLegalStep";

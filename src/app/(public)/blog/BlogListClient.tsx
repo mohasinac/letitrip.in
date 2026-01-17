@@ -1,7 +1,7 @@
 "use client";
 
 import { BlogCard } from "@/components/cards/BlogCard";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import type { BlogPost } from "@/services/blog.service";
 import { blogService, type BlogFilters } from "@/services/blog.service";

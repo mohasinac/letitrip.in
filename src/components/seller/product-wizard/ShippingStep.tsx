@@ -1,9 +1,9 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { AddressSelectorWithCreate } from "@letitrip/react-library";
 import type { StepProps } from "./types";
 import type { AddressFE } from "@/types/frontend/address.types";
 

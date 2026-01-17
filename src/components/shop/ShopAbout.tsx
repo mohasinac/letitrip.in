@@ -1,41 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Globe,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import type { ShopFE } from "@/types/frontend/shop.types";
-
-export interface ShopAboutProps {
-  shop: ShopFE;
-  className?: string;
-}
-
-/**
- * ShopAbout Component
- *
- * Displays shop description, policies, and contact information.
- * Used on shop detail pages.
- *
- * Features:
- * - Formatted description
- * - Shop establishment date
- * - Location display
- * - Contact buttons (email, call, WhatsApp)
- * - Policy tabs/accordion (return, shipping, warranty)
- *
- * @example
- * ```tsx
- * <ShopAbout shop={shop} />
- * ```
- */
-export function ShopAbout({ shop, className = "" }: ShopAboutProps) {
+export { ShopAbout, ShopAbout as default } from "@letitrip/react-library";
+export type { ShopAboutProps } from "@letitrip/react-library";
   const [activePolicy, setActivePolicy] = useState<string | null>("return");
 
   const contactMethods = [

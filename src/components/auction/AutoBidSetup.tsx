@@ -6,7 +6,7 @@
 
 "use client";
 
-import { FormLabel } from "@/components/forms/FormLabel";
+import { FormLabel } from "@letitrip/react-library";
 import { formatPrice } from "@/lib/price.utils";
 import { AlertTriangle, Check, X, Zap } from "lucide-react";
 import { useState } from "react";

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * FormFileUpload Component
  * Framework-agnostic file upload input with drag-and-drop

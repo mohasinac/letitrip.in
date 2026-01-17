@@ -1,7 +1,7 @@
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormField } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface PoliciesStepProps {

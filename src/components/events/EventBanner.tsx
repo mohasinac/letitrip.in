@@ -1,6 +1,6 @@
 "use client";
 
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { DateDisplay } from "@letitrip/react-library";
 import { Calendar, CheckCircle, Clock, MapPin, Users } from "lucide-react";
 
 export interface EventBannerProps {

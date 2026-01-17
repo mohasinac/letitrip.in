@@ -1,10 +1,10 @@
 "use client";
 
 import AuctionCard from "@/components/cards/AuctionCard";
-import { PageState } from "@/components/common/PageState";
+import { PageState } from '@letitrip/react-library';
 import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";

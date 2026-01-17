@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useWindowResize Hook
  *

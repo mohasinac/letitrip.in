@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * usePaginationState Hook
  * Manages pagination state with cursor-based and offset-based approaches

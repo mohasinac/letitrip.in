@@ -1,6 +1,6 @@
 "use client";
 
-import { Price } from "@/components/common/values/Price";
+import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { favoritesService } from "@/services/favorites.service";

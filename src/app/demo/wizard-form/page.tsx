@@ -1,6 +1,6 @@
 "use client";
 
-import { useWizardFormState } from "@/hooks/useWizardFormState";
+import { useWizardFormState } from "@letitrip/react-library";
 import { z } from "zod";
 
 // Define Zod schemas for each step

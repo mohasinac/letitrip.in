@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FormInput } from "@/components/forms/FormInput";
+import { FormInput } from "@letitrip/react-library";
 import {
   Search,
   HelpCircle,

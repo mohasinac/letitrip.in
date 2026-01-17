@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Package } from "lucide-react";
-import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { FavoriteButton } from "@letitrip/react-library";
 
 export interface CategoryCardProps {
   id: string;

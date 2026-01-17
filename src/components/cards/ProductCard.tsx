@@ -1,8 +1,8 @@
 "use client";
 
-import { FavoriteButton } from "@/components/common/FavoriteButton";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { StatusBadge } from "@/components/common/StatusBadge";
+import { FavoriteButton } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
+import { StatusBadge } from '@letitrip/react-library';
 import { CompareButton } from "@/components/products/CompareButton";
 import { formatDiscount } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";

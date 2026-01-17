@@ -24,6 +24,7 @@
 ## 🎯 Overview
 
 LetItRip.in is a full-featured auction and e-commerce platform built with Next.js 16, featuring:
+
 - **Real-time Auctions** with live bidding
 - **Multi-vendor Marketplace** with shop management
 - **Product Listings** with advanced search and filters
@@ -41,6 +42,7 @@ LetItRip.in is a full-featured auction and e-commerce platform built with Next.j
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **Next.js 16.1** - React framework with App Router
 - **React 19.2** - UI library
 - **TypeScript** - Type safety
@@ -48,6 +50,7 @@ LetItRip.in is a full-featured auction and e-commerce platform built with Next.j
 - **@letitrip/react-library** - Custom component library (82 components, 26 hooks)
 
 ### Backend & Services
+
 - **Firebase**
   - Firestore - NoSQL database
   - Storage - File uploads
@@ -57,12 +60,14 @@ LetItRip.in is a full-featured auction and e-commerce platform built with Next.j
 - **Razorpay** - Payment processing
 
 ### State & Data
+
 - **TanStack Query (React Query)** - Server state management
 - **React Context** - Global state (Auth, Cart, Theme)
 - **React Hook Form** - Form management
 - **Zod** - Schema validation
 
 ### Tools & Libraries
+
 - **Lucide React** - Icons
 - **React Quill** - Rich text editor
 - **Recharts** - Data visualization
@@ -121,23 +126,28 @@ src/components/
 These routes are accessible to all visitors without authentication.
 
 #### Homepage
+
 - **`/`** - Homepage
   - **Components**: `HeroSection`, `WelcomeHero`, `ProductsSection`, `AuctionsSection`, `FeaturedCategoriesSection`, `FeaturedShopsSection`, `FeaturedBlogsSection`, `RecentReviewsSection`, `ValueProposition`, `FAQSection`, `RecentlyViewedWidget`
   - **Purpose**: Main landing page with featured content, hero slides, and sections
   - **Features**: Responsive layout, dynamic content loading, recently viewed products
 
 #### Products
+
 - **`/products`** - Product listing page
+
   - **Components**: `ProductListClient`, `ProductFilters`, `SearchBar`, `Pagination`
   - **Purpose**: Browse all products with filtering and search
   - **Features**: Category filters, price range, sorting, infinite scroll option
 
 - **`/products/[slug]`** - Product detail page
+
   - **Components**: `ProductDetailClient`, `ProductGallery`, `ProductInfo`, `ReviewsList`, `RelatedProducts`, `BreadcrumbNav`
   - **Purpose**: View detailed product information
   - **Features**: Image gallery, add to cart, reviews, similar products
 
 - **`/products/[slug]/edit`** - Edit product (Protected - seller only)
+
   - **Components**: `ProductEditForm`, `ImageUploadWithCrop`, `CategorySelector`
   - **Purpose**: Edit existing product
   - **Features**: Image management, pricing, inventory, variants
@@ -148,7 +158,9 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Multi-step form, image upload, variant management
 
 #### Auctions
+
 - **`/auctions`** - Auction listing page
+
   - **Components**: `AuctionListClient`, `AuctionFilters`, `AuctionCard`
   - **Purpose**: Browse live and upcoming auctions
   - **Features**: Real-time status, countdown timers, bid history
@@ -159,17 +171,21 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Real-time bidding, auto-bid, bid notifications
 
 #### Shops
+
 - **`/shops`** - Shop listing page
+
   - **Components**: `ShopListClient`, `ShopCard`, `ShopFilters`
   - **Purpose**: Browse all vendor shops
   - **Features**: Shop ratings, product count, featured shops
 
 - **`/shops/[slug]`** - Shop detail page
+
   - **Components**: `ShopDetailClient`, `ShopHeader`, `ShopProducts`, `ShopReviews`
   - **Purpose**: View shop profile and products
   - **Features**: Shop info, product listings, reviews, contact
 
 - **`/shops/[slug]/about`** - Shop about page
+
   - **Components**: `ShopAbout`, `ShopStats`, `ShopPolicies`
   - **Purpose**: Detailed shop information
   - **Features**: Business details, policies, seller info
@@ -180,7 +196,9 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Contact form, business hours, location
 
 #### Categories
+
 - **`/categories`** - Category listing page
+
   - **Components**: `CategoryGridClient`, `CategoryCard`
   - **Purpose**: Browse all product categories
   - **Features**: Hierarchical categories, product counts
@@ -191,7 +209,9 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Category tree, filters, sorting
 
 #### Blog
+
 - **`/blog`** - Blog listing page
+
   - **Components**: `BlogListClient`, `BlogCard`, `BlogFilters`
   - **Purpose**: Browse blog posts
   - **Features**: Categories, tags, search, pagination
@@ -202,7 +222,9 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Rich content, images, related posts
 
 #### Search & Compare
+
 - **`/search`** - Global search page
+
   - **Components**: `SearchPageClient`, `SearchResults`, `SearchFilters`, `ContentTypeFilter`
   - **Purpose**: Search across products, shops, auctions
   - **Features**: Multi-type search, advanced filters, sorting
@@ -213,13 +235,16 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Feature comparison, price comparison, add to cart
 
 #### Reviews
+
 - **`/reviews`** - All reviews page
   - **Components**: `ReviewListClient`, `ReviewCard`, `ReviewFilters`
   - **Purpose**: Browse all product reviews
   - **Features**: Rating filters, verified purchases, helpful votes
 
 #### Events
+
 - **`/events`** - Events listing page
+
   - **Components**: `EventListClient`, `EventCard`
   - **Purpose**: Browse platform events
   - **Features**: Upcoming events, event categories
@@ -230,12 +255,15 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Event info, registration, calendar add
 
 #### Information Pages
+
 - **`/contact`** - Contact page
+
   - **Components**: `ContactForm`, `ContactInfo`, `FAQSection`
   - **Purpose**: Contact platform support
   - **Features**: Support form, email, phone
 
 - **`/faq`** - FAQ page
+
   - **Components**: `FAQClient`, `FAQAccordion`, `FAQSearch`
   - **Purpose**: Frequently asked questions
   - **Features**: Searchable, categorized, collapsible
@@ -246,6 +274,7 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Company info, mission, team
 
 #### Legal Pages
+
 - **`/terms-of-service`** - Terms of service
 - **`/privacy-policy`** - Privacy policy
 - **`/refund-policy`** - Refund policy
@@ -256,12 +285,15 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Formatted legal text, last updated date
 
 #### Fee Structure
+
 - **`/fees/structure`** - Fee structure page
+
   - **Components**: `FeeStructureContent`, `PricingTable`
   - **Purpose**: Platform fee information
   - **Features**: Fee breakdown, pricing tiers
 
 - **`/fees/shipping`** - Shipping fees page
+
   - **Components**: `ShippingFeesContent`, `ShippingCalculator`
   - **Purpose**: Shipping cost information
   - **Features**: Zone-wise rates, calculator
@@ -272,6 +304,7 @@ These routes are accessible to all visitors without authentication.
   - **Features**: Feature add-ons, premium services
 
 #### Guides
+
 - **`/guide/new-user`** - New user guide
 - **`/guide/returns`** - Returns guide
 - **`/guide/prohibited`** - Prohibited items guide
@@ -286,12 +319,15 @@ These routes are accessible to all visitors without authentication.
 These routes require user authentication. Redirects to `/login` if not authenticated.
 
 #### Cart & Checkout
+
 - **`/cart`** - Shopping cart
+
   - **Components**: `CartPageClient`, `CartItems`, `CartSummary`, `CouponInput`
   - **Purpose**: View and manage cart items
   - **Features**: Quantity update, remove items, apply coupons, shipping calculation
 
 - **`/checkout`** - Checkout page
+
   - **Components**: `CheckoutForm`, `AddressSelector`, `PaymentOptions`, `OrderSummary`
   - **Purpose**: Complete purchase
   - **Features**: Address selection, payment method, order review, place order
@@ -302,57 +338,69 @@ These routes require user authentication. Redirects to `/login` if not authentic
   - **Features**: Order number, details, download invoice, tracking
 
 #### User Dashboard
+
 - **`/user/profile`** - User profile
+
   - **Components**: `ProfileForm`, `AvatarUpload`, `ProfileStats`
   - **Purpose**: Manage user profile
   - **Features**: Edit details, avatar upload, password change
 
 - **`/user/addresses`** - Address management
+
   - **Components**: `AddressListClient`, `AddressForm`, `AddressSelectorWithCreate`
   - **Purpose**: Manage delivery addresses
   - **Features**: Add, edit, delete addresses, set default
 
 - **`/user/orders`** - Order history
+
   - **Components**: `OrderListClient`, `OrderCard`, `OrderFilters`
   - **Purpose**: View past orders
   - **Features**: Order status, track shipment, reorder, cancel
 
 - **`/user/orders/[id]`** - Order details
+
   - **Components**: `OrderDetailClient`, `OrderItems`, `OrderTimeline`, `InvoiceDownload`
   - **Purpose**: View specific order
   - **Features**: Item details, status tracking, invoice, support
 
 - **`/user/bids`** - Bid history
+
   - **Components**: `BidListClient`, `BidCard`, `BidStatus`
   - **Purpose**: View auction bids
   - **Features**: Active bids, won auctions, bid history
 
 - **`/user/watchlist`** - Watchlist
+
   - **Components**: `WatchlistClient`, `WatchlistProductCard`, `PriceAlerts`
   - **Purpose**: Saved products for later
   - **Features**: Add/remove products, price drop alerts
 
 - **`/user/reviews`** - User reviews
+
   - **Components**: `UserReviewsClient`, `ReviewForm`, `ReviewCard`
   - **Purpose**: Manage user reviews
   - **Features**: Write reviews, edit reviews, view history
 
 - **`/user/messages`** - Messages inbox
+
   - **Components**: `MessagesClient`, `ConversationList`, `MessageThread`, `MessageInput`
   - **Purpose**: Communication with sellers/support
   - **Features**: Real-time messaging, attachments, notifications
 
 - **`/user/favorites`** - Favorite shops
+
   - **Components**: `FavoritesClient`, `ShopCard`
   - **Purpose**: Saved favorite shops
   - **Features**: Follow shops, notifications
 
 - **`/user/notifications`** - Notifications
+
   - **Components**: `NotificationsClient`, `NotificationItem`, `NotificationFilters`
   - **Purpose**: View all notifications
   - **Features**: Mark as read, filter by type, delete
 
 - **`/user/wallet`** - Wallet/Credits
+
   - **Components**: `WalletClient`, `TransactionHistory`, `AddFunds`
   - **Purpose**: Manage wallet balance
   - **Features**: Add funds, transaction history, refunds
@@ -363,72 +411,87 @@ These routes require user authentication. Redirects to `/login` if not authentic
   - **Features**: Privacy settings, notifications, preferences
 
 #### Seller Dashboard
+
 - **`/seller`** - Seller overview
+
   - **Components**: `SellerDashboard`, `StatCard`, `RecentOrders`, `SalesChart`
   - **Purpose**: Seller dashboard home
   - **Features**: Sales stats, charts, quick actions
 
 - **`/seller/shop`** - Shop management
+
   - **Components**: `ShopSettingsForm`, `ShopBanner`, `BusinessInfo`
   - **Purpose**: Manage shop profile
   - **Features**: Shop details, branding, policies
 
 - **`/seller/products`** - Product management
+
   - **Components**: `ProductListClient`, `DataTable`, `BulkActions`
   - **Purpose**: Manage product inventory
   - **Features**: Add/edit/delete products, bulk actions, stock management
 
 - **`/seller/products/create`** - Create product
+
   - **Components**: `ProductCreateForm`, `WizardForm`, `ImageUploadWithCrop`
   - **Purpose**: Add new product
   - **Features**: Multi-step form, image upload, variants, pricing
 
 - **`/seller/products/[id]/edit`** - Edit product
+
   - **Components**: `ProductEditForm`, `ProductVariants`, `InventoryManager`
   - **Purpose**: Edit existing product
   - **Features**: Update details, images, stock, variants
 
 - **`/seller/orders`** - Order management
+
   - **Components**: `SellerOrdersClient`, `OrderTable`, `OrderActions`
   - **Purpose**: Manage customer orders
   - **Features**: Process orders, update status, print labels
 
 - **`/seller/orders/[id]`** - Order details
+
   - **Components**: `SellerOrderDetail`, `OrderTimeline`, `ShippingLabel`
   - **Purpose**: View order details
   - **Features**: Customer info, items, shipping, actions
 
 - **`/seller/auctions`** - Auction management
+
   - **Components**: `AuctionListClient`, `AuctionTable`, `AuctionStatus`
   - **Purpose**: Manage auctions
   - **Features**: Create auctions, monitor bids, end auctions
 
 - **`/seller/auctions/create`** - Create auction
+
   - **Components**: `AuctionCreateForm`, `VideoUploadWithThumbnail`, `AuctionSettings`
   - **Purpose**: Create new auction
   - **Features**: Item details, starting bid, duration, reserve price
 
 - **`/seller/auctions/[id]`** - Auction details
+
   - **Components**: `AuctionDetailClient`, `BidList`, `AuctionControls`
   - **Purpose**: Monitor auction
   - **Features**: Live bids, analytics, end early
 
 - **`/seller/analytics`** - Seller analytics
+
   - **Components**: `AnalyticsClient`, `SalesChart`, `ProductPerformance`, `RevenueReport`
   - **Purpose**: Sales analytics
   - **Features**: Charts, reports, insights, export data
 
 - **`/seller/payouts`** - Payout management
+
   - **Components**: `PayoutsClient`, `PayoutHistory`, `BankDetails`
   - **Purpose**: Track earnings and payouts
   - **Features**: Pending payouts, history, bank account setup
 
 - **`/seller/reviews`** - Seller reviews
+
   - **Components**: `SellerReviewsClient`, `ReviewCard`, `ReviewResponse`
   - **Purpose**: Manage product reviews
   - **Features**: Respond to reviews, flag inappropriate
 
 - **`/seller/settings`** - Seller settings
+
   - **Components**: `SellerSettingsClient`, `ShippingSettings`, `PaymentSettings`
   - **Purpose**: Configure seller preferences
   - **Features**: Shipping, payments, notifications, policies
@@ -439,12 +502,15 @@ These routes require user authentication. Redirects to `/login` if not authentic
   - **Features**: Guides, FAQs, contact support
 
 #### Support
+
 - **`/support/ticket`** - Create support ticket
+
   - **Components**: `SupportTicketForm`, `FileUpload`, `IssueCategories`
   - **Purpose**: Submit support request
   - **Features**: Describe issue, attach files, track ticket
 
 - **`/support/tickets`** - View tickets
+
   - **Components**: `TicketListClient`, `TicketCard`, `TicketFilters`
   - **Purpose**: View all support tickets
   - **Features**: Ticket status, replies, filter by status
@@ -461,7 +527,9 @@ These routes require user authentication. Redirects to `/login` if not authentic
 Admin-only routes for platform management. Requires admin role authentication.
 
 #### Admin Dashboard
+
 - **`/admin`** - Admin home
+
   - **Components**: `AdminDashboard`, `StatsOverview`, `ActivityFeed`, `QuickActions`
   - **Purpose**: Admin dashboard overview
   - **Features**: Platform stats, recent activity, alerts
@@ -472,7 +540,9 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Charts, KPIs, trends, export reports
 
 #### User Management
+
 - **`/admin/users`** - User list
+
   - **Components**: `UserListClient`, `DataTable`, `UserFilters`, `BulkActions`
   - **Purpose**: Manage platform users
   - **Features**: View users, search, filter, suspend, delete
@@ -483,7 +553,9 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: User info, orders, activity, actions
 
 #### Product Management
+
 - **`/admin/products`** - Product list
+
   - **Components**: `AdminProductsClient`, `DataTable`, `ProductFilters`
   - **Purpose**: Moderate all products
   - **Features**: Approve, reject, edit, delete products
@@ -494,12 +566,15 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Full product control, moderation notes
 
 #### Category Management
+
 - **`/admin/categories`** - Category list
+
   - **Components**: `CategoryTreeClient`, `CategoryTable`, `CategoryActions`
   - **Purpose**: Manage categories
   - **Features**: Add, edit, delete, reorder categories
 
 - **`/admin/categories/create`** - Create category
+
   - **Components**: `CategoryCreateForm`, `ParentSelector`, `CategoryIcon`
   - **Purpose**: Add new category
   - **Features**: Parent selection, icon, featured image
@@ -510,7 +585,9 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Update details, move in tree, merge
 
 #### Shop Management
+
 - **`/admin/shops`** - Shop list
+
   - **Components**: `ShopListClient`, `DataTable`, `ShopFilters`, `ShopActions`
   - **Purpose**: Manage all shops
   - **Features**: Approve, suspend, verify shops
@@ -521,7 +598,9 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Full control, verification, notes
 
 #### Order Management
+
 - **`/admin/orders`** - Order list
+
   - **Components**: `AdminOrdersClient`, `DataTable`, `OrderFilters`, `OrderActions`
   - **Purpose**: View all orders
   - **Features**: Monitor, cancel, refund orders
@@ -532,12 +611,15 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Full order info, status change, refund
 
 #### Auction Management
+
 - **`/admin/auctions`** - Auction list
+
   - **Components**: `AdminAuctionsClient`, `DataTable`, `AuctionFilters`
   - **Purpose**: Manage all auctions
   - **Features**: Approve, monitor, end auctions
 
 - **`/admin/auctions/live`** - Live auctions
+
   - **Components**: `LiveAuctionsClient`, `LiveAuctionCard`, `BidMonitor`
   - **Purpose**: Monitor live auctions
   - **Features**: Real-time bids, intervention, alerts
@@ -548,13 +630,16 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Review, approve, reject auctions
 
 #### Review Management
+
 - **`/admin/reviews`** - Review list
   - **Components**: `AdminReviewsClient`, `DataTable`, `ReviewFilters`
   - **Purpose**: Moderate reviews
   - **Features**: Approve, hide, delete reviews
 
 #### Payment & Payout Management
+
 - **`/admin/payments`** - Payment list
+
   - **Components**: `PaymentListClient`, `DataTable`, `PaymentFilters`, `PaymentDetails`
   - **Purpose**: View all payments
   - **Features**: Payment history, status, refunds
@@ -565,18 +650,22 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Approve, process, reject payouts
 
 #### Returns Management
+
 - **`/admin/returns`** - Return requests
   - **Components**: `ReturnListClient`, `DataTable`, `ReturnFilters`, `ReturnActions`
   - **Purpose**: Manage return requests
   - **Features**: Approve, reject, track returns
 
 #### Coupon Management
+
 - **`/admin/coupons`** - Coupon list
+
   - **Components**: `CouponListClient`, `DataTable`, `CouponFilters`
   - **Purpose**: Manage discount coupons
   - **Features**: Create, edit, activate, deactivate
 
 - **`/admin/coupons/create`** - Create coupon
+
   - **Components**: `CouponCreateForm`, `DiscountSettings`, `UsageLimits`
   - **Purpose**: Create new coupon
   - **Features**: Discount type, validity, usage limits
@@ -587,22 +676,27 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Update details, view usage stats
 
 #### Blog Management
+
 - **`/admin/blog`** - Blog post list
+
   - **Components**: `BlogListClient`, `DataTable`, `BlogFilters`
   - **Purpose**: Manage blog posts
   - **Features**: Create, edit, publish, delete posts
 
 - **`/admin/blog/create`** - Create blog post
+
   - **Components**: `BlogCreateForm`, `RichTextEditor`, `FeaturedImage`, `SEOSettings`
   - **Purpose**: Create blog post
   - **Features**: Rich content, images, SEO, scheduling
 
 - **`/admin/blog/[id]/edit`** - Edit blog post
+
   - **Components**: `BlogEditForm`, `RichTextEditor`, `PostSettings`
   - **Purpose**: Edit blog post
   - **Features**: Update content, republish
 
 - **`/admin/blog/categories`** - Blog categories
+
   - **Components**: `BlogCategoryList`, `CategoryForm`
   - **Purpose**: Manage blog categories
   - **Features**: Add, edit, delete categories
@@ -613,22 +707,27 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Add, edit, delete tags
 
 #### Homepage Management
+
 - **`/admin/homepage`** - Homepage settings
+
   - **Components**: `HomepageSettings`, `SectionToggle`, `FeaturedContent`
   - **Purpose**: Configure homepage
   - **Features**: Enable/disable sections, featured content
 
 - **`/admin/hero-slides`** - Hero slides
+
   - **Components**: `HeroSlideList`, `DataTable`, `SlideActions`
   - **Purpose**: Manage hero carousel
   - **Features**: Add, edit, reorder, activate slides
 
 - **`/admin/hero-slides/create`** - Create slide
+
   - **Components**: `HeroSlideForm`, `ImageUploadWithCrop`, `LinkSettings`
   - **Purpose**: Create hero slide
   - **Features**: Image, title, link, schedule
 
 - **`/admin/hero-slides/[id]/edit`** - Edit slide
+
   - **Components**: `HeroSlideEditForm`, `SlidePreview`
   - **Purpose**: Edit hero slide
   - **Features**: Update content, preview
@@ -639,7 +738,9 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Products, categories, shops sections
 
 #### Event Management
+
 - **`/admin/events`** - Event list
+
   - **Components**: `EventListClient`, `DataTable`, `EventFilters`
   - **Purpose**: Manage platform events
   - **Features**: Create, edit, publish events
@@ -650,18 +751,22 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Update details, view registrations
 
 #### Email Management
+
 - **`/admin/emails`** - Email templates
   - **Components**: `EmailTemplateList`, `TemplateEditor`
   - **Purpose**: Manage email templates
   - **Features**: Edit templates, test emails
 
 #### Support Ticket Management
+
 - **`/admin/support-tickets`** - Ticket list
+
   - **Components**: `AdminTicketList`, `DataTable`, `TicketFilters`
   - **Purpose**: Manage support tickets
   - **Features**: Assign, respond, close tickets
 
 - **`/admin/support-tickets/[id]`** - Ticket details
+
   - **Components**: `AdminTicketDetail`, `TicketThread`, `AdminResponse`
   - **Purpose**: View and respond to ticket
   - **Features**: Full conversation, assign, resolve
@@ -670,22 +775,27 @@ Admin-only routes for platform management. Requires admin role authentication.
   - Similar to support-tickets but different URL structure
 
 #### Analytics
+
 - **`/admin/analytics`** - Analytics dashboard
+
   - **Components**: `AnalyticsDashboard`, `RevenueChart`, `UserMetrics`, `ProductMetrics`
   - **Purpose**: Platform analytics
   - **Features**: Revenue, users, products, trends
 
 - **`/admin/analytics/sales`** - Sales analytics
+
   - **Components**: `SalesAnalytics`, `SalesChart`, `TopProducts`, `SalesReports`
   - **Purpose**: Detailed sales data
   - **Features**: Period comparison, export reports
 
 - **`/admin/analytics/users`** - User analytics
+
   - **Components**: `UserAnalytics`, `UserGrowth`, `UserSegments`, `ActivityHeatmap`
   - **Purpose**: User insights
   - **Features**: Growth, retention, activity
 
 - **`/admin/analytics/payments`** - Payment analytics
+
   - **Components**: `PaymentAnalytics`, `PaymentMethodChart`, `TransactionVolume`
   - **Purpose**: Payment insights
   - **Features**: Payment methods, success rates
@@ -696,64 +806,77 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Conversion rates, bid metrics
 
 #### Static Assets
+
 - **`/admin/static-assets`** - Asset management
   - **Components**: `StaticAssetManager`, `FileUpload`, `AssetGallery`
   - **Purpose**: Manage platform assets
   - **Features**: Upload, organize, delete images/files
 
 #### RipLimit (Platform Credits)
+
 - **`/admin/riplimit`** - RipLimit management
   - **Components**: `RipLimitClient`, `CreditManager`, `RefundList`
   - **Purpose**: Manage platform credit system
   - **Features**: Refunds, adjustments, credit history
 
 #### Settings
+
 - **`/admin/settings`** - Settings overview
+
   - **Components**: `SettingsNav`, `SettingsSidebar`
   - **Purpose**: Admin settings navigation
   - **Features**: Access all settings sections
 
 - **`/admin/settings/general`** - General settings
+
   - **Components**: `GeneralSettings`, `PlatformInfo`, `MaintenanceMode`
   - **Purpose**: Basic platform settings
   - **Features**: Site name, logo, maintenance mode
 
 - **`/admin/settings/payment`** - Payment settings
+
   - **Components**: `PaymentSettings`, `GatewayConfig`
   - **Purpose**: Configure payment gateways
   - **Features**: Razorpay, COD, settings
 
 - **`/admin/settings/payment-gateways`** - Payment gateway details
+
   - **Components**: `PaymentGatewayList`, `GatewayForm`
   - **Purpose**: Manage payment providers
   - **Features**: Add, configure gateways
 
 - **`/admin/settings/shipping`** - Shipping settings
+
   - **Components**: `ShippingSettings`, `ShippingZones`, `ShippingRates`
   - **Purpose**: Configure shipping
   - **Features**: Zones, rates, carriers
 
 - **`/admin/settings/email`** - Email settings
+
   - **Components**: `EmailSettings`, `SMTPConfig`, `EmailTemplates`
   - **Purpose**: Email configuration
   - **Features**: SMTP, sender info, templates
 
 - **`/admin/settings/notifications`** - Notification settings
+
   - **Components**: `NotificationSettings`, `NotificationTypes`
   - **Purpose**: Configure notifications
   - **Features**: Email, push, SMS settings
 
 - **`/admin/settings/address-api`** - Address API settings
+
   - **Components**: `AddressAPISettings`, `APIKeyConfig`
   - **Purpose**: Configure address lookup APIs
   - **Features**: Google Places, postal code APIs
 
 - **`/admin/settings/whatsapp`** - WhatsApp settings
+
   - **Components**: `WhatsAppSettings`, `MessageTemplates`
   - **Purpose**: WhatsApp integration
   - **Features**: API config, message templates
 
 - **`/admin/settings/features`** - Feature flags
+
   - **Components**: `FeatureFlags`, `FeatureToggle`
   - **Purpose**: Enable/disable features
   - **Features**: Toggle auctions, reviews, etc.
@@ -764,12 +887,15 @@ Admin-only routes for platform management. Requires admin role authentication.
   - **Features**: Enable, custom message, allowed IPs
 
 #### Demo & Development
+
 - **`/admin/demo`** - Component demo
+
   - **Components**: Various demo components
   - **Purpose**: Test components
   - **Features**: Component playground
 
 - **`/admin/component-demo`** - Component showcase
+
   - **Components**: Component examples
   - **Purpose**: Component documentation
   - **Features**: Live examples
@@ -786,21 +912,25 @@ Admin-only routes for platform management. Requires admin role authentication.
 Authentication and account management routes. No auth required (except logout).
 
 - **`/login`** - Login page
+
   - **Components**: `LoginForm`, `SocialLogin`, `RememberMe`
   - **Purpose**: User authentication
   - **Features**: Email/password, social login, remember me
 
 - **`/register`** - Registration page
+
   - **Components**: `RegisterForm`, `TermsCheckbox`, `EmailVerification`
   - **Purpose**: Create new account
   - **Features**: Form validation, email verification
 
 - **`/forgot-password`** - Forgot password
+
   - **Components**: `ForgotPasswordForm`, `EmailInput`
   - **Purpose**: Password recovery
   - **Features**: Send reset email
 
 - **`/reset-password`** - Reset password
+
   - **Components**: `ResetPasswordForm`, `PasswordStrength`
   - **Purpose**: Set new password
   - **Features**: Token validation, password confirmation
@@ -814,22 +944,27 @@ Authentication and account management routes. No auth required (except logout).
 ### Special Routes
 
 #### Error Pages
+
 - **`/error.tsx`** - Error boundary
+
   - **Components**: `ErrorBoundary`, `ErrorMessage`
   - **Purpose**: Handle runtime errors
   - **Features**: Error display, retry, report
 
 - **`/global-error.tsx`** - Global error handler
+
   - **Components**: `GlobalErrorBoundary`
   - **Purpose**: Root-level error handling
   - **Features**: Fallback UI
 
 - **`/not-found.tsx`** - 404 page
+
   - **Components**: `NotFoundContent`, `SearchSuggestions`
   - **Purpose**: Handle missing routes
   - **Features**: Helpful links, search
 
 - **`/forbidden`** - 403 page
+
   - **Components**: `ForbiddenContent`
   - **Purpose**: Access denied
   - **Features**: Reason, contact support
@@ -840,13 +975,16 @@ Authentication and account management routes. No auth required (except logout).
   - **Features**: Login prompt, redirect
 
 #### Demo Routes
+
 - **`/demo/form-accessibility`** - Form accessibility demo
 - **`/demo/virtual-scroll`** - Virtual scrolling demo
   - **Purpose**: Development/testing
   - **Features**: Component demos, testing
 
 #### SEO & Metadata
+
 - **`/robots.ts`** - Robots.txt configuration
+
   - **Purpose**: SEO, crawler control
   - **Features**: Dynamic robots.txt
 
@@ -871,6 +1009,7 @@ App (RootLayout)
 ### Key Component Categories
 
 #### 1. Layout Components (`src/components/layout/`)
+
 - **Header** - Main navigation, search, cart, user menu
 - **Footer** - Site links, newsletter, social media
 - **Sidebar** - Admin/seller navigation
@@ -878,6 +1017,7 @@ App (RootLayout)
 - **Breadcrumbs** - Page navigation trail
 
 #### 2. Homepage Components (`src/components/homepage/`)
+
 - **HeroSection** - Main hero carousel with slides
 - **WelcomeHero** - Welcome message for authenticated users
 - **ProductsSection** - Featured products grid
@@ -890,6 +1030,7 @@ App (RootLayout)
 - **FAQSection** - Quick FAQs
 
 #### 3. Product Components (`src/components/product/`)
+
 - **ProductCard** - Product grid item
 - **ProductList** - Product listing
 - **ProductDetail** - Full product view
@@ -902,6 +1043,7 @@ App (RootLayout)
 - **ProductReviews** - Review list
 
 #### 4. Auction Components (`src/components/auction/`)
+
 - **AuctionCard** - Auction grid item
 - **AuctionDetail** - Full auction view
 - **BiddingPanel** - Place bid interface
@@ -911,6 +1053,7 @@ App (RootLayout)
 - **WinnerAnnouncement** - Auction end notice
 
 #### 5. Cart & Checkout Components (`src/components/cart/`, `src/components/checkout/`)
+
 - **CartDrawer** - Slide-out cart
 - **CartItems** - Items in cart
 - **CartSummary** - Total, shipping, discount
@@ -920,6 +1063,7 @@ App (RootLayout)
 - **OrderSummary** - Final review before payment
 
 #### 6. User Components (`src/components/user/`)
+
 - **ProfileForm** - Edit profile
 - **ProfileStats** - User statistics
 - **OrderHistory** - Past orders
@@ -930,6 +1074,7 @@ App (RootLayout)
 - **NotificationList** - User notifications
 
 #### 7. Seller Components (`src/components/seller/`)
+
 - **SellerDashboard** - Seller home
 - **SalesChart** - Revenue visualization
 - **OrderTable** - Seller orders
@@ -939,6 +1084,7 @@ App (RootLayout)
 - **PayoutHistory** - Earnings tracking
 
 #### 8. Admin Components (`src/components/admin/`)
+
 - **AdminDashboard** - Admin home
 - **StatsOverview** - Platform metrics
 - **UserTable** - User management
@@ -949,6 +1095,7 @@ App (RootLayout)
 - **SettingsPanel** - Platform settings
 
 #### 9. Auth Components (`src/components/auth/`)
+
 - **LoginForm** - Sign in
 - **RegisterForm** - Sign up
 - **SocialLogin** - OAuth buttons
@@ -956,6 +1103,7 @@ App (RootLayout)
 - **EmailVerification** - Verify email
 
 #### 10. Navigation Components (`src/components/navigation/`)
+
 - **MainNav** - Primary navigation
 - **CategoryNav** - Category menu
 - **MegaMenu** - Multi-column dropdown
@@ -963,12 +1111,14 @@ App (RootLayout)
 - **BreadcrumbNav** - Page breadcrumbs
 
 #### 11. Search Components (`src/components/search/`)
+
 - **SearchBar** - Search input (from library)
 - **SearchResults** - Result display
 - **SearchFilters** - Filter sidebar (from library)
 - **SearchSuggestions** - Autocomplete
 
 #### 12. Provider Components (`src/components/providers/`)
+
 - **AuthProvider** - Authentication context
 - **CartProvider** - Shopping cart state
 - **ThemeProvider** - Dark/light mode
@@ -977,6 +1127,7 @@ App (RootLayout)
 - **FirebaseProvider** - Firebase initialization
 
 #### 13. Common Components (`src/components/common/`)
+
 - **ErrorBoundary** - Error handling
 - **ErrorInitializer** - Error setup
 - **NotImplemented** - Placeholder
@@ -984,6 +1135,7 @@ App (RootLayout)
 - **Skeletons** - Loading states (app-specific)
 
 #### 14. Form Components (from `@letitrip/react-library`)
+
 - **FormField** - Generic form field
 - **FormInput** - Text input
 - **FormTextarea** - Multiline input
@@ -997,6 +1149,7 @@ App (RootLayout)
 - **VideoUploadWithThumbnail** - Video upload
 
 #### 15. Table Components (from `@letitrip/react-library`)
+
 - **DataTable** - Sortable, filterable table
 - **ResponsiveTable** - Mobile-friendly table
 - **BulkActionBar** - Multi-select actions
@@ -1007,6 +1160,7 @@ App (RootLayout)
 - **PageState** - Loading/error/empty states
 
 #### 16. UI Components (from `@letitrip/react-library`)
+
 - **Button** - Primary button
 - **Card** - Content container
 - **Toast** - Notification toast
@@ -1022,6 +1176,7 @@ App (RootLayout)
 ## 🔥 Key Features
 
 ### 1. Real-time Auctions
+
 - Live bidding with WebSocket updates
 - Automatic bid increments
 - Countdown timers
@@ -1030,6 +1185,7 @@ App (RootLayout)
 - Reserve price handling
 
 ### 2. Multi-vendor Marketplace
+
 - Seller registration and verification
 - Shop profiles and branding
 - Product management dashboard
@@ -1038,6 +1194,7 @@ App (RootLayout)
 - Performance analytics
 
 ### 3. Advanced Search & Filtering
+
 - Full-text search across products, shops, auctions
 - Multi-faceted filters (category, price, rating, etc.)
 - Sort options (price, date, popularity)
@@ -1045,6 +1202,7 @@ App (RootLayout)
 - Search suggestions
 
 ### 4. Shopping Cart & Checkout
+
 - Add to cart from product/auction pages
 - Quantity updates
 - Coupon application
@@ -1053,6 +1211,7 @@ App (RootLayout)
 - Order confirmation emails
 
 ### 5. User Management
+
 - Registration with email verification
 - Social login (OAuth)
 - Profile management
@@ -1062,6 +1221,7 @@ App (RootLayout)
 - Messaging system
 
 ### 6. Admin Dashboard
+
 - Platform analytics and insights
 - User, product, shop, order management
 - Content moderation
@@ -1071,6 +1231,7 @@ App (RootLayout)
 - Payment and payout management
 
 ### 7. Blog System
+
 - Rich content editor
 - Categories and tags
 - Featured images
@@ -1079,6 +1240,7 @@ App (RootLayout)
 - Related posts
 
 ### 8. Review & Rating System
+
 - Product reviews
 - Shop ratings
 - Verified purchase badges
@@ -1087,6 +1249,7 @@ App (RootLayout)
 - Review images
 
 ### 9. Notification System
+
 - Email notifications
 - In-app notifications
 - Push notifications (optional)
@@ -1094,6 +1257,7 @@ App (RootLayout)
 - Real-time updates
 
 ### 10. Responsive Design
+
 - Mobile-first approach
 - Tablet optimization
 - Desktop layouts
@@ -1105,6 +1269,7 @@ App (RootLayout)
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ and npm/yarn
 - Firebase project (Firestore, Storage, Auth)
 - Razorpay account (for payments)
@@ -1112,12 +1277,14 @@ App (RootLayout)
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/mohasinac/letitrip.in.git
    cd letitrip.in
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # Also install library dependencies
@@ -1125,26 +1292,30 @@ App (RootLayout)
    ```
 
 3. **Environment setup**
+
    - Copy `.env.example` to `.env.local`
    - Fill in Firebase credentials
    - Add Razorpay keys
    - Configure other services
 
 4. **Firebase setup**
+
    ```bash
    # Deploy Firestore rules and indexes
    npm run setup:firebase-rules
-   
+
    # Deploy custom indexes
    npm run indexes:deploy
    ```
 
 5. **Build the library**
+
    ```bash
    npm run lib:build
    ```
 
 6. **Run development server**
+
    ```bash
    npm run dev
    ```
@@ -1189,6 +1360,7 @@ letitrip.in/
 All API routes are in `src/app/api/v1/`. Key endpoints:
 
 ### Authentication
+
 - `POST /api/v1/auth/register` - Register user
 - `POST /api/v1/auth/login` - Login user
 - `POST /api/v1/auth/logout` - Logout user
@@ -1196,6 +1368,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - `POST /api/v1/auth/verify-email` - Verify email
 
 ### Products
+
 - `GET /api/v1/products` - List products
 - `GET /api/v1/products/[id]` - Get product
 - `POST /api/v1/products` - Create product (seller)
@@ -1203,6 +1376,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - `DELETE /api/v1/products/[id]` - Delete product (seller)
 
 ### Auctions
+
 - `GET /api/v1/auctions` - List auctions
 - `GET /api/v1/auctions/[id]` - Get auction
 - `POST /api/v1/auctions` - Create auction (seller)
@@ -1210,6 +1384,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - `GET /api/v1/auctions/[id]/bids` - Get bid history
 
 ### Cart
+
 - `GET /api/v1/cart` - Get cart
 - `POST /api/v1/cart/add` - Add to cart
 - `PUT /api/v1/cart/update` - Update cart item
@@ -1217,6 +1392,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - `DELETE /api/v1/cart/clear` - Clear cart
 
 ### Orders
+
 - `GET /api/v1/orders` - List orders
 - `GET /api/v1/orders/[id]` - Get order
 - `POST /api/v1/orders` - Create order
@@ -1224,17 +1400,20 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - `POST /api/v1/orders/[id]/cancel` - Cancel order
 
 ### Payments
+
 - `POST /api/v1/payments/create` - Create payment
 - `POST /api/v1/payments/verify` - Verify payment
 - `POST /api/v1/payments/refund` - Refund payment
 
 ### Reviews
+
 - `GET /api/v1/reviews` - List reviews
 - `POST /api/v1/reviews` - Create review
 - `PUT /api/v1/reviews/[id]` - Update review
 - `DELETE /api/v1/reviews/[id]` - Delete review
 
 ### Admin
+
 - `GET /api/v1/admin/stats` - Platform statistics
 - `GET /api/v1/admin/users` - List users
 - `PUT /api/v1/admin/users/[id]/suspend` - Suspend user
@@ -1245,6 +1424,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 ## 🔄 State Management
 
 ### Global State (React Context)
+
 - **AuthContext** - User authentication state
 - **CartContext** - Shopping cart state
 - **ThemeContext** - Dark/light mode
@@ -1254,6 +1434,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - **LoginRegisterContext** - Modal state
 
 ### Server State (TanStack Query)
+
 - Product data
 - Auction data
 - Order data
@@ -1263,6 +1444,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 - Review data
 
 ### Local State
+
 - Form state (React Hook Form)
 - UI state (modals, drawers, tooltips)
 - Filter state (URL-based with useUrlFilters)
@@ -1273,6 +1455,7 @@ All API routes are in `src/app/api/v1/`. Key endpoints:
 ## 🧪 Testing
 
 ### Test Structure
+
 ```
 tests/                        # Test suite (submodule)
 ├── e2e/                      # Playwright E2E tests
@@ -1298,6 +1481,7 @@ react-library/src/__tests__/  # Library tests
 ```
 
 ### Running Tests
+
 ```bash
 # Unit tests (Jest)
 npm test
@@ -1317,6 +1501,7 @@ npm run test:coverage
 ## 📦 Component Library (`@letitrip/react-library`)
 
 ### Usage
+
 All reusable UI components have been migrated to the library:
 
 ```typescript
@@ -1329,10 +1514,11 @@ import {
   Toast,
   useDebounce,
   useMediaUpload,
-} from '@letitrip/react-library';
+} from "@letitrip/react-library";
 ```
 
 ### Library Categories
+
 - **Forms** (20 components) - FormField, FormInput, FormSelect, RichTextEditor, etc.
 - **Tables** (13 components) - DataTable, ResponsiveTable, BulkActionBar, etc.
 - **Filters** (19 components) - FilterSidebar, SearchBar, PriceRangeFilter, etc.
@@ -1344,6 +1530,7 @@ import {
 - **Hooks** (26 hooks) - useQuery, useMutation, useFilters, useFormState, etc.
 
 ### Documentation
+
 - Library docs: `react-library/README.md`
 - Storybook: `npm run lib:storybook`
 - Component tests: `react-library/src/__tests__/`
@@ -1353,18 +1540,21 @@ import {
 ## 🔐 Authentication & Authorization
 
 ### User Roles
+
 - **Guest** - Unauthenticated visitors (browse, search)
 - **User** - Registered customers (buy, bid, review)
 - **Seller** - Vendors (sell products, manage shop)
 - **Admin** - Platform administrators (full access)
 
 ### Protected Routes
+
 - Route groups enforce authentication at layout level
 - Middleware checks user roles
 - Redirects to `/login` if unauthenticated
 - Shows 403 Forbidden if insufficient permissions
 
 ### Firebase Auth
+
 - Email/password authentication
 - Social login (Google, Facebook, etc.)
 - Email verification
@@ -1376,6 +1566,7 @@ import {
 ## 🎨 Styling & Theming
 
 ### Tailwind CSS
+
 - Utility-first CSS framework
 - Custom color palette
 - Responsive breakpoints
@@ -1383,6 +1574,7 @@ import {
 - Custom components via @apply
 
 ### Theme System
+
 - Light/dark mode toggle
 - Persisted preference (localStorage)
 - ThemeProvider context
@@ -1393,21 +1585,25 @@ import {
 ## 🚢 Deployment
 
 ### Build
+
 ```bash
 npm run build
 ```
 
 ### Deploy to Vercel
+
 ```bash
 npm run deploy:vercel
 ```
 
 ### Deploy to Firebase
+
 ```bash
 npm run deploy:firebase
 ```
 
 ### Environment Sync
+
 ```bash
 npm run sync:env
 ```
@@ -1423,6 +1619,7 @@ This project is proprietary software. All rights reserved.
 ## 🤝 Contributing
 
 This is a private project. For authorized contributors:
+
 1. Create feature branch from `main`
 2. Make changes with descriptive commits
 3. Run tests before pushing
@@ -1434,6 +1631,7 @@ This is a private project. For authorized contributors:
 ## 📞 Support
 
 For issues or questions:
+
 - Email: support@letitrip.in
 - Documentation: See individual component README files
 - API Docs: `/api/v1/docs` (when running)
@@ -1443,6 +1641,7 @@ For issues or questions:
 ## 🏗 Architecture Decisions
 
 ### Why Next.js App Router?
+
 - Server-side rendering (SSR) for SEO
 - Static generation for performance
 - File-based routing
@@ -1451,6 +1650,7 @@ For issues or questions:
 - Optimized image loading
 
 ### Why Firebase?
+
 - Real-time database (Firestore)
 - Scalable file storage
 - Built-in authentication
@@ -1459,6 +1659,7 @@ For issues or questions:
 - Pay-as-you-go pricing
 
 ### Why Component Library?
+
 - Framework-agnostic reusable components
 - Consistent UI across app
 - Independent testing
@@ -1467,6 +1668,7 @@ For issues or questions:
 - Reduced main app bundle size
 
 ### Why TanStack Query?
+
 - Automatic caching
 - Background refetching
 - Optimistic updates

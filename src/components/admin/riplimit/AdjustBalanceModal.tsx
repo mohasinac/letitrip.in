@@ -1,8 +1,8 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { Button } from "@/components/ui/Button";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
+import { Button } from "@letitrip/react-library";
 import { X } from "lucide-react";
 import { useState } from "react";
 

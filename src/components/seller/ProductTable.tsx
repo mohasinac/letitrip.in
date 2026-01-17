@@ -1,10 +1,10 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { ConfirmDialog } from "@letitrip/react-library";
 import { FormModal } from "@/components/common/FormModal";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { Price } from "@/components/common/values/Price";
+import { OptimizedImage } from "@letitrip/react-library"
+import { StatusBadge } from '@letitrip/react-library';
+import { Price } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";

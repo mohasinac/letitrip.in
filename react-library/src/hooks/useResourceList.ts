@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useResourceList Hook
  * Task 1.8.1 - Common Hooks & Utilities

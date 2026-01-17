@@ -9,11 +9,11 @@
  * Admin interface for WhatsApp Business API configuration
  */
 
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
 import { TEMPLATES, WHATSAPP_PROVIDERS } from "@/config/whatsapp.config";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
 import {

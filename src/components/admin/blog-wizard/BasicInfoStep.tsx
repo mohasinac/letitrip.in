@@ -1,5 +1,5 @@
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import type { BlogFormData, OnBlogChange } from "./types";
 
 interface BasicInfoStepProps {

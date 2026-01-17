@@ -10,8 +10,8 @@
  */
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { Price } from "@/components/common/values/Price";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { Price } from "@letitrip/react-library";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   AlertCircle,

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
+import { FormCurrencyInput } from "@letitrip/react-library";
 import { Currency } from "@/lib/price.utils";
 import { useState } from "react";
 
@@ -265,7 +265,7 @@ export default function FormCurrencyInputDemo() {
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Usage Example:</h3>
           <pre className="text-xs text-gray-800 overflow-x-auto">
-            {`import { FormCurrencyInput } from "@/components/forms/FormCurrencyInput";
+            {`import { FormCurrencyInput } from "@letitrip/react-library";
 
 function ProductForm() {
   const [price, setPrice] = useState<number | null>(null);

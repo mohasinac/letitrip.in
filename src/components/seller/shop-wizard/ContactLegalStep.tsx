@@ -1,8 +1,8 @@
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
-import { FormInput } from "@/components/forms/FormInput";
-import { AddressSelectorWithCreate } from "@/components/common/AddressSelectorWithCreate";
+import { FormField } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { AddressSelectorWithCreate } from "@letitrip/react-library";
 import type { ShopFormData, OnShopChange } from "./types";
 
 interface ContactLegalStepProps {

@@ -1,6 +1,6 @@
+import { LegalPageLayout } from "@letitrip/react-library";
 import { Metadata } from "next";
 import Link from "next/link";
-import LegalPageLayout from "@/components/legal/LegalPageLayout";
 
 export const metadata: Metadata = {
   title: "Shipping Policy - Let It Rip",

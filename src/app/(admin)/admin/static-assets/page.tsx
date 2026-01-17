@@ -1,9 +1,6 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { FormInput } from "@/components/forms/FormInput";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   deleteAsset,
@@ -12,6 +9,11 @@ import {
   uploadAsset,
   type StaticAsset,
 } from "@/services/static-assets-client.service";
+import {
+  FormInput,
+  OptimizedImage,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -214,7 +216,9 @@ export default function StaticAssetsPage() {
                     <OptimizedImage
                       src={asset.url}
                       alt={asset.name}
-                      fill
+                      width={400}
+                      height={300}
+                      objectFit="contain"
                       className="object-contain"
                     />
                   ) : asset.contentType.startsWith("video/") ? (

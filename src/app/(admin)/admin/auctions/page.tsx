@@ -2,10 +2,10 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { auctionsService } from "@/services/auctions.service";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { Gavel, Clock, TrendingUp } from "lucide-react";
 import { AuctionStatus } from "@/types/shared/common.types";
 import { getAuctionBulkActions } from "@/constants/bulk-actions";

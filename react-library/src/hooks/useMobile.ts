@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Mobile Detection Hooks
  *

@@ -1,6 +1,5 @@
 "use client";
 
-import { ThemeToggle } from "@/components/common/ThemeToggle";
 import {
   ADMIN_MENU_ITEMS,
   COMPANY_NAME,
@@ -8,8 +7,8 @@ import {
   USER_MENU_ITEMS,
 } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
 import { useHeaderStats } from "@/hooks/useHeaderStats";
+import { ThemeToggle, useCart } from "@letitrip/react-library";
 import {
   Bell,
   ChevronDown,

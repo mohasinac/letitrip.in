@@ -1,17 +1,18 @@
 "use client";
 
 import {
-  ContentTypeFilter,
-  getContentTypePlaceholder,
-  type ContentType,
-} from "@/components/common/ContentTypeFilter";
-import { DynamicIcon, type IconName } from "@/components/common/DynamicIcon";
-import {
   searchNavigationRoutes,
   type SearchableRoute,
 } from "@/constants/searchable-routes";
 import { useGlobalSearch } from "@/contexts/GlobalSearchContext";
-import { useDebounce } from "@/hooks/useDebounce";
+import {
+  ContentTypeFilter,
+  DynamicIcon,
+  getContentTypePlaceholder,
+  useDebounce,
+  type ContentType,
+  type IconName,
+} from "@letitrip/react-library";
 import { ArrowRight, Navigation, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {

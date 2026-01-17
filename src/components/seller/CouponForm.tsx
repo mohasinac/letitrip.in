@@ -1,8 +1,8 @@
 "use client";
 
-import DateTimePicker from "@/components/common/DateTimePicker";
-import TagInput from "@/components/common/TagInput";
-import { FormLabel } from "@/components/forms/FormLabel";
+import { DateTimePicker } from '@letitrip/react-library';
+import { TagInput } from "@letitrip/react-library"
+import { FormLabel } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";

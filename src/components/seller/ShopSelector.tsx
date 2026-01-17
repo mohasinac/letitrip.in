@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { FormSelect } from "@/components/forms/FormSelect";
+import { FormSelect } from "@letitrip/react-library";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 
 interface Option {
   label: string;

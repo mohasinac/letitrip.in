@@ -1,7 +1,7 @@
 "use client";
 
-import { WizardActionBar } from "@/components/forms/WizardActionBar";
-import { WizardSteps } from "@/components/forms/WizardSteps";
+import { WizardActionBar } from "@letitrip/react-library";
+import { WizardSteps } from "@letitrip/react-library";
 import { OptionalDetailsStep } from "@/components/seller/auction-wizard/OptionalDetailsStep";
 import { RequiredInfoStep } from "@/components/seller/auction-wizard/RequiredInfoStep";
 import type { AuctionFormData } from "@/components/seller/auction-wizard/types";

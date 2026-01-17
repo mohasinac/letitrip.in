@@ -1,11 +1,13 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormTextarea } from "@/components/forms/FormTextarea";
-import { useLoadingState } from "@/hooks/useLoadingState";
 import { logError } from "@/lib/firebase-error-logger";
 import { supportService } from "@/services/support.service";
+import {
+  DateDisplay,
+  FormTextarea,
+  useLoadingState,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";

@@ -6,7 +6,7 @@
  */
 
 import { UnifiedFilterSidebar } from "@/components/common/UnifiedFilterSidebar";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { useUrlFilters } from "@letitrip/react-library";
 import { useState } from "react";
 
 export function FilteredListPageExample() {

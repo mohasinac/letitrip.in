@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Star, MapPin, Heart, Share2 } from "lucide-react";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { OptimizedImage } from "@letitrip/react-library"
+import { DateDisplay } from "@letitrip/react-library";
 import type { ShopFE, ShopCardFE } from "@/types/frontend/shop.types";
 import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";

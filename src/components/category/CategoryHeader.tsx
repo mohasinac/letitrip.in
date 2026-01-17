@@ -2,7 +2,7 @@
 
 import { ChevronRight, Package } from "lucide-react";
 import Link from "next/link";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 
 export interface CategoryHeaderProps {
   id: string;

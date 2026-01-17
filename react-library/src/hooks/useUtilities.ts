@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Utility hooks for common patterns
  */

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ShopCard } from "@/components/cards/ShopCard";
 import { logError } from "@/lib/firebase-error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { HorizontalScrollContainer } from "@/components/common/HorizontalScrollContainer";
+import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { shopsService } from "@/services/shops.service";
 import { productsService } from "@/services/products.service";
 import { apiService } from "@/services/api.service";

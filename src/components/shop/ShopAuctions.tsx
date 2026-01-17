@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { EmptyState } from "@/components/common/EmptyState";
+import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import {
   AuctionFilters,
   AuctionFilterValues,
-} from "@/components/filters/AuctionFilters";
-import type { AuctionCardFE } from "@/types/frontend/auction.types";
+  EmptyState,
+} from "@letitrip/react-library";
+import { Filter as FilterIcon, Grid, List, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export interface ShopAuctionsProps {
   auctions: AuctionCardFE[];

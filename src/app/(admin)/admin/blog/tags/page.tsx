@@ -3,11 +3,11 @@
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
 import { toast } from "@/components/admin/Toast";
-import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { ConfirmDialog } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { apiService } from "@/services/api.service";
 import {

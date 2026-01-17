@@ -1,9 +1,9 @@
 "use client";
 
-import SlugInput from "@/components/common/SlugInput";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormTextarea } from "@/components/forms/FormTextarea";
+import { SlugInput } from "@letitrip/react-library";
+import { FormInput } from "@letitrip/react-library";
+import { FormLabel } from "@letitrip/react-library";
+import { FormTextarea } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { Loader2, Plus, X } from "lucide-react";

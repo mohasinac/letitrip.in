@@ -1,17 +1,18 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import RichTextEditor from "@/components/common/RichTextEditor";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { FormInput } from "@/components/forms/FormInput";
-import { FormLabel } from "@/components/forms/FormLabel";
-import { FormSelect } from "@/components/forms/FormSelect";
-import { FormTextarea } from "@/components/forms/FormTextarea";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@/hooks/useLoadingState";
-import { useMediaUploadWithCleanup } from "@/hooks/useMediaUploadWithCleanup";
 import { logError } from "@/lib/firebase-error-logger";
 import { blogService, type BlogPost } from "@/services/blog.service";
+import {
+  DateDisplay,
+  FormInput,
+  FormLabel,
+  FormSelect,
+  FormTextarea,
+  OptimizedImage,
+  RichTextEditor,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { ArrowLeft, Eye, Loader2, Save, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -56,10 +57,12 @@ export default function EditBlogPostPage() {
   const [tagInput, setTagInput] = useState("");
   const [customCategory, setCustomCategory] = useState("");
 
-  // Media upload
-  const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
-    useMediaUploadWithCleanup();
-  const uploadedUrls = getUploadedUrls();
+  // TODO: Refactor media upload to use new useMediaUpload API
+  // Media upload - TEMPORARILY DISABLED (API incompatible)
+  // const { getUploadedUrls, isUploading, uploadMedia, cleanupUploadedMedia } =
+  //   useMediaUpload();
+  // const uploadedUrls = getUploadedUrls();
+  const uploadedUrls: string[] = [];
 
   const categories = [
     "News",
@@ -98,7 +101,7 @@ export default function EditBlogPostPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -152,7 +155,9 @@ export default function EditBlogPostPage() {
     }
 
     try {
-      await uploadMedia(file, "product"); // Use product context for blog images
+      // TODO: Implement with new useMediaUpload API
+      // await uploadMedia(file, "product"); // Use product context for blog images
+      toast.error("Image upload temporarily disabled - needs refactoring");
       setErrors((prev) => ({ ...prev, featuredImage: "" }));
     } catch (error) {
       setErrors((prev) => ({
@@ -165,7 +170,7 @@ export default function EditBlogPostPage() {
 
   const handleRemoveImage = () => {
     if (uploadedUrls.length > 0) {
-      cleanupUploadedMedia();
+      // cleanupUploadedMedia(); // TODO: Implement with new API
     } else {
       setFormData((prev) => ({ ...prev, featuredImage: "" }));
     }
@@ -228,7 +233,7 @@ export default function EditBlogPostPage() {
     } catch (error) {
       console.error("Failed to update blog post:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to update blog post",
+        error instanceof Error ? error.message : "Failed to update blog post"
       );
     } finally {
       setLoading(false);
@@ -239,10 +244,10 @@ export default function EditBlogPostPage() {
     if (uploadedUrls.length > 0) {
       if (
         confirm(
-          "Are you sure you want to cancel? All unsaved changes will be lost.",
+          "Are you sure you want to cancel? All unsaved changes will be lost."
         )
       ) {
-        cleanupUploadedMedia();
+        // cleanupUploadedMedia(); // TODO: Implement with new API
         router.push("/admin/blog");
       }
     } else {
@@ -377,7 +382,7 @@ export default function EditBlogPostPage() {
             <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 hover:bg-gray-100">
               <Upload className="h-8 w-8 text-gray-400 mb-2" />
               <span className="text-sm text-gray-600">
-                {isUploading ? "Uploading..." : "Click to upload image"}
+                Click to upload image (temporarily disabled)
               </span>
               <span className="text-xs text-gray-500 mt-1">
                 PNG, JPG up to 5MB
@@ -387,7 +392,7 @@ export default function EditBlogPostPage() {
                 accept="image/*"
                 onChange={handleImageUpload}
                 className="hidden"
-                disabled={isUploading}
+                disabled={true}
               />
             </label>
           )}
@@ -407,9 +412,11 @@ export default function EditBlogPostPage() {
               setFormData((prev) => ({ ...prev, content: value }))
             }
             placeholder="Write your blog post content here..."
-            minHeight={400}
-            error={errors.content}
+            minHeight="400px"
           />
+          {errors.content && (
+            <p className="mt-1 text-sm text-red-600">{errors.content}</p>
+          )}
         </div>
 
         {/* Category */}

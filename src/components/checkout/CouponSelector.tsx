@@ -10,11 +10,11 @@ import {
   Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useLoadingState } from "@/hooks/useLoadingState";
+import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
-import { FormInput } from "@/components/forms/FormInput";
-import { Price } from "@/components/common/values/Price";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { FormInput } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
+import { DateDisplay } from "@letitrip/react-library";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
 

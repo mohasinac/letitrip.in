@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useResourceListState Hook
  * Manages complete list/table state including loading, pagination, and filtering

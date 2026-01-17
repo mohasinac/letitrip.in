@@ -2,9 +2,9 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { ordersService } from "@/services/orders.service";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
 import { Package, User, Store } from "lucide-react";
 import { getOrderBulkActions } from "@/constants/bulk-actions";
 import { toInlineFields } from "@/constants/form-fields";

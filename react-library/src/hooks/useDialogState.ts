@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useDialogState Hook
  * Framework-agnostic dialog/modal state management

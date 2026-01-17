@@ -1,8 +1,8 @@
 "use client";
 
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { RelativeDate } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
+import { OptimizedImage } from "@letitrip/react-library"
+import { RelativeDate } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { Clock, ShoppingBag, Trash2, X } from "lucide-react";
 import Link from "next/link";

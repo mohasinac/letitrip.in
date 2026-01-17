@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { OptimizedImage } from "@letitrip/react-library"
 import { shopsService } from "@/services/shops.service";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
 import { logError } from "@/lib/firebase-error-logger";

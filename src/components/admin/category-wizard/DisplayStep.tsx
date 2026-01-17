@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInput } from "@/components/forms/FormInput";
+import { FormInput } from "@letitrip/react-library";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { CategoryFormData, OnChange } from "./types";
 

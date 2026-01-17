@@ -2,10 +2,10 @@
 
 import { AdminResourcePage } from "@/components/admin/AdminResourcePage";
 import { productsService } from "@/services/products.service";
-import { StatusBadge } from "@/components/common/StatusBadge";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
-import { Price } from "@/components/common/values/Price";
-import OptimizedImage from "@/components/common/OptimizedImage";
+import { StatusBadge } from '@letitrip/react-library';
+import { DateDisplay } from "@letitrip/react-library";
+import { Price } from "@letitrip/react-library";
+import { OptimizedImage } from "@letitrip/react-library"
 import { Package } from "lucide-react";
 import { getProductBulkActions } from "@/constants/bulk-actions";
 import { PRODUCT_FIELDS, toInlineFields } from "@/constants/form-fields";

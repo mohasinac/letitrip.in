@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Check } from "lucide-react";
 import { logError } from "@/lib/firebase-error-logger";
-import OptimizedImage from "@/components/common/OptimizedImage";
-import { DateDisplay } from "@/components/common/values/DateDisplay";
+import { OptimizedImage } from "@letitrip/react-library"
+import { DateDisplay } from "@letitrip/react-library";
 import { reviewsService } from "@/services/reviews.service";
-import { EmptyState } from "@/components/common/EmptyState";
+import { EmptyState } from '@letitrip/react-library';
 
 interface Review {
   id: string;
