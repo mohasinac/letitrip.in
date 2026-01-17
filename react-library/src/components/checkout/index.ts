@@ -4,3 +4,6 @@ export type {
   ShopOrderItem,
   ShopOrderSummaryProps,
 } from "./ShopOrderSummary";
+
+export { PaymentMethod } from "./PaymentMethod";
+export type { PaymentMethodProps } from "./PaymentMethod";
