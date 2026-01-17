@@ -12,3 +12,6 @@ export type { ReviewFormProps, MediaFile } from "./ReviewForm";
 
 export { SellerProducts } from "./SellerProducts";
 export type { SellerProductsProps } from "./SellerProducts";
+
+export { SimilarProducts } from "./SimilarProducts";
+export type { SimilarProductsProps } from "./SimilarProducts";
