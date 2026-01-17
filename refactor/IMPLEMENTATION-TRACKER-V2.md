@@ -903,10 +903,14 @@ export type { ValuePropositionProps } from "@letitrip/react-library";
 
 **Other Product**:
 
-- [ ] ProductDescription (formatting)
+- [x] ProductDescription (formatting) ✅
 - [ ] ProductInfo (display)
-- [ ] ReviewList (display - accept reviews as props)
-- [ ] ReviewForm (form UI - accept submit callback)
+- [x] ProductGallery (image gallery with zoom) ✅
+- [x] ReviewList (display - accept reviews as props) ✅
+- [x] ReviewForm (form UI - accept submit callback) ✅
+- [x] SellerProducts (seller's other products with scroll) ✅
+- [ ] SimilarProducts (similar products from category)
+- [ ] ProductVariants (variant products horizontal scroll)
 
 ---
 
