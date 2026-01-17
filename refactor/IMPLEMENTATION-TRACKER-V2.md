@@ -11,17 +11,17 @@
 
 - [x] **Phase 1**: Quick Wins - Fully Migratable Components (9/35 complete) ✅
 - [x] **Phase 2**: Pure UI Components with Injection (20/20 complete) ✅
-- [ ] **Phase 3**: Business Logic Extraction (18/35 started)
+- [ ] **Phase 3**: Business Logic Extraction (21/35 started)
 - [ ] **Phase 4**: Complex Refactoring (0/25 complete)
 
-**Total**: 48/115 components migrated (41.7%)
+**Total**: 51/115 components migrated (44.3%)
 
 **Status Notes**:
 
 - Mobile components: 11/11 migrated ✅ Complete!
 - Navigation components: TabNav ✅, TabbedLayout ✅ Complete!
 - Dashboard components: ActivityItem ✅, QuickLink ✅, PendingActionCard ✅, DashboardStatCard ✅ Complete!
-- Auction components: LiveCountdown ✅, LiveBidHistory ✅ Migrated!
+- Auction components: LiveCountdown ✅, LiveBidHistory ✅, AuctionDescription ✅, AuctionGallery ✅, AuctionSellerInfo ✅ Migrated!
 - Common components: NotImplemented ✅, NotImplementedPage ✅, StatsCard ✅, StatsCardGrid ✅ Migrated!
 - Category components: CategoryStats ✅ Migrated!
 - Shop components: ShopStats ✅, ShopPolicies ✅, ShopAbout ✅, ShopTabs ✅, ShopHeader ✅ Migrated!
@@ -937,6 +937,19 @@ export type { ValuePropositionProps } from "@letitrip/react-library";
 - [x] SalesChart ✅ (Chart component with recharts)
 - [x] AnalyticsOverview ✅ (Stats dashboard)
 - [x] TopProducts ✅ (Bar chart + table)
+
+---
+
+### 3.6 Auction Components
+
+**Files**:
+
+- [x] AuctionDescription (alias to ProductDescription) ✅
+- [x] AuctionGallery (alias to ProductGallery) ✅
+- [x] AuctionSellerInfo (seller info card with Link injection) ✅
+- [ ] AuctionInfo (bidding UI with callbacks)
+- [ ] AutoBidSetup (auto-bid configuration)
+- [ ] SimilarAuctions (similar auctions grid)
 
 **SalesChart.tsx** - Sales revenue line chart
 
