@@ -82,3 +82,9 @@ export * from "./analytics";
 
 // Events Components (Phase 3 Migration)
 export * from "./events";
+
+// Cart Components (Phase 3 Migration)
+export * from "./cart";
+
+// Checkout Components (Phase 3 Migration)
+export * from "./checkout";
