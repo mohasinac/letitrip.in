@@ -15,3 +15,6 @@ export type { SellerProductsProps } from "./SellerProducts";
 
 export { SimilarProducts } from "./SimilarProducts";
 export type { SimilarProductsProps } from "./SimilarProducts";
+
+export { ProductVariants } from "./ProductVariants";
+export type { ProductVariantsProps } from "./ProductVariants";

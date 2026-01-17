@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { productsService } from "@/services/products.service";
+import { ProductVariants as LibraryProductVariants } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 
 interface ProductVariantsProps {
@@ -22,29 +23,21 @@ export function ProductVariants({
 }: ProductVariantsProps) {
   const [products, setProducts] = useState<ProductCardFE[]>([]);
   const [loading, setLoading] = useState(true);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  useEffect(() => {
-    loadVariants();
-  }, [productId, categoryId]);
 
   const loadVariants = async () => {
     try {
       setLoading(true);
-      // Fetch products from EXACT same category only
       const response = await productsService.list({
         categoryId,
         status: "active" as any,
         limit: 20,
       });
 
-      // Filter out current product and ensure exact category match
       const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId,
+        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId
       );
 
-      setProducts(filtered.slice(0, 12)); // Max 12 variants
+      setProducts(filtered.slice(0, 12));
     } catch (error) {
       logError(error as Error, {
         component: "ProductVariants.loadVariants",
@@ -55,128 +48,20 @@ export function ProductVariants({
     }
   };
 
-  const handleScroll = (direction: "left" | "right") => {
-    const container = document.getElementById("product-variants-scroll");
-    if (!container) return;
-
-    const scrollAmount = container.offsetWidth * 0.8;
-    const newPosition =
-      direction === "left"
-        ? container.scrollLeft - scrollAmount
-        : container.scrollLeft + scrollAmount;
-
-    container.scrollTo({
-      left: newPosition,
-      behavior: "smooth",
-    });
-  };
-
-  const updateScrollButtons = () => {
-    const container = document.getElementById("product-variants-scroll");
-    if (!container) return;
-
-    setCanScrollLeft(container.scrollLeft > 0);
-    setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
-    );
-  };
-
-  useEffect(() => {
-    const container = document.getElementById("product-variants-scroll");
-    if (!container) return;
-
-    updateScrollButtons();
-    container.addEventListener("scroll", updateScrollButtons);
-    globalThis.addEventListener("resize", updateScrollButtons);
-
-    return () => {
-      container.removeEventListener("scroll", updateScrollButtons);
-      globalThis.removeEventListener("resize", updateScrollButtons);
-    };
-  }, [products]);
-
-  if (loading) {
-    return (
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Other options in {categoryName}
-        </h3>
-        <div className="flex gap-3 overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-40 h-56 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!products || products.length === 0) {
-    return null;
-  }
-
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Other options in {categoryName}
-      </h3>
-
-      <div className="relative group">
-        {canScrollLeft && (
-          <button
-            onClick={() => handleScroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-        )}
-
-        <div
-          id="product-variants-scroll"
-          className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {products.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-40">
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                originalPrice={product.originalPrice ?? undefined}
-                image={product.images?.[0] || ""}
-                rating={product.rating}
-                reviewCount={product.reviewCount}
-                shopName={product.shopId}
-                shopSlug={product.shopId}
-                inStock={product.stockCount > 0}
-                featured={product.featured}
-                condition={product.condition}
-                showShopName={false}
-              />
-            </div>
-          ))}
-        </div>
-
-        {canScrollRight && (
-          <button
-            onClick={() => handleScroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-700 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 dark:hover:bg-gray-600"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-        )}
-      </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-    </div>
+    <LibraryProductVariants
+      productId={productId}
+      categoryId={categoryId}
+      currentShopId={currentShopId}
+      categoryName={categoryName}
+      products={products}
+      loading={loading}
+      onLoadProducts={loadVariants}
+      ProductCardComponent={ProductCard}
+      icons={{
+        chevronLeft: <ChevronLeft className="w-5 h-5" />,
+        chevronRight: <ChevronRight className="w-5 h-5" />,
+      }}
+    />
   );
 }
