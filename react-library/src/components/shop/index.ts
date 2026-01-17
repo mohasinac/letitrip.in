@@ -6,3 +6,6 @@ export type { ShopPoliciesData, ShopPoliciesProps } from "./ShopPolicies";
 
 export { ShopAbout } from "./ShopAbout";
 export type { ShopAboutData, ShopAboutProps } from "./ShopAbout";
+
+export { ShopTabs } from "./ShopTabs";
+export type { ShopTab, ShopTabType, ShopTabsProps } from "./ShopTabs";
