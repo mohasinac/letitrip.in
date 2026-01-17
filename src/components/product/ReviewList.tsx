@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Star, ThumbsUp, Check } from "lucide-react";
 import { logError } from "@/lib/firebase-error-logger";
-import { OptimizedImage } from "@letitrip/react-library";
 import { reviewsService } from "@/services/reviews.service";
-import { EmptyState } from "@letitrip/react-library";
 import {
+  EmptyState,
   ReviewList as LibraryReviewList,
+  OptimizedImage,
   Review,
   ReviewStats,
 } from "@letitrip/react-library";
 import { format } from "date-fns";
+import { Check, Star, ThumbsUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ReviewListProps {
   productId: string;
@@ -22,7 +22,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"recent" | "helpful" | "rating">(
-    "recent"
+    "recent",
   );
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
@@ -40,8 +40,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
           sortBy === "helpful"
             ? "helpfulCount"
             : sortBy === "rating"
-              ? "rating"
-              : "createdAt",
+            ? "rating"
+            : "createdAt",
         sortOrder: "desc",
         limit: 20,
       });
@@ -59,7 +59,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
               acc[item.rating] = item.count;
               return acc;
             },
-            {}
+            {},
           ),
         });
       }
@@ -82,8 +82,8 @@ export default function ReviewList({ productId }: ReviewListProps) {
       // Update local state
       setReviews(
         reviews.map((r) =>
-          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r
-        )
+          r.id === reviewId ? { ...r, helpful_count: result.helpfulCount } : r,
+        ),
       );
     } catch (error: any) {
       logError(error as Error, {

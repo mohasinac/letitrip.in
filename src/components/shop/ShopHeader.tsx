@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { Star, MapPin, Heart, Share2 } from "lucide-react";
-import { OptimizedImage } from "@letitrip/react-library";
-import { DateDisplay } from "@letitrip/react-library";
-import { ShopHeader as LibraryShopHeader } from "@letitrip/react-library";
-import type { ShopFE } from "@/types/frontend/shop.types";
-import { shopsService } from "@/services/shops.service";
 import { logError } from "@/lib/firebase-error-logger";
+import { shopsService } from "@/services/shops.service";
+import type { ShopFE } from "@/types/frontend/shop.types";
+import {
+  DateDisplay,
+  ShopHeader as LibraryShopHeader,
+  OptimizedImage,
+} from "@letitrip/react-library";
+import { Heart, MapPin, Share2, Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface ShopHeaderProps {
   shop: ShopFE;
@@ -84,7 +86,13 @@ export function ShopHeader({ shop }: ShopHeaderProps) {
       icons={{
         star: <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />,
         mapPin: <MapPin className="w-4 h-4" />,
-        heart: <Heart className={`w-4 h-4 inline mr-2 ${isFollowing ? "fill-current" : ""}`} />,
+        heart: (
+          <Heart
+            className={`w-4 h-4 inline mr-2 ${
+              isFollowing ? "fill-current" : ""
+            }`}
+          />
+        ),
         share: <Share2 className="w-5 h-5" />,
       }}
     />

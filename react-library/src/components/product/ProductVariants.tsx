@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ComponentType } from "react";
+import React, { ComponentType, useEffect, useRef, useState } from "react";
 
 export interface ProductVariantsProps {
   productId: string;
@@ -60,7 +60,7 @@ export function ProductVariants({
 
     setCanScrollLeft(container.scrollLeft > 0);
     setCanScrollRight(
-      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10
+      container.scrollLeft < container.scrollWidth - container.offsetWidth - 10,
     );
   };
 
@@ -80,14 +80,34 @@ export function ProductVariants({
 
   // Default SVG icons
   const defaultChevronLeft = (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   );
 
   const defaultChevronRight = (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+      />
     </svg>
   );
 
@@ -151,10 +171,7 @@ export function ProductVariants({
           }}
         >
           {displayProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex-shrink-0 w-40"
-            >
+            <div key={product.id} className="flex-shrink-0 w-40">
               <ProductCardComponent product={product} />
             </div>
           ))}
