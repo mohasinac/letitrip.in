@@ -8,7 +8,7 @@ export { ReviewList } from "./ReviewList";
 export type { Review, ReviewListProps, ReviewStats } from "./ReviewList";
 
 export { ReviewForm } from "./ReviewForm";
-export type { ReviewFormProps, MediaFile } from "./ReviewForm";
+export type { MediaFile, ReviewFormProps } from "./ReviewForm";
 
 export { SellerProducts } from "./SellerProducts";
 export type { SellerProductsProps } from "./SellerProducts";

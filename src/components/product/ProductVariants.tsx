@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
-import { ProductVariants as LibraryProductVariants } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { ProductVariants as LibraryProductVariants } from "@letitrip/react-library";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface ProductVariantsProps {
   productId: string;
@@ -34,7 +34,7 @@ export function ProductVariants({
       });
 
       const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId
+        (p: ProductCardFE) => p.id !== productId && p.categoryId === categoryId,
       );
 
       setProducts(filtered.slice(0, 12));

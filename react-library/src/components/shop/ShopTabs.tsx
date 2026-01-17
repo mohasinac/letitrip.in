@@ -1,4 +1,4 @@
-import React, { ComponentType, ReactNode } from "react";
+import { ReactNode } from "react";
 
 export type ShopTabType =
   | "products"

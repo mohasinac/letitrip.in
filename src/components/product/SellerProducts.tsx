@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight, Store } from "lucide-react";
-import { toast } from "sonner";
-import { logError } from "@/lib/error-logger";
 import { ProductCard } from "@/components/cards/ProductCard";
+import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
-import { SellerProducts as LibrarySellerProducts } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { SellerProducts as LibrarySellerProducts } from "@letitrip/react-library";
+import { ChevronLeft, ChevronRight, Store } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface SellerProductsProps {
   productId: string;
@@ -36,7 +36,7 @@ export function SellerProducts({
       });
 
       const filtered = (response.data || []).filter(
-        (p: ProductCardFE) => p.id !== productId
+        (p: ProductCardFE) => p.id !== productId,
       );
 
       const sorted = filtered.sort((a, b) => {

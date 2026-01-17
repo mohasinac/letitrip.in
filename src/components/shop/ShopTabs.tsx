@@ -7,8 +7,12 @@
  * Reusable tab navigation for shop pages with mobile responsive horizontal scroll.
  */
 
+import {
+  ShopTabs as LibraryShopTabs,
+  ShopTab,
+  ShopTabType,
+} from "@letitrip/react-library";
 import { Gavel, MessageCircle, Package, Star, Store } from "lucide-react";
-import { ShopTabs as LibraryShopTabs, ShopTab, ShopTabType } from "@letitrip/react-library";
 
 const DEFAULT_TABS: ShopTab[] = [
   {
@@ -48,9 +52,6 @@ interface ShopTabsProps {
   className?: string;
 }
 
-export function ShopTabs({
-  tabs = DEFAULT_TABS,
-  ...props
-}: ShopTabsProps) {
+export function ShopTabs({ tabs = DEFAULT_TABS, ...props }: ShopTabsProps) {
   return <LibraryShopTabs tabs={tabs} {...props} />;
 }

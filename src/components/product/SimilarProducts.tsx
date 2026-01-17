@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Grid, X, Package } from "lucide-react";
-import { logError } from "@/lib/error-logger";
-import { ProductCard } from "@/components/cards/ProductCard";
 import { CardGrid } from "@/components/cards/CardGrid";
+import { ProductCard } from "@/components/cards/ProductCard";
+import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
-import { SimilarProducts as LibrarySimilarProducts } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { SimilarProducts as LibrarySimilarProducts } from "@letitrip/react-library";
+import { ChevronLeft, ChevronRight, Grid, Package, X } from "lucide-react";
+import { useState } from "react";
 
 interface SimilarProductsProps {
   productId: string;
@@ -53,8 +53,8 @@ export function SimilarProducts({
         new Map(
           allProducts
             .filter((p: ProductCardFE) => p.id !== productId)
-            .map((p) => [p.id, p])
-        ).values()
+            .map((p) => [p.id, p]),
+        ).values(),
       );
 
       const diversified = diversifyByShop(uniqueProducts, currentShopId);
@@ -70,7 +70,7 @@ export function SimilarProducts({
 
   const diversifyByShop = (
     products: ProductCardFE[],
-    currentShopId: string
+    currentShopId: string,
   ) => {
     const otherShops: ProductCardFE[] = [];
     const sameShop: ProductCardFE[] = [];

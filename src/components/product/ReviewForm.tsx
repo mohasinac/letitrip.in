@@ -8,8 +8,8 @@ import {
   FormInput,
   FormLabel,
   FormTextarea,
-  useMediaUpload,
   ReviewForm as LibraryReviewForm,
+  useMediaUpload,
 } from "@letitrip/react-library";
 import { Image as ImageIcon, Star } from "lucide-react";
 import { useState } from "react";
@@ -105,7 +105,7 @@ export default function ReviewForm({
         await uploadMultipleMedia(
           files.map((f) => f.file),
           "review",
-          productId
+          productId,
         );
         toast.success("Images uploaded successfully");
       } catch (err) {
