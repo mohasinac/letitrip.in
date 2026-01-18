@@ -33,7 +33,7 @@
  * ```
  */
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -77,7 +77,15 @@ export function FormRichText({
   minHeight = "200px",
   className,
 }: FormRichTextProps) {
+  // Client-side only rendering to avoid SSR issues with rich text editors
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // If children provided, render custom editor
+
   // Otherwise, render basic textarea as fallback
   const renderEditor = () => {
     if (children) {
@@ -88,7 +96,7 @@ export function FormRichText({
             !!error
               ? "border-red-300 dark:border-red-700"
               : "border-gray-300 dark:border-gray-600",
-            disabled && "opacity-60 cursor-not-allowed"
+            disabled && "opacity-60 cursor-not-allowed",
           )}
         >
           {children}
@@ -112,7 +120,7 @@ export function FormRichText({
             ? "border-red-300 dark:border-red-700"
             : "border-gray-300 dark:border-gray-600",
           disabled &&
-            "bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-60"
+            "bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-60",
         )}
         style={{ minHeight }}
         aria-label={label}
@@ -133,7 +141,15 @@ export function FormRichText({
         </label>
       )}
 
-      {renderEditor()}
+      {!isMounted ? (
+        // Show loading skeleton during SSR/hydration
+        <div
+          className="rounded-lg border border-gray-300 dark:border-gray-600 animate-pulse bg-gray-100 dark:bg-gray-800"
+          style={{ minHeight }}
+        />
+      ) : (
+        renderEditor()
+      )}
 
       {helperText && !error && (
         <p

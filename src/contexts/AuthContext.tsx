@@ -26,6 +26,8 @@
  * ```
  */
 
+import { AuthActionsContext } from "@/contexts/auth/AuthActionsContext";
+import { AuthStateContext } from "@/contexts/auth/AuthStateContext";
 import { useAuthActions, useAuthState } from "@letitrip/react-library";
 
 // Re-export provider for backward compatibility
@@ -52,8 +54,8 @@ export type { AuthState } from "@/contexts/auth/AuthStateContext";
  * ```
  */
 export function useAuth() {
-  const state = useAuthState();
-  const actions = useAuthActions();
+  const state = useAuthState(AuthStateContext);
+  const actions = useAuthActions(AuthActionsContext);
 
   return {
     ...state,
@@ -78,7 +80,7 @@ interface AuthContextType {
   login: (
     email: string,
     password: string,
-    rememberMe?: boolean
+    rememberMe?: boolean,
   ) => Promise<AuthResponse>;
   loginWithGoogle: (
     idToken: string,
@@ -86,7 +88,7 @@ interface AuthContextType {
       displayName?: string;
       email?: string;
       photoURL?: string;
-    }
+    },
   ) => Promise<GoogleAuthResponse>;
   register: (data: {
     email: string;
@@ -105,5 +107,5 @@ interface AuthContextType {
  * @deprecated Use AuthStateContext and AuthActionsContext instead
  */
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
+  undefined,
 );

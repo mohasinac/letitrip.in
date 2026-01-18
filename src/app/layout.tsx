@@ -15,6 +15,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { GlobalSearchProvider } from "@/contexts/GlobalSearchContext";
 import { ThemeProvider, ThemeScript } from "@/contexts/ThemeContext";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
+import "@/lib/polyfills";
 import { defaultMetadata } from "@/lib/seo/metadata";
 import {
   generateJSONLD,
