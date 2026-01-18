@@ -27,7 +27,6 @@ import type {
   BulkActionResponse,
 } from "@/types/shared/common.types";
 import { logServiceError } from "@/lib/error-logger";
-import { getUserFriendlyError } from "@letitrip/react-library";
 
 class AuctionsService {
   /**

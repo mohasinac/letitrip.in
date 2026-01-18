@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { NotImplementedPage } from "@/components/common/NotImplemented";
+import { NotImplementedPage } from "@letitrip/react-library";
 import { Wrench } from "lucide-react";
 
 export const metadata: Metadata = {

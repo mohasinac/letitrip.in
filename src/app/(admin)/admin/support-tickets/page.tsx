@@ -2,7 +2,7 @@
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import { UnifiedFilterSidebar } from "@letitrip/react-library";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { DateDisplay } from "@letitrip/react-library";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";

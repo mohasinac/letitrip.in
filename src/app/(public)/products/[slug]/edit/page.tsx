@@ -1,7 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { ErrorBoundary } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";

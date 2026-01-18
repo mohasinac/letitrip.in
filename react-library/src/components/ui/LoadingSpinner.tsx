@@ -59,10 +59,14 @@ export function LoadingSpinner({
   );
 
   const content = (
-    <div className={`flex flex-col items-center justify-center gap-3 ${className}`}>
+    <div
+      className={`flex flex-col items-center justify-center gap-3 ${className}`}
+    >
       {spinner}
       {message && (
-        <p className={`text-sm text-gray-600 dark:text-gray-400 ${messageClassName}`}>
+        <p
+          className={`text-sm text-gray-600 dark:text-gray-400 ${messageClassName}`}
+        >
           {message}
         </p>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";

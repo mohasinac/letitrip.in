@@ -1,8 +1,8 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { ErrorBoundary } from "@letitrip/react-library";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { logComponentError } from "@/lib/error-logger";
 import { returnsService } from "@/services/returns.service";

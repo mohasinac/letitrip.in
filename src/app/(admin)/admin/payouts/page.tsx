@@ -8,7 +8,7 @@ import {
   BulkActionBar,
   TableCheckbox,
 } from "@letitrip/react-library";
-import { StatsCardGrid, StatsCard } from "@/components/common/StatsCard";
+import { StatsCardGrid, StatsCard } from "@letitrip/react-library";
 import { SimplePagination } from '@letitrip/react-library';
 import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";

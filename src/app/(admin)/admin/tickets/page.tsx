@@ -1,7 +1,7 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { supportService } from "@/services/support.service";
 import {
   DateDisplay,
