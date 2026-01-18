@@ -1,25 +1,23 @@
 "use client";
 
-import {
-  ProductCard as LibraryProductCard,
-  type ProductCardProps as LibraryProductCardProps,
-} from "@letitrip/react-library";
-import {
-  FavoriteButton,
-  OptimizedImage,
-  StatusBadge,
-} from "@letitrip/react-library";
 import { CompareButton } from "@/components/products/CompareButton";
 import { formatDiscount } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
+import {
+  FavoriteButton,
+  ProductCard as LibraryProductCard,
+  OptimizedImage,
+  StatusBadge,
+  type ProductCardProps as LibraryProductCardProps,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 // Re-export types for convenience
 export type {
-  ProductCardVariant,
   ProductCardProps,
+  ProductCardVariant,
 } from "@letitrip/react-library";
 
 // Omit injected props from library component

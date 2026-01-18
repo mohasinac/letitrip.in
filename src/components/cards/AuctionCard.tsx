@@ -1,21 +1,22 @@
 "use client";
 
-import {
-  AuctionCard as LibraryAuctionCard,
-  type AuctionCardProps as LibraryAuctionCardProps,
-} from "@letitrip/react-library";
-import { FavoriteButton, OptimizedImage } from "@letitrip/react-library";
 import { formatTimeRemaining } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
-import { getTimeRemaining } from "@/lib/validation/auction";
 import { cn } from "@/lib/utils";
+import { getTimeRemaining } from "@/lib/validation/auction";
+import {
+  FavoriteButton,
+  AuctionCard as LibraryAuctionCard,
+  OptimizedImage,
+  type AuctionCardProps as LibraryAuctionCardProps,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import React from "react";
 
 // Re-export types for convenience
 export type {
-  AuctionCardVariant,
   AuctionCardProps,
+  AuctionCardVariant,
 } from "@letitrip/react-library";
 
 // Omit injected props from library component

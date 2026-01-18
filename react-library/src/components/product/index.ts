@@ -18,3 +18,6 @@ export type { SimilarProductsProps } from "./SimilarProducts";
 
 export { ProductVariants } from "./ProductVariants";
 export type { ProductVariantsProps } from "./ProductVariants";
+
+export { ProductInfo } from "./ProductInfo";
+export type { ProductInfoProps } from "./ProductInfo";
