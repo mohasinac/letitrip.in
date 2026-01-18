@@ -12,9 +12,9 @@
 - [x] **Phase 1**: Quick Wins - Fully Migratable Components (9/35 complete) ✅
 - [x] **Phase 2**: Pure UI Components with Injection (25/20 complete) ✅
 - [x] **Phase 3**: Business Logic Extraction (35/35 complete) ✅
-- [ ] **Phase 4**: Complex Refactoring (8/25 complete)
+- [ ] **Phase 4**: Complex Refactoring (9/25 complete)
 
-**Total**: 99/115 components migrated (86.1%)
+**Total**: 100/115 components migrated (87.0%)
 
 **Status Notes**:
 
@@ -39,6 +39,7 @@
 - Wizard components: ContactInfoStep ✅, BusinessAddressStep ✅, ShopSelectionStep ✅, CategorySelectionStep ✅ Migrated!
 - Search components: SearchFilters ✅, SearchResults ✅ Migrated!
 - Category display: CategoryHeader ✅, SubcategoryGrid ✅ Migrated!
+- Media components: MediaPreviewCard ✅ Migrated!
 - Skeleton, FAQ, Legal, UI components: Already in library
 - BaseCard: ✅ Migrated with injection pattern (Phase 2.2)
 - MobileAdminSidebar: ✅ Migrated with injection pattern (Phase 2.3)
