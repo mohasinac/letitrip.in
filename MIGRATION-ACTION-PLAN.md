@@ -106,11 +106,13 @@ Migrate complete modules (e.g., all auction-related code).
 6. **Demo & Remaining Pages** - Priority 6 ⭐⭐
 
 **Real-Time Updates**: After completing each page/component:
+
 - Update `MIGRATION-TRACKER.md` immediately
 - Commit with proper message
 - Test before moving to next item
 
 **Constants & Enums**: Create in `src/constants/`
+
 - Routes, API endpoints, status values, validation rules, config
 
 ---
@@ -148,6 +150,7 @@ code react-library/src/index.ts
 ```
 
 #### Task 1.3: Start Dev Server 🔥 ⏰ 1 minute
+
 ```powershell
 # Start in background terminal - keeps running while you work
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'd:\proj\letitrip.in'; npm run dev"
@@ -695,12 +698,14 @@ BREAKING CHANGE: Complete codebase migration"
 9. **Evening**: Document any issues/learnings
 
 ### Real-Time Tracking
+
 - Update tracker after EACH completion, not at end of day
 - Mark items as complete immediately
 - Update completion percentages
 - Document any blockers or issues
 
 ### Dev Server Management
+
 ```powershell
 # Start dev server in background (one time at start of day)
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'd:\proj\letitrip.in'; npm run dev"
@@ -710,7 +715,9 @@ npm run dev
 ```
 
 ### Constants Creation
+
 For each page/component, check for:
+
 - Hardcoded paths → Extract to `routes.ts`
 - Hardcoded API URLs → Extract to `api-endpoints.ts`
 - Hardcoded status strings → Extract to `status.ts` as enums

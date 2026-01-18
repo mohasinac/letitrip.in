@@ -58,6 +58,7 @@ npm run dev
 This project is currently undergoing migration to use `@letitrip/react-library` for all components.
 
 **Migration Documents**:
+
 - [`MIGRATION-STATUS.md`](./MIGRATION-STATUS.md) - Current status & quick start
 - [`MIGRATION-TRACKER.md`](./MIGRATION-TRACKER.md) - Complete tracking
 - [`MIGRATION-QUICK-REFERENCE.md`](./MIGRATION-QUICK-REFERENCE.md) - Patterns & examples
@@ -107,6 +108,7 @@ src/
 ### Constants & Enums
 
 All application constants are centralized in `src/constants/` for:
+
 - **Type Safety**: Using TypeScript enums and `as const`
 - **Maintainability**: Single source of truth for values
 - **Consistency**: Avoid magic numbers and hardcoded strings
