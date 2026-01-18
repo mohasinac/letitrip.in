@@ -2,9 +2,9 @@
 
 import { formatPrice } from "@/lib/price.utils";
 import {
+  FormLabel,
   AutoBidSetup as LibAutoBidSetup,
   type AutoBidSetupProps as LibAutoBidSetupProps,
-  FormLabel,
 } from "@letitrip/react-library";
 
 export type AutoBidSetupProps = Omit<
