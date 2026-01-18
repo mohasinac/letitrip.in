@@ -237,7 +237,6 @@ export const ShopForm: React.FC<ShopFormProps> = ({
               Shop Slug
             </FormLabel>
             <SlugInput
-              id="shop-slug"
               value={slug}
               onChange={setSlug}
               sourceText={name}
@@ -266,11 +265,10 @@ export const ShopForm: React.FC<ShopFormProps> = ({
               Shop Description
             </FormLabel>
             <RichTextEditor
-              id="shop-description"
               value={description}
               onChange={setDescription}
               placeholder="Describe your shop..."
-              minHeight={200}
+              minHeight="200px"
             />
             {errors.description && (
               <p className="text-sm text-red-600 mt-1">{errors.description}</p>

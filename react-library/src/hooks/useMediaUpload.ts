@@ -64,7 +64,7 @@ export interface MediaUploadReturn {
 function validateFile(
   file: File,
   maxSize?: number,
-  allowedTypes?: string[]
+  allowedTypes?: string[],
 ): { isValid: boolean; error?: string } {
   if (!file) {
     return {
@@ -136,7 +136,7 @@ export function useMediaUpload(options: MediaUploadOptions): MediaUploadReturn {
   // Validate required options
   if (!options.uploadService) {
     throw new Error(
-      "uploadService is required. Provide an UploadService implementation (ApiUploadService, StorageUploadService, or custom)"
+      "uploadService is required. Provide an UploadService implementation (ApiUploadService, StorageUploadService, or custom)",
     );
   }
 
@@ -166,7 +166,7 @@ export function useMediaUpload(options: MediaUploadOptions): MediaUploadReturn {
     uploadService,
     maxSize,
     allowedTypes,
-    maxRetries = 3,
+    maxRetries: _maxRetries = 3,
     onProgress,
     onSuccess,
     onError,
@@ -287,7 +287,7 @@ export function useMediaUpload(options: MediaUploadOptions): MediaUploadReturn {
       context,
       contextId,
       pathPattern,
-    ]
+    ],
   );
 
   /**

@@ -24,7 +24,7 @@ export function ResponsiveTable({
           {children}
         </div>
       </div>
-      <style jsx global>{`
+      <style>{`
         .sticky-first-col table thead tr th:first-child,
         .sticky-first-col table tbody tr td:first-child {
           position: sticky;

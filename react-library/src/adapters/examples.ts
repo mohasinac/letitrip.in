@@ -129,7 +129,7 @@ export class MockUploadService implements UploadService {
       path?: string;
       metadata?: Record<string, any>;
       onProgress?: (progress: number) => void;
-    }
+    },
   ): Promise<string> {
     // Simulate progress
     if (options?.onProgress) {
@@ -150,7 +150,7 @@ export class MockUploadService implements UploadService {
     return `https://mock-storage.example.com/${path}`;
   }
 
-  async delete(url: string): Promise<void> {
+  async delete(_url: string): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 }
@@ -173,7 +173,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async upload(
     file: File,
     path: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): Promise<StorageUploadResult> {
     const { data, error } = await this.storage
       .from(this.bucket)
@@ -198,7 +198,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     file: File,
     path: string,
     onProgress: (progress: number) => void,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): Promise<StorageUploadResult> {
     // Supabase doesn't support progress out of the box
     // This is a simplified version
@@ -218,7 +218,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         const { error } = await this.storage.from(this.bucket).remove([path]);
         if (error) throw error;
       },
-      updateMetadata: async (metadata: Record<string, any>) => {
+      updateMetadata: async (_metadata: Record<string, any>) => {
         // Supabase doesn't support metadata updates directly
         console.warn("Supabase metadata updates not supported");
       },
