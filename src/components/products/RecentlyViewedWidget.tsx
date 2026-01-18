@@ -2,7 +2,7 @@
 
 import { OptimizedImage } from "@letitrip/react-library"
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";

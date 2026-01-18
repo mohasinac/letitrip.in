@@ -1,6 +1,6 @@
 "use client";
 
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 import {
   FormLabel,
   AutoBidSetup as LibAutoBidSetup,

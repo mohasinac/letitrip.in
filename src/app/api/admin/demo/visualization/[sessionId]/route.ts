@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { toDateInputValue, getTodayDateInputValue } from "@/lib/date-utils";
+import { toDateInputValue, getTodayDateInputValue } from "@letitrip/react-library";
 import { COLLECTIONS } from "@/constants/database";
 
 export async function GET(

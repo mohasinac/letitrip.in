@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { safeToISOString, toISOStringOrDefault } from "@/lib/date-utils";
+import { safeToISOString, toISOStringOrDefault } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 
 // Note: This is a server component, we can fetch data directly

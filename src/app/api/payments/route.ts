@@ -4,7 +4,7 @@ import {
   getUserFromRequest,
   requireRole,
 } from "@/app/api/middleware/rbac-auth";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

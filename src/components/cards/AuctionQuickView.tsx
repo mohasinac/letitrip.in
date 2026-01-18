@@ -8,8 +8,8 @@
 "use client";
 
 import { FormLabel } from "@letitrip/react-library";
-import { formatTimeRemaining } from "@/lib/formatters";
-import { formatPrice } from "@/lib/price.utils";
+import { formatTimeRemaining } from "@letitrip/react-library";
+import { formatPrice } from "@letitrip/react-library";
 import { getNextMinimumBid, getTimeRemaining } from "@/lib/validation/auction";
 import {
   AlertCircle,

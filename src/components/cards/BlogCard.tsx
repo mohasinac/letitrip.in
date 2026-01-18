@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@/lib/formatters";
+import { formatDate } from "@letitrip/react-library";
 import {
   BlogCard as LibraryBlogCard,
   BlogCardProps as LibraryBlogCardProps,

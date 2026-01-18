@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@/lib/formatters";
+import { formatDate } from "@letitrip/react-library";
 import {
   ReviewCard as LibraryReviewCard,
   ReviewCardProps as LibraryReviewCardProps,

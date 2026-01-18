@@ -1,10 +1,10 @@
 "use client";
 
-import { formatTimeRemaining } from "@/lib/formatters";
-import { formatPrice } from "@/lib/price.utils";
-import { cn } from "@/lib/utils";
+import { formatTimeRemaining } from "@letitrip/react-library";
+import { formatPrice } from "@letitrip/react-library";
 import { getTimeRemaining } from "@/lib/validation/auction";
 import {
+  cn,
   FavoriteButton,
   AuctionCard as LibraryAuctionCard,
   OptimizedImage,

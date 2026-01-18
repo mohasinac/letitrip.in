@@ -15,13 +15,11 @@
 "use client";
 
 import {
-  usePasswordFieldState,
-  UsePasswordFieldStateReturn,
-} from "@letitrip/react-library";
-import {
   useFormState,
   UseFormStateReturn,
   useLoadingState,
+  usePasswordFieldState,
+  UsePasswordFieldStateReturn,
 } from "@letitrip/react-library";
 import React, { createContext, useCallback, useContext } from "react";
 import { useAuth } from "./AuthContext";
@@ -101,7 +99,7 @@ export function LoginRegisterProvider({
         await login(loginForm.formData.email, loginForm.formData.password);
       });
     },
-    [loginForm, executeLogin, login]
+    [loginForm, executeLogin, login],
   );
 
   const resetLoginForm = useCallback(() => {
@@ -133,7 +131,7 @@ export function LoginRegisterProvider({
       if (data.password && data.confirmPassword) {
         const passwordMatch = loginPassword.validatePasswordMatch(
           data.password,
-          data.confirmPassword
+          data.confirmPassword,
         );
         if (passwordMatch) {
           errors.confirmPassword = passwordMatch;
@@ -142,7 +140,7 @@ export function LoginRegisterProvider({
 
       if (data.password) {
         const strengthCheck = loginPassword.validatePasswordStrength(
-          data.password
+          data.password,
         );
         if (!strengthCheck.valid) {
           errors.password = strengthCheck.errors[0];
@@ -177,7 +175,7 @@ export function LoginRegisterProvider({
         });
       });
     },
-    [registerForm, executeRegister, register, loginPassword]
+    [registerForm, executeRegister, register, loginPassword],
   );
 
   const resetRegisterForm = useCallback(() => {
@@ -212,7 +210,7 @@ export function useLoginRegister() {
   const context = useContext(LoginRegisterContext);
   if (!context) {
     throw new Error(
-      "useLoginRegister must be used within LoginRegisterProvider"
+      "useLoginRegister must be used within LoginRegisterProvider",
     );
   }
   return context;

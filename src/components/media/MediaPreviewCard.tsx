@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDuration, formatFileSize } from "@/lib/formatters";
+import { formatDuration, formatFileSize } from "@letitrip/react-library";
 import type { MediaPreviewCardProps as LibraryMediaPreviewCardProps } from "@letitrip/react-library";
 import { MediaPreviewCard as LibraryMediaPreviewCard } from "@letitrip/react-library";
 import { AlertCircle, CheckCircle2, Edit2, RotateCw, X } from "lucide-react";

@@ -6,9 +6,9 @@ import { Price } from "@letitrip/react-library";
 import { FormInput } from "@letitrip/react-library";
 import { FormSelect } from "@letitrip/react-library";
 import { useLoadingState } from "@letitrip/react-library";
-import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
+import { getTodayDateInputValue, toDateInputValue } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 import { analyticsService } from "@/services/analytics.service";
 import {
   Calendar,

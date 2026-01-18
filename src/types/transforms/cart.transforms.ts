@@ -4,7 +4,7 @@
  * Functions to convert between Backend (BE) and Frontend (FE) cart types.
  */
 
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 import { Timestamp } from "firebase/firestore";
 import { AddToCartRequestBE, CartBE, CartItemBE } from "../backend/cart.types";
 import {

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormCurrencyInput } from "@letitrip/react-library";
-import { Currency } from "@/lib/price.utils";
+import { PriceCurrency as Currency } from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
