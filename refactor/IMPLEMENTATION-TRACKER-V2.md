@@ -12,14 +12,14 @@
 - [x] **Phase 1**: Quick Wins - Fully Migratable Components (9/35 complete) ✅
 - [x] **Phase 2**: Pure UI Components with Injection (25/20 complete) ✅
 - [x] **Phase 3**: Business Logic Extraction (35/35 complete) ✅
-- [ ] **Phase 4**: Complex Refactoring (10/25 complete)
+- [ ] **Phase 4**: Complex Refactoring (12/25 complete)
 
-**Total**: 101/115 components migrated (87.8%)
+**Total**: 103/115 components migrated (89.6%)
 
 **Status Notes**:
 
 - Mobile components: 11/11 migrated ✅ Complete!
-- Navigation components: TabNav ✅, TabbedLayout ✅ Complete!
+- Navigation components: TabNav ✅, TabbedLayout ✅, SubNavbar ✅, MobileNavRow ✅ Complete!
 - Dashboard components: ActivityItem ✅, QuickLink ✅, PendingActionCard ✅, DashboardStatCard ✅ Complete!
 - Auction components: LiveCountdown ✅, LiveBidHistory ✅, AuctionDescription ✅, AuctionGallery ✅, AuctionSellerInfo ✅, SimilarAuctions ✅, AutoBidSetup ✅, AuctionCard ✅, AuctionInfo ✅ Migrated!
 - Common components: NotImplemented ✅, NotImplementedPage ✅, StatsCard ✅, StatsCardGrid ✅, ErrorBoundary ✅ Migrated!
