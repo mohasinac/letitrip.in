@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import {
   CategoryFeaturedSellers as LibCategoryFeaturedSellers,
   type CategoryFeaturedSellersProps as LibCategoryFeaturedSellersProps,
 } from "@letitrip/react-library";
+import Link from "next/link";
 
 export type CategoryFeaturedSellersProps = Omit<
   LibCategoryFeaturedSellersProps,
@@ -12,12 +12,7 @@ export type CategoryFeaturedSellersProps = Omit<
 >;
 
 export function CategoryFeaturedSellers(props: CategoryFeaturedSellersProps) {
-  return (
-    <LibCategoryFeaturedSellers
-      {...props}
-      LinkComponent={Link}
-    />
-  );
+  return <LibCategoryFeaturedSellers {...props} LinkComponent={Link} />;
 }
 
 export default CategoryFeaturedSellers;

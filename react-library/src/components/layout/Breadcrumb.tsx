@@ -1,5 +1,5 @@
-import React, { ComponentType, ReactNode, useMemo } from "react";
 import { ChevronRight, Home } from "lucide-react";
+import { ComponentType, ReactNode, useMemo } from "react";
 
 export interface BreadcrumbItem {
   label: string;
@@ -25,7 +25,7 @@ export interface BreadcrumbProps {
 const DEFAULT_ROUTE_LABELS: Record<string, string> = {
   // User routes
   "/user/favorites": "Favorites",
-  "/user/orders": "My Orders", 
+  "/user/orders": "My Orders",
   "/user/history": "Order History",
   "/user/messages": "Messages",
   "/user/settings": "Settings",

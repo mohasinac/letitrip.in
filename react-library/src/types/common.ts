@@ -45,6 +45,11 @@ export type Color =
 export type AuctionStatus = "active" | "ending" | "ended";
 
 /**
+ * Product status types
+ */
+export type ProductStatus = "draft" | "active" | "inactive" | "archived" | "pending" | "rejected";
+
+/**
  * RipLimit status types
  */
 export type RipLimitStatus = "default" | "blocked" | "available";

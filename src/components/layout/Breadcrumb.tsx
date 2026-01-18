@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { generateBreadcrumbSchema, generateJSONLD } from "@/lib/seo/schema";
 import {
   Breadcrumb as LibBreadcrumb,
   type BreadcrumbProps as LibBreadcrumbProps,
 } from "@letitrip/react-library";
-import { generateBreadcrumbSchema, generateJSONLD } from "@/lib/seo/schema";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export type BreadcrumbProps = Omit<
   LibBreadcrumbProps,
