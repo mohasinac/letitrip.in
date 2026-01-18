@@ -5,10 +5,10 @@ export { PollVoting } from "./PollVoting";
 export type { PollOption, PollVotingProps } from "./PollVoting";
 
 export { EventCard } from "./EventCard";
-export type { EventCardProps, EventCardData } from "./EventCard";
+export type { EventCardData, EventCardProps } from "./EventCard";
 
 export { EventBanner } from "./EventBanner";
-export type { EventBannerProps, EventBannerData } from "./EventBanner";
+export type { EventBannerData, EventBannerProps } from "./EventBanner";
 
 export { WinnersSection } from "./WinnersSection";
-export type { WinnersSectionProps, Winner } from "./WinnersSection";
+export type { Winner, WinnersSectionProps } from "./WinnersSection";
