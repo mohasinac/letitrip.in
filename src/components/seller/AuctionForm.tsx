@@ -1,23 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { AuctionForm } from "@letitrip-library/components";
-import { Card } from "@letitrip/react-library";
-import { FormField } from "@letitrip/react-library";
-import { FormInput } from "@letitrip/react-library";
-import { FormTextarea } from "@letitrip/react-library";
-import { FormSelect } from "@letitrip/react-library";
-import { FormLabel } from "@letitrip/react-library";
-import { SlugInput } from "@letitrip/react-library";
-import { RichTextEditor } from "@letitrip/react-library";
-import { DateTimePicker } from "@letitrip/react-library";
-import { FormCurrencyInput } from "@letitrip/react-library";
-import { FormActions } from "@letitrip/react-library";
+import { logError } from "@/lib/error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  AuctionForm,
+  Card,
+  DateTimePicker,
+  FormActions,
+  FormCurrencyInput,
+  FormField,
+  FormInput,
+  FormLabel,
+  FormSelect,
+  FormTextarea,
+  RichTextEditor,
+  SlugInput,
+} from "@letitrip/react-library";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-import { logError } from "@/lib/error-logger";
 
 interface AuctionFormWrapperProps {
   mode: "create" | "edit";
@@ -28,10 +30,10 @@ interface AuctionFormWrapperProps {
 
 /**
  * Next.js wrapper for AuctionForm component
- * 
+ *
  * Provides Next.js-specific implementations:
  * - Router navigation
- * - Service layer integration  
+ * - Service layer integration
  * - Toast notifications
  * - Component injection
  */
@@ -39,7 +41,7 @@ export default function AuctionFormWrapper({
   mode,
   initialData,
   shopId,
-  className = '',
+  className = "",
 }: AuctionFormWrapperProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);

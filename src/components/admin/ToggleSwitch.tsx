@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleSwitch } from "@letitrip-library/components";
+import { ToggleSwitch } from "@letitrip/react-library";
 
 interface ToggleSwitchWrapperProps {
   enabled: boolean;
@@ -19,12 +19,7 @@ export function ToggleSwitchWrapper({
   onToggle,
   ...props
 }: ToggleSwitchWrapperProps) {
-  return (
-    <ToggleSwitch
-      {...props}
-      onToggle={(enabled) => onToggle()}
-    />
-  );
+  return <ToggleSwitch {...props} onToggle={(enabled) => onToggle()} />;
 }
 
 export { ToggleSwitchWrapper as ToggleSwitch };
