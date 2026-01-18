@@ -1,4 +1,3 @@
-"use client";
 
 import { AlertCircle, Clock, Eye, Gavel, ShoppingCart } from "lucide-react";
 import { ReactNode, useState } from "react";

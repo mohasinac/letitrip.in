@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Data Fetching Adapters

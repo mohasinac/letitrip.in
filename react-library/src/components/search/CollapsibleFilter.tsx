@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * CollapsibleFilter Component
  *
@@ -47,7 +45,7 @@ export interface FilterSection {
   defaultExpanded?: boolean;
 }
 
-export interface StorageAdapter {
+export interface FilterStorageAdapter {
   getItem: (key: string) => string | null;
   setItem: (key: string, value: string) => void;
 }
@@ -66,7 +64,7 @@ export interface CollapsibleFilterProps {
   /** Search threshold (minimum options to show search) */
   searchThreshold?: number;
   /** Storage adapter for state persistence (optional) */
-  storage?: StorageAdapter;
+  storage?: FilterStorageAdapter;
   /** Storage key for expanded state */
   storageKey?: string;
   /** Custom Chevron Down icon */
@@ -215,7 +213,7 @@ export function CollapsibleFilter({
   const handleCheckboxChange = (
     sectionId: string,
     optionValue: string | number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const currentValues = activeFilters[sectionId] || [];
     const newValues = checked
@@ -230,7 +228,7 @@ export function CollapsibleFilter({
 
   const handleRadioChange = (
     sectionId: string,
-    optionValue: string | number
+    optionValue: string | number,
   ) => {
     onFilterChange({
       ...activeFilters,
@@ -250,13 +248,13 @@ export function CollapsibleFilter({
 
   const filterOptions = (
     options: FilterOption[],
-    sectionId: string
+    sectionId: string,
   ): FilterOption[] => {
     const searchTerm = searchTerms[sectionId];
     if (!searchTerm) return options;
 
     return options.filter((option) =>
-      option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      option.label.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   };
 
@@ -389,7 +387,7 @@ export function CollapsibleFilter({
                                 handleCheckboxChange(
                                   section.id,
                                   option.value,
-                                  e.target.checked
+                                  e.target.checked,
                                 )
                               }
                               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"

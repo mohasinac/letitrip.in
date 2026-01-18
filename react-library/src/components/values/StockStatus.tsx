@@ -9,7 +9,6 @@
  * <StockStatus count={0} />         // Out of Stock (red)
  */
 
-"use client";
 
 import React from "react";
 import { AlertTriangle, XCircle, CheckCircle2 } from "lucide-react";

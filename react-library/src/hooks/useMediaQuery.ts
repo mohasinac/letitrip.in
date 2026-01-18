@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Media query and responsive hooks
@@ -17,7 +16,6 @@
  * ```
  */
 
-"use client";
 
 import { useEffect, useState } from "react";
 

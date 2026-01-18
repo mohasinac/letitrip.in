@@ -9,7 +9,6 @@
  * <Email value="user@example.com" masked />    // u***@example.com
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { Mail } from "lucide-react";

@@ -8,7 +8,6 @@
  * <PhoneNumber value="+919876543210" clickable /> // Clickable tel: link
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { Phone } from "lucide-react";

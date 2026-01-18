@@ -1,4 +1,3 @@
-"use client";
 
 import { LucideIcon, Package, Star, Store, Tag } from "lucide-react";
 import { ReactNode } from "react";

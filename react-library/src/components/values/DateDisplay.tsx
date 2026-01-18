@@ -10,7 +10,6 @@
  * <DateRange start={startDate} end={endDate} />        // Dec 1, 2025 - Dec 15, 2025
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { cn } from "../../utils/cn";

@@ -14,6 +14,8 @@ import {
 } from "@letitrip/react-library";
 import { Gavel, MessageCircle, Package, Star, Store } from "lucide-react";
 
+export type { ShopTabType };
+
 const DEFAULT_TABS: ShopTab[] = [
   {
     id: "products",

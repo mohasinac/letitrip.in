@@ -9,7 +9,6 @@
  * <Rating value={4.5} showNumber={false} />       // ★★★★½
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { Star } from "lucide-react";

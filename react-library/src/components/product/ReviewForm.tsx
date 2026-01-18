@@ -1,4 +1,3 @@
-"use client";
 
 import { ComponentType, ReactNode, useState } from "react";
 

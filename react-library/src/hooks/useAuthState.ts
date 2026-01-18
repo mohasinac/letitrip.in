@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Generic Auth State Hook

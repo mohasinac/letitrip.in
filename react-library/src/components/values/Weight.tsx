@@ -9,7 +9,6 @@
  * <Weight grams={2000} showBoth />         // 2kg (2,000g)
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { cn } from "../../utils/cn";

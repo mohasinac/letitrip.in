@@ -1,4 +1,3 @@
-"use client";
 
 import { Film, Upload, X } from "lucide-react";
 import React, { useCallback, useRef, useState } from "react";

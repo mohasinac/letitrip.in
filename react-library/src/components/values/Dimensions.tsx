@@ -8,7 +8,6 @@
  * <Dimensions length={1.5} width={0.8} unit="m" />             // 1.5 × 0.8 m
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { cn } from "../../utils/cn";

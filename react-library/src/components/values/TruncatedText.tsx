@@ -8,7 +8,6 @@
  * <TruncatedText text={description} lines={2} />
  */
 
-"use client";
 
 import { useState } from "react";
 import { cn } from "../../utils/cn";

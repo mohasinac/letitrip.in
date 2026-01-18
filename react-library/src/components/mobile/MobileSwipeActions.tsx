@@ -1,4 +1,3 @@
-"use client";
 
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { ReactNode, useCallback, useRef, useState } from "react";

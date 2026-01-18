@@ -1,4 +1,3 @@
-"use client";
 
 import { forwardRef, InputHTMLAttributes, useState } from "react";
 import { cn } from "../../utils/cn";

@@ -9,7 +9,6 @@
  * <AuctionStatus status="pending" />           // ⏳ Upcoming
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import {

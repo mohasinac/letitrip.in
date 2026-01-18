@@ -9,7 +9,6 @@
  * <OrderId value="abc123xyz" format="full" />      // Full ID shown
  */
 
-"use client";
 
 // Removed firebase-error-logger import
 import { formatOrderId } from "../../utils/formatters";

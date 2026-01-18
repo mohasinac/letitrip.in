@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * AuctionCard - Pure React Component

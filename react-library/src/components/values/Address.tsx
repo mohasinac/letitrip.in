@@ -9,7 +9,6 @@
  * <Address address={...} format="multi-line" />
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { MapPin } from "lucide-react";
