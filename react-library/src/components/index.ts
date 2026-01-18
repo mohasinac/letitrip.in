@@ -97,3 +97,6 @@ export * from "./wizards";
 
 // Admin Components (Phase 4 Migration)
 export * from "./admin";
+
+// Seller Components (Phase 4 Migration)
+export * from "./seller";
