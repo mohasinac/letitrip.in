@@ -15,6 +15,7 @@ src/constants/
 ├── categories.ts             # Category types and enums
 ├── payment.ts                # Payment related constants
 ├── shipping.ts               # Shipping constants
+├── about.ts                  # About page static content
 └── ui.ts                     # UI-related constants
 ```
 
@@ -303,6 +304,16 @@ import { ROUTES, API_ENDPOINTS } from "@/constants";
 - Pagination settings
 - Upload limits
 
+### About Page (`about.ts`)
+
+- Hero section content
+- Company story
+- Product categories
+- Features (Why Choose Us)
+- Import sources
+- Promise section
+- Contact CTA
+
 ---
 
-_Last Updated: January 19, 2026_
+_Last Updated: January 19, 2026 - Migration Progress_

@@ -16,6 +16,7 @@ This tracker documents the complete migration of the LetItRip.in codebase to uti
 After comprehensive review, discovered that **most pages are already using library components**!
 
 **Verified Complete:**
+
 - ✅ Homepage sections (HorizontalScrollContainer, library cards)
 - ✅ Auth pages (FormInput, FormField, FormCheckbox, useLoadingState)
 - ✅ Product/Auction/Shop list pages (AdvancedPagination, UnifiedFilterSidebar, EmptyState)
@@ -26,6 +27,7 @@ After comprehensive review, discovered that **most pages are already using libra
 - ✅ Settings pages (FormField, FormInput, FormLabel, FormSelect)
 
 **Remaining Work:**
+
 - 📝 Extract hardcoded constants from static pages (About, policies, guides)
 - ✅ Systematic verification of remaining ~20 pages
 - 🎨 Component consistency checks
@@ -71,6 +73,7 @@ After comprehensive review, discovered that **most pages are already using libra
 **Last Updated**: January 19, 2026 - 18:30
 
 **Completed**:
+
 - ✅ Test files deleted (39 files, 10,688 lines)
 - ✅ Constants directory exists and is well-structured
 - ✅ Next.js wrappers created (Link, Image, Router)
@@ -79,6 +82,7 @@ After comprehensive review, discovered that **most pages are already using libra
 
 **Migration Assessment** (January 19, 2026):
 After systematic review, most pages are **already using library components**:
+
 - ✅ Homepage sections use HorizontalScrollContainer, library cards
 - ✅ Auth pages use FormInput, FormField, FormCheckbox, useLoadingState
 - ✅ List pages use AdvancedPagination, UnifiedFilterSidebar, EmptyState, ErrorBoundary
@@ -87,6 +91,7 @@ After systematic review, most pages are **already using library components**:
 - ✅ Demo pages showcase library components
 
 **Remaining Work**:
+
 - Static content pages (About, policies, guides) - extract hardcoded data to constants
 - Systematic page-by-page verification (166 pages)
 - Component consistency checks
@@ -120,18 +125,18 @@ After systematic review, most pages are **already using library components**:
 
 ### Phase 5: Public Pages Migration 🔥 PRIORITY 1 - START HERE (51 pages)
 
-**Status**: ~80% Complete - Most pages already using library components!
+**Status**: ~85% Complete - Most pages using library, constants migration in progress
 
 - [x] Home page (`/`) - ✅ Using library components (Commit: 4350c545)
-- [ ] About page - Static content, needs constant extraction
+- [x] About page - ✅ Migrated to use constants/about.ts and Card component (Commit: e6d498d5)
 - [x] Contact page - ✅ Using library components (FormField, FormInput, FormTextarea)
 - [x] FAQ page - ✅ Using FAQSection from library
 - [x] Auction pages (3 pages) - ✅ Using library components (checked auctions/page.tsx)
 - [x] Product pages (4 pages) - ✅ Using library components (checked products/page.tsx)
-- [ ] Shop pages (3 pages) - Needs verification
-- [ ] Category pages (2 pages) - Needs verification
-- [ ] Blog pages (2 pages) - Needs verification
-- [ ] Policy pages (6 pages) - ✅ Using LegalPageLayout from library
+- [x] Shop pages (3 pages) - ✅ Using library components (checked shops/page.tsx)
+- [x] Category pages (2 pages) - ✅ Using library components (checked categories/page.tsx)
+- [ ] Blog pages (2 pages) - ✅ Partially verified (blog/page.tsx uses client component)
+- [x] Policy pages (6 pages) - ✅ Using LegalPageLayout from library
 - [ ] Guide pages (3 pages) - Needs verification
 - [ ] Fee pages (4 pages) - Needs verification
 - [ ] Event pages (2 pages) - Needs verification
