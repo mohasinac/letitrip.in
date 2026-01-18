@@ -23,7 +23,7 @@ Successfully resolved all critical TypeScript warnings in the react-library, red
 - **Build Status**: ✅ Building successfully
 - **Categories**:
   - Export ambiguities: 4 (non-blocking)
-  
+
 ### Impact
 
 - ✅ Library builds successfully
@@ -40,12 +40,12 @@ Successfully resolved all critical TypeScript warnings in the react-library, red
 ```json
 {
   "compilerOptions": {
-    "noUnusedLocals": false,    // Reduced noise
+    "noUnusedLocals": false, // Reduced noise
     "noUnusedParameters": false, // Reduced noise
-    "types": ["node"]            // Added Node.js types
+    "types": ["node"] // Added Node.js types
   },
   "exclude": [
-    "**/*.stories.tsx"           // Excluded Storybook
+    "**/*.stories.tsx" // Excluded Storybook
   ]
 }
 ```
@@ -95,6 +95,7 @@ const handleFilesAdded = async (files: MediaFile[]) => {
 ```
 
 **Changes**:
+
 - Removed `id` prop (not supported)
 - Changed `minHeight` from number to string
 
@@ -106,10 +107,14 @@ const handleFilesAdded = async (files: MediaFile[]) => {
 
 ```typescript
 // Before
-{getIcon(category.icon)}
+{
+  getIcon(category.icon);
+}
 
 // After
-{category.icon && getIcon(category.icon)}
+{
+  category.icon && getIcon(category.icon);
+}
 ```
 
 **Impact**: Prevents undefined errors.
