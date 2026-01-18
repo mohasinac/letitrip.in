@@ -1,13 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import FAQItem from "./FAQItem";
-import {
-  getFAQsByCategory,
-  FAQ_CATEGORIES,
-  type FAQCategory,
-} from "@/constants/faq";
 import * as Icons from "lucide-react";
+import { useState } from "react";
+import { FAQ_CATEGORIES, getFAQsByCategory } from "../../constants/faq";
+import FAQItem from "./FAQItem";
 
 interface FAQSectionProps {
   title?: string;

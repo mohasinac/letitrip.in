@@ -1,10 +1,12 @@
 "use client";
 
-import { ProductCard } from "@letitrip/react-library";
 import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import { ProductVariants as LibraryProductVariants } from "@letitrip/react-library";
+import {
+  ProductVariants as LibraryProductVariants,
+  ProductCard,
+} from "@letitrip/react-library";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 

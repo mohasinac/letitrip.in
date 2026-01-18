@@ -1,9 +1,8 @@
 "use client";
 
-import AuctionCard from "@letitrip/react-library";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import type { ShopAuctionsProps as LibraryShopAuctionsProps } from "@letitrip/react-library";
-import {
+import AuctionCard, {
   AuctionFilters,
   EmptyState,
   ShopAuctions as LibraryShopAuctions,

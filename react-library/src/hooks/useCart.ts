@@ -28,7 +28,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-export interface CartItem {
+export interface CartItemHook {
   id: string;
   productId: string;
   productName: string;
@@ -48,7 +48,7 @@ export interface CartItem {
 export interface Cart {
   id: string;
   userId: string;
-  items: CartItem[];
+  items: CartItemHook[];
   itemCount: number;
   subtotal: number;
   discount: number;
@@ -59,7 +59,7 @@ export interface Cart {
 
 export interface CartService {
   get: () => Promise<Cart>;
-  addItem: (item: Omit<CartItem, "id">) => Promise<Cart>;
+  addItem: (item: Omit<CartItemHook, "id">) => Promise<Cart>;
   removeItem: (itemId: string) => Promise<Cart>;
   updateQuantity: (itemId: string, quantity: number) => Promise<Cart>;
   clear: () => Promise<void>;
@@ -80,7 +80,7 @@ export interface UseCartReturn {
   cart: Cart | null;
   loading: boolean;
   error: string | null;
-  addItem: (item: Omit<CartItem, "id">) => Promise<void>;
+  addItem: (item: Omit<CartItemHook, "id">) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -111,7 +111,7 @@ export function useCart(options: UseCartOptions): UseCartReturn {
   }, [cartService, onError]);
 
   const addItem = useCallback(
-    async (item: Omit<CartItem, "id">) => {
+    async (item: Omit<CartItemHook, "id">) => {
       try {
         setLoading(true);
         setError(null);
@@ -127,7 +127,7 @@ export function useCart(options: UseCartOptions): UseCartReturn {
         setLoading(false);
       }
     },
-    [cartService, onError]
+    [cartService, onError],
   );
 
   const removeItem = useCallback(
@@ -147,7 +147,7 @@ export function useCart(options: UseCartOptions): UseCartReturn {
         setLoading(false);
       }
     },
-    [cartService, onError]
+    [cartService, onError],
   );
 
   const updateQuantity = useCallback(
@@ -167,7 +167,7 @@ export function useCart(options: UseCartOptions): UseCartReturn {
         setLoading(false);
       }
     },
-    [cartService, onError]
+    [cartService, onError],
   );
 
   const clearCart = useCallback(async () => {

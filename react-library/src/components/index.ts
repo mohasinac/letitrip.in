@@ -94,3 +94,6 @@ export * from "./auth";
 
 // Wizard Components (Phase 4 Migration)
 export * from "./wizards";
+
+// Admin Components (Phase 4 Migration)
+export * from "./admin";
