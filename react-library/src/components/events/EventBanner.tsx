@@ -1,5 +1,5 @@
-import React, { ComponentType } from "react";
 import { Calendar, CheckCircle, Clock, MapPin, Users } from "lucide-react";
+import { ComponentType } from "react";
 
 export interface EventBannerData {
   title: string;
@@ -69,7 +69,9 @@ export function EventBanner({
     event.maxParticipants && event.participantCount >= event.maxParticipants;
 
   return (
-    <div className={`relative bg-gray-900 rounded-lg overflow-hidden ${className}`}>
+    <div
+      className={`relative bg-gray-900 rounded-lg overflow-hidden ${className}`}
+    >
       {/* Background Image */}
       {event.imageUrl && (
         <div className="absolute inset-0">
@@ -172,8 +174,8 @@ export function EventBanner({
                   {isFull
                     ? "Event Full"
                     : !isUpcoming
-                      ? "Registration Closed"
-                      : "Register Now"}
+                    ? "Registration Closed"
+                    : "Register Now"}
                 </button>
               ) : (
                 <div className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg flex items-center gap-2">

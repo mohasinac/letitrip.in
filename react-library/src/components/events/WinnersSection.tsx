@@ -1,4 +1,3 @@
-import React from "react";
 import { Award, Medal, Trophy } from "lucide-react";
 
 export interface Winner {

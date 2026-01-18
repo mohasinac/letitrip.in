@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import {
-  EventCard as LibEventCard,
-  type EventCardProps as LibEventCardProps,
   DateDisplay,
+  EventCard as LibEventCard,
   StatusBadge,
+  type EventCardProps as LibEventCardProps,
 } from "@letitrip/react-library";
+import Link from "next/link";
 
 export type EventCardProps = Omit<
   LibEventCardProps,

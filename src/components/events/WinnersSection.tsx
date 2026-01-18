@@ -2,8 +2,8 @@
 
 export {
   WinnersSection,
-  type WinnersSectionProps,
   type Winner,
+  type WinnersSectionProps,
 } from "@letitrip/react-library";
 
 export default WinnersSection;
