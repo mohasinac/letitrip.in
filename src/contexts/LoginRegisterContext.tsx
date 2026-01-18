@@ -17,7 +17,7 @@
 import {
   usePasswordFieldState,
   UsePasswordFieldStateReturn,
-} from "@/hooks/usePasswordFieldState";
+} from "@letitrip/react-library";
 import {
   useFormState,
   UseFormStateReturn,

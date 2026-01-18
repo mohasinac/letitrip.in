@@ -7,8 +7,7 @@ import {
   USER_MENU_ITEMS,
 } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useHeaderStats } from "@/hooks/useHeaderStats";
-import { ThemeToggle, useCart } from "@letitrip/react-library";
+import { ThemeToggle, useCart, useHeaderStats } from "@letitrip/react-library";
 import {
   Bell,
   ChevronDown,
