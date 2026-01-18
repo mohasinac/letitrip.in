@@ -28,7 +28,7 @@ export interface MediaPreviewCardProps {
   onEdit?: () => void;
   onRetry?: () => void;
   showActions?: boolean;
-  
+
   // Injection props
   ImageComponent?: React.ComponentType<{
     src: string;
@@ -93,7 +93,11 @@ export function MediaPreviewCard({
   ImageComponent,
   icons,
   formatFileSize = (bytes) => `${Math.round(bytes / 1024)} KB`,
-  formatDuration = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`,
+  formatDuration = (seconds) =>
+    `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(
+      2,
+      "0",
+    )}`,
   className,
 }: MediaPreviewCardProps) {
   const isImage = media.type === "image";
@@ -108,7 +112,7 @@ export function MediaPreviewCard({
       className={cn(
         "relative group rounded-lg border bg-white overflow-hidden",
         isError ? "border-red-300" : "border-gray-200",
-        className
+        className,
       )}
     >
       {/* Preview */}
