@@ -1,11 +1,16 @@
 "use client";
 
-import { ErrorBoundary as LibraryErrorBoundary, withErrorBoundary as libraryWithErrorBoundary, type ErrorBoundaryProps as LibraryErrorBoundaryProps } from "@letitrip/react-library";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { logComponentError } from "@/lib/error-logger";
+import {
+  ErrorBoundary as LibraryErrorBoundary,
+  withErrorBoundary as libraryWithErrorBoundary,
+  type ErrorBoundaryProps as LibraryErrorBoundaryProps,
+} from "@letitrip/react-library";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import type { ErrorInfo } from "react";
 
-export interface ErrorBoundaryProps extends Omit<LibraryErrorBoundaryProps, "onError" | "icons"> {
+export interface ErrorBoundaryProps
+  extends Omit<LibraryErrorBoundaryProps, "onError" | "icons"> {
   onReset?: () => void;
 }
 
@@ -18,7 +23,8 @@ export interface ErrorBoundaryProps extends Omit<LibraryErrorBoundaryProps, "onE
 export class ErrorBoundary extends LibraryErrorBoundary {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to centralized error logger
-    const componentStack = errorInfo.componentStack?.split("\n")[1]?.trim() || "UnknownComponent";
+    const componentStack =
+      errorInfo.componentStack?.split("\n")[1]?.trim() || "UnknownComponent";
     logComponentError("ErrorBoundary", componentStack, error);
 
     // Call parent implementation
@@ -34,7 +40,9 @@ export function ErrorBoundaryWithIcons(props: ErrorBoundaryProps) {
     <LibraryErrorBoundary
       {...props}
       onError={(error, errorInfo) => {
-        const componentStack = errorInfo.componentStack?.split("\n")[1]?.trim() || "UnknownComponent";
+        const componentStack =
+          errorInfo.componentStack?.split("\n")[1]?.trim() ||
+          "UnknownComponent";
         logComponentError("ErrorBoundary", componentStack, error);
       }}
       icons={{
@@ -56,7 +64,8 @@ export function withErrorBoundary<P extends object>(
   return libraryWithErrorBoundary(Component, {
     ...errorBoundaryProps,
     onError: (error, errorInfo) => {
-      const componentStack = errorInfo.componentStack?.split("\n")[1]?.trim() || "UnknownComponent";
+      const componentStack =
+        errorInfo.componentStack?.split("\n")[1]?.trim() || "UnknownComponent";
       logComponentError("ErrorBoundary", componentStack, error);
     },
   });
