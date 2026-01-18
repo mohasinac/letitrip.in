@@ -38,7 +38,7 @@ function parseDate(timestamp: any): Date {
   return new Date();
 }
 
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 
 /**
  * Calculate discount

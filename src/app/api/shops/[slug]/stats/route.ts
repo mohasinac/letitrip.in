@@ -1,6 +1,6 @@
 import { Collections } from "@/app/api/lib/firebase/collections";
 import { userOwnsShop } from "@/app/api/lib/firebase/queries";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "../../../lib/session";

@@ -19,7 +19,7 @@ import type {
   BogoConfigFE,
 } from "../frontend/coupon.types";
 import { CouponStatus } from "../shared/common.types";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 
 /**
  * Format currency amount

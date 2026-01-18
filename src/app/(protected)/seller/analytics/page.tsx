@@ -10,7 +10,7 @@ import AnalyticsOverview from "@/components/seller/AnalyticsOverview";
 import SalesChart from "@/components/seller/SalesChart";
 import TopProducts from "@/components/seller/TopProducts";
 import { analyticsService } from "@/services/analytics.service";
-import { toDateInputValue } from "@/lib/date-utils";
+import { toDateInputValue } from "@letitrip/react-library";
 import { useLoadingState } from "@letitrip/react-library";
 
 interface AnalyticsData {

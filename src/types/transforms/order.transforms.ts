@@ -5,7 +5,7 @@
  */
 
 import { Timestamp } from "firebase/firestore";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 import {
   OrderBE,
   OrderListItemBE,

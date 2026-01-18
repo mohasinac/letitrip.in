@@ -3,7 +3,7 @@
 import { OptimizedImage } from "@letitrip/react-library"
 import { COMPARISON_FIELDS } from "@/constants/comparison";
 import { useComparison } from "@/contexts/ComparisonContext";
-import { formatPrice } from "@/lib/price.utils";
+import { formatPrice } from "@letitrip/react-library";
 import type { ComparisonProduct } from "@/services/comparison.service";
 import { ArrowLeft, GitCompare, Heart, ShoppingCart, X } from "lucide-react";
 import Link from "next/link";

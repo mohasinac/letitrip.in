@@ -2,7 +2,7 @@
 
 import { FormInput } from "@letitrip/react-library";
 import { FormSelect } from "@letitrip/react-library";
-import { getTodayDateInputValue, toDateInputValue } from "@/lib/date-utils";
+import { getTodayDateInputValue, toDateInputValue } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";

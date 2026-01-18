@@ -1,7 +1,7 @@
 "use client";
 
 import { logError } from "@/lib/error-logger";
-import { formatDuration } from "@/lib/formatters";
+import { formatDuration } from "@letitrip/react-library";
 import { MediaFile } from "@/types/media";
 import { Camera, Monitor, Pause, Play, Square, Video, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

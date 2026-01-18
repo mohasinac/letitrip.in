@@ -1,24 +1,24 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from "@letitrip/react-library";
 import {
-  LayoutDashboard,
-  Store,
-  Package,
-  ShoppingCart,
-  RotateCcw,
-  Ticket,
   BarChart3,
-  DollarSign,
-  Star,
-  Gavel,
   ChevronDown,
   ChevronRight,
+  DollarSign,
+  Gavel,
+  LayoutDashboard,
+  Package,
+  RotateCcw,
   Search,
+  ShoppingCart,
+  Star,
+  Store,
+  Ticket,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 interface NavItem {
   title: string;

@@ -7,8 +7,8 @@
  * Supports both Phone (SMS) and TOTP (Authenticator App) methods
  */
 
-import { cn } from "@/lib/utils";
 import { authMFAService, MFAFactorInfo } from "@/services/auth-mfa-service";
+import { cn } from "@letitrip/react-library";
 import { TotpSecret } from "firebase/auth";
 import {
   Check,
@@ -153,7 +153,7 @@ export function MFAEnrollment({
 
     try {
       const result = await authMFAService.enrollTotpMFA(
-        totpDisplayName || undefined
+        totpDisplayName || undefined,
       );
 
       setTotpSecret(result.totpSecret);
@@ -279,7 +279,7 @@ export function MFAEnrollment({
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {factor.phoneNumber ||
                         `Enrolled ${new Date(
-                          factor.enrollmentTime
+                          factor.enrollmentTime,
                         ).toLocaleDateString()}`}
                     </div>
                   </div>

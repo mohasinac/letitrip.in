@@ -6,7 +6,7 @@ import { Timestamp } from "firebase/firestore";
 import { ShopBE, CreateShopRequestBE } from "../backend/shop.types";
 import { ShopFE, ShopFormFE, ShopCardFE } from "../frontend/shop.types";
 import { Status } from "../shared/common.types";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 
 function parseDate(date: Timestamp | string): Date {
   return date instanceof Timestamp ? date.toDate() : new Date(date);

@@ -7,8 +7,8 @@
  * When user encounters MFA challenge, this component verifies the code
  */
 
-import { cn } from "@/lib/utils";
 import { authMFAService } from "@/services/auth-mfa-service";
+import { cn } from "@letitrip/react-library";
 import { MultiFactorResolver } from "firebase/auth";
 import { AlertCircle, Key, Shield, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -131,7 +131,7 @@ export function MFAVerification({
                     "w-full p-3 border-2 rounded-lg text-left transition-colors",
                     selectedFactorIndex === index
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600",
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -218,7 +218,7 @@ export function MFAVerification({
               error
                 ? "border-red-500 dark:border-red-400"
                 : "border-gray-300 dark:border-gray-600",
-              loading && "opacity-50 cursor-not-allowed"
+              loading && "opacity-50 cursor-not-allowed",
             )}
           />
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
@@ -238,7 +238,7 @@ export function MFAVerification({
               "focus:outline-none focus:ring-2 focus:ring-offset-2",
               loading || verificationCode.length !== 6
                 ? "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500"
+                : "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500",
             )}
           >
             {loading ? (

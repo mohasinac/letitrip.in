@@ -1,6 +1,6 @@
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
-import { safeToISOString } from "@/lib/date-utils";
+import { safeToISOString } from "@letitrip/react-library";
 import { NextResponse } from "next/server";
 
 // Disable caching for live stats

@@ -3,9 +3,9 @@
  */
 
 import { AUCTION_TIMING } from "@/constants/time-constants";
-import { safeToISOString } from "@/lib/date-utils";
-import { formatDate } from "@/lib/formatters";
-import { formatPrice } from "@/lib/price.utils";
+import { safeToISOString } from "@letitrip/react-library";
+import { formatDate } from "@letitrip/react-library";
+import { formatPrice } from "@letitrip/react-library";
 import { Timestamp } from "firebase/firestore";
 import {
   AuctionBE,

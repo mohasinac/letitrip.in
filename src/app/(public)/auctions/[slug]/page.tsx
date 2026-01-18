@@ -6,7 +6,7 @@ import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
-import { formatINR } from "@/lib/price.utils";
+import { formatINR } from "@letitrip/react-library";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import type {
