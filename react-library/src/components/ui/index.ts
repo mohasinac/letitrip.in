@@ -8,6 +8,10 @@ export type { CardProps, CardSectionProps } from "./Card";
 export { BaseCard } from "./BaseCard";
 export type { ActionButton, Badge, BaseCardProps } from "./BaseCard";
 
+export { LoadingSpinner } from "./LoadingSpinner";
+
+export { ToggleSwitch } from "./ToggleSwitch";
+
 // Dialogs & Messages
 export { ConfirmDialog } from "./ConfirmDialog";
 export type { ConfirmDialogProps } from "./ConfirmDialog";
