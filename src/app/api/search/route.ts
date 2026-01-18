@@ -142,8 +142,8 @@ export async function GET(req: NextRequest) {
         (typeof val === "string"
           ? val
           : Array.isArray(val)
-            ? val.join(" ")
-            : ""
+          ? val.join(" ")
+          : ""
         )
           .toString()
           .toLowerCase();
