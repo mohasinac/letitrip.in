@@ -464,12 +464,12 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : (mode === "create" ? "Create Category" : "Save Changes")}
+        <Button type="submit" variant="primary" disabled={loading}>
+          {loading
+            ? "Saving..."
+            : mode === "create"
+            ? "Create Category"
+            : "Save Changes"}
         </Button>
       </div>
     </form>

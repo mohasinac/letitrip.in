@@ -1438,12 +1438,14 @@ Update the tracker as you complete each task. Mark items as complete with ✅.
 #### Fixes Applied
 
 1. **TypeScript Configuration** ✅
+
    - Added `@types/node` for Node.js globals
    - Disabled `noUnusedLocals` and `noUnusedParameters` (reduced noise)
    - Excluded `**/*.stories.tsx` from type checking
    - Added `types: ["node"]` to tsconfig
 
 2. **Type Errors Fixed (103 → 4)** ✅
+
    - Fixed ReviewMediaFile → MediaFile type
    - Fixed ShopForm component props
    - Fixed RichTextEditor props
@@ -1466,6 +1468,7 @@ Update the tracker as you complete each task. Mark items as complete with ✅.
 #### Known Issues (Non-Blocking)
 
 4 export ambiguity warnings (TS2308):
+
 - FormActions (forms/ + ui/)
 - StorageAdapter (components/ + adapters/)
 - HttpClient (utils/ + adapters/)
