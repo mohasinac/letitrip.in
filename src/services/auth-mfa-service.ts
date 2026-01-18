@@ -139,7 +139,7 @@ export class AuthMFAService {
    * Returns verification ID for code verification
    */
   async enrollPhoneMFA(
-    request: EnrollPhoneMFARequest
+    request: EnrollPhoneMFARequest,
   ): Promise<EnrollPhoneMFAResponse> {
     try {
       // Validate input
@@ -150,7 +150,7 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to enroll MFA",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
@@ -158,7 +158,7 @@ export class AuthMFAService {
       if (!this.recaptchaVerifier) {
         throw new ValidationError(
           "reCAPTCHA verifier not initialized. Call initializeRecaptcha() first",
-          "RECAPTCHA_NOT_INITIALIZED"
+          "RECAPTCHA_NOT_INITIALIZED",
         );
       }
 
@@ -172,7 +172,7 @@ export class AuthMFAService {
           phoneNumber: validated.phoneNumber,
           session: multiFactorSession,
         },
-        this.recaptchaVerifier
+        this.recaptchaVerifier,
       );
 
       return {
@@ -184,7 +184,7 @@ export class AuthMFAService {
         throw new ValidationError(
           error.errors[0].message,
           "VALIDATION_ERROR",
-          error.errors
+          error.errors,
         );
       }
 
@@ -194,7 +194,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to enroll phone MFA: ${(error as Error).message}`,
-        "MFA_ENROLLMENT_FAILED"
+        "MFA_ENROLLMENT_FAILED",
       );
     }
   }
@@ -212,14 +212,14 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to verify MFA",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
       // Create phone credential
       const phoneAuthCredential = PhoneAuthProvider.credential(
         validated.verificationId,
-        validated.verificationCode
+        validated.verificationCode,
       );
 
       // Create multi-factor assertion
@@ -233,7 +233,7 @@ export class AuthMFAService {
         throw new ValidationError(
           error.errors[0].message,
           "VALIDATION_ERROR",
-          error.errors
+          error.errors,
         );
       }
 
@@ -243,7 +243,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to verify phone MFA: ${(error as Error).message}`,
-        "MFA_VERIFICATION_FAILED"
+        "MFA_VERIFICATION_FAILED",
       );
     }
   }
@@ -259,7 +259,7 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to enroll MFA",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
@@ -268,13 +268,13 @@ export class AuthMFAService {
 
       // Generate TOTP secret
       const totpSecret = await TotpMultiFactorGenerator.generateSecret(
-        multiFactorSession
+        multiFactorSession,
       );
 
       // Generate QR code URL for authenticator apps
       const qrCodeUrl = totpSecret.generateQrCodeUrl(
         user.email || user.phoneNumber || "user",
-        "Letitrip.in"
+        "Letitrip.in",
       );
 
       return {
@@ -289,7 +289,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to enroll TOTP MFA: ${(error as Error).message}`,
-        "MFA_ENROLLMENT_FAILED"
+        "MFA_ENROLLMENT_FAILED",
       );
     }
   }
@@ -299,7 +299,7 @@ export class AuthMFAService {
    */
   async verifyTotpMFA(
     totpSecret: TotpSecret,
-    request: VerifyTotpMFARequest
+    request: VerifyTotpMFARequest,
   ): Promise<void> {
     try {
       // Validate input
@@ -310,7 +310,7 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to verify MFA",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
@@ -318,20 +318,20 @@ export class AuthMFAService {
       const multiFactorAssertion =
         TotpMultiFactorGenerator.assertionForEnrollment(
           totpSecret,
-          validated.verificationCode
+          validated.verificationCode,
         );
 
       // Finalize enrollment with optional display name
       await multiFactor(user).enroll(
         multiFactorAssertion,
-        validated.displayName
+        validated.displayName,
       );
     } catch (error) {
       if (error instanceof z.ZodError) {
         throw new ValidationError(
           error.errors[0].message,
           "VALIDATION_ERROR",
-          error.errors
+          error.errors,
         );
       }
 
@@ -341,7 +341,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to verify TOTP MFA: ${(error as Error).message}`,
-        "MFA_VERIFICATION_FAILED"
+        "MFA_VERIFICATION_FAILED",
       );
     }
   }
@@ -355,7 +355,7 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to get enrolled factors",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
@@ -376,7 +376,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to get enrolled factors: ${(error as Error).message}`,
-        "MFA_LIST_FAILED"
+        "MFA_LIST_FAILED",
       );
     }
   }
@@ -394,20 +394,20 @@ export class AuthMFAService {
       if (!user) {
         throw new AuthError(
           "User must be signed in to unenroll MFA",
-          "UNAUTHORIZED"
+          "UNAUTHORIZED",
         );
       }
 
       // Find the factor to unenroll
       const enrolledFactors = multiFactor(user).enrolledFactors;
       const factorToUnenroll = enrolledFactors.find(
-        (factor) => factor.uid === validated.factorUid
+        (factor) => factor.uid === validated.factorUid,
       );
 
       if (!factorToUnenroll) {
         throw new ValidationError(
           "MFA factor not found",
-          "MFA_FACTOR_NOT_FOUND"
+          "MFA_FACTOR_NOT_FOUND",
         );
       }
 
@@ -418,7 +418,7 @@ export class AuthMFAService {
         throw new ValidationError(
           error.errors[0].message,
           "VALIDATION_ERROR",
-          error.errors
+          error.errors,
         );
       }
 
@@ -428,7 +428,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to unenroll MFA: ${(error as Error).message}`,
-        "MFA_UNENROLL_FAILED"
+        "MFA_UNENROLL_FAILED",
       );
     }
   }
@@ -444,7 +444,7 @@ export class AuthMFAService {
       if (!verificationCode || verificationCode.length !== 6) {
         throw new ValidationError(
           "Verification code must be 6 digits",
-          "INVALID_VERIFICATION_CODE"
+          "INVALID_VERIFICATION_CODE",
         );
       }
 
@@ -453,7 +453,7 @@ export class AuthMFAService {
       if (!selectedFactor) {
         throw new ValidationError(
           "Invalid factor selected",
-          "INVALID_MFA_FACTOR"
+          "INVALID_MFA_FACTOR",
         );
       }
 
@@ -465,7 +465,7 @@ export class AuthMFAService {
         if (!this.recaptchaVerifier) {
           throw new ValidationError(
             "reCAPTCHA verifier not initialized",
-            "RECAPTCHA_NOT_INITIALIZED"
+            "RECAPTCHA_NOT_INITIALIZED",
           );
         }
 
@@ -475,12 +475,12 @@ export class AuthMFAService {
             multiFactorHint: selectedFactor,
             session: resolver.session,
           },
-          this.recaptchaVerifier
+          this.recaptchaVerifier,
         );
 
         const phoneAuthCredential = PhoneAuthProvider.credential(
           verificationId,
-          verificationCode
+          verificationCode,
         );
 
         multiFactorAssertion =
@@ -491,12 +491,12 @@ export class AuthMFAService {
         // TOTP MFA
         multiFactorAssertion = TotpMultiFactorGenerator.assertionForSignIn(
           selectedFactor.uid,
-          verificationCode
+          verificationCode,
         );
       } else {
         throw new ValidationError(
           "Unsupported MFA factor type",
-          "UNSUPPORTED_MFA_FACTOR"
+          "UNSUPPORTED_MFA_FACTOR",
         );
       }
 
@@ -509,7 +509,7 @@ export class AuthMFAService {
 
       throw new AuthError(
         `Failed to sign in with MFA: ${(error as Error).message}`,
-        "MFA_SIGN_IN_FAILED"
+        "MFA_SIGN_IN_FAILED",
       );
     }
   }
