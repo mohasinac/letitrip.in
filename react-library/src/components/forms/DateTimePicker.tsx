@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * DateTimePicker Component
  * Framework-agnostic date and time picker
@@ -195,3 +197,4 @@ export function DateTimePicker({
     </div>
   );
 }
+

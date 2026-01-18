@@ -1,3 +1,5 @@
+"use client";
+
 import { Save } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Card } from "../ui/Card";
@@ -360,3 +362,4 @@ export const ShopForm: React.FC<ShopFormProps> = ({
     </form>
   );
 };
+

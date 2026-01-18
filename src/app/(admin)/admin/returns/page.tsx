@@ -83,7 +83,7 @@ export default function AdminReturnsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex">
           <UnifiedFilterSidebar
-            sections={RETURN_FILTERS}
+            sections={RETURN_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({
@@ -431,3 +431,4 @@ export default function AdminReturnsPage() {
     </AuthGuard>
   );
 }
+

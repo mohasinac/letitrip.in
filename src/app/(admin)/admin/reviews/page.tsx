@@ -129,7 +129,7 @@ export default function AdminReviewsPage() {
         <div className="flex gap-6">
           {/* Filter Sidebar */}
           <UnifiedFilterSidebar
-            sections={REVIEW_FILTERS}
+            sections={REVIEW_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({
@@ -385,3 +385,4 @@ export default function AdminReviewsPage() {
     </AuthGuard>
   );
 }
+

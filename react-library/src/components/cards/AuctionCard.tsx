@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * AuctionCard - Pure React Component
  *
@@ -738,3 +740,4 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
 
 // Memoized export for performance optimization
 export default React.memo(AuctionCard);
+

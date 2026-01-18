@@ -10,7 +10,6 @@ import {
   StatsCard,
   StatsCardGrid,
   useLoadingState,
-  UserProfileSkeleton,
 } from "@letitrip/react-library";
 import {
   ChevronRight,

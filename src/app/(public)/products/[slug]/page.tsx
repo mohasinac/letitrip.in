@@ -12,11 +12,7 @@ import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { useProductBySlug } from "@/hooks/queries/useProduct";
 import { useShop } from "@/hooks/queries/useShop";
 import { formatDiscount, formatINR } from "@/lib/price.utils";
-import {
-  ErrorMessage,
-  ProductCardSkeletonGrid,
-  useCart,
-} from "@letitrip/react-library";
+import { ErrorMessage, useCart } from "@letitrip/react-library";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -209,12 +205,12 @@ function ProductContent({ slug }: { slug: string }) {
                     <div className="flex items-baseline gap-2 mb-2">
                       {formatDiscount(
                         product.compareAtPrice,
-                        product.price
+                        product.price,
                       ) && (
                         <span className="text-sm font-medium text-red-600 dark:text-red-400">
                           {formatDiscount(
                             product.compareAtPrice,
-                            product.price
+                            product.price,
                           )}
                         </span>
                       )}
@@ -311,7 +307,7 @@ function ProductContent({ slug }: { slug: string }) {
                             <option key={i + 1} value={i + 1}>
                               {i + 1}
                             </option>
-                          )
+                          ),
                         )}
                       </select>
                     </div>
@@ -336,10 +332,10 @@ function ProductContent({ slug }: { slug: string }) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           toast.success(
-                            `Added ${selectedQuantity} item(s) to cart`
+                            `Added ${selectedQuantity} item(s) to cart`,
                           );
                         } catch (error: any) {
                           toast.error(error.message || "Failed to add to cart");
@@ -367,7 +363,7 @@ function ProductContent({ slug }: { slug: string }) {
                               image: product.images[0],
                               shopId: product.shopId,
                               shopName: shop?.name || product.shopId,
-                            }
+                            },
                           );
                           router.push("/checkout");
                         } catch (error: any) {
@@ -441,7 +437,7 @@ function ProductContent({ slug }: { slug: string }) {
             <SimilarProducts
               productId={product.id}
               parentCategoryIds={product.categoryIds.filter(
-                (id: string) => id !== product.categoryId
+                (id: string) => id !== product.categoryId,
               )}
               currentShopId={product.shopId}
               parentCategoryName="related categories"

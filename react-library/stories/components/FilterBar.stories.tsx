@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import type { QuickFilter } from "../../src/components/search/FilterBar";
@@ -286,3 +288,4 @@ export const InteractiveDemo: Story = {
     );
   },
 };
+

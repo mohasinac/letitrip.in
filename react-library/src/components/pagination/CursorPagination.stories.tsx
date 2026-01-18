@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { CursorPagination } from "./CursorPagination";
@@ -247,3 +249,4 @@ export const InfiniteScrollUseCase: Story = {
     );
   },
 };
+

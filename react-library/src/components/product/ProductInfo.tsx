@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Check,
   Heart,
@@ -386,3 +388,4 @@ export function ProductInfo({
 }
 
 export default ProductInfo;
+

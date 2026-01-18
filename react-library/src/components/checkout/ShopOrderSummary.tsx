@@ -1,3 +1,5 @@
+"use client";
+
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 
@@ -365,3 +367,4 @@ export function ShopOrderSummary({
     </div>
   );
 }
+

@@ -164,7 +164,7 @@ export default function CouponsPage() {
         {/* Desktop Filters */}
         {!isMobile && (
           <UnifiedFilterSidebar
-            sections={COUPON_FILTERS}
+            sections={COUPON_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
@@ -398,7 +398,7 @@ export default function CouponsPage() {
         {/* Mobile Filters */}
         {isMobile && (
           <UnifiedFilterSidebar
-            sections={COUPON_FILTERS}
+            sections={COUPON_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({ ...prev, [key]: value }));
@@ -424,3 +424,4 @@ export default function CouponsPage() {
     </div>
   );
 }
+

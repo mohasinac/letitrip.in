@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { TableCheckbox } from "../../src/components/tables/TableCheckbox";
@@ -226,3 +228,4 @@ export const TouchFriendly: Story = {
     </div>
   ),
 };
+

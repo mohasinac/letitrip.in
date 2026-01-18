@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, type ReactNode } from "react";
 
 export interface PollOption {
@@ -223,3 +225,4 @@ export function PollVoting({
     </div>
   );
 }
+

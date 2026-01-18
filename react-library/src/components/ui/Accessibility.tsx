@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Accessibility Components
  *
@@ -242,3 +244,4 @@ export default {
   VisuallyHidden,
   FocusGuard,
 };
+

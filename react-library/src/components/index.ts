@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Components
  *
@@ -100,3 +102,6 @@ export * from "./admin";
 
 // Seller Components (Phase 4 Migration)
 export * from "./seller";
+
+// Media Components
+export * from "./media";

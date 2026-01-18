@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { PageState } from "../src/components/tables/PageState";
 import { useState } from "react";
@@ -584,3 +586,4 @@ export const AllStatesComparison: StoryObj = {
     },
   },
 };
+

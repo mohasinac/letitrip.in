@@ -3,7 +3,6 @@
 import { formatDiscount } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import {
-  CompareButton,
   FavoriteButton,
   ProductCard as LibraryProductCard,
   OptimizedImage,
@@ -26,7 +25,6 @@ type ProductCardWrapperProps = Omit<
   | "LinkComponent"
   | "ImageComponent"
   | "FavoriteButtonComponent"
-  | "CompareButtonComponent"
   | "StatusBadgeComponent"
   | "formatPrice"
   | "formatDiscount"
@@ -48,7 +46,6 @@ const ProductCardComponent: React.FC<ProductCardWrapperProps> = ({
       LinkComponent={Link as any}
       ImageComponent={OptimizedImage as any}
       FavoriteButtonComponent={FavoriteButton as any}
-      CompareButtonComponent={CompareButton as any}
       StatusBadgeComponent={StatusBadge as any}
       formatPrice={formatPrice}
       formatDiscount={formatDiscount}

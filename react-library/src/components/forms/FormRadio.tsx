@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * FormRadio Component
  *
@@ -182,3 +184,4 @@ export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
 };
 
 export default FormRadio;
+

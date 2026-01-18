@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { ImageUploadWithCrop } from "../../src/components/ImageUploadWithCrop";
@@ -166,3 +168,4 @@ export const Interactive = () => {
     </div>
   );
 };
+

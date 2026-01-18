@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, type ReactNode } from "react";
 
 export interface EventCountdownProps {
@@ -217,3 +219,4 @@ export function EventCountdown({
     </div>
   );
 }
+

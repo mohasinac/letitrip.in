@@ -1,3 +1,5 @@
+"use client";
+
 import type { ComponentType, ReactNode } from "react";
 import { useEffect, useState } from "react";
 
@@ -394,3 +396,4 @@ export function ProductGallery({
     </>
   );
 }
+

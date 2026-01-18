@@ -5,7 +5,7 @@ import { ShopAuctions } from "@/components/shop/ShopAuctions";
 import { ShopHeader } from "@/components/shop/ShopHeader";
 import { ShopPolicies } from "@/components/shop/ShopPolicies";
 import { ShopProducts } from "@/components/shop/ShopProducts";
-import { ShopReviews } from "@/components/shop/ShopReviews";
+import ShopReviews from "@/components/shop/ShopReviews";
 import { ShopStats } from "@/components/shop/ShopStats";
 import { ShopTabs, type ShopTabType } from "@/components/shop/ShopTabs";
 import { notFound } from "@/lib/error-redirects";
@@ -138,7 +138,7 @@ export default function ShopPage({ params }: ShopPageProps) {
         ...new Set(
           productsData
             .map((p) => p.brand)
-            .filter((brand): brand is string => Boolean(brand))
+            .filter((brand): brand is string => Boolean(brand)),
         ),
       ];
       setAvailableBrands(brands);
@@ -188,7 +188,7 @@ export default function ShopPage({ params }: ShopPageProps) {
 
   const handleProductSort = (
     newSortBy: string,
-    newSortOrder: "asc" | "desc"
+    newSortOrder: "asc" | "desc",
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -201,7 +201,7 @@ export default function ShopPage({ params }: ShopPageProps) {
 
   const handleAuctionSort = (
     newSortBy: string,
-    newSortOrder: "asc" | "desc"
+    newSortOrder: "asc" | "desc",
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -220,7 +220,7 @@ export default function ShopPage({ params }: ShopPageProps) {
       image: string;
       shopId: string;
       shopName: string;
-    }
+    },
   ) => {
     try {
       if (!productDetails) {

@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { AdvancedPagination } from "./AdvancedPagination";
@@ -191,3 +193,4 @@ export const WithCustomIcons: Story = {
     );
   },
 };
+

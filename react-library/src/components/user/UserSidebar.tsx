@@ -1,3 +1,5 @@
+"use client";
+
 import { LayoutDashboard, Search } from "lucide-react";
 import React, { ComponentType, ReactNode, useRef, useState } from "react";
 
@@ -275,3 +277,4 @@ export const defaultUserNavigation: UserNavItem[] = [
     icon: require("lucide-react").Settings,
   },
 ];
+

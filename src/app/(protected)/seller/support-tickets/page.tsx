@@ -261,7 +261,7 @@ function SellerSupportTicketsContent() {
         {/* Desktop Filters - Always Visible Sidebar */}
         {!isMobile && (
           <UnifiedFilterSidebar
-            sections={TICKET_FILTERS}
+            sections={TICKET_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({
@@ -454,7 +454,7 @@ function SellerSupportTicketsContent() {
       {/* Mobile Filters Drawer */}
       {isMobile && (
         <UnifiedFilterSidebar
-          sections={TICKET_FILTERS}
+          sections={TICKET_FILTERS as any}
           values={filterValues}
           onChange={(key, value) => {
             setFilterValues((prev) => ({
@@ -484,3 +484,4 @@ function SellerSupportTicketsContent() {
     </div>
   );
 }
+
