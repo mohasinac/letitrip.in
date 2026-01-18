@@ -1,9 +1,13 @@
 "use client";
 
 import { logError } from "@/lib/error-logger";
-import { FormLabel, Price, useCart } from "@letitrip/react-library";
-import { ProductInfo as LibraryProductInfo } from "@letitrip/react-library";
 import type { ProductInfoProps as LibraryProductInfoProps } from "@letitrip/react-library";
+import {
+  FormLabel,
+  ProductInfo as LibraryProductInfo,
+  Price,
+  useCart,
+} from "@letitrip/react-library";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -15,7 +19,11 @@ export interface ProductInfoProps {
   isFavorite?: boolean;
 }
 
-export function ProductInfo({ product, quantity, isFavorite }: ProductInfoProps) {
+export function ProductInfo({
+  product,
+  quantity,
+  isFavorite,
+}: ProductInfoProps) {
   const router = useRouter();
   const { addItem } = useCart();
 

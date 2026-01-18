@@ -115,30 +115,46 @@ export function ShopProducts({
   const [filters, setFilters] = useState<ProductFilterValues>({});
 
   // Default components (fallbacks)
-  const CardGrid = CardGridComponent || (({ children }: { children: ReactNode }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {children}
-    </div>
-  ));
+  const CardGrid =
+    CardGridComponent ||
+    (({ children }: { children: ReactNode }) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {children}
+      </div>
+    ));
 
-  const EmptyState = EmptyStateComponent || (({ title, description }: { title: string; description: string }) => (
-    <div className="text-center py-12">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{description}</p>
-    </div>
-  ));
+  const EmptyState =
+    EmptyStateComponent ||
+    (({ title, description }: { title: string; description: string }) => (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400">{description}</p>
+      </div>
+    ));
 
-  const Price = PriceComponent || (({ amount }: { amount: number }) => (
-    <span>₹{amount.toLocaleString("en-IN")}</span>
-  ));
+  const Price =
+    PriceComponent ||
+    (({ amount }: { amount: number }) => (
+      <span>₹{amount.toLocaleString("en-IN")}</span>
+    ));
 
-  const FormSelect = FormSelectComponent || (({ value, onChange, options }: any) => (
-    <select value={value} onChange={onChange} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg">
-      {options.map((opt: any) => (
-        <option key={opt.value} value={opt.value}>{opt.label}</option>
-      ))}
-    </select>
-  ));
+  const FormSelect =
+    FormSelectComponent ||
+    (({ value, onChange, options }: any) => (
+      <select
+        value={value}
+        onChange={onChange}
+        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+      >
+        {options.map((opt: any) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    ));
 
   const OptimizedImage = OptimizedImageComponent;
 
@@ -364,7 +380,8 @@ export function ShopProducts({
                       <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
                         {product.rating > 0 && (
                           <span>
-                            ★ {product.rating.toFixed(1)} ({product.reviewCount})
+                            ★ {product.rating.toFixed(1)} ({product.reviewCount}
+                            )
                           </span>
                         )}
                         <span

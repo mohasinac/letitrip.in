@@ -1,5 +1,5 @@
 import { Filter as FilterIcon, Grid, List, Loader2 } from "lucide-react";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 
 interface Auction {
   id: string;
@@ -94,12 +94,16 @@ export function ShopAuctions({
   });
 
   // Default EmptyState component (fallback)
-  const EmptyState = EmptyStateComponent || (({ title, description }: { title: string; description: string }) => (
-    <div className="text-center py-12">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{description}</p>
-    </div>
-  ));
+  const EmptyState =
+    EmptyStateComponent ||
+    (({ title, description }: { title: string; description: string }) => (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400">{description}</p>
+      </div>
+    ));
 
   const handleFiltersChange = (newFilters: AuctionFilterValues) => {
     setFilters(newFilters);

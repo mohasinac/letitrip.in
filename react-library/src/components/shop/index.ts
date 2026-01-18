@@ -14,7 +14,10 @@ export { ShopHeader } from "./ShopHeader";
 export type { ShopHeaderProps } from "./ShopHeader";
 
 export { ShopProducts } from "./ShopProducts";
-export type { ShopProductsProps, ProductFilterValues } from "./ShopProducts";
+export type { ProductFilterValues, ShopProductsProps } from "./ShopProducts";
 
 export { ShopAuctions } from "./ShopAuctions";
-export type { ShopAuctionsProps, AuctionFilterValues } from "./ShopAuctions";
+export type { AuctionFilterValues, ShopAuctionsProps } from "./ShopAuctions";
+
+export { ShopReviews } from "./ShopReviews";
+export type { ShopReview, ShopReviewsProps } from "./ShopReviews";
