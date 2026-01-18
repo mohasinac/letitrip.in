@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfirmDialog } from "@letitrip/react-library";
-import { FormModal } from "@/components/common/FormModal";
+import { FormModal } from "@letitrip/react-library";
 import { OptimizedImage } from "@letitrip/react-library"
 import { StatusBadge } from '@letitrip/react-library';
 import { Price } from "@letitrip/react-library";

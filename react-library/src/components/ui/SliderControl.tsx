@@ -1,6 +1,6 @@
 /**
  * SliderControl - Pure React
- * 
+ *
  * Range slider input with label and min/max display.
  * Framework-agnostic slider component.
  */

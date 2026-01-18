@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AuctionCard from "@/components/cards/AuctionCard";
+import AuctionCard from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { HorizontalScrollContainer } from '@letitrip/react-library';
 import { auctionsService } from "@/services/auctions.service";

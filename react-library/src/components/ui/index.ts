@@ -15,7 +15,10 @@ export { SliderControl } from "./SliderControl";
 export type { SliderControlProps } from "./SliderControl";
 
 export { RipLimitStatsCards } from "./RipLimitStatsCards";
-export type { RipLimitStats, RipLimitStatsCardsProps } from "./RipLimitStatsCards";
+export type {
+  RipLimitStats,
+  RipLimitStatsCardsProps,
+} from "./RipLimitStatsCards";
 
 export { LoadingSpinner } from "./LoadingSpinner";
 

@@ -3,7 +3,7 @@
  * Client-side localStorage service for managing product comparison
  */
 
-import type { ProductCardProps } from "@/components/cards/ProductCard";
+import type { ProductCardProps } from "@letitrip/react-library";
 import { COMPARISON_CONFIG } from "@/constants/comparison";
 
 export type ComparisonProduct = Pick<

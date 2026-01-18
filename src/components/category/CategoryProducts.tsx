@@ -5,7 +5,7 @@ import { Loader2, Grid, List, Filter as FilterIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FormSelect } from "@letitrip/react-library";
-import { ProductCard } from "@/components/cards/ProductCard";
+import { ProductCard } from "@letitrip/react-library";
 import { EmptyState } from '@letitrip/react-library';
 import { Price } from "@letitrip/react-library";
 import { OptimizedImage } from "@letitrip/react-library"
