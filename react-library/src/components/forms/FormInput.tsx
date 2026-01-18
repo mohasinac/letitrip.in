@@ -1,4 +1,3 @@
-"use client";
 
 import { forwardRef, InputHTMLAttributes, useEffect, useRef } from "react";
 import { announceToScreenReader } from "../../utils/accessibility";

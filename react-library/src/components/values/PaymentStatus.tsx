@@ -9,7 +9,6 @@
  * <PaymentStatus status="failed" />        // ❌ Failed (red)
  */
 
-"use client";
 
 import React from "react";
 import {

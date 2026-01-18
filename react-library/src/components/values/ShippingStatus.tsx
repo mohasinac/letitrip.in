@@ -8,7 +8,6 @@
  * <ShippingStatus status="delivered" />    // ✅ Delivered (green)
  */
 
-"use client";
 
 import React from "react";
 import {

@@ -7,11 +7,9 @@
 
 export { OrderCardSkeleton, OrderCardSkeletonList } from "./OrderCardSkeleton";
 export {
-  ProductCardSkeleton,
-  ProductCardSkeletonGrid,
-} from "./ProductCardSkeleton";
-export {
   ProductListSkeleton,
   ProductListSkeletonList,
 } from "./ProductListSkeleton";
 export { UserProfileSkeleton } from "./UserProfileSkeleton";
+
+// Note: ProductCardSkeleton exported from ../cards to keep with ProductCard

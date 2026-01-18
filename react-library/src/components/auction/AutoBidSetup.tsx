@@ -1,4 +1,3 @@
-"use client";
 
 import { AlertTriangle, Check, X, Zap } from "lucide-react";
 import React, { ComponentType, useState } from "react";

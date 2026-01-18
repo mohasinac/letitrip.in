@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Components
  *
@@ -105,3 +103,6 @@ export * from "./seller";
 
 // Media Components
 export * from "./media";
+
+// Skeleton Components (card skeletons exported from ./cards)
+export * from "./skeletons";

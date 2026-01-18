@@ -1,12 +1,7 @@
-"use client";
-
 // Main entry point for @letitrip/react-library
 // This file exports all utilities, components, hooks, types, and adapters
 
-// Utilities (includes HttpClient)
-export * from "./utils";
-
-// Components (includes FormActions from both forms/ and ui/ - use the one you need explicitly)
+// Components first
 export * from "./components";
 
 // Hooks
@@ -15,12 +10,30 @@ export * from "./hooks";
 // Styles
 export * from "./styles";
 
-// Adapters (includes StorageAdapter - may conflict with component export)
-export * from "./adapters";
+// Utilities (includes HttpClient)
+export * from "./utils";
 
-// Note: Due to export conflicts, explicitly import these if needed:
-// - FormActions: import from '@letitrip/react-library/forms' (children-based) or '@letitrip/react-library/ui' (props-based)
-// - StorageAdapter: import from '@letitrip/react-library/adapters'
-// - HttpClient: import from '@letitrip/react-library/utils'
+// Adapters - export explicitly to avoid conflicts
+export {
+  // Upload service classes
+  ApiUploadService,
+  // Firebase adapters
+  FirebaseAuthAdapter,
+  FirebaseFirestoreAdapter,
+  FirebaseStorageAdapter,
+  // Example adapters
+  InMemoryCacheAdapter,
+  LocalStorageCacheAdapter,
+  MockUploadService,
+  StorageUploadService,
+  SupabaseStorageAdapter,
+  // Adapter interfaces
+  type AnalyticsAdapter,
+  type AuthAdapter,
+  type CacheAdapter,
+  type DatabaseAdapter,
+  type StorageAdapter,
+  type UploadService,
+} from "./adapters";
 
 // Types - import from './types' subpath to avoid conflicts

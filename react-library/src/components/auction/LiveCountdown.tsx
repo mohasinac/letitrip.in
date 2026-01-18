@@ -5,7 +5,6 @@
  * Shows time remaining with automatic updates
  */
 
-"use client";
 
 import { AlertCircle, Clock } from "lucide-react";
 import { useEffect, useState } from "react";

@@ -8,7 +8,7 @@ export { CollapsibleFilter } from "./CollapsibleFilter";
 export type {
   CollapsibleFilterProps,
   FilterSection,
-  StorageAdapter,
+  FilterStorageAdapter,
 } from "./CollapsibleFilter";
 export {
   ContentTypeFilter,

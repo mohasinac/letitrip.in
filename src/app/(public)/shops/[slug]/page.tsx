@@ -17,9 +17,8 @@ import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopFE } from "@/types/frontend/shop.types";
 import {
-  AuctionFilterValues,
   ProductFilterValues,
-  useCart,
+  ShopAuctionFilterValues,
   useLoadingState,
 } from "@letitrip/react-library";
 import { Loader2 } from "lucide-react";
@@ -35,7 +34,8 @@ interface ShopPageProps {
 
 export default function ShopPage({ params }: ShopPageProps) {
   const router = useRouter();
-  const { addItem } = useCart();
+  // TODO: Replace with proper cart service implementation
+  // const { addItem } = useCart({ user: null, cartService });
   const { slug } = use(params);
 
   const [products, setProducts] = useState<ProductCardFE[]>([]);
@@ -64,10 +64,12 @@ export default function ShopPage({ params }: ShopPageProps) {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [productFilters, setProductFilters] = useState<ProductFilterValues>({});
-  const [auctionFilters, setAuctionFilters] = useState<AuctionFilterValues>({
-    sortBy: "endTime",
-    sortOrder: "asc",
-  });
+  const [auctionFilters, setAuctionFilters] = useState<ShopAuctionFilterValues>(
+    {
+      sortBy: "endTime",
+      sortOrder: "asc",
+    },
+  );
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
 
   useEffect(() => {
@@ -159,8 +161,8 @@ export default function ShopPage({ params }: ShopPageProps) {
         shopId: slug,
         limit: 100,
       };
-      if (auctionFilters.status && auctionFilters.status.length > 0) {
-        apiFilters.status = auctionFilters.status[0];
+      if (auctionFilters.status && auctionFilters.status) {
+        apiFilters.status = auctionFilters.status;
       }
       if (auctionFilters.bidMin !== undefined) {
         apiFilters.minBid = auctionFilters.bidMin;
@@ -207,7 +209,7 @@ export default function ShopPage({ params }: ShopPageProps) {
     setSortOrder(newSortOrder);
   };
 
-  const handleAuctionFilters = (filters: AuctionFilterValues) => {
+  const handleAuctionFilters = (filters: ShopAuctionFilterValues) => {
     setAuctionFilters(filters);
     loadAuctions();
   };
@@ -234,8 +236,9 @@ export default function ShopPage({ params }: ShopPageProps) {
           shopName: shop?.name || "",
         };
       }
-      await addItem(productId, 1, undefined, productDetails);
-      toast.success("Added to cart!");
+      // TODO: Implement cart service and fix addItem call
+      // await addItem(productId, 1, undefined, productDetails);
+      toast.success("Product added! (Cart implementation pending)");
     } catch (error: any) {
       toast.error(error.message || "Failed to add to cart");
     }

@@ -1,4 +1,3 @@
-"use client";
 
 import { LucideIcon, Package, Star, TrendingUp, Users } from "lucide-react";
 

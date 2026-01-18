@@ -9,7 +9,6 @@
  * <SKU value="PROD-12345" label={false} />   // PROD-12345
  */
 
-"use client";
 
 // Removed firebase-error-logger import
 import { cn } from "../../utils/cn";

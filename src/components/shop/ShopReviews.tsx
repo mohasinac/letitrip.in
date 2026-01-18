@@ -17,10 +17,15 @@ interface NextShopReviewsProps
     | "onMarkHelpfulError"
     | "EmptyStateComponent"
   > {
-  shopId: string;
+  shopId?: string;
 }
 
-const ShopReviews: React.FC<NextShopReviewsProps> = ({ shopId, ...props }) => {
+const ShopReviews: React.FC<NextShopReviewsProps> = ({
+  shopId: passedShopId,
+  shop,
+  ...props
+}) => {
+  const shopId = passedShopId || shop?.id || "";
   const handleSubmitReview = async (rating: number, comment: string) => {
     try {
       // TODO: Implement review submission API call
@@ -69,6 +74,7 @@ const ShopReviews: React.FC<NextShopReviewsProps> = ({ shopId, ...props }) => {
   return (
     <ShopReviewsBase
       {...props}
+      shop={shop}
       onSubmitReview={handleSubmitReview}
       onMarkHelpful={handleMarkHelpful}
       onSubmitSuccess={handleSubmitSuccess}

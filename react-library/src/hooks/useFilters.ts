@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * useFilters Hook

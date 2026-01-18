@@ -13,7 +13,7 @@ export type { ShopCardProps, ShopCardVariant } from "./ShopCard";
 export { StatsCard, StatsCardGrid } from "./StatsCard";
 export type { StatsCardGridProps, StatsCardProps } from "./StatsCard";
 
-// Skeletons
+// Card Skeletons (keep with their cards)
 export { AuctionCardSkeleton } from "./AuctionCardSkeleton";
 export { CategoryCardSkeleton } from "./CategoryCardSkeleton";
 export type { CategoryCardSkeletonProps } from "./CategoryCardSkeleton";

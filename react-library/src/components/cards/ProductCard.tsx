@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * ProductCard - Pure React Component

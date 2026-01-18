@@ -10,7 +10,6 @@
  * <BidCount count={25} compact />           // 25
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { Gavel } from "lucide-react";

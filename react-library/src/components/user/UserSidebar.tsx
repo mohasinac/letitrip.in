@@ -1,4 +1,3 @@
-"use client";
 
 import { LayoutDashboard, Search } from "lucide-react";
 import React, { ComponentType, ReactNode, useRef, useState } from "react";

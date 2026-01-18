@@ -11,7 +11,6 @@
  * <CompactPrice amount={150000} />              // ₹1.5L
  */
 
-"use client";
 
 import { cn } from "../../utils/cn";
 import { formatCompactCurrency } from "../../utils/formatters";

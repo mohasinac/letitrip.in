@@ -9,7 +9,6 @@
  * <TimeRemaining endTime={futureDate} format="full" /> // 2 days 5 hours 30 minutes
  */
 
-"use client";
 
 import { AlertCircle, Clock } from "lucide-react";
 import { useEffect, useState } from "react";

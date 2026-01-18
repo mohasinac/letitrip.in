@@ -10,7 +10,6 @@
  * <Percentage value={15} type="increase" />    // +15% (red for price increase)
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { TrendingDown, TrendingUp } from "lucide-react";

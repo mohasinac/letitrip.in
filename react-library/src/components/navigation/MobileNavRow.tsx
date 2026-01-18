@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * MobileNavRow - Pure React

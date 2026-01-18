@@ -1,4 +1,3 @@
-"use client";
 
 import { ChevronDown } from "lucide-react";
 import { forwardRef, SelectHTMLAttributes, useEffect, useRef } from "react";

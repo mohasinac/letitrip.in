@@ -9,7 +9,6 @@
  * <Currency amount={1499} code="USD" />   // $1,499
  */
 
-"use client";
 
 // React import not needed in React 17+ JSX transform
 import { cn } from "../../utils/cn";

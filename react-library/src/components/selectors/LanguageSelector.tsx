@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * LanguageSelector Component

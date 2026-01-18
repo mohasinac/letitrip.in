@@ -11,7 +11,8 @@
     "url": "https://github.com/mohasinac/letitrip.in"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"npm run dev:app\" \"npm run lib:dev\" --names \"app,lib\" --prefix-colors \"cyan,magenta\"",
+    "dev:app": "next dev --turbopack",
     "build": "cross-env BASELINE_BROWSER_MAPPING_QUIET=1 BROWSERSLIST_IGNORE_OLD_DATA=1 next build",
     "start": "next start",
     "lint": "eslint src",
@@ -118,6 +119,7 @@
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
     "autoprefixer": "^10.4.17",
+    "concurrently": "^9.1.2",
     "critters": "^0.0.25",
     "cross-env": "^10.1.0",
     "eslint": "^9.0.0",
