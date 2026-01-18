@@ -50,12 +50,14 @@ This tracker documents the complete migration of the LetItRip.in codebase to uti
 **Last Updated**: January 19, 2026 - 15:45
 
 **Completed**:
+
 - ✅ Test files deleted
 - ✅ Constants directory exists and is well-structured
 - ✅ Next.js wrappers created (Link, Image, Router)
 - ✅ Service adapter pattern implemented with Product adapter example
 
 **Remaining**:
+
 - ⏳ Audit library exports (documentation task)
 - ⏳ Document available components (can be done alongside migration)
 
@@ -89,9 +91,9 @@ This tracker documents the complete migration of the LetItRip.in codebase to uti
 
 ### Phase 5: Public Pages Migration 🔥 PRIORITY 1 - START HERE (51 pages)
 
-- [ ] Home page (`/`)
+- [x] Home page (`/`) - ✅ AuctionsSection migrated to HorizontalScrollContainer (Commit: 4350c545)
 - [ ] About page
-- [ ] Contact page
+- [ ] Contact page - Already using library components (FormField, FormInput, FormTextarea, useLoadingState)
 - [ ] FAQ page
 - [ ] Auction pages (3 pages)
 - [ ] Product pages (4 pages)
