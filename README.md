@@ -173,10 +173,16 @@ letitrip.in/
 │   ├── contexts/              # React contexts
 │   ├── types/                 # TypeScript definitions
 │   └── styles/                # Global styles
+├── scripts/                   # Utility scripts
+│   ├── database/              # Database migrations
+│   ├── deployment/            # Deployment utilities
+│   ├── development/           # Development tools
+│   └── setup/                 # Setup scripts
 ├── functions/                 # Firebase Cloud Functions
 ├── react-library/             # Custom React component library
 ├── tests/                     # Test files
 ├── public/                    # Static assets
+├── refactor/                  # Migration tracker
 └── NDocs/                     # Documentation
 
 ```
