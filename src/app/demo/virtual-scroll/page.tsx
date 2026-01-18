@@ -1,6 +1,6 @@
 "use client";
 
-import { useVirtualList } from "@/hooks/useVirtualList";
+import { useVirtualList } from "@letitrip/react-library";
 import React from "react";
 
 // Mock product data generator
