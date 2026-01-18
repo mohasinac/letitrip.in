@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { logError } from "@/lib/error-logger";
 import AuctionCard from "@/components/cards/AuctionCard";
-import { AuctionCardSkeleton, HorizontalScrollContainer } from "@letitrip/react-library";
-import { homepageService } from "@/services/homepage.service";
+import { logError } from "@/lib/error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type { AuctionItemFE } from "@/services/homepage.service";
+import { homepageService } from "@/services/homepage.service";
+import {
+  AuctionCardSkeleton,
+  HorizontalScrollContainer,
+} from "@letitrip/react-library";
+import { useEffect, useState } from "react";
 
 interface AuctionsSectionProps {
   hotLimit?: number;
@@ -97,8 +100,8 @@ export function AuctionsSection({
                   auction.status === "upcoming"
                     ? "pending"
                     : auction.status === "live"
-                      ? "active"
-                      : auction.status,
+                    ? "active"
+                    : auction.status,
                 shop: {
                   id: auction.shopId,
                   name: auction.shopName,
@@ -134,8 +137,8 @@ export function AuctionsSection({
                   auction.status === "upcoming"
                     ? "pending"
                     : auction.status === "live"
-                      ? "active"
-                      : auction.status,
+                    ? "active"
+                    : auction.status,
                 featured: true,
                 shop: {
                   id: auction.shopId,

@@ -5,6 +5,7 @@ This directory contains Next.js-specific wrapper components that bridge the gap 
 ## Purpose
 
 The react-library is **pure React** with no Next.js dependencies. These wrappers allow library components to work seamlessly with Next.js features like:
+
 - Client-side navigation (`next/link`)
 - Image optimization (`next/image`)
 - Router hooks (`next/navigation`)
@@ -12,6 +13,7 @@ The react-library is **pure React** with no Next.js dependencies. These wrappers
 ## Available Wrappers
 
 ### LinkWrapper
+
 Wraps Next.js `Link` component for navigation.
 
 ```tsx
@@ -19,7 +21,7 @@ import { LinkWrapper } from '@/components/wrappers';
 import { Button } from '@letitrip/react-library';
 
 // Pass as LinkComponent prop
-<ProductCard 
+<ProductCard
   product={product}
   LinkComponent={LinkWrapper}
   href="/products/123"
@@ -32,40 +34,35 @@ import { Button } from '@letitrip/react-library';
 ```
 
 ### ImageWrapper
+
 Wraps Next.js `Image` component for optimization.
 
 ```tsx
-import { ImageWrapper } from '@/components/wrappers';
-import { ProductCard } from '@letitrip/react-library';
+import { ImageWrapper } from "@/components/wrappers";
+import { ProductCard } from "@letitrip/react-library";
 
-<ProductCard 
-  product={product}
-  ImageComponent={ImageWrapper}
-/>
+<ProductCard product={product} ImageComponent={ImageWrapper} />;
 ```
 
 ### RouterWrapper
+
 Provides router functionality through callbacks.
 
 ```tsx
-import { useRouterWrapper } from '@/components/wrappers';
-import { LibraryComponent } from '@letitrip/react-library';
+import { useRouterWrapper } from "@/components/wrappers";
+import { LibraryComponent } from "@letitrip/react-library";
 
 function MyPage() {
   const { push, back } = useRouterWrapper();
-  
-  return (
-    <LibraryComponent 
-      onNavigate={push}
-      onGoBack={back}
-    />
-  );
+
+  return <LibraryComponent onNavigate={push} onGoBack={back} />;
 }
 ```
 
 ## Usage Pattern
 
 ### In Library Components (react-library)
+
 Library components accept wrappers as props:
 
 ```tsx
@@ -78,16 +75,21 @@ interface ProductCardProps {
 ```
 
 ### In Next.js App (main app)
+
 Pages pass wrappers to library components:
 
 ```tsx
 // src/app/products/page.tsx
-import { LinkWrapper, ImageWrapper, useRouterWrapper } from '@/components/wrappers';
-import { ProductList } from '@letitrip/react-library';
+import {
+  LinkWrapper,
+  ImageWrapper,
+  useRouterWrapper,
+} from "@/components/wrappers";
+import { ProductList } from "@letitrip/react-library";
 
 export default function ProductsPage() {
   const { push } = useRouterWrapper();
-  
+
   return (
     <ProductList
       LinkComponent={LinkWrapper}
@@ -114,19 +116,17 @@ Library components can be tested without Next.js by providing mock wrappers:
 const MockLink = ({ children, href }: any) => <a href={href}>{children}</a>;
 const MockImage = ({ src, alt }: any) => <img src={src} alt={alt} />;
 
-<ProductCard 
-  LinkComponent={MockLink}
-  ImageComponent={MockImage}
-/>
+<ProductCard LinkComponent={MockLink} ImageComponent={MockImage} />;
 ```
 
 ## Future Wrappers
 
 Consider adding:
+
 - `HeadWrapper` - For meta tags and SEO
 - `ScriptWrapper` - For third-party scripts
 - `MiddlewareWrapper` - For auth/redirects
 
 ---
 
-*Last Updated: January 19, 2026*
+_Last Updated: January 19, 2026_
