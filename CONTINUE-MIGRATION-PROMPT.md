@@ -9,6 +9,7 @@ Use this prompt when resuming migration work:
 I'm continuing the migration of LetItRip.in to use @letitrip/react-library.
 
 **Current Context:**
+
 - Main tracker: `MIGRATION-TRACKER.md`
 - Action plan: `MIGRATION-ACTION-PLAN.md`
 - Quick reference: `MIGRATION-QUICK-REFERENCE.md`
@@ -16,6 +17,7 @@ I'm continuing the migration of LetItRip.in to use @letitrip/react-library.
 - Main app location: `src/`
 
 **Migration Order:**
+
 1. ✅ Public pages (51 pages) - Priority 1
 2. ✅ Auth/Login pages (5 pages) - Priority 2
 3. ✅ Admin pages (66 pages) - Priority 3
@@ -24,6 +26,7 @@ I'm continuing the migration of LetItRip.in to use @letitrip/react-library.
 6. ✅ Remaining pages and routes - Priority 6
 
 **Requirements:**
+
 - Start dev server automatically: `npm run dev`
 - Update tracker in real-time after each completion
 - Use constants and enums wherever possible
@@ -35,6 +38,7 @@ I'm continuing the migration of LetItRip.in to use @letitrip/react-library.
 **Current Phase:** [Check MIGRATION-TRACKER.md for current phase]
 
 **Key Principles:**
+
 1. Library is pure React (no Next.js dependencies)
 2. Use Next.js wrappers in main app
 3. Use service adapters for API integration
@@ -50,6 +54,7 @@ I'm continuing the migration of LetItRip.in to use @letitrip/react-library.
 
 **Instructions:**
 Please continue the migration from where we left off. For each item:
+
 1. Read the current page/component code
 2. Identify what needs migration
 3. Replace with library components

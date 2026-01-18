@@ -23,6 +23,7 @@ src/constants/
 ### When to Create a Constant
 
 ✅ **DO create constants for:**
+
 - Route paths
 - API endpoints
 - Status values
@@ -35,6 +36,7 @@ src/constants/
 - Limits/thresholds
 
 ❌ **DON'T create constants for:**
+
 - One-time use values
 - Component-specific text
 - Truly dynamic values
@@ -43,36 +45,39 @@ src/constants/
 ### Examples
 
 #### Routes
+
 ```typescript
 // src/constants/routes.ts
 export const ROUTES = {
-  HOME: '/',
-  PRODUCTS: '/products',
+  HOME: "/",
+  PRODUCTS: "/products",
   PRODUCT_DETAIL: (slug: string) => `/products/${slug}`,
-  LOGIN: '/login',
-  REGISTER: '/register',
+  LOGIN: "/login",
+  REGISTER: "/register",
 } as const;
 
 // Usage
-import { ROUTES } from '@/constants/routes';
-router.push(ROUTES.PRODUCT_DETAIL('laptop-123'));
+import { ROUTES } from "@/constants/routes";
+router.push(ROUTES.PRODUCT_DETAIL("laptop-123"));
 ```
 
 #### API Endpoints
+
 ```typescript
 // src/constants/api-endpoints.ts
 export const API_ENDPOINTS = {
-  PRODUCTS: '/api/products',
+  PRODUCTS: "/api/products",
   PRODUCT_BY_ID: (id: string) => `/api/products/${id}`,
-  AUCTIONS: '/api/auctions',
+  AUCTIONS: "/api/auctions",
 } as const;
 
 // Usage
-import { API_ENDPOINTS } from '@/constants/api-endpoints';
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 const response = await fetch(API_ENDPOINTS.PRODUCTS);
 ```
 
 #### Status Enums
+
 ```typescript
 // src/constants/status.ts
 export enum OrderStatus {
@@ -97,6 +102,7 @@ if (order.status === OrderStatus.PENDING) { ... }
 ```
 
 #### Validation Rules
+
 ```typescript
 // src/constants/validation.ts
 export const VALIDATION_RULES = {
@@ -116,6 +122,7 @@ export const REGEX_PATTERNS = {
 ```
 
 #### Configuration
+
 ```typescript
 // src/constants/config.ts
 export const APP_CONFIG = {
@@ -137,24 +144,27 @@ export const FEATURE_FLAGS = {
 ## 📚 Best Practices
 
 ### 1. Use `as const` for Type Safety
+
 ```typescript
 export const COLORS = {
-  PRIMARY: '#3B82F6',
-  SECONDARY: '#10B981',
+  PRIMARY: "#3B82F6",
+  SECONDARY: "#10B981",
 } as const;
 // Type: { readonly PRIMARY: '#3B82F6', readonly SECONDARY: '#10B981' }
 ```
 
 ### 2. Use Enums for Related Values
+
 ```typescript
 export enum UserRole {
-  USER = 'user',
-  SELLER = 'seller',
-  ADMIN = 'admin',
+  USER = "user",
+  SELLER = "seller",
+  ADMIN = "admin",
 }
 ```
 
 ### 3. Group Related Constants
+
 ```typescript
 export const AUCTION_CONSTANTS = {
   MIN_BID_INCREMENT: 10,
@@ -165,6 +175,7 @@ export const AUCTION_CONSTANTS = {
 ```
 
 ### 4. Use Functions for Dynamic Values
+
 ```typescript
 export const ROUTES = {
   PRODUCT_DETAIL: (slug: string) => `/products/${slug}`,
@@ -173,6 +184,7 @@ export const ROUTES = {
 ```
 
 ### 5. Document Complex Constants
+
 ```typescript
 /**
  * Maximum number of images allowed per product
@@ -192,6 +204,7 @@ export const SLOW_CONNECTION_THRESHOLD = 5000;
 During the migration to @letitrip/react-library, we're extracting hardcoded values into constants:
 
 ### Before Migration
+
 ```typescript
 // ❌ Hardcoded values
 if (password.length < 8) { ... }
@@ -200,6 +213,7 @@ fetch('/api/products');
 ```
 
 ### After Migration
+
 ```typescript
 // ✅ Using constants
 import { VALIDATION_RULES } from '@/constants/validation';
@@ -224,15 +238,15 @@ export const MAX_FILE_SIZE = 5000000;
 
 // Enums
 export enum PaymentStatus {
-  PENDING = 'PENDING',
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
 }
 
 // Constant Objects
 export const API_ENDPOINTS = {
-  USERS: '/api/users',
-  PRODUCTS: '/api/products',
+  USERS: "/api/users",
+  PRODUCTS: "/api/products",
 } as const;
 
 // Functions
@@ -245,15 +259,16 @@ The react-library also has constants. Import from appropriate location:
 
 ```typescript
 // Library constants (framework-independent)
-import { BREAKPOINTS, COLORS } from '@letitrip/react-library';
+import { BREAKPOINTS, COLORS } from "@letitrip/react-library";
 
 // App constants (Next.js specific)
-import { ROUTES, API_ENDPOINTS } from '@/constants';
+import { ROUTES, API_ENDPOINTS } from "@/constants";
 ```
 
 ## 📊 Current Constants
 
 ### Routes (`routes.ts`)
+
 - Public routes
 - Auth routes
 - Protected routes
@@ -262,10 +277,12 @@ import { ROUTES, API_ENDPOINTS } from '@/constants';
 - API routes
 
 ### API Endpoints (`api-endpoints.ts`)
+
 - All API endpoint paths
 - Dynamic endpoint functions
 
 ### Status (`status.ts`)
+
 - OrderStatus
 - AuctionStatus
 - PaymentStatus
@@ -274,11 +291,13 @@ import { ROUTES, API_ENDPOINTS } from '@/constants';
 - UserStatus
 
 ### Validation (`validation.ts`)
+
 - Field length limits
 - Regex patterns
 - Validation rules
 
 ### Config (`config.ts`)
+
 - App configuration
 - Feature flags
 - Pagination settings
@@ -286,4 +305,4 @@ import { ROUTES, API_ENDPOINTS } from '@/constants';
 
 ---
 
-*Last Updated: January 19, 2026*
+_Last Updated: January 19, 2026_
