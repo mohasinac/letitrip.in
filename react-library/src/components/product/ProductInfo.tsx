@@ -46,7 +46,10 @@ export interface ProductInfoProps {
   onShareSuccess?: (message: string) => void;
   // Injected components
   PriceComponent?: React.ComponentType<{ amount: number }>;
-  FormLabelComponent?: React.ComponentType<{ htmlFor?: string; children: ReactNode }>;
+  FormLabelComponent?: React.ComponentType<{
+    htmlFor?: string;
+    children: ReactNode;
+  }>;
   className?: string;
 }
 
@@ -99,23 +102,30 @@ export function ProductInfo({
   const [cartLoading, setCartLoading] = useState(false);
 
   // Default Price component (fallback if not injected)
-  const Price = PriceComponent || (({ amount }: { amount: number }) => (
-    <span>₹{amount.toLocaleString("en-IN")}</span>
-  ));
+  const Price =
+    PriceComponent ||
+    (({ amount }: { amount: number }) => (
+      <span>₹{amount.toLocaleString("en-IN")}</span>
+    ));
 
   // Default FormLabel component (fallback if not injected)
-  const FormLabel = FormLabelComponent || (({ htmlFor, children }: { htmlFor?: string; children: ReactNode }) => (
-    <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-      {children}
-    </label>
-  ));
+  const FormLabel =
+    FormLabelComponent ||
+    (({ htmlFor, children }: { htmlFor?: string; children: ReactNode }) => (
+      <label
+        htmlFor={htmlFor}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        {children}
+      </label>
+    ));
 
   const discountPercent =
     product.originalPrice && product.originalPrice > product.salePrice
       ? Math.round(
           ((product.originalPrice - product.salePrice) /
             product.originalPrice) *
-            100
+            100,
         )
       : 0;
 
@@ -268,8 +278,8 @@ export function ProductInfo({
                 setQuantity(
                   Math.min(
                     Math.max(1, parseInt(e.target.value) || 1),
-                    product.stock
-                  )
+                    product.stock,
+                  ),
                 )
               }
               className="w-20 text-center border border-gray-300 dark:border-gray-600 rounded-lg py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
@@ -336,7 +346,9 @@ export function ProductInfo({
       <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
         <div className="flex items-center gap-3 mb-3">
           <Store className="w-5 h-5 text-gray-400" />
-          <span className="text-sm text-gray-600 dark:text-gray-400">Sold by</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Sold by
+          </span>
           {onShopClick ? (
             <button
               onClick={() => onShopClick(product.shop_id)}

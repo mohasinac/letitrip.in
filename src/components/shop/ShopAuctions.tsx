@@ -2,20 +2,21 @@
 
 import AuctionCard from "@/components/cards/AuctionCard";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import type { ShopAuctionsProps as LibraryShopAuctionsProps } from "@letitrip/react-library";
 import {
   AuctionFilters,
   EmptyState,
+  ShopAuctions as LibraryShopAuctions,
 } from "@letitrip/react-library";
-import { ShopAuctions as LibraryShopAuctions } from "@letitrip/react-library";
-import type { ShopAuctionsProps as LibraryShopAuctionsProps } from "@letitrip/react-library";
 
-export interface ShopAuctionsProps extends Omit<
-  LibraryShopAuctionsProps,
-  | "AuctionCardComponent"
-  | "AuctionFiltersComponent"
-  | "EmptyStateComponent"
-  | "auctions"
-> {
+export interface ShopAuctionsProps
+  extends Omit<
+    LibraryShopAuctionsProps,
+    | "AuctionCardComponent"
+    | "AuctionFiltersComponent"
+    | "EmptyStateComponent"
+    | "auctions"
+  > {
   auctions: AuctionCardFE[];
 }
 
@@ -28,7 +29,8 @@ export function ShopAuctions(props: ShopAuctionsProps) {
     currentPrice: a.currentPrice || a.startingBid || 0,
     startingBid: a.startingBid || 0,
     totalBids: a.totalBids || 0,
-    endTime: typeof a.endTime === "string" ? a.endTime : a.endTime.toISOString(),
+    endTime:
+      typeof a.endTime === "string" ? a.endTime : a.endTime.toISOString(),
     status: a.status,
     featured: (a as any).featured,
   }));

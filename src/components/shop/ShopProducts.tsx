@@ -3,32 +3,33 @@
 import { CardGrid } from "@/components/cards/CardGrid";
 import { ProductCard } from "@/components/cards/ProductCard";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import type { ShopProductsProps as LibraryShopProductsProps } from "@letitrip/react-library";
 import {
   EmptyState,
   FormSelect,
+  ShopProducts as LibraryShopProducts,
   OptimizedImage,
   Price,
   ProductFilters,
 } from "@letitrip/react-library";
-import { ShopProducts as LibraryShopProducts } from "@letitrip/react-library";
-import type { ShopProductsProps as LibraryShopProductsProps } from "@letitrip/react-library";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export interface ShopProductsProps extends Omit<
-  LibraryShopProductsProps,
-  | "CardGridComponent"
-  | "ProductCardComponent"
-  | "ProductFiltersComponent"
-  | "EmptyStateComponent"
-  | "FormSelectComponent"
-  | "OptimizedImageComponent"
-  | "PriceComponent"
-  | "onProductClick"
-  | "onAddToCartSuccess"
-  | "onAddToCartError"
-  | "products"
-> {
+export interface ShopProductsProps
+  extends Omit<
+    LibraryShopProductsProps,
+    | "CardGridComponent"
+    | "ProductCardComponent"
+    | "ProductFiltersComponent"
+    | "EmptyStateComponent"
+    | "FormSelectComponent"
+    | "OptimizedImageComponent"
+    | "PriceComponent"
+    | "onProductClick"
+    | "onAddToCartSuccess"
+    | "onAddToCartError"
+    | "products"
+  > {
   products: ProductCardFE[];
 }
 

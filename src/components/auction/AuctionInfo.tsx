@@ -1,9 +1,11 @@
 "use client";
 
 import { VerificationGate } from "@/components/auth/VerificationGate";
-import { Price } from "@letitrip/react-library";
-import { AuctionInfo as LibraryAuctionInfo } from "@letitrip/react-library";
 import type { AuctionInfoProps as LibraryAuctionInfoProps } from "@letitrip/react-library";
+import {
+  AuctionInfo as LibraryAuctionInfo,
+  Price,
+} from "@letitrip/react-library";
 import { toast } from "sonner";
 
 export type AuctionInfoProps = Omit<
