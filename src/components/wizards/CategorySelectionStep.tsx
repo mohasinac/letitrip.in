@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronRight } from "lucide-react";
-import { CategorySelectionStep as LibraryCategorySelectionStep } from "@letitrip/react-library";
-import type { CategorySelectionStepProps as LibraryCategorySelectionStepProps } from "@letitrip/react-library";
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
+import type { CategorySelectionStepProps as LibraryCategorySelectionStepProps } from "@letitrip/react-library";
+import { CategorySelectionStep as LibraryCategorySelectionStep } from "@letitrip/react-library";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 export interface CategorySelectionStepProps
   extends Omit<

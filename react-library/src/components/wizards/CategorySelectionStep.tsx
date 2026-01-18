@@ -12,7 +12,7 @@ export interface CategorySelectionStepProps {
   leafOnly?: boolean;
   entityType?: "product" | "shop" | "auction";
   selectedPath?: string[];
-  
+
   // Injection props
   selectorComponent: ReactNode;
   icons?: {

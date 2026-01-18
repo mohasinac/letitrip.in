@@ -11,7 +11,13 @@ export interface AdvancedSearchFilters {
   inStock?: boolean;
   categoryId?: string;
   shopId?: string;
-  sortBy?: "relevance" | "price_asc" | "price_desc" | "rating" | "newest" | "popular";
+  sortBy?:
+    | "relevance"
+    | "price_asc"
+    | "price_desc"
+    | "rating"
+    | "newest"
+    | "popular";
   fuzzy?: boolean;
   exact?: boolean;
 }
@@ -70,7 +76,7 @@ export function SearchFilters({
   className,
 }: SearchFiltersProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(["price", "rating", "availability", "sort"])
+    new Set(["price", "rating", "availability", "sort"]),
   );
 
   const toggleSection = (section: string) => {
@@ -121,13 +127,13 @@ export function SearchFilters({
   ] as const;
 
   return (
-    <div className={cn("bg-white rounded-lg border border-gray-200", className)}>
+    <div
+      className={cn("bg-white rounded-lg border border-gray-200", className)}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          {icons?.filter && (
-            <div className="text-gray-600">{icons.filter}</div>
-          )}
+          {icons?.filter && <div className="text-gray-600">{icons.filter}</div>}
           <h3 className="font-semibold text-gray-900">Filters</h3>
         </div>
         {hasActiveFilters() && (
@@ -150,7 +156,9 @@ export function SearchFilters({
           >
             <span className="font-medium text-gray-900">Sort By</span>
             <div className="text-gray-400">
-              {expandedSections.has("sort") ? icons?.chevronUp : icons?.chevronDown}
+              {expandedSections.has("sort")
+                ? icons?.chevronUp
+                : icons?.chevronDown}
             </div>
           </button>
           {expandedSections.has("sort") && (
@@ -185,7 +193,9 @@ export function SearchFilters({
           >
             <span className="font-medium text-gray-900">Price Range</span>
             <div className="text-gray-400">
-              {expandedSections.has("price") ? icons?.chevronUp : icons?.chevronDown}
+              {expandedSections.has("price")
+                ? icons?.chevronUp
+                : icons?.chevronDown}
             </div>
           </button>
           {expandedSections.has("price") && (
@@ -202,7 +212,7 @@ export function SearchFilters({
                   onChange={(e) =>
                     updateFilter(
                       "minPrice",
-                      e.target.value ? Number(e.target.value) : undefined
+                      e.target.value ? Number(e.target.value) : undefined,
                     )
                   }
                   placeholder="₹0"
@@ -221,7 +231,7 @@ export function SearchFilters({
                   onChange={(e) =>
                     updateFilter(
                       "maxPrice",
-                      e.target.value ? Number(e.target.value) : undefined
+                      e.target.value ? Number(e.target.value) : undefined,
                     )
                   }
                   placeholder="₹10,000"
@@ -240,7 +250,9 @@ export function SearchFilters({
           >
             <span className="font-medium text-gray-900">Minimum Rating</span>
             <div className="text-gray-400">
-              {expandedSections.has("rating") ? icons?.chevronUp : icons?.chevronDown}
+              {expandedSections.has("rating")
+                ? icons?.chevronUp
+                : icons?.chevronDown}
             </div>
           </button>
           {expandedSections.has("rating") && (
@@ -279,7 +291,9 @@ export function SearchFilters({
           >
             <span className="font-medium text-gray-900">Availability</span>
             <div className="text-gray-400">
-              {expandedSections.has("availability") ? icons?.chevronUp : icons?.chevronDown}
+              {expandedSections.has("availability")
+                ? icons?.chevronUp
+                : icons?.chevronDown}
             </div>
           </button>
           {expandedSections.has("availability") && (
@@ -308,7 +322,9 @@ export function SearchFilters({
             >
               <span className="font-medium text-gray-900">Category</span>
               <div className="text-gray-400">
-                {expandedSections.has("category") ? icons?.chevronUp : icons?.chevronDown}
+                {expandedSections.has("category")
+                  ? icons?.chevronUp
+                  : icons?.chevronDown}
               </div>
             </button>
             {expandedSections.has("category") && (
@@ -341,7 +357,9 @@ export function SearchFilters({
             >
               <span className="font-medium text-gray-900">Shop</span>
               <div className="text-gray-400">
-                {expandedSections.has("shop") ? icons?.chevronUp : icons?.chevronDown}
+                {expandedSections.has("shop")
+                  ? icons?.chevronUp
+                  : icons?.chevronDown}
               </div>
             </button>
             {expandedSections.has("shop") && (
@@ -373,7 +391,9 @@ export function SearchFilters({
           >
             <span className="font-medium text-gray-900">Search Options</span>
             <div className="text-gray-400">
-              {expandedSections.has("options") ? icons?.chevronUp : icons?.chevronDown}
+              {expandedSections.has("options")
+                ? icons?.chevronUp
+                : icons?.chevronDown}
             </div>
           </button>
           {expandedSections.has("options") && (

@@ -6,7 +6,9 @@ export interface SearchResultItem {
   [key: string]: any;
 }
 
-export interface SearchResultsProps<T extends SearchResultItem = SearchResultItem> {
+export interface SearchResultsProps<
+  T extends SearchResultItem = SearchResultItem,
+> {
   products?: T[];
   shops?: T[];
   categories?: T[];
@@ -19,7 +21,7 @@ export interface SearchResultsProps<T extends SearchResultItem = SearchResultIte
   onProductClick?: (product: T) => void;
   onShopClick?: (shop: T) => void;
   onCategoryClick?: (category: T) => void;
-  
+
   // Injection props
   renderProduct?: (product: T) => ReactNode;
   renderShop?: (shop: T) => ReactNode;
@@ -108,9 +110,12 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
         {emptyState || (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No results found</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No results found
+            </h3>
             <p className="text-gray-600">
-              We couldn&apos;t find anything matching &quot;{query}&quot;. Try different keywords or check the spelling.
+              We couldn&apos;t find anything matching &quot;{query}&quot;. Try
+              different keywords or check the spelling.
             </p>
           </div>
         )}
@@ -125,7 +130,8 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Search Results</h2>
           <p className="text-gray-600 mt-1">
-            Found {total} {total === 1 ? "result" : "results"} for &quot;{query}&quot;
+            Found {total} {total === 1 ? "result" : "results"} for &quot;{query}
+            &quot;
           </p>
         </div>
       </div>
@@ -222,7 +228,7 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
                     "w-10 h-10 rounded-lg border transition-colors",
                     currentPage === pageNum
                       ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
                   )}
                 >
                   {pageNum}

@@ -33,7 +33,10 @@ export type {
 export { SearchInput } from "./SearchInput";
 
 export { SearchFilters } from "./SearchFilters";
-export type { AdvancedSearchFilters, SearchFiltersProps } from "./SearchFilters";
+export type {
+  AdvancedSearchFilters,
+  SearchFiltersProps,
+} from "./SearchFilters";
 
 export { SearchResults } from "./SearchResults";
 export type { SearchResultItem, SearchResultsProps } from "./SearchResults";
