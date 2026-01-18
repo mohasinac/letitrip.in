@@ -1,12 +1,12 @@
 /**
  * SubNavbar - Pure React
- * 
+ *
  * Secondary navigation bar with icon-based nav items.
  * Framework-agnostic navigation component with Link and pathname injection.
  */
 
-import { type ComponentType, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { type ComponentType, type ReactNode } from "react";
 
 export interface SubNavbarItem {
   id: string;

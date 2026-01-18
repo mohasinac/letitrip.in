@@ -1,6 +1,6 @@
 /**
  * WelcomeHero Component - Pure React
- * 
+ *
  * Simple welcome hero section with configurable title and description.
  * Framework-agnostic component for homepage welcome banner.
  */

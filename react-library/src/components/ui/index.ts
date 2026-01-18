@@ -8,6 +8,15 @@ export type { CardProps, CardSectionProps } from "./Card";
 export { BaseCard } from "./BaseCard";
 export type { ActionButton, Badge, BaseCardProps } from "./BaseCard";
 
+export { SectionCard } from "./SectionCard";
+export type { SectionCardProps } from "./SectionCard";
+
+export { SliderControl } from "./SliderControl";
+export type { SliderControlProps } from "./SliderControl";
+
+export { RipLimitStatsCards } from "./RipLimitStatsCards";
+export type { RipLimitStats, RipLimitStatsCardsProps } from "./RipLimitStatsCards";
+
 export { LoadingSpinner } from "./LoadingSpinner";
 
 export { ToggleSwitch } from "./ToggleSwitch";

@@ -1,17 +1,17 @@
 "use client";
 
 import { SubNavbar as LibrarySubNavbar } from "@letitrip/react-library";
+import {
+  BookOpen,
+  Gavel,
+  Home,
+  Layers,
+  ShoppingBag,
+  Star,
+  Store,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  ShoppingBag,
-  Layers,
-  Star,
-  BookOpen,
-  Store,
-  Gavel,
-} from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "home", name: "Home", href: "/", icon: Home },

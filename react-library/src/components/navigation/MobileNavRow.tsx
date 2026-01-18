@@ -1,12 +1,19 @@
 /**
  * MobileNavRow - Pure React
- * 
+ *
  * Horizontally scrollable navigation row for mobile.
  * Framework-agnostic component with Link and pathname injection.
  */
 
-import React, { useRef, useState, useEffect, useCallback, type ComponentType, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { cn } from "../../utils/cn";
 
 export interface MobileNavRowItem {
