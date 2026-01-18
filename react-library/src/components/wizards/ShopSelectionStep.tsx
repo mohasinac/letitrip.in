@@ -10,7 +10,7 @@ export interface ShopSelectionStepProps {
   helperText?: string;
   showCreateLink?: boolean;
   createLinkUrl?: string;
-  
+
   // Injection props
   selectorComponent: ReactNode;
   LinkComponent?: React.ComponentType<{

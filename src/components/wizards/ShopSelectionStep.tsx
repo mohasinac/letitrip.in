@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { Plus, Store } from "lucide-react";
-import { ShopSelectionStep as LibraryShopSelectionStep } from "@letitrip/react-library";
-import type { ShopSelectionStepProps as LibraryShopSelectionStepProps } from "@letitrip/react-library";
 import ShopSelector from "@/components/seller/ShopSelector";
+import type { ShopSelectionStepProps as LibraryShopSelectionStepProps } from "@letitrip/react-library";
+import { ShopSelectionStep as LibraryShopSelectionStep } from "@letitrip/react-library";
+import { Plus, Store } from "lucide-react";
+import Link from "next/link";
 
 export interface ShopSelectionStepProps
   extends Omit<

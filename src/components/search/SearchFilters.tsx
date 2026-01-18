@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Filter } from "lucide-react";
-import { SearchFilters as LibrarySearchFilters } from "@letitrip/react-library";
 import type { SearchFiltersProps as LibrarySearchFiltersProps } from "@letitrip/react-library";
+import { SearchFilters as LibrarySearchFilters } from "@letitrip/react-library";
+import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 
 export type { AdvancedSearchFilters } from "@letitrip/react-library";
 
