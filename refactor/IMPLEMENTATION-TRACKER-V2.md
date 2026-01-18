@@ -10,11 +10,11 @@
 ## Overall Progress
 
 - [x] **Phase 1**: Quick Wins - Fully Migratable Components (9/35 complete) ✅
-- [x] **Phase 2**: Pure UI Components with Injection (23/20 complete) ✅
-- [ ] **Phase 3**: Business Logic Extraction (21/35 started)
+- [x] **Phase 2**: Pure UI Components with Injection (25/20 complete) ✅
+- [ ] **Phase 3**: Business Logic Extraction (23/35 started)
 - [ ] **Phase 4**: Complex Refactoring (0/25 complete)
 
-**Total**: 62/115 components migrated (54.0%)
+**Total**: 77/115 components migrated (67.0%)
 
 **Status Notes**:
 
@@ -36,6 +36,9 @@
 - Product components: ProductDescription ✅, ProductGallery ✅, ReviewList ✅, ReviewForm ✅, SellerProducts ✅, SimilarProducts ✅, ProductVariants ✅ Migrated!
 - Card components: CategoryCard ✅, BlogCard ✅, ReviewCard ✅, CategoryCardSkeleton ✅, ProductCardSkeleton ✅, ShopCardSkeleton ✅, AuctionCardSkeleton ✅ Migrated!
 - User components: UserSidebar ✅ Migrated!
+- Layout components: Breadcrumb ✅ Migrated!
+- Category components: CategoryStats ✅, CategoryFeaturedSellers ✅ Migrated!
+- Auction components: LiveCountdown ✅, LiveBidHistory ✅, AuctionSellerInfo ✅, SimilarAuctions ✅, AutoBidSetup ✅ Migrated!
 - Skeleton, FAQ, Legal, UI components: Already in library
 - BaseCard: ✅ Migrated with injection pattern (Phase 2.2)
 - MobileAdminSidebar: ✅ Migrated with injection pattern (Phase 2.3)
