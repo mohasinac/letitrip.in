@@ -1,6 +1,6 @@
-import { Metadata } from "next";
 import { NotImplementedPage } from "@letitrip/react-library";
 import { Wrench } from "lucide-react";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Maintenance Mode | Admin Settings",

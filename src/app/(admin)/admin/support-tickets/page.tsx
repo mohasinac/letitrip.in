@@ -1,12 +1,15 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { UnifiedFilterSidebar } from "@letitrip/react-library";
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
-import { DateDisplay } from "@letitrip/react-library";
 import { TICKET_FILTERS } from "@/constants/filters";
 import { supportService } from "@/services/support.service";
 import type { SupportTicketFE } from "@/types/frontend/support-ticket.types";
+import {
+  DateDisplay,
+  StatsCard,
+  StatsCardGrid,
+  UnifiedFilterSidebar,
+} from "@letitrip/react-library";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -302,7 +305,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                                  ticket.priority
+                                  ticket.priority,
                                 )}`}
                               >
                                 {formatStatus(ticket.priority)}
@@ -311,7 +314,7 @@ function SupportTicketsContent() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                                  ticket.status
+                                  ticket.status,
                                 )}`}
                               >
                                 {formatStatus(ticket.status)}

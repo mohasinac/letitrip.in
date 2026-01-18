@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import AuthGuard from "@/components/auth/AuthGuard";
-import {
-  UnifiedFilterSidebar,
-  BulkActionBar,
-  TableCheckbox,
-} from "@letitrip/react-library";
-import { StatsCardGrid, StatsCard } from "@letitrip/react-library";
-import { SimplePagination } from '@letitrip/react-library';
-import { payoutsService } from "@/services/payouts.service";
 import { toast } from "@/components/admin/Toast";
-import { Eye, CheckCircle, XCircle } from "lucide-react";
-import { useLoadingState } from "@letitrip/react-library";
-import { DateDisplay } from "@letitrip/react-library";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { payoutsService } from "@/services/payouts.service";
+import {
+  BulkActionBar,
+  DateDisplay,
+  SimplePagination,
+  StatsCard,
+  StatsCardGrid,
+  TableCheckbox,
+  UnifiedFilterSidebar,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { CheckCircle, Eye, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AdminPayoutsPage() {
   const router = useRouter();
@@ -332,8 +333,8 @@ export default function AdminPayoutsPage() {
                               payout.status === "processed"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
                                 : payout.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
-                                  : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400"
                             }`}
                           >
                             {payout.status}

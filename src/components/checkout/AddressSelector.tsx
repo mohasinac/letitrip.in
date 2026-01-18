@@ -3,9 +3,9 @@
 import { logError } from "@/lib/error-logger";
 import { addressService } from "@/services/address.service";
 import type { AddressFE } from "@/types/frontend/address.types";
+import { ConfirmDialog, SmartAddressForm } from "@letitrip/react-library";
 import { Check, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ConfirmDialog, SmartAddressForm } from "@letitrip/react-library";
 
 interface AddressSelectorProps {
   selectedId: string | null;

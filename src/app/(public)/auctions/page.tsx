@@ -2,15 +2,15 @@
 
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { ErrorBoundary } from "@letitrip/react-library";
-import { AuctionCardSkeletonGrid } from "@letitrip/react-library";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import {
   AdvancedPagination,
+  AuctionCardSkeletonGrid,
   EmptyState,
+  ErrorBoundary,
   UnifiedFilterSidebar,
   useIsMobile,
   useLoadingState,
@@ -281,7 +281,7 @@ function AuctionsContent() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {
                         auctions.filter(
-                          (a) => a.status === AuctionStatus.ACTIVE
+                          (a) => a.status === AuctionStatus.ACTIVE,
                         ).length
                       }
                     </p>

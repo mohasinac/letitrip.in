@@ -1,11 +1,9 @@
 "use client";
 
-import { ErrorBoundary } from "@letitrip/react-library";
-import { ErrorMessage } from "@letitrip/react-library";
-import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { checkoutService } from "@/services/checkout.service";
+import { ErrorBoundary, ErrorMessage, Price } from "@letitrip/react-library";
 import {
   AlertTriangle,
   ArrowRight,
@@ -95,7 +93,7 @@ function CheckoutSuccessContent() {
       });
       setError(
         error.message ||
-          "Failed to process PayPal payment. Please contact support."
+          "Failed to process PayPal payment. Please contact support.",
       );
       setLoading(false);
       setProcessing(false);
@@ -259,7 +257,7 @@ function CheckoutSuccessContent() {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
-                        }
+                        },
                       )}
                     </p>
                   </div>

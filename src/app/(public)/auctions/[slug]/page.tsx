@@ -4,7 +4,6 @@ import { AuctionDescription } from "@/components/auction/AuctionDescription";
 import { AuctionGallery } from "@/components/auction/AuctionGallery";
 import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
-import { AuctionCardSkeletonGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatINR } from "@/lib/price.utils";
@@ -18,6 +17,7 @@ import type {
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import {
+  AuctionCardSkeletonGrid,
   DateDisplay,
   ErrorMessage,
   FormInput,
@@ -98,7 +98,7 @@ export default function AuctionDetailPage() {
             limit: 6,
           });
           setShopAuctions(
-            (shopAuctionsData.data || []).filter((a) => a.slug !== slug)
+            (shopAuctionsData.data || []).filter((a) => a.slug !== slug),
           );
         } catch (error) {
           logError(error as Error, {
@@ -116,7 +116,7 @@ export default function AuctionDetailPage() {
           limit: 6,
         });
         setSimilarAuctions(
-          (similarData.data || []).filter((a) => a.slug !== slug)
+          (similarData.data || []).filter((a) => a.slug !== slug),
         );
       } catch (error) {
         logError(error as Error, {

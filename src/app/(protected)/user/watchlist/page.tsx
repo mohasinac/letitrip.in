@@ -1,14 +1,17 @@
 "use client";
 
 import AuctionCard from "@/components/cards/AuctionCard";
-import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import {
+  PageState,
+  StatsCard,
+  StatsCardGrid,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { AlertCircle, Clock, Eye, Heart } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect } from "react";

@@ -6,13 +6,13 @@
 
 // Types
 export type {
+  AnalyticsAdapter,
   AuthAdapter,
+  CacheAdapter,
   DatabaseAdapter,
+  HttpClient,
   StorageAdapter,
   UploadService,
-  AnalyticsAdapter,
-  CacheAdapter,
-  HttpClient,
 } from "../types/adapters";
 
 // Classes

@@ -13,7 +13,6 @@
  * - User activity metrics
  */
 
-import { StatsCard } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type { CustomerAnalyticsFE } from "@/types/frontend/analytics.types";
@@ -22,6 +21,7 @@ import {
   PeriodSelector,
   Price,
   Quantity,
+  StatsCard,
   useLoadingState,
 } from "@letitrip/react-library";
 import {

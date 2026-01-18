@@ -1,14 +1,17 @@
 "use client";
 
-import { EmptyState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
-import { DateDisplay } from "@letitrip/react-library";
-import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { ordersService } from "@/services/orders.service";
 import type { OrderCardFE } from "@/types/frontend/order.types";
-import { UserProfileSkeleton } from "@letitrip/react-library";
+import {
+  DateDisplay,
+  EmptyState,
+  Price,
+  StatsCard,
+  StatsCardGrid,
+  useLoadingState,
+  UserProfileSkeleton,
+} from "@letitrip/react-library";
 import {
   ChevronRight,
   Clock,
@@ -59,13 +62,13 @@ export default function UserDashboardPage() {
     // Calculate stats
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(
-      (o) => o.status === "pending" || o.status === "confirmed"
+      (o) => o.status === "pending" || o.status === "confirmed",
     ).length;
     const completedOrders = orders.filter(
-      (o) => o.status === "delivered"
+      (o) => o.status === "delivered",
     ).length;
     const cancelledOrders = orders.filter(
-      (o) => o.status === "cancelled"
+      (o) => o.status === "cancelled",
     ).length;
 
     return {

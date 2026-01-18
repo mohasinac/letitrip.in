@@ -1,13 +1,16 @@
 "use client";
 
-import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
+import {
+  PageState,
+  StatsCard,
+  StatsCardGrid,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   CheckCircle,
@@ -68,13 +71,13 @@ export default function WonAuctionsPage() {
 
   const totalWinnings = auctionsList.reduce(
     (sum, auction) => sum + (auction.currentBid || 0),
-    0
+    0,
   );
   const pendingPayment = auctionsList.filter(
-    (a) => !(a as any).order_id || (a as any).order_status === "pending"
+    (a) => !(a as any).order_id || (a as any).order_status === "pending",
   );
   const completedOrders = auctionsList.filter(
-    (a) => (a as any).order_id && (a as any).order_status === "completed"
+    (a) => (a as any).order_id && (a as any).order_status === "completed",
   );
 
   return (

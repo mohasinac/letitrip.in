@@ -1,14 +1,13 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
-import { ErrorBoundary } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import { shopsService } from "@/services/shops.service";
 import type { ProductFE, ProductFormFE } from "@/types/frontend/product.types";
 import type { ShopCardFE } from "@/types/frontend/shop.types";
-import { Card, useLoadingState } from "@letitrip/react-library";
+import { Card, ErrorBoundary, useLoadingState } from "@letitrip/react-library";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -81,7 +80,7 @@ function EditProductContent({ params }: EditProductPageProps) {
     try {
       const updatedProduct = await productsService.update(
         product.slug,
-        formData
+        formData,
       );
       router.push(`/products/${updatedProduct.slug}`);
     } catch (error: any) {

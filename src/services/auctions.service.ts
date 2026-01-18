@@ -1,32 +1,32 @@
-import { apiService } from "./api.service";
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { AUCTION_STATUS } from "@/constants/statuses";
+import { logServiceError } from "@/lib/error-logger";
 import {
   AuctionBE,
   AuctionFiltersBE,
   BidBE,
 } from "@/types/backend/auction.types";
 import {
-  AuctionFE,
   AuctionCardFE,
+  AuctionFE,
   AuctionFormFE,
-  PlaceBidFormFE,
   BidFE,
+  PlaceBidFormFE,
 } from "@/types/frontend/auction.types";
-import {
-  toFEAuction,
-  toFEAuctions,
-  toFEAuctionCard,
-  toFEBid,
-  toBECreateAuctionRequest,
-} from "@/types/transforms/auction.transforms";
 import type {
+  BulkActionResponse,
   PaginatedResponseBE,
   PaginatedResponseFE,
-  BulkActionResponse,
 } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
+import {
+  toBECreateAuctionRequest,
+  toFEAuction,
+  toFEAuctionCard,
+  toFEAuctions,
+  toFEBid,
+} from "@/types/transforms/auction.transforms";
+import { apiService } from "./api.service";
 
 class AuctionsService {
   /**
@@ -150,8 +150,9 @@ class AuctionsService {
         ? `/auctions/${id}/bid?${queryString}`
         : `/auctions/${id}/bid`;
 
-      const response =
-        await apiService.get<PaginatedResponseBE<BidBE>>(endpoint);
+      const response = await apiService.get<PaginatedResponseBE<BidBE>>(
+        endpoint,
+      );
 
       return {
         data: response.data.map((bid) => toFEBid(bid)),

@@ -1,21 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import AuthGuard from "@/components/auth/AuthGuard";
-import {
-  UnifiedFilterSidebar,
-  BulkActionBar,
-  TableCheckbox,
-} from "@letitrip/react-library";
-import { StatsCardGrid, StatsCard } from "@letitrip/react-library";
-import { SimplePagination } from '@letitrip/react-library';
-import { REVIEW_FILTERS } from "@/constants/filters";
-import { getReviewBulkActions } from "@/constants/bulk-actions";
-import { reviewsService } from "@/services/reviews.service";
 import { toast } from "@/components/admin/Toast";
-import { Star, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { useLoadingState } from "@letitrip/react-library";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { getReviewBulkActions } from "@/constants/bulk-actions";
+import { REVIEW_FILTERS } from "@/constants/filters";
+import { reviewsService } from "@/services/reviews.service";
+import {
+  BulkActionBar,
+  SimplePagination,
+  StatsCard,
+  StatsCardGrid,
+  TableCheckbox,
+  UnifiedFilterSidebar,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { AlertTriangle, CheckCircle, Eye, Star, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AdminReviewsPage() {
   const router = useRouter();
@@ -313,10 +314,10 @@ export default function AdminReviewsPage() {
                               review.status === "approved"
                                 ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                                 : review.status === "rejected"
-                                  ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
-                                  : review.status === "flagged"
-                                    ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
-                                    : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
+                                ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                                : review.status === "flagged"
+                                ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
+                                : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                             }`}
                           >
                             {review.status}

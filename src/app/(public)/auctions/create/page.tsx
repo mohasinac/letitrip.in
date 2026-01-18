@@ -1,11 +1,8 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/admin/LoadingSpinner";
-import { ErrorBoundary } from "@letitrip/react-library";
 import AuctionForm from "@/components/seller/AuctionForm";
-import { Card } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import { productsService } from "@/services/products.service";
@@ -19,6 +16,7 @@ import {
   ProductStatus,
   ShippingClass,
 } from "@/types/shared/common.types";
+import { Card, ErrorBoundary, useLoadingState } from "@letitrip/react-library";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
