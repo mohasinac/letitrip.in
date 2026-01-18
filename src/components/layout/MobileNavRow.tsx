@@ -1,27 +1,30 @@
 "use client";
 
-import React from "react";
-import { MobileNavRow as LibraryMobileNavRow, type MobileNavRowItem } from "@letitrip/react-library";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  LayoutDashboard,
-  ShoppingBag,
-  Heart,
-  Eye,
-  Gavel,
-  MapPin,
-  Star,
-  Settings,
-  Users,
-  Store,
-  Package,
-  ShoppingCart,
+  MobileNavRow as LibraryMobileNavRow,
+  type MobileNavRowItem,
+} from "@letitrip/react-library";
+import {
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
   CreditCard,
   DollarSign,
-  BarChart3,
+  Eye,
+  Gavel,
+  Heart,
+  LayoutDashboard,
+  MapPin,
+  Package,
+  Settings,
+  ShoppingBag,
+  ShoppingCart,
+  Star,
+  Store,
+  Users,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface MobileNavRowProps {
   items: MobileNavRowItem[];

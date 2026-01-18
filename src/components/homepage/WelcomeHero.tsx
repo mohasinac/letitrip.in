@@ -1,5 +1,5 @@
+import { COMPANY_ALT_TEXT, COMPANY_NAME } from "@/constants/navigation";
 import { WelcomeHero as LibraryWelcomeHero } from "@letitrip/react-library";
-import { COMPANY_NAME, COMPANY_ALT_TEXT } from "@/constants/navigation";
 
 export function WelcomeHero() {
   return (
