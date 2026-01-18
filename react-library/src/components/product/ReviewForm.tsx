@@ -100,7 +100,7 @@ export function ReviewForm({
       </svg>
     ));
 
-  const handleFilesAdded = async (files: ReviewMediaFile[]) => {
+  const handleFilesAdded = async (files: MediaFile[]) => {
     setMediaFiles([...mediaFiles, ...files]);
   };
 
