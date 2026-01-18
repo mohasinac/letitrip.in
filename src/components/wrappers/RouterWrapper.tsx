@@ -1,19 +1,19 @@
 /**
  * Next.js Router Wrapper for React Library Components
- * 
+ *
  * Provides Next.js router functionality to pure React components
  * in @letitrip/react-library through a callback interface.
- * 
+ *
  * @example
  * // In pages/components:
  * const { push, back } = useRouterWrapper();
  * <LibraryComponent onNavigate={push} onGoBack={back} />
  */
 
-'use client';
+"use client";
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
 export interface RouterWrapperInterface {
   /** Navigate to a new route */
@@ -41,9 +41,12 @@ export function useRouterWrapper(): RouterWrapperInterface {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const push = useCallback((href: string) => {
-    router.push(href);
-  }, [router]);
+  const push = useCallback(
+    (href: string) => {
+      router.push(href);
+    },
+    [router],
+  );
 
   const back = useCallback(() => {
     router.back();
@@ -53,9 +56,12 @@ export function useRouterWrapper(): RouterWrapperInterface {
     router.forward();
   }, [router]);
 
-  const replace = useCallback((href: string) => {
-    router.replace(href);
-  }, [router]);
+  const replace = useCallback(
+    (href: string) => {
+      router.replace(href);
+    },
+    [router],
+  );
 
   const refresh = useCallback(() => {
     router.refresh();

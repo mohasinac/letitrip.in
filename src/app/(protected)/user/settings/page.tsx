@@ -51,7 +51,9 @@ export default function SettingsPage() {
     // Load user data
     const phoneWithCode = user.phoneNumber || "";
     const countryCodeMatch = phoneWithCode.match(/^(\+\d+)/);
-    const countryCode = countryCodeMatch ? countryCodeMatch[1] : DEFAULT_COUNTRY_CODE;
+    const countryCode = countryCodeMatch
+      ? countryCodeMatch[1]
+      : DEFAULT_COUNTRY_CODE;
     const phoneOnly = phoneWithCode.replace(/^\+\d+\s*/, "");
 
     setFormData({
@@ -87,7 +89,10 @@ export default function SettingsPage() {
         if (refreshUser) {
           await refreshUser();
         }
-        setTimeout(() => setSuccess(false), NOTIFICATION_TIMINGS.SUCCESS_DURATION);
+        setTimeout(
+          () => setSuccess(false),
+          NOTIFICATION_TIMINGS.SUCCESS_DURATION,
+        );
       });
     }
   };
@@ -109,7 +114,10 @@ export default function SettingsPage() {
       if (refreshUser) {
         await refreshUser();
       }
-      setTimeout(() => setSuccess(false), NOTIFICATION_TIMINGS.SUCCESS_DURATION);
+      setTimeout(
+        () => setSuccess(false),
+        NOTIFICATION_TIMINGS.SUCCESS_DURATION,
+      );
     });
   };
 

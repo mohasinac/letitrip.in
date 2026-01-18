@@ -119,10 +119,10 @@ export default function AboutPage() {
                   className={`bg-gradient-to-br ${source.colorClass} rounded-lg p-4`}
                 >
                   <div className="text-2xl mb-2">{source.flag}</div>
-                  <h3 className="font-bold text-gray-900 mb-2">{source.country}</h3>
-                  <p className="text-sm text-gray-600">
-                    {source.products}
-                  </p>
+                  <h3 className="font-bold text-gray-900 mb-2">
+                    {source.country}
+                  </h3>
+                  <p className="text-sm text-gray-600">{source.products}</p>
                 </Card>
               ))}
             </div>
@@ -140,9 +140,7 @@ export default function AboutPage() {
               <p className="text-center font-semibold">
                 {OUR_PROMISE.mainMessage}
               </p>
-              <p className="text-center mt-4">
-                {OUR_PROMISE.extendedMessage}
-              </p>
+              <p className="text-center mt-4">{OUR_PROMISE.extendedMessage}</p>
             </div>
           </Card>
 
@@ -151,9 +149,7 @@ export default function AboutPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               {CONTACT_CTA.title}
             </h3>
-            <p className="text-gray-600 mb-6">
-              {CONTACT_CTA.description}
-            </p>
+            <p className="text-gray-600 mb-6">{CONTACT_CTA.description}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {CONTACT_CTA.buttons.map((button) => (
                 <Link
