@@ -1,19 +1,21 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   UserSidebar as LibraryUserSidebar,
   defaultUserNavigation,
   type UserSidebarProps as LibraryUserSidebarProps,
 } from "@letitrip/react-library";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-type UserSidebarProps = Omit<LibraryUserSidebarProps, "LinkComponent" | "currentPath">;
+type UserSidebarProps = Omit<
+  LibraryUserSidebarProps,
+  "LinkComponent" | "currentPath"
+>;
 
 export function UserSidebar(props: UserSidebarProps) {
   const pathname = usePathname();
-  
+
   return (
     <LibraryUserSidebar
       {...props}
