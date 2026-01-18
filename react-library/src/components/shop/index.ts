@@ -12,3 +12,9 @@ export type { ShopTab, ShopTabType, ShopTabsProps } from "./ShopTabs";
 
 export { ShopHeader } from "./ShopHeader";
 export type { ShopHeaderProps } from "./ShopHeader";
+
+export { ShopProducts } from "./ShopProducts";
+export type { ShopProductsProps, ProductFilterValues } from "./ShopProducts";
+
+export { ShopAuctions } from "./ShopAuctions";
+export type { ShopAuctionsProps, AuctionFilterValues } from "./ShopAuctions";
