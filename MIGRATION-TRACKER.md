@@ -41,8 +41,8 @@ This tracker documents the complete migration of the LetItRip.in codebase to uti
 - [x] Delete all test files (as per user request) ✅ **DONE** - Commit: 326b5157
 - [ ] Audit react-library exports in `/react-library/src/index.ts`
 - [ ] Document all available components, hooks, and utilities
-- [ ] Create constants & enums in `/src/constants/` (README already created)
-- [ ] Create Next.js wrapper components for library components
+- [x] Create constants & enums in `/src/constants/` ✅ **EXISTS** - Already well-structured
+- [x] Create Next.js wrapper components for library components ✅ **DONE** - Commit: 9726bc57
 - [ ] Set up service adapters for API integration
 
 ### Phase 2: Core Components Migration
