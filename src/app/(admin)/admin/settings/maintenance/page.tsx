@@ -1,7 +1,6 @@
 import { NotImplementedPage } from "@letitrip/react-library";
 import { Wrench } from "lucide-react";
 import { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Maintenance Mode | Admin Settings",
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function AdminMaintenancePage() {
   return (
     <NotImplementedPage
-      LinkComponent={Link as any}
       title="Maintenance Mode"
       description="Put the platform in maintenance mode for updates or scheduled downtime. Configure access controls and display custom maintenance messages."
       featureName="E021 - System Maintenance"

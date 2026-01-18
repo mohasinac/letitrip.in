@@ -1,7 +1,6 @@
 import { NotImplementedPage } from "@letitrip/react-library";
 import { Sparkles } from "lucide-react";
 import { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Feature Flags | Admin Settings",
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function AdminFeatureFlagsPage() {
   return (
     <NotImplementedPage
-      LinkComponent={Link as any}
       title="Feature Flags"
       description="Control which features are enabled or disabled across the platform. Toggle experimental features, A/B tests, and gradual rollouts."
       featureName="E021 - Feature Management"

@@ -59,6 +59,24 @@ const nextConfig = {
 
   // Webpack configuration for optimized chunking
   webpack: (config, { isServer, webpack, dev }) => {
+    // Polyfill 'self' for server-side rendering (react-quill uses it)
+    if (isServer) {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "react-quill": false,
+        quill: false,
+      };
+    }
+
+    // Add global polyfill for 'self' in SSR
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        "typeof self": JSON.stringify("undefined"),
+      }),
+    );
+
     // Reduce HMR payload in development
     if (dev && !isServer) {
       config.watchOptions = {
