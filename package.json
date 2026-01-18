@@ -11,9 +11,9 @@
     "url": "https://github.com/mohasinac/letitrip.in"
   },
   "scripts": {
-    "dev": "concurrently \"npm run dev:app\" \"npm run lib:dev\" --names \"app,lib\" --prefix-colors \"cyan,magenta\"",
+    "dev": "npm run lib:build && concurrently \"npm run dev:app\" \"npm run lib:dev\" --names \"app,lib\" --prefix-colors \"cyan,magenta\"",
     "dev:app": "next dev --turbopack",
-    "build": "cross-env BASELINE_BROWSER_MAPPING_QUIET=1 BROWSERSLIST_IGNORE_OLD_DATA=1 next build",
+    "build": "npm run lib:build && cross-env BASELINE_BROWSER_MAPPING_QUIET=1 BROWSERSLIST_IGNORE_OLD_DATA=1 next build",
     "start": "next start",
     "lint": "eslint src",
     "test": "node --max-old-space-size=16384 --expose-gc node_modules/jest/bin/jest.js --maxWorkers=4 --detectOpenHandles --logHeapUsage",

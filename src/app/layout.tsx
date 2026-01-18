@@ -1,9 +1,13 @@
-import { ToastContainer } from "@/components/admin/Toast";
+import { ToastContainer, ToastProvider } from "@/components/admin/Toast";
 import ErrorInitializer from "@/components/common/ErrorInitializer";
 import BottomNav from "@/components/layout/BottomNav";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import {
+  MobileInstallPrompt,
+  MobileOfflineIndicator,
+} from "@/components/mobile/MobileComponents";
 import { ComparisonBar } from "@/components/products/ComparisonBar";
 import {
   ComparisonProvider,
@@ -22,10 +26,6 @@ import {
   generateOrganizationSchema,
   generateWebSiteSchema,
 } from "@/lib/seo/schema";
-import {
-  MobileInstallPrompt,
-  MobileOfflineIndicator,
-} from "@letitrip/react-library";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -92,28 +92,30 @@ export default function RootLayout({
           <ThemeProvider defaultTheme="dark" enableStorage>
             <QueryProvider>
               <AuthProvider>
-                <GlobalSearchProvider>
-                  <LoginRegisterProvider>
-                    <ComparisonProvider>
-                      <ViewingHistoryProvider>
-                        <ErrorInitializer />
-                        <ToastContainer />
-                        <MobileOfflineIndicator />
-                        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
-                          <Header />
-                          <Breadcrumb />
-                          <main className="flex-1 pb-16 lg:pb-0 bg-white dark:bg-gray-900">
-                            {children}
-                          </main>
-                          <Footer />
-                          <BottomNav />
-                          <MobileInstallPrompt />
-                          <ComparisonBar />
-                        </div>
-                      </ViewingHistoryProvider>
-                    </ComparisonProvider>
-                  </LoginRegisterProvider>{" "}
-                </GlobalSearchProvider>{" "}
+                <ToastProvider>
+                  <GlobalSearchProvider>
+                    <LoginRegisterProvider>
+                      <ComparisonProvider>
+                        <ViewingHistoryProvider>
+                          <ErrorInitializer />
+                          <ToastContainer />
+                          <MobileOfflineIndicator />
+                          <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+                            <Header />
+                            <Breadcrumb />
+                            <main className="flex-1 pb-16 lg:pb-0 bg-white dark:bg-gray-900">
+                              {children}
+                            </main>
+                            <Footer />
+                            <BottomNav />
+                            <MobileInstallPrompt />
+                            <ComparisonBar />
+                          </div>
+                        </ViewingHistoryProvider>
+                      </ComparisonProvider>
+                    </LoginRegisterProvider>
+                  </GlobalSearchProvider>
+                </ToastProvider>
               </AuthProvider>
             </QueryProvider>
           </ThemeProvider>
