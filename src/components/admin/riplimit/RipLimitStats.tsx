@@ -1,8 +1,10 @@
 "use client";
 
-import { RipLimitStatsCards as LibraryRipLimitStatsCards, type RipLimitStats } from "@letitrip/react-library";
-import { Quantity } from "@letitrip/react-library";
-import { Card } from "@letitrip/react-library";
+import {
+  Card,
+  RipLimitStatsCards as LibraryRipLimitStatsCards,
+  type RipLimitStats,
+} from "@letitrip/react-library";
 import { AlertTriangle, DollarSign, Users, Wallet } from "lucide-react";
 
 interface RipLimitStatsProps {

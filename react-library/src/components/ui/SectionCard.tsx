@@ -1,12 +1,12 @@
 /**
  * SectionCard - Pure React
- * 
+ *
  * Collapsible card component for section management with enable/disable toggle.
  * Includes reordering buttons and expandable content area.
  */
 
-import { type ReactNode, type ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
+import { type ComponentType, type ReactNode } from "react";
 
 export interface SectionCardProps {
   /** Section title */

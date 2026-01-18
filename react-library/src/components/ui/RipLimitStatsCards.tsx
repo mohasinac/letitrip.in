@@ -1,6 +1,6 @@
 /**
  * RipLimitStatsCards - Pure React
- * 
+ *
  * Statistics cards for RipLimit (virtual currency) metrics.
  * Displays circulation, revenue, users, and unpaid auctions.
  */
@@ -56,7 +56,9 @@ export function RipLimitStatsCards({
   const AlertTriangle = icons.alertTriangle;
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${className}`}>
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${className}`}
+    >
       {/* Total Circulation */}
       <CardComponent>
         <div className="flex items-start justify-between">
@@ -98,8 +100,12 @@ export function RipLimitStatsCards({
                   {formatters.formatINR(stats?.netRevenue || 0)}
                 </p>
                 <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  <span>↑ {formatters.formatINR(stats?.totalRevenue || 0)}</span>
-                  <span>↓ {formatters.formatINR(stats?.totalRefunded || 0)}</span>
+                  <span>
+                    ↑ {formatters.formatINR(stats?.totalRevenue || 0)}
+                  </span>
+                  <span>
+                    ↓ {formatters.formatINR(stats?.totalRefunded || 0)}
+                  </span>
                 </div>
               </>
             )}

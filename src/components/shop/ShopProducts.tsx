@@ -1,7 +1,6 @@
 "use client";
 
-import { CardGrid } from "@/components/cards/CardGrid";
-import { ProductCard } from "@/components/cards/ProductCard";
+import { CardGrid, ProductCard } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopProductsProps as LibraryShopProductsProps } from "@letitrip/react-library";
 import {

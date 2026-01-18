@@ -1,6 +1,6 @@
 "use client";
 
-import { CompareButton } from "@/components/products/CompareButton";
+import { CompareButton } from "@letitrip/react-library";
 import { formatDiscount } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import {

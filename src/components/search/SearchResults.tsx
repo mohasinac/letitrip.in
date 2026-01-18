@@ -1,8 +1,6 @@
 "use client";
 
-import { CategoryCard } from "@/components/cards/CategoryCard";
-import { ProductCard } from "@/components/cards/ProductCard";
-import { ShopCard } from "@/components/cards/ShopCard";
+import { CategoryCard, ProductCard, ShopCard } from "@letitrip/react-library";
 import type { CategoryFE } from "@/types/frontend/category.types";
 import type { ProductFE } from "@/types/frontend/product.types";
 import type { ShopCardFE } from "@/types/frontend/shop.types";

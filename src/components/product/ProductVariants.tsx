@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/cards/ProductCard";
+import { ProductCard } from "@letitrip/react-library";
 import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
