@@ -1,4 +1,4 @@
-import React, { ComponentType, ReactNode } from "react";
+import { ComponentType, ReactNode } from "react";
 
 export interface FeaturedSeller {
   id: string;
