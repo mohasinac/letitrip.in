@@ -1,7 +1,6 @@
 "use client";
 
-import { FormInput } from "@letitrip/react-library";
-import { OptimizedImage } from "@letitrip/react-library"
+import { FormInput, OptimizedImage } from "@letitrip/react-library";
 import type { CategoryFormData, OnChange } from "./types";
 
 interface MediaStepProps {
@@ -30,8 +29,9 @@ export default function MediaStep({ formData, onChange }: MediaStepProps) {
             <OptimizedImage
               src={formData.imageUrl}
               alt="Category preview"
-              fill
-              className="object-cover rounded-lg border border-gray-200"
+              width={384}
+              height={192}
+              className="object-cover rounded-lg border border-gray-200 w-full h-full"
             />
           </div>
         </div>

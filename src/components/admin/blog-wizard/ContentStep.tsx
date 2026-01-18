@@ -1,5 +1,4 @@
-import { FormLabel } from "@letitrip/react-library";
-import { RichTextEditor } from "@letitrip/react-library";
+import { FormLabel, RichTextEditor } from "@letitrip/react-library";
 import type { BlogFormData, OnBlogChange } from "./types";
 
 interface ContentStepProps {
@@ -26,9 +25,9 @@ export function ContentStep({ formData, onChange, error }: ContentStepProps) {
           value={formData.content}
           onChange={(value) => onChange("content", value)}
           placeholder="Write your blog post content here..."
-          minHeight={400}
-          error={error}
+          minHeight="400px"
         />
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     </div>
   );

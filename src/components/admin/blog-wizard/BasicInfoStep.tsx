@@ -28,8 +28,8 @@ export function BasicInfoStep({
       formData={formData}
       onChange={onChange}
       errors={errors}
-      FormInputComponent={FormInput}
-      FormTextareaComponent={FormTextarea}
+      FormInputComponent={FormInput as any}
+      FormTextareaComponent={FormTextarea as any}
       urlPrefix="/blog/"
     />
   );

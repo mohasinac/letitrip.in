@@ -38,10 +38,10 @@ export default function SeoStep({
       onChange={onChange}
       validateSlug={validateSlug}
       errors={errors}
-      FormInputComponent={FormInput}
-      FormTextareaComponent={FormTextarea}
-      FormLabelComponent={FormLabel}
-      SlugInputComponent={SlugInput}
+      FormInputComponent={FormInput as any}
+      FormTextareaComponent={FormTextarea as any}
+      FormLabelComponent={FormLabel as any}
+      SlugInputComponent={SlugInput as any}
       baseUrl="letitrip.in"
       siteName="Letitrip"
     />

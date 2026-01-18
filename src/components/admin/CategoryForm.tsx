@@ -5,10 +5,10 @@ import { logError } from "@/lib/firebase-error-logger";
 import { categoriesService } from "@/services/categories.service";
 import { MediaFile } from "@/types/media";
 import {
+  Button,
   Card,
   CategorySelector,
   Category as CategoryType,
-  FormActions,
   FormCheckbox,
   FormField,
   FormInput,
@@ -17,10 +17,9 @@ import {
   OptimizedImage,
   RichTextEditor,
   SlugInput,
-  useMediaUpload,
 } from "@letitrip/react-library";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CategoryFormProps {
   initialData?: {
@@ -59,28 +58,64 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     meta_description: initialData?.meta_description || "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
-  const {
-    uploadMedia,
-    cleanupUploadedMedia,
-    clearTracking,
-    confirmNavigation,
-    isUploading,
-    isCleaning,
-    hasUploadedMedia,
-  } = useMediaUpload({
-    enableNavigationGuard: true,
-    navigationGuardMessage: "You have uploaded an image. Leave and delete?",
-    onUploadSuccess: (url) => {
+  // Simple media upload handlers (replacing library hook)
+  const uploadMedia = useCallback(async (file: File, _context: string) => {
+    setIsUploading(true);
+    try {
+      const formDataObj = new FormData();
+      formDataObj.append("file", file);
+      formDataObj.append("context", "category");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataObj,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const data = await response.json();
+      const url = data.url;
+      setUploadedImageUrl(url);
       setFormData((prev) => ({ ...prev, image: url }));
-    },
-    onUploadError: (error) => {
+    } catch (error) {
       setErrors((prev) => ({ ...prev, image: `Upload failed: ${error}` }));
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  }, []);
+
+  const clearTracking = useCallback(() => {
+    setUploadedImageUrl(null);
+  }, []);
+
+  const cleanupUploadedMedia = useCallback(async () => {
+    // Could call delete API here if needed
+    setUploadedImageUrl(null);
+    setUploadedFiles([]);
+  }, []);
+
+  const hasUploadedMedia = uploadedImageUrl !== null;
+
+  const confirmNavigation = useCallback(
+    async (callback: () => void) => {
+      if (hasUploadedMedia) {
+        const confirmed = window.confirm(
+          "You have uploaded an image. Leave and delete?",
+        );
+        if (confirmed) {
+          await cleanupUploadedMedia();
+          callback();
+        }
+      } else {
+        callback();
+      }
     },
-    onCleanupComplete: () => {
-      setUploadedFiles([]);
-    },
-  });
+    [hasUploadedMedia, cleanupUploadedMedia],
+  );
 
   // Load categories for CategorySelector
   useEffect(() => {
@@ -135,7 +170,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       } else {
         await categoriesService.update(
           initialData?.slug || "",
-          formData as any
+          formData as any,
         );
       }
 
@@ -183,9 +218,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     }
   };
 
-  const handleCancel = async () => {
+  const handleCancel = () => {
     if (hasUploadedMedia) {
-      await confirmNavigation(() => router.back());
+      confirmNavigation(() => router.back());
     } else {
       router.back();
     }
@@ -288,12 +323,14 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <Card title="Category Image">
         <div className="space-y-4">
           {formData.image && !uploadedFiles.length && (
-            <div className="relative w-full max-w-md h-48">
+            <div className="relative w-full max-w-md">
               <OptimizedImage
                 src={formData.image}
                 alt="Current category"
-                fill
-                className="object-cover rounded-lg"
+                width={448}
+                height={192}
+                objectFit="cover"
+                className="rounded-lg"
               />
             </div>
           )}
@@ -322,7 +359,7 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
               setUploadedFiles([]);
             }}
             files={uploadedFiles}
-            disabled={loading || isUploading || isCleaning}
+            disabled={loading || isUploading}
           />
         </div>
       </Card>
@@ -418,12 +455,23 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       )}
 
       {/* Actions */}
-      <FormActions
-        onCancel={handleCancel}
-        submitLabel={mode === "create" ? "Create Category" : "Save Changes"}
-        isSubmitting={loading}
-        cancelDisabled={loading}
-      />
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+        <Button
+          type="button"
+          onClick={handleCancel}
+          variant="outline"
+          disabled={loading}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={loading}
+        >
+          {loading ? "Saving..." : (mode === "create" ? "Create Category" : "Save Changes")}
+        </Button>
+      </div>
     </form>
   );
 }

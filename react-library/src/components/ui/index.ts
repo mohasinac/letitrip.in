@@ -119,3 +119,7 @@ export type {
   ToastProviderProps,
   ToastVariant,
 } from "./Toast";
+
+// Form Actions (deprecated - use forms/FormSection's FormActions with children)
+export { FormActions } from "./FormActions";
+export type { FormActionsProps } from "./FormActions";

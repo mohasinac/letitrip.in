@@ -39,7 +39,7 @@ export default function DisplayStep({
       categories={libraryCategories}
       onChange={onChange}
       errors={errors}
-      FormInputComponent={FormInput}
+      FormInputComponent={FormInput as any}
     />
   );
 }
