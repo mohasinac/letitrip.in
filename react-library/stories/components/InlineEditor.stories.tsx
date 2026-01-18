@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { useState } from "react";
@@ -320,3 +322,4 @@ export const WithError: Story = {
     );
   },
 };
+

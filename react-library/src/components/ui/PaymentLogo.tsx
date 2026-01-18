@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * PaymentLogo Component
  *
@@ -95,3 +97,4 @@ export function PaymentLogo({
 }
 
 export default PaymentLogo;
+

@@ -26,7 +26,7 @@ function copyTokens() {
       console.log(
         `✓ Copied ${
           files.filter((f) => f.endsWith(".css")).length
-        } CSS token files to dist/styles/tokens`
+        } CSS token files to dist/styles/tokens`,
       );
     },
   };
@@ -67,6 +67,10 @@ export default defineConfig({
         "libphonenumber-js",
       ],
       output: {
+        banner: (chunk) => {
+          // Add "use client" directive to all chunks
+          return '"use client";';
+        },
         // Global variables for UMD/IIFE builds
         globals: {
           react: "React",

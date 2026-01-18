@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Calendar,
   ChevronDown,
@@ -209,3 +211,4 @@ export function ShopAbout({ shop, className = "" }: ShopAboutProps) {
     </div>
   );
 }
+

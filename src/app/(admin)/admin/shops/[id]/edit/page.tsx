@@ -197,13 +197,13 @@ export default function AdminEditShopPage() {
 
   const handleLogoUpload = async (files: any[]) => {
     if (files.length > 0) {
-      await uploadLogo(files[0].file, "shop", shopId);
+      await uploadLogo();
     }
   };
 
   const handleBannerUpload = async (files: any[]) => {
     if (files.length > 0) {
-      await uploadBanner(files[0].file, "shop", shopId);
+      await uploadBanner();
     }
   };
 
@@ -278,7 +278,7 @@ export default function AdminEditShopPage() {
     } catch (error) {
       console.error("Failed to delete shop:", error);
       toast.error(
-        "Failed to delete shop. It may have active products or orders."
+        "Failed to delete shop. It may have active products or orders.",
       );
       setShowDeleteDialog(false);
     } finally {

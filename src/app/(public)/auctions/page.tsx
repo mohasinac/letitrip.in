@@ -8,7 +8,6 @@ import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import {
   AdvancedPagination,
-  AuctionCardSkeletonGrid,
   EmptyState,
   ErrorBoundary,
   UnifiedFilterSidebar,
@@ -169,7 +168,7 @@ function AuctionsContent() {
           {/* Desktop Sidebar */}
           {!isMobile && (
             <UnifiedFilterSidebar
-              sections={AUCTION_FILTERS}
+              sections={AUCTION_FILTERS as any}
               values={filters}
               onChange={(key, value) => updateFilter(key, value)}
               onApply={(pendingValues) => {
@@ -411,7 +410,7 @@ function AuctionsContent() {
         {/* Mobile Filter Drawer */}
         {isMobile && (
           <UnifiedFilterSidebar
-            sections={AUCTION_FILTERS}
+            sections={AUCTION_FILTERS as any}
             values={filters}
             onChange={(key, value) => updateFilter(key, value)}
             onApply={(pendingValues) => {
@@ -448,3 +447,4 @@ export default function AuctionsPage() {
     </ErrorBoundary>
   );
 }
+

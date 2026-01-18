@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { VideoUploadWithThumbnail } from "../../src/components/VideoUploadWithThumbnail";
@@ -197,3 +199,4 @@ export const Interactive = () => {
     </div>
   );
 };
+

@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, useState } from "react";
 
 interface AuctionFormData {
@@ -642,3 +644,4 @@ export function AuctionForm({
 }
 
 export default AuctionForm;
+

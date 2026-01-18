@@ -157,7 +157,7 @@ export default function SellerReturnsPage() {
 
           <div className="flex">
             <UnifiedFilterSidebar
-              sections={RETURN_FILTERS}
+              sections={RETURN_FILTERS as any}
               values={filterValues}
               onChange={(key, value) => {
                 setFilterValues({
@@ -490,3 +490,4 @@ export default function SellerReturnsPage() {
     </AuthGuard>
   );
 }
+

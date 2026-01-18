@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertCircle, Clock, Eye, Gavel, ShoppingCart } from "lucide-react";
 import { ReactNode, useState } from "react";
 
@@ -311,3 +313,4 @@ export function AuctionInfo({
 }
 
 export default AuctionInfo;
+

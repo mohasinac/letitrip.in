@@ -15,7 +15,6 @@ import {
   FormSelect,
   OptimizedImage,
   Price,
-  ProductCardSkeletonGrid,
   UnifiedFilterSidebar,
   useCart,
   useIsMobile,

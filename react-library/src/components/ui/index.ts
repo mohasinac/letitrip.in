@@ -121,5 +121,6 @@ export type {
 } from "./Toast";
 
 // Form Actions (deprecated - use forms/FormSection's FormActions with children)
-export { FormActions } from "./FormActions";
-export type { FormActionsProps } from "./FormActions";
+// Commented out to avoid conflict with forms/FormActions
+// export { FormActions } from "./FormActions";
+// export type { FormActionsProps } from "./FormActions";

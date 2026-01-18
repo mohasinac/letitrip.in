@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ComponentType, useEffect, useRef, useState } from "react";
 
 export interface ProductVariantsProps {
@@ -180,3 +182,4 @@ export function ProductVariants({
     </div>
   );
 }
+

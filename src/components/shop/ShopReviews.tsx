@@ -1,6 +1,4 @@
 "use client";
-
-import { logger } from "@/lib/logger";
 import {
   EmptyState,
   ShopReviews as ShopReviewsBase,
@@ -29,7 +27,7 @@ const ShopReviews: React.FC<NextShopReviewsProps> = ({ shopId, ...props }) => {
       console.log("Submitting review:", { shopId, rating, comment });
       // await submitShopReview(shopId, { rating, comment });
     } catch (error) {
-      logger.error("Failed to submit shop review:", { shopId, error });
+      console.error("Failed to submit shop review:", { shopId, error });
       throw error;
     }
   };
@@ -41,7 +39,7 @@ const ShopReviews: React.FC<NextShopReviewsProps> = ({ shopId, ...props }) => {
       // await markReviewHelpful(reviewId);
       return true;
     } catch (error) {
-      logger.error("Failed to mark review helpful:", {
+      console.error("Failed to mark review helpful:", {
         reviewId,
         shopId,
         error,

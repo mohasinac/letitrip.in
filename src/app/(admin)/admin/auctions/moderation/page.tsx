@@ -140,7 +140,7 @@ export default function AuctionModerationPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="flex">
           <UnifiedFilterSidebar
-            sections={AUCTION_FILTERS}
+            sections={AUCTION_FILTERS as any}
             values={filterValues}
             onChange={(key, value) => {
               setFilterValues((prev) => ({

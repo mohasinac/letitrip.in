@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChevronDown,
   ChevronUp,
@@ -416,3 +418,4 @@ export function ShopReviews({
 }
 
 export default ShopReviews;
+

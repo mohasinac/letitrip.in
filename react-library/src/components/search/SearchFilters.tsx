@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, useState } from "react";
 import { cn } from "../../utils/cn";
 
@@ -433,3 +435,4 @@ export function SearchFilters({
     </div>
   );
 }
+

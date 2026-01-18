@@ -8,7 +8,6 @@ import {
   EmptyState,
   MobileDataTable,
   MobilePullToRefresh,
-  OrderCardSkeletonList,
   PageState,
   Price,
   StatusBadge,
@@ -40,7 +39,7 @@ export default function OrdersPage() {
       } as any);
       setOrders(response.data || []);
       setHasNextPage(
-        (response.pagination as any)?.hasNextPage || response.data.length >= 20
+        (response.pagination as any)?.hasNextPage || response.data.length >= 20,
       );
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));

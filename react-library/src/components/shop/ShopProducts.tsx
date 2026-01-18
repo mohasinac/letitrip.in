@@ -1,3 +1,5 @@
+"use client";
+
 import { Filter as FilterIcon, Grid, List, Loader2 } from "lucide-react";
 import { ReactNode, useState } from "react";
 
@@ -429,3 +431,4 @@ export function ShopProducts({
 }
 
 export default ShopProducts;
+

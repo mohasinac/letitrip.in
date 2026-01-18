@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useId } from "react";
 import { cn } from "../../utils/cn";
 import { FormLabel } from "./FormLabel";
@@ -100,3 +102,4 @@ export const FormField: React.FC<FormFieldProps> = ({
 };
 
 export default FormField;
+

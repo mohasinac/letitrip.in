@@ -177,7 +177,7 @@ function ShopsContent() {
           {/* Desktop Sidebar */}
           {!isMobile && (
             <UnifiedFilterSidebar
-              sections={SHOP_FILTERS}
+              sections={SHOP_FILTERS as any}
               values={filters}
               onChange={(key, value) => updateFilter(key, value)}
               onApply={(pendingValues) => {
@@ -307,7 +307,7 @@ function ShopsContent() {
         {/* Mobile Filter Drawer */}
         {isMobile && (
           <UnifiedFilterSidebar
-            sections={SHOP_FILTERS}
+            sections={SHOP_FILTERS as any}
             values={filters}
             onChange={(key, value) => updateFilter(key, value)}
             onApply={(pendingValues) => {
@@ -342,3 +342,4 @@ export default function ShopsPage() {
     </Suspense>
   );
 }
+

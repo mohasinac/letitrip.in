@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BarChart3,
   ChevronDown,
@@ -330,3 +332,4 @@ export function MobileSellerSidebar({
     </>
   );
 }
+

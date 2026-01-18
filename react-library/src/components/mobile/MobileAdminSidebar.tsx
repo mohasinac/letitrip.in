@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Banknote,
   BarChart3,
@@ -349,3 +351,4 @@ export function MobileAdminSidebar({
     </>
   );
 }
+

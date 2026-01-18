@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MobileNavRow - Pure React
  *
@@ -197,3 +199,4 @@ export function MobileNavRow({
     </div>
   );
 }
+

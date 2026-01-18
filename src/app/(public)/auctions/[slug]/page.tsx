@@ -17,7 +17,6 @@ import type {
 import type { ShopFE } from "@/types/frontend/shop.types";
 import { AuctionStatus } from "@/types/shared/common.types";
 import {
-  AuctionCardSkeletonGrid,
   DateDisplay,
   ErrorMessage,
   FormInput,

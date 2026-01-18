@@ -1,3 +1,5 @@
+"use client";
+
 // Main entry point for @letitrip/react-library
 // This file exports all utilities, components, hooks, types, and adapters
 

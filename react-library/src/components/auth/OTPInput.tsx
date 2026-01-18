@@ -1,3 +1,5 @@
+"use client";
+
 import { ChangeEvent, ClipboardEvent, KeyboardEvent, useRef } from "react";
 import { cn } from "../../utils/cn";
 
@@ -153,3 +155,4 @@ export function OTPInput({
     </div>
   );
 }
+

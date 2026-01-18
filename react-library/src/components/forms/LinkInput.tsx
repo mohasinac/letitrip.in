@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * LinkInput Component
  *
@@ -230,3 +232,4 @@ export function LinkInput({
 }
 
 export default LinkInput;
+

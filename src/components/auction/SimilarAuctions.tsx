@@ -1,6 +1,7 @@
 "use client";
 
-import AuctionCard, {
+import {
+  AuctionCard,
   SimilarAuctions as LibSimilarAuctions,
   type SimilarAuctionsProps as LibSimilarAuctionsProps,
 } from "@letitrip/react-library";

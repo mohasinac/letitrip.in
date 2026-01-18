@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * ProductCard - Pure React Component
  *
@@ -608,3 +610,4 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
 // Memoized export for performance optimization
 export default React.memo(ProductCard);
+

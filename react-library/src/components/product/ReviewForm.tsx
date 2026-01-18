@@ -1,3 +1,5 @@
+"use client";
+
 import { ComponentType, ReactNode, useState } from "react";
 
 export interface MediaFile {
@@ -268,3 +270,4 @@ export function ReviewForm({
     </form>
   );
 }
+
