@@ -113,4 +113,14 @@ export const COLOR_CLASSES = {
     text: "text-gray-900 font-bold",
     textLight: "text-gray-800 font-semibold",
   },
+
+  // Conversation Type Colors
+  conversation: {
+    buyer_seller:
+      "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+    order:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+    support:
+      "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  },
 } as const;

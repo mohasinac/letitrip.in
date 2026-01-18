@@ -1,6 +1,8 @@
 "use client";
 
 import MediaUploader from "@/components/media/MediaUploader";
+import { DEFAULT_COUNTRY_CODE } from "@/constants/location";
+import { NOTIFICATION_TIMINGS } from "@/constants/ui-constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { authService } from "@/services/auth.service";
@@ -37,7 +39,7 @@ export default function SettingsPage() {
     name: "",
     email: "",
     phone: "",
-    phoneCountryCode: "+91",
+    phoneCountryCode: DEFAULT_COUNTRY_CODE,
   });
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function SettingsPage() {
     // Load user data
     const phoneWithCode = user.phoneNumber || "";
     const countryCodeMatch = phoneWithCode.match(/^(\+\d+)/);
-    const countryCode = countryCodeMatch ? countryCodeMatch[1] : "+91";
+    const countryCode = countryCodeMatch ? countryCodeMatch[1] : DEFAULT_COUNTRY_CODE;
     const phoneOnly = phoneWithCode.replace(/^\+\d+\s*/, "");
 
     setFormData({
@@ -85,7 +87,7 @@ export default function SettingsPage() {
         if (refreshUser) {
           await refreshUser();
         }
-        setTimeout(() => setSuccess(false), 3000);
+        setTimeout(() => setSuccess(false), NOTIFICATION_TIMINGS.SUCCESS_DURATION);
       });
     }
   };
@@ -107,7 +109,7 @@ export default function SettingsPage() {
       if (refreshUser) {
         await refreshUser();
       }
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => setSuccess(false), NOTIFICATION_TIMINGS.SUCCESS_DURATION);
     });
   };
 

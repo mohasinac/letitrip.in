@@ -8,6 +8,7 @@ import { useConversationState } from "@/hooks/useConversationState";
 import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
+import { COLORS } from "@/constants/colors";
 import {
   ConversationFE,
   ConversationType,
@@ -40,14 +41,8 @@ const participantIcons: Record<ParticipantType, React.ReactNode> = {
   admin: <Shield className="h-4 w-4" />,
 };
 
-// Conversation type colors
-const typeColors: Record<ConversationType, string> = {
-  buyer_seller:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  order:
-    "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-  support:
-    "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+// Conversation type colors - use constants
+const typeColors: Record<ConversationType, string> = COLORS.conversation;
 };
 
 function ConversationItem({
