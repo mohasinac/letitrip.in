@@ -1,6 +1,6 @@
 "use client";
 
-import { LoadingSpinner } from "@letitrip-library/components";
+import { LoadingSpinner as LibraryLoadingSpinner } from "@letitrip/react-library";
 
 interface LoadingSpinnerWrapperProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -12,8 +12,8 @@ interface LoadingSpinnerWrapperProps {
 /**
  * Next.js wrapper for LoadingSpinner component
  */
-export function LoadingSpinnerWrapper(props: LoadingSpinnerWrapperProps) {
-  return <LoadingSpinner {...props} />;
+export function LoadingSpinner(props: LoadingSpinnerWrapperProps) {
+  return <LibraryLoadingSpinner {...props} />;
 }
 
-export default LoadingSpinnerWrapper;
+export default LoadingSpinner;
