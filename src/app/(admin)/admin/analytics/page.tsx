@@ -1,6 +1,6 @@
 "use client";
 
-import { StatsCard } from "@/components/common/StatsCard";
+import { StatsCard } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type {

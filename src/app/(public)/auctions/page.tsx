@@ -2,8 +2,8 @@
 
 import AuctionCard from "@/components/cards/AuctionCard";
 import { CardGrid } from "@/components/cards/CardGrid";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { ErrorBoundary } from "@letitrip/react-library";
+import { AuctionCardSkeletonGrid } from "@letitrip/react-library";
 import { AUCTION_FILTERS } from "@/constants/filters";
 import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";

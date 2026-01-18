@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { ErrorBoundary } from "@letitrip/react-library";
 import { ErrorMessage } from "@letitrip/react-library";
 import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";

@@ -2,7 +2,7 @@
 
 import { toast } from "@/components/admin/Toast";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
 import {

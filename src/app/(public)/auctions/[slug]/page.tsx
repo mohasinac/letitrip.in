@@ -4,7 +4,7 @@ import { AuctionDescription } from "@/components/auction/AuctionDescription";
 import { AuctionGallery } from "@/components/auction/AuctionGallery";
 import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
-import { AuctionCardSkeletonGrid } from "@/components/common/skeletons/AuctionCardSkeleton";
+import { AuctionCardSkeletonGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { formatINR } from "@/lib/price.utils";

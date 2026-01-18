@@ -1,7 +1,7 @@
 "use client";
 
 import { EmptyState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { DateDisplay } from "@letitrip/react-library";
 import { Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";

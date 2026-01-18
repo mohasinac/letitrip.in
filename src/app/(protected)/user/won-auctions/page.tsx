@@ -1,7 +1,7 @@
 "use client";
 
 import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@letitrip/react-library";
 import { formatDate } from "@/lib/formatters";

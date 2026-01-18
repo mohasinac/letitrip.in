@@ -3,7 +3,7 @@
 import { VerificationGate } from "@/components/auth/VerificationGate";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { ErrorBoundary } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { isInternationalAddress } from "@/lib/validators/address.validator";

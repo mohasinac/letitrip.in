@@ -27,7 +27,7 @@ import { reviewsService } from "@/services/reviews.service";
 import { ConfirmDialog } from "@letitrip/react-library";
 import { useLoadingState } from "@letitrip/react-library";
 import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import type { ReviewFE } from "@/types/frontend/review.types";
 
 // Filter options

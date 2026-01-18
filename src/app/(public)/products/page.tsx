@@ -2,7 +2,7 @@
 
 import { toast } from "@/components/admin/Toast";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { ErrorBoundary } from "@letitrip/react-library";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useProducts } from "@/hooks/queries/useProduct";
 import { logError } from "@/lib/firebase-error-logger";

@@ -2,7 +2,7 @@
 
 import AuctionCard from "@/components/cards/AuctionCard";
 import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@/components/common/StatsCard";
+import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
