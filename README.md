@@ -53,6 +53,17 @@ npm run dev
 # Open http://localhost:3000
 ```
 
+### 🔄 Migration in Progress
+
+This project is currently undergoing migration to use `@letitrip/react-library` for all components.
+
+**Migration Documents**:
+- [`MIGRATION-STATUS.md`](./MIGRATION-STATUS.md) - Current status & quick start
+- [`MIGRATION-TRACKER.md`](./MIGRATION-TRACKER.md) - Complete tracking
+- [`MIGRATION-QUICK-REFERENCE.md`](./MIGRATION-QUICK-REFERENCE.md) - Patterns & examples
+
+**For Contributors**: See [`CONTINUE-MIGRATION-PROMPT.md`](./CONTINUE-MIGRATION-PROMPT.md) to resume migration work.
+
 ---
 
 ## 🛠 Tech Stack
@@ -78,11 +89,30 @@ src/
 │   ├── (auth)/        # Login/register
 │   └── api/           # API routes
 ├── components/        # React components
+│   └── wrappers/      # Next.js wrappers for library components
 ├── lib/               # Utilities & helpers
+│   └── adapters/      # Service adapters for library integration
 ├── services/          # API services
 ├── hooks/             # Custom hooks
+├── constants/         # Application constants and enums
+│   ├── routes.ts          # All route paths
+│   ├── api-endpoints.ts   # All API endpoint paths
+│   ├── status.ts          # Status enums
+│   ├── validation.ts      # Validation rules
+│   ├── config.ts          # App configuration
+│   └── README.md          # Constants documentation
 └── types/             # TypeScript types
 ```
+
+### Constants & Enums
+
+All application constants are centralized in `src/constants/` for:
+- **Type Safety**: Using TypeScript enums and `as const`
+- **Maintainability**: Single source of truth for values
+- **Consistency**: Avoid magic numbers and hardcoded strings
+- **Refactoring**: Easy to update values across the app
+
+See [`src/constants/README.md`](./src/constants/README.md) for usage guidelines.
 
 ---
 
