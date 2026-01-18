@@ -1,9 +1,9 @@
 /**
  * ShopCard - Pure React Component
- * 
+ *
  * Displays shop information in a card format with banner, logo, ratings, and statistics.
  * Supports multiple variants for different contexts.
- * 
+ *
  * Features:
  * - Optional banner image with featured badge
  * - Shop logo with fallback
@@ -11,21 +11,21 @@
  * - Product and auction counts
  * - Admin/seller management actions
  * - Follow functionality
- * 
+ *
  * @packageDocumentation
  */
 
-import React, { ComponentType, ReactNode, MouseEvent } from "react";
 import {
-  Star,
-  MapPin,
   BadgeCheck,
-  ShoppingBag,
-  Edit,
-  Trash2,
-  Eye,
   CheckCircle,
+  Edit,
+  Eye,
+  MapPin,
+  ShoppingBag,
+  Star,
+  Trash2,
 } from "lucide-react";
+import React, { ComponentType, MouseEvent, ReactNode } from "react";
 
 export type ShopCardVariant = "public" | "admin" | "seller" | "compact";
 
@@ -159,7 +159,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
 
   const cardClasses = cn(
     "group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 relative",
-    isSelected && "ring-2 ring-blue-500 dark:ring-blue-400"
+    isSelected && "ring-2 ring-blue-500 dark:ring-blue-400",
   );
 
   return (
@@ -173,7 +173,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
               "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
               isSelected
                 ? "bg-blue-500 border-blue-500 text-white"
-                : "bg-white/90 border-gray-400 hover:border-blue-500"
+                : "bg-white/90 border-gray-400 hover:border-blue-500",
             )}
           >
             {isSelected && <CheckCircle size={14} />}
@@ -184,7 +184,12 @@ export const ShopCard: React.FC<ShopCardProps> = ({
       {/* Favorite Button - for public/compact only */}
       {!isAdmin && !isSeller && FavoriteButtonComponent && (
         <div className="absolute top-2 right-2 z-10">
-          <FavoriteButtonComponent itemId={id} itemType="shop" initialIsFavorite={false} size="md" />
+          <FavoriteButtonComponent
+            itemId={id}
+            itemType="shop"
+            initialIsFavorite={false}
+            size="md"
+          />
         </div>
       )}
 
@@ -226,7 +231,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
           <div
             className={cn(
               "absolute top-2 flex flex-col gap-1",
-              (isAdmin || isSeller) && onSelect ? "left-9" : "left-2"
+              (isAdmin || isSeller) && onSelect ? "left-9" : "left-2",
             )}
           >
             {/* Status Badge for Admin/Seller */}
@@ -236,7 +241,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
                   "text-white text-xs font-semibold px-2 py-1 rounded",
                   status === "pending" && "bg-yellow-500",
                   status === "moderation" && "bg-purple-500",
-                  status === "suspended" && "bg-red-600"
+                  status === "suspended" && "bg-red-600",
                 )}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -255,7 +260,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
       <div
         className={cn(
           isCompact ? "p-4" : "p-6",
-          showBanner && banner && !isCompact ? "-mt-12" : ""
+          showBanner && banner && !isCompact ? "-mt-12" : "",
         )}
       >
         {/* Logo & Basic Info */}
@@ -267,7 +272,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({
               showBanner && banner && !isCompact
                 ? "border-4 border-white dark:border-gray-700 shadow-lg"
                 : "border border-gray-200 dark:border-gray-700",
-              isCompact ? "w-16 h-16" : "w-20 h-20"
+              isCompact ? "w-16 h-16" : "w-20 h-20",
             )}
           >
             {logo ? (

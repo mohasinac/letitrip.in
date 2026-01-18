@@ -47,7 +47,13 @@ export type AuctionStatus = "active" | "ending" | "ended";
 /**
  * Product status types
  */
-export type ProductStatus = "draft" | "active" | "inactive" | "archived" | "pending" | "rejected";
+export type ProductStatus =
+  | "draft"
+  | "active"
+  | "inactive"
+  | "archived"
+  | "pending"
+  | "rejected";
 
 /**
  * RipLimit status types

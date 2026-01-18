@@ -16,3 +16,6 @@ export type {
 
 export { AutoBidSetup } from "./AutoBidSetup";
 export type { AutoBidSetupProps } from "./AutoBidSetup";
+
+export { AuctionInfo } from "./AuctionInfo";
+export type { AuctionInfoProps } from "./AuctionInfo";
