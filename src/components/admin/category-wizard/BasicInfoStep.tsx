@@ -41,9 +41,9 @@ export default function BasicInfoStep({
       categories={libraryCategories}
       onChange={onChange}
       errors={errors}
-      FormInputComponent={FormInput}
-      FormSelectComponent={FormSelect}
-      FormTextareaComponent={FormTextarea}
+      FormInputComponent={FormInput as any}
+      FormSelectComponent={FormSelect as any}
+      FormTextareaComponent={FormTextarea as any}
     />
   );
 }

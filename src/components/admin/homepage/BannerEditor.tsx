@@ -1,9 +1,7 @@
 "use client";
 
 import { ToggleSwitch } from "@/components/admin/ToggleSwitch";
-import { RichTextEditor } from "@letitrip/react-library";
-import { FormInput } from "@letitrip/react-library";
-import { FormLabel } from "@letitrip/react-library";
+import { FormInput, FormLabel, RichTextEditor } from "@letitrip/react-library";
 
 interface BannerSettings {
   enabled: boolean;
@@ -57,7 +55,7 @@ export function BannerEditor({ settings, onChange }: BannerEditorProps) {
                 })
               }
               placeholder="Enter banner content..."
-              minHeight={150}
+              minHeight="150px"
             />
           </div>
 

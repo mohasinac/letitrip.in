@@ -2,66 +2,37 @@
 
 import {
   ToastContainer as LibraryToastContainer,
-  ToastItem as LibraryToastItem,
-  useToastManager,
-  type Toast,
-  type ToastType,
+  ToastProvider,
+  toast as libraryToast,
+  useToast,
+  useToastGlobalHandler,
+  type ToastVariant,
 } from "@letitrip/react-library";
-import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from "lucide-react";
+import { AlertCircle, AlertTriangle, CheckCircle, Info } from "lucide-react";
 
 // Re-export types
-export type { ToastType };
+export type { ToastVariant };
 
-// Global toast manager instance
-let globalToastManager: ReturnType<typeof useToastManager> | null = null;
-
+// Map of icons for toast variants
 const icons = {
-  success: CheckCircle,
-  error: AlertCircle,
-  warning: AlertTriangle,
-  info: Info,
-  close: X,
+  success: <CheckCircle className="w-5 h-5" />,
+  error: <AlertCircle className="w-5 h-5" />,
+  warning: <AlertTriangle className="w-5 h-5" />,
+  info: <Info className="w-5 h-5" />,
 };
 
-export const toast = {
-  success: (message: string, duration?: number) => {
-    globalToastManager?.addToast("success", message, duration);
-  },
-  error: (message: string, duration?: number) => {
-    globalToastManager?.addToast("error", message, duration);
-  },
-  info: (message: string, duration?: number) => {
-    globalToastManager?.addToast("info", message, duration);
-  },
-  warning: (message: string, duration?: number) => {
-    globalToastManager?.addToast("warning", message, duration);
-  },
-  // For testing: clear all toasts
-  __clearAll: () => {
-    globalToastManager?.clearAll();
-  },
-};
+// Re-export the library toast for direct use
+export const toast = libraryToast;
 
 export function ToastContainer() {
-  // Initialize global manager
-  const toastManager = useToastManager();
-  globalToastManager = toastManager;
+  // Connect the global toast handler
+  useToastGlobalHandler();
 
-  return (
-    <LibraryToastContainer
-      toasts={toastManager.toasts}
-      onRemove={toastManager.removeToast}
-      icons={icons}
-    />
-  );
+  return <LibraryToastContainer icons={icons} />;
 }
 
-export function ToastItem({
-  toast,
-  onClose,
-}: {
-  toast: Toast;
-  onClose: () => void;
-}) {
-  return <LibraryToastItem toast={toast} onClose={onClose} icons={icons} />;
-}
+// Export ToastProvider for wrapping app
+export { ToastProvider };
+
+// Hook for using toast programmatically
+export { useToast };

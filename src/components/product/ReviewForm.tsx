@@ -9,10 +9,9 @@ import {
   FormLabel,
   FormTextarea,
   ReviewForm as LibraryReviewForm,
-  useMediaUpload,
 } from "@letitrip/react-library";
 import { Image as ImageIcon, Star } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 interface ReviewFormProps {
@@ -30,21 +29,53 @@ export default function ReviewForm({
 }: ReviewFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
-  const {
-    uploadMultipleMedia,
-    cleanupUploadedMedia,
-    clearTracking,
-    isUploading,
-    getUploadedUrls,
-    hasUploadedMedia,
-  } = useMediaUpload({
-    enableNavigationGuard: true,
-    navigationGuardMessage: "You have uploaded media. Leave and delete?",
-    onUploadError: (error) => {
-      setError(`Upload failed: ${error}`);
+  // Simple media upload handlers
+  const uploadMultipleMedia = useCallback(
+    async (files: File[], _context: string, _contextId: string) => {
+      setIsUploading(true);
+      try {
+        const urls: string[] = [];
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("context", "review");
+
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) throw new Error("Upload failed");
+
+          const data = await response.json();
+          urls.push(data.url);
+        }
+        setUploadedUrls((prev) => [...prev, ...urls]);
+        return urls;
+      } catch (err) {
+        setError(`Upload failed: ${err}`);
+        throw err;
+      } finally {
+        setIsUploading(false);
+      }
     },
-  });
+    [],
+  );
+
+  const clearTracking = useCallback(() => {
+    setUploadedUrls([]);
+  }, []);
+
+  const cleanupUploadedMedia = useCallback(async () => {
+    setUploadedUrls([]);
+  }, []);
+
+  const getUploadedUrls = useCallback(() => uploadedUrls, [uploadedUrls]);
+
+  const hasUploadedMedia = uploadedUrls.length > 0;
 
   const handleSubmit = async (data: {
     rating: number;

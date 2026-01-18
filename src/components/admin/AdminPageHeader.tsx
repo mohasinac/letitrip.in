@@ -12,7 +12,7 @@ type AdminPageHeaderProps = Omit<LibraryAdminPageHeaderProps, "LinkComponent">;
  * Next.js wrapper for AdminPageHeader component
  */
 export function AdminPageHeader(props: AdminPageHeaderProps) {
-  return <LibraryAdminPageHeader {...props} LinkComponent={Link} />;
+  return <LibraryAdminPageHeader {...props} LinkComponent={Link as any} />;
 }
 
 export default AdminPageHeader;
