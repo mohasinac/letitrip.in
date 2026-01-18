@@ -14,7 +14,7 @@ interface Auction {
   featured?: boolean;
 }
 
-export interface AuctionFilterValues {
+export interface ShopAuctionFilterValues {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   status?: string;
@@ -34,7 +34,7 @@ export interface ShopAuctionsProps {
   isVerified?: boolean;
   showShopInfo?: boolean;
   onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
-  onFiltersChange?: (filters: AuctionFilterValues) => void;
+  onFiltersChange?: (filters: ShopAuctionFilterValues) => void;
   className?: string;
   // Injected components
   AuctionCardComponent?: React.ComponentType<any>;
@@ -88,7 +88,7 @@ export function ShopAuctions({
 }: ShopAuctionsProps) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<AuctionFilterValues>({
+  const [filters, setFilters] = useState<ShopAuctionFilterValues>({
     sortBy: "endTime",
     sortOrder: "asc",
   });
@@ -105,7 +105,7 @@ export function ShopAuctions({
       </div>
     ));
 
-  const handleFiltersChange = (newFilters: AuctionFilterValues) => {
+  const handleFiltersChange = (newFilters: ShopAuctionFilterValues) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
   };
@@ -116,7 +116,7 @@ export function ShopAuctions({
   };
 
   const handleResetFilters = () => {
-    const resetFilters: AuctionFilterValues = {
+    const resetFilters: ShopAuctionFilterValues = {
       sortBy: "endTime",
       sortOrder: "asc",
     };

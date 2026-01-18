@@ -1,14 +1,17 @@
 "use client";
 
-import { ConfirmDialog } from "@letitrip/react-library";
-import { FormModal } from "@letitrip/react-library";
-import { OptimizedImage } from "@letitrip/react-library"
-import { StatusBadge } from '@letitrip/react-library';
-import { Price } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
-import { Column, DataTable } from "@letitrip/react-library";
+import {
+  Column,
+  ConfirmDialog,
+  DataTable,
+  FormModal,
+  OptimizedImage,
+  Price,
+  StatusBadge,
+} from "@letitrip/react-library";
 import { Edit, ExternalLink, Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -29,7 +32,7 @@ export default function ProductTable({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductCardFE | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
 

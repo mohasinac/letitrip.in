@@ -1,5 +1,13 @@
 import { Save } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Card } from "../ui/Card";
+import { FormActions } from "../ui/FormActions";
+import { FormField } from "./FormField";
+import { FormInput } from "./FormInput";
+import { FormLabel } from "./FormLabel";
+import { FormPhoneInput } from "./FormPhoneInput";
+import { RichTextEditor } from "./RichTextEditor";
+import { SlugInput } from "./SlugInput";
 
 export interface ShopFormData {
   name: string;

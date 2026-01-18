@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import AuctionCard from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
-import { HorizontalScrollContainer } from '@letitrip/react-library';
-import { auctionsService } from "@/services/auctions.service";
 import { apiService } from "@/services/api.service";
+import { auctionsService } from "@/services/auctions.service";
 import type { AuctionCardFE } from "@/types/frontend/auction.types";
 import { AuctionStatus } from "@/types/shared/common.types";
+import AuctionCard, {
+  HorizontalScrollContainer,
+} from "@letitrip/react-library";
+import { useEffect, useState } from "react";
 
 interface FeaturedItem {
   id: string;

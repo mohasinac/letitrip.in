@@ -15,7 +15,7 @@ interface Product {
   condition: string;
 }
 
-export interface ProductFilterValues {
+export interface ShopProductFilterValues {
   minPrice?: number;
   maxPrice?: number;
   category?: string;
@@ -33,7 +33,7 @@ export interface ShopProductsProps {
   shopSlug: string;
   showShopName?: boolean;
   onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
-  onFiltersChange?: (filters: ProductFilterValues) => void;
+  onFiltersChange?: (filters: ShopProductFilterValues) => void;
   onAddToCart?: (productId: string, productDetails?: any) => void;
   availableBrands?: string[];
   className?: string;
@@ -112,7 +112,7 @@ export function ShopProducts({
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [filters, setFilters] = useState<ProductFilterValues>({});
+  const [filters, setFilters] = useState<ShopProductFilterValues>({});
 
   // Default components (fallbacks)
   const CardGrid =
@@ -168,7 +168,7 @@ export function ShopProducts({
     onSortChange?.(sortBy, value);
   };
 
-  const handleFiltersChange = (newFilters: ProductFilterValues) => {
+  const handleFiltersChange = (newFilters: ShopProductFilterValues) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
   };

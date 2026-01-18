@@ -1,14 +1,15 @@
 "use client";
 
-import { CardGrid, ProductCard } from "@letitrip/react-library";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import type { ShopProductsProps as LibraryShopProductsProps } from "@letitrip/react-library";
 import {
+  CardGrid,
   EmptyState,
   FormSelect,
   ShopProducts as LibraryShopProducts,
   OptimizedImage,
   Price,
+  ProductCard,
   ProductFilters,
 } from "@letitrip/react-library";
 import { useRouter } from "next/navigation";

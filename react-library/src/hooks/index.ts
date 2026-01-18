@@ -93,7 +93,7 @@ export type {
 export { useCart } from "./useCart";
 export type {
   Cart,
-  CartItem,
+  CartItemHook,
   CartService,
   UseCartOptions,
   UseCartReturn,
