@@ -88,3 +88,6 @@ export * from "./checkout";
 
 // User Components (Phase 3 Migration)
 export * from "./user";
+
+// Auth Components (Phase 3 Migration)
+export * from "./auth";
