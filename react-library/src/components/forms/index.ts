@@ -8,6 +8,9 @@ export type { FormFieldProps } from "./FormField";
 export { FormFieldset } from "./FormFieldset";
 export type { FormFieldsetProps } from "./FormFieldset";
 
+export { default as AuctionForm } from "./AuctionForm";
+export type { AuctionFormProps } from "./AuctionForm";
+
 export { FormActions, FormRow, FormSection } from "./FormSection";
 export type {
   FormActionsProps,
@@ -97,3 +100,7 @@ export type {
 
 export { WizardActionBar } from "./WizardActionBar";
 export type { WizardActionBarProps } from "./WizardActionBar";
+
+// Complex forms
+export { ShopForm } from "./ShopForm";
+export type { ShopFormData, ShopFormProps } from "./ShopForm";
