@@ -1,12 +1,15 @@
 "use client";
 
-import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { formatDate } from "@/lib/formatters";
 import { formatPrice } from "@/lib/price.utils";
 import { auctionsService } from "@/services/auctions.service";
+import {
+  PageState,
+  StatsCard,
+  StatsCardGrid,
+  useLoadingState,
+} from "@letitrip/react-library";
 import { AlertCircle, Gavel, TrendingUp, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,7 +84,7 @@ export default function MyBidsPage() {
     // Sort by created_at descending
     bidsWithStatus.sort(
       (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
     return bidsWithStatus;

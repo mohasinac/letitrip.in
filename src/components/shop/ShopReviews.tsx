@@ -1,8 +1,8 @@
 "use client";
 
-import { EmptyState } from "@letitrip/react-library";
 import { logger } from "@/lib/logger";
 import {
+  EmptyState,
   ShopReviews as ShopReviewsBase,
   type ShopReviewsProps,
 } from "@letitrip/react-library";

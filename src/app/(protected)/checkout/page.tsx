@@ -3,13 +3,13 @@
 import { VerificationGate } from "@/components/auth/VerificationGate";
 import { PaymentMethod } from "@/components/checkout/PaymentMethod";
 import { ShopOrderSummary } from "@/components/checkout/ShopOrderSummary";
-import { ErrorBoundary } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { isInternationalAddress } from "@/lib/validators/address.validator";
 import { checkoutService } from "@/services/checkout.service";
 import {
   AddressSelectorWithCreate,
+  ErrorBoundary,
   ErrorMessage,
   FormCheckbox,
   FormField,
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
     const inrTotal = shopGroups.reduce((sum, shop) => {
       const subtotal = shop.items.reduce(
         (s, item) => s + item.price * item.quantity,
-        0
+        0,
       );
       const discount = shop.coupon?.discountAmount || 0;
       const shipping = subtotal >= 5000 ? 0 : 100;
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
         });
 
         const response = await fetch(
-          `/api/payments/available-gateways?${params}`
+          `/api/payments/available-gateways?${params}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch payment gateways");
@@ -307,7 +307,7 @@ export default function CheckoutPage() {
 
       const subtotal = shop.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
-        0
+        0,
       );
       const discountAmount = Math.round(subtotal * 0.1); // 10% discount
 
@@ -372,7 +372,7 @@ export default function CheckoutPage() {
         // Check if Razorpay is loaded
         if (!window.Razorpay) {
           throw new Error(
-            "Payment gateway not available. Please try Cash on Delivery or refresh the page."
+            "Payment gateway not available. Please try Cash on Delivery or refresh the page.",
           );
         }
 
@@ -396,7 +396,7 @@ export default function CheckoutPage() {
 
               // Redirect to first order (or create a multi-order success page)
               router.push(
-                `/user/orders/${orderIds[0]}?success=true&multi=true`
+                `/user/orders/${orderIds[0]}?success=true&multi=true`,
               );
             } catch (error: any) {
               logError(error as Error, {
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
           modal: {
             ondismiss: function () {
               setError(
-                "Payment was cancelled. Your order has not been placed."
+                "Payment was cancelled. Your order has not been placed.",
               );
               setProcessing(false);
             },
@@ -438,7 +438,7 @@ export default function CheckoutPage() {
           });
           setError(
             response.error.description ||
-              "Payment failed. Please try again or use a different payment method."
+              "Payment failed. Please try again or use a different payment method.",
           );
           setProcessing(false);
         });
@@ -645,7 +645,7 @@ export default function CheckoutPage() {
                                     | "INR"
                                     | "USD"
                                     | "EUR"
-                                    | "GBP"
+                                    | "GBP",
                                 )
                               }
                               options={[
@@ -774,7 +774,7 @@ export default function CheckoutPage() {
                     {shopGroups.map((shop) => {
                       const subtotal = shop.items.reduce(
                         (sum, item) => sum + item.price * item.quantity,
-                        0
+                        0,
                       );
                       const discount =
                         shopCoupons[shop.shopId]?.discountAmount || 0;

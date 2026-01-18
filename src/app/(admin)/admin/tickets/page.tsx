@@ -1,11 +1,12 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { supportService } from "@/services/support.service";
 import {
   DateDisplay,
   FormSelect,
+  StatsCard,
+  StatsCardGrid,
   useIsMobile,
   useLoadingState,
 } from "@letitrip/react-library";
@@ -48,7 +49,7 @@ export default function AdminTicketsPage() {
         status: filter.status as any,
         category: filter.category as any,
         priority: filter.priority as any,
-      })
+      }),
     );
   }, [filter, execute]);
 

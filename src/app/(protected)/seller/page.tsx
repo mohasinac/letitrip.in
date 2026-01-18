@@ -1,11 +1,15 @@
 "use client";
 
-import { PageState } from '@letitrip/react-library';
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
-import { CompactPrice, Price } from "@letitrip/react-library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLoadingState } from "@letitrip/react-library";
 import { analyticsService } from "@/services/analytics.service";
+import {
+  CompactPrice,
+  PageState,
+  Price,
+  StatsCard,
+  StatsCardGrid,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   ArrowRight,

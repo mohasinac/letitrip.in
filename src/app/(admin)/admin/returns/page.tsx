@@ -2,11 +2,12 @@
 
 import { toast } from "@/components/admin/Toast";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { StatsCard, StatsCardGrid } from "@letitrip/react-library";
 import { RETURN_FILTERS } from "@/constants/filters";
 import { returnsService } from "@/services/returns.service";
 import {
   DateDisplay,
+  StatsCard,
+  StatsCardGrid,
   UnifiedFilterSidebar,
   useIsMobile,
   useLoadingState,

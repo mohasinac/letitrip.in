@@ -1,6 +1,6 @@
-import { Metadata } from "next";
 import { NotImplementedPage } from "@letitrip/react-library";
 import { Sparkles } from "lucide-react";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Feature Flags | Admin Settings",

@@ -13,13 +13,13 @@
  * - Popular categories
  */
 
-import { StatsCard } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import {
   CompactPrice,
   PeriodSelector,
   Price,
   Quantity,
+  StatsCard,
   useLoadingState,
 } from "@letitrip/react-library";
 import {

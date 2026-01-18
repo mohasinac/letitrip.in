@@ -1,6 +1,5 @@
 "use client";
 
-import { StatsCard } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { analyticsService } from "@/services/analytics.service";
 import type {
@@ -13,6 +12,7 @@ import {
   PeriodSelector,
   Price,
   Quantity,
+  StatsCard,
   useLoadingState,
 } from "@letitrip/react-library";
 import {
@@ -406,8 +406,8 @@ export default function AdminAnalyticsSalesPage() {
                             date={
                               new Date(
                                 salesData.reduce((best, day) =>
-                                  day.revenue > best.revenue ? day : best
-                                ).date
+                                  day.revenue > best.revenue ? day : best,
+                                ).date,
                               )
                             }
                             format="full"

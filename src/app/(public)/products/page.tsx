@@ -2,7 +2,6 @@
 
 import { toast } from "@/components/admin/Toast";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { ErrorBoundary } from "@letitrip/react-library";
 import { PRODUCT_FILTERS } from "@/constants/filters";
 import { useProducts } from "@/hooks/queries/useProduct";
 import { logError } from "@/lib/firebase-error-logger";
@@ -11,6 +10,7 @@ import { shopsService } from "@/services/shops.service";
 import {
   AdvancedPagination,
   EmptyState,
+  ErrorBoundary,
   FavoriteButton,
   FormSelect,
   OptimizedImage,
@@ -167,7 +167,7 @@ function ProductsContent() {
         image: string;
         shopId: string;
         shopName: string;
-      }
+      },
     ) => {
       try {
         if (!productDetails) {
@@ -191,7 +191,7 @@ function ProductsContent() {
         toast.error(error.message || "Failed to add to cart");
       }
     },
-    [products, addItem]
+    [products, addItem],
   );
 
   return (

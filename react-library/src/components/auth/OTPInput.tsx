@@ -145,7 +145,7 @@ export function OTPInput({
             disabled
               ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
               : "bg-white dark:bg-gray-900",
-            !disabled && "hover:border-gray-400 dark:hover:border-gray-500"
+            !disabled && "hover:border-gray-400 dark:hover:border-gray-500",
           )}
           aria-label={`Digit ${index + 1} of ${length}`}
         />
