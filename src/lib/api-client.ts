@@ -1,19 +1,19 @@
 /**
  * API Client
- * 
+ *
  * Centralized API client with error handling, authentication, and response parsing.
  * Wraps fetch API with consistent error handling and authentication token management.
- * 
+ *
  * @example
  * ```tsx
  * import { apiClient } from '@/lib/api-client';
- * 
+ *
  * // GET request
  * const products = await apiClient.get('/api/products');
- * 
+ *
  * // POST request
  * const newProduct = await apiClient.post('/api/products', { name: 'Product' });
- * 
+ *
  * // With query params
  * const filtered = await apiClient.get('/api/products', { category: 'electronics' });
  * ```
@@ -25,11 +25,7 @@ import { buildQueryString } from "@/constants/api-endpoints";
  * API Error class with status code and message
  */
 export class ApiError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-    public data?: any,
-  ) {
+  constructor(public status: number, message: string, public data?: any) {
     super(message);
     this.name = "ApiError";
   }
@@ -101,7 +97,12 @@ class ApiClient {
     endpoint: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { params, skipAuth, headers: customHeaders, ...fetchOptions } = options;
+    const {
+      params,
+      skipAuth,
+      headers: customHeaders,
+      ...fetchOptions
+    } = options;
 
     // Build URL
     const url = this.buildUrl(endpoint, params);
@@ -172,7 +173,11 @@ class ApiClient {
   /**
    * GET request
    */
-  async get<T>(endpoint: string, params?: Record<string, any>, options?: RequestOptions): Promise<T> {
+  async get<T>(
+    endpoint: string,
+    params?: Record<string, any>,
+    options?: RequestOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       method: "GET",
       params,
@@ -183,7 +188,11 @@ class ApiClient {
   /**
    * POST request
    */
-  async post<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       method: "POST",
       body: data ? JSON.stringify(data) : undefined,
@@ -194,7 +203,11 @@ class ApiClient {
   /**
    * PUT request
    */
-  async put<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+  async put<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
@@ -205,7 +218,11 @@ class ApiClient {
   /**
    * PATCH request
    */
-  async patch<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+  async patch<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
@@ -226,9 +243,13 @@ class ApiClient {
   /**
    * Upload file(s)
    */
-  async upload<T>(endpoint: string, formData: FormData, options?: RequestOptions): Promise<T> {
+  async upload<T>(
+    endpoint: string,
+    formData: FormData,
+    options?: RequestOptions,
+  ): Promise<T> {
     const { headers, ...restOptions } = options || {};
-    
+
     // Remove Content-Type header to let browser set it with boundary
     const uploadHeaders = { ...headers };
     delete uploadHeaders["Content-Type"];
@@ -250,7 +271,8 @@ export const apiClient = new ApiClient();
 /**
  * Create custom API client with different configuration
  */
-export const createApiClient = (config: ApiClientConfig) => new ApiClient(config);
+export const createApiClient = (config: ApiClientConfig) =>
+  new ApiClient(config);
 
 /**
  * Helper to handle API errors in components
@@ -259,11 +281,11 @@ export function handleApiError(error: unknown): string {
   if (error instanceof ApiError) {
     return error.message;
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return "An unexpected error occurred";
 }
 

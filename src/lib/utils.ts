@@ -1,13 +1,13 @@
 /**
  * Utility Functions
- * 
+ *
  * Common helper functions used throughout the application.
  * Includes formatting, validation, string manipulation, and more.
- * 
+ *
  * @example
  * ```tsx
  * import { cn, formatPrice, formatDate, slugify } from '@/lib/utils';
- * 
+ *
  * const className = cn('base-class', isActive && 'active-class');
  * const price = formatPrice(1234.56); // "₹1,234.56"
  * const date = formatDate(new Date()); // "Jan 19, 2026"
@@ -20,10 +20,10 @@ import { twMerge } from "tailwind-merge";
 /**
  * Merge Tailwind CSS classes with conflict resolution
  * Combines clsx and tailwind-merge for optimal class merging
- * 
+ *
  * @param inputs - Class values to merge
  * @returns Merged class string
- * 
+ *
  * @example
  * ```tsx
  * cn('px-4 py-2', 'px-6') // 'py-2 px-6'
@@ -36,11 +36,11 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Format price in Indian Rupees
- * 
+ *
  * @param amount - Price amount
  * @param currency - Currency code (default: 'INR')
  * @returns Formatted price string
- * 
+ *
  * @example
  * ```tsx
  * formatPrice(1234.56) // "₹1,234.56"
@@ -58,10 +58,10 @@ export function formatPrice(amount: number, currency: string = "INR"): string {
 
 /**
  * Format number with Indian numbering system
- * 
+ *
  * @param num - Number to format
  * @returns Formatted number string
- * 
+ *
  * @example
  * ```tsx
  * formatNumber(1234567) // "12,34,567"
@@ -73,11 +73,11 @@ export function formatNumber(num: number): string {
 
 /**
  * Format date to readable string
- * 
+ *
  * @param date - Date to format
  * @param options - Intl.DateTimeFormat options
  * @returns Formatted date string
- * 
+ *
  * @example
  * ```tsx
  * formatDate(new Date()) // "Jan 19, 2026"
@@ -94,10 +94,10 @@ export function formatDate(
 
 /**
  * Format date with time
- * 
+ *
  * @param date - Date to format
  * @returns Formatted date and time string
- * 
+ *
  * @example
  * ```tsx
  * formatDateTime(new Date()) // "Jan 19, 2026, 3:45 PM"
@@ -112,10 +112,10 @@ export function formatDateTime(date: Date | string): string {
 
 /**
  * Get relative time string (e.g., "2 hours ago")
- * 
+ *
  * @param date - Date to compare
  * @returns Relative time string
- * 
+ *
  * @example
  * ```tsx
  * getRelativeTime(new Date(Date.now() - 3600000)) // "1 hour ago"
@@ -127,19 +127,23 @@ export function getRelativeTime(date: Date | string): string {
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
 
   if (diffInSeconds < 60) return "just now";
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
+  if (diffInSeconds < 3600)
+    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400)
+    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 2592000)
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  if (diffInSeconds < 31536000)
+    return `${Math.floor(diffInSeconds / 2592000)} months ago`;
   return `${Math.floor(diffInSeconds / 31536000)} years ago`;
 }
 
 /**
  * Convert string to URL-friendly slug
- * 
+ *
  * @param str - String to slugify
  * @returns Slugified string
- * 
+ *
  * @example
  * ```tsx
  * slugify('Hello World!') // 'hello-world'
@@ -157,28 +161,32 @@ export function slugify(str: string): string {
 
 /**
  * Truncate string to specified length
- * 
+ *
  * @param str - String to truncate
  * @param length - Maximum length
  * @param suffix - Suffix to add (default: '...')
  * @returns Truncated string
- * 
+ *
  * @example
  * ```tsx
  * truncate('Long text here', 10) // 'Long text...'
  * ```
  */
-export function truncate(str: string, length: number, suffix: string = "..."): string {
+export function truncate(
+  str: string,
+  length: number,
+  suffix: string = "...",
+): string {
   if (str.length <= length) return str;
   return str.slice(0, length - suffix.length) + suffix;
 }
 
 /**
  * Capitalize first letter of string
- * 
+ *
  * @param str - String to capitalize
  * @returns Capitalized string
- * 
+ *
  * @example
  * ```tsx
  * capitalize('hello world') // 'Hello world'
@@ -190,10 +198,10 @@ export function capitalize(str: string): string {
 
 /**
  * Validate email format
- * 
+ *
  * @param email - Email to validate
  * @returns True if valid
- * 
+ *
  * @example
  * ```tsx
  * isValidEmail('test@example.com') // true
@@ -207,10 +215,10 @@ export function isValidEmail(email: string): boolean {
 
 /**
  * Validate Indian phone number
- * 
+ *
  * @param phone - Phone number to validate
  * @returns True if valid
- * 
+ *
  * @example
  * ```tsx
  * isValidPhone('9876543210') // true
@@ -224,10 +232,10 @@ export function isValidPhone(phone: string): boolean {
 
 /**
  * Format phone number to Indian format
- * 
+ *
  * @param phone - Phone number to format
  * @returns Formatted phone number
- * 
+ *
  * @example
  * ```tsx
  * formatPhone('9876543210') // '+91 98765 43210'
@@ -243,10 +251,10 @@ export function formatPhone(phone: string): string {
 
 /**
  * Generate random ID
- * 
+ *
  * @param length - Length of ID (default: 16)
  * @returns Random ID string
- * 
+ *
  * @example
  * ```tsx
  * generateId() // 'a1b2c3d4e5f6g7h8'
@@ -261,11 +269,11 @@ export function generateId(length: number = 16): string {
 
 /**
  * Debounce function calls
- * 
+ *
  * @param func - Function to debounce
  * @param delay - Delay in milliseconds
  * @returns Debounced function
- * 
+ *
  * @example
  * ```tsx
  * const debouncedSearch = debounce(handleSearch, 300);
@@ -284,12 +292,12 @@ export function debounce<T extends (...args: any[]) => any>(
 
 /**
  * Calculate percentage
- * 
+ *
  * @param value - Current value
  * @param total - Total value
  * @param decimals - Number of decimal places
  * @returns Percentage
- * 
+ *
  * @example
  * ```tsx
  * calculatePercentage(25, 100) // 25
@@ -307,11 +315,11 @@ export function calculatePercentage(
 
 /**
  * Calculate discount percentage
- * 
+ *
  * @param originalPrice - Original price
  * @param discountedPrice - Discounted price
  * @returns Discount percentage
- * 
+ *
  * @example
  * ```tsx
  * calculateDiscount(1000, 800) // 20
@@ -326,10 +334,10 @@ export function calculateDiscount(
 
 /**
  * Sleep utility for async functions
- * 
+ *
  * @param ms - Milliseconds to sleep
  * @returns Promise that resolves after delay
- * 
+ *
  * @example
  * ```tsx
  * await sleep(1000); // Wait 1 second
@@ -341,10 +349,10 @@ export function sleep(ms: number): Promise<void> {
 
 /**
  * Check if value is empty (null, undefined, empty string, empty array, empty object)
- * 
+ *
  * @param value - Value to check
  * @returns True if empty
- * 
+ *
  * @example
  * ```tsx
  * isEmpty('') // true
@@ -363,10 +371,10 @@ export function isEmpty(value: any): boolean {
 
 /**
  * Deep clone object
- * 
+ *
  * @param obj - Object to clone
  * @returns Cloned object
- * 
+ *
  * @example
  * ```tsx
  * const cloned = deepClone(original);
@@ -378,11 +386,11 @@ export function deepClone<T>(obj: T): T {
 
 /**
  * Group array by key
- * 
+ *
  * @param array - Array to group
  * @param key - Key to group by
  * @returns Grouped object
- * 
+ *
  * @example
  * ```tsx
  * groupBy([{id: 1, type: 'a'}, {id: 2, type: 'a'}], 'type')
@@ -390,13 +398,10 @@ export function deepClone<T>(obj: T): T {
  * ```
  */
 export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
-  return array.reduce(
-    (acc, item) => {
-      const groupKey = String(item[key]);
-      if (!acc[groupKey]) acc[groupKey] = [];
-      acc[groupKey].push(item);
-      return acc;
-    },
-    {} as Record<string, T[]>,
-  );
+  return array.reduce((acc, item) => {
+    const groupKey = String(item[key]);
+    if (!acc[groupKey]) acc[groupKey] = [];
+    acc[groupKey].push(item);
+    return acc;
+  }, {} as Record<string, T[]>);
 }
