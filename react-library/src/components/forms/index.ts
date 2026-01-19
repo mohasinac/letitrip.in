@@ -104,3 +104,11 @@ export type { WizardActionBarProps } from "./WizardActionBar";
 // Complex forms
 export { ShopForm } from "./ShopForm";
 export type { ShopFormData, ShopFormProps } from "./ShopForm";
+
+// SEO form group
+export { SEOFieldsGroup } from "./SEOFieldsGroup";
+export type {
+  SEOFieldsValues,
+  SEOFieldsErrors,
+  SEOFieldsGroupProps,
+} from "./SEOFieldsGroup";
