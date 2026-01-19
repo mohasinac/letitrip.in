@@ -2,7 +2,7 @@
 
 **Last Updated:** January 20, 2026
 **Current Phase:** Phase 2 - Component Integration & API Routes
-**Overall Progress:** 27% (36/132 tasks)
+**Overall Progress:** 30% (40/132 tasks)
 **Design Specs:** See `DESIGN-SPECIFICATIONS.md` for detailed requirements
 
 ---
@@ -102,7 +102,7 @@
 ## 📦 PHASE 2: Component Integration & API Routes
 
 **Target:** Days 2-5
-**Status:** 🔵 In Progress (20/34 tasks)
+**Status:** 🔵 In Progress (24/34 tasks)
 **Priority:** CRITICAL - Required for all pages
 
 **Note:** Many components already exist in react-library and will be reused!
@@ -239,12 +239,12 @@
 
 **Note:** All use slugs, not IDs
 
-### 2.9 Auction APIs (0/4)
+### 2.9 Auction APIs (4/4) - ✅ COMPLETED
 
-- [ ] `GET /api/auctions` - List with cursor pagination
-- [ ] `GET /api/auctions/[slug]` - Auction details by slug
-- [ ] `POST /api/auctions/[slug]/bid` - Place bid
-- [ ] `GET /api/auctions/[slug]/bids` - Bid history (last 5)
+- [x] `GET /api/auctions` - List with cursor pagination
+- [x] `GET /api/auctions/[slug]` - Auction details by slug
+- [x] `POST /api/auctions/[slug]/bid` - Place bid
+- [x] `GET /api/auctions/[slug]/bids` - Bid history (last 5)
 
 ### 2.10 Cart & Orders (0/7)
 
