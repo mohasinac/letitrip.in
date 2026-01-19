@@ -1,9 +1,9 @@
 /**
  * Homepage - Let It Rip E-Commerce Platform
- * 
+ *
  * Main landing page with hero carousel, featured products, popular categories, and FAQ.
  * Fully responsive with dark mode support.
- * 
+ *
  * Sections:
  * 1. Advertisement Banner (10% height)
  * 2. Welcome Section with background video/image
@@ -12,19 +12,19 @@
  * 5. Featured Products (horizontal scroller)
  * 6. Popular Products (horizontal scroller)
  * 7. FAQ Section with category filter
- * 
+ *
  * @page / - Homepage
  */
 
-import { Metadata } from "next";
 import {
+  AdvertisementBanner,
+  CategoryCard,
+  FAQAccordion,
   HeroSlide,
   HorizontalScroller,
-  FAQAccordion,
   ProductCard,
-  CategoryCard,
-  AdvertisementBanner,
 } from "@letitrip/react-library";
+import { Metadata } from "next";
 import Link from "next/link";
 
 // SEO Metadata
