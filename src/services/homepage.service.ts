@@ -1,15 +1,15 @@
-import { apiService } from "./api.service";
 import {
+  AUCTION_ROUTES,
   HOMEPAGE_ROUTES,
   PRODUCT_ROUTES,
-  AUCTION_ROUTES,
 } from "@/constants/api-routes";
-import { logServiceError } from "@/lib/error-logger";
-import { analyticsService } from "./analytics.service";
-import type { ProductCardFE } from "@/types/frontend/product.types";
-import type { ShopCardFE } from "@/types/frontend/shop.types";
 import type { CategoryFE } from "@/types/frontend/category.types";
+import type { ProductCardFE } from "@/types/frontend/product.types";
 import type { ReviewFE } from "@/types/frontend/review.types";
+import type { ShopCardFE } from "@/types/frontend/shop.types";
+import { logServiceError } from "@letitrip/react-library";
+import { analyticsService } from "./analytics.service";
+import { apiService } from "./api.service";
 
 interface HeroSlide {
   id: string;
@@ -104,7 +104,7 @@ function transformSlide(data: Record<string, unknown>): HeroSlide {
     enabled:
       data.enabled !== undefined
         ? (data.enabled as boolean)
-        : ((data.is_active as boolean) ?? true),
+        : (data.is_active as boolean) ?? true,
   };
 }
 
@@ -454,12 +454,12 @@ class HomepageService {
 
 export const homepageService = new HomepageService();
 export type {
+  AuctionItemFE,
+  BlogPostFE,
+  CategoryWithItems,
+  FAQ,
   HeroSlide,
   HeroSlidesResponse,
   HomepageData,
-  CategoryWithItems,
   ShopWithItems,
-  AuctionItemFE,
-  BlogPostFE,
-  FAQ,
 };

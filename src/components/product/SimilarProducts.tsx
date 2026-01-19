@@ -1,11 +1,11 @@
 "use client";
 
-import { logError } from "@/lib/error-logger";
 import { productsService } from "@/services/products.service";
 import type { ProductCardFE } from "@/types/frontend/product.types";
 import {
   CardGrid,
   SimilarProducts as LibrarySimilarProducts,
+  logError,
   ProductCard,
 } from "@letitrip/react-library";
 import { ChevronLeft, ChevronRight, Grid, Package, X } from "lucide-react";

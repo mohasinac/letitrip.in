@@ -15,8 +15,8 @@
  * All operations go through API routes (following architecture pattern)
  */
 
+import { logServiceError } from "@letitrip/react-library";
 import { apiService } from "./api.service";
-import { logServiceError } from "@/lib/error-logger";
 
 export interface StaticAsset {
   id: string;

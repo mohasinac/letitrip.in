@@ -11,8 +11,12 @@ import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget
 import { useViewingHistory } from "@/contexts/ViewingHistoryContext";
 import { useProductBySlug } from "@/hooks/queries/useProduct";
 import { useShop } from "@/hooks/queries/useShop";
-import { formatDiscount, formatINR } from "@letitrip/react-library";
-import { ErrorMessage, useCart } from "@letitrip/react-library";
+import {
+  ErrorMessage,
+  formatDiscount,
+  formatINR,
+  useCart,
+} from "@letitrip/react-library";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

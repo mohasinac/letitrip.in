@@ -1,15 +1,18 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { DateDisplay } from "@letitrip/react-library";
-import { Price } from "@letitrip/react-library";
-import { FormInput } from "@letitrip/react-library";
-import { FormSelect } from "@letitrip/react-library";
-import { useLoadingState } from "@letitrip/react-library";
-import { getTodayDateInputValue, toDateInputValue } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
-import { formatPrice } from "@letitrip/react-library";
 import { analyticsService } from "@/services/analytics.service";
+import {
+  DateDisplay,
+  formatPrice,
+  FormInput,
+  FormSelect,
+  getTodayDateInputValue,
+  Price,
+  toDateInputValue,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Calendar,
   CreditCard,
@@ -36,7 +39,7 @@ export default function SellerRevenuePage() {
     endDate: string;
   }>({
     startDate: toDateInputValue(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     ),
     endDate: getTodayDateInputValue(),
   });
@@ -87,7 +90,7 @@ export default function SellerRevenuePage() {
           endDate: dateRange.endDate,
           period,
         },
-        format
+        format,
       );
       const url = globalThis.URL?.createObjectURL(blob) || "";
       const link = document.createElement("a");
@@ -305,7 +308,7 @@ export default function SellerRevenuePage() {
                   <div className="h-64 flex items-end justify-between gap-2">
                     {salesData.map((data, index) => {
                       const maxRevenue = Math.max(
-                        ...salesData.map((d) => d.revenue)
+                        ...salesData.map((d) => d.revenue),
                       );
                       const height = (data.revenue / maxRevenue) * 100;
                       return (

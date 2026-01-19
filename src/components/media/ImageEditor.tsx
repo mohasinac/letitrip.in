@@ -1,8 +1,8 @@
 "use client";
 
-import { logError } from "@/lib/error-logger";
 import { applyImageEdits } from "@/lib/media/image-processor";
 import { EditorState, MediaFile } from "@/types/media";
+import { logError } from "@letitrip/react-library";
 import {
   Crop,
   Crosshair,

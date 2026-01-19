@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { Camera, X, RotateCw, Check } from "lucide-react";
-import { logError } from "@/lib/error-logger";
-import { OptimizedImage } from "@letitrip/react-library"
 import { MediaFile } from "@/types/media";
+import { logError, OptimizedImage } from "@letitrip/react-library";
+import { Camera, Check, RotateCw, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface CameraCaptureProps {
   onCapture: (mediaFile: MediaFile) => void;

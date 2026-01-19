@@ -1,10 +1,10 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { formatDate } from "@letitrip/react-library";
-import { formatPrice } from "@letitrip/react-library";
 import { auctionsService } from "@/services/auctions.service";
 import {
+  formatDate,
+  formatPrice,
   PageState,
   StatsCard,
   StatsCardGrid,

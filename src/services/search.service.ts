@@ -16,11 +16,11 @@
  * - Search analytics and tracking
  */
 
-import { logServiceError } from "@/lib/error-logger";
 import type {
   SearchFiltersFE,
   SearchResultFE,
 } from "@/types/frontend/search.types";
+import { logServiceError } from "@letitrip/react-library";
 import { apiService } from "./api.service";
 
 // ============================================================================
@@ -106,7 +106,7 @@ class SearchService {
    * Advanced search with fuzzy matching and filters
    */
   async advancedSearch(
-    filters: AdvancedSearchFilters
+    filters: AdvancedSearchFilters,
   ): Promise<SearchResultFE> {
     // Validate query parameter
     if (!filters.q || filters.q.trim() === "") {
@@ -123,12 +123,12 @@ class SearchService {
     // Validate query length
     if (cleanQuery.length > 500) {
       throw new Error(
-        "[Search] Query too long. Maximum 500 characters allowed."
+        "[Search] Query too long. Maximum 500 characters allowed.",
       );
     }
     if (cleanQuery.length < 2) {
       throw new Error(
-        "[Search] Query too short. Minimum 2 characters required."
+        "[Search] Query too short. Minimum 2 characters required.",
       );
     }
 
@@ -190,7 +190,7 @@ class SearchService {
       }
 
       const result = await apiService.get<SearchResultFE>(
-        `/search/advanced?${params.toString()}`
+        `/search/advanced?${params.toString()}`,
       );
 
       // Save to search history
@@ -235,12 +235,12 @@ class SearchService {
     // Validate query length to prevent DoS
     if (cleanQuery.length > 500) {
       throw new Error(
-        "[Search] Query too long. Maximum 500 characters allowed."
+        "[Search] Query too long. Maximum 500 characters allowed.",
       );
     }
     if (cleanQuery.length < 2) {
       throw new Error(
-        "[Search] Query too short. Minimum 2 characters required."
+        "[Search] Query too short. Minimum 2 characters required.",
       );
     }
 
@@ -255,7 +255,7 @@ class SearchService {
       }
 
       const result = await apiService.get<SearchResultFE>(
-        `/search?${params.toString()}`
+        `/search?${params.toString()}`,
       );
 
       // Handle null/undefined results
@@ -298,7 +298,7 @@ class SearchService {
       params.append("limit", "10");
 
       const suggestions = await apiService.get<SearchSuggestion[]>(
-        `/search/autocomplete?${params.toString()}`
+        `/search/autocomplete?${params.toString()}`,
       );
 
       return suggestions || [];
@@ -306,7 +306,7 @@ class SearchService {
       logServiceError(
         "SearchService",
         "getAutocompleteSuggestions",
-        error as Error
+        error as Error,
       );
       return [];
     }
@@ -317,7 +317,7 @@ class SearchService {
    */
   async fuzzySearch(
     query: string,
-    filters?: Omit<AdvancedSearchFilters, "q" | "fuzzy">
+    filters?: Omit<AdvancedSearchFilters, "q" | "fuzzy">,
   ): Promise<SearchResultFE> {
     return this.advancedSearch({
       q: query,
@@ -348,7 +348,7 @@ class SearchService {
    */
   removeFromHistory(query: string): void {
     this.searchHistory = this.searchHistory.filter(
-      (item) => item.query !== query
+      (item) => item.query !== query,
     );
     this.saveSearchHistory();
   }
@@ -362,7 +362,7 @@ class SearchService {
       params.append("limit", limit.toString());
 
       const trending = await apiService.get<TrendingSearch[]>(
-        `/search/trending?${params.toString()}`
+        `/search/trending?${params.toString()}`,
       );
 
       return trending || [];
@@ -377,7 +377,7 @@ class SearchService {
    */
   async getPopularSearches(
     categoryId?: string,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<string[]> {
     try {
       const params = new URLSearchParams();
@@ -387,7 +387,7 @@ class SearchService {
       }
 
       const popular = await apiService.get<string[]>(
-        `/search/popular?${params.toString()}`
+        `/search/popular?${params.toString()}`,
       );
 
       return popular || [];
@@ -402,7 +402,7 @@ class SearchService {
    */
   private async trackSearch(
     query: string,
-    resultsCount: number
+    resultsCount: number,
   ): Promise<void> {
     try {
       await apiService.post("/search/analytics", {
@@ -422,7 +422,7 @@ class SearchService {
   async trackClick(
     query: string,
     resultId: string,
-    resultType: "product" | "shop" | "category"
+    resultType: "product" | "shop" | "category",
   ): Promise<void> {
     try {
       await apiService.post("/search/click", {
@@ -443,7 +443,7 @@ class SearchService {
   private addToHistory(query: string, resultsCount: number): void {
     // Remove duplicate if exists
     this.searchHistory = this.searchHistory.filter(
-      (item) => item.query !== query
+      (item) => item.query !== query,
     );
 
     // Add new item
@@ -492,7 +492,7 @@ class SearchService {
     try {
       localStorage.setItem(
         this.HISTORY_STORAGE_KEY,
-        JSON.stringify(this.searchHistory)
+        JSON.stringify(this.searchHistory),
       );
     } catch (error) {
       console.error("Failed to save search history:", error);
@@ -522,7 +522,7 @@ class SearchService {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1, // substitution
             matrix[i][j - 1] + 1, // insertion
-            matrix[i - 1][j] + 1 // deletion
+            matrix[i - 1][j] + 1, // deletion
           );
         }
       }
@@ -538,11 +538,11 @@ class SearchService {
   private isFuzzyMatch(
     query: string,
     target: string,
-    threshold: number = 0.7
+    threshold: number = 0.7,
   ): boolean {
     const distance = this.levenshteinDistance(
       query.toLowerCase(),
-      target.toLowerCase()
+      target.toLowerCase(),
     );
     const maxLength = Math.max(query.length, target.length);
     const similarity = 1 - distance / maxLength;

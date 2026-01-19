@@ -7,10 +7,12 @@
 
 "use client";
 
-import { FormLabel } from "@letitrip/react-library";
-import { formatTimeRemaining } from "@letitrip/react-library";
-import { formatPrice } from "@letitrip/react-library";
 import { getNextMinimumBid, getTimeRemaining } from "@/lib/validation/auction";
+import {
+  formatPrice,
+  formatTimeRemaining,
+  FormLabel,
+} from "@letitrip/react-library";
 import {
   AlertCircle,
   ChevronLeft,
@@ -55,7 +57,7 @@ export interface AuctionQuickViewProps {
     auctionId: string,
     bidAmount: number,
     isAutoBid: boolean,
-    maxAutoBid?: number
+    maxAutoBid?: number,
   ) => Promise<void>;
   onWatch?: (auctionId: string) => void;
   isWatched?: boolean;
@@ -98,19 +100,19 @@ export default function AuctionQuickView({
   const minNextBid = getNextMinimumBid(
     currentBid,
     auction.startingBid,
-    auction.bidIncrement
+    auction.bidIncrement,
   );
   const isEnded = timeRemaining.isEnded;
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? auction.images.length - 1 : prev - 1
+      prev === 0 ? auction.images.length - 1 : prev - 1,
     );
   };
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === auction.images.length - 1 ? 0 : prev + 1
+      prev === auction.images.length - 1 ? 0 : prev + 1,
     );
   };
 
@@ -142,7 +144,7 @@ export default function AuctionQuickView({
       setIsAutoBid(false);
     } catch (error) {
       setBidError(
-        error instanceof Error ? error.message : "Failed to place bid"
+        error instanceof Error ? error.message : "Failed to place bid",
       );
     } finally {
       setIsPlacingBid(false);

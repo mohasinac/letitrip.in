@@ -1,9 +1,9 @@
 "use client";
 
-import { formatCompactNumber } from "@letitrip/react-library";
 import {
   cn,
   FavoriteButton,
+  formatCompactNumber,
   ShopCard as LibraryShopCard,
   OptimizedImage,
   type ShopCardProps as LibraryShopCardProps,

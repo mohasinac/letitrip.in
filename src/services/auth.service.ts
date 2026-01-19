@@ -1,7 +1,7 @@
-import { logServiceError } from "@/lib/error-logger";
 import { AuthError, ErrorCode, ValidationError } from "@/lib/errors";
 import { UserFE } from "@/types/frontend/user.types";
 import { UserRole, UserStatus } from "@/types/shared/common.types";
+import { logServiceError } from "@letitrip/react-library";
 import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
@@ -235,7 +235,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid registration data",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.issues }
+          { errors: error.issues },
         );
       }
       throw error;
@@ -268,7 +268,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid login credentials format",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;
@@ -303,7 +303,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid Google auth data",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;
@@ -340,7 +340,7 @@ class AuthService {
   async getCurrentUser(): Promise<UserFE | null> {
     try {
       const response = await apiService.get<{ user: AuthUserBE; session: any }>(
-        "/auth/me"
+        "/auth/me",
       );
 
       // Transform and store user
@@ -357,7 +357,7 @@ class AuthService {
         }
         throw new AuthError(
           "Session expired or invalid",
-          ErrorCode.SESSION_EXPIRED
+          ErrorCode.SESSION_EXPIRED,
         );
       }
       // Return null silently for unauthenticated users
@@ -408,7 +408,7 @@ class AuthService {
   async getSessions(): Promise<any[]> {
     try {
       const response = await apiService.get<{ sessions: any[] }>(
-        "/auth/sessions"
+        "/auth/sessions",
       );
       return response.sessions;
     } catch (error) {
@@ -438,7 +438,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid email format",
           ErrorCode.INVALID_FORMAT,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;
@@ -456,7 +456,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid verification token",
           ErrorCode.INVALID_TOKEN,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;
@@ -467,7 +467,7 @@ class AuthService {
   async updateProfile(data: Partial<UserFE>): Promise<UserFE> {
     const response = await apiService.patch<{ user: AuthUserBE }>(
       "/auth/profile",
-      data
+      data,
     );
 
     // Transform and store user
@@ -479,7 +479,7 @@ class AuthService {
   // Change password
   async changePassword(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<{ message: string }> {
     try {
       // Validate passwords with Zod
@@ -493,7 +493,7 @@ class AuthService {
         throw new ValidationError(
           "Invalid password format",
           ErrorCode.INVALID_FORMAT,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;

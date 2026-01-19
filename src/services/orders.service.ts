@@ -1,5 +1,4 @@
 import { buildUrl, ORDER_ROUTES } from "@/constants/api-routes";
-import { logServiceError } from "@/lib/error-logger";
 import { ErrorCode, NotFoundError, ValidationError } from "@/lib/errors";
 import {
   OrderBE,
@@ -24,6 +23,7 @@ import {
   toFEOrder,
   toFEOrderCard,
 } from "@/types/transforms/order.transforms";
+import { logServiceError } from "@letitrip/react-library";
 import { z, ZodError } from "zod";
 import { apiService } from "./api.service";
 
@@ -43,7 +43,7 @@ export const CreateOrderSchema = z.object({
           .int("Quantity must be a whole number")
           .min(1, "Quantity must be at least 1")
           .max(100, "Quantity cannot exceed 100"),
-      })
+      }),
     )
     .min(1, "At least one item is required"),
   shippingAddressId: z.string().min(1, "Shipping address is required"),
@@ -59,7 +59,7 @@ export const CreateOrderSchema = z.object({
     .max(50, "Coupon code must not exceed 50 characters")
     .regex(
       /^[A-Z0-9-]+$/,
-      "Coupon code must contain only uppercase letters, numbers, and hyphens"
+      "Coupon code must contain only uppercase letters, numbers, and hyphens",
     )
     .optional(),
   customerNotes: z
@@ -84,7 +84,7 @@ export const UpdateOrderStatusSchema = z.object({
     ],
     {
       errorMap: () => ({ message: "Invalid order status" }),
-    }
+    },
   ),
   internalNotes: z
     .string()
@@ -151,7 +151,7 @@ export const BulkRefundSchema = z.object({
 class OrdersService {
   // List orders (role-filtered)
   async list(
-    filters?: Partial<OrderFiltersBE>
+    filters?: Partial<OrderFiltersBE>,
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     const endpoint = buildUrl(ORDER_ROUTES.LIST, filters);
     const response = await apiService.get<PaginatedResponseBE<any>>(endpoint);
@@ -165,7 +165,7 @@ class OrdersService {
 
   // Get seller's orders specifically (uses unified route with automatic filtering)
   async getSellerOrders(
-    filters?: Partial<OrderFiltersBE>
+    filters?: Partial<OrderFiltersBE>,
   ): Promise<PaginatedResponseFE<OrderCardFE>> {
     // The unified route automatically filters by seller's shop
     return this.list(filters);
@@ -186,7 +186,7 @@ class OrdersService {
       const request = toBECreateOrderRequest(validatedData);
       const orderBE = await apiService.post<OrderBE>(
         ORDER_ROUTES.CREATE,
-        request
+        request,
       );
       return toFEOrder(orderBE);
     } catch (error) {
@@ -194,7 +194,7 @@ class OrdersService {
         throw new ValidationError(
           "Invalid order data",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       throw error;
@@ -205,7 +205,7 @@ class OrdersService {
   async updateStatus(
     id: string,
     status: string,
-    internalNotes?: string
+    internalNotes?: string,
   ): Promise<OrderFE> {
     try {
       // Validate input data
@@ -216,11 +216,11 @@ class OrdersService {
 
       const request = toBEUpdateOrderStatusRequest(
         validatedData.status,
-        validatedData.internalNotes
+        validatedData.internalNotes,
       );
       const orderBE = await apiService.patch<OrderBE>(
         ORDER_ROUTES.BY_ID(id),
-        request
+        request,
       );
       return toFEOrder(orderBE);
     } catch (error) {
@@ -228,7 +228,7 @@ class OrdersService {
         throw new ValidationError(
           "Invalid order status",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       if (
@@ -248,7 +248,7 @@ class OrdersService {
     id: string,
     trackingNumber: string,
     shippingProvider: string,
-    estimatedDelivery?: Date
+    estimatedDelivery?: Date,
   ): Promise<OrderFE> {
     try {
       // Validate input data
@@ -261,11 +261,11 @@ class OrdersService {
       const request = toBECreateShipmentRequest(
         validatedData.trackingNumber,
         validatedData.shippingProvider,
-        validatedData.estimatedDelivery
+        validatedData.estimatedDelivery,
       );
       const orderBE = await apiService.post<OrderBE>(
         `/orders/${id}/shipment`,
-        request
+        request,
       );
       return toFEOrder(orderBE);
     } catch (error) {
@@ -273,7 +273,7 @@ class OrdersService {
         throw new ValidationError(
           "Invalid shipment data",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       if (
@@ -303,7 +303,7 @@ class OrdersService {
         throw new ValidationError(
           "Invalid cancellation reason",
           ErrorCode.VALIDATION_ERROR,
-          { errors: error.errors }
+          { errors: error.errors },
         );
       }
       if (
@@ -371,7 +371,7 @@ class OrdersService {
   async bulkAction(
     action: string,
     orderIds: string[],
-    data?: any
+    data?: any,
   ): Promise<BulkActionResponse> {
     try {
       // Validate bulk action inputs
@@ -387,7 +387,7 @@ class OrdersService {
           action: validatedAction.action,
           orderIds: validatedAction.orderIds,
           data: validatedAction.data,
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -415,7 +415,7 @@ class OrdersService {
    */
   async bulkShip(
     orderIds: string[],
-    trackingNumber?: string
+    trackingNumber?: string,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("ship", orderIds, { trackingNumber });
   }
@@ -432,7 +432,7 @@ class OrdersService {
    */
   async bulkCancel(
     orderIds: string[],
-    reason?: string
+    reason?: string,
   ): Promise<BulkActionResponse> {
     // Validate reason if provided
     if (reason) {
@@ -447,7 +447,7 @@ class OrdersService {
   async bulkRefund(
     orderIds: string[],
     refundAmount?: number,
-    reason?: string
+    reason?: string,
   ): Promise<BulkActionResponse> {
     // Validate refund data
     const validatedData = BulkRefundSchema.parse({ refundAmount, reason });
@@ -466,7 +466,7 @@ class OrdersService {
    */
   async bulkUpdate(
     orderIds: string[],
-    updates: Partial<UpdateOrderStatusRequestBE>
+    updates: Partial<UpdateOrderStatusRequestBE>,
   ): Promise<BulkActionResponse> {
     return this.bulkAction("update", orderIds, updates);
   }

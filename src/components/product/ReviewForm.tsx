@@ -1,7 +1,6 @@
 "use client";
 
 import MediaUploader from "@/components/media/MediaUploader";
-import { logError } from "@/lib/error-logger";
 import { reviewsService } from "@/services/reviews.service";
 import { MediaFile } from "@/types/media";
 import {
@@ -9,6 +8,7 @@ import {
   FormLabel,
   FormTextarea,
   ReviewForm as LibraryReviewForm,
+  logError,
 } from "@letitrip/react-library";
 import { Image as ImageIcon, Star } from "lucide-react";
 import { useCallback, useState } from "react";

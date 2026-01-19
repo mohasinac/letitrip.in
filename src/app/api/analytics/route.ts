@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../lib/session";
-import { Collections } from "../lib/firebase/collections";
 import { safeToISOString } from "@letitrip/react-library";
+import { NextRequest, NextResponse } from "next/server";
+import { Collections } from "../lib/firebase/collections";
+import { getCurrentUser } from "../lib/session";
 
 /**
  * GET /api/analytics

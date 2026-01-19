@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
-import { toDateInputValue, getTodayDateInputValue } from "@letitrip/react-library";
 import { COLLECTIONS } from "@/constants/database";
+import {
+  getTodayDateInputValue,
+  toDateInputValue,
+} from "@letitrip/react-library";
+import { NextResponse } from "next/server";
 
 export async function GET(
   _request: Request,

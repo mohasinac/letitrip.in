@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import {
+  getShopIdFromRequest,
+  handleAuthError,
+  requireRole,
+} from "@/app/api/lib/auth-helpers";
 import { getFirestoreAdmin } from "@/app/api/lib/firebase/admin";
 import { COLLECTIONS } from "@/constants/database";
 import { safeToISOString } from "@letitrip/react-library";
-import {
-  requireRole,
-  getShopIdFromRequest,
-  handleAuthError,
-} from "@/app/api/lib/auth-helpers";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Calculate average response time from order creation to first status update

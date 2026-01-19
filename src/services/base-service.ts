@@ -1,4 +1,3 @@
-import { logServiceError } from "@/lib/error-logger";
 import {
   AppError,
   ErrorCode,
@@ -7,6 +6,7 @@ import {
   ValidationError,
 } from "@/lib/errors";
 import type { PaginatedResponse } from "@/types/shared/pagination.types";
+import { logServiceError } from "@letitrip/react-library";
 import { apiService, type RequestOptions } from "./api.service";
 
 /**
@@ -50,7 +50,7 @@ export abstract class BaseService<
   TFE,
   TBE,
   TCreate = Partial<TBE>,
-  TUpdate = Partial<TBE>
+  TUpdate = Partial<TBE>,
 > {
   protected readonly resourceName: string;
   protected readonly baseRoute: string;
@@ -79,14 +79,14 @@ export abstract class BaseService<
     try {
       const response = await apiService.get<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
-        options
+        options,
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id }
+          { id },
         );
       }
 
@@ -102,12 +102,12 @@ export abstract class BaseService<
    */
   async getAll(
     params?: Record<string, any>,
-    options?: ServiceOptions
+    options?: ServiceOptions,
   ): Promise<PaginatedResponse<TFE>> {
     try {
       const response = await apiService.get<PaginatedResponse<TBE>>(
         this.baseRoute,
-        { ...options, params }
+        { ...options, params },
       );
 
       return {
@@ -128,7 +128,7 @@ export abstract class BaseService<
       if (!this.toBECreate) {
         throw new AppError(
           `Create operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED
+          ErrorCode.NOT_IMPLEMENTED,
         );
       }
 
@@ -136,13 +136,13 @@ export abstract class BaseService<
       const response = await apiService.post<{ data: TBE }>(
         this.baseRoute,
         beData,
-        options
+        options,
       );
 
       if (!response.data) {
         throw new AppError(
           `Failed to create ${this.resourceName}`,
-          ErrorCode.INTERNAL_ERROR
+          ErrorCode.INTERNAL_ERROR,
         );
       }
 
@@ -159,13 +159,13 @@ export abstract class BaseService<
   async update(
     id: string,
     data: TUpdate,
-    options?: ServiceOptions
+    options?: ServiceOptions,
   ): Promise<TFE> {
     try {
       if (!this.toBEUpdate) {
         throw new AppError(
           `Update operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED
+          ErrorCode.NOT_IMPLEMENTED,
         );
       }
 
@@ -173,14 +173,14 @@ export abstract class BaseService<
       const response = await apiService.put<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
         beData,
-        options
+        options,
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id }
+          { id },
         );
       }
 
@@ -197,13 +197,13 @@ export abstract class BaseService<
   async patch(
     id: string,
     data: Partial<TUpdate>,
-    options?: ServiceOptions
+    options?: ServiceOptions,
   ): Promise<TFE> {
     try {
       if (!this.toBEUpdate) {
         throw new AppError(
           `Update operation not supported for ${this.resourceName}`,
-          ErrorCode.NOT_IMPLEMENTED
+          ErrorCode.NOT_IMPLEMENTED,
         );
       }
 
@@ -211,14 +211,14 @@ export abstract class BaseService<
       const response = await apiService.patch<{ data: TBE }>(
         `${this.baseRoute}/${id}`,
         beData,
-        options
+        options,
       );
 
       if (!response.data) {
         throw new NotFoundError(
           `${this.resourceName} not found`,
           ErrorCode.RESOURCE_NOT_FOUND,
-          { id }
+          { id },
         );
       }
 
@@ -246,7 +246,7 @@ export abstract class BaseService<
    */
   async bulkDelete(
     ids: string[],
-    options?: ServiceOptions
+    options?: ServiceOptions,
   ): Promise<{ success: number; failed: number; errors?: string[] }> {
     try {
       const response = await apiService.delete<{
@@ -285,12 +285,12 @@ export abstract class BaseService<
    */
   async count(
     params?: Record<string, any>,
-    options?: ServiceOptions
+    options?: ServiceOptions,
   ): Promise<number> {
     try {
       const response = await apiService.get<{ count: number }>(
         `${this.baseRoute}/count`,
-        { ...options, params }
+        { ...options, params },
       );
 
       return response.count;
@@ -324,7 +324,7 @@ export abstract class BaseService<
       return new ValidationError(
         (error as any)?.message ||
           `Validation failed for ${operation} operation`,
-        { originalError: error }
+        { originalError: error },
       );
     }
 
@@ -332,7 +332,7 @@ export abstract class BaseService<
     return new AppError(
       `Failed to ${operation} ${this.resourceName}`,
       ErrorCode.INTERNAL_ERROR,
-      { originalError: error }
+      { originalError: error },
     );
   }
 

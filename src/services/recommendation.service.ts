@@ -14,8 +14,8 @@
  * - Collaborative filtering basics
  */
 
-import { logServiceError } from "@/lib/error-logger";
 import type { ProductFE } from "@/types/frontend/product.types";
+import { logServiceError } from "@letitrip/react-library";
 import { apiService } from "./api.service";
 
 // ============================================================================
@@ -77,7 +77,7 @@ class RecommendationService {
    */
   async getSimilarProducts(
     productId: string,
-    options: SimilarProductsOptions = {}
+    options: SimilarProductsOptions = {},
   ): Promise<ProductFE[]> {
     const {
       limit = 10,
@@ -106,7 +106,7 @@ class RecommendationService {
       }
 
       const response = await apiService.get<ProductFE[]>(
-        `/recommendations/similar?${params.toString()}`
+        `/recommendations/similar?${params.toString()}`,
       );
 
       return response || [];
@@ -114,7 +114,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getSimilarProducts",
-        error as Error
+        error as Error,
       );
       return [];
     }
@@ -125,7 +125,7 @@ class RecommendationService {
    */
   async getFrequentlyBoughtTogether(
     productId: string,
-    options: FrequentlyBoughtTogetherOptions = {}
+    options: FrequentlyBoughtTogetherOptions = {},
   ): Promise<ProductFE[]> {
     const {
       limit = 5,
@@ -146,7 +146,7 @@ class RecommendationService {
       }
 
       const response = await apiService.get<ProductFE[]>(
-        `/recommendations/bought-together?${params.toString()}`
+        `/recommendations/bought-together?${params.toString()}`,
       );
 
       return response || [];
@@ -154,7 +154,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getFrequentlyBoughtTogether",
-        error as Error
+        error as Error,
       );
       return [];
     }
@@ -164,7 +164,7 @@ class RecommendationService {
    * Get personalized recommendations based on user history
    */
   async getPersonalizedRecommendations(
-    options: PersonalizedRecommendationOptions
+    options: PersonalizedRecommendationOptions,
   ): Promise<ProductFE[]> {
     const {
       userId,
@@ -188,7 +188,7 @@ class RecommendationService {
       }
 
       const response = await apiService.get<ProductFE[]>(
-        `/recommendations/personalized?${params.toString()}`
+        `/recommendations/personalized?${params.toString()}`,
       );
 
       return response || [];
@@ -196,7 +196,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getPersonalizedRecommendations",
-        error as Error
+        error as Error,
       );
       return [];
     }
@@ -206,7 +206,7 @@ class RecommendationService {
    * Get trending products
    */
   async getTrendingProducts(
-    options: TrendingProductsOptions = {}
+    options: TrendingProductsOptions = {},
   ): Promise<ProductFE[]> {
     const {
       limit = 20,
@@ -228,7 +228,7 @@ class RecommendationService {
       }
 
       const response = await apiService.get<ProductFE[]>(
-        `/recommendations/trending?${params.toString()}`
+        `/recommendations/trending?${params.toString()}`,
       );
 
       return response || [];
@@ -236,7 +236,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getTrendingProducts",
-        error as Error
+        error as Error,
       );
       return [];
     }
@@ -265,7 +265,7 @@ class RecommendationService {
     if (this.recentlyViewed.size > this.MAX_RECENTLY_VIEWED) {
       // Remove oldest entry
       const oldest = Array.from(this.recentlyViewed.entries()).sort(
-        (a, b) => a[1] - b[1]
+        (a, b) => a[1] - b[1],
       )[0];
       this.recentlyViewed.delete(oldest[0]);
     }
@@ -299,7 +299,7 @@ class RecommendationService {
           ? this.getPersonalizedRecommendations({ userId, limit: 10 })
           : this.getTrendingProducts({ limit: 10, period: "day" }),
         apiService.get<ProductFE[]>(
-          "/products?sort=createdAt&order=desc&limit=10"
+          "/products?sort=createdAt&order=desc&limit=10",
         ),
       ]);
 
@@ -312,7 +312,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getHomePageRecommendations",
-        error as Error
+        error as Error,
       );
       return {
         trending: [],
@@ -328,7 +328,7 @@ class RecommendationService {
    */
   async getCompleteProductRecommendations(
     productId: string,
-    userId?: string
+    userId?: string,
   ): Promise<{
     similar: ProductFE[];
     boughtTogether: ProductFE[];
@@ -339,7 +339,7 @@ class RecommendationService {
         this.getSimilarProducts(productId, { limit: 8 }),
         this.getFrequentlyBoughtTogether(productId, { limit: 4 }),
         apiService.get<ProductFE[]>(
-          `/products/${productId}/same-seller?limit=6`
+          `/products/${productId}/same-seller?limit=6`,
         ),
       ]);
 
@@ -352,7 +352,7 @@ class RecommendationService {
       logServiceError(
         "RecommendationService",
         "getCompleteProductRecommendations",
-        error as Error
+        error as Error,
       );
       return {
         similar: [],
@@ -404,13 +404,13 @@ class RecommendationService {
   findSimilarProductsLocally(
     targetProduct: ProductFE,
     allProducts: ProductFE[],
-    options: SimilarProductsOptions = {}
+    options: SimilarProductsOptions = {},
   ): ProductFE[] {
     const { limit = 10, excludeProductIds = [] } = options;
 
     const scores: RecommendationScore[] = allProducts
       .filter(
-        (p) => p.id !== targetProduct.id && !excludeProductIds.includes(p.id)
+        (p) => p.id !== targetProduct.id && !excludeProductIds.includes(p.id),
       )
       .map((product) => ({
         productId: product.id,
@@ -431,7 +431,7 @@ class RecommendationService {
    */
   private getSimilarityReasons(
     product1: ProductFE,
-    product2: ProductFE
+    product2: ProductFE,
   ): string[] {
     const reasons: string[] = [];
 
@@ -451,7 +451,7 @@ class RecommendationService {
 
     if (product1.tags && product2.tags) {
       const commonTags = product1.tags.filter((tag) =>
-        product2.tags?.includes(tag)
+        product2.tags?.includes(tag),
       );
       if (commonTags.length > 0) {
         reasons.push(`Common tags: ${commonTags.slice(0, 2).join(", ")}`);
@@ -489,7 +489,7 @@ class RecommendationService {
       const obj = Object.fromEntries(this.recentlyViewed);
       localStorage.setItem(
         this.RECENTLY_VIEWED_STORAGE_KEY,
-        JSON.stringify(obj)
+        JSON.stringify(obj),
       );
     } catch (error) {
       console.error("Failed to save recently viewed:", error);
