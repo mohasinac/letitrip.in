@@ -41,12 +41,12 @@ export type {
 export { SearchResults } from "./SearchResults";
 export type {
   SearchResultItem,
-  SearchResultsProps,
   SearchResultTab,
+  SearchResultsProps,
 } from "./SearchResults";
 
 export { SearchSuggestions } from "./SearchSuggestions";
 export type {
-  SuggestionItem,
   SearchSuggestionsProps,
+  SuggestionItem,
 } from "./SearchSuggestions";
