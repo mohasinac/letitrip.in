@@ -39,9 +39,8 @@ export { Footer } from "./Footer";
 export type {
   FooterLink,
   FooterLinkSection,
-  FooterLogo,
   FooterProps,
-  FooterSocialLink,
+  PartnerLogo,
 } from "./Footer";
 
 export { MobileNavigation } from "./MobileNavigation";
