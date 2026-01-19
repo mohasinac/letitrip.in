@@ -1,22 +1,22 @@
 /**
  * Product Listing Page
- * 
+ *
  * Dynamic product listing with filters, search, sorting, and pagination.
  * Supports multiple view modes (grid/table) and SEO-friendly URLs.
- * 
+ *
  * URL Examples:
  * - /buy-product-all - All products
  * - /buy-product-electronics - Electronics category
  * - /buy-product-all?sort=price-asc&inStock=true
  * - /buy-product-fashion?minPrice=500&maxPrice=2000
- * 
+ *
  * @page /buy-product-[...filters] - Product listing
  */
 
+import { Breadcrumb, ProductCard } from "@letitrip/react-library";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ProductCard, Breadcrumb } from "@letitrip/react-library";
+import { notFound } from "next/navigation";
 
 // Types
 interface PageProps {
@@ -90,13 +90,16 @@ const SORT_OPTIONS = [
 ];
 
 // Fetch products server-side
-async function getProducts(params: PageProps["params"], searchParams: PageProps["searchParams"]) {
+async function getProducts(
+  params: PageProps["params"],
+  searchParams: PageProps["searchParams"],
+) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const category = params.filters?.[0];
 
   // Build query params
   const queryParams = new URLSearchParams();
-  
+
   if (category && category !== "all") {
     queryParams.set("categorySlug", category);
   }
@@ -104,7 +107,8 @@ async function getProducts(params: PageProps["params"], searchParams: PageProps[
   if (searchParams.sort) queryParams.set("sort", searchParams.sort);
   if (searchParams.minPrice) queryParams.set("minPrice", searchParams.minPrice);
   if (searchParams.maxPrice) queryParams.set("maxPrice", searchParams.maxPrice);
-  if (searchParams.condition) queryParams.set("condition", searchParams.condition);
+  if (searchParams.condition)
+    queryParams.set("condition", searchParams.condition);
   if (searchParams.shopSlug) queryParams.set("shopSlug", searchParams.shopSlug);
   if (searchParams.inStock === "true") queryParams.set("inStock", "true");
   if (searchParams.featured === "true") queryParams.set("featured", "true");
@@ -113,9 +117,12 @@ async function getProducts(params: PageProps["params"], searchParams: PageProps[
   else queryParams.set("limit", "24");
 
   try {
-    const res = await fetch(`${baseUrl}/api/products?${queryParams.toString()}`, {
-      next: { revalidate: 300 }, // Cache for 5 minutes
-    });
+    const res = await fetch(
+      `${baseUrl}/api/products?${queryParams.toString()}`,
+      {
+        next: { revalidate: 300 }, // Cache for 5 minutes
+      },
+    );
 
     if (!res.ok) {
       console.error("Failed to fetch products:", res.status);
@@ -134,7 +141,10 @@ async function getProducts(params: PageProps["params"], searchParams: PageProps[
   }
 }
 
-export default async function ProductListingPage({ params, searchParams }: PageProps) {
+export default async function ProductListingPage({
+  params,
+  searchParams,
+}: PageProps) {
   const category = params.filters?.[0] || "all";
   const categoryName = CATEGORY_MAP[category];
 
@@ -144,7 +154,10 @@ export default async function ProductListingPage({ params, searchParams }: PageP
   }
 
   // Fetch data
-  const { products, hasMore, nextCursor } = await getProducts(params, searchParams);
+  const { products, hasMore, nextCursor } = await getProducts(
+    params,
+    searchParams,
+  );
 
   // Build breadcrumbs
   const breadcrumbs = [
@@ -177,7 +190,8 @@ export default async function ProductListingPage({ params, searchParams }: PageP
             {searchParams.q ? `Search: "${searchParams.q}"` : categoryName}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {products.length} {products.length === 1 ? "product" : "products"} found
+            {products.length} {products.length === 1 ? "product" : "products"}{" "}
+            found
           </p>
         </div>
 
@@ -243,7 +257,10 @@ export default async function ProductListingPage({ params, searchParams }: PageP
             {hasMore && (
               <div className="flex justify-center">
                 <Link
-                  href={`?${new URLSearchParams({ ...searchParams, cursor: nextCursor }).toString()}`}
+                  href={`?${new URLSearchParams({
+                    ...searchParams,
+                    cursor: nextCursor,
+                  }).toString()}`}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
                 >
                   Load More
