@@ -86,3 +86,7 @@ logs/
 .env.local.example
 test-*-output.txt
 test-results*.txt
+
+# Workspace projects with own repos
+/react-library/
+/tests/
