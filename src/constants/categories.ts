@@ -1,13 +1,13 @@
 /**
  * Product Categories
- * 
+ *
  * Centralized category definitions with hierarchical structure.
  * Categories are used for product/auction organization and filtering.
- * 
+ *
  * @example
  * ```tsx
  * import { CATEGORIES, getCategoryBySlug } from '@/constants/categories';
- * 
+ *
  * const electronics = getCategoryBySlug('electronics');
  * ```
  */

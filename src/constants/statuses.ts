@@ -1,13 +1,13 @@
 /**
  * Status Enums
- * 
+ *
  * Centralized status constants for orders, auctions, products, and other entities.
  * Use these enums for consistency across the application.
- * 
+ *
  * @example
  * ```tsx
  * import { ORDER_STATUS, AUCTION_STATUS } from '@/constants/statuses';
- * 
+ *
  * if (order.status === ORDER_STATUS.DELIVERED) {
  *   // Show review prompt
  * }
@@ -257,6 +257,6 @@ export function getStatusVariant(
   if (successStatuses.includes(status as any)) return "success";
   if (warningStatuses.includes(status as any)) return "warning";
   if (errorStatuses.includes(status as any)) return "error";
-  
+
   return "default";
 }

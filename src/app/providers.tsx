@@ -2,10 +2,10 @@
 
 /**
  * Providers Component
- * 
+ *
  * Centralized provider wrapper for all global contexts and state management.
  * Includes React Query, Theme, Auth, and Cart providers.
- * 
+ *
  * @example
  * ```tsx
  * <Providers>
@@ -17,7 +17,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -25,13 +25,13 @@ interface ProvidersProps {
 
 /**
  * Providers - Wraps app with all necessary providers
- * 
+ *
  * Features:
  * - React Query for data fetching and caching
  * - Theme provider for dark mode
  * - Auth context (to be implemented)
  * - Cart context (to be implemented)
- * 
+ *
  * @param props - Component props
  * @returns Providers wrapper component
  */
