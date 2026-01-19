@@ -1,6 +1,5 @@
-
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { cn } from "../../utils/cn";
+import { ReactNode, useState } from "react";
+import { HorizontalScroller } from "../common/HorizontalScroller";
 
 export interface Subcategory {
   id: string;
@@ -14,7 +13,6 @@ export interface SubcategoryGridProps {
   subcategories: Subcategory[];
   parentSlug: string;
   loading?: boolean;
-
   // Injection props
   LinkComponent?: React.ComponentType<{
     href: string;
@@ -31,26 +29,22 @@ export interface SubcategoryGridProps {
   }>;
   icons?: {
     search?: ReactNode;
-    chevronLeft?: ReactNode;
-    chevronRight?: ReactNode;
     package?: ReactNode;
   };
   className?: string;
 }
 
 /**
- * SubcategoryGrid Component (Library Version)
+ * SubcategoryGrid Component
  *
- * Framework-agnostic scrollable horizontal grid for child categories.
+ * Horizontal scrollable grid for child categories using the generic HorizontalScroller.
  *
  * Features:
- * - Horizontal scroll with arrow navigation
  * - Search/filter subcategories
  * - Sort by name or product count
  * - Product count badges
  * - Category images
- * - Responsive grid
- * - Component injection for Link and Image
+ * - Uses HorizontalScroller for scroll logic
  *
  * @example
  * ```tsx
@@ -59,12 +53,6 @@ export interface SubcategoryGridProps {
  *   parentSlug="electronics"
  *   LinkComponent={NextLink}
  *   ImageComponent={OptimizedImage}
- *   icons={{
- *     search: <Search />,
- *     chevronLeft: <ChevronLeft />,
- *     chevronRight: <ChevronRight />,
- *     package: <Package />
- *   }}
  * />
  * ```
  */
@@ -77,13 +65,10 @@ export function SubcategoryGrid({
   icons,
   className,
 }: SubcategoryGridProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"alphabetical" | "productCount">(
     "alphabetical",
   );
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
 
   // Filter and sort subcategories
   const filteredSubcategories = subcategories
@@ -96,82 +81,54 @@ export function SubcategoryGrid({
       }
     });
 
-  // Check scroll arrows visibility
-  const updateScrollArrows = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setShowLeftArrow(scrollLeft > 0);
-    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-
-  useEffect(() => {
-    updateScrollArrows();
-    const scrollEl = scrollRef.current;
-    if (scrollEl) {
-      scrollEl.addEventListener("scroll", updateScrollArrows);
-      window.addEventListener("resize", updateScrollArrows);
-      return () => {
-        scrollEl.removeEventListener("scroll", updateScrollArrows);
-        window.removeEventListener("resize", updateScrollArrows);
-      };
-    }
-  }, [filteredSubcategories]);
-
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
-    const scrollAmount = 300;
-    scrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
   if (subcategories.length === 0) {
     return null;
   }
 
+  // Header actions (search + sort buttons)
+  const headerActions = (
+    <div className="flex items-center gap-2 flex-wrap">
+      {/* Sort Buttons */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setSortBy("alphabetical")}
+          className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+            sortBy === "alphabetical"
+              ? "bg-primary text-white"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+          }`}
+        >
+          A-Z
+        </button>
+        <button
+          type="button"
+          onClick={() => setSortBy("productCount")}
+          className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+            sortBy === "productCount"
+              ? "bg-primary text-white"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+          }`}
+        >
+          Popular
+        </button>
+      </div>
+    </div>
+  );
+
+  // Empty state
+  const emptyState = (
+    <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+      No subcategories found
+    </p>
+  );
+
   return (
     <div
-      className={cn(
-        "bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6",
-        className,
-      )}
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 ${
+        className || ""
+      }`}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Browse Subcategories ({subcategories.length})
-        </h2>
-
-        {/* Sort Buttons */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setSortBy("alphabetical")}
-            className={cn(
-              "px-3 py-1 text-sm rounded-lg transition-colors",
-              sortBy === "alphabetical"
-                ? "bg-primary text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600",
-            )}
-          >
-            A-Z
-          </button>
-          <button
-            type="button"
-            onClick={() => setSortBy("productCount")}
-            className={cn(
-              "px-3 py-1 text-sm rounded-lg transition-colors",
-              sortBy === "productCount"
-                ? "bg-primary text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600",
-            )}
-          >
-            Popular
-          </button>
-        </div>
-      </div>
-
       {/* Search */}
       {subcategories.length > 6 && (
         <div className="relative mb-4">
@@ -190,109 +147,60 @@ export function SubcategoryGrid({
         </div>
       )}
 
-      {/* Horizontal Scroll */}
-      <div className="relative">
-        {/* Left Arrow */}
-        {showLeftArrow && icons?.chevronLeft && (
-          <button
-            type="button"
-            onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <div className="w-5 h-5 text-gray-600 dark:text-gray-400">
-              {icons.chevronLeft}
-            </div>
-          </button>
-        )}
-
-        {/* Right Arrow */}
-        {showRightArrow && icons?.chevronRight && (
-          <button
-            type="button"
-            onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <div className="w-5 h-5 text-gray-600 dark:text-gray-400">
-              {icons.chevronRight}
-            </div>
-          </button>
-        )}
-
-        {/* Subcategory Grid */}
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {filteredSubcategories.map((subcat) =>
-            LinkComponent ? (
-              <LinkComponent
-                key={subcat.id}
-                href={`/categories/${subcat.slug}`}
-                className="flex-shrink-0 w-40 group"
-              >
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 hover:border-primary">
-                  {/* Image */}
-                  {subcat.image && ImageComponent && (
-                    <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                      <ImageComponent
-                        src={subcat.image}
-                        alt={subcat.name}
-                        fill={true}
-                        className="object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-                  )}
-
-                  {/* Name */}
-                  <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {subcat.name}
-                  </h3>
-
-                  {/* Product Count */}
-                  <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                    {icons?.package && (
-                      <div className="w-3 h-3">{icons.package}</div>
-                    )}
-                    <span>{subcat.productCount.toLocaleString()}</span>
-                  </div>
+      {/* Horizontal Scroller */}
+      <HorizontalScroller
+        title={`Browse Subcategories (${subcategories.length})`}
+        titleLevel="h2"
+        headerActions={headerActions}
+        showArrows
+        itemWidth="160px"
+        gap="1rem"
+        loading={loading}
+        emptyState={filteredSubcategories.length === 0 ? emptyState : undefined}
+      >
+        {filteredSubcategories.map((subcat) => {
+          const card = (
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-md transition-all border border-gray-200 dark:border-gray-600 hover:border-primary h-full">
+              {/* Image */}
+              {subcat.image && ImageComponent && (
+                <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                  <ImageComponent
+                    src={subcat.image}
+                    alt={subcat.name}
+                    fill={true}
+                    className="object-cover group-hover:scale-105 transition-transform"
+                  />
                 </div>
-              </LinkComponent>
-            ) : (
-              <div key={subcat.id} className="flex-shrink-0 w-40">
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                  {subcat.image && ImageComponent && (
-                    <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                      <ImageComponent
-                        src={subcat.image}
-                        alt={subcat.name}
-                        fill={true}
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
-                    {subcat.name}
-                  </h3>
-                  <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                    {icons?.package && (
-                      <div className="w-3 h-3">{icons.package}</div>
-                    )}
-                    <span>{subcat.productCount.toLocaleString()}</span>
-                  </div>
-                </div>
+              )}
+
+              {/* Name */}
+              <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                {subcat.name}
+              </h3>
+
+              {/* Product Count */}
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                {icons?.package && (
+                  <div className="w-3 h-3">{icons.package}</div>
+                )}
+                <span>{subcat.productCount.toLocaleString()}</span>
               </div>
-            ),
-          )}
-        </div>
-      </div>
+            </div>
+          );
 
-      {filteredSubcategories.length === 0 && (
-        <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-          No subcategories found
-        </p>
-      )}
+          return LinkComponent ? (
+            <LinkComponent
+              key={subcat.id}
+              href={`/categories/${subcat.slug}`}
+              className="group block h-full"
+            >
+              {card}
+            </LinkComponent>
+          ) : (
+            <div key={subcat.id}>{card}</div>
+          );
+        })}
+      </HorizontalScroller>
     </div>
   );
 }
-

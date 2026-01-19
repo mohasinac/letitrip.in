@@ -27,7 +27,9 @@ A comprehensive, framework-independent React library with 115+ components, 19 ho
 
 ### ✅ What's Included
 
-- **115 Components**: Forms, UI elements, cards, tables, filters, pagination, wizards, admin panels
+- **115+ Components**: Forms, UI elements, cards, tables, filters, pagination, wizards, admin panels
+  - **Generic Components**: `MediaGallery` (universal media viewer), `HeroSlide` (flexible hero banners)
+  - Framework-independent with dependency injection
 - **19 Hooks**: Debounce, storage, responsive, utilities
 - **60+ Utilities**: Formatters, validators, date utils, sanitization, accessibility
 - **Design System**: 200+ CSS tokens, Tailwind config, dark mode support
@@ -68,6 +70,21 @@ import { ... } from '@letitrip/react-library'
 
 - `ImageUploadWithCrop`, `VideoUploadWithThumbnail`, `MediaUploader`, `FileUpload`
 - Media upload with preview and validation
+
+### Media Gallery (1)
+
+- **`MediaGallery`** - Universal gallery for any resource (products, auctions, categories)
+- Lightbox with zoom (50%-300%), rotate, download
+- Black backdrop with blur effect, keyboard shortcuts
+- Auto-play slideshow, thumbnail navigation
+- Replaces: `ProductGallery`, `AuctionGallery` (now deprecated wrappers)
+
+### Homepage/Hero (1)
+
+- **`HeroSlide`** - Dynamic hero/banner with 3x3 grid positioning
+- 9 content positions (top-left through bottom-right)
+- Mobile responsive (auto-centers), video/image background
+- Customizable overlay, gradient fallback
 
 ### Cards (8)
 
@@ -273,6 +290,63 @@ function MyComponent() {
   );
 }
 ```
+
+### Universal Media Gallery
+
+Use `MediaGallery` for any resource type - products, auctions, categories, etc.:
+
+```tsx
+import { MediaGallery } from "@letitrip/react-library/media";
+import Image from "next/image";
+
+function ProductPage({ product }) {
+  return (
+    <MediaGallery
+      resourceName={product.name}
+      media={product.images} // Works with any media array
+      ImageComponent={Image}
+      autoPlayInterval={3000}
+    />
+  );
+}
+
+// Same component for auctions!
+function AuctionPage({ auction }) {
+  return (
+    <MediaGallery
+      resourceName={auction.title}
+      media={auction.media}
+      ImageComponent={Image}
+    />
+  );
+}
+```
+
+**Features**: Zoom (50%-300%), rotate (90°), download, lightbox with black backdrop + blur, keyboard navigation (arrows, ESC)
+
+### Dynamic Hero/Banners
+
+Use `HeroSlide` with 3x3 grid positioning for flexible content placement:
+
+```tsx
+import { HeroSlide } from "@letitrip/react-library/homepage";
+
+function HomePage() {
+  return (
+    <HeroSlide
+      backgroundImage="/hero-sale.jpg"
+      title="Summer Sale"
+      description="Up to 70% off on all items"
+      cta={{ text: "Shop Now", href: "/products" }}
+      contentPosition="bottom-left" // 9 positions available
+      overlayOpacity={50}
+    />
+  );
+}
+```
+
+**Grid Positions**: `top-left`, `top-center`, `top-right`, `middle-left`, `middle-center`, `middle-right`, `bottom-left`, `bottom-center`, `bottom-right`
+**Mobile**: Automatically centers content on small screens
 
 ### Framework Independence
 

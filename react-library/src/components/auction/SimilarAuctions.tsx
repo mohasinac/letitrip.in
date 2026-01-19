@@ -1,5 +1,8 @@
-import { Loader2 } from "lucide-react";
+/**
+ * @deprecated Use SimilarItems from @letitrip/react-library/common instead
+ */
 import { ComponentType } from "react";
+import { SimilarItems } from "../common/SimilarItems";
 
 export interface SimilarAuctionData {
   id: string;
@@ -47,94 +50,63 @@ export interface SimilarAuctionsProps {
   className?: string;
 }
 
+// Transform SimilarAuctionData to format expected by card
+function transformAuction(auction: SimilarAuctionData): AuctionCardData {
+  return {
+    id: auction.id,
+    name: auction.productName || "",
+    slug: auction.productSlug || "",
+    images: auction.productImage ? [auction.productImage] : [],
+    currentBid: auction.currentPrice || auction.startingBid || 0,
+    startingBid: auction.startingBid || 0,
+    bidCount: auction.totalBids || 0,
+    endTime: auction.endTime,
+    status: auction.status,
+    featured: auction.featured,
+    shop: auction.shopId
+      ? {
+          id: auction.shopId,
+          name: auction.shopId,
+          isVerified: false,
+        }
+      : undefined,
+  };
+}
+
 /**
- * SimilarAuctions Component
- *
- * Displays similar ongoing auctions in a grid layout.
- * Used on auction detail pages to show related auctions.
- *
- * Features:
- * - Grid of auction cards with responsive layout
- * - Filters out current auction from the list
- * - Loading state with spinner
- * - Conditional rendering (hidden if no results)
- * - Data transformation for auction cards
- * - Configurable title and shop info display
- *
- * @example
- * ```tsx
- * <SimilarAuctions
- *   auctions={similarAuctions}
- *   currentAuctionId="auction123"
- *   AuctionCardComponent={AuctionCard}
- * />
- * ```
+ * @deprecated Use SimilarItems component instead
+ * This is a backward compatibility wrapper
  */
 export function SimilarAuctions({
   auctions,
-  loading = false,
+  loading,
   currentAuctionId,
   title = "Similar Auctions",
-  showShopInfo = true,
+  showShopInfo,
   AuctionCardComponent,
-  className = "",
+  className,
 }: SimilarAuctionsProps) {
-  // Filter out current auction
-  const filteredAuctions = auctions.filter(
-    (auction) => auction.id !== currentAuctionId,
+  // Transform auctions to required format
+  const transformedAuctions = auctions.map(transformAuction);
+
+  // Create wrapper component to pass transformed data
+  const AuctionCardWrapper = ({ item }: { item: AuctionCardData }) => (
+    <AuctionCardComponent
+      auction={item}
+      showShopInfo={showShopInfo}
+      href={`/auctions/${item.slug}`}
+    />
   );
 
-  if (loading) {
-    return (
-      <div className={className}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          {title}
-        </h2>
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-        </div>
-      </div>
-    );
-  }
-
-  if (filteredAuctions.length === 0) {
-    return null;
-  }
-
   return (
-    <div className={className}>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        {title}
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAuctions.map((auction) => (
-          <AuctionCardComponent
-            key={auction.id}
-            auction={{
-              id: auction.id,
-              name: auction.productName || "",
-              slug: auction.productSlug || "",
-              images: auction.productImage ? [auction.productImage] : [],
-              currentBid: auction.currentPrice || auction.startingBid || 0,
-              startingBid: auction.startingBid || 0,
-              bidCount: auction.totalBids || 0,
-              endTime: auction.endTime,
-              status: auction.status,
-              featured: auction.featured,
-              shop: auction.shopId
-                ? {
-                    id: auction.shopId,
-                    name: auction.shopId,
-                    isVerified: false,
-                  }
-                : undefined,
-            }}
-            showShopInfo={showShopInfo}
-            href={`/auctions/${auction.productSlug}`}
-          />
-        ))}
-      </div>
-    </div>
+    <SimilarItems
+      items={transformedAuctions}
+      currentItemId={currentAuctionId}
+      loading={loading}
+      title={title}
+      showViewAllButton={false}
+      ItemCardComponent={AuctionCardWrapper}
+      className={className}
+    />
   );
 }

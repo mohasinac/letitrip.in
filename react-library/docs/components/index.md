@@ -39,6 +39,306 @@ Complete documentation for all components in @letitrip/react-library.
 
 ---
 
+## 🎯 Generic Components (New!)
+
+### Universal Resource Components
+
+These components work with **any resource type** (products, auctions, categories, shops, etc.) - just pass the data!
+
+#### `MediaGallery` ⭐ **Recommended**
+
+**Universal media gallery** for any resource with full lightbox support.
+
+**Features:**
+
+- Works for products, auctions, categories, or any resource
+- Image/video carousel with auto-play
+- Lightbox with zoom (50%-300%), rotate (90°), download
+- Black backdrop with blur effect
+- Thumbnail navigation
+- Keyboard shortcuts (arrows, ESC)
+
+**Props:**
+
+- `media: GalleryMedia[]` - Array of images/videos
+- `resourceName: string` - Name for alt text and downloads
+- `ImageComponent: ComponentType` - Image component to use
+- `autoPlayInterval?: number` - Auto-play interval (default: 3000ms)
+- `icons?: object` - Custom icons
+- `className?: string` - Additional CSS classes
+
+**Usage:**
+
+```tsx
+import { MediaGallery } from '@letitrip/react-library/media';
+
+// For products
+<MediaGallery
+  resourceName="Leather Jacket"
+  media={[
+    { url: '/image1.jpg', type: 'image', alt: 'Front view' },
+    { url: '/video.mp4', type: 'video' }
+  ]}
+  ImageComponent={Image}
+/>
+
+// For auctions - same component!
+<MediaGallery
+  resourceName="Vintage Watch"
+  media={auctionImages}
+  ImageComponent={Image}
+/>
+```
+
+**Lightbox Controls:**
+
+- **Zoom**: +/- buttons (50% to 300%)
+- **Rotate**: 90° rotation button
+- **Download**: Save image locally
+- **Navigate**: Arrow buttons or keyboard
+- **Close**: ESC key or close button
+
+---
+
+#### `SimilarItems` ⭐ **Recommended**
+
+**Universal component** for displaying similar/related items with horizontal scroll.
+
+**Features:**
+
+- Works for any resource type (products, auctions, categories, shops)
+- Horizontal scrollable carousel with navigation
+- Optional "View All" modal with grid layout
+- Loading skeleton states
+- Empty state handling
+- Filters out current item from list
+- Responsive design
+
+**Props:**
+
+- `items: T[]` - Array of items to display
+- `currentItemId?: string` - ID of current item to exclude
+- `loading?: boolean` - Loading state
+- `title?: string` - Section title (default: "You might also like")
+- `categoryName?: string` - Category label to display
+- `showViewAllButton?: boolean` - Show view all button (default: true)
+- `maxDisplayItems?: number` - Max items in carousel (default: 16)
+- `onLoadItems?: () => void` - Callback to load items
+- `showAllModal?: boolean` - Modal open state
+- `onShowAllModalChange?: (show: boolean) => void` - Modal toggle
+- `ItemCardComponent: ComponentType` - Card component for each item
+- `CardGridComponent?: ComponentType` - Grid layout component
+- `icons?: object` - Custom icons
+- `className?: string` - Additional CSS classes
+
+**Usage:**
+
+```tsx
+import { SimilarItems } from '@letitrip/react-library/common';
+
+// For products
+<SimilarItems
+  items={similarProducts}
+  currentItemId={product.id}
+  title="You might also like"
+  categoryName="Electronics"
+  ItemCardComponent={ProductCard}
+  CardGridComponent={CardGrid}
+/>
+
+// For auctions - same component!
+<SimilarItems
+  items={similarAuctions}
+  currentItemId={auction.id}
+  title="Similar Auctions"
+  ItemCardComponent={AuctionCard}
+/>
+```
+
+**Replaces:** `SimilarProducts`, `SimilarAuctions` (now deprecated wrappers)
+
+---
+
+#### `ResourceListing` ⭐ **Recommended**
+
+**Universal component** for displaying any resource type with filtering, sorting, and views.
+
+**Features:**
+
+- Works for any resource (products, auctions, shops, categories)
+- Grid/list view toggle
+- Collapsible filters sidebar (mobile-friendly)
+- Sort by multiple criteria with order toggle
+- Responsive layout
+- Empty state handling
+- Loading skeleton states
+
+**Props:**
+
+- `items: T[]` - Array of items to display
+- `loading?: boolean` - Loading state
+- `resourceName: string` - Plural name (e.g., "Products", "Auctions")
+- `resourceSingular?: string` - Singular name (auto-derived if not provided)
+- `defaultView?: 'grid' | 'list'` - Default view mode (default: 'grid')
+- `showViewToggle?: boolean` - Show view toggle buttons (default: true)
+- `showFilters?: boolean` - Show filters sidebar (default: true)
+- `showSort?: boolean` - Show sort controls (default: true)
+- `sortOptions?: Array` - Sort dropdown options
+- `onSortChange?: (sortBy, sortOrder) => void` - Sort change callback
+- `filters?: object` - Current filter values
+- `onFiltersChange?: (filters) => void` - Filter change callback
+- `ItemCardComponent?: ComponentType` - Card component for items
+- `FiltersComponent?: ComponentType` - Filters sidebar component
+- `gridCols?: object` - Grid column configuration per breakpoint
+
+**Usage:**
+
+```tsx
+import { ResourceListing } from '@letitrip/react-library/common';
+
+// For products
+<ResourceListing
+  items={products}
+  resourceName="Products"
+  ItemCardComponent={ProductCard}
+  FiltersComponent={ProductFilters}
+  sortOptions={[
+    { value: 'price', label: 'Price' },
+    { value: 'rating', label: 'Rating' }
+  ]}
+  onSortChange={handleSort}
+  onFiltersChange={handleFilters}
+/>
+
+// For auctions - same component!
+<ResourceListing
+  items={auctions}
+  resourceName="Auctions"
+  ItemCardComponent={AuctionCard}
+  FiltersComponent={AuctionFilters}
+/>
+```
+
+**Replaces:** `ShopProducts`, `ShopAuctions` (can be converted to wrappers)
+
+---
+
+#### `HorizontalScroller` ⭐ **Recommended**
+
+**Generic horizontal scrolling container** with navigation arrows.
+
+**Features:**
+
+- Works for any content (categories, sellers, featured items)
+- Auto-hide navigation arrows based on scroll position
+- Smooth scrolling with customizable scroll amount
+- Loading skeleton states
+- Empty state support
+- Responsive design
+- Customizable item width and gap
+
+**Props:**
+
+- `children: ReactNode` - Items to display
+- `title?: string` - Section title
+- `titleLevel?: 'h2' | 'h3' | 'h4'` - Heading level (default: 'h2')
+- `headerActions?: ReactNode` - Additional header content (filters, buttons)
+- `showArrows?: boolean` - Show navigation arrows (default: true)
+- `arrowSize?: 'sm' | 'md' | 'lg'` - Arrow size (default: 'md')
+- `itemWidth?: string | number` - Item width (e.g., '200px' or 200)
+- `gap?: string | number` - Gap between items (default: '1rem')
+- `scrollPercentage?: number` - Scroll amount as % of width (default: 0.8)
+- `icons?: object` - Custom arrow icons
+- `loading?: boolean` - Loading state
+- `emptyState?: ReactNode` - Empty state content
+- `className?: string` - Additional CSS classes
+
+**Usage:**
+
+```tsx
+import { HorizontalScroller } from '@letitrip/react-library/common';
+
+// For subcategories
+<HorizontalScroller
+  title="Browse Categories"
+  showArrows
+  itemWidth="200px"
+  gap="1rem"
+>
+  {categories.map(cat => <CategoryCard key={cat.id} {...cat} />)}
+</HorizontalScroller>
+
+// For featured sellers
+<HorizontalScroller
+  title="Top Sellers"
+  itemWidth={280}
+  headerActions={<button>View All</button>}
+>
+  {sellers.map(seller => <SellerCard key={seller.id} {...seller} />)}
+</HorizontalScroller>
+
+// For featured products (any content!)
+<HorizontalScroller showArrows itemWidth="250px">
+  {products.map(p => <ProductCard key={p.id} {...p} />)}
+</HorizontalScroller>
+```
+
+**Replaces:** Scroll logic in `SubcategoryGrid`, `HorizontalScrollContainer` (UI)
+
+---
+
+## 🎨 Hero Components
+
+### `HeroSlide`
+
+Dynamic hero/banner component with **3x3 grid positioning** for content.
+
+**Features:**
+
+- 9 position options for title/description/CTA
+- Mobile responsive (auto-centers on small screens)
+- Background image or video support
+- Customizable overlay opacity
+- Gradient fallback
+
+**Grid Positions:**
+
+- `top-left`, `top-center`, `top-right`
+- `middle-left`, `middle-center`, `middle-right`
+- `bottom-left`, `bottom-center`, `bottom-right`
+
+**Props:**
+
+- `backgroundImage?: string` - Background image URL
+- `backgroundVideo?: string` - Background video URL
+- `title?: string` - Hero title
+- `description?: string` - Hero description
+- `cta?: { text, href, onClick }` - Call-to-action button
+- `contentPosition?: GridPosition` - Content position (default: 'middle-center')
+- `overlayOpacity?: number` - Overlay opacity 0-100 (default: 40)
+- `ImageComponent?: ComponentType` - Image component
+- `LinkComponent?: ComponentType` - Link component
+- `minHeight?: string` - Minimum height (default: '500px')
+
+**Usage:**
+
+```tsx
+import { HeroSlide } from "@letitrip/react-library/homepage";
+
+<HeroSlide
+  backgroundImage="/hero-sale.jpg"
+  title="Summer Sale"
+  description="Up to 70% off on all items"
+  cta={{ text: "Shop Now", href: "/products" }}
+  contentPosition="bottom-left" // Content in bottom-left corner
+  overlayOpacity={50}
+/>;
+
+// Mobile automatically centers to bottom-center on small screens
+```
+
+---
+
 ## Value Display Components
 
 Components for displaying formatted values with consistent styling.
