@@ -1,18 +1,18 @@
 /**
  * User Addresses API Routes
- * 
+ *
  * Handles user shipping/billing addresses with create-on-fly support.
- * 
+ *
  * @route GET /api/user/addresses - List user addresses
  * @route POST /api/user/addresses - Add new address
  * @route PUT /api/user/addresses/[id] - Update address
  * @route DELETE /api/user/addresses/[id] - Delete address
- * 
+ *
  * @example
  * ```tsx
  * // List addresses
  * const response = await fetch('/api/user/addresses?userId=user-id');
- * 
+ *
  * // Add address
  * const response = await fetch('/api/user/addresses', {
  *   method: 'POST',
@@ -26,20 +26,20 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
   addDoc,
-  updateDoc,
+  collection,
   deleteDoc,
   doc,
-  serverTimestamp,
+  getDocs,
   orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface Address {
   userId: string;
@@ -58,9 +58,9 @@ interface Address {
 
 /**
  * GET /api/user/addresses
- * 
+ *
  * List all addresses for a user.
- * 
+ *
  * Query Parameters:
  * - userId: User ID (required)
  * - type: Filter by address type (shipping/billing/both)
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -89,10 +89,7 @@ export async function GET(request: NextRequest) {
       constraints.unshift(where("type", "in", [type, "both"]));
     }
 
-    const addressesQuery = query(
-      collection(db, "addresses"),
-      ...constraints
-    );
+    const addressesQuery = query(collection(db, "addresses"), ...constraints);
 
     const querySnapshot = await getDocs(addressesQuery);
 
@@ -109,23 +106,23 @@ export async function GET(request: NextRequest) {
           count: addresses.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching addresses:", error);
     return NextResponse.json(
       { error: "Failed to fetch addresses", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * POST /api/user/addresses
- * 
+ *
  * Add a new address for the user.
  * Supports create-on-fly during checkout.
- * 
+ *
  * Request Body:
  * - userId: User ID (required)
  * - type: Address type (shipping/billing/both) (required)
@@ -159,10 +156,20 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!userId || !type || !fullName || !phone || !addressLine1 || !city || !state || !zipCode || !country) {
+    if (
+      !userId ||
+      !type ||
+      !fullName ||
+      !phone ||
+      !addressLine1 ||
+      !city ||
+      !state ||
+      !zipCode ||
+      !country
+    ) {
       return NextResponse.json(
         { error: "Missing required address fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -171,12 +178,12 @@ export async function POST(request: NextRequest) {
       const existingDefaultQuery = query(
         collection(db, "addresses"),
         where("userId", "==", userId),
-        where("isDefault", "==", true)
+        where("isDefault", "==", true),
       );
       const existingDefaults = await getDocs(existingDefaultQuery);
 
       const updatePromises = existingDefaults.docs.map((doc) =>
-        updateDoc(doc.ref, { isDefault: false })
+        updateDoc(doc.ref, { isDefault: false }),
       );
       await Promise.all(updatePromises);
     }
@@ -210,7 +217,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Address added successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error adding address:", error);
@@ -218,26 +225,26 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to add address" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to add address", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * PUT /api/user/addresses
- * 
+ *
  * Update an existing address.
- * 
+ *
  * Query Parameters:
  * - id: Address ID (required)
  * - userId: User ID (required, for verification)
- * 
+ *
  * Request Body: (all fields optional)
  * - type, fullName, phone, addressLine1, addressLine2
  * - city, state, zipCode, country, isDefault, label
@@ -252,7 +259,7 @@ export async function PUT(request: NextRequest) {
     if (!addressId || !userId) {
       return NextResponse.json(
         { error: "id and userId are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -261,14 +268,14 @@ export async function PUT(request: NextRequest) {
       query(
         collection(db, "addresses"),
         where("__name__", "==", addressId),
-        where("userId", "==", userId)
-      )
+        where("userId", "==", userId),
+      ),
     );
 
     if (addressDoc.empty) {
       return NextResponse.json(
         { error: "Address not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -277,7 +284,7 @@ export async function PUT(request: NextRequest) {
       const existingDefaultQuery = query(
         collection(db, "addresses"),
         where("userId", "==", userId),
-        where("isDefault", "==", true)
+        where("isDefault", "==", true),
       );
       const existingDefaults = await getDocs(existingDefaultQuery);
 
@@ -298,7 +305,7 @@ export async function PUT(request: NextRequest) {
 
     // Get updated data
     const updatedDoc = await getDocs(
-      query(collection(db, "addresses"), where("__name__", "==", addressId))
+      query(collection(db, "addresses"), where("__name__", "==", addressId)),
     );
 
     const updatedData = {
@@ -312,7 +319,7 @@ export async function PUT(request: NextRequest) {
         data: updatedData,
         message: "Address updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating address:", error);
@@ -320,22 +327,22 @@ export async function PUT(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to update address" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update address", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * DELETE /api/user/addresses
- * 
+ *
  * Delete an address.
- * 
+ *
  * Query Parameters:
  * - id: Address ID (required)
  * - userId: User ID (required, for verification)
@@ -349,7 +356,7 @@ export async function DELETE(request: NextRequest) {
     if (!addressId || !userId) {
       return NextResponse.json(
         { error: "id and userId are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -358,14 +365,14 @@ export async function DELETE(request: NextRequest) {
       query(
         collection(db, "addresses"),
         where("__name__", "==", addressId),
-        where("userId", "==", userId)
-      )
+        where("userId", "==", userId),
+      ),
     );
 
     if (addressDoc.empty) {
       return NextResponse.json(
         { error: "Address not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -377,7 +384,7 @@ export async function DELETE(request: NextRequest) {
         success: true,
         message: "Address deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error deleting address:", error);
@@ -385,13 +392,13 @@ export async function DELETE(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to delete address" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to delete address", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,34 +1,24 @@
 /**
  * Search API Routes
- * 
+ *
  * Handles global search across multiple content types (products, shops, categories, auctions).
  * Supports type-specific queries and relevance ranking.
- * 
+ *
  * @route GET /api/search - Global search with multi-type results
- * 
+ *
  * @example
  * ```tsx
  * // Search across all types
  * const response = await fetch('/api/search?q=laptop&types=products,shops');
- * 
+ *
  * // Search with pagination
  * const response = await fetch('/api/search?q=laptop&limit=20&cursor=doc-id');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
-  startAfter,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface SearchResult {
   id: string;
@@ -74,7 +64,7 @@ function calculateRelevance(item: any, searchQuery: string): number {
 async function searchCollection(
   collectionName: string,
   searchQuery: string,
-  pageLimit: number
+  pageLimit: number,
 ): Promise<SearchResult[]> {
   const lowerQuery = searchQuery.toLowerCase();
 
@@ -88,7 +78,7 @@ async function searchCollection(
 
   const searchQueryRef = query(
     collection(db, collectionName),
-    ...searchConstraints
+    ...searchConstraints,
   );
 
   const querySnapshot = await getDocs(searchQueryRef);
@@ -98,7 +88,11 @@ async function searchCollection(
       const data = doc.data();
       return {
         id: doc.id,
-        type: collectionName.slice(0, -1) as "product" | "shop" | "category" | "auction", // Remove 's' from collection name
+        type: collectionName.slice(0, -1) as
+          | "product"
+          | "shop"
+          | "category"
+          | "auction", // Remove 's' from collection name
         name: data.name,
         slug: data.slug,
         description: data.description,
@@ -112,9 +106,9 @@ async function searchCollection(
 
 /**
  * GET /api/search
- * 
+ *
  * Global search across multiple content types.
- * 
+ *
  * Query Parameters:
  * - q: Search query (required)
  * - types: Comma-separated list of types to search (products,shops,categories,auctions)
@@ -125,24 +119,22 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const searchQuery = searchParams.get("q");
-    const typesParam = searchParams.get("types") || "products,shops,categories,auctions";
-    const pageLimit = Math.min(
-      parseInt(searchParams.get("limit") || "10"),
-      50
-    );
+    const typesParam =
+      searchParams.get("types") || "products,shops,categories,auctions";
+    const pageLimit = Math.min(parseInt(searchParams.get("limit") || "10"), 50);
     const sortBy = searchParams.get("sortBy") || "relevance";
 
     if (!searchQuery || searchQuery.trim().length === 0) {
       return NextResponse.json(
         { error: "Search query is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (searchQuery.trim().length < 2) {
       return NextResponse.json(
         { error: "Search query must be at least 2 characters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -154,13 +146,13 @@ export async function GET(request: NextRequest) {
     if (searchTypes.length === 0) {
       return NextResponse.json(
         { error: "At least one valid type must be specified" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Search in parallel across all specified collections
     const searchPromises = searchTypes.map((type) =>
-      searchCollection(type, searchQuery, pageLimit)
+      searchCollection(type, searchQuery, pageLimit),
     );
 
     const results = await Promise.all(searchPromises);
@@ -172,18 +164,14 @@ export async function GET(request: NextRequest) {
     });
 
     // Get all results flattened and sorted
-    const allResults = results
-      .flat()
-      .sort((a, b) => {
-        if (sortBy === "relevance") {
-          return b.relevance - a.relevance;
-        } else if (sortBy === "newest") {
-          return (
-            (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-          );
-        }
-        return 0;
-      });
+    const allResults = results.flat().sort((a, b) => {
+      if (sortBy === "relevance") {
+        return b.relevance - a.relevance;
+      } else if (sortBy === "newest") {
+        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+      }
+      return 0;
+    });
 
     // Count totals
     const totals = searchTypes.reduce(
@@ -192,7 +180,7 @@ export async function GET(request: NextRequest) {
         acc.all += results[index].length;
         return acc;
       },
-      { all: 0 } as Record<string, number>
+      { all: 0 } as Record<string, number>,
     );
 
     return NextResponse.json(
@@ -206,13 +194,13 @@ export async function GET(request: NextRequest) {
           searchTypes,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error performing search:", error);
     return NextResponse.json(
       { error: "Search failed", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

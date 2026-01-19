@@ -1,13 +1,13 @@
 /**
  * Filter Presets API
- * 
+ *
  * Allows users to save and manage their search filter presets.
  * Useful for frequently used search/filter combinations.
- * 
+ *
  * @route POST /api/filters/presets - Save a new filter preset
  * @route GET /api/filters/presets - List user's saved presets
  * @route DELETE /api/filters/presets/[id] - Delete a preset
- * 
+ *
  * @example
  * ```tsx
  * // Save preset
@@ -27,19 +27,19 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
   addDoc,
+  collection,
   deleteDoc,
   doc,
-  serverTimestamp,
+  getDocs,
   orderBy,
+  query,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface FilterPreset {
   userId: string;
@@ -59,9 +59,9 @@ interface FilterPreset {
 
 /**
  * POST /api/filters/presets
- * 
+ *
  * Save a new filter preset for the user.
- * 
+ *
  * Request Body:
  * - userId: User ID (required)
  * - name: Preset name (required)
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !name || !filters) {
       return NextResponse.json(
         { error: "userId, name, and filters are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -85,14 +85,14 @@ export async function POST(request: NextRequest) {
     const existingQuery = query(
       collection(db, "filterPresets"),
       where("userId", "==", userId),
-      where("name", "==", name)
+      where("name", "==", name),
     );
     const existingSnapshot = await getDocs(existingQuery);
 
     if (!existingSnapshot.empty) {
       return NextResponse.json(
         { error: "A preset with this name already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Filter preset saved successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error saving filter preset:", error);
@@ -125,22 +125,22 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to save preset" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to save preset", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * GET /api/filters/presets
- * 
+ *
  * List all filter presets for a user.
- * 
+ *
  * Query Parameters:
  * - userId: User ID (required)
  * - type: Filter by content type (product/auction/shop)
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -168,10 +168,7 @@ export async function GET(request: NextRequest) {
       constraints.unshift(where("type", "==", type));
     }
 
-    const presetsQuery = query(
-      collection(db, "filterPresets"),
-      ...constraints
-    );
+    const presetsQuery = query(collection(db, "filterPresets"), ...constraints);
 
     const querySnapshot = await getDocs(presetsQuery);
 
@@ -188,22 +185,22 @@ export async function GET(request: NextRequest) {
           count: presets.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching filter presets:", error);
     return NextResponse.json(
       { error: "Failed to fetch presets", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * DELETE /api/filters/presets
- * 
+ *
  * Delete a filter preset.
- * 
+ *
  * Query Parameters:
  * - id: Preset ID (required)
  * - userId: User ID (required, for verification)
@@ -217,7 +214,7 @@ export async function DELETE(request: NextRequest) {
     if (!presetId || !userId) {
       return NextResponse.json(
         { error: "id and userId are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -226,14 +223,14 @@ export async function DELETE(request: NextRequest) {
       query(
         collection(db, "filterPresets"),
         where("__name__", "==", presetId),
-        where("userId", "==", userId)
-      )
+        where("userId", "==", userId),
+      ),
     );
 
     if (presetDoc.empty) {
       return NextResponse.json(
         { error: "Preset not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -245,7 +242,7 @@ export async function DELETE(request: NextRequest) {
         success: true,
         message: "Filter preset deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error deleting filter preset:", error);
@@ -253,13 +250,13 @@ export async function DELETE(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to delete preset" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to delete preset", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

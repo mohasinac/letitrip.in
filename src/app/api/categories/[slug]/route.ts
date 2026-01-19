@@ -1,17 +1,17 @@
 /**
  * Category Details API Routes
- * 
+ *
  * Handles fetching and updating individual category details by slug.
  * Includes recursive children fetching for hierarchical categories.
- * 
+ *
  * @route GET /api/categories/[slug] - Get category with recursive children
  * @route PUT /api/categories/[slug] - Update category (Admin only)
- * 
+ *
  * @example
  * ```tsx
  * // Get category with children
  * const response = await fetch('/api/categories/electronics');
- * 
+ *
  * // Update category
  * const response = await fetch('/api/categories/electronics', {
  *   method: 'PUT',
@@ -24,16 +24,16 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
   getDocs,
-  updateDoc,
+  query,
   serverTimestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -58,7 +58,7 @@ async function getDescendants(slug: string): Promise<CategoryNode[]> {
   // Find direct children
   const childrenQuery = query(
     collection(db, "categories"),
-    where("parentSlug", "==", slug)
+    where("parentSlug", "==", slug),
   );
   const childrenSnapshot = await getDocs(childrenQuery);
 
@@ -66,10 +66,13 @@ async function getDescendants(slug: string): Promise<CategoryNode[]> {
     return [];
   }
 
-  const children: CategoryNode[] = childrenSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  } as CategoryNode));
+  const children: CategoryNode[] = childrenSnapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      } as CategoryNode),
+  );
 
   // Recursively get descendants for each child
   const descendantsPromises = children.map(async (child) => {
@@ -85,7 +88,7 @@ async function getDescendants(slug: string): Promise<CategoryNode[]> {
 
 /**
  * GET /api/categories/[slug]
- * 
+ *
  * Get category details by slug with recursive children.
  * Returns full hierarchy tree starting from this category.
  */
@@ -96,13 +99,16 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     // Query category by slug
     const categoryQuery = query(
       collection(db, "categories"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
 
     const querySnapshot = await getDocs(categoryQuery);
 
     if (querySnapshot.empty) {
-      return NextResponse.json({ error: "Category not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 },
+      );
     }
 
     const categoryDoc = querySnapshot.docs[0];
@@ -123,13 +129,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         success: true,
         data: categoryData,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching category:", error);
     return NextResponse.json(
       { error: "Failed to fetch category", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -147,10 +153,10 @@ interface UpdateCategoryRequest {
 
 /**
  * PUT /api/categories/[slug]
- * 
+ *
  * Update category details (Admin only).
  * Cannot update slug or level (level is auto-calculated from parent).
- * 
+ *
  * Request Body:
  * - name: Category name
  * - description: Category description
@@ -169,13 +175,16 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     // Query category by slug
     const categoryQuery = query(
       collection(db, "categories"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
 
     const querySnapshot = await getDocs(categoryQuery);
 
     if (querySnapshot.empty) {
-      return NextResponse.json({ error: "Category not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 },
+      );
     }
 
     const categoryDoc = querySnapshot.docs[0];
@@ -202,14 +211,14 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       if (body.parentSlug) {
         const parentQuery = query(
           collection(db, "categories"),
-          where("slug", "==", body.parentSlug)
+          where("slug", "==", body.parentSlug),
         );
         const parentSnapshot = await getDocs(parentQuery);
 
         if (parentSnapshot.empty) {
           return NextResponse.json(
             { error: "Parent category not found" },
-            { status: 404 }
+            { status: 404 },
           );
         }
 
@@ -236,7 +245,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         data: updatedData,
         message: "Category updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating category:", error);
@@ -244,13 +253,13 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to update category" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update category", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,20 +1,20 @@
 /**
  * Categories API Routes
- * 
+ *
  * Handles listing and creating categories with hierarchical tree structure.
  * Supports parent-child relationships for nested categories.
- * 
+ *
  * @route GET /api/categories - List categories in tree structure
  * @route POST /api/categories - Create category (Admin only)
- * 
+ *
  * @example
  * ```tsx
  * // List all categories
  * const response = await fetch('/api/categories');
- * 
+ *
  * // List with parent filter
  * const response = await fetch('/api/categories?parent=electronics');
- * 
+ *
  * // Create category
  * const response = await fetch('/api/categories', {
  *   method: 'POST',
@@ -28,19 +28,17 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
   addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
   serverTimestamp,
-  doc,
-  getDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface CategoryNode {
   id: string;
@@ -64,7 +62,7 @@ interface CategoryNode {
  */
 function buildCategoryTree(
   categories: CategoryNode[],
-  parentSlug: string | null = null
+  parentSlug: string | null = null,
 ): CategoryNode[] {
   return categories
     .filter((cat) => cat.parentSlug === parentSlug)
@@ -77,10 +75,10 @@ function buildCategoryTree(
 
 /**
  * GET /api/categories
- * 
+ *
  * List categories in hierarchical tree structure.
  * Can filter by parent to get only children of specific category.
- * 
+ *
  * Query Parameters:
  * - parent: Filter by parent slug (null for root categories)
  * - flat: Return flat list instead of tree (true/false)
@@ -114,17 +112,17 @@ export async function GET(request: NextRequest) {
     constraints.push(orderBy("name", "asc"));
 
     // Execute query
-    const categoriesQuery = query(
-      collection(db, "categories"),
-      ...constraints
-    );
+    const categoriesQuery = query(collection(db, "categories"), ...constraints);
 
     const querySnapshot = await getDocs(categoriesQuery);
 
-    const categories: CategoryNode[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as CategoryNode));
+    const categories: CategoryNode[] = querySnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as CategoryNode),
+    );
 
     // Return flat list or tree structure
     if (flat || parentSlug !== null) {
@@ -133,20 +131,23 @@ export async function GET(request: NextRequest) {
           success: true,
           data: categories,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     // Build tree structure (all categories needed for tree)
     const allCategoriesQuery = query(
       collection(db, "categories"),
-      orderBy("order", "asc")
+      orderBy("order", "asc"),
     );
     const allSnapshot = await getDocs(allCategoriesQuery);
-    const allCategories: CategoryNode[] = allSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as CategoryNode));
+    const allCategories: CategoryNode[] = allSnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as CategoryNode),
+    );
 
     const tree = buildCategoryTree(allCategories);
 
@@ -155,13 +156,13 @@ export async function GET(request: NextRequest) {
         success: true,
         data: tree,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching categories:", error);
     return NextResponse.json(
       { error: "Failed to fetch categories", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -180,10 +181,10 @@ interface CreateCategoryRequest {
 
 /**
  * POST /api/categories
- * 
+ *
  * Create a new category (Admin only).
  * Automatically calculates level based on parent hierarchy.
- * 
+ *
  * Request Body:
  * - name: Category name (required)
  * - slug: URL-friendly slug (required, unique)
@@ -214,21 +215,21 @@ export async function POST(request: NextRequest) {
     if (!name || !slug) {
       return NextResponse.json(
         { error: "Name and slug are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if slug already exists
     const existingCategoryQuery = query(
       collection(db, "categories"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
     const existingCategories = await getDocs(existingCategoryQuery);
 
     if (!existingCategories.empty) {
       return NextResponse.json(
         { error: "Category with this slug already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -237,14 +238,14 @@ export async function POST(request: NextRequest) {
     if (parentSlug) {
       const parentQuery = query(
         collection(db, "categories"),
-        where("slug", "==", parentSlug)
+        where("slug", "==", parentSlug),
       );
       const parentSnapshot = await getDocs(parentQuery);
 
       if (parentSnapshot.empty) {
         return NextResponse.json(
           { error: "Parent category not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -286,7 +287,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Category created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating category:", error);
@@ -294,13 +295,13 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to create category" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to create category", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

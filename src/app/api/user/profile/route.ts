@@ -1,16 +1,16 @@
 /**
  * User Profile API Routes
- * 
+ *
  * Handles user profile management including profile data and addresses.
- * 
+ *
  * @route GET /api/user/profile - Get user profile
  * @route PUT /api/user/profile - Update user profile
- * 
+ *
  * @example
  * ```tsx
  * // Get profile
  * const response = await fetch('/api/user/profile?userId=user-id');
- * 
+ *
  * // Update profile
  * const response = await fetch('/api/user/profile', {
  *   method: 'PUT',
@@ -24,20 +24,15 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/user/profile
- * 
+ *
  * Get user profile data.
- * 
+ *
  * Query Parameters:
  * - userId: User ID (required)
  */
@@ -49,7 +44,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,10 +52,7 @@ export async function GET(request: NextRequest) {
     const userDoc = await getDoc(doc(db, "users", userId));
 
     if (!userDoc.exists()) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const userData: any = {
@@ -77,13 +69,13 @@ export async function GET(request: NextRequest) {
         success: true,
         data: userData,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -104,10 +96,10 @@ interface UpdateProfileRequest {
 
 /**
  * PUT /api/user/profile
- * 
+ *
  * Update user profile data.
  * Cannot update: email, role, verified status, or stats.
- * 
+ *
  * Request Body:
  * - userId: User ID (required)
  * - displayName: Display name
@@ -124,7 +116,7 @@ export async function PUT(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -132,10 +124,7 @@ export async function PUT(request: NextRequest) {
     const userDoc = await getDoc(doc(db, "users", userId));
 
     if (!userDoc.exists()) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Build update object (only allow specific fields)
@@ -169,7 +158,7 @@ export async function PUT(request: NextRequest) {
         data: updatedData,
         message: "Profile updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating user profile:", error);
@@ -177,13 +166,13 @@ export async function PUT(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to update profile" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update profile", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

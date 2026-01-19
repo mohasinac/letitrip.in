@@ -1,11 +1,11 @@
 /**
  * Search Suggestions API
- * 
+ *
  * Provides live autocomplete suggestions for search queries.
  * Returns top 10 matches across products, shops, and categories.
- * 
+ *
  * @route GET /api/search/suggestions - Get live search suggestions
- * 
+ *
  * @example
  * ```tsx
  * // Get suggestions
@@ -14,15 +14,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import {
-  collection,
-  query,
-  where,
-  limit,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface Suggestion {
   text: string;
@@ -33,10 +27,10 @@ interface Suggestion {
 
 /**
  * GET /api/search/suggestions
- * 
+ *
  * Get autocomplete suggestions for search query.
  * Returns top 10 matches with quick links.
- * 
+ *
  * Query Parameters:
  * - q: Search query (required, min 2 characters)
  * - types: Filter by types (products,shops,categories)
@@ -50,7 +44,7 @@ export async function GET(request: NextRequest) {
     if (!searchQuery || searchQuery.trim().length < 2) {
       return NextResponse.json(
         { error: "Search query must be at least 2 characters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +61,7 @@ export async function GET(request: NextRequest) {
         where("nameLower", ">=", lowerQuery),
         where("nameLower", "<=", lowerQuery + "\uf8ff"),
         where("status", "==", "active"),
-        limit(5)
+        limit(5),
       );
 
       const productsSnapshot = await getDocs(productsQuery);
@@ -89,7 +83,7 @@ export async function GET(request: NextRequest) {
         where("nameLower", ">=", lowerQuery),
         where("nameLower", "<=", lowerQuery + "\uf8ff"),
         where("status", "==", "active"),
-        limit(3)
+        limit(3),
       );
 
       const shopsSnapshot = await getDocs(shopsQuery);
@@ -111,7 +105,7 @@ export async function GET(request: NextRequest) {
         where("name", ">=", searchQuery),
         where("name", "<=", searchQuery + "\uf8ff"),
         where("status", "==", "active"),
-        limit(2)
+        limit(2),
       );
 
       const categoriesSnapshot = await getDocs(categoriesQuery);
@@ -138,13 +132,13 @@ export async function GET(request: NextRequest) {
           count: topSuggestions.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching suggestions:", error);
     return NextResponse.json(
       { error: "Failed to fetch suggestions", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
