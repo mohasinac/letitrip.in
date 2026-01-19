@@ -3,12 +3,12 @@
  * Predefined filter configurations for each resource type
  */
 
-import { FilterSection } from "@letitrip/react-library";
+import { FilterSidebarSection } from "@letitrip/react-library";
 
 /**
  * Product Filters Configuration
  */
-export const PRODUCT_FILTERS: FilterSection[] = [
+export const PRODUCT_FILTERS: FilterSidebarSection[] = [
   {
     title: "Price Range",
     fields: [
@@ -93,7 +93,7 @@ export const PRODUCT_FILTERS: FilterSection[] = [
 /**
  * Shop Filters Configuration
  */
-export const SHOP_FILTERS: FilterSection[] = [
+export const SHOP_FILTERS: FilterSidebarSection[] = [
   {
     title: "Verification Status",
     fields: [
@@ -145,7 +145,7 @@ export const SHOP_FILTERS: FilterSection[] = [
 /**
  * Order Filters Configuration
  */
-export const ORDER_FILTERS: FilterSection[] = [
+export const ORDER_FILTERS: FilterSidebarSection[] = [
   {
     title: "Order Status",
     fields: [
@@ -194,7 +194,7 @@ export const ORDER_FILTERS: FilterSection[] = [
 /**
  * Return Filters Configuration
  */
-export const RETURN_FILTERS: FilterSection[] = [
+export const RETURN_FILTERS: FilterSidebarSection[] = [
   {
     title: "Return Status",
     fields: [
@@ -247,7 +247,7 @@ export const RETURN_FILTERS: FilterSection[] = [
 /**
  * Coupon Filters Configuration
  */
-export const COUPON_FILTERS: FilterSection[] = [
+export const COUPON_FILTERS: FilterSidebarSection[] = [
   {
     title: "Coupon Type",
     fields: [
@@ -296,7 +296,7 @@ export const COUPON_FILTERS: FilterSection[] = [
 /**
  * User Filters Configuration
  */
-export const USER_FILTERS: FilterSection[] = [
+export const USER_FILTERS: FilterSidebarSection[] = [
   {
     title: "User Role",
     fields: [
@@ -350,7 +350,7 @@ export const USER_FILTERS: FilterSection[] = [
 /**
  * Category Filters Configuration
  */
-export const CATEGORY_FILTERS: FilterSection[] = [
+export const CATEGORY_FILTERS: FilterSidebarSection[] = [
   {
     title: "Product Count",
     fields: [
@@ -404,7 +404,7 @@ export const CATEGORY_FILTERS: FilterSection[] = [
 /**
  * Review Filters Configuration
  */
-export const REVIEW_FILTERS: FilterSection[] = [
+export const REVIEW_FILTERS: FilterSidebarSection[] = [
   {
     title: "Rating",
     fields: [
@@ -485,7 +485,7 @@ export const REVIEW_FILTERS: FilterSection[] = [
 /**
  * Auction Filters Configuration
  */
-export const AUCTION_FILTERS: FilterSection[] = [
+export const AUCTION_FILTERS: FilterSidebarSection[] = [
   {
     title: "Auction Status",
     fields: [
@@ -562,7 +562,7 @@ export const AUCTION_FILTERS: FilterSection[] = [
 /**
  * Support Ticket Filters Configuration
  */
-export const TICKET_FILTERS: FilterSection[] = [
+export const TICKET_FILTERS: FilterSidebarSection[] = [
   {
     title: "Ticket Status",
     fields: [
@@ -619,7 +619,7 @@ export const TICKET_FILTERS: FilterSection[] = [
 /**
  * Payment Filters Configuration
  */
-export const PAYMENT_FILTERS: FilterSection[] = [
+export const PAYMENT_FILTERS: FilterSidebarSection[] = [
   {
     title: "Payment Filters",
     fields: [
@@ -657,7 +657,7 @@ export const PAYMENT_FILTERS: FilterSection[] = [
 /**
  * Payout Filters Configuration
  */
-export const PAYOUT_FILTERS: FilterSection[] = [
+export const PAYOUT_FILTERS: FilterSidebarSection[] = [
   {
     title: "Payout Filters",
     fields: [
@@ -684,7 +684,7 @@ export const PAYOUT_FILTERS: FilterSection[] = [
 /**
  * Blog Post Filters Configuration
  */
-export const BLOG_FILTERS: FilterSection[] = [
+export const BLOG_FILTERS: FilterSidebarSection[] = [
   {
     title: "Status",
     fields: [

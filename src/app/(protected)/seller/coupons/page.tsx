@@ -1,12 +1,12 @@
 "use client";
 
 import { toast } from "@/components/admin/Toast";
-import type { FilterSection } from "@/components/common/FilterSidebar";
 import { ViewToggle } from "@/components/seller/ViewToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
 import { couponsService } from "@/services/coupons.service";
 import type { CouponFE } from "@/types/frontend/coupon.types";
+import type { FilterSidebarSection } from "@letitrip/react-library";
 import {
   DateDisplay,
   PageState,
@@ -21,7 +21,7 @@ import { Copy, Edit, Filter, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-const COUPON_FILTERS: FilterSection[] = [
+const COUPON_FILTERS: FilterSidebarSection[] = [
   {
     title: "Status",
     fields: [
@@ -105,7 +105,7 @@ export default function CouponsPage() {
     (coupon) =>
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (isLoading) {
@@ -424,4 +424,3 @@ export default function CouponsPage() {
     </div>
   );
 }
-

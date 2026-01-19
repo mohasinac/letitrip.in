@@ -6,8 +6,8 @@ import {
   ValidationError,
 } from "@/lib/errors";
 import type { PaginatedResponse } from "@/types/shared/pagination.types";
-import { logServiceError } from "@letitrip/react-library";
-import { apiService, type RequestOptions } from "./api.service";
+import { logServiceError, type RequestOptions } from "@letitrip/react-library";
+import { apiService } from "./api.service";
 
 /**
  * Base options for service operations
