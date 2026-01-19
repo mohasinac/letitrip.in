@@ -1,11 +1,11 @@
 /**
  * List Auctions API Route
- * 
+ *
  * Fetches auctions with cursor-based pagination and filtering.
  * Supports filtering by category, shop, status, and search query.
- * 
+ *
  * @route GET /api/auctions
- * 
+ *
  * @queryparam cursor - Pagination cursor (auction slug)
  * @queryparam limit - Number of items per page (default: 20, max: 100)
  * @queryparam category - Filter by category slug
@@ -13,32 +13,32 @@
  * @queryparam status - Filter by status (upcoming, live, ended)
  * @queryparam search - Search query for auction title/description
  * @queryparam sort - Sort order (ending-soon, newest, popular)
- * 
+ *
  * @example
  * ```tsx
  * // Get live auctions
  * const response = await fetch('/api/auctions?status=live&sort=ending-soon');
- * 
+ *
  * // Get next page
  * const response = await fetch('/api/auctions?cursor=auction-slug&limit=20');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-  getDocs,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   QueryConstraint,
+  startAfter,
   Timestamp,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
       filteredAuctions = auctions.filter(
         (auction: any) =>
           auction.title?.toLowerCase().includes(lowerQuery) ||
-          auction.description?.toLowerCase().includes(lowerQuery)
+          auction.description?.toLowerCase().includes(lowerQuery),
       );
     }
 
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching auctions:", error);
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch auctions",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
  */
 function getAuctionStatus(
   startTime: Timestamp,
-  endTime: Timestamp
+  endTime: Timestamp,
 ): "upcoming" | "live" | "ended" {
   const now = Timestamp.now();
   if (startTime.toMillis() > now.toMillis()) {

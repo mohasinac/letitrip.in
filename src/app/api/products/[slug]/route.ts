@@ -1,24 +1,24 @@
 /**
  * Product Details API Route
- * 
+ *
  * Get, update, or delete a specific product by slug.
- * 
+ *
  * @route GET /api/products/[slug]
  * @route PUT /api/products/[slug]
  * @route DELETE /api/products/[slug]
- * 
+ *
  * @example
  * ```tsx
  * // Get product
  * const response = await fetch('/api/products/laptop-dell-xps');
- * 
+ *
  * // Update product
  * const response = await fetch('/api/products/laptop-dell-xps', {
  *   method: 'PUT',
  *   headers: { 'Content-Type': 'application/json' },
  *   body: JSON.stringify({ price: 89.99, stock: 50 })
  * });
- * 
+ *
  * // Delete product
  * const response = await fetch('/api/products/laptop-dell-xps', {
  *   method: 'DELETE'
@@ -26,16 +26,16 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
+  deleteDoc,
   doc,
   getDoc,
-  updateDoc,
-  deleteDoc,
   increment,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: {
@@ -46,10 +46,7 @@ interface RouteContext {
 /**
  * GET - Fetch product details by slug
  */
-export async function GET(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
 
@@ -57,10 +54,7 @@ export async function GET(
     const productDoc = await getDoc(doc(db, "products", slug));
 
     if (!productDoc.exists()) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     const productData = productDoc.data();
@@ -68,7 +62,9 @@ export async function GET(
     // Increment view count asynchronously (don't wait)
     updateDoc(doc(db, "products", slug), {
       viewCount: increment(1),
-    }).catch((error) => console.error("Failed to increment view count:", error));
+    }).catch((error) =>
+      console.error("Failed to increment view count:", error),
+    );
 
     return NextResponse.json(
       {
@@ -78,7 +74,7 @@ export async function GET(
           ...productData,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching product:", error);
@@ -88,7 +84,7 @@ export async function GET(
         error: "Failed to fetch product",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -96,10 +92,7 @@ export async function GET(
 /**
  * PUT - Update product by slug (Seller/Admin only)
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
     const body = await request.json();
@@ -107,10 +100,7 @@ export async function PUT(
     // Check if product exists
     const productDoc = await getDoc(doc(db, "products", slug));
     if (!productDoc.exists()) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Remove fields that shouldn't be updated
@@ -148,7 +138,7 @@ export async function PUT(
           ...updatedDoc.data(),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating product:", error);
@@ -158,7 +148,7 @@ export async function PUT(
         error: "Failed to update product",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -166,20 +156,14 @@ export async function PUT(
 /**
  * DELETE - Delete product by slug (Seller/Admin only)
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
 
     // Check if product exists
     const productDoc = await getDoc(doc(db, "products", slug));
     if (!productDoc.exists()) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Delete product
@@ -190,7 +174,7 @@ export async function DELETE(
         success: true,
         message: "Product deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error deleting product:", error);
@@ -200,7 +184,7 @@ export async function DELETE(
         error: "Failed to delete product",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

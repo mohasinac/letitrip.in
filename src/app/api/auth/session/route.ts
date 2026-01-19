@@ -1,11 +1,11 @@
 /**
  * User Session API Route
- * 
+ *
  * Gets current user session and profile information.
  * Returns user data if authenticated, null if not.
- * 
+ *
  * @route GET /api/auth/session
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auth/session');
@@ -16,9 +16,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
           user: null,
           message: "No active session",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
             profileComplete: false,
           },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
           lastLoginAt: userData.lastLoginAt,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Session error:", error);
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     // Return error response
     return NextResponse.json(
       { error: "Failed to retrieve session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

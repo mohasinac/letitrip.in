@@ -1,11 +1,11 @@
 /**
  * Place Bid API Route
- * 
+ *
  * Places a bid on a live auction.
  * Validates bid amount, auction status, and updates highest bid.
- * 
+ *
  * @route POST /api/auctions/[slug]/bid
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auctions/vintage-watch-auction/bid', {
@@ -20,18 +20,18 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  doc,
-  getDoc,
-  updateDoc,
   addDoc,
   collection,
+  doc,
+  getDoc,
+  increment,
   serverTimestamp,
   Timestamp,
-  increment,
+  updateDoc,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: {
@@ -39,10 +39,7 @@ interface RouteContext {
   };
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
     const body = await request.json();
@@ -52,7 +49,7 @@ export async function POST(
     if (!bidAmount || !userId || !userName) {
       return NextResponse.json(
         { error: "Bid amount, user ID, and user name are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,10 +58,7 @@ export async function POST(
     const auctionDoc = await getDoc(auctionRef);
 
     if (!auctionDoc.exists()) {
-      return NextResponse.json(
-        { error: "Auction not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
     const auctionData = auctionDoc.data();
@@ -74,15 +68,12 @@ export async function POST(
     if (auctionData.startTime.toMillis() > now.toMillis()) {
       return NextResponse.json(
         { error: "Auction has not started yet" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (auctionData.endTime.toMillis() <= now.toMillis()) {
-      return NextResponse.json(
-        { error: "Auction has ended" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Auction has ended" }, { status: 400 });
     }
 
     // Validate bid amount
@@ -96,7 +87,7 @@ export async function POST(
           error: `Bid must be at least ${minValidBid}`,
           minBid: minValidBid,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -104,7 +95,7 @@ export async function POST(
     if (userId === auctionData.sellerId) {
       return NextResponse.json(
         { error: "Cannot bid on your own auction" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -141,7 +132,7 @@ export async function POST(
           totalBids: (auctionData.totalBids || 0) + 1,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error placing bid:", error);
@@ -151,7 +142,7 @@ export async function POST(
         error: "Failed to place bid",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

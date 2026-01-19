@@ -1,11 +1,11 @@
 /**
  * List Products API Route
- * 
+ *
  * Fetches products with cursor-based pagination and filtering.
  * Supports filtering by category, shop, price range, and search query.
- * 
+ *
  * @route GET /api/products
- * 
+ *
  * @queryparam cursor - Pagination cursor (product slug)
  * @queryparam limit - Number of items per page (default: 20, max: 100)
  * @queryparam category - Filter by category slug
@@ -15,36 +15,36 @@
  * @queryparam search - Search query for product name/description
  * @queryparam sort - Sort order (newest, price-asc, price-desc, popular)
  * @queryparam status - Filter by status (active, inactive, outOfStock)
- * 
+ *
  * @example
  * ```tsx
  * // Get first page
  * const response = await fetch('/api/products?limit=20&sort=newest');
- * 
+ *
  * // Get next page
  * const response = await fetch('/api/products?cursor=product-slug&limit=20');
- * 
+ *
  * // Filter by category
  * const response = await fetch('/api/products?category=electronics&limit=20');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-  getDocs,
   doc,
   getDoc,
-  setDoc,
-  serverTimestamp,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   QueryConstraint,
+  serverTimestamp,
+  setDoc,
+  startAfter,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -128,9 +128,7 @@ export async function GET(request: NextRequest) {
 
     // Check if there's a next page
     const hasMore = querySnapshot.docs.length > pageLimit;
-    const nextCursor = hasMore
-      ? querySnapshot.docs[pageLimit - 1].id
-      : null;
+    const nextCursor = hasMore ? querySnapshot.docs[pageLimit - 1].id : null;
 
     // Filter by search query (client-side filtering for now)
     let filteredProducts = products;
@@ -140,7 +138,7 @@ export async function GET(request: NextRequest) {
         (product: any) =>
           product.name?.toLowerCase().includes(lowerQuery) ||
           product.description?.toLowerCase().includes(lowerQuery) ||
-          product.seoTitle?.toLowerCase().includes(lowerQuery)
+          product.seoTitle?.toLowerCase().includes(lowerQuery),
       );
     }
 
@@ -165,7 +163,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching products:", error);
@@ -175,19 +173,19 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch products",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * Create Product API Route
- * 
+ *
  * Creates a new product (Seller/Admin only).
  * Generates slug from product name and ensures uniqueness.
- * 
+ *
  * @route POST /api/products
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/products', {
@@ -226,7 +224,7 @@ export async function POST(request: NextRequest) {
     if (!name || !price || !categorySlug || !shopSlug) {
       return NextResponse.json(
         { error: "Name, price, category, and shop are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -284,7 +282,7 @@ export async function POST(request: NextRequest) {
           ...productData,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating product:", error);
@@ -294,7 +292,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to create product",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

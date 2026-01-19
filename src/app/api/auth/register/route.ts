@@ -1,11 +1,11 @@
 /**
  * User Registration API Route
- * 
+ *
  * Handles new user registration with email/password authentication.
  * Creates user account in Firebase Auth and user profile in Firestore.
- * 
+ *
  * @route POST /api/auth/register
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auth/register', {
@@ -21,14 +21,14 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auth, db } from "@/lib/firebase";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RegisterRequestBody {
   email: string;
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!email || !password || !name) {
       return NextResponse.json(
         { error: "Email, password, and name are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: "Invalid email format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (password.length < 6) {
       return NextResponse.json(
         { error: "Password must be at least 6 characters long" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const user = userCredential.user;
 
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
           emailVerified: user.emailVerified,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Registration error:", error);
@@ -132,28 +132,28 @@ export async function POST(request: NextRequest) {
     if (error.code === "auth/email-already-in-use") {
       return NextResponse.json(
         { error: "Email is already registered" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     if (error.code === "auth/invalid-email") {
       return NextResponse.json(
         { error: "Invalid email address" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (error.code === "auth/weak-password") {
       return NextResponse.json(
         { error: "Password is too weak" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Generic error response
     return NextResponse.json(
       { error: "Registration failed. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

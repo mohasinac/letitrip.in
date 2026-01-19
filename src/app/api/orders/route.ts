@@ -1,11 +1,11 @@
 /**
  * Orders API Routes
- * 
+ *
  * Create orders and list user orders.
- * 
+ *
  * @route POST /api/orders - Create new order
  * @route GET /api/orders - List user orders
- * 
+ *
  * @example
  * ```tsx
  * // Create order
@@ -18,28 +18,28 @@
  *     paymentMethod: 'card'
  *   })
  * });
- * 
+ *
  * // List orders
  * const response = await fetch('/api/orders?userId=user-id&limit=20');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-  getDocs,
   addDoc,
+  collection,
   doc,
   getDoc,
-  serverTimestamp,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   QueryConstraint,
+  serverTimestamp,
+  startAfter,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST - Create new order
@@ -62,14 +62,14 @@ export async function POST(request: NextRequest) {
     if (!userId || !items || !items.length || !shippingAddress) {
       return NextResponse.json(
         { error: "User ID, items, and shipping address are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Calculate order totals
     const subtotal = items.reduce(
       (sum: number, item: any) => sum + item.price * item.quantity,
-      0
+      0,
     );
     const shippingFee = 50; // Base shipping fee
     const tax = subtotal * 0.18; // 18% GST
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
           status: "pending",
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating order:", error);
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to create order",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "User ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching orders:", error);
@@ -216,7 +216,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch orders",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

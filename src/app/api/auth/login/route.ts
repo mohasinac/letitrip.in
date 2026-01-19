@@ -1,11 +1,11 @@
 /**
  * User Login API Route
- * 
+ *
  * Handles user authentication with email/password.
  * Returns user session data and updates last login timestamp.
- * 
+ *
  * @route POST /api/auth/login
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auth/login', {
@@ -19,10 +19,10 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface LoginRequestBody {
   email: string;
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const user = userCredential.user;
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         },
         token: idToken,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Login error:", error);
@@ -107,35 +107,35 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Invalid email or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (error.code === "auth/invalid-email") {
       return NextResponse.json(
         { error: "Invalid email address" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (error.code === "auth/user-disabled") {
       return NextResponse.json(
         { error: "This account has been disabled" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     if (error.code === "auth/too-many-requests") {
       return NextResponse.json(
         { error: "Too many failed login attempts. Please try again later." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
     // Generic error response
     return NextResponse.json(
       { error: "Login failed. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

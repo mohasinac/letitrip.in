@@ -1,17 +1,17 @@
 /**
  * Cart API Routes
- * 
+ *
  * Handles cart operations for both guest and authenticated users.
  * Guest carts are stored in localStorage, user carts in Firestore.
- * 
+ *
  * @route GET /api/cart - Get cart items
  * @route POST /api/cart - Add item to cart
- * 
+ *
  * @example
  * ```tsx
  * // Get cart
  * const response = await fetch('/api/cart?userId=user-id');
- * 
+ *
  * // Add to cart
  * const response = await fetch('/api/cart', {
  *   method: 'POST',
@@ -25,18 +25,18 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
   addDoc,
-  serverTimestamp,
+  collection,
   doc,
   getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface CartItem {
   userId: string;
@@ -69,14 +69,14 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "User ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Query cart items for user
     const cartQuery = query(
       collection(db, "cart"),
-      where("userId", "==", userId)
+      where("userId", "==", userId),
     );
 
     const querySnapshot = await getDocs(cartQuery);
@@ -85,12 +85,12 @@ export async function GET(request: NextRequest) {
     const cartItems: CartItemWithProduct[] = await Promise.all(
       querySnapshot.docs.map(async (cartDoc) => {
         const cartData = cartDoc.data() as CartItem;
-        
+
         // Fetch product details
         const productDoc = await getDoc(
-          doc(db, "products", cartData.productSlug)
+          doc(db, "products", cartData.productSlug),
         );
-        
+
         const productData = productDoc.exists() ? productDoc.data() : null;
 
         return {
@@ -107,13 +107,13 @@ export async function GET(request: NextRequest) {
               }
             : null,
         };
-      })
+      }),
     );
 
     // Calculate totals
     const subtotal = cartItems.reduce(
       (sum, item) => sum + (item.product?.currentPrice || 0) * item.quantity,
-      0
+      0,
     );
 
     return NextResponse.json(
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
           subtotal,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching cart:", error);
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch cart",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -152,17 +152,14 @@ export async function POST(request: NextRequest) {
     if (!userId || !productSlug || !quantity || !price) {
       return NextResponse.json(
         { error: "User ID, product slug, quantity, and price are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate product exists
     const productDoc = await getDoc(doc(db, "products", productSlug));
     if (!productDoc.exists()) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     const productData = productDoc.data();
@@ -171,7 +168,7 @@ export async function POST(request: NextRequest) {
     if (productData.stock < quantity) {
       return NextResponse.json(
         { error: "Insufficient stock" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -180,7 +177,7 @@ export async function POST(request: NextRequest) {
       collection(db, "cart"),
       where("userId", "==", userId),
       where("productSlug", "==", productSlug),
-      where("variantId", "==", variantId || null)
+      where("variantId", "==", variantId || null),
     );
 
     const existingCart = await getDocs(existingCartQuery);
@@ -188,7 +185,7 @@ export async function POST(request: NextRequest) {
     if (!existingCart.empty) {
       return NextResponse.json(
         { error: "Item already in cart. Use PUT to update quantity." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -214,7 +211,7 @@ export async function POST(request: NextRequest) {
           ...cartItem,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error adding to cart:", error);
@@ -224,7 +221,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to add item to cart",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

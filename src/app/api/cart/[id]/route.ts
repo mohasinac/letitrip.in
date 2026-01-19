@@ -1,11 +1,11 @@
 /**
  * Cart Item API Routes
- * 
+ *
  * Update or delete a specific cart item.
- * 
+ *
  * @route PUT /api/cart/[id] - Update item quantity
  * @route DELETE /api/cart/[id] - Remove item from cart
- * 
+ *
  * @example
  * ```tsx
  * // Update quantity
@@ -13,7 +13,7 @@
  *   method: 'PUT',
  *   body: JSON.stringify({ quantity: 3 })
  * });
- * 
+ *
  * // Remove item
  * const response = await fetch('/api/cart/cart-item-id', {
  *   method: 'DELETE'
@@ -21,14 +21,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: {
@@ -39,10 +34,7 @@ interface RouteContext {
 /**
  * PUT - Update cart item quantity
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = params;
     const body = await request.json();
@@ -52,7 +44,7 @@ export async function PUT(
     if (!quantity || quantity < 1) {
       return NextResponse.json(
         { error: "Valid quantity is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +55,7 @@ export async function PUT(
     if (!cartItemDoc.exists()) {
       return NextResponse.json(
         { error: "Cart item not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -79,7 +71,7 @@ export async function PUT(
             error: "Insufficient stock",
             availableStock: productData.stock,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -99,7 +91,7 @@ export async function PUT(
           ...updatedDoc.data(),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating cart item:", error);
@@ -109,7 +101,7 @@ export async function PUT(
         error: "Failed to update cart item",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,10 +109,7 @@ export async function PUT(
 /**
  * DELETE - Remove cart item
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = params;
 
@@ -130,7 +119,7 @@ export async function DELETE(
     if (!cartItemDoc.exists()) {
       return NextResponse.json(
         { error: "Cart item not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -142,7 +131,7 @@ export async function DELETE(
         success: true,
         message: "Item removed from cart",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error deleting cart item:", error);
@@ -152,7 +141,7 @@ export async function DELETE(
         error: "Failed to remove cart item",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

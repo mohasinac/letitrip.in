@@ -1,26 +1,26 @@
 /**
  * Auction Details API Route
- * 
+ *
  * Fetches detailed information about a specific auction by slug.
  * Increments view count on each view.
- * 
+ *
  * @route GET /api/auctions/[slug]
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auctions/vintage-watch-auction');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   doc,
   getDoc,
-  updateDoc,
   increment,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: {
@@ -28,10 +28,7 @@ interface RouteContext {
   };
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
 
@@ -39,10 +36,7 @@ export async function GET(
     const auctionDoc = await getDoc(doc(db, "auctions", slug));
 
     if (!auctionDoc.exists()) {
-      return NextResponse.json(
-        { error: "Auction not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
     const auctionData = auctionDoc.data();
@@ -51,7 +45,7 @@ export async function GET(
     const now = Timestamp.now();
     const startTime = auctionData.startTime;
     const endTime = auctionData.endTime;
-    
+
     let status: "upcoming" | "live" | "ended";
     if (startTime.toMillis() > now.toMillis()) {
       status = "upcoming";
@@ -64,7 +58,9 @@ export async function GET(
     // Increment view count asynchronously
     updateDoc(doc(db, "auctions", slug), {
       viewCount: increment(1),
-    }).catch((error) => console.error("Failed to increment view count:", error));
+    }).catch((error) =>
+      console.error("Failed to increment view count:", error),
+    );
 
     return NextResponse.json(
       {
@@ -75,7 +71,7 @@ export async function GET(
           status,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching auction:", error);
@@ -85,7 +81,7 @@ export async function GET(
         error: "Failed to fetch auction",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

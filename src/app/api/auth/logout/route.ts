@@ -1,11 +1,11 @@
 /**
  * User Logout API Route
- * 
+ *
  * Handles user logout by signing out from Firebase Auth.
  * Clears user session and authentication state.
- * 
+ *
  * @route POST /api/auth/logout
- * 
+ *
  * @example
  * ```tsx
  * const response = await fetch('/api/auth/logout', {
@@ -15,9 +15,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message: "Logout successful",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Logout error:", error);
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     // Generic error response
     return NextResponse.json(
       { error: "Logout failed. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

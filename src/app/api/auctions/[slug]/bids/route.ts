@@ -1,35 +1,35 @@
 /**
  * Bid History API Route
- * 
+ *
  * Fetches the last 5 (or specified number) bids for an auction.
  * Returns bids in descending order by timestamp.
- * 
+ *
  * @route GET /api/auctions/[slug]/bids
- * 
+ *
  * @queryparam limit - Number of bids to return (default: 5, max: 50)
- * 
+ *
  * @example
  * ```tsx
  * // Get last 5 bids
  * const response = await fetch('/api/auctions/vintage-watch-auction/bids');
- * 
+ *
  * // Get last 10 bids
  * const response = await fetch('/api/auctions/vintage-watch-auction/bids?limit=10');
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: {
@@ -37,10 +37,7 @@ interface RouteContext {
   };
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = params;
     const searchParams = request.nextUrl.searchParams;
@@ -52,10 +49,7 @@ export async function GET(
     // Check if auction exists
     const auctionDoc = await getDoc(doc(db, "auctions", slug));
     if (!auctionDoc.exists()) {
-      return NextResponse.json(
-        { error: "Auction not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
     // Query bids for this auction
@@ -63,7 +57,7 @@ export async function GET(
       collection(db, "bids"),
       where("auctionSlug", "==", slug),
       orderBy("timestamp", "desc"),
-      limit(bidLimit)
+      limit(bidLimit),
     );
 
     const querySnapshot = await getDocs(bidsQuery);
@@ -83,7 +77,7 @@ export async function GET(
           total: bids.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching bid history:", error);
@@ -93,7 +87,7 @@ export async function GET(
         error: "Failed to fetch bid history",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
