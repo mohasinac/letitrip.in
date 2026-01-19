@@ -1,20 +1,22 @@
 "use client";
 
 import AuthGuard from "@/components/auth/AuthGuard";
-import { FormInput } from "@letitrip/react-library";
-import { FormTextarea } from "@letitrip/react-library";
+import { COLORS } from "@/constants/colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversationState } from "@/hooks/useConversationState";
-import { useLoadingState } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
 import { messagesService } from "@/services/messages.service";
-import { COLORS } from "@/constants/colors";
 import {
   ConversationFE,
   ConversationType,
   MessageFE,
   ParticipantType,
 } from "@/types/frontend/message.types";
+import {
+  FormInput,
+  FormTextarea,
+  useLoadingState,
+} from "@letitrip/react-library";
 import {
   Archive,
   ArrowLeft,
@@ -224,8 +226,8 @@ function MessagesContent() {
           conversations.map((c: ConversationFE) =>
             c.id === conversationId
               ? { ...c, unreadCount: 0, isUnread: false }
-              : c
-          )
+              : c,
+          ),
         );
       } catch (err) {
         logError(err as Error, { component: "MessagesPage.loadMessages" });
@@ -234,7 +236,7 @@ function MessagesContent() {
         setMessagesLoading(false);
       }
     },
-    [selectConversation, setMessages, setConversations, setMessagesLoading]
+    [selectConversation, setMessages, setConversations, setMessagesLoading],
   );
 
   // Send message
@@ -293,8 +295,8 @@ function MessagesContent() {
       await messagesService.archiveConversation(selectedConversation.id);
       setConversations(
         conversations.filter(
-          (c: ConversationFE) => c.id !== selectedConversation.id
-        )
+          (c: ConversationFE) => c.id !== selectedConversation.id,
+        ),
       );
       selectConversation(null);
     } catch (err) {

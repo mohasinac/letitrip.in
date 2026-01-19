@@ -23,9 +23,5 @@ export type {
   RouterWrapperInterface,
 } from "./RouterWrapper";
 
-// Re-export for convenience
-export {
-  ImageWrapper as Image,
-  LinkWrapper as Link,
-  useRouterWrapper as useRouter,
-};
+// Convenience aliases - use the primary exports instead
+// Example: import { LinkWrapper as Link } from '@/components/wrappers';
