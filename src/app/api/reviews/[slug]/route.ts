@@ -1,10 +1,10 @@
 /**
  * Review Details API Route
- * 
+ *
  * Handles fetching individual review details by slug.
- * 
+ *
  * @route GET /api/reviews/[slug] - Get review details
- * 
+ *
  * @example
  * ```tsx
  * // Get review
@@ -12,14 +12,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -29,7 +24,7 @@ interface RouteContext {
 
 /**
  * GET /api/reviews/[slug]
- * 
+ *
  * Get review details by slug.
  */
 export async function GET(request: NextRequest, { params }: RouteContext) {
@@ -39,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     // Query review by slug
     const reviewQuery = query(
       collection(db, "reviews"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
 
     const querySnapshot = await getDocs(reviewQuery);
@@ -59,13 +54,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         success: true,
         data: reviewData,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching review:", error);
     return NextResponse.json(
       { error: "Failed to fetch review", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

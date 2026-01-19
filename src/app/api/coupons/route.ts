@@ -1,18 +1,18 @@
 /**
  * Coupons API Routes
- * 
+ *
  * Handles coupon listing, validation, and creation.
  * Supports both global (Admin) and shop-specific (Seller) coupons.
- * 
+ *
  * @route GET /api/coupons - List available coupons
  * @route POST /api/coupons - Create coupon (Admin/Seller)
  * @route POST /api/coupons/validate - Validate coupon code
- * 
+ *
  * @example
  * ```tsx
  * // List coupons
  * const response = await fetch('/api/coupons?shopSlug=my-shop');
- * 
+ *
  * // Create coupon
  * const response = await fetch('/api/coupons', {
  *   method: 'POST',
@@ -26,25 +26,25 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
   addDoc,
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   Timestamp,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/coupons
- * 
+ *
  * List available coupons.
- * 
+ *
  * Query Parameters:
  * - shopSlug: Filter by shop slug (omit for global coupons)
  * - status: Filter by status (active/expired/disabled)
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "active";
     const pageLimit = Math.min(
       parseInt(searchParams.get("limit") || "20"),
-      100
+      100,
     );
 
     // Build query constraints
@@ -98,13 +98,13 @@ export async function GET(request: NextRequest) {
           count: coupons.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching coupons:", error);
     return NextResponse.json(
       { error: "Failed to fetch coupons", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -128,10 +128,10 @@ interface CreateCouponRequest {
 
 /**
  * POST /api/coupons
- * 
+ *
  * Create a new coupon.
  * Admin can create global coupons, Sellers can create shop-specific.
- * 
+ *
  * Request Body:
  * - code: Coupon code (required, unique, uppercase)
  * - type: Discount type (percentage/fixed) (required)
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     if (!code || !type || !value || !scope || !validFrom || !validUntil) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
     if (scope === "shop" && !shopSlug) {
       return NextResponse.json(
         { error: "shopSlug is required for shop-scoped coupons" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -188,14 +188,14 @@ export async function POST(request: NextRequest) {
     if (type === "percentage" && (value <= 0 || value > 100)) {
       return NextResponse.json(
         { error: "Percentage value must be between 0 and 100" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (type === "fixed" && value <= 0) {
       return NextResponse.json(
         { error: "Fixed value must be greater than 0" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -205,14 +205,14 @@ export async function POST(request: NextRequest) {
     // Check if code already exists
     const existingCouponQuery = query(
       collection(db, "coupons"),
-      where("code", "==", normalizedCode)
+      where("code", "==", normalizedCode),
     );
     const existingCoupons = await getDocs(existingCouponQuery);
 
     if (!existingCoupons.empty) {
       return NextResponse.json(
         { error: "Coupon code already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Coupon created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating coupon:", error);
@@ -261,13 +261,13 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to create coupon" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to create coupon", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,11 +1,11 @@
 /**
  * Coupon Management API Route
- * 
+ *
  * Handles updating coupon details by code.
- * 
+ *
  * @route PUT /api/coupons/[code] - Update coupon (Admin/Seller)
  * @route DELETE /api/coupons/[code] - Delete/disable coupon
- * 
+ *
  * @example
  * ```tsx
  * // Update coupon
@@ -20,18 +20,18 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
   deleteDoc,
+  getDocs,
+  query,
   serverTimestamp,
   Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -51,9 +51,9 @@ interface UpdateCouponRequest {
 
 /**
  * PUT /api/coupons/[code]
- * 
+ *
  * Update coupon details (Admin/Seller).
- * 
+ *
  * Request Body:
  * - status: Coupon status (active/disabled/expired)
  * - usageLimit: Total usage limit
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     // Query coupon by code
     const couponQuery = query(
       collection(db, "coupons"),
-      where("code", "==", normalizedCode)
+      where("code", "==", normalizedCode),
     );
 
     const querySnapshot = await getDocs(couponQuery);
@@ -118,7 +118,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         data: updatedData,
         message: "Coupon updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating coupon:", error);
@@ -126,20 +126,20 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to update coupon" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update coupon", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /**
  * DELETE /api/coupons/[code]
- * 
+ *
  * Delete coupon by code (Admin/Seller).
  */
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
@@ -152,7 +152,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     // Query coupon by code
     const couponQuery = query(
       collection(db, "coupons"),
-      where("code", "==", normalizedCode)
+      where("code", "==", normalizedCode),
     );
 
     const querySnapshot = await getDocs(couponQuery);
@@ -171,7 +171,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
         success: true,
         message: "Coupon deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error deleting coupon:", error);
@@ -179,13 +179,13 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to delete coupon" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to delete coupon", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

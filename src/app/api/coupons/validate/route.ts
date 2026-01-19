@@ -1,10 +1,10 @@
 /**
  * Coupon Validation API Route
- * 
+ *
  * Validates coupon codes and returns discount details.
- * 
+ *
  * @route POST /api/coupons/validate - Validate coupon code
- * 
+ *
  * @example
  * ```tsx
  * // Validate coupon
@@ -21,15 +21,15 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
   getDocs,
+  query,
   Timestamp,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface ValidateCouponRequest {
   code: string;
@@ -42,9 +42,9 @@ interface ValidateCouponRequest {
 
 /**
  * POST /api/coupons/validate
- * 
+ *
  * Validate a coupon code and calculate discount.
- * 
+ *
  * Request Body:
  * - code: Coupon code (required)
  * - userId: User ID (required)
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     if (!code || !userId || orderValue === undefined) {
       return NextResponse.json(
         { error: "code, userId, and orderValue are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const couponQuery = query(
       collection(db, "coupons"),
       where("code", "==", normalizedCode),
-      where("status", "==", "active")
+      where("status", "==", "active"),
     );
 
     const querySnapshot = await getDocs(couponQuery);
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: "Invalid or expired coupon code",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: "Coupon is not yet valid",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: "Coupon has expired",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             valid: false,
             error: "This coupon is not valid for this shop",
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: `Minimum order value of ₹${coupon.minOrderValue} required`,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: "Coupon usage limit reached",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     const userUsageQuery = query(
       collection(db, "couponUsage"),
       where("couponId", "==", couponDoc.id),
-      where("userId", "==", userId)
+      where("userId", "==", userId),
     );
     const userUsageSnapshot = await getDocs(userUsageQuery);
     const userUsageCount = userUsageSnapshot.size;
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           error: "You have already used this coupon",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
             valid: false,
             error: "Coupon not valid for this category",
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
     // Check product restrictions
     if (coupon.applicableProducts && coupon.applicableProducts.length > 0) {
       const hasApplicableProduct = productSlugs.some((slug) =>
-        coupon.applicableProducts.includes(slug)
+        coupon.applicableProducts.includes(slug),
       );
       if (!hasApplicableProduct) {
         return NextResponse.json(
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
             valid: false,
             error: "Coupon not valid for these products",
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -241,13 +241,13 @@ export async function POST(request: NextRequest) {
         },
         message: "Coupon applied successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error validating coupon:", error);
     return NextResponse.json(
       { error: "Failed to validate coupon", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

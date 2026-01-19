@@ -1,16 +1,16 @@
 /**
  * Blogs API Routes
- * 
+ *
  * Handles blog post listing and creation.
- * 
+ *
  * @route GET /api/blogs - List blog posts
  * @route POST /api/blogs - Create blog post (Admin only)
- * 
+ *
  * @example
  * ```tsx
  * // List blogs
  * const response = await fetch('/api/blogs?category=tech&limit=10');
- * 
+ *
  * // Create blog
  * const response = await fetch('/api/blogs', {
  *   method: 'POST',
@@ -24,27 +24,27 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
   addDoc,
-  serverTimestamp,
-  startAfter,
+  collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  startAfter,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/blogs
- * 
+ *
  * List blog posts with filtering and pagination.
- * 
+ *
  * Query Parameters:
  * - category: Filter by category slug
  * - author: Filter by author ID
@@ -62,10 +62,7 @@ export async function GET(request: NextRequest) {
     const featuredParam = searchParams.get("featured");
     const status = searchParams.get("status") || "published";
     const sortBy = searchParams.get("sort") || "newest";
-    const pageLimit = Math.min(
-      parseInt(searchParams.get("limit") || "10"),
-      50
-    );
+    const pageLimit = Math.min(parseInt(searchParams.get("limit") || "10"), 50);
     const cursor = searchParams.get("cursor");
 
     // Build query constraints
@@ -136,13 +133,13 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json(
       { error: "Failed to fetch blogs", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -162,9 +159,9 @@ interface CreateBlogRequest {
 
 /**
  * POST /api/blogs
- * 
+ *
  * Create a new blog post (Admin only).
- * 
+ *
  * Request Body:
  * - title: Blog title (required)
  * - slug: URL-friendly slug (required, unique)
@@ -197,21 +194,21 @@ export async function POST(request: NextRequest) {
     if (!title || !slug || !excerpt || !content || !authorId) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if slug already exists
     const existingBlogQuery = query(
       collection(db, "blogs"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
     const existingBlogs = await getDocs(existingBlogQuery);
 
     if (!existingBlogs.empty) {
       return NextResponse.json(
         { error: "Blog with this slug already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -245,7 +242,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Blog post created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating blog:", error);
@@ -253,13 +250,13 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to create blog" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to create blog", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

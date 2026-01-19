@@ -1,11 +1,11 @@
 /**
  * Blog Comments API Route
- * 
+ *
  * Handles adding comments to blog posts.
- * 
+ *
  * @route POST /api/blogs/[slug]/comments - Add comment to blog
  * @route GET /api/blogs/[slug]/comments - List comments for blog
- * 
+ *
  * @example
  * ```tsx
  * // Add comment
@@ -20,20 +20,20 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
   addDoc,
+  collection,
+  getDocs,
+  increment,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   updateDoc,
-  increment,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -43,9 +43,9 @@ interface RouteContext {
 
 /**
  * GET /api/blogs/[slug]/comments
- * 
+ *
  * List comments for a blog post.
- * 
+ *
  * Query Parameters:
  * - limit: Number of comments (default 20, max 100)
  * - sort: Sort order (newest, oldest)
@@ -56,15 +56,12 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     const { searchParams } = new URL(request.url);
     const pageLimit = Math.min(
       parseInt(searchParams.get("limit") || "20"),
-      100
+      100,
     );
     const sortBy = searchParams.get("sort") || "newest";
 
     // Query blog to get its ID
-    const blogQuery = query(
-      collection(db, "blogs"),
-      where("slug", "==", slug)
-    );
+    const blogQuery = query(collection(db, "blogs"), where("slug", "==", slug));
     const blogSnapshot = await getDocs(blogQuery);
 
     if (blogSnapshot.empty) {
@@ -78,7 +75,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       collection(db, "blogComments"),
       where("blogId", "==", blogId),
       orderBy("createdAt", sortBy === "oldest" ? "asc" : "desc"),
-      limit(pageLimit)
+      limit(pageLimit),
     );
 
     const commentsSnapshot = await getDocs(commentsQuery);
@@ -97,13 +94,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
           total: comments.length,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching comments:", error);
     return NextResponse.json(
       { error: "Failed to fetch comments", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,9 +114,9 @@ interface AddCommentRequest {
 
 /**
  * POST /api/blogs/[slug]/comments
- * 
+ *
  * Add a comment to a blog post.
- * 
+ *
  * Request Body:
  * - userId: User ID (required)
  * - userName: User display name (required)
@@ -136,22 +133,19 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     if (!userId || !userName || !comment) {
       return NextResponse.json(
         { error: "userId, userName, and comment are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (comment.trim().length < 2) {
       return NextResponse.json(
         { error: "Comment must be at least 2 characters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Query blog to get its ID
-    const blogQuery = query(
-      collection(db, "blogs"),
-      where("slug", "==", slug)
-    );
+    const blogQuery = query(collection(db, "blogs"), where("slug", "==", slug));
     const blogSnapshot = await getDocs(blogQuery);
 
     if (blogSnapshot.empty) {
@@ -190,7 +184,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
         },
         message: "Comment added successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error adding comment:", error);
@@ -198,13 +192,13 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to add comment" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to add comment", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,17 +1,17 @@
 /**
  * Reviews API Routes
- * 
+ *
  * Handles product and auction reviews with purchase verification.
  * Users can only review items they have purchased/won.
- * 
+ *
  * @route GET /api/reviews - List reviews with filters
  * @route POST /api/reviews - Create review (requires order)
- * 
+ *
  * @example
  * ```tsx
  * // List reviews
  * const response = await fetch('/api/reviews?productSlug=laptop-dell&sort=newest');
- * 
+ *
  * // Create review
  * const response = await fetch('/api/reviews', {
  *   method: 'POST',
@@ -27,29 +27,29 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
   addDoc,
-  serverTimestamp,
-  startAfter,
+  collection,
   doc,
   getDoc,
-  updateDoc,
+  getDocs,
   increment,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  startAfter,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/reviews
- * 
+ *
  * List reviews with filtering and pagination.
- * 
+ *
  * Query Parameters:
  * - productSlug: Filter by product slug
  * - auctionSlug: Filter by auction slug
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sort") || "newest";
     const pageLimit = Math.min(
       parseInt(searchParams.get("limit") || "20"),
-      100
+      100,
     );
     const cursor = searchParams.get("cursor");
 
@@ -160,13 +160,13 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json(
       { error: "Failed to fetch reviews", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -187,9 +187,9 @@ interface CreateReviewRequest {
 
 /**
  * POST /api/reviews
- * 
+ *
  * Create a new review (requires verified purchase/win).
- * 
+ *
  * Request Body:
  * - userId: User ID (required)
  * - productSlug: Product slug (required if not auction)
@@ -224,38 +224,35 @@ export async function POST(request: NextRequest) {
     if (!userId || !shopSlug || !orderId || !rating || !title || !comment) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!productSlug && !auctionSlug) {
       return NextResponse.json(
         { error: "Either productSlug or auctionSlug is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (rating < 1 || rating > 5) {
       return NextResponse.json(
         { error: "Rating must be between 1 and 5" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Verify order exists and belongs to user
     const orderDoc = await getDoc(doc(db, "orders", orderId));
     if (!orderDoc.exists()) {
-      return NextResponse.json(
-        { error: "Order not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     const orderData = orderDoc.data();
     if (orderData.userId !== userId) {
       return NextResponse.json(
         { error: "Order does not belong to this user" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -265,14 +262,14 @@ export async function POST(request: NextRequest) {
       where("userId", "==", userId),
       productSlug
         ? where("productSlug", "==", productSlug)
-        : where("auctionSlug", "==", auctionSlug)
+        : where("auctionSlug", "==", auctionSlug),
     );
     const existingReviews = await getDocs(existingReviewQuery);
 
     if (!existingReviews.empty) {
       return NextResponse.json(
         { error: "You have already reviewed this item" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -309,7 +306,7 @@ export async function POST(request: NextRequest) {
     if (productSlug) {
       const productQuery = query(
         collection(db, "products"),
-        where("slug", "==", productSlug)
+        where("slug", "==", productSlug),
       );
       const productSnapshot = await getDocs(productQuery);
       if (!productSnapshot.empty) {
@@ -321,7 +318,7 @@ export async function POST(request: NextRequest) {
     } else if (auctionSlug) {
       const auctionQuery = query(
         collection(db, "auctions"),
-        where("slug", "==", auctionSlug)
+        where("slug", "==", auctionSlug),
       );
       const auctionSnapshot = await getDocs(auctionQuery);
       if (!auctionSnapshot.empty) {
@@ -341,7 +338,7 @@ export async function POST(request: NextRequest) {
         },
         message: "Review submitted successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating review:", error);
@@ -349,13 +346,13 @@ export async function POST(request: NextRequest) {
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to create review" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to create review", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

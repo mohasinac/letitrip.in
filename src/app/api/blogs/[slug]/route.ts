@@ -1,11 +1,11 @@
 /**
  * Blog Details API Route
- * 
+ *
  * Handles fetching and updating individual blog posts by slug.
- * 
+ *
  * @route GET /api/blogs/[slug] - Get blog details
  * @route PUT /api/blogs/[slug] - Update blog (Admin only)
- * 
+ *
  * @example
  * ```tsx
  * // Get blog
@@ -13,17 +13,16 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
   getDocs,
-  updateDoc,
-  serverTimestamp,
   increment,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -33,7 +32,7 @@ interface RouteContext {
 
 /**
  * GET /api/blogs/[slug]
- * 
+ *
  * Get blog details by slug.
  * Increments view count asynchronously.
  */
@@ -42,10 +41,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     const { slug } = await params;
 
     // Query blog by slug
-    const blogQuery = query(
-      collection(db, "blogs"),
-      where("slug", "==", slug)
-    );
+    const blogQuery = query(collection(db, "blogs"), where("slug", "==", slug));
 
     const querySnapshot = await getDocs(blogQuery);
 
@@ -71,13 +67,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         success: true,
         data: blogData,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching blog:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
