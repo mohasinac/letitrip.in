@@ -52,3 +52,6 @@ export type {
   SubNavSection,
   SubNavigationProps,
 } from "./SubNavigation";
+
+export { AdvertisementBanner } from "./AdvertisementBanner";
+export type { AdvertisementBannerProps } from "./AdvertisementBanner";

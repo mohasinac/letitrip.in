@@ -1,4 +1,3 @@
-
 import { ChevronRight, Home } from "lucide-react";
 import { ComponentType, ReactNode, useMemo } from "react";
 
@@ -258,4 +257,3 @@ export function Breadcrumb({
     </>
   );
 }
-
