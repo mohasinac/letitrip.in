@@ -103,7 +103,10 @@ export * from "./seller";
 
 // Media Components
 export { MediaGallery } from "./media";
-export type { MediaGalleryProps, GalleryMedia as MediaGalleryMedia } from "./media";
+export type {
+  GalleryMedia as MediaGalleryMedia,
+  MediaGalleryProps,
+} from "./media";
 
 // Skeleton Components (card skeletons exported from ./cards)
 export * from "./skeletons";
