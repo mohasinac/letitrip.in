@@ -43,7 +43,6 @@ const participantIcons: Record<ParticipantType, React.ReactNode> = {
 
 // Conversation type colors - use constants
 const typeColors: Record<ConversationType, string> = COLORS.conversation;
-};
 
 function ConversationItem({
   conversation,
