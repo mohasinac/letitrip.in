@@ -35,9 +35,16 @@ const DEFAULT_ROUTE_LABELS: Record<string, string> = {
   "/shops": "Shops",
 
   // Product routes
+  "/products": "Products",
   "/categories": "Categories",
+  "/auctions": "Auctions",
   "/cart": "Shopping Cart",
   "/coupons": "Coupons",
+
+  // Content routes
+  "/blogs": "Blog",
+  "/reviews": "Reviews",
+  "/orders": "Orders",
 
   // Auth routes
   "/login": "Sign In",
@@ -45,9 +52,13 @@ const DEFAULT_ROUTE_LABELS: Record<string, string> = {
   "/logout": "Logout",
 
   // Support routes
+  "/support": "Support",
   "/support/ticket": "Support Ticket",
+  "/faq": "FAQ",
 
-  // About
+  // Legal routes
+  "/terms": "Terms of Service",
+  "/privacy": "Privacy Policy",
   "/about": "About Us",
 
   // Admin routes
@@ -55,11 +66,14 @@ const DEFAULT_ROUTE_LABELS: Record<string, string> = {
   "/admin/users": "Manage Users",
   "/admin/products": "Manage Products",
   "/admin/orders": "Manage Orders",
+  "/admin/categories": "Manage Categories",
+  "/admin/shops": "Manage Shops",
 
   // Seller routes
   "/seller": "Seller Dashboard",
   "/seller/products": "My Products",
   "/seller/orders": "My Orders",
+  "/seller/auctions": "My Auctions",
 
   // Other routes
   "/unauthorized": "Unauthorized Access",
@@ -73,6 +87,7 @@ const DEFAULT_ROUTE_LABELS: Record<string, string> = {
  *
  * Features:
  * - Automatic breadcrumb generation from URL path
+ * - SEO-friendly slug support (buy-*, view-* patterns)
  * - Customizable route labels
  * - Home page icon integration
  * - SEO schema generation support
@@ -82,8 +97,24 @@ const DEFAULT_ROUTE_LABELS: Record<string, string> = {
  *
  * @example
  * ```tsx
+ * // Simple usage
  * <Breadcrumb
  *   currentPath="/user/orders"
+ *   LinkComponent={Link}
+ * />
+ *
+ * // With SEO slugs
+ * <Breadcrumb
+ *   currentPath="/buy-product-orange-juice-500ml"
+ *   routeLabels={{
+ *     "/buy-product-orange-juice-500ml": "Orange Juice 500ml"
+ *   }}
+ *   LinkComponent={Link}
+ * />
+ *
+ * // With schema generation
+ * <Breadcrumb
+ *   currentPath="/buy-category-electronics"
  *   LinkComponent={Link}
  *   generateSchema={generateBreadcrumbSchema}
  *   generateJSONLD={generateJSONLD}
@@ -125,11 +156,33 @@ export function Breadcrumb({
       let label = routeLabels[pathSoFar] || DEFAULT_ROUTE_LABELS[pathSoFar];
 
       if (!label) {
-        // Format the segment nicely
-        label = segment
-          .split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
+        // Handle SEO-friendly slugs (buy-*, view-*)
+        if (segment.startsWith("buy-") || segment.startsWith("view-")) {
+          // Extract type and name from slug
+          const parts = segment.split("-");
+          const action = parts[0]; // 'buy' or 'view'
+          const type = parts[1]; // 'product', 'auction', 'category', etc.
+          const nameParts = parts.slice(2); // remaining parts are the name
+
+          // Format type nicely
+          const formattedType =
+            type.charAt(0).toUpperCase() + type.slice(1) + "s";
+
+          // If we have name parts, use them; otherwise use type
+          if (nameParts.length > 0) {
+            label = nameParts
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ");
+          } else {
+            label = formattedType;
+          }
+        } else {
+          // Format the segment nicely (standard hyphen-separated)
+          label = segment
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+        }
       }
 
       items.push({
