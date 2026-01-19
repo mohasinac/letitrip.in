@@ -1,12 +1,12 @@
 /**
  * Product Details Page
- * 
+ *
  * Detailed product page with media gallery, specifications, reviews, and related products.
  * Server-side rendered for SEO optimization.
- * 
+ *
  * URL Format: /buy-product-{slug}
  * Example: /buy-product-iphone-15-pro-max-256gb
- * 
+ *
  * Features:
  * - Media gallery with lightbox viewer
  * - Product details and specifications
@@ -14,18 +14,14 @@
  * - Product variants and similar products
  * - Customer reviews section
  * - SEO metadata with structured data
- * 
+ *
  * @page /buy-product-[slug] - Product details
  */
 
+import { Breadcrumb, ProductCard } from "@letitrip/react-library";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  ProductCard,
-  Breadcrumb,
-  ReviewCard,
-} from "@letitrip/react-library";
+import { notFound } from "next/navigation";
 
 // Types
 interface PageProps {
@@ -55,7 +51,9 @@ export async function generateMetadata({
   const title = `${product.name} | Let It Rip`;
   const description =
     product.shortDescription ||
-    `Buy ${product.name} at ₹${product.price.toLocaleString()}. ${product.condition} condition. ${product.inStock ? "In stock" : "Out of stock"}.`;
+    `Buy ${product.name} at ₹${product.price.toLocaleString()}. ${
+      product.condition
+    } condition. ${product.inStock ? "In stock" : "Out of stock"}.`;
 
   return {
     title,
@@ -116,7 +114,7 @@ async function getSimilarProducts(categorySlug: string, currentSlug: string) {
       `${baseUrl}/api/products?categorySlug=${categorySlug}&limit=8`,
       {
         next: { revalidate: 600 },
-      }
+      },
     );
 
     if (!res.ok) return [];
@@ -124,7 +122,7 @@ async function getSimilarProducts(categorySlug: string, currentSlug: string) {
     const data = await res.json();
     // Filter out current product
     return (data.data?.products || []).filter(
-      (p: any) => p.slug !== currentSlug
+      (p: any) => p.slug !== currentSlug,
     );
   } catch (error) {
     console.error("Error fetching similar products:", error);
@@ -143,7 +141,7 @@ async function getReviews(productSlug: string) {
       `${baseUrl}/api/reviews?productSlug=${productSlug}&limit=5`,
       {
         next: { revalidate: 300 },
-      }
+      },
     );
 
     if (!res.ok) return [];
@@ -175,7 +173,7 @@ export default async function ProductDetailsPage({
   // Calculate discount percentage
   const discountPercent = product.originalPrice
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
+        ((product.originalPrice - product.price) / product.originalPrice) * 100,
       )
     : 0;
 
@@ -214,18 +212,20 @@ export default async function ProductDetailsPage({
               {/* Thumbnail Gallery */}
               {product.images && product.images.length > 1 && (
                 <div className="grid grid-cols-4 gap-4">
-                  {product.images.slice(0, 4).map((img: string, idx: number) => (
-                    <div
-                      key={idx}
-                      className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition"
-                    >
-                      <img
-                        src={img}
-                        alt={`${product.name} - ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
+                  {product.images
+                    .slice(0, 4)
+                    .map((img: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition"
+                      >
+                        <img
+                          src={img}
+                          alt={`${product.name} - ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
@@ -400,7 +400,7 @@ export default async function ProductDetailsPage({
                             {value}
                           </dd>
                         </div>
-                      )
+                      ),
                     )}
                   </dl>
                 </div>

@@ -1,22 +1,22 @@
 /**
  * Auction Listing Page
- * 
+ *
  * Dynamic auction listing with filters, search, sorting, and pagination.
  * Similar to product listing but with auction-specific features.
- * 
+ *
  * URL Examples:
  * - /buy-auction-all - All auctions
  * - /buy-auction-electronics - Electronics category
  * - /buy-auction-all?status=active&sort=ending-soon
  * - /buy-auction-fashion?minBid=1000
- * 
+ *
  * @page /buy-auction-[...filters] - Auction listing
  */
 
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Link from "next/link";
 import { AuctionCard, Breadcrumb } from "@letitrip/react-library";
+import { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 // Types
 interface PageProps {
@@ -95,7 +95,7 @@ const SORT_OPTIONS = [
  */
 async function getAuctions(
   params: PageProps["params"],
-  searchParams: PageProps["searchParams"]
+  searchParams: PageProps["searchParams"],
 ) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const category = params.filters?.[0];
@@ -112,8 +112,7 @@ async function getAuctions(
   if (searchParams.maxBid) queryParams.set("maxBid", searchParams.maxBid);
   if (searchParams.status) queryParams.set("status", searchParams.status);
   if (searchParams.shopSlug) queryParams.set("shopSlug", searchParams.shopSlug);
-  if (searchParams.featured === "true")
-    queryParams.set("featured", "true");
+  if (searchParams.featured === "true") queryParams.set("featured", "true");
   if (searchParams.cursor) queryParams.set("cursor", searchParams.cursor);
   if (searchParams.limit) queryParams.set("limit", searchParams.limit);
   else queryParams.set("limit", "24");
@@ -123,7 +122,7 @@ async function getAuctions(
       `${baseUrl}/api/auctions?${queryParams.toString()}`,
       {
         next: { revalidate: 60 }, // Cache for 1 minute (auctions change frequently)
-      }
+      },
     );
 
     if (!res.ok) {
@@ -158,7 +157,7 @@ export default async function AuctionListingPage({
   // Fetch data
   const { auctions, hasMore, nextCursor } = await getAuctions(
     params,
-    searchParams
+    searchParams,
   );
 
   // Current filters
@@ -295,7 +294,9 @@ export default async function AuctionListingPage({
                     const diff = end.getTime() - now.getTime();
                     if (diff <= 0) return "Ended";
                     const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const minutes = Math.floor(
+                      (diff % (1000 * 60 * 60)) / (1000 * 60),
+                    );
                     if (hours > 24) {
                       const days = Math.floor(hours / 24);
                       return `${days}d ${hours % 24}h`;

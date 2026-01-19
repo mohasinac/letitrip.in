@@ -1,12 +1,12 @@
 /**
  * Auction Details Page
- * 
+ *
  * Detailed auction page with media gallery, bidding interface, and auction history.
  * Real-time updates for bid status and countdown timer.
- * 
+ *
  * URL Format: /buy-auction-{slug}
  * Example: /buy-auction-vintage-rolex-submariner
- * 
+ *
  * Features:
  * - Media gallery with fullscreen lightbox
  * - Real-time countdown timer
@@ -15,14 +15,14 @@
  * - Similar auctions section
  * - Seller reviews
  * - SEO metadata
- * 
+ *
  * @page /buy-auction-[slug] - Auction details
  */
 
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Link from "next/link";
 import { AuctionCard, Breadcrumb } from "@letitrip/react-library";
+import { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 // Types
 interface PageProps {
@@ -49,7 +49,11 @@ export async function generateMetadata({
   const title = `${auction.title} - Auction | Let It Rip`;
   const description =
     auction.shortDescription ||
-    `Bid on ${auction.title}. Current bid: ₹${auction.currentBid.toLocaleString()}. ${auction.bidCount} bids.`;
+    `Bid on ${
+      auction.title
+    }. Current bid: ₹${auction.currentBid.toLocaleString()}. ${
+      auction.bidCount
+    } bids.`;
 
   return {
     title,
@@ -110,14 +114,14 @@ async function getSimilarAuctions(categorySlug: string, currentSlug: string) {
       `${baseUrl}/api/auctions?categorySlug=${categorySlug}&status=active&limit=8`,
       {
         next: { revalidate: 300 },
-      }
+      },
     );
 
     if (!res.ok) return [];
 
     const data = await res.json();
     return (data.data?.auctions || []).filter(
-      (a: any) => a.slug !== currentSlug
+      (a: any) => a.slug !== currentSlug,
     );
   } catch (error) {
     console.error("Error fetching similar auctions:", error);
@@ -173,7 +177,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
   // Fetch similar auctions
   const similarAuctions = await getSimilarAuctions(
     auction.categorySlug,
-    auction.slug
+    auction.slug,
   );
 
   // Calculate time remaining
@@ -316,8 +320,8 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                       auction.status === "active"
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                         : auction.status === "live"
-                          ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                     }`}
                   >
                     {auction.status}
