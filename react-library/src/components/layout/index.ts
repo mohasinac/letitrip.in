@@ -45,3 +45,10 @@ export type {
 
 export { MobileNavigation } from "./MobileNavigation";
 export type { MobileNavItem, MobileNavigationProps } from "./MobileNavigation";
+
+export { SubNavigation } from "./SubNavigation";
+export type {
+  SubNavLink,
+  SubNavSection,
+  SubNavigationProps,
+} from "./SubNavigation";
