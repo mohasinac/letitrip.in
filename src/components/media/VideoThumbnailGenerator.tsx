@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { logError } from "@/lib/error-logger";
-import { X, Check } from "lucide-react";
-import { MediaFile } from "@/types/media";
 import { extractMultipleThumbnails } from "@/lib/media/video-processor";
+import { MediaFile } from "@/types/media";
+import { logError } from "@letitrip/react-library";
+import { Check, X } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface VideoThumbnailGeneratorProps {
   media: MediaFile;
@@ -66,8 +66,9 @@ export default function VideoThumbnailGenerator({
 
     setIsGenerating(true);
     try {
-      const { extractVideoThumbnail } =
-        await import("@/lib/media/video-processor");
+      const { extractVideoThumbnail } = await import(
+        "@/lib/media/video-processor"
+      );
       const thumbnailDataUrl = await extractVideoThumbnail(
         media.file,
         timestamp,

@@ -1,24 +1,19 @@
-import { apiService } from "./api.service";
 import { COUPON_ROUTES, buildUrl } from "@/constants/api-routes";
 import type { CouponBE, CouponFiltersBE } from "@/types/backend/coupon.types";
+import type { CouponFE, CouponFormFE } from "@/types/frontend/coupon.types";
 import type {
-  CouponFE,
-  CouponFormFE,
-  ValidateCouponRequestFE,
-  ValidateCouponResponseFE,
-} from "@/types/frontend/coupon.types";
-import type {
+  BulkActionResponse,
   PaginatedResponseBE,
   PaginatedResponseFE,
-  BulkActionResponse,
 } from "@/types/shared/common.types";
-import { logServiceError } from "@/lib/error-logger";
 import {
-  toFECoupon,
-  toFECoupons,
   toBECreateCouponRequest,
   toBEUpdateCouponRequest,
+  toFECoupon,
+  toFECoupons,
 } from "@/types/transforms/coupon.transforms";
+import { logServiceError } from "@letitrip/react-library";
+import { apiService } from "./api.service";
 
 // Remove old interfaces - now using types from type system
 
@@ -45,8 +40,9 @@ class CouponsService {
     filters?: Partial<CouponFiltersBE>,
   ): Promise<PaginatedResponseFE<CouponFE>> {
     const endpoint = buildUrl(COUPON_ROUTES.LIST, filters);
-    const response =
-      await apiService.get<PaginatedResponseBE<CouponBE>>(endpoint);
+    const response = await apiService.get<PaginatedResponseBE<CouponBE>>(
+      endpoint,
+    );
 
     return {
       data: toFECoupons(response.data),

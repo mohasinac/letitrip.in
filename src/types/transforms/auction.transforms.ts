@@ -3,9 +3,11 @@
  */
 
 import { AUCTION_TIMING } from "@/constants/time-constants";
-import { safeToISOString } from "@letitrip/react-library";
-import { formatDate } from "@letitrip/react-library";
-import { formatPrice } from "@letitrip/react-library";
+import {
+  formatDate,
+  formatPrice,
+  safeToISOString,
+} from "@letitrip/react-library";
 import { Timestamp } from "firebase/firestore";
 import {
   AuctionBE,
@@ -50,7 +52,7 @@ function formatTimeRemaining(endTime: Date | null): {
 
 function generateAuctionBadges(
   auctionBE: AuctionBE,
-  timeRemainingSeconds: number
+  timeRemainingSeconds: number,
 ): string[] {
   const badges: string[] = [];
 
@@ -74,7 +76,7 @@ function generateAuctionBadges(
 export function toFEBid(
   bidBE: BidBE,
   currentUserId?: string,
-  highestBidId?: string
+  highestBidId?: string,
 ): BidFE {
   const createdAt = parseDate(bidBE.createdAt) || new Date();
   const now = new Date();
@@ -96,7 +98,7 @@ export function toFEBid(
 
 export function toFEAuction(
   auctionBE: AuctionBE,
-  currentUserId?: string
+  currentUserId?: string,
 ): AuctionFE {
   const startTime = parseDate(auctionBE.startTime) || new Date();
   const endTime = parseDate(auctionBE.endTime) || new Date();
@@ -267,7 +269,7 @@ export function toFEAuctionCard(auctionBE: AuctionListItemBE): AuctionCardFE {
 }
 
 export function toBECreateAuctionRequest(
-  formData: any
+  formData: any,
 ): CreateAuctionRequestBE {
   return {
     productId: formData.productId,
@@ -284,7 +286,7 @@ export function toBECreateAuctionRequest(
 }
 
 export function toBEPlaceBidRequest(
-  formData: PlaceBidFormFE
+  formData: PlaceBidFormFE,
 ): PlaceBidRequestBE {
   return {
     amount: formData.amount,
@@ -295,13 +297,13 @@ export function toBEPlaceBidRequest(
 
 export function toFEAuctions(
   auctionsBE: AuctionBE[],
-  currentUserId?: string
+  currentUserId?: string,
 ): AuctionFE[] {
   return auctionsBE.map((a) => toFEAuction(a, currentUserId));
 }
 
 export function toFEAuctionCards(
-  auctionsBE: AuctionListItemBE[]
+  auctionsBE: AuctionListItemBE[],
 ): AuctionCardFE[] {
   return auctionsBE.map(toFEAuctionCard);
 }

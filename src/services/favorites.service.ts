@@ -1,5 +1,5 @@
-import { logServiceError } from "@/lib/error-logger";
 import type { ProductCardFE } from "@/types/frontend/product.types";
+import { logServiceError } from "@letitrip/react-library";
 import { apiService } from "./api.service";
 
 interface FavoriteItem {
@@ -18,7 +18,7 @@ class FavoritesService {
   }> {
     try {
       return await apiService.get<{ success: boolean; data: FavoriteItem[] }>(
-        `/api/favorites/list/${type}`
+        `/api/favorites/list/${type}`,
       );
     } catch (error) {
       logServiceError("FavoritesService", "listByType", error as Error);
@@ -39,11 +39,11 @@ class FavoritesService {
   // Remove favorite by type and ID
   async removeByType(
     type: "product" | "shop" | "category" | "auction",
-    itemId: string
+    itemId: string,
   ): Promise<{ success: boolean }> {
     try {
       await apiService.delete<{ success: boolean }>(
-        `/api/favorites/${type}/${itemId}`
+        `/api/favorites/${type}/${itemId}`,
       );
       return { success: true };
     } catch (error) {
@@ -60,16 +60,16 @@ class FavoritesService {
   // Remove by product ID
   async removeByProductId(productId: string): Promise<{ message: string }> {
     return apiService.delete<{ message: string }>(
-      `/favorites/product/${productId}`
+      `/favorites/product/${productId}`,
     );
   }
 
   // Check if product is favorited
   async isFavorited(
-    productId: string
+    productId: string,
   ): Promise<{ isFavorited: boolean; favoriteId?: string }> {
     return apiService.get<{ isFavorited: boolean; favoriteId?: string }>(
-      `/favorites/check/${productId}`
+      `/favorites/check/${productId}`,
     );
   }
 
@@ -96,7 +96,7 @@ class FavoritesService {
       // Validate that parsed data is an array
       if (!Array.isArray(parsed)) {
         console.error(
-          "[Favorites] Invalid favorites data in localStorage, resetting"
+          "[Favorites] Invalid favorites data in localStorage, resetting",
         );
         this.clearGuestFavorites();
         return [];
@@ -104,7 +104,7 @@ class FavoritesService {
 
       // Validate all items are strings
       const validFavorites = parsed.filter(
-        (item) => typeof item === "string" && item.length > 0
+        (item) => typeof item === "string" && item.length > 0,
       );
       if (validFavorites.length !== parsed.length) {
         console.warn("[Favorites] Removed invalid product IDs from favorites");
@@ -115,7 +115,7 @@ class FavoritesService {
     } catch (error) {
       console.error(
         "[Favorites] Failed to parse favorites from localStorage:",
-        error
+        error,
       );
       this.clearGuestFavorites();
       return [];
@@ -188,7 +188,7 @@ class FavoritesService {
         "/favorites/sync",
         {
           productIds: guestFavorites,
-        }
+        },
       );
 
       // Clear guest favorites after sync

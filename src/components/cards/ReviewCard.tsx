@@ -1,7 +1,7 @@
 "use client";
 
-import { formatDate } from "@letitrip/react-library";
 import {
+  formatDate,
   ReviewCard as LibraryReviewCard,
   ReviewCardProps as LibraryReviewCardProps,
 } from "@letitrip/react-library";

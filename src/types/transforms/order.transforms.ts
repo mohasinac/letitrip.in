@@ -4,27 +4,27 @@
  * Functions to convert between Backend (BE) and Frontend (FE) order types.
  */
 
-import { Timestamp } from "firebase/firestore";
 import { safeToISOString } from "@letitrip/react-library";
+import { Timestamp } from "firebase/firestore";
 import {
-  OrderBE,
-  OrderListItemBE,
-  OrderItemBE as OrderItemBE_BE,
-  ShippingAddressBE,
   CreateOrderRequestBE,
+  OrderBE,
+  OrderItemBE as OrderItemBE_BE,
+  OrderListItemBE,
+  ShippingAddressBE,
 } from "../backend/order.types";
 import {
-  OrderFE,
-  OrderCardFE,
-  OrderItemFE,
-  ShippingAddressFE,
-  OrderProgressStep,
   CreateOrderFormFE,
+  OrderCardFE,
+  OrderFE,
+  OrderItemFE,
+  OrderProgressStep,
+  ShippingAddressFE,
 } from "../frontend/order.types";
 import {
   OrderStatus,
-  PaymentStatus,
   PaymentMethod,
+  PaymentStatus,
   ShippingMethod,
 } from "../shared/common.types";
 
@@ -150,8 +150,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status >= OrderStatus.CONFIRMED
           ? "completed"
           : orderBE.status === OrderStatus.CONFIRMED
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.CONFIRMED ? createdAt : null,
       description: "Order confirmed by seller",
     },
@@ -161,8 +161,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status > OrderStatus.PROCESSING
           ? "completed"
           : orderBE.status === OrderStatus.PROCESSING
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.PROCESSING ? createdAt : null,
       description: "Preparing your order",
     },
@@ -172,8 +172,8 @@ function generateProgressSteps(orderBE: OrderBE): OrderProgressStep[] {
         orderBE.status > OrderStatus.SHIPPED
           ? "completed"
           : orderBE.status === OrderStatus.SHIPPED
-            ? "current"
-            : "pending",
+          ? "current"
+          : "pending",
       date: orderBE.status >= OrderStatus.SHIPPED ? createdAt : null,
       description: orderBE.trackingNumber
         ? `Tracking: ${orderBE.trackingNumber}`
@@ -256,7 +256,9 @@ function formatEstimatedDelivery(
  */
 function getDeliveryStatus(orderBE: OrderBE): string {
   if (orderBE.status === OrderStatus.DELIVERED && orderBE.deliveredAt) {
-    return `Delivered on ${formatDate(parseDate(orderBE.deliveredAt) || new Date())}`;
+    return `Delivered on ${formatDate(
+      parseDate(orderBE.deliveredAt) || new Date(),
+    )}`;
   }
   if (orderBE.status === OrderStatus.SHIPPED) {
     return "In transit";

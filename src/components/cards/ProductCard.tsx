@@ -1,9 +1,9 @@
 "use client";
 
-import { formatDiscount } from "@letitrip/react-library";
-import { formatPrice } from "@letitrip/react-library";
 import {
   FavoriteButton,
+  formatDiscount,
+  formatPrice,
   ProductCard as LibraryProductCard,
   OptimizedImage,
   StatusBadge,

@@ -1,7 +1,9 @@
-import { formatRelativeTime } from "@letitrip/react-library";
-import { formatPrice } from "@letitrip/react-library";
 import type { BidData, LiveBidHistoryProps } from "@letitrip/react-library";
-import { LiveBidHistory as LiveBidHistoryBase } from "@letitrip/react-library";
+import {
+  formatPrice,
+  formatRelativeTime,
+  LiveBidHistory as LiveBidHistoryBase,
+} from "@letitrip/react-library";
 import { Clock, TrendingUp, User } from "lucide-react";
 
 /**

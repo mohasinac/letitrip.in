@@ -1,10 +1,9 @@
 "use client";
 
-import { OptimizedImage } from "@letitrip/react-library"
 import { COMPARISON_FIELDS } from "@/constants/comparison";
 import { useComparison } from "@/contexts/ComparisonContext";
-import { formatPrice } from "@letitrip/react-library";
 import type { ComparisonProduct } from "@/services/comparison.service";
+import { formatPrice, OptimizedImage } from "@letitrip/react-library";
 import { ArrowLeft, GitCompare, Heart, ShoppingCart, X } from "lucide-react";
 import Link from "next/link";
 
@@ -36,7 +35,7 @@ export default function ComparePage() {
 
   const getValue = (
     product: ComparisonProduct,
-    key: string
+    key: string,
   ): string | number | boolean | null => {
     const value = product[key as keyof ComparisonProduct];
     if (value === undefined || value === null) return null;
@@ -45,7 +44,7 @@ export default function ComparePage() {
 
   const renderValue = (
     value: string | number | boolean | null,
-    type: string
+    type: string,
   ) => {
     if (value === null || value === undefined) {
       return <span className="text-gray-400">—</span>;

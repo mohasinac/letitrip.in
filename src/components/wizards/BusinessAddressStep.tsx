@@ -1,9 +1,9 @@
 "use client";
 
 import { INDIAN_STATES } from "@/constants/location";
-import { logError } from "@/lib/error-logger";
 import {
   BusinessAddressStep as LibraryBusinessAddressStep,
+  logError,
   type BusinessAddressStepProps as LibraryBusinessAddressStepProps,
 } from "@letitrip/react-library";
 import { MapPin } from "lucide-react";

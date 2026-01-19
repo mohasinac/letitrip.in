@@ -1,7 +1,6 @@
 import { AUCTION_ROUTES, buildUrl } from "@/constants/api-routes";
 import { PAGINATION } from "@/constants/limits";
 import { AUCTION_STATUS } from "@/constants/statuses";
-import { logServiceError } from "@/lib/error-logger";
 import {
   AuctionBE,
   AuctionFiltersBE,
@@ -26,6 +25,7 @@ import {
   toFEAuctions,
   toFEBid,
 } from "@/types/transforms/auction.transforms";
+import { logServiceError } from "@letitrip/react-library";
 import { apiService } from "./api.service";
 
 class AuctionsService {

@@ -1,6 +1,6 @@
-import { MetadataRoute } from "next";
-import { safeToISOString, toISOStringOrDefault } from "@letitrip/react-library";
 import { logError } from "@/lib/firebase-error-logger";
+import { safeToISOString } from "@letitrip/react-library";
+import { MetadataRoute } from "next";
 
 // Note: This is a server component, we can fetch data directly
 async function fetchProducts() {

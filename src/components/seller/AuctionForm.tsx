@@ -1,6 +1,5 @@
 "use client";
 
-import { logError } from "@/lib/error-logger";
 import { auctionsService } from "@/services/auctions.service";
 import { AuctionStatus } from "@/types/shared/common.types";
 import {
@@ -14,6 +13,7 @@ import {
   FormLabel,
   FormSelect,
   FormTextarea,
+  logError,
   RichTextEditor,
   SlugInput,
 } from "@letitrip/react-library";

@@ -1,7 +1,9 @@
 "use client";
 
-import { FormCurrencyInput } from "@letitrip/react-library";
-import { PriceCurrency as Currency } from "@letitrip/react-library";
+import {
+  PriceCurrency as Currency,
+  FormCurrencyInput,
+} from "@letitrip/react-library";
 import { useState } from "react";
 
 /**
@@ -54,7 +56,9 @@ export default function FormCurrencyInputDemo() {
 
     setError("");
     alert(
-      `Price submitted: ${price2} ${currency2}\nFormatted: ${currency2 === "INR" ? "₹" : "$"}${price2?.toLocaleString("en-IN")}`
+      `Price submitted: ${price2} ${currency2}\nFormatted: ${
+        currency2 === "INR" ? "₹" : "$"
+      }${price2?.toLocaleString("en-IN")}`,
     );
   };
 
@@ -95,11 +99,19 @@ export default function FormCurrencyInputDemo() {
                   currency: currency1,
                   formatted:
                     price1 != null
-                      ? `${currency1 === "INR" ? "₹" : currency1 === "USD" ? "$" : currency1 === "EUR" ? "€" : "£"}${price1.toLocaleString("en-IN")}`
+                      ? `${
+                          currency1 === "INR"
+                            ? "₹"
+                            : currency1 === "USD"
+                            ? "$"
+                            : currency1 === "EUR"
+                            ? "€"
+                            : "£"
+                        }${price1.toLocaleString("en-IN")}`
                       : null,
                 },
                 null,
-                2
+                2,
               )}
             </pre>
           </div>
@@ -150,9 +162,7 @@ export default function FormCurrencyInputDemo() {
 
         {/* Example 3: Currency Selector */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">
-            With Currency Selector
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">With Currency Selector</h2>
 
           <FormCurrencyInput
             label="International Price"
@@ -193,9 +203,7 @@ export default function FormCurrencyInputDemo() {
 
         {/* Example 5: Negative Values */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Allow Negative Values
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">Allow Negative Values</h2>
 
           <div className="space-y-4">
             <FormCurrencyInput

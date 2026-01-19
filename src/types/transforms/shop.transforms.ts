@@ -2,11 +2,11 @@
  * SHOP TYPE TRANSFORMATIONS
  */
 
-import { Timestamp } from "firebase/firestore";
-import { ShopBE, CreateShopRequestBE } from "../backend/shop.types";
-import { ShopFE, ShopFormFE, ShopCardFE } from "../frontend/shop.types";
-import { Status } from "../shared/common.types";
 import { safeToISOString } from "@letitrip/react-library";
+import { Timestamp } from "firebase/firestore";
+import { CreateShopRequestBE, ShopBE } from "../backend/shop.types";
+import { ShopCardFE, ShopFE, ShopFormFE } from "../frontend/shop.types";
+import { Status } from "../shared/common.types";
 
 function parseDate(date: Timestamp | string): Date {
   return date instanceof Timestamp ? date.toDate() : new Date(date);

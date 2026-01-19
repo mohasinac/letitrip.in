@@ -2,13 +2,13 @@
 
 import CategorySelectorWithCreate from "@/components/seller/CategorySelectorWithCreate";
 import ShopSelector from "@/components/seller/ShopSelector";
-import { logError } from "@/lib/error-logger";
 import { mediaService } from "@/services/media.service";
 import {
   AuctionRequiredInfoStep,
   FormInput,
   FormLabel,
   FormSelect,
+  logError,
   SlugInput,
 } from "@letitrip/react-library";
 import Image from "next/image";

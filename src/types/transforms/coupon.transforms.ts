@@ -4,22 +4,22 @@
  * Convert between backend and frontend coupon types
  */
 
+import { safeToISOString } from "@letitrip/react-library";
 import type {
-  CouponBE,
-  TieredDiscountBE,
   BogoConfigBE,
+  CouponBE,
   CreateCouponRequestBE,
+  TieredDiscountBE,
   UpdateCouponRequestBE,
 } from "../backend/coupon.types";
 import type {
-  CouponFE,
+  BogoConfigFE,
   CouponCardFE,
+  CouponFE,
   CouponFormFE,
   TieredDiscountFE,
-  BogoConfigFE,
 } from "../frontend/coupon.types";
 import { CouponStatus } from "../shared/common.types";
-import { safeToISOString } from "@letitrip/react-library";
 
 /**
  * Format currency amount

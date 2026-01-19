@@ -129,18 +129,18 @@ function getValidationErrors(items: CartItemFE[]): string[] {
     errors.push(
       `${unavailableItems.length} item${
         unavailableItems.length > 1 ? "s" : ""
-      } unavailable`
+      } unavailable`,
     );
   }
 
   const overQuantityItems = items.filter(
-    (item) => item.quantity > item.maxQuantity
+    (item) => item.quantity > item.maxQuantity,
   );
   if (overQuantityItems.length > 0) {
     errors.push(
       `${overQuantityItems.length} item${
         overQuantityItems.length > 1 ? "s exceed" : " exceeds"
-      } available stock`
+      } available stock`,
     );
   }
 
@@ -158,7 +158,7 @@ function getValidationWarnings(items: CartItemFE[]): string[] {
     warnings.push(
       `${lowStockItems.length} item${
         lowStockItems.length > 1 ? "s have" : " has"
-      } low stock`
+      } low stock`,
     );
   }
 
@@ -237,7 +237,7 @@ export function toFECartSummary(cartFE: CartFE): CartSummaryFE {
  * Transform Frontend Add to Cart Form to Backend Request
  */
 export function toBEAddToCartRequest(
-  formData: AddToCartFormFE
+  formData: AddToCartFormFE,
 ): AddToCartRequestBE {
   return {
     productId: formData.productId,

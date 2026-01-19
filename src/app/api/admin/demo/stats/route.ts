@@ -207,7 +207,7 @@ export async function GET() {
         summary: null,
         error: error.message,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 }

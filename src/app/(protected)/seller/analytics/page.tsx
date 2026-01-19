@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import ShopSelector from "@/components/seller/ShopSelector";
-import { DateTimePicker } from '@letitrip/react-library';
-import { FormLabel } from "@letitrip/react-library";
 import AnalyticsOverview from "@/components/seller/AnalyticsOverview";
 import SalesChart from "@/components/seller/SalesChart";
+import ShopSelector from "@/components/seller/ShopSelector";
 import TopProducts from "@/components/seller/TopProducts";
+import { useAuth } from "@/contexts/AuthContext";
 import { analyticsService } from "@/services/analytics.service";
-import { toDateInputValue } from "@letitrip/react-library";
-import { useLoadingState } from "@letitrip/react-library";
+import {
+  DateTimePicker,
+  FormLabel,
+  toDateInputValue,
+  useLoadingState,
+} from "@letitrip/react-library";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface AnalyticsData {
   revenue: { total: number; average: number; trend: number };

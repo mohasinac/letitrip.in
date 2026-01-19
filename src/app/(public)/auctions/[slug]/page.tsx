@@ -6,7 +6,6 @@ import { AuctionSellerInfo } from "@/components/auction/AuctionSellerInfo";
 import { SimilarAuctions } from "@/components/auction/SimilarAuctions";
 import { useAuth } from "@/contexts/AuthContext";
 import { logError } from "@/lib/firebase-error-logger";
-import { formatINR } from "@letitrip/react-library";
 import { auctionsService } from "@/services/auctions.service";
 import { shopsService } from "@/services/shops.service";
 import type {
@@ -19,6 +18,7 @@ import { AuctionStatus } from "@/types/shared/common.types";
 import {
   DateDisplay,
   ErrorMessage,
+  formatINR,
   FormInput,
   OptimizedImage,
   Price,
