@@ -44,3 +44,9 @@ export type {
   SearchResultsProps,
   SearchResultTab,
 } from "./SearchResults";
+
+export { SearchSuggestions } from "./SearchSuggestions";
+export type {
+  SuggestionItem,
+  SearchSuggestionsProps,
+} from "./SearchSuggestions";
