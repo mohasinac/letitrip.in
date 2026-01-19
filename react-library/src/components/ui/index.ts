@@ -2,11 +2,18 @@
 export { Button } from "./Button";
 export type { ButtonProps } from "./Button";
 
+export { Badge } from "./Badge";
+export type { BadgeProps } from "./Badge";
+
 export { Card, CardSection } from "./Card";
 export type { CardProps, CardSectionProps } from "./Card";
 
 export { BaseCard } from "./BaseCard";
-export type { ActionButton, Badge, BaseCardProps } from "./BaseCard";
+export type {
+  ActionButton,
+  Badge as BaseCardBadge,
+  BaseCardProps,
+} from "./BaseCard";
 
 export { SectionCard } from "./SectionCard";
 export type { SectionCardProps } from "./SectionCard";
@@ -88,6 +95,13 @@ export type { PendingUploadsWarningProps } from "./PendingUploadsWarning";
 // Icons & Accessibility
 export { DynamicIcon } from "./DynamicIcon";
 export type { DynamicIconProps } from "./DynamicIcon";
+
+// Typography
+export { Heading } from "./Heading";
+export type { HeadingProps } from "./Heading";
+
+export { Text } from "./Text";
+export type { TextProps } from "./Text";
 
 export {
   Announcer,

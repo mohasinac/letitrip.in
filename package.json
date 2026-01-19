@@ -23,6 +23,7 @@
     "test:coverage": "node --max-old-space-size=8192 node_modules/jest/bin/jest.js --coverage --maxWorkers=25%",
     "test:fast": "jest --maxWorkers=75% --bail",
     "type-check": "tsc --noEmit",
+    "create:directories": "powershell -ExecutionPolicy Bypass -File ./scripts/setup/create-directories.ps1",
     "clean": "rm -rf .next node_modules",
     "clean:logs": "rm -rf logs/*.log",
     "setup:vercel": "node scripts/setup/setup-vercel-env.js",
