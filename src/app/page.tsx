@@ -1,65 +1,13 @@
-"use client";
-
-import { AuctionsSection } from "@/components/homepage/AuctionsSection";
-import { FeaturedBlogsSection } from "@/components/homepage/FeaturedBlogsSection";
-import { FeaturedCategoriesSection } from "@/components/homepage/FeaturedCategoriesSection";
-import { FeaturedShopsSection } from "@/components/homepage/FeaturedShopsSection";
-import { HeroSection } from "@/components/homepage/HeroSection";
-import { ProductsSection } from "@/components/homepage/ProductsSection";
-import { RecentReviewsSection } from "@/components/homepage/RecentReviewsSection";
-import { ValueProposition } from "@/components/homepage/ValueProposition";
-import { WelcomeHero } from "@/components/homepage/WelcomeHero";
-import { RecentlyViewedWidget } from "@/components/products/RecentlyViewedWidget";
-import { FAQSection, useIsMobile } from "@letitrip/react-library";
-
-export default function Home() {
-  const isMobile = useIsMobile();
-
+export default function HomePage() {
   return (
-    <main
-      id="home-page"
-      className="container mx-auto px-3 md:px-4 py-6 md:py-8"
-    >
-      <div className="space-y-6 md:space-y-8">
-        {/* Welcome Heading - Always shown */}
-        <WelcomeHero />
-
-        {/* Hero Section */}
-        <HeroSection enabled={true} />
-
-        {/* Recently Viewed Products - Client-side only */}
-        <RecentlyViewedWidget title="Continue Browsing" />
-
-        {/* Value Proposition */}
-        <ValueProposition />
-
-        {/* Products Section (Latest + Featured merged) */}
-        <ProductsSection latestLimit={10} featuredLimit={10} />
-
-        {/* Auctions Section (Hot + Featured merged) */}
-        <AuctionsSection hotLimit={10} featuredLimit={10} />
-
-        {/* Featured Categories */}
-        <FeaturedCategoriesSection categoryLimit={6} itemsPerCategory={10} />
-
-        {/* Featured Shops */}
-        <FeaturedShopsSection shopLimit={4} itemsPerShop={10} />
-
-        {/* Recent Reviews */}
-        <RecentReviewsSection limit={10} />
-
-        {/* Featured Blogs */}
-        <FeaturedBlogsSection limit={10} />
-
-        {/* FAQ Section - Always shown */}
-        <section id="faq-section" className="py-6 md:py-8">
-          <FAQSection
-            title="Frequently Asked Questions"
-            description="Find answers to common questions about our platform"
-            showSearch={false}
-            maxItemsToShow={isMobile ? 5 : 10}
-          />
-        </section>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="text-center px-4">
+        <h1 className="text-6xl md:text-8xl font-bold text-gray-900 mb-4">
+          Welcome to <span className="text-indigo-600">LetItRip</span>
+        </h1>
+        <p className="text-xl md:text-2xl text-gray-600">
+          Your journey starts here
+        </p>
       </div>
     </main>
   );
