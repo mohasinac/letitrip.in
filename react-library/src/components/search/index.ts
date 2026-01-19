@@ -39,4 +39,8 @@ export type {
 } from "./SearchFilters";
 
 export { SearchResults } from "./SearchResults";
-export type { SearchResultItem, SearchResultsProps } from "./SearchResults";
+export type {
+  SearchResultItem,
+  SearchResultsProps,
+  SearchResultTab,
+} from "./SearchResults";

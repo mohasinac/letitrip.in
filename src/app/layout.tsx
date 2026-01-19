@@ -1,28 +1,28 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import "./globals.css";
-import { Providers } from "./providers";
 import {
   AdvertisementBanner,
-  Header,
   Footer,
+  Header,
   MobileNavigation,
 } from "@letitrip/react-library";
 import {
-  Home,
-  Package,
-  ShoppingCart,
-  User,
-  Gavel,
-  Store,
-  ShoppingBag,
-  TruckIcon,
   CreditCard,
+  Gavel,
   Headphones,
-  Search,
+  Home,
   Menu,
+  Package,
+  Search,
+  ShoppingBag,
+  ShoppingCart,
+  Store,
+  TruckIcon,
+  User,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
+import "./globals.css";
+import { Providers } from "./providers";
 
 // Type-safe Link wrapper
 const LinkWrapper: ComponentType<{

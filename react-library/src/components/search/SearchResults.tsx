@@ -1,10 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "../../utils/cn";
 
 export interface SearchResultItem {
   id: string;
   [key: string]: any;
 }
+
+export type SearchResultTab = "all" | "products" | "shops" | "categories";
 
 export interface SearchResultsProps<
   T extends SearchResultItem = SearchResultItem,
@@ -22,6 +24,11 @@ export interface SearchResultsProps<
   onShopClick?: (shop: T) => void;
   onCategoryClick?: (category: T) => void;
 
+  // Tabbed interface
+  enableTabs?: boolean;
+  defaultTab?: SearchResultTab;
+  onTabChange?: (tab: SearchResultTab) => void;
+
   // Injection props
   renderProduct?: (product: T) => ReactNode;
   renderShop?: (shop: T) => ReactNode;
@@ -34,19 +41,22 @@ export interface SearchResultsProps<
 /**
  * SearchResults Component (Library Version)
  *
- * Framework-agnostic search results display with pagination and empty states.
+ * Framework-agnostic search results display with pagination, tabbed interface, and empty states.
  * Supports products, shops, and categories via render props.
  *
  * Features:
  * - Multiple result types (products, shops, categories)
+ * - Tabbed interface to filter by result type
  * - Loading state
  * - Empty state
  * - Pagination
  * - Results summary
  * - Flexible rendering via injection
+ * - Dark mode support
  *
  * @example
  * ```tsx
+ * // Without tabs (default stacked layout)
  * <SearchResults
  *   products={products}
  *   shops={shops}
@@ -60,8 +70,21 @@ export interface SearchResultsProps<
  *   renderProduct={(product) => <ProductCard {...product} />}
  *   renderShop={(shop) => <ShopCard {...shop} />}
  *   renderCategory={(category) => <CategoryCard {...category} />}
- *   emptyState={<EmptyState />}
- *   loadingIcon={<Loader2 className="animate-spin" />}
+ * />
+ *
+ * // With tabbed interface
+ * <SearchResults
+ *   products={products}
+ *   shops={shops}
+ *   categories={categories}
+ *   total={total}
+ *   query={query}
+ *   enableTabs={true}
+ *   defaultTab="all"
+ *   onTabChange={(tab) => console.log('Tab changed:', tab)}
+ *   renderProduct={(product) => <ProductCard {...product} />}
+ *   renderShop={(shop) => <ShopCard {...shop} />}
+ *   renderCategory={(category) => <CategoryCard {...category} />}
  * />
  * ```
  */
@@ -78,6 +101,9 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
   onProductClick,
   onShopClick,
   onCategoryClick,
+  enableTabs = false,
+  defaultTab = "all",
+  onTabChange,
   renderProduct,
   renderShop,
   renderCategory,
@@ -85,11 +111,23 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
   loadingIcon,
   className,
 }: SearchResultsProps<T>) {
+  const [activeTab, setActiveTab] = useState<SearchResultTab>(defaultTab);
+
   const totalPages = Math.ceil(total / pageSize);
   const hasProducts = products.length > 0;
   const hasShops = shops.length > 0;
   const hasCategories = categories.length > 0;
   const hasResults = hasProducts || hasShops || hasCategories;
+
+  const handleTabChange = (tab: SearchResultTab) => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+  };
+
+  // Determine what to show based on active tab
+  const showProducts = activeTab === "all" || activeTab === "products";
+  const showShops = activeTab === "all" || activeTab === "shops";
+  const showCategories = activeTab === "all" || activeTab === "categories";
 
   // Loading state
   if (loading) {
@@ -128,20 +166,82 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
       {/* Results Summary */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Search Results</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Search Results
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Found {total} {total === 1 ? "result" : "results"} for &quot;{query}
             &quot;
           </p>
         </div>
       </div>
 
+      {/* Tabs */}
+      {enableTabs && (
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <nav className="flex space-x-8" aria-label="Search result tabs">
+            <button
+              onClick={() => handleTabChange("all")}
+              className={cn(
+                "pb-4 px-1 border-b-2 font-medium text-sm transition-colors",
+                activeTab === "all"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600",
+              )}
+            >
+              All ({total})
+            </button>
+            {hasProducts && (
+              <button
+                onClick={() => handleTabChange("products")}
+                className={cn(
+                  "pb-4 px-1 border-b-2 font-medium text-sm transition-colors",
+                  activeTab === "products"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600",
+                )}
+              >
+                Products ({products.length})
+              </button>
+            )}
+            {hasShops && (
+              <button
+                onClick={() => handleTabChange("shops")}
+                className={cn(
+                  "pb-4 px-1 border-b-2 font-medium text-sm transition-colors",
+                  activeTab === "shops"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600",
+                )}
+              >
+                Shops ({shops.length})
+              </button>
+            )}
+            {hasCategories && (
+              <button
+                onClick={() => handleTabChange("categories")}
+                className={cn(
+                  "pb-4 px-1 border-b-2 font-medium text-sm transition-colors",
+                  activeTab === "categories"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600",
+                )}
+              >
+                Categories ({categories.length})
+              </button>
+            )}
+          </nav>
+        </div>
+      )}
+
       {/* Categories */}
-      {hasCategories && renderCategory && (
+      {showCategories && hasCategories && renderCategory && (
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Categories ({categories.length})
-          </h3>
+          {!enableTabs && (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Categories ({categories.length})
+            </h3>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {categories.map((category) => (
               <div
@@ -157,11 +257,13 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
       )}
 
       {/* Shops */}
-      {hasShops && renderShop && (
+      {showShops && hasShops && renderShop && (
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Shops ({shops.length})
-          </h3>
+          {!enableTabs && (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Shops ({shops.length})
+            </h3>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {shops.map((shop) => (
               <div
@@ -177,11 +279,13 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
       )}
 
       {/* Products */}
-      {hasProducts && renderProduct && (
+      {showProducts && hasProducts && renderProduct && (
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Products ({products.length})
-          </h3>
+          {!enableTabs && (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Products ({products.length})
+            </h3>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {products.map((product) => (
               <div
@@ -248,7 +352,7 @@ export function SearchResults<T extends SearchResultItem = SearchResultItem>({
       )}
 
       {/* Results per page info */}
-      <div className="text-center text-sm text-gray-500">
+      <div className="text-center text-sm text-gray-500 dark:text-gray-400">
         Showing {(currentPage - 1) * pageSize + 1}-
         {Math.min(currentPage * pageSize, total)} of {total} results
       </div>
