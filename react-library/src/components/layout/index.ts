@@ -25,3 +25,24 @@ export type { CardGridProps } from "./CardGrid";
 
 export { Breadcrumb } from "./Breadcrumb";
 export type { BreadcrumbItem, BreadcrumbProps } from "./Breadcrumb";
+
+export { Header } from "./Header";
+export type {
+  HeaderIcons,
+  HeaderLogo,
+  HeaderNavItem,
+  HeaderProps,
+  HeaderUser,
+} from "./Header";
+
+export { Footer } from "./Footer";
+export type {
+  FooterLink,
+  FooterLinkSection,
+  FooterLogo,
+  FooterProps,
+  FooterSocialLink,
+} from "./Footer";
+
+export { MobileNavigation } from "./MobileNavigation";
+export type { MobileNavItem, MobileNavigationProps } from "./MobileNavigation";
