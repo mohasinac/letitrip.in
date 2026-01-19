@@ -1,4 +1,3 @@
-
 /**
  * AuctionCard - Pure React Component
  *
@@ -478,7 +477,7 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+        <div className="absolute top-2 right-2 flex flex-col gap-2 z-30">
           {/* Admin Actions */}
           {isAdmin && (
             <>
@@ -739,4 +738,3 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
 
 // Memoized export for performance optimization
 export default React.memo(AuctionCard);
-

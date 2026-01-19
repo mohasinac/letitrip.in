@@ -1,4 +1,3 @@
-
 /**
  * ProductCard - Pure React Component
  *
@@ -425,7 +424,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons - Public variant */}
         {!isAdminOrSeller && FavoriteButtonComponent && (
-          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute top-2 right-2 flex flex-col gap-2 z-30">
             <FavoriteButtonComponent
               itemId={id}
               itemType="product"
@@ -473,10 +472,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Add to Cart Overlay - Public only */}
         {!isAdminOrSeller && onAddToCart && inStock && (
-          <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute bottom-0 left-0 right-0 p-2 z-30">
             <button
               onClick={handleAddToCart}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2 font-medium transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2 font-medium transition-colors shadow-md"
             >
               <ShoppingCart className="w-4 h-4" />
               Add to Cart
@@ -593,7 +592,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
             <LinkComponent
               href={`/products/${slug}`}
-              target="_blank"
               onClick={(e) => e.stopPropagation()}
               className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-purple-700 flex items-center justify-center gap-1"
             >
@@ -609,4 +607,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
 // Memoized export for performance optimization
 export default React.memo(ProductCard);
-

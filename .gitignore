@@ -88,5 +88,5 @@ test-*-output.txt
 test-results*.txt
 
 # Workspace projects with own repos
-/react-library/
-/tests/
+/react-library
+/tests
