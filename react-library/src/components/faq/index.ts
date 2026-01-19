@@ -7,3 +7,5 @@
 
 export { default as FAQItem } from "./FAQItem";
 export { default as FAQSection } from "./FAQSection";
+export { FAQAccordion } from "./FAQAccordion";
+export type { FAQItem as FAQItemType, FAQCategory, FAQAccordionProps } from "./FAQAccordion";
