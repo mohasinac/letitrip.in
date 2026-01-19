@@ -56,6 +56,7 @@ export interface CartFE {
   discount: number;
   tax: number;
   total: number;
+  couponCode: string | null;
   createdAt: Date;
   updatedAt: Date;
   expiresAt: Date | null;

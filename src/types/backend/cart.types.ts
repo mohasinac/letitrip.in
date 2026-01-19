@@ -42,6 +42,7 @@ export interface CartBE {
   discount: number;
   tax: number;
   total: number;
+  couponCode: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   expiresAt: Timestamp | null;

@@ -1,7 +1,7 @@
 "use client";
 
 import { logError } from "@/lib/firebase-error-logger";
-import { AuthResponse, authService } from "@/services/auth.service";
+import { authService } from "@/services/auth.service";
 import { UserFE } from "@/types/frontend/user.types";
 import React, {
   useCallback,
@@ -12,10 +12,6 @@ import React, {
 } from "react";
 import { AuthActions, AuthActionsContext } from "./AuthActionsContext";
 import { AuthState, AuthStateContext } from "./AuthStateContext";
-
-interface GoogleAuthResponse extends AuthResponse {
-  isNewUser: boolean;
-}
 
 /**
  * AuthProvider manages authentication state and provides both state and actions
@@ -94,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const delay = baseRetryDelay * Math.pow(2, retryCountRef.current - 1);
 
           console.log(
-            `Token refresh failed, retrying in ${delay}ms (attempt ${retryCountRef.current}/${maxRetries})`
+            `Token refresh failed, retrying in ${delay}ms (attempt ${retryCountRef.current}/${maxRetries})`,
           );
 
           await new Promise((resolve) => setTimeout(resolve, delay));
@@ -102,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           // Max retries exceeded, log out user
           console.error(
-            "Token refresh failed after max retries, logging out user"
+            "Token refresh failed after max retries, logging out user",
           );
           setUser(null);
           retryCountRef.current = 0;
@@ -110,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    []
+    [],
   );
 
   /**
@@ -176,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login: async (
         email: string,
         password: string,
-        rememberMe: boolean = false
+        rememberMe: boolean = false,
       ) => {
         try {
           const response = await authService.login({
@@ -190,8 +186,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Schedule background token refresh
           scheduleTokenRefresh();
-
-          return response;
         } catch (error) {
           setUser(null);
           setLoading(false);
@@ -205,7 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           displayName?: string;
           email?: string;
           photoURL?: string;
-        }
+        },
       ) => {
         try {
           const response = await authService.loginWithGoogle({
@@ -218,8 +212,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Schedule background token refresh
           scheduleTokenRefresh();
-
-          return response;
         } catch (error) {
           setUser(null);
           setLoading(false);
@@ -241,8 +233,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Schedule background token refresh
           scheduleTokenRefresh();
-
-          return response;
         } catch (error) {
           setUser(null);
           setLoading(false);
@@ -262,10 +252,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
 
       refreshUser: async () => {
-        return refreshUserWithRetry(false);
+        await refreshUserWithRetry(false);
       },
     }),
-    [scheduleTokenRefresh, clearRefreshTimer, refreshUserWithRetry]
+    [scheduleTokenRefresh, clearRefreshTimer, refreshUserWithRetry],
   );
 
   // Auth state - computed from current user

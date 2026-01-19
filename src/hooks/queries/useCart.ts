@@ -27,7 +27,7 @@ import {
  * const { data: cart, isLoading } = useCart();
  */
 export function useCart(
-  options?: Omit<UseQueryOptions<CartFE>, "queryKey" | "queryFn">
+  options?: Omit<UseQueryOptions<CartFE>, "queryKey" | "queryFn">,
 ) {
   return useQuery<CartFE>({
     queryKey: queryKeys.cart.current(),
@@ -49,7 +49,7 @@ export function useCart(
  * addToCart.mutate({ productId: '123', quantity: 1 });
  */
 export function useAddToCart(
-  options?: UseMutationOptions<CartFE, Error, AddToCartFormFE>
+  options?: UseMutationOptions<CartFE, Error, AddToCartFormFE>,
 ) {
   const queryClient = useQueryClient();
 
@@ -62,7 +62,7 @@ export function useAddToCart(
 
       // Snapshot previous value
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       // Optimistically update cart
@@ -78,10 +78,10 @@ export function useAddToCart(
               productSlug: "",
               quantity: newItem.quantity,
               price: 0,
-              imageUrl: "",
+              productImage: "",
               sku: "",
               variantId: newItem.variantId || null,
-              variantName: newItem.variantName || null,
+              variantName: null,
               maxQuantity: 100,
               subtotal: 0,
               discount: 0,
@@ -111,7 +111,7 @@ export function useAddToCart(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },
@@ -134,7 +134,7 @@ export function useUpdateCartItem(
     CartFE,
     Error,
     { itemId: string; quantity: number }
-  >
+  >,
 ) {
   const queryClient = useQueryClient();
 
@@ -146,7 +146,7 @@ export function useUpdateCartItem(
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.current() });
 
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       if (previousCart) {
@@ -183,7 +183,7 @@ export function useUpdateCartItem(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },
@@ -201,7 +201,7 @@ export function useUpdateCartItem(
  * @returns Mutation result
  */
 export function useRemoveFromCart(
-  options?: UseMutationOptions<CartFE, Error, string>
+  options?: UseMutationOptions<CartFE, Error, string>,
 ) {
   const queryClient = useQueryClient();
 
@@ -212,7 +212,7 @@ export function useRemoveFromCart(
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.current() });
 
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       if (previousCart) {
@@ -231,7 +231,7 @@ export function useRemoveFromCart(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },
@@ -249,7 +249,7 @@ export function useRemoveFromCart(
  * @returns Mutation result
  */
 export function useClearCart(
-  options?: UseMutationOptions<{ message: string }, Error, void>
+  options?: UseMutationOptions<{ message: string }, Error, void>,
 ) {
   const queryClient = useQueryClient();
 
@@ -260,7 +260,7 @@ export function useClearCart(
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.current() });
 
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       if (previousCart) {
@@ -286,7 +286,7 @@ export function useClearCart(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },
@@ -304,7 +304,7 @@ export function useClearCart(
  * @returns Mutation result
  */
 export function useApplyCoupon(
-  options?: UseMutationOptions<CartFE, Error, string>
+  options?: UseMutationOptions<CartFE, Error, string>,
 ) {
   const queryClient = useQueryClient();
 
@@ -315,7 +315,7 @@ export function useApplyCoupon(
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.current() });
 
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       if (previousCart) {
@@ -323,7 +323,7 @@ export function useApplyCoupon(
         const discount = Math.round(previousCart.subtotal * 0.1 * 100) / 100;
         const total =
           Math.round(
-            (previousCart.subtotal + previousCart.tax - discount) * 100
+            (previousCart.subtotal + previousCart.tax - discount) * 100,
           ) / 100;
 
         const optimisticCart: CartFE = {
@@ -343,7 +343,7 @@ export function useApplyCoupon(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },
@@ -361,7 +361,7 @@ export function useApplyCoupon(
  * @returns Mutation result
  */
 export function useRemoveCoupon(
-  options?: UseMutationOptions<CartFE, Error, void>
+  options?: UseMutationOptions<CartFE, Error, void>,
 ) {
   const queryClient = useQueryClient();
 
@@ -372,7 +372,7 @@ export function useRemoveCoupon(
       await queryClient.cancelQueries({ queryKey: queryKeys.cart.current() });
 
       const previousCart = queryClient.getQueryData<CartFE>(
-        queryKeys.cart.current()
+        queryKeys.cart.current(),
       );
 
       if (previousCart) {
@@ -396,7 +396,7 @@ export function useRemoveCoupon(
       if (context?.previousCart) {
         queryClient.setQueryData(
           queryKeys.cart.current(),
-          context.previousCart
+          context.previousCart,
         );
       }
     },

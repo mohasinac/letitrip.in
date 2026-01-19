@@ -1,6 +1,6 @@
 {
   "name": "@letitrip/react-library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reusable React components and utilities for Letitrip",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -49,17 +49,15 @@
     "build:full": "tsc && vite build",
     "build:analyze": "vite build && node scripts/analyze-bundle.mjs",
     "build:storybook": "storybook build",
-    "lint": "eslint src --ext ts,tsx --max-warnings 0",
-    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "storybook": "storybook dev -p 6006",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run lint && npm run type-check && npm test && npm run build",
-    "preversion": "npm run lint && npm run type-check && npm test",
-    "postversion": "git push && git push --tags"
+    "prepublishOnly": "npm run lint && npm run type-check && npm test && npm run build"
   },
   "repository": {
     "type": "git",
