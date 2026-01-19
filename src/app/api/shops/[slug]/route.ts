@@ -1,16 +1,16 @@
 /**
  * Shop Details API Routes
- * 
+ *
  * Handles fetching and updating individual shop details by slug.
- * 
+ *
  * @route GET /api/shops/[slug] - Get shop details
  * @route PUT /api/shops/[slug] - Update shop (Seller/Admin only)
- * 
+ *
  * @example
  * ```tsx
  * // Get shop details
  * const response = await fetch('/api/shops/my-shop');
- * 
+ *
  * // Update shop
  * const response = await fetch('/api/shops/my-shop', {
  *   method: 'PUT',
@@ -22,18 +22,17 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  query,
-  where,
   getDocs,
-  updateDoc,
-  serverTimestamp,
-  doc,
   increment,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{
@@ -43,30 +42,21 @@ interface RouteContext {
 
 /**
  * GET /api/shops/[slug]
- * 
+ *
  * Get shop details by slug.
  * Increments view count asynchronously.
  */
-export async function GET(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = await params;
 
     // Query shop by slug
-    const shopQuery = query(
-      collection(db, "shops"),
-      where("slug", "==", slug)
-    );
+    const shopQuery = query(collection(db, "shops"), where("slug", "==", slug));
 
     const querySnapshot = await getDocs(shopQuery);
 
     if (querySnapshot.empty) {
-      return NextResponse.json(
-        { error: "Shop not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Shop not found" }, { status: 404 });
     }
 
     const shopDoc = querySnapshot.docs[0];
@@ -87,13 +77,13 @@ export async function GET(
         success: true,
         data: shopData,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching shop:", error);
     return NextResponse.json(
       { error: "Failed to fetch shop", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -124,10 +114,10 @@ interface UpdateShopRequest {
 
 /**
  * PUT /api/shops/[slug]
- * 
+ *
  * Update shop details (Seller/Admin only).
  * Owner or admin can update. Cannot update: ownerId, slug, counters, rating.
- * 
+ *
  * Request Body:
  * - name: Shop name
  * - description: Shop description
@@ -140,27 +130,18 @@ interface UpdateShopRequest {
  * - socialLinks: Social media links
  * - status: Shop status (admin only)
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: RouteContext
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const { slug } = await params;
     const body: UpdateShopRequest = await request.json();
 
     // Query shop by slug
-    const shopQuery = query(
-      collection(db, "shops"),
-      where("slug", "==", slug)
-    );
+    const shopQuery = query(collection(db, "shops"), where("slug", "==", slug));
 
     const querySnapshot = await getDocs(shopQuery);
 
     if (querySnapshot.empty) {
-      return NextResponse.json(
-        { error: "Shop not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Shop not found" }, { status: 404 });
     }
 
     const shopDoc = querySnapshot.docs[0];
@@ -178,10 +159,13 @@ export async function PUT(
     if (body.description !== undefined) updates.description = body.description;
     if (body.logo !== undefined) updates.logo = body.logo;
     if (body.banner !== undefined) updates.banner = body.banner;
-    if (body.categorySlug !== undefined) updates.categorySlug = body.categorySlug;
+    if (body.categorySlug !== undefined)
+      updates.categorySlug = body.categorySlug;
     if (body.address) updates.address = body.address;
-    if (body.contactEmail !== undefined) updates.contactEmail = body.contactEmail;
-    if (body.contactPhone !== undefined) updates.contactPhone = body.contactPhone;
+    if (body.contactEmail !== undefined)
+      updates.contactEmail = body.contactEmail;
+    if (body.contactPhone !== undefined)
+      updates.contactPhone = body.contactPhone;
     if (body.socialLinks) updates.socialLinks = body.socialLinks;
     if (body.status) updates.status = body.status;
 
@@ -201,7 +185,7 @@ export async function PUT(
         data: updatedData,
         message: "Shop updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating shop:", error);
@@ -209,13 +193,13 @@ export async function PUT(
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to update shop" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update shop", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

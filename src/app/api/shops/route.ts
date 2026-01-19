@@ -1,16 +1,16 @@
 /**
  * Shops API Routes
- * 
+ *
  * Handles listing and creating shops.
- * 
+ *
  * @route GET /api/shops - List shops with filters
  * @route POST /api/shops - Create shop (Seller only)
- * 
+ *
  * @example
  * ```tsx
  * // List shops
  * const response = await fetch('/api/shops?category=electronics&featured=true');
- * 
+ *
  * // Create shop
  * const response = await fetch('/api/shops', {
  *   method: 'POST',
@@ -24,29 +24,29 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  startAfter,
-  Query,
   DocumentData,
+  Query,
+  addDoc,
+  collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  startAfter,
+  where,
 } from "firebase/firestore";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/shops
- * 
+ *
  * List shops with filters and cursor-based pagination.
- * 
+ *
  * Query Parameters:
  * - category: Filter by category slug
  * - featured: Filter featured shops (true/false)
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sort") || "newest";
     const pageLimit = Math.min(
       parseInt(searchParams.get("limit") || "20"),
-      100
+      100,
     );
     const cursor = searchParams.get("cursor");
 
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const shopsQuery: Query<DocumentData> = query(
       collection(db, "shops"),
-      ...constraints
+      ...constraints,
     );
 
     const querySnapshot = await getDocs(shopsQuery);
@@ -159,13 +159,13 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error fetching shops:", error);
     return NextResponse.json(
       { error: "Failed to fetch shops", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -197,10 +197,10 @@ interface CreateShopRequest {
 
 /**
  * POST /api/shops
- * 
+ *
  * Create a new shop (Seller only).
  * Requires authentication and seller role.
- * 
+ *
  * Request Body:
  * - name: Shop name (required)
  * - slug: URL-friendly slug (required, unique)
@@ -235,21 +235,21 @@ export async function POST(request: NextRequest) {
     if (!name || !slug || !ownerId) {
       return NextResponse.json(
         { error: "Name, slug, and ownerId are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if slug already exists
     const existingShopQuery = query(
       collection(db, "shops"),
-      where("slug", "==", slug)
+      where("slug", "==", slug),
     );
     const existingShops = await getDocs(existingShopQuery);
 
     if (!existingShops.empty) {
       return NextResponse.json(
         { error: "Shop with this slug already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -267,22 +267,22 @@ export async function POST(request: NextRequest) {
       contactEmail: contactEmail || null,
       contactPhone: contactPhone || null,
       socialLinks: socialLinks || {},
-      
+
       // Status and metrics
       featured: false,
       verified: false,
       status: "active",
-      
+
       // Counters
       totalProducts: 0,
       totalAuctions: 0,
       totalSales: 0,
       totalRevenue: 0,
-      
+
       // Rating
       rating: 0,
       reviewCount: 0,
-      
+
       // Timestamps
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -299,21 +299,21 @@ export async function POST(request: NextRequest) {
         },
         message: "Shop created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating shop:", error);
-    
+
     if (error.code === "permission-denied") {
       return NextResponse.json(
         { error: "Insufficient permissions to create shop" },
-        { status: 403 }
+        { status: 403 },
       );
     }
-    
+
     return NextResponse.json(
       { error: "Failed to create shop", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
