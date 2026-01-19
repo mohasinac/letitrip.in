@@ -1,13 +1,13 @@
 /**
  * API Endpoints
- * 
+ *
  * Centralized API endpoint paths for consistent API calls.
  * Use these constants instead of hardcoded strings.
- * 
+ *
  * @example
  * ```tsx
  * import { API_ENDPOINTS } from '@/constants/api-endpoints';
- * 
+ *
  * const response = await fetch(API_ENDPOINTS.PRODUCTS.LIST);
  * const product = await fetch(API_ENDPOINTS.PRODUCTS.DETAIL(productId));
  * ```
@@ -178,7 +178,7 @@ export const API_ENDPOINTS = {
  */
 export function buildQueryString(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {
       if (Array.isArray(value)) {
@@ -188,7 +188,7 @@ export function buildQueryString(params: Record<string, any>): string {
       }
     }
   });
-  
+
   const queryString = searchParams.toString();
   return queryString ? `?${queryString}` : "";
 }

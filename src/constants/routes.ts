@@ -1,13 +1,13 @@
 /**
  * Application Routes
- * 
+ *
  * Centralized route paths for the entire application.
  * Use these constants instead of hardcoded strings for type safety and consistency.
- * 
+ *
  * @example
  * ```tsx
  * import { ROUTES } from '@/constants/routes';
- * 
+ *
  * <Link href={ROUTES.PRODUCTS.LIST}>Products</Link>
  * <Link href={ROUTES.PRODUCTS.DETAIL('laptop-hp-15')}>Product Detail</Link>
  * ```
@@ -16,14 +16,14 @@
 export const ROUTES = {
   // Public routes
   HOME: "/",
-  
+
   // Products
   PRODUCTS: {
     LIST: "/products",
     DETAIL: (slug: string) => `/products/${slug}`,
     CATEGORY: (slug: string) => `/products/category/${slug}`,
   },
-  
+
   // Auctions
   AUCTIONS: {
     LIST: "/auctions",
@@ -32,23 +32,23 @@ export const ROUTES = {
     WATCHLIST: "/auctions/watchlist",
     WON: "/auctions/won",
   },
-  
+
   // Shops
   SHOPS: {
     LIST: "/shops",
     DETAIL: (slug: string) => `/shops/${slug}`,
   },
-  
+
   // Categories
   CATEGORIES: {
     LIST: "/categories",
     DETAIL: (slug: string) => `/categories/${slug}`,
   },
-  
+
   // Search
   SEARCH: "/search",
   COMPARE: "/compare",
-  
+
   // Auth routes
   AUTH: {
     LOGIN: "/login",
@@ -56,11 +56,11 @@ export const ROUTES = {
     FORGOT_PASSWORD: "/forgot-password",
     RESET_PASSWORD: "/reset-password",
   },
-  
+
   // Protected user routes
   CART: "/cart",
   CHECKOUT: "/checkout",
-  
+
   USER: {
     PROFILE: "/user/profile",
     ORDERS: "/user/orders",
@@ -70,7 +70,7 @@ export const ROUTES = {
     MESSAGES: "/user/messages",
     SETTINGS: "/user/settings",
   },
-  
+
   // Seller routes
   SELLER: {
     DASHBOARD: "/seller/dashboard",
@@ -84,7 +84,7 @@ export const ROUTES = {
     SHOP: "/seller/shop",
     ANALYTICS: "/seller/analytics",
   },
-  
+
   // Admin routes
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
@@ -103,7 +103,7 @@ export const ROUTES = {
     ANALYTICS: "/admin/analytics",
     SETTINGS: "/admin/settings",
   },
-  
+
   // Legal & Info
   ABOUT: "/about",
   CONTACT: "/contact",
