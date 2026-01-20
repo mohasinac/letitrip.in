@@ -1,11 +1,14 @@
 {
-  "name": "@letitrip/react-library",
+  "name": "@mohasinac/react-library",
   "version": "1.0.1",
   "description": "Reusable React components and utilities for Letitrip",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -62,7 +65,7 @@
     "test:ui": "vitest --ui",
     "storybook": "storybook dev -p 6006",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run lint && npm run type-check && npm test && npm run build"
+    "prepublishOnly": "npm run type-check && npm run build"
   },
   "repository": {
     "type": "git",

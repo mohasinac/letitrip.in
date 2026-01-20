@@ -32,6 +32,9 @@ const nextConfig = {
   // Turbopack configuration - npm workspaces handles @letitrip/react-library
   turbopack: {},
 
+  // Transpile workspace packages
+  transpilePackages: ["@letitrip/react-library"],
+
   // Experimental features for faster builds
   experimental: {
     // Enable optimized package imports for better tree-shaking
