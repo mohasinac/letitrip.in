@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import React, { useState } from "react";
 
 /**
  * Admin Products Page
- * 
+ *
  * Global product management interface for admins with:
  * - All products across all shops and sellers
  * - Approval workflow (pending/approved/rejected)
@@ -15,7 +14,7 @@ import Image from "next/image";
  * - Bulk approval and rejection
  * - Product detail view with seller info
  * - Grid/Table view toggle
- * 
+ *
  * Features:
  * - Search by product name, SKU, or category
  * - Filter by shop, seller, approval status, category
@@ -23,7 +22,7 @@ import Image from "next/image";
  * - Bulk approve/reject/delete operations
  * - View seller information
  * - Product status management
- * 
+ *
  * @example
  * ```tsx
  * // Route: /admin/products
@@ -148,14 +147,20 @@ const SORT_OPTIONS = [
 ];
 
 // Extract unique shops and sellers for filters
-const SHOPS = Array.from(new Set(MOCK_PRODUCTS.map((p) => ({ id: p.shopId, name: p.shopName }))));
-const SELLERS = Array.from(new Set(MOCK_PRODUCTS.map((p) => ({ id: p.sellerId, name: p.sellerName }))));
+const SHOPS = Array.from(
+  new Set(MOCK_PRODUCTS.map((p) => ({ id: p.shopId, name: p.shopName }))),
+);
+const SELLERS = Array.from(
+  new Set(MOCK_PRODUCTS.map((p) => ({ id: p.sellerId, name: p.sellerName }))),
+);
 const CATEGORIES = Array.from(new Set(MOCK_PRODUCTS.map((p) => p.category)));
 
 export default function AdminProductsPage() {
   // State
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(
+    new Set(),
+  );
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Product>>({});
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -207,7 +212,7 @@ export default function AdminProductsPage() {
     if (!editingProduct) return;
 
     const updatedProducts = products.map((p) =>
-      p.id === editingProduct ? { ...p, ...editForm } : p
+      p.id === editingProduct ? { ...p, ...editForm } : p,
     );
     setProducts(updatedProducts);
 
@@ -233,7 +238,9 @@ export default function AdminProductsPage() {
     switch (action) {
       case "approve":
         const approvedProducts = products.map((p) =>
-          selectedIds.includes(p.id) ? { ...p, approvalStatus: "approved" as const } : p
+          selectedIds.includes(p.id)
+            ? { ...p, approvalStatus: "approved" as const }
+            : p,
         );
         setProducts(approvedProducts);
         alert(`${selectedIds.length} product(s) approved`);
@@ -241,7 +248,9 @@ export default function AdminProductsPage() {
 
       case "reject":
         const rejectedProducts = products.map((p) =>
-          selectedIds.includes(p.id) ? { ...p, approvalStatus: "rejected" as const } : p
+          selectedIds.includes(p.id)
+            ? { ...p, approvalStatus: "rejected" as const }
+            : p,
         );
         setProducts(rejectedProducts);
         alert(`${selectedIds.length} product(s) rejected`);
@@ -249,21 +258,29 @@ export default function AdminProductsPage() {
 
       case "activate":
         const activatedProducts = products.map((p) =>
-          selectedIds.includes(p.id) ? { ...p, status: "active" as const } : p
+          selectedIds.includes(p.id) ? { ...p, status: "active" as const } : p,
         );
         setProducts(activatedProducts);
         break;
 
       case "deactivate":
         const deactivatedProducts = products.map((p) =>
-          selectedIds.includes(p.id) ? { ...p, status: "inactive" as const } : p
+          selectedIds.includes(p.id)
+            ? { ...p, status: "inactive" as const }
+            : p,
         );
         setProducts(deactivatedProducts);
         break;
 
       case "delete":
-        if (confirm(`Are you sure you want to delete ${selectedIds.length} product(s)?`)) {
-          const remainingProducts = products.filter((p) => !selectedIds.includes(p.id));
+        if (
+          confirm(
+            `Are you sure you want to delete ${selectedIds.length} product(s)?`,
+          )
+        ) {
+          const remainingProducts = products.filter(
+            (p) => !selectedIds.includes(p.id),
+          );
           setProducts(remainingProducts);
           setSelectedProducts(new Set());
         }
@@ -342,8 +359,12 @@ export default function AdminProductsPage() {
       }
     });
 
-  const allSelected = filteredProducts.length > 0 && selectedProducts.size === filteredProducts.length;
-  const someSelected = selectedProducts.size > 0 && selectedProducts.size < filteredProducts.length;
+  const allSelected =
+    filteredProducts.length > 0 &&
+    selectedProducts.size === filteredProducts.length;
+  const someSelected =
+    selectedProducts.size > 0 &&
+    selectedProducts.size < filteredProducts.length;
 
   // Get approval status badge
   const getApprovalBadge = (status: Product["approvalStatus"]) => {
@@ -381,8 +402,12 @@ export default function AdminProductsPage() {
       {/* Left Sidebar - Reusable Admin Navigation */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">System Management</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Admin Panel
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            System Management
+          </p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -390,8 +415,18 @@ export default function AdminProductsPage() {
             href="/admin/dashboard"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
             </svg>
             Dashboard
           </Link>
@@ -400,8 +435,18 @@ export default function AdminProductsPage() {
             href="/admin/users"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
             </svg>
             Users
           </Link>
@@ -410,8 +455,18 @@ export default function AdminProductsPage() {
             href="/admin/products"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-lg"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
             </svg>
             Products
           </Link>
@@ -420,8 +475,18 @@ export default function AdminProductsPage() {
             href="/admin/categories"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
             </svg>
             Categories
           </Link>
@@ -430,8 +495,18 @@ export default function AdminProductsPage() {
             href="/admin/auctions"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Auctions
           </Link>
@@ -440,8 +515,18 @@ export default function AdminProductsPage() {
             href="/admin/shops"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
             Shops
           </Link>
@@ -450,8 +535,18 @@ export default function AdminProductsPage() {
             href="/admin/orders"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
             </svg>
             Orders
           </Link>
@@ -460,8 +555,18 @@ export default function AdminProductsPage() {
             href="/admin/coupons"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
             </svg>
             Coupons
           </Link>
@@ -470,8 +575,18 @@ export default function AdminProductsPage() {
             href="/admin/blogs"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+              />
             </svg>
             Blogs
           </Link>
@@ -480,8 +595,18 @@ export default function AdminProductsPage() {
             href="/admin/analytics"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
             Analytics
           </Link>
@@ -490,9 +615,24 @@ export default function AdminProductsPage() {
             href="/admin/settings"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </Link>
@@ -505,9 +645,12 @@ export default function AdminProductsPage() {
           {/* Header with bulk actions */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Products Management</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Products Management
+              </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {filteredProducts.length} product(s) • {selectedProducts.size} selected
+                {filteredProducts.length} product(s) • {selectedProducts.size}{" "}
+                selected
               </p>
             </div>
 
@@ -568,8 +711,18 @@ export default function AdminProductsPage() {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -586,8 +739,18 @@ export default function AdminProductsPage() {
                     } transition-colors`}
                     title="Table View"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                      />
                     </svg>
                   </button>
                   <button
@@ -599,8 +762,18 @@ export default function AdminProductsPage() {
                     } transition-colors`}
                     title="Grid View"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -764,39 +937,63 @@ export default function AdminProductsPage() {
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
+                              onChange={(e) =>
+                                handleSelectProduct(
+                                  product.id,
+                                  e.target.checked,
+                                )
+                              }
                               className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
                             />
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                                <span className="text-gray-400 text-xs">IMG</span>
+                                <span className="text-gray-400 text-xs">
+                                  IMG
+                                </span>
                               </div>
                               {isEditing ? (
                                 <div className="space-y-1">
                                   <input
                                     type="text"
                                     value={editForm.name || ""}
-                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                    onChange={(e) =>
+                                      setEditForm({
+                                        ...editForm,
+                                        name: e.target.value,
+                                      })
+                                    }
                                     className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                     placeholder="Name"
                                   />
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">{product.sku}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                                    {product.sku}
+                                  </div>
                                 </div>
                               ) : (
                                 <div>
-                                  <div className="font-medium text-gray-900 dark:text-white">{product.name}</div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400">{product.sku}</div>
-                                  <div className="text-xs text-gray-400 dark:text-gray-500">{product.category}</div>
+                                  <div className="font-medium text-gray-900 dark:text-white">
+                                    {product.name}
+                                  </div>
+                                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    {product.sku}
+                                  </div>
+                                  <div className="text-xs text-gray-400 dark:text-gray-500">
+                                    {product.category}
+                                  </div>
                                 </div>
                               )}
                             </div>
                           </td>
                           <td className="px-4 py-3">
                             <div>
-                              <div className="text-sm font-medium text-gray-900 dark:text-white">{product.shopName}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">{product.sellerName}</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                {product.shopName}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {product.sellerName}
+                              </div>
                             </div>
                           </td>
                           <td className="px-4 py-3">
@@ -805,13 +1002,20 @@ export default function AdminProductsPage() {
                                 <input
                                   type="number"
                                   value={editForm.price || ""}
-                                  onChange={(e) => setEditForm({ ...editForm, price: parseFloat(e.target.value) })}
+                                  onChange={(e) =>
+                                    setEditForm({
+                                      ...editForm,
+                                      price: parseFloat(e.target.value),
+                                    })
+                                  }
                                   className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                 />
                               </div>
                             ) : (
                               <div>
-                                <div className="font-medium text-gray-900 dark:text-white">₹{product.price.toLocaleString()}</div>
+                                <div className="font-medium text-gray-900 dark:text-white">
+                                  ₹{product.price.toLocaleString()}
+                                </div>
                                 {product.comparePrice && (
                                   <div className="text-xs text-gray-400 dark:text-gray-500 line-through">
                                     ₹{product.comparePrice.toLocaleString()}
@@ -825,18 +1029,35 @@ export default function AdminProductsPage() {
                               <input
                                 type="number"
                                 value={editForm.stock || ""}
-                                onChange={(e) => setEditForm({ ...editForm, stock: parseInt(e.target.value) })}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    stock: parseInt(e.target.value),
+                                  })
+                                }
                                 className="w-16 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                               />
                             ) : (
-                              <span className={`font-medium ${getStockColor(product.stock)}`}>{product.stock}</span>
+                              <span
+                                className={`font-medium ${getStockColor(
+                                  product.stock,
+                                )}`}
+                              >
+                                {product.stock}
+                              </span>
                             )}
                           </td>
                           <td className="px-4 py-3">
                             {isEditing ? (
                               <select
                                 value={editForm.approvalStatus || ""}
-                                onChange={(e) => setEditForm({ ...editForm, approvalStatus: e.target.value as Product["approvalStatus"] })}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    approvalStatus: e.target
+                                      .value as Product["approvalStatus"],
+                                  })
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                               >
                                 <option value="pending">Pending</option>
@@ -844,8 +1065,15 @@ export default function AdminProductsPage() {
                                 <option value="rejected">Rejected</option>
                               </select>
                             ) : (
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getApprovalBadge(product.approvalStatus)}`}>
-                                {product.approvalStatus.charAt(0).toUpperCase() + product.approvalStatus.slice(1)}
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getApprovalBadge(
+                                  product.approvalStatus,
+                                )}`}
+                              >
+                                {product.approvalStatus
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  product.approvalStatus.slice(1)}
                               </span>
                             )}
                           </td>
@@ -858,8 +1086,18 @@ export default function AdminProductsPage() {
                                     className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
                                     title="Save"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                      />
                                     </svg>
                                   </button>
                                   <button
@@ -867,8 +1105,18 @@ export default function AdminProductsPage() {
                                     className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                     title="Cancel"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
                                     </svg>
                                   </button>
                                 </>
@@ -879,27 +1127,66 @@ export default function AdminProductsPage() {
                                     className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
                                     title="Edit"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                      />
                                     </svg>
                                   </button>
                                   <button
-                                    onClick={() => console.log("View:", product.id)}
+                                    onClick={() =>
+                                      console.log("View:", product.id)
+                                    }
                                     className="p-1.5 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
                                     title="View"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                      />
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                      />
                                     </svg>
                                   </button>
                                   <button
-                                    onClick={() => handleDeleteProduct(product.id)}
+                                    onClick={() =>
+                                      handleDeleteProduct(product.id)
+                                    }
                                     className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                     title="Delete"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                      />
                                     </svg>
                                   </button>
                                 </>
@@ -928,7 +1215,9 @@ export default function AdminProductsPage() {
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                    No products found
+                  </h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Try adjusting your filters or search query
                   </p>
@@ -958,12 +1247,19 @@ export default function AdminProductsPage() {
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
+                        onChange={(e) =>
+                          handleSelectProduct(product.id, e.target.checked)
+                        }
                         className="absolute top-3 left-3 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                       />
                       <div className="absolute top-3 right-3 flex gap-2">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getApprovalBadge(product.approvalStatus)}`}>
-                          {product.approvalStatus.charAt(0).toUpperCase() + product.approvalStatus.slice(1)}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getApprovalBadge(
+                            product.approvalStatus,
+                          )}`}
+                        >
+                          {product.approvalStatus.charAt(0).toUpperCase() +
+                            product.approvalStatus.slice(1)}
                         </span>
                       </div>
                     </div>
@@ -971,12 +1267,18 @@ export default function AdminProductsPage() {
                     {/* Content */}
                     <div className="p-4 space-y-3">
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">{product.name}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{product.sku} • {product.category}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {product.sku} • {product.category}
+                        </p>
                       </div>
 
                       <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-bold text-gray-900 dark:text-white">₹{product.price.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                          ₹{product.price.toLocaleString()}
+                        </span>
                         {product.comparePrice && (
                           <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
                             ₹{product.comparePrice.toLocaleString()}
@@ -985,10 +1287,18 @@ export default function AdminProductsPage() {
                       </div>
 
                       <div className="flex items-center justify-between text-sm">
-                        <span className={`font-medium ${getStockColor(product.stock)}`}>
+                        <span
+                          className={`font-medium ${getStockColor(
+                            product.stock,
+                          )}`}
+                        >
                           Stock: {product.stock}
                         </span>
-                        <span className={`inline-flex px-2 py-0.5 text-xs rounded-full ${getStatusBadge(product.status)}`}>
+                        <span
+                          className={`inline-flex px-2 py-0.5 text-xs rounded-full ${getStatusBadge(
+                            product.status,
+                          )}`}
+                        >
                           {product.status.replace("_", " ")}
                         </span>
                       </div>
@@ -1013,9 +1323,24 @@ export default function AdminProductsPage() {
                           className="p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                           title="View"
                         >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
                           </svg>
                         </button>
                         <button
@@ -1023,8 +1348,18 @@ export default function AdminProductsPage() {
                           className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -1048,7 +1383,9 @@ export default function AdminProductsPage() {
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                    No products found
+                  </h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Try adjusting your filters or search query
                   </p>
