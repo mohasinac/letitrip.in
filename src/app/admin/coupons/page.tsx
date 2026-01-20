@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
+import React, { useState } from "react";
 
 /**
  * Admin Coupons Page
- * 
+ *
  * Global coupon management interface for admins with:
  * - All coupons (global + shop-specific)
  * - CRUD operations (create, edit, delete)
@@ -16,7 +16,7 @@ import Link from "next/link";
  * - Active/inactive status
  * - Shop assignment
  * - Grid/Table view toggle
- * 
+ *
  * Features:
  * - Search by coupon code or description
  * - Filter by type (global/shop-specific), status, discount type
@@ -25,7 +25,7 @@ import Link from "next/link";
  * - Inline edit for quick updates
  * - Bulk activate/deactivate/delete
  * - Usage statistics
- * 
+ *
  * @example
  * ```tsx
  * // Route: /admin/coupons
@@ -145,15 +145,19 @@ const SORT_OPTIONS = [
 // Extract unique shops
 const SHOPS = Array.from(
   new Set(
-    MOCK_COUPONS.filter((c) => !c.isGlobal && c.shopId)
-      .map((c) => ({ id: c.shopId!, name: c.shopName! }))
-  )
+    MOCK_COUPONS.filter((c) => !c.isGlobal && c.shopId).map((c) => ({
+      id: c.shopId!,
+      name: c.shopName!,
+    })),
+  ),
 );
 
 export default function AdminCouponsPage() {
   // State
   const [coupons, setCoupons] = useState<Coupon[]>(MOCK_COUPONS);
-  const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(new Set());
+  const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(
+    new Set(),
+  );
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<string | null>(null);
@@ -282,7 +286,8 @@ export default function AdminCouponsPage() {
       shopName: addForm.shopName,
       shopId: addForm.shopId,
       status: "active",
-      expiresAt: addForm.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      expiresAt:
+        addForm.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       createdAt: new Date(),
     };
 
@@ -314,7 +319,7 @@ export default function AdminCouponsPage() {
     if (!editingCoupon) return;
 
     const updatedCoupons = coupons.map((c) =>
-      c.id === editingCoupon ? { ...c, ...editForm } : c
+      c.id === editingCoupon ? { ...c, ...editForm } : c,
     );
     setCoupons(updatedCoupons);
     setEditingCoupon(null);
@@ -325,7 +330,11 @@ export default function AdminCouponsPage() {
   const handleDelete = (couponId: string) => {
     const coupon = coupons.find((c) => c.id === couponId);
     if (coupon && coupon.usedCount > 0) {
-      if (!confirm(`This coupon has been used ${coupon.usedCount} times. Are you sure you want to delete it?`)) {
+      if (
+        !confirm(
+          `This coupon has been used ${coupon.usedCount} times. Are you sure you want to delete it?`,
+        )
+      ) {
         return;
       }
     }
@@ -337,7 +346,7 @@ export default function AdminCouponsPage() {
     const updatedCoupons = coupons.map((c) =>
       selectedCoupons.has(c.id) && c.status !== "expired"
         ? { ...c, status: "active" as const }
-        : c
+        : c,
     );
     setCoupons(updatedCoupons);
     setSelectedCoupons(new Set());
@@ -346,7 +355,7 @@ export default function AdminCouponsPage() {
   // Handle bulk deactivate
   const handleBulkDeactivate = () => {
     const updatedCoupons = coupons.map((c) =>
-      selectedCoupons.has(c.id) ? { ...c, status: "inactive" as const } : c
+      selectedCoupons.has(c.id) ? { ...c, status: "inactive" as const } : c,
     );
     setCoupons(updatedCoupons);
     setSelectedCoupons(new Set());
@@ -366,8 +375,11 @@ export default function AdminCouponsPage() {
     }
   };
 
-  const allSelected = filteredCoupons.length > 0 && selectedCoupons.size === filteredCoupons.length;
-  const someSelected = selectedCoupons.size > 0 && selectedCoupons.size < filteredCoupons.length;
+  const allSelected =
+    filteredCoupons.length > 0 &&
+    selectedCoupons.size === filteredCoupons.length;
+  const someSelected =
+    selectedCoupons.size > 0 && selectedCoupons.size < filteredCoupons.length;
 
   // Get status badge
   const getStatusBadge = (status: Coupon["status"]) => {
@@ -384,7 +396,9 @@ export default function AdminCouponsPage() {
   // Get discount display
   const getDiscountDisplay = (coupon: Coupon) => {
     if (coupon.discountType === "percentage") {
-      return `${coupon.discountValue}% off${coupon.maxDiscount ? ` (max ₹${coupon.maxDiscount})` : ""}`;
+      return `${coupon.discountValue}% off${
+        coupon.maxDiscount ? ` (max ₹${coupon.maxDiscount})` : ""
+      }`;
     }
     return `₹${coupon.discountValue} off`;
   };
@@ -394,8 +408,12 @@ export default function AdminCouponsPage() {
       {/* Left Sidebar - Reusable Admin Navigation */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">System Management</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Admin Panel
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            System Management
+          </p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -403,7 +421,12 @@ export default function AdminCouponsPage() {
             href="/admin/dashboard"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -418,7 +441,12 @@ export default function AdminCouponsPage() {
             href="/admin/users"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -433,7 +461,12 @@ export default function AdminCouponsPage() {
             href="/admin/products"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -448,7 +481,12 @@ export default function AdminCouponsPage() {
             href="/admin/categories"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -463,8 +501,18 @@ export default function AdminCouponsPage() {
             href="/admin/auctions"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Auctions
           </Link>
@@ -473,7 +521,12 @@ export default function AdminCouponsPage() {
             href="/admin/shops"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -488,7 +541,12 @@ export default function AdminCouponsPage() {
             href="/admin/orders"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -503,7 +561,12 @@ export default function AdminCouponsPage() {
             href="/admin/coupons"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-lg"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -518,7 +581,12 @@ export default function AdminCouponsPage() {
             href="/admin/blogs"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -533,7 +601,12 @@ export default function AdminCouponsPage() {
             href="/admin/analytics"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -548,14 +621,24 @@ export default function AdminCouponsPage() {
             href="/admin/settings"
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </Link>
@@ -568,16 +651,30 @@ export default function AdminCouponsPage() {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Coupons Management</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{filteredCoupons.length} coupon(s)</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Coupons Management
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {filteredCoupons.length} coupon(s)
+              </p>
             </div>
 
             <button
               onClick={() => setShowAddModal(true)}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Add Coupon
             </button>
@@ -634,8 +731,18 @@ export default function AdminCouponsPage() {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -652,8 +759,18 @@ export default function AdminCouponsPage() {
                     } transition-colors`}
                     title="Table View"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                      />
                     </svg>
                   </button>
                   <button
@@ -665,7 +782,12 @@ export default function AdminCouponsPage() {
                     } transition-colors`}
                     title="Grid View"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -809,7 +931,9 @@ export default function AdminCouponsPage() {
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={(e) => handleSelectCoupon(coupon.id, e.target.checked)}
+                              onChange={(e) =>
+                                handleSelectCoupon(coupon.id, e.target.checked)
+                              }
                               className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
                             />
                           </td>
@@ -818,20 +942,33 @@ export default function AdminCouponsPage() {
                               <input
                                 type="text"
                                 value={editForm.code || ""}
-                                onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    code: e.target.value.toUpperCase(),
+                                  })
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                             ) : (
                               <div>
-                                <div className="font-mono font-bold text-gray-900 dark:text-white">{coupon.code}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">{coupon.description}</div>
+                                <div className="font-mono font-bold text-gray-900 dark:text-white">
+                                  {coupon.code}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {coupon.description}
+                                </div>
                               </div>
                             )}
                           </td>
                           <td className="px-4 py-3">
                             <div>
-                              <div className="font-medium text-gray-900 dark:text-white">{getDiscountDisplay(coupon)}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">Min: ₹{coupon.minOrderValue}</div>
+                              <div className="font-medium text-gray-900 dark:text-white">
+                                {getDiscountDisplay(coupon)}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                Min: ₹{coupon.minOrderValue}
+                              </div>
                             </div>
                           </td>
                           <td className="px-4 py-3">
@@ -842,7 +979,13 @@ export default function AdminCouponsPage() {
                               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
                                 <div
                                   className="bg-blue-600 h-2 rounded-full"
-                                  style={{ width: `${Math.min((coupon.usedCount / coupon.usageLimit) * 100, 100)}%` }}
+                                  style={{
+                                    width: `${Math.min(
+                                      (coupon.usedCount / coupon.usageLimit) *
+                                        100,
+                                      100,
+                                    )}%`,
+                                  }}
                                 />
                               </div>
                             </div>
@@ -853,17 +996,24 @@ export default function AdminCouponsPage() {
                                 {coupon.isGlobal ? "Global" : "Shop-Specific"}
                               </div>
                               {!coupon.isGlobal && (
-                                <div className="text-xs text-gray-500 dark:text-gray-400">{coupon.shopName}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {coupon.shopName}
+                                </div>
                               )}
                             </div>
                           </td>
                           <td className="px-4 py-3">
                             <div>
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(coupon.status)}`}>
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                                  coupon.status,
+                                )}`}
+                              >
                                 {coupon.status}
                               </span>
                               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Expires: {coupon.expiresAt.toLocaleDateString("en-IN")}
+                                Expires:{" "}
+                                {coupon.expiresAt.toLocaleDateString("en-IN")}
                               </div>
                             </div>
                           </td>
@@ -876,8 +1026,18 @@ export default function AdminCouponsPage() {
                                     className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
                                     title="Save"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                      />
                                     </svg>
                                   </button>
                                   <button
@@ -888,8 +1048,18 @@ export default function AdminCouponsPage() {
                                     className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                     title="Cancel"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
                                     </svg>
                                   </button>
                                 </>
@@ -900,7 +1070,12 @@ export default function AdminCouponsPage() {
                                     className="p-1.5 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
                                     title="Edit"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
                                       <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -914,7 +1089,12 @@ export default function AdminCouponsPage() {
                                     className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                     title="Delete"
                                   >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
                                       <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -936,7 +1116,12 @@ export default function AdminCouponsPage() {
 
               {filteredCoupons.length === 0 && (
                 <div className="text-center py-12">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -944,8 +1129,12 @@ export default function AdminCouponsPage() {
                       d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                     />
                   </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No coupons found</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters or search query</p>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                    No coupons found
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Try adjusting your filters or search query
+                  </p>
                 </div>
               )}
             </div>
@@ -956,13 +1145,18 @@ export default function AdminCouponsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredCoupons.map((coupon) => {
                 const isSelected = selectedCoupons.has(coupon.id);
-                const usagePercent = Math.min((coupon.usedCount / coupon.usageLimit) * 100, 100);
+                const usagePercent = Math.min(
+                  (coupon.usedCount / coupon.usageLimit) * 100,
+                  100,
+                );
 
                 return (
                   <div
                     key={coupon.id}
                     className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border ${
-                      isSelected ? "border-blue-500 dark:border-blue-400" : "border-gray-200 dark:border-gray-700"
+                      isSelected
+                        ? "border-blue-500 dark:border-blue-400"
+                        : "border-gray-200 dark:border-gray-700"
                     } overflow-hidden hover:shadow-md transition-shadow p-6`}
                   >
                     {/* Header */}
@@ -970,50 +1164,75 @@ export default function AdminCouponsPage() {
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={(e) => handleSelectCoupon(coupon.id, e.target.checked)}
+                        onChange={(e) =>
+                          handleSelectCoupon(coupon.id, e.target.checked)
+                        }
                         className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(coupon.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                          coupon.status,
+                        )}`}
+                      >
                         {coupon.status}
                       </span>
                     </div>
 
                     {/* Coupon Code */}
                     <div className="mb-4">
-                      <div className="font-mono text-2xl font-bold text-gray-900 dark:text-white">{coupon.code}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{coupon.description}</div>
+                      <div className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
+                        {coupon.code}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        {coupon.description}
+                      </div>
                     </div>
 
                     {/* Discount */}
                     <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <div className="text-lg font-bold text-blue-900 dark:text-blue-300">{getDiscountDisplay(coupon)}</div>
-                      <div className="text-xs text-blue-700 dark:text-blue-400 mt-1">Min Order: ₹{coupon.minOrderValue}</div>
+                      <div className="text-lg font-bold text-blue-900 dark:text-blue-300">
+                        {getDiscountDisplay(coupon)}
+                      </div>
+                      <div className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                        Min Order: ₹{coupon.minOrderValue}
+                      </div>
                     </div>
 
                     {/* Usage Stats */}
                     <div className="mb-4">
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600 dark:text-gray-400">Usage</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Usage
+                        </span>
                         <span className="font-medium text-gray-900 dark:text-white">
                           {coupon.usedCount} / {coupon.usageLimit}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${usagePercent}%` }} />
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${usagePercent}%` }}
+                        />
                       </div>
                     </div>
 
                     {/* Scope & Expiry */}
                     <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Scope</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Scope
+                        </span>
                         <span className="font-medium text-gray-900 dark:text-white">
                           {coupon.isGlobal ? "Global" : coupon.shopName}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Expires</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{coupon.expiresAt.toLocaleDateString("en-IN")}</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Expires
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {coupon.expiresAt.toLocaleDateString("en-IN")}
+                        </span>
                       </div>
                     </div>
 
@@ -1030,7 +1249,12 @@ export default function AdminCouponsPage() {
                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Delete"
                       >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -1046,7 +1270,12 @@ export default function AdminCouponsPage() {
 
               {filteredCoupons.length === 0 && (
                 <div className="col-span-full text-center py-12">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -1054,8 +1283,12 @@ export default function AdminCouponsPage() {
                       d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                     />
                   </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No coupons found</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters or search query</p>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                    No coupons found
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Try adjusting your filters or search query
+                  </p>
                 </div>
               )}
             </div>
@@ -1069,13 +1302,25 @@ export default function AdminCouponsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Coupon</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Create New Coupon
+                </h2>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -1084,14 +1329,22 @@ export default function AdminCouponsPage() {
             <div className="p-6 space-y-4">
               {/* Coupon Code */}
               <div>
-                <label htmlFor="add-code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="add-code"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Coupon Code *
                 </label>
                 <input
                   id="add-code"
                   type="text"
                   value={addForm.code || ""}
-                  onChange={(e) => setAddForm({ ...addForm, code: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setAddForm({
+                      ...addForm,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
                   placeholder="e.g., SAVE50"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                 />
@@ -1099,14 +1352,19 @@ export default function AdminCouponsPage() {
 
               {/* Description */}
               <div>
-                <label htmlFor="add-desc" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="add-desc"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Description *
                 </label>
                 <input
                   id="add-desc"
                   type="text"
                   value={addForm.description || ""}
-                  onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
+                  onChange={(e) =>
+                    setAddForm({ ...addForm, description: e.target.value })
+                  }
                   placeholder="e.g., Get 50% off on your first order"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -1115,13 +1373,21 @@ export default function AdminCouponsPage() {
               {/* Discount Type & Value */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="add-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="add-type"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Discount Type
                   </label>
                   <select
                     id="add-type"
                     value={addForm.discountType || "percentage"}
-                    onChange={(e) => setAddForm({ ...addForm, discountType: e.target.value as "percentage" | "fixed" })}
+                    onChange={(e) =>
+                      setAddForm({
+                        ...addForm,
+                        discountType: e.target.value as "percentage" | "fixed",
+                      })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="percentage">Percentage</option>
@@ -1129,15 +1395,25 @@ export default function AdminCouponsPage() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="add-value" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="add-value"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Discount Value
                   </label>
                   <input
                     id="add-value"
                     type="number"
                     value={addForm.discountValue || 0}
-                    onChange={(e) => setAddForm({ ...addForm, discountValue: Number(e.target.value) })}
-                    placeholder={addForm.discountType === "percentage" ? "10" : "100"}
+                    onChange={(e) =>
+                      setAddForm({
+                        ...addForm,
+                        discountValue: Number(e.target.value),
+                      })
+                    }
+                    placeholder={
+                      addForm.discountType === "percentage" ? "10" : "100"
+                    }
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -1146,28 +1422,44 @@ export default function AdminCouponsPage() {
               {/* Min Order & Max Discount */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="add-min" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="add-min"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Min Order Value (₹)
                   </label>
                   <input
                     id="add-min"
                     type="number"
                     value={addForm.minOrderValue || 0}
-                    onChange={(e) => setAddForm({ ...addForm, minOrderValue: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setAddForm({
+                        ...addForm,
+                        minOrderValue: Number(e.target.value),
+                      })
+                    }
                     placeholder="500"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 {addForm.discountType === "percentage" && (
                   <div>
-                    <label htmlFor="add-max" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor="add-max"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       Max Discount (₹)
                     </label>
                     <input
                       id="add-max"
                       type="number"
                       value={addForm.maxDiscount || ""}
-                      onChange={(e) => setAddForm({ ...addForm, maxDiscount: Number(e.target.value) || undefined })}
+                      onChange={(e) =>
+                        setAddForm({
+                          ...addForm,
+                          maxDiscount: Number(e.target.value) || undefined,
+                        })
+                      }
                       placeholder="1000"
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
@@ -1177,14 +1469,22 @@ export default function AdminCouponsPage() {
 
               {/* Usage Limit */}
               <div>
-                <label htmlFor="add-limit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="add-limit"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Usage Limit
                 </label>
                 <input
                   id="add-limit"
                   type="number"
                   value={addForm.usageLimit || 100}
-                  onChange={(e) => setAddForm({ ...addForm, usageLimit: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setAddForm({
+                      ...addForm,
+                      usageLimit: Number(e.target.value),
+                    })
+                  }
                   placeholder="100"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -1192,39 +1492,66 @@ export default function AdminCouponsPage() {
 
               {/* Expiry Date */}
               <div>
-                <label htmlFor="add-expiry" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="add-expiry"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Expiry Date
                 </label>
                 <input
                   id="add-expiry"
                   type="date"
-                  value={addForm.expiresAt ? addForm.expiresAt.toISOString().split("T")[0] : ""}
-                  onChange={(e) => setAddForm({ ...addForm, expiresAt: new Date(e.target.value) })}
+                  value={
+                    addForm.expiresAt
+                      ? addForm.expiresAt.toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setAddForm({
+                      ...addForm,
+                      expiresAt: new Date(e.target.value),
+                    })
+                  }
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               {/* Scope */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Scope</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Scope
+                </label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
                       checked={addForm.isGlobal === true}
-                      onChange={() => setAddForm({ ...addForm, isGlobal: true, shopId: undefined, shopName: undefined })}
+                      onChange={() =>
+                        setAddForm({
+                          ...addForm,
+                          isGlobal: true,
+                          shopId: undefined,
+                          shopName: undefined,
+                        })
+                      }
                       className="w-4 h-4 text-blue-600"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Global (All Shops)</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Global (All Shops)
+                    </span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
                       checked={addForm.isGlobal === false}
-                      onChange={() => setAddForm({ ...addForm, isGlobal: false })}
+                      onChange={() =>
+                        setAddForm({ ...addForm, isGlobal: false })
+                      }
                       className="w-4 h-4 text-blue-600"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Shop-Specific</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Shop-Specific
+                    </span>
                   </label>
                 </div>
               </div>
@@ -1232,7 +1559,10 @@ export default function AdminCouponsPage() {
               {/* Shop Selection (if shop-specific) */}
               {addForm.isGlobal === false && (
                 <div>
-                  <label htmlFor="add-shop" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label
+                    htmlFor="add-shop"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
                     Select Shop
                   </label>
                   <select
@@ -1240,7 +1570,11 @@ export default function AdminCouponsPage() {
                     value={addForm.shopId || ""}
                     onChange={(e) => {
                       const shop = SHOPS.find((s) => s.id === e.target.value);
-                      setAddForm({ ...addForm, shopId: shop?.id, shopName: shop?.name });
+                      setAddForm({
+                        ...addForm,
+                        shopId: shop?.id,
+                        shopName: shop?.name,
+                      });
                     }}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
