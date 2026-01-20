@@ -2,7 +2,7 @@
 
 **Last Updated:** January 20, 2026
 **Current Phase:** Phase 6 - Admin Dashboard & CMS
-**Overall Progress:** 83% (110/132 tasks)
+**Overall Progress:** 84% (111/132 tasks)
 **Design Specs:** See `DESIGN-SPECIFICATIONS.md` for detailed requirements
 
 ---
@@ -41,11 +41,11 @@
 | 3         | Homepage & Public Pages      | 14      | 14        | 100%     | ✅ Completed       |
 | 4         | Auth & User Flow             | 8       | 8         | 100%     | ✅ Completed       |
 | 5         | Seller Dashboard & CMS       | 12      | 12        | 100%     | ✅ Completed       |
-| 6         | Admin Dashboard & CMS        | 10      | 4         | 40%      | 🔵 In Progress     |
+| 6         | Admin Dashboard & CMS        | 10      | 5         | 50%      | 🔵 In Progress     |
 | 7         | Mobile Optimization          | 8       | 0         | 0%       | ⚪ Pending         |
 | 8         | Firebase & Security          | 10      | 0         | 0%       | ⚪ Pending         |
 | 9         | Performance & Testing        | 20      | 0         | 0%       | ⚪ Pending         |
-| **TOTAL** | **All Phases**               | **132** | **110**   | **83%**  | **🔵 In Progress** |
+| **TOTAL** | **All Phases**               | **132** | **111**   | **84%**  | **🔵 In Progress** |
 
 ---
 
@@ -594,15 +594,15 @@
 ## 👑 PHASE 6: Admin Dashboard & CMS
 
 **Target:** Days 15-16
-**Status:** 🔵 In Progress (4/10 tasks - 40%)
+**Status:** 🔵 In Progress (5/10 tasks - 50%)
 
-### 6.1 Admin Pages (4/6)
+### 6.1 Admin Pages (5/6)
 
 - [x] `src/app/admin/dashboard/page.tsx` - Admin dashboard with left sidebar ✅
 - [x] `src/app/admin/users/page.tsx` - Users datatable with role/status management ✅
 - [x] `src/app/admin/products/page.tsx` - All products with approval workflow ✅
 - [x] `src/app/admin/categories/page.tsx` - Categories tree view + CRUD ✅
-- [ ] `src/app/admin/orders/page.tsx` - All orders datatable
+- [x] `src/app/admin/orders/page.tsx` - All orders datatable ✅
 - [ ] `src/app/admin/coupons/page.tsx` - Global coupons management
 
 **Admin Sidebar (Left Side):**
