@@ -16,6 +16,7 @@
  * @page /(protected)/user/orders - User orders page
  */
 
+import { FALLBACK_ORDERS } from "@/lib/fallback-data";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -24,33 +25,13 @@ export const metadata: Metadata = {
   description: "View and track your order history.",
 };
 
-// Mock orders data
-const orders = [
-  {
-    id: "ORD-2024-001",
-    date: "2024-01-15",
-    items: 2,
-    total: 104989,
-    status: "delivered",
-    trackingNumber: "TRK123456789",
-  },
-  {
-    id: "ORD-2024-002",
-    date: "2024-01-18",
-    items: 1,
-    total: 74999,
-    status: "shipped",
-    trackingNumber: "TRK987654321",
-  },
-  {
-    id: "ORD-2024-003",
-    date: "2024-01-20",
-    items: 3,
-    total: 125000,
-    status: "pending",
-    trackingNumber: null,
-  },
-];
+// Use fallback orders data
+const orders = FALLBACK_ORDERS.map((order) => ({
+  ...order,
+  date: order.createdAt.toISOString().split("T")[0],
+  items: order.itemCount,
+  trackingNumber: order.trackingNumber || null,
+}));
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-IN", {

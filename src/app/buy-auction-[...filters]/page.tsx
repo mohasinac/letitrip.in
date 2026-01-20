@@ -13,13 +13,15 @@
  * @page /buy-auction-[...filters] - Auction listing
  */
 
-import { AuctionCard, Breadcrumb } from "@letitrip/react-library";
+import { AuctionCard } from "@/components/common/AuctionCard";
+import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ClientLink } from "@/components/common/ClientLink";
 import { SortDropdown } from "@/components/common/SortDropdown";
+import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
 
 // Types
 interface PageProps {
@@ -129,8 +131,12 @@ async function getAuctions(
     );
 
     if (!res.ok) {
-      console.error("Failed to fetch auctions:", res.status);
-      return { auctions: [], hasMore: false, nextCursor: null };
+      console.error(
+        "Failed to fetch auctions:",
+        res.status,
+        "- Using fallback data",
+      );
+      return { auctions: FALLBACK_AUCTIONS, hasMore: false, nextCursor: null };
     }
 
     const data = await res.json();
@@ -140,8 +146,8 @@ async function getAuctions(
       nextCursor: data.data?.nextCursor || null,
     };
   } catch (error) {
-    console.error("Error fetching auctions:", error);
-    return { auctions: [], hasMore: false, nextCursor: null };
+    console.error("Error fetching auctions:", error, "- Using fallback data");
+    return { auctions: FALLBACK_AUCTIONS, hasMore: false, nextCursor: null };
   }
 }
 
@@ -273,35 +279,6 @@ export default async function AuctionListingPage({
                       : undefined,
                   }}
                   variant="public"
-                  LinkComponent={ClientLink}
-                  ImageComponent={"img" as any}
-                  formatPrice={(price) => `₹${price.toLocaleString()}`}
-                  formatTimeRemaining={(endTime) => {
-                    if (!endTime) return "Ended";
-                    const end = new Date(endTime);
-                    const now = new Date();
-                    const diff = end.getTime() - now.getTime();
-                    if (diff <= 0) return "Ended";
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor(
-                      (diff % (1000 * 60 * 60)) / (1000 * 60),
-                    );
-                    if (hours > 24) {
-                      const days = Math.floor(hours / 24);
-                      return `${days}d ${hours % 24}h`;
-                    }
-                    return `${hours}h ${minutes}m`;
-                  }}
-                  getTimeRemaining={(endTime) => {
-                    if (!endTime) return { totalMs: 0, isEnded: true };
-                    const end = new Date(endTime);
-                    const now = new Date();
-                    const diff = end.getTime() - now.getTime();
-                    return { totalMs: diff, isEnded: diff <= 0 };
-                  }}
-                  cn={(...classes) =>
-                    classes.filter((c) => typeof c === "string").join(" ")
-                  }
                 />
               ))}
             </div>

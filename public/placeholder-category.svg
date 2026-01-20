@@ -1,0 +1,13 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#FDF4FF"/>
+  <rect x="80" y="80" width="240" height="240" rx="12" fill="#F3E8FF"/>
+  <!-- Grid pattern -->
+  <rect x="120" y="120" width="60" height="60" rx="4" fill="#C084FC"/>
+  <rect x="220" y="120" width="60" height="60" rx="4" fill="#C084FC"/>
+  <rect x="120" y="220" width="60" height="60" rx="4" fill="#C084FC"/>
+  <rect x="220" y="220" width="60" height="60" rx="4" fill="#C084FC"/>
+  <!-- Center icon -->
+  <circle cx="200" cy="200" r="30" fill="#A855F7"/>
+  <rect x="185" y="185" width="30" height="30" rx="4" fill="white"/>
+  <text x="200" y="360" font-family="Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle" fill="#A855F7">Category</text>
+</svg>

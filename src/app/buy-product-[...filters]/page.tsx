@@ -13,13 +13,16 @@
  * @page /buy-product-[...filters] - Product listing
  */
 
-import { Breadcrumb, ProductCard } from "@letitrip/react-library";
+import { Breadcrumb } from "@/components/common/Breadcrumb";
+import { ProductCard } from "@/components/common/ProductCard";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ClientLink } from "@/components/common/ClientLink";
 import { SortDropdown } from "@/components/common/SortDropdown";
+import { ROUTES } from "@/constants/routes";
+import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
 
 // Types
 interface PageProps {
@@ -128,8 +131,12 @@ async function getProducts(
     );
 
     if (!res.ok) {
-      console.error("Failed to fetch products:", res.status);
-      return { products: [], hasMore: false, nextCursor: null };
+      console.error(
+        "Failed to fetch products:",
+        res.status,
+        "- Using fallback data",
+      );
+      return { products: FALLBACK_PRODUCTS, hasMore: false, nextCursor: null };
     }
 
     const data = await res.json();
@@ -139,8 +146,8 @@ async function getProducts(
       nextCursor: data.data?.nextCursor || null,
     };
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return { products: [], hasMore: false, nextCursor: null };
+    console.error("Error fetching products:", error, "- Using fallback data");
+    return { products: FALLBACK_PRODUCTS, hasMore: false, nextCursor: null };
   }
 }
 
@@ -165,13 +172,13 @@ export default async function ProductListingPage({
   // Build breadcrumbs
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: "Products", href: "/buy-product-all" },
+    { label: "Products", href: ROUTES.PRODUCTS.FILTERS("all") },
   ];
 
   if (category !== "all") {
     breadcrumbs.push({
       label: categoryName,
-      href: `/buy-product-${category}`,
+      href: ROUTES.PRODUCTS.FILTERS(category),
     });
   }
 
@@ -183,7 +190,7 @@ export default async function ProductListingPage({
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <Breadcrumb
-          currentPath={`/buy-product-${category}`}
+          currentPath={ROUTES.PRODUCTS.FILTERS(category)}
           LinkComponent={ClientLink}
         />
 
@@ -234,10 +241,6 @@ export default async function ProductListingPage({
                   shopName={product.shopName}
                   shopSlug={product.shopSlug}
                   variant="public"
-                  LinkComponent={ClientLink}
-                  ImageComponent={"img" as any}
-                  formatPrice={(price) => `₹${price.toLocaleString()}`}
-                  formatDiscount={(discount) => `-${discount}%`}
                 />
               ))}
             </div>
@@ -267,7 +270,7 @@ export default async function ProductListingPage({
               Try adjusting your filters or search query
             </p>
             <Link
-              href="/buy-product-all"
+              href={ROUTES.PRODUCTS.FILTERS("all")}
               className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
             >
               View All Products

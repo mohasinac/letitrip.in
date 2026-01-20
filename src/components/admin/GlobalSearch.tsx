@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -77,7 +78,7 @@ const searchAPI = async (
       title: "Vintage Wooden Clock",
       subtitle: "Antique Paradise • ₹4,999",
       status: "active",
-      url: "/buy-product-vintage-wooden-clock",
+      url: ROUTES.PRODUCTS.DETAIL("vintage-wooden-clock"),
     },
     {
       id: "3",

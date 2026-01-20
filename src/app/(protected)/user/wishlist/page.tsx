@@ -15,7 +15,10 @@
  * @page /(protected)/user/wishlist - User wishlist page
  */
 
+import { ROUTES } from "@/constants/routes";
+import { FALLBACK_WISHLIST_ITEMS } from "@/lib/fallback-data";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,45 +27,37 @@ export const metadata: Metadata = {
   description: "View and manage your saved items.",
 };
 
-// Mock wishlist data
-const wishlistItems = [
-  {
-    id: "wish-1",
-    productId: "prod-123",
-    slug: "apple-iphone-15-pro",
-    name: "Apple iPhone 15 Pro (Natural Titanium, 256GB)",
-    image: "/products/iphone-15-pro.jpg",
-    price: 134900,
-    originalPrice: 139900,
-    rating: 4.8,
-    inStock: true,
-    addedDate: "2024-01-10",
-  },
-  {
-    id: "wish-2",
-    productId: "prod-456",
-    slug: "samsung-galaxy-watch",
-    name: "Samsung Galaxy Watch 6 Classic (Black, 43mm)",
-    image: "/products/galaxy-watch-6.jpg",
-    price: 34999,
-    originalPrice: 39999,
-    rating: 4.6,
-    inStock: true,
-    addedDate: "2024-01-12",
-  },
-  {
-    id: "wish-3",
-    productId: "prod-789",
-    slug: "sony-ps5-console",
-    name: "Sony PlayStation 5 Digital Edition Console",
-    image: "/products/ps5-digital.jpg",
-    price: 44990,
-    originalPrice: 44990,
-    rating: 4.9,
-    inStock: false,
-    addedDate: "2024-01-14",
-  },
-];
+async function getWishlistItems() {
+  try {
+    const cookieStore = await cookies();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/user/wishlist`,
+      {
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Failed to fetch wishlist - Using fallback data");
+      return FALLBACK_WISHLIST_ITEMS;
+    }
+
+    const data = await response.json();
+    const items = data.items || [];
+    // If API returns empty array, use fallback data for better UX
+    if (items.length === 0) {
+      console.log("API returned empty wishlist - Using fallback data");
+      return FALLBACK_WISHLIST_ITEMS;
+    }
+    return items;
+  } catch (error) {
+    console.error("Error fetching wishlist:", error, "- Using fallback data");
+    return FALLBACK_WISHLIST_ITEMS;
+  }
+}
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -72,7 +67,9 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-export default function UserWishlistPage() {
+export default async function UserWishlistPage() {
+  const wishlistItems = await getWishlistItems();
+
   // Empty state
   if (wishlistItems.length === 0) {
     return (
@@ -143,7 +140,7 @@ export default function UserWishlistPage() {
                 >
                   {/* Product Image */}
                   <Link
-                    href={`/buy-product-${item.slug}`}
+                    href={ROUTES.PRODUCTS.DETAIL(item.slug)}
                     className="relative block aspect-square bg-gray-100 dark:bg-gray-700"
                   >
                     <Image
@@ -179,7 +176,7 @@ export default function UserWishlistPage() {
                   {/* Product Details */}
                   <div className="p-4">
                     <Link
-                      href={`/buy-product-${item.slug}`}
+                      href={ROUTES.PRODUCTS.DETAIL(item.slug)}
                       className="font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 line-clamp-2 mb-2"
                     >
                       {item.name}

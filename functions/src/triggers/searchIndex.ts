@@ -352,9 +352,9 @@ async function deleteFromSearchIndex(docId: string): Promise<void> {
   try {
     console.log(`Deleting document from search index: ${docId}`);
     await admin.firestore().collection("search").doc(docId).delete();
-    console.log(`Successfully deleted document from search index`);
+    console.log(\"Successfully deleted document from search index\");
   } catch (error) {
-    console.error(`Error deleting from search index:`, error);
+    console.error(\"Error deleting from search index:\", error);
     throw error;
   }
 }

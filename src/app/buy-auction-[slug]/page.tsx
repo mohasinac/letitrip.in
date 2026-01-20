@@ -19,12 +19,14 @@
  * @page /buy-auction-[slug] - Auction details
  */
 
-import { AuctionCard, Breadcrumb } from "@letitrip/react-library";
+import { AuctionCard } from "@/components/common/AuctionCard";
+import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ClientLink } from "@/components/common/ClientLink";
+import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
 
 // Types
 interface PageProps {
@@ -84,7 +86,14 @@ export async function generateMetadata({
  * Fetch auction details from API
  */
 async function getAuction(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  // For development, return fallback data directly
+  const auction = FALLBACK_AUCTIONS.find((a) => a.slug === slug);
+  if (auction) {
+    return auction;
+  }
+
+  // If not found in fallback, try API
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
     const res = await fetch(`${baseUrl}/api/auctions/${slug}`, {
@@ -93,15 +102,15 @@ async function getAuction(slug: string) {
 
     if (!res.ok) {
       if (res.status === 404) return null;
-      console.error("Failed to fetch auction:", res.status);
-      return null;
+      console.error("Failed to fetch auction:", res.status, "- Using fallback");
+      return FALLBACK_AUCTIONS[0];
     }
 
     const data = await res.json();
     return data.data;
   } catch (error) {
-    console.error("Error fetching auction:", error);
-    return null;
+    console.error("Error fetching auction:", error, "- Using fallback");
+    return FALLBACK_AUCTIONS[0];
   }
 }
 
@@ -109,7 +118,11 @@ async function getAuction(slug: string) {
  * Fetch similar auctions (same category)
  */
 async function getSimilarAuctions(categorySlug: string, currentSlug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  // For development, return fallback data directly
+  return FALLBACK_AUCTIONS.filter((a) => a.slug !== currentSlug).slice(0, 4);
+
+  // If not using fallback, try API
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
     const res = await fetch(
@@ -119,15 +132,22 @@ async function getSimilarAuctions(categorySlug: string, currentSlug: string) {
       },
     );
 
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.log("Failed to fetch similar auctions - Using fallback");
+      return FALLBACK_AUCTIONS.slice(1, 5);
+    }
 
     const data = await res.json();
     return (data.data?.auctions || []).filter(
       (a: any) => a.slug !== currentSlug,
     );
   } catch (error) {
-    console.error("Error fetching similar auctions:", error);
-    return [];
+    console.error(
+      "Error fetching similar auctions:",
+      error,
+      "- Using fallback",
+    );
+    return FALLBACK_AUCTIONS.slice(1, 5);
   }
 }
 
@@ -205,7 +225,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
               {/* Main Image */}
               <div className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-4">
                 <img
-                  src={auction.images?.[0] || "/placeholder-auction.jpg"}
+                  src={auction.images?.[0] || "/placeholder-auction.svg"}
                   alt={auction.title}
                   className="w-full h-full object-cover"
                 />
@@ -494,9 +514,6 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                       : undefined,
                   }}
                   variant="compact"
-                  LinkComponent={ClientLink}
-                  ImageComponent={"img" as any}
-                  formatPrice={(price) => `₹${price.toLocaleString()}`}
                   formatTimeRemaining={(endTime) => {
                     if (!endTime) return "Ended";
                     const result = getTimeRemaining(endTime);

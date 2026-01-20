@@ -23,6 +23,7 @@
 
 "use client";
 
+import { ROUTES } from "@/constants/routes";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -383,7 +384,7 @@ export default function ProductWizard({
                 </label>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 dark:text-gray-400 text-sm">
-                    letitrip.in/buy-product-
+                    letitrip.in{ROUTES.PRODUCTS.DETAIL("")}
                   </span>
                   <input
                     type="text"

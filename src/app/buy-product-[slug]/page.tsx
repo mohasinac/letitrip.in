@@ -18,21 +18,24 @@
  * @page /buy-product-[slug] - Product details
  */
 
-import { Breadcrumb, ProductCard } from "@letitrip/react-library";
+import { Breadcrumb } from "@/components/common/Breadcrumb";
+import { ProductCard } from "@/components/common/ProductCard";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ClientLink } from "@/components/common/ClientLink";
+import { ROUTES } from "@/constants/routes";
+import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
 
 // Types
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     variant?: string;
-  };
+  }>;
 }
 
 /**
@@ -41,7 +44,8 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
 
   if (!product) {
     return {
@@ -84,7 +88,14 @@ export async function generateMetadata({
  * Fetch product details from API
  */
 async function getProduct(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  // For development, return fallback data directly
+  const product = FALLBACK_PRODUCTS.find((p) => p.slug === slug);
+  if (product) {
+    return product;
+  }
+
+  // If not found in fallback, try API
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
     const res = await fetch(`${baseUrl}/api/products/${slug}`, {
@@ -93,15 +104,15 @@ async function getProduct(slug: string) {
 
     if (!res.ok) {
       if (res.status === 404) return null;
-      console.error("Failed to fetch product:", res.status);
-      return null;
+      console.error("Failed to fetch product:", res.status, "- Using fallback");
+      return FALLBACK_PRODUCTS[0];
     }
 
     const data = await res.json();
     return data.data;
   } catch (error) {
-    console.error("Error fetching product:", error);
-    return null;
+    console.error("Error fetching product:", error, "- Using fallback");
+    return FALLBACK_PRODUCTS[0];
   }
 }
 
@@ -109,7 +120,11 @@ async function getProduct(slug: string) {
  * Fetch similar products (same category)
  */
 async function getSimilarProducts(categorySlug: string, currentSlug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  // For development, return fallback data directly
+  return FALLBACK_PRODUCTS.filter((p) => p.slug !== currentSlug).slice(0, 4);
+
+  // If not using fallback, try API
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
     const res = await fetch(
@@ -119,7 +134,10 @@ async function getSimilarProducts(categorySlug: string, currentSlug: string) {
       },
     );
 
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.log("Failed to fetch similar products - Using fallback");
+      return FALLBACK_PRODUCTS.slice(1, 5);
+    }
 
     const data = await res.json();
     // Filter out current product
@@ -127,8 +145,12 @@ async function getSimilarProducts(categorySlug: string, currentSlug: string) {
       (p: any) => p.slug !== currentSlug,
     );
   } catch (error) {
-    console.error("Error fetching similar products:", error);
-    return [];
+    console.error(
+      "Error fetching similar products:",
+      error,
+      "- Using fallback",
+    );
+    return FALLBACK_PRODUCTS.slice(1, 5);
   }
 }
 
@@ -136,7 +158,11 @@ async function getSimilarProducts(categorySlug: string, currentSlug: string) {
  * Fetch product reviews
  */
 async function getReviews(productSlug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  // For development, return empty array or some fallback reviews
+  return [];
+
+  // If not using fallback, try API
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
     const res = await fetch(
@@ -160,7 +186,8 @@ export default async function ProductDetailsPage({
   params,
   searchParams,
 }: PageProps) {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
 
   if (!product) {
     notFound();
@@ -184,7 +211,7 @@ export default async function ProductDetailsPage({
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <Breadcrumb
-          currentPath={`/buy-product-${params.slug}`}
+          currentPath={ROUTES.PRODUCTS.DETAIL(slug)}
           LinkComponent={ClientLink}
         />
 
@@ -195,7 +222,7 @@ export default async function ProductDetailsPage({
               {/* Main Image */}
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-4">
                 <img
-                  src={product.images?.[0] || "/placeholder-product.jpg"}
+                  src={product.images?.[0] || "/placeholder-product.svg"}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -450,10 +477,6 @@ export default async function ProductDetailsPage({
                   shopName={similarProduct.shopName}
                   shopSlug={similarProduct.shopSlug}
                   variant="public"
-                  LinkComponent={ClientLink}
-                  ImageComponent={"img" as any}
-                  formatPrice={(price) => `₹${price.toLocaleString()}`}
-                  formatDiscount={(discount) => `-${discount}%`}
                 />
               ))}
             </div>

@@ -17,7 +17,11 @@
  * @page /(protected)/cart - Shopping cart page
  */
 
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { ROUTES } from "@/constants/routes";
+import { FALLBACK_CART_ITEMS } from "@/lib/fallback-data";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -26,33 +30,37 @@ export const metadata: Metadata = {
   description: "Review your cart items and proceed to checkout.",
 };
 
-// Mock cart data (will be replaced with real data from Firebase/LocalStorage)
-const cartItems = [
-  {
-    id: "1",
-    productId: "product-123",
-    slug: "samsung-galaxy-s23",
-    name: "Samsung Galaxy S23 5G (Phantom Black, 128GB)",
-    image: "/products/samsung-s23.jpg",
-    price: 74999,
-    originalPrice: 89999,
-    quantity: 1,
-    inStock: true,
-    maxQuantity: 5,
-  },
-  {
-    id: "2",
-    productId: "product-456",
-    slug: "sony-headphones",
-    name: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
-    image: "/products/sony-wh1000xm5.jpg",
-    price: 29990,
-    originalPrice: 34990,
-    quantity: 2,
-    inStock: true,
-    maxQuantity: 3,
-  },
-];
+async function getCartItems() {
+  try {
+    const cookieStore = await cookies();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}${API_ENDPOINTS.CART.GET}`,
+      {
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Failed to fetch cart - Using fallback data");
+      return FALLBACK_CART_ITEMS;
+    }
+
+    const data = await response.json();
+    const items = data.items || [];
+    // If API returns empty array, use fallback data for better UX
+    if (items.length === 0) {
+      console.log("API returned empty cart - Using fallback data");
+      return FALLBACK_CART_ITEMS;
+    }
+    return items;
+  } catch (error) {
+    console.error("Error fetching cart:", error, "- Using fallback data");
+    return FALLBACK_CART_ITEMS;
+  }
+}
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -62,11 +70,12 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-function calculateTotal(items: typeof cartItems) {
+function calculateTotal(items: any[]) {
   return items.reduce((total, item) => total + item.price * item.quantity, 0);
 }
 
-export default function CartPage() {
+export default async function CartPage() {
+  const cartItems = await getCartItems();
   const subtotal = calculateTotal(cartItems);
   const tax = Math.round(subtotal * 0.18); // 18% GST
   const shipping = subtotal > 50000 ? 0 : 99;
@@ -143,7 +152,7 @@ export default function CartPage() {
                 <div className="flex gap-4">
                   {/* Product Image */}
                   <Link
-                    href={`/buy-product-${item.slug}`}
+                    href={ROUTES.PRODUCTS.DETAIL(item.slug)}
                     className="relative w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0"
                   >
                     <Image
@@ -158,7 +167,7 @@ export default function CartPage() {
                   {/* Product Details */}
                   <div className="flex-1 min-w-0">
                     <Link
-                      href={`/buy-product-${item.slug}`}
+                      href={ROUTES.PRODUCTS.DETAIL(item.slug)}
                       className="font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 line-clamp-2"
                     >
                       {item.name}

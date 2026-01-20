@@ -19,18 +19,16 @@ export const ROUTES = {
 
   // Products
   PRODUCTS: {
-    LIST: "/products",
-    DETAIL: (slug: string) => `/products/${slug}`,
-    CATEGORY: (slug: string) => `/products/category/${slug}`,
+    LIST: "/buy-product-all",
+    DETAIL: (slug: string) => `/buy-product-${slug}`,
+    FILTERS: (...filters: string[]) => `/buy-product-${filters.join("/")}`,
   },
 
   // Auctions
   AUCTIONS: {
-    LIST: "/auctions",
-    DETAIL: (id: string) => `/auctions/${id}`,
-    MY_BIDS: "/auctions/my-bids",
-    WATCHLIST: "/auctions/watchlist",
-    WON: "/auctions/won",
+    LIST: "/buy-auction-all",
+    DETAIL: (slug: string) => `/buy-auction-${slug}`,
+    FILTERS: (...filters: string[]) => `/buy-auction-${filters.join("/")}`,
   },
 
   // Shops
@@ -48,6 +46,7 @@ export const ROUTES = {
   // Search
   SEARCH: "/search",
   COMPARE: "/compare",
+  DEALS: "/deals",
 
   // Auth routes
   AUTH: {
@@ -130,6 +129,7 @@ export const ROUTE_GROUPS = {
     ROUTES.SHOPS.LIST,
     ROUTES.CATEGORIES.LIST,
     ROUTES.SEARCH,
+    ROUTES.DEALS,
     ROUTES.ABOUT,
     ROUTES.CONTACT,
     ROUTES.TERMS,

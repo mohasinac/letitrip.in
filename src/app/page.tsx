@@ -17,7 +17,10 @@
  */
 
 import { ClientLink } from "@/components/common";
-import { AdvertisementBanner, FAQAccordion } from "@letitrip/react-library";
+import { AdvertisementBanner } from "@/components/common/AdvertisementBanner";
+import { FAQAccordion } from "@/components/common/FAQAccordion";
+import { ROUTES } from "@/constants/routes";
+import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallback-data";
 import { Metadata } from "next";
 
 // SEO Metadata
@@ -69,17 +72,28 @@ async function getHomePageData() {
     const featured = featuredRes.ok ? await featuredRes.json() : { data: [] };
     const popular = popularRes.ok ? await popularRes.json() : { data: [] };
 
+    // Extract data with fallback for empty arrays
+    const categoriesData = categories.data || [];
+    const featuredData = featured.data?.products || [];
+    const popularData = popular.data?.products || [];
+
     return {
-      categories: categories.data || [],
-      featuredProducts: featured.data?.products || [],
-      popularProducts: popular.data?.products || [],
+      categories:
+        categoriesData.length > 0 ? categoriesData : FALLBACK_CATEGORIES,
+      featuredProducts:
+        featuredData.length > 0 ? featuredData : FALLBACK_PRODUCTS,
+      popularProducts: popularData.length > 0 ? popularData : FALLBACK_PRODUCTS,
     };
   } catch (error) {
-    console.error("Error fetching homepage data:", error);
+    console.error(
+      "Error fetching homepage data:",
+      error,
+      "- Using fallback data",
+    );
     return {
-      categories: [],
-      featuredProducts: [],
-      popularProducts: [],
+      categories: FALLBACK_CATEGORIES,
+      featuredProducts: FALLBACK_PRODUCTS,
+      popularProducts: FALLBACK_PRODUCTS,
     };
   }
 }
@@ -97,7 +111,7 @@ const heroSlides = [
     title: "Premium Electronics at Unbeatable Prices",
     subtitle: "Shop the latest gadgets with exclusive deals",
     ctaText: "Shop Now",
-    ctaLink: "/buy-product-electronics",
+    ctaLink: ROUTES.PRODUCTS.FILTERS("electronics"),
     poster: "/images/hero-1-poster.jpg",
   },
   {
@@ -114,7 +128,7 @@ const heroSlides = [
     title: "Fashion Sale - Up to 70% Off",
     subtitle: "Trending styles for men, women & kids",
     ctaText: "Explore Fashion",
-    ctaLink: "/buy-product-fashion",
+    ctaLink: ROUTES.PRODUCTS.FILTERS("fashion"),
   },
 ];
 
@@ -181,7 +195,7 @@ export default async function HomePage() {
         LinkComponent={ClientLink}
         content="🎉 New Year Sale! Get up to 50% off on selected products"
         ctaText="Shop Now"
-        ctaHref="/deals"
+        ctaHref={ROUTES.DEALS}
         isDismissible={true}
         backgroundColor="#3b82f6"
       />
@@ -214,13 +228,13 @@ export default async function HomePage() {
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <ClientLink
-                href="/buy-product-all"
+                href={ROUTES.PRODUCTS.LIST}
                 className="rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white transition hover:bg-blue-700"
               >
                 Start Shopping
               </ClientLink>
               <ClientLink
-                href="/auctions"
+                href={ROUTES.AUCTIONS.LIST}
                 className="rounded-lg border-2 border-white bg-white/10 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
               >
                 View Auctions
@@ -250,7 +264,7 @@ export default async function HomePage() {
               Popular Categories
             </h2>
             <ClientLink
-              href="/categories"
+              href={ROUTES.CATEGORIES.LIST}
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
@@ -262,7 +276,7 @@ export default async function HomePage() {
               {categories.slice(0, 10).map((category: any) => (
                 <ClientLink
                   key={category.id}
-                  href={`/buy-product-${category.slug}`}
+                  href={ROUTES.PRODUCTS.FILTERS(category.slug)}
                   className="rounded-lg border border-gray-200 p-4 text-center transition hover:border-blue-500 hover:shadow-lg dark:border-gray-700"
                 >
                   <div className="mb-2 text-4xl">{category.icon || "📦"}</div>
@@ -291,7 +305,7 @@ export default async function HomePage() {
               Featured Products
             </h2>
             <ClientLink
-              href="/buy-product-all?featured=true"
+              href={`${ROUTES.PRODUCTS.LIST}?featured=true`}
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
@@ -303,7 +317,7 @@ export default async function HomePage() {
               {featuredProducts.slice(0, 8).map((product: any) => (
                 <ClientLink
                   key={product.id}
-                  href={`/buy-product-${product.slug}`}
+                  href={ROUTES.PRODUCTS.DETAIL(product.slug)}
                   className="group rounded-lg border border-gray-200 overflow-hidden transition hover:shadow-lg dark:border-gray-700"
                 >
                   <div className="aspect-square bg-gray-200 dark:bg-gray-700" />
@@ -340,7 +354,7 @@ export default async function HomePage() {
               Popular Products
             </h2>
             <ClientLink
-              href="/buy-product-all?sort=popular"
+              href={`${ROUTES.PRODUCTS.LIST}?sort=popular`}
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
@@ -352,7 +366,7 @@ export default async function HomePage() {
               {popularProducts.slice(0, 8).map((product: any) => (
                 <ClientLink
                   key={product.id}
-                  href={`/buy-product-${product.slug}`}
+                  href={ROUTES.PRODUCTS.DETAIL(product.slug)}
                   className="group rounded-lg border border-gray-200 overflow-hidden transition hover:shadow-lg dark:border-gray-700"
                 >
                   <div className="aspect-square bg-gray-200 dark:bg-gray-700" />
@@ -411,13 +425,13 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <ClientLink
-              href="/register"
+              href={ROUTES.AUTH.REGISTER}
               className="rounded-lg bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition hover:bg-gray-100"
             >
               Create Account
             </ClientLink>
             <ClientLink
-              href="/buy-product-all"
+              href={ROUTES.PRODUCTS.LIST}
               className="rounded-lg border-2 border-white px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
             >
               Browse Products

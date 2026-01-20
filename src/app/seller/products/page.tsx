@@ -17,7 +17,10 @@
  * @page /seller/products - Seller products management
  */
 
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { ROUTES } from "@/constants/routes";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -26,45 +29,31 @@ export const metadata: Metadata = {
   description: "Manage your product listings.",
 };
 
-// Mock products data
-const products = [
-  {
-    id: "prod-1",
-    name: "Samsung Galaxy S23 5G (Phantom Black, 128GB)",
-    slug: "samsung-galaxy-s23",
-    image: "/products/samsung-s23.jpg",
-    price: 74999,
-    stock: 25,
-    status: "active",
-    category: "Electronics",
-    sales: 45,
-    createdAt: "2024-01-10",
-  },
-  {
-    id: "prod-2",
-    name: "Sony WH-1000XM5 Wireless Headphones",
-    slug: "sony-wh-1000xm5",
-    image: "/products/sony-headphones.jpg",
-    price: 29990,
-    stock: 15,
-    status: "active",
-    category: "Electronics",
-    sales: 38,
-    createdAt: "2024-01-12",
-  },
-  {
-    id: "prod-3",
-    name: "Apple Watch Series 9 (Midnight, 45mm)",
-    slug: "apple-watch-series-9",
-    image: "/products/apple-watch-9.jpg",
-    price: 45900,
-    stock: 0,
-    status: "inactive",
-    category: "Electronics",
-    sales: 32,
-    createdAt: "2024-01-15",
-  },
-];
+async function getSellerProducts() {
+  try {
+    const cookieStore = await cookies();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}${API_ENDPOINTS.PRODUCTS.LIST}?seller=me`,
+      {
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Failed to fetch products");
+      return [];
+    }
+
+    const data = await response.json();
+    return data.products || [];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -74,7 +63,9 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-export default function SellerProductsPage() {
+export default async function SellerProductsPage() {
+  const products = await getSellerProducts();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex">
@@ -447,7 +438,7 @@ export default function SellerProductsPage() {
                             </div>
                             <div>
                               <Link
-                                href={`/buy-product-${product.slug}`}
+                                href={ROUTES.PRODUCTS.DETAIL(product.slug)}
                                 className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                                 target="_blank"
                               >
@@ -527,7 +518,7 @@ export default function SellerProductsPage() {
                               </svg>
                             </Link>
                             <Link
-                              href={`/buy-product-${product.slug}`}
+                              href={ROUTES.PRODUCTS.DETAIL(product.slug)}
                               className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
                               title="View product"
                               target="_blank"
