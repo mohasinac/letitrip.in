@@ -1,8 +1,8 @@
 /**
  * Seller Shop Settings Page
- * 
+ *
  * Configure shop information, branding, and business settings.
- * 
+ *
  * Features:
  * - Shop information form
  * - Logo and banner upload
@@ -10,7 +10,7 @@
  * - Operating hours
  * - Shipping settings
  * - Return policy
- * 
+ *
  * @page /seller/shop - Seller shop settings
  */
 

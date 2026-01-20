@@ -1,9 +1,9 @@
 /**
  * User Wishlist Page
- * 
+ *
  * Displays user's saved/wishlist items in a grid layout.
  * Allows quick actions like add to cart or remove.
- * 
+ *
  * Features:
  * - Grid view of wishlist items
  * - Product card display
@@ -11,13 +11,13 @@
  * - Remove from wishlist
  * - Empty state
  * - Price alerts for price drops
- * 
+ *
  * @page /(protected)/user/wishlist - User wishlist page
  */
 
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "My Wishlist | Let It Rip",
@@ -206,21 +206,22 @@ export default function UserWishlistPage() {
                       <span className="text-xl font-bold text-gray-900 dark:text-white">
                         {formatPrice(item.price)}
                       </span>
-                      {item.originalPrice && item.originalPrice > item.price && (
-                        <>
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                            {formatPrice(item.originalPrice)}
-                          </span>
-                          <span className="ml-2 text-sm text-green-600 dark:text-green-400 font-medium">
-                            {Math.round(
-                              ((item.originalPrice - item.price) /
-                                item.originalPrice) *
-                                100
-                            )}
-                            % off
-                          </span>
-                        </>
-                      )}
+                      {item.originalPrice &&
+                        item.originalPrice > item.price && (
+                          <>
+                            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                              {formatPrice(item.originalPrice)}
+                            </span>
+                            <span className="ml-2 text-sm text-green-600 dark:text-green-400 font-medium">
+                              {Math.round(
+                                ((item.originalPrice - item.price) /
+                                  item.originalPrice) *
+                                  100,
+                              )}
+                              % off
+                            </span>
+                          </>
+                        )}
                     </div>
 
                     {/* Actions */}

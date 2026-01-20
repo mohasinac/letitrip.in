@@ -1,9 +1,9 @@
 /**
  * User Orders Page
- * 
+ *
  * Displays user's order history in a datatable format.
  * Includes filters, search, and status tracking.
- * 
+ *
  * Features:
  * - Orders datatable with sorting
  * - Status filters (all/pending/shipped/delivered/cancelled)
@@ -12,7 +12,7 @@
  * - Track order link
  * - Invoice download
  * - Reorder button
- * 
+ *
  * @page /(protected)/user/orders - User orders page
  */
 
@@ -62,10 +62,14 @@ function formatPrice(price: number) {
 
 function getStatusColor(status: string) {
   const colors = {
-    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    processing: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-    shipped: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-    delivered: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+    pending:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    processing:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    shipped:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+    delivered:
+      "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
     cancelled: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
   };
   return colors[status as keyof typeof colors] || colors.pending;
@@ -171,7 +175,7 @@ export default function UserOrdersPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                              order.status
+                              order.status,
                             )}`}
                           >
                             {order.status.charAt(0).toUpperCase() +

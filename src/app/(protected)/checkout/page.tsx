@@ -1,9 +1,9 @@
 /**
  * Checkout Page
- * 
+ *
  * Multi-step checkout flow with address selection, payment, and order confirmation.
  * Supports Razorpay and PhonePe payment gateways.
- * 
+ *
  * Features:
  * - Address selection with create modal
  * - Coupon code input with validation
@@ -11,7 +11,7 @@
  * - Order summary with price breakdown
  * - Payment gateway integration
  * - Order confirmation
- * 
+ *
  * @page /(protected)/checkout - Checkout page
  */
 
@@ -67,7 +67,7 @@ function formatPrice(price: number) {
 export default function CheckoutPage() {
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
   const tax = Math.round(subtotal * 0.18);
   const shipping = subtotal > 50000 ? 0 : 99;

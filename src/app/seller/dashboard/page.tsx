@@ -1,9 +1,9 @@
 /**
  * Seller Dashboard Page
- * 
+ *
  * Main dashboard for sellers to manage their shop, products, and orders.
  * Displays key metrics, recent orders, and quick actions.
- * 
+ *
  * Features:
  * - Left sidebar navigation
  * - Dashboard stats (sales, orders, products, visitors)
@@ -12,7 +12,7 @@
  * - Top products list
  * - Quick actions
  * - Shop performance metrics
- * 
+ *
  * @page /seller/dashboard - Seller dashboard
  */
 
@@ -79,10 +79,14 @@ function formatPrice(price: number) {
 
 function getStatusColor(status: string) {
   const colors = {
-    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    processing: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-    shipped: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-    delivered: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+    pending:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    processing:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    shipped:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+    delivered:
+      "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
     cancelled: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
   };
   return colors[status as keyof typeof colors] || colors.pending;
@@ -453,7 +457,10 @@ export default function SellerDashboardPage() {
                 </h2>
                 <div className="space-y-4">
                   {topProducts.map((product, index) => (
-                    <div key={index} className="flex justify-between items-center">
+                    <div
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
                       <div className="flex-1">
                         <p className="font-medium text-gray-900 dark:text-white">
                           {product.name}
@@ -536,7 +543,7 @@ export default function SellerDashboardPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                              order.status
+                              order.status,
                             )}`}
                           >
                             {order.status.charAt(0).toUpperCase() +

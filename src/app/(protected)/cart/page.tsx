@@ -1,9 +1,9 @@
 /**
  * Shopping Cart Page
- * 
+ *
  * Displays user's cart items with quantity controls and checkout.
  * Supports guest cart (LocalStorage) and authenticated user cart (Firestore).
- * 
+ *
  * Features:
  * - Cart item list with image, name, price
  * - Quantity controls (increase/decrease)
@@ -13,13 +13,13 @@
  * - Checkout button
  * - Empty cart state
  * - Guest → User cart merge on sign-in
- * 
+ *
  * @page /(protected)/cart - Shopping cart page
  */
 
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Shopping Cart | Let It Rip",
@@ -121,7 +121,8 @@ export default function CartPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Shopping Cart ({cartItems.length} {cartItems.length === 1 ? "item" : "items"})
+            Shopping Cart ({cartItems.length}{" "}
+            {cartItems.length === 1 ? "item" : "items"})
           </h1>
           <Link
             href="/"
@@ -179,21 +180,22 @@ export default function CartPage() {
                       <span className="text-xl font-bold text-gray-900 dark:text-white">
                         {formatPrice(item.price)}
                       </span>
-                      {item.originalPrice && item.originalPrice > item.price && (
-                        <>
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                            {formatPrice(item.originalPrice)}
-                          </span>
-                          <span className="ml-2 text-sm text-green-600 dark:text-green-400 font-medium">
-                            {Math.round(
-                              ((item.originalPrice - item.price) /
-                                item.originalPrice) *
-                                100
-                            )}
-                            % off
-                          </span>
-                        </>
-                      )}
+                      {item.originalPrice &&
+                        item.originalPrice > item.price && (
+                          <>
+                            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                              {formatPrice(item.originalPrice)}
+                            </span>
+                            <span className="ml-2 text-sm text-green-600 dark:text-green-400 font-medium">
+                              {Math.round(
+                                ((item.originalPrice - item.price) /
+                                  item.originalPrice) *
+                                  100,
+                              )}
+                              % off
+                            </span>
+                          </>
+                        )}
                     </div>
                   </div>
 

@@ -1,16 +1,16 @@
 /**
  * Forgot Password Page
- * 
+ *
  * Password reset request page with email verification.
  * Sends password reset link via Firebase Auth.
- * 
+ *
  * Features:
  * - Email input for reset link
  * - Firebase password reset email
  * - Success confirmation
  * - Back to login link
  * - Resend reset link option
- * 
+ *
  * @page /(auth)/forgot-password - Password reset page
  */
 
@@ -128,8 +128,8 @@ export default function ForgotPasswordPage() {
               <p className="font-medium mb-1">Check your email</p>
               <p className="text-blue-700 dark:text-blue-300">
                 If an account exists with this email, you'll receive a password
-                reset link within a few minutes. Please check your spam folder if
-                you don't see it.
+                reset link within a few minutes. Please check your spam folder
+                if you don't see it.
               </p>
             </div>
           </div>

@@ -1,22 +1,22 @@
 /**
  * User Profile Page
- * 
+ *
  * User profile management with right sidebar navigation.
  * Displays user information and allows editing.
- * 
+ *
  * Features:
  * - Profile information display
  * - Avatar upload
  * - Edit profile form
  * - Right sidebar with navigation links
  * - Account settings
- * 
+ *
  * @page /(protected)/user/profile - User profile page
  */
 
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "My Profile | Let It Rip",

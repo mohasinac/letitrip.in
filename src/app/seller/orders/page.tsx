@@ -1,9 +1,9 @@
 /**
  * Seller Orders Page
- * 
+ *
  * View and manage orders for seller's products.
  * Sellers can view order details, update status, and download invoices.
- * 
+ *
  * Features:
  * - Orders datatable with filters
  * - Status updates
@@ -11,7 +11,7 @@
  * - Customer search
  * - Invoice download
  * - Order details modal
- * 
+ *
  * @page /seller/orders - Seller orders management
  */
 
@@ -101,10 +101,14 @@ function formatDate(date: string) {
 
 function getStatusBadge(status: string) {
   const styles = {
-    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    processing: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-    shipped: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-    delivered: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+    pending:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    processing:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    shipped:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+    delivered:
+      "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
     cancelled: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
   };
 
@@ -404,7 +408,9 @@ export default function SellerOrdersPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(order.status)}`}
+                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(
+                              order.status,
+                            )}`}
                           >
                             {order.status.charAt(0).toUpperCase() +
                               order.status.slice(1)}

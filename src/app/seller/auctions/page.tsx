@@ -1,9 +1,9 @@
 /**
  * Seller Auctions Page
- * 
+ *
  * Auctions management with datatable, filters, and bulk actions.
  * Allows sellers to view, create, edit, and manage their auctions.
- * 
+ *
  * Features:
  * - Auctions datatable with sorting
  * - Search and filters
@@ -13,13 +13,13 @@
  * - Inline edit
  * - Create new auction button
  * - Bid tracking
- * 
+ *
  * @page /seller/auctions - Seller auctions management
  */
 
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Manage Auctions | Seller Dashboard",

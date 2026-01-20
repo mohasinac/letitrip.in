@@ -1,9 +1,9 @@
 /**
  * Seller Products Page
- * 
+ *
  * Products management with datatable, filters, and bulk actions.
  * Allows sellers to view, create, edit, and manage their products.
- * 
+ *
  * Features:
  * - Products datatable with sorting
  * - Search and filters
@@ -13,13 +13,13 @@
  * - Inline edit
  * - Create new product button
  * - Stock management
- * 
+ *
  * @page /seller/products - Seller products management
  */
 
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Manage Products | Seller Dashboard",
