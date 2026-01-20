@@ -13,27 +13,16 @@ export * from "./styles";
 // Utilities (includes HttpClient)
 export * from "./utils";
 
-// Adapters - export explicitly to avoid conflicts
-export {
-  // Upload service classes
-  ApiUploadService,
-  // Firebase adapters
-  FirebaseAuthAdapter,
-  FirebaseFirestoreAdapter,
-  FirebaseStorageAdapter,
-  // Example adapters
-  InMemoryCacheAdapter,
-  LocalStorageCacheAdapter,
-  MockUploadService,
-  StorageUploadService,
-  SupabaseStorageAdapter,
-  // Adapter interfaces
-  type AnalyticsAdapter,
-  type AuthAdapter,
-  type CacheAdapter,
-  type DatabaseAdapter,
-  type StorageAdapter,
-  type UploadService,
+// Adapter types only - interfaces are SSR-safe
+// NOTE: Adapter classes (Firebase, LocalStorage, etc.) are NOT exported from main entry
+// to avoid SSR issues. Import them directly from "@letitrip/react-library/adapters"
+export type {
+  AnalyticsAdapter,
+  AuthAdapter,
+  CacheAdapter,
+  DatabaseAdapter,
+  StorageAdapter,
+  UploadService,
 } from "./adapters";
 
 // Types - import from './types' subpath to avoid conflicts

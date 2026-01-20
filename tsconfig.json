@@ -22,9 +22,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@letitrip/react-library": ["./react-library/dist"],
-      "@letitrip/react-library/*": ["./react-library/dist/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [

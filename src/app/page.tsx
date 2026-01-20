@@ -17,10 +17,7 @@
  */
 
 import { ClientLink } from "@/components/common";
-import {
-  AdvertisementBanner,
-  FAQAccordion,
-} from "@letitrip/react-library";
+import { AdvertisementBanner, FAQAccordion } from "@letitrip/react-library";
 import { Metadata } from "next";
 
 // SEO Metadata
@@ -238,7 +235,9 @@ export default async function HomePage() {
         <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white">
           <div className="text-center">
             <h2 className="text-4xl font-bold mb-4">Hero Carousel</h2>
-            <p className="text-xl">Coming Soon - Carousel implementation in progress</p>
+            <p className="text-xl">
+              Coming Soon - Carousel implementation in progress
+            </p>
           </div>
         </div>
       </section>
@@ -315,11 +314,12 @@ export default async function HomePage() {
                     <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       ₹{product.price?.toLocaleString("en-IN")}
                     </p>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <p className="text-sm text-gray-500 line-through">
-                        ₹{product.originalPrice.toLocaleString("en-IN")}
-                      </p>
-                    )}
+                    {product.originalPrice &&
+                      product.originalPrice > product.price && (
+                        <p className="text-sm text-gray-500 line-through">
+                          ₹{product.originalPrice.toLocaleString("en-IN")}
+                        </p>
+                      )}
                   </div>
                 </ClientLink>
               ))}
@@ -363,11 +363,12 @@ export default async function HomePage() {
                     <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       ₹{product.price?.toLocaleString("en-IN")}
                     </p>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <p className="text-sm text-gray-500 line-through">
-                        ₹{product.originalPrice.toLocaleString("en-IN")}
-                      </p>
-                    )}
+                    {product.originalPrice &&
+                      product.originalPrice > product.price && (
+                        <p className="text-sm text-gray-500 line-through">
+                          ₹{product.originalPrice.toLocaleString("en-IN")}
+                        </p>
+                      )}
                   </div>
                 </ClientLink>
               ))}

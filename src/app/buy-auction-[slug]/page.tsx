@@ -24,6 +24,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ClientLink } from "@/components/common/ClientLink";
+
 // Types
 interface PageProps {
   params: {
@@ -193,7 +195,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
         {/* Breadcrumbs */}
         <Breadcrumb
           currentPath={`/buy-auction-${params.slug}`}
-          LinkComponent={Link as any}
+          LinkComponent={ClientLink}
         />
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -492,7 +494,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                       : undefined,
                   }}
                   variant="compact"
-                  LinkComponent={Link as any}
+                  LinkComponent={ClientLink}
                   ImageComponent={"img" as any}
                   formatPrice={(price) => `₹${price.toLocaleString()}`}
                   formatTimeRemaining={(endTime) => {

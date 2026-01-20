@@ -46,6 +46,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
+        "adapters/index": resolve(__dirname, "src/adapters/index.ts"),
         "utils/index": resolve(__dirname, "src/utils/index.ts"),
         "components/index": resolve(__dirname, "src/components/index.ts"),
         "hooks/index": resolve(__dirname, "src/hooks/index.ts"),
@@ -65,6 +66,8 @@ export default defineConfig({
         "clsx",
         "tailwind-merge",
         "libphonenumber-js",
+        "isomorphic-dompurify",
+        "dompurify",
       ],
       output: {
         banner: (chunk) => {
@@ -80,6 +83,8 @@ export default defineConfig({
           clsx: "clsx",
           "tailwind-merge": "tailwindMerge",
           "libphonenumber-js": "libphonenumberJs",
+          "isomorphic-dompurify": "DOMPurify",
+          dompurify: "DOMPurify",
         },
         // Optimize chunk splitting for better tree-shaking
         manualChunks: undefined, // Let Rollup decide optimal chunks

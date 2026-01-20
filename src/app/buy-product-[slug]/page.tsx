@@ -23,6 +23,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ClientLink } from "@/components/common/ClientLink";
+
 // Types
 interface PageProps {
   params: {
@@ -183,7 +185,7 @@ export default async function ProductDetailsPage({
         {/* Breadcrumbs */}
         <Breadcrumb
           currentPath={`/buy-product-${params.slug}`}
-          LinkComponent={Link as any}
+          LinkComponent={ClientLink}
         />
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -448,7 +450,7 @@ export default async function ProductDetailsPage({
                   shopName={similarProduct.shopName}
                   shopSlug={similarProduct.shopSlug}
                   variant="public"
-                  LinkComponent={Link as any}
+                  LinkComponent={ClientLink}
                   ImageComponent={"img" as any}
                   formatPrice={(price) => `₹${price.toLocaleString()}`}
                   formatDiscount={(discount) => `-${discount}%`}

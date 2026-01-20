@@ -18,6 +18,9 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ClientLink } from "@/components/common/ClientLink";
+import { SortDropdown } from "@/components/common/SortDropdown";
+
 // Types
 interface PageProps {
   params: {
@@ -181,7 +184,7 @@ export default async function ProductListingPage({
         {/* Breadcrumbs */}
         <Breadcrumb
           currentPath={`/buy-product-${category}`}
-          LinkComponent={Link as any}
+          LinkComponent={ClientLink}
         />
 
         {/* Header */}
@@ -202,25 +205,11 @@ export default async function ProductListingPage({
           </div>
 
           {/* Sort Dropdown */}
-          <select
-            value={currentSort}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              if (e.target.value !== "newest") {
-                url.searchParams.set("sort", e.target.value);
-              } else {
-                url.searchParams.delete("sort");
-              }
-              window.location.href = url.toString();
-            }}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <SortDropdown
+            currentSort={currentSort}
+            options={SORT_OPTIONS}
+            defaultValue="newest"
+          />
         </div>
 
         {/* Products Grid */}
@@ -245,7 +234,7 @@ export default async function ProductListingPage({
                   shopName={product.shopName}
                   shopSlug={product.shopSlug}
                   variant="public"
-                  LinkComponent={Link as any}
+                  LinkComponent={ClientLink}
                   ImageComponent={"img" as any}
                   formatPrice={(price) => `₹${price.toLocaleString()}`}
                   formatDiscount={(discount) => `-${discount}%`}

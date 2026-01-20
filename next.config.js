@@ -29,7 +29,7 @@ const nextConfig = {
   // Reduce Docker image size
   output: "standalone",
 
-  // Turbopack configuration (empty to silence warning)
+  // Turbopack configuration - npm workspaces handles @letitrip/react-library
   turbopack: {},
 
   // Experimental features for faster builds

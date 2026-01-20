@@ -7,28 +7,35 @@
 
 :root {
   /* ============================================
-   * Brand Colors
+   * Brand Colors - LetItRip Theme
+   * Blue Dragon, Red Accent, Gold Highlight
    * ============================================ */
-  --color-primary: #ca8a04; /* yellow-600 - Main brand color */
-  --color-primary-hover: #a16207; /* yellow-700 */
-  --color-primary-light: #fef08a; /* yellow-200 */
-  --color-primary-dark: #854d0e; /* yellow-800 */
-  --color-primary-50: #fefce8;
-  --color-primary-100: #fef9c3;
-  --color-primary-200: #fef08a;
-  --color-primary-300: #fde047;
-  --color-primary-400: #facc15;
-  --color-primary-500: #eab308;
-  --color-primary-600: #ca8a04;
-  --color-primary-700: #a16207;
-  --color-primary-800: #854d0e;
-  --color-primary-900: #713f12;
+  --color-primary: #2e86ab; /* Dragon Blue - Main brand color */
+  --color-primary-hover: #256d8a; /* Darker blue */
+  --color-primary-light: #a8d4e6; /* Light blue */
+  --color-primary-dark: #1a5066; /* Dark blue */
+  --color-primary-50: #e8f4f8;
+  --color-primary-100: #d1e9f1;
+  --color-primary-200: #a8d4e6;
+  --color-primary-300: #7fbfda;
+  --color-primary-400: #56aace;
+  --color-primary-500: #2e86ab;
+  --color-primary-600: #256d8a;
+  --color-primary-700: #1c5469;
+  --color-primary-800: #1a5066;
+  --color-primary-900: #0f2f3d;
 
-  /* Secondary */
-  --color-secondary: #4f46e5; /* indigo-600 */
-  --color-secondary-hover: #4338ca; /* indigo-700 */
-  --color-secondary-light: #c7d2fe; /* indigo-200 */
-  --color-secondary-dark: #3730a3; /* indigo-800 */
+  /* Secondary - Crimson Red */
+  --color-secondary: #c41e3a; /* Logo red */
+  --color-secondary-hover: #a3182f; /* Darker red */
+  --color-secondary-light: #f5b3be; /* Light red/pink */
+  --color-secondary-dark: #8b1528; /* Dark red */
+
+  /* Accent - Gold/Yellow */
+  --color-accent: #f4b942; /* Gold from .IN text */
+  --color-accent-hover: #e5a832;
+  --color-accent-light: #fce6b8;
+  --color-accent-dark: #c4942f;
 
   /* ============================================
    * Semantic Colors
@@ -78,38 +85,38 @@
   --color-gray-950: #030712;
 
   /* ============================================
-   * Background Colors
+   * Background Colors - White light / Black dark
    * ============================================ */
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb; /* gray-50 */
-  --color-bg-tertiary: #f3f4f6; /* gray-100 */
-  --color-bg-inverse: #111827; /* gray-900 */
+  --color-bg-primary: #ffffff; /* Pure white */
+  --color-bg-secondary: #f8fafc; /* slate-50 */
+  --color-bg-tertiary: #f1f5f9; /* slate-100 */
+  --color-bg-inverse: #000000; /* Pure black */
   --color-bg-elevated: #ffffff;
-  --color-bg-hover: #f3f4f6; /* gray-100 */
-  --color-bg-active: #e5e7eb; /* gray-200 */
-  --color-bg-disabled: #f3f4f6; /* gray-100 */
+  --color-bg-hover: #f1f5f9; /* slate-100 */
+  --color-bg-active: #e2e8f0; /* slate-200 */
+  --color-bg-disabled: #f1f5f9; /* slate-100 */
 
   /* ============================================
    * Text Colors
    * ============================================ */
-  --color-text-primary: #111827; /* gray-900 */
-  --color-text-secondary: #4b5563; /* gray-600 */
-  --color-text-tertiary: #6b7280; /* gray-500 */
-  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-primary: #0f172a; /* slate-900 */
+  --color-text-secondary: #475569; /* slate-600 */
+  --color-text-tertiary: #64748b; /* slate-500 */
+  --color-text-muted: #94a3b8; /* slate-400 */
   --color-text-inverse: #ffffff;
-  --color-text-disabled: #9ca3af; /* gray-400 */
-  --color-text-link: #2563eb; /* blue-600 */
-  --color-text-link-hover: #1d4ed8; /* blue-700 */
+  --color-text-disabled: #94a3b8; /* slate-400 */
+  --color-text-link: #2e86ab; /* primary blue */
+  --color-text-link-hover: #256d8a; /* primary hover */
 
   /* ============================================
    * Border Colors
    * ============================================ */
-  --color-border-primary: #e5e7eb; /* gray-200 */
-  --color-border-secondary: #d1d5db; /* gray-300 */
-  --color-border-focus: #ca8a04; /* primary */
+  --color-border-primary: #e2e8f0; /* slate-200 */
+  --color-border-secondary: #cbd5e1; /* slate-300 */
+  --color-border-focus: #2e86ab; /* primary blue */
   --color-border-error: #dc2626; /* error */
   --color-border-success: #16a34a; /* success */
-  --color-border-disabled: #e5e7eb; /* gray-200 */
+  --color-border-disabled: #e2e8f0; /* slate-200 */
 
   /* ============================================
    * Status Colors (Orders, Auctions, etc.)
@@ -158,12 +165,12 @@
   --color-status-unverified: #f59e0b;
 
   /* ============================================
-   * RipLimit Currency Colors
+   * RipLimit Currency Colors - Gold theme
    * ============================================ */
-  --color-riplimit: #ca8a04; /* matches primary */
-  --color-riplimit-bg: #fef9c3;
-  --color-riplimit-blocked: #dc2626;
-  --color-riplimit-blocked-bg: #fef2f2;
+  --color-riplimit: #f4b942; /* Gold accent */
+  --color-riplimit-bg: #fce6b8;
+  --color-riplimit-blocked: #c41e3a; /* Red */
+  --color-riplimit-blocked-bg: #f5b3be;
   --color-riplimit-available: #16a34a;
   --color-riplimit-available-bg: #f0fdf4;
 
@@ -176,34 +183,34 @@
 }
 
 /* ============================================
- * Dark Theme Overrides
+ * Dark Theme Overrides - Pure Black Background
  * ============================================ */
 [data-theme="dark"],
 .dark {
-  /* Background */
-  --color-bg-primary: #111827; /* gray-900 */
-  --color-bg-secondary: #1f2937; /* gray-800 */
-  --color-bg-tertiary: #374151; /* gray-700 */
+  /* Background - Pure black */
+  --color-bg-primary: #000000; /* Pure black */
+  --color-bg-secondary: #0a0a0a; /* Near black */
+  --color-bg-tertiary: #171717; /* neutral-900 */
   --color-bg-inverse: #ffffff;
-  --color-bg-elevated: #1f2937;
-  --color-bg-hover: #374151;
-  --color-bg-active: #4b5563;
-  --color-bg-disabled: #374151;
+  --color-bg-elevated: #0a0a0a;
+  --color-bg-hover: #171717;
+  --color-bg-active: #262626; /* neutral-800 */
+  --color-bg-disabled: #171717;
 
   /* Text */
-  --color-text-primary: #f9fafb; /* gray-50 */
-  --color-text-secondary: #d1d5db; /* gray-300 */
-  --color-text-tertiary: #9ca3af; /* gray-400 */
-  --color-text-muted: #6b7280; /* gray-500 */
-  --color-text-inverse: #111827;
-  --color-text-disabled: #4b5563;
-  --color-text-link: #60a5fa; /* blue-400 */
-  --color-text-link-hover: #93c5fd; /* blue-300 */
+  --color-text-primary: #fafafa; /* neutral-50 */
+  --color-text-secondary: #d4d4d4; /* neutral-300 */
+  --color-text-tertiary: #a3a3a3; /* neutral-400 */
+  --color-text-muted: #737373; /* neutral-500 */
+  --color-text-inverse: #000000;
+  --color-text-disabled: #525252;
+  --color-text-link: #56aace; /* Lighter primary blue */
+  --color-text-link-hover: #7fbfda; /* Even lighter blue */
 
   /* Border */
-  --color-border-primary: #374151; /* gray-700 */
-  --color-border-secondary: #4b5563; /* gray-600 */
-  --color-border-disabled: #374151;
+  --color-border-primary: #262626; /* neutral-800 */
+  --color-border-secondary: #404040; /* neutral-700 */
+  --color-border-disabled: #262626;
 
   /* Status backgrounds (darker versions) */
   --color-status-pending-bg: rgba(245, 158, 11, 0.15);
