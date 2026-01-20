@@ -25,7 +25,7 @@ import {
   ProductCard,
 } from "@letitrip/react-library";
 import { Metadata } from "next";
-import Link from "next/link";
+import { ClientLink } from "@/components/common";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -271,7 +271,7 @@ export default async function HomePage() {
                   icon={category.icon}
                   itemCount={category.itemCount}
                   onClick={() => {}}
-                  LinkComponent={Link}
+                  LinkComponent={ClientLink}
                 />
               )}
               itemWidth={250}

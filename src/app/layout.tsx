@@ -19,20 +19,11 @@ import {
   User,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { ClientLink } from "@/components/common/ClientLink";
 import "./globals.css";
 import { Providers } from "./providers";
 
-// Type-safe Link wrapper
-const LinkWrapper: ComponentType<{
-  href: string;
-  className?: string;
-  children: ReactNode;
-  target?: string;
-  rel?: string;
-  "aria-label"?: string;
-}> = Link as any;
 
 export const metadata: Metadata = {
   title: "LetItRip - Modern Auction & E-commerce Platform",
@@ -51,7 +42,7 @@ export default function RootLayout({
         <Providers>
           {/* Advertisement Banner */}
           <AdvertisementBanner
-            LinkComponent={LinkWrapper}
+            LinkComponent={ClientLink}
             content="🎉 Welcome to LetItRip! New Year Sale - Get 50% off on all products"
             ctaText="Shop Now"
             ctaHref="/products"
@@ -61,7 +52,7 @@ export default function RootLayout({
 
           {/* Header */}
           <Header
-            LinkComponent={LinkWrapper}
+            LinkComponent={ClientLink}
             logo={{
               src: "/logo.svg",
               alt: "LetItRip",
@@ -89,7 +80,7 @@ export default function RootLayout({
 
           {/* Footer */}
           <Footer
-            LinkComponent={LinkWrapper}
+            LinkComponent={ClientLink}
             linkSections={[
               {
                 title: "Shop",
@@ -139,7 +130,7 @@ export default function RootLayout({
 
           {/* Mobile Navigation */}
           <MobileNavigation
-            LinkComponent={LinkWrapper}
+            LinkComponent={ClientLink}
             currentPath="/"
             items={[
               { label: "Home", href: "/", icon: Home },
