@@ -1,8 +1,8 @@
 /**
  * CouponWizard Component
- * 
+ *
  * Multi-step wizard for creating and editing coupons/discount codes.
- * 
+ *
  * Features:
  * - 2-step non-linear navigation with step indicators
  * - Step 1: Basic info (code, description, type, value, dates)
@@ -10,7 +10,7 @@
  * - Inline validation with error badges
  * - Always-visible Save/Finish button
  * - Mobile responsive
- * 
+ *
  * @component CouponWizard
  * @example
  * ```tsx
@@ -20,7 +20,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface CouponFormData {
   // Step 1: Basic Info
@@ -105,7 +105,8 @@ export default function CouponWizard({
     if (step === 1) {
       if (!formData.code) newErrors.code = "Coupon code is required";
       if (formData.code && !/^[A-Z0-9-]+$/.test(formData.code))
-        newErrors.code = "Code must be uppercase letters, numbers, and hyphens only";
+        newErrors.code =
+          "Code must be uppercase letters, numbers, and hyphens only";
       if (!formData.description)
         newErrors.description = "Description is required";
       if (!formData.value || formData.value <= 0)
@@ -114,7 +115,7 @@ export default function CouponWizard({
         newErrors.value = "Percentage cannot exceed 100";
       if (!formData.startDate) newErrors.startDate = "Start date is required";
       if (!formData.endDate) newErrors.endDate = "End date is required";
-      
+
       if (formData.startDate && formData.endDate) {
         const start = new Date(formData.startDate);
         const end = new Date(formData.endDate);
@@ -212,8 +213,8 @@ export default function CouponWizard({
                       step.number === currentStep
                         ? "bg-blue-600 text-white"
                         : step.isComplete
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {step.isComplete && step.number !== currentStep ? (
@@ -284,7 +285,11 @@ export default function CouponWizard({
                         code: e.target.value.toUpperCase(),
                       })
                     }
-                    className={`flex-1 px-4 py-2 border ${errors.code ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white font-mono`}
+                    className={`flex-1 px-4 py-2 border ${
+                      errors.code
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white font-mono`}
                     placeholder="SUMMER2024"
                     maxLength={20}
                   />
@@ -318,7 +323,11 @@ export default function CouponWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.description ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.description
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Describe what this coupon is for"
                 />
                 {errors.description && (
@@ -370,7 +379,11 @@ export default function CouponWizard({
                           value: parseFloat(e.target.value),
                         })
                       }
-                      className={`w-full px-4 py-2 border ${errors.value ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                      className={`w-full px-4 py-2 border ${
+                        errors.value
+                          ? "border-red-500"
+                          : "border-gray-300 dark:border-gray-700"
+                      } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                       placeholder="0"
                       min={0}
                       max={formData.type === "percentage" ? 100 : undefined}
@@ -400,7 +413,11 @@ export default function CouponWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, startDate: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.startDate ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.startDate
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.startDate && (
                     <p className="mt-1 text-sm text-red-500">
@@ -423,7 +440,11 @@ export default function CouponWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, endDate: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.endDate ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.endDate
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.endDate && (
                     <p className="mt-1 text-sm text-red-500">
@@ -587,7 +608,9 @@ export default function CouponWizard({
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          applicableProducts: e.target.value as "all" | "specific",
+                          applicableProducts: e.target.value as
+                            | "all"
+                            | "specific",
                         })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
@@ -609,7 +632,9 @@ export default function CouponWizard({
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          applicableProducts: e.target.value as "all" | "specific",
+                          applicableProducts: e.target.value as
+                            | "all"
+                            | "specific",
                         })
                       }
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"

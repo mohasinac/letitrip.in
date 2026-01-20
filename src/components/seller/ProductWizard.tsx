@@ -1,8 +1,8 @@
 /**
  * ProductWizard Component
- * 
+ *
  * Multi-step wizard for creating and editing products.
- * 
+ *
  * Features:
  * - 4-step non-linear navigation with step indicators
  * - Step 1: Required fields (name, description, price, category)
@@ -13,7 +13,7 @@
  * - Always-visible Save/Finish button
  * - Draft save functionality
  * - Mobile responsive
- * 
+ *
  * @component ProductWizard
  * @example
  * ```tsx
@@ -23,8 +23,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface ProductFormData {
   // Step 1: Basic Info
@@ -294,8 +294,8 @@ export default function ProductWizard({
                       step.number === currentStep
                         ? "bg-blue-600 text-white"
                         : step.isComplete
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {step.isComplete && step.number !== currentStep ? (
@@ -362,7 +362,11 @@ export default function ProductWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.name ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.name
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Enter product name"
                 />
                 {errors.name && (
@@ -407,7 +411,11 @@ export default function ProductWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.description ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.description
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Enter product description"
                 />
                 {errors.description && (
@@ -435,7 +443,11 @@ export default function ProductWizard({
                         price: parseFloat(e.target.value),
                       })
                     }
-                    className={`w-full px-4 py-2 border ${errors.price ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.price
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                     placeholder="0"
                   />
                   {errors.price && (
@@ -480,7 +492,11 @@ export default function ProductWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, categoryId: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.categoryId ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.categoryId
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   >
                     <option value="">Select category</option>
                     {CATEGORIES.map((cat) => (
@@ -513,7 +529,11 @@ export default function ProductWizard({
                         stock: parseInt(e.target.value),
                       })
                     }
-                    className={`w-full px-4 py-2 border ${errors.stock ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.stock
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                     placeholder="0"
                   />
                   {errors.stock && (
@@ -678,7 +698,9 @@ export default function ProductWizard({
                     setFormData({ ...formData, metaTitle: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
-                  placeholder={`${formData.name || "Product Name"} | Buy Online`}
+                  placeholder={`${
+                    formData.name || "Product Name"
+                  } | Buy Online`}
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Recommended: 50-60 characters
@@ -703,7 +725,9 @@ export default function ProductWizard({
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
-                  placeholder={`Buy ${formData.name || "this product"} online at the best price...`}
+                  placeholder={`Buy ${
+                    formData.name || "this product"
+                  } online at the best price...`}
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Recommended: 150-160 characters
@@ -792,7 +816,7 @@ export default function ProductWizard({
                               </svg>
                             </button>
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   )}

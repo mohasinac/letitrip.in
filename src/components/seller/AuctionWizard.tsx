@@ -1,8 +1,8 @@
 /**
  * AuctionWizard Component
- * 
+ *
  * Multi-step wizard for creating and editing auctions.
- * 
+ *
  * Features:
  * - 4-step non-linear navigation with step indicators
  * - Step 1: Required fields (name, description, starting bid, end time, category)
@@ -13,7 +13,7 @@
  * - Always-visible Save/Finish button
  * - Draft save functionality
  * - Mobile responsive
- * 
+ *
  * @component AuctionWizard
  * @example
  * ```tsx
@@ -23,8 +23,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface AuctionFormData {
   // Step 1: Basic Info
@@ -160,7 +160,7 @@ export default function AuctionWizard({
       if (!formData.categoryId) newErrors.categoryId = "Category is required";
       if (!formData.startTime) newErrors.startTime = "Start time is required";
       if (!formData.endTime) newErrors.endTime = "End time is required";
-      
+
       if (formData.startTime && formData.endTime) {
         const start = new Date(formData.startTime);
         const end = new Date(formData.endTime);
@@ -270,8 +270,8 @@ export default function AuctionWizard({
                       step.number === currentStep
                         ? "bg-blue-600 text-white"
                         : step.isComplete
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {step.isComplete && step.number !== currentStep ? (
@@ -338,7 +338,11 @@ export default function AuctionWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.name ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.name
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Enter auction title"
                 />
                 {errors.name && (
@@ -383,7 +387,11 @@ export default function AuctionWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.description ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.description
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Enter auction description"
                 />
                 {errors.description && (
@@ -411,7 +419,11 @@ export default function AuctionWizard({
                         startingBid: parseFloat(e.target.value),
                       })
                     }
-                    className={`w-full px-4 py-2 border ${errors.startingBid ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.startingBid
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                     placeholder="0"
                   />
                   {errors.startingBid && (
@@ -434,7 +446,11 @@ export default function AuctionWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, categoryId: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.categoryId ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.categoryId
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   >
                     <option value="">Select category</option>
                     {CATEGORIES.map((cat) => (
@@ -466,7 +482,11 @@ export default function AuctionWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, startTime: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.startTime ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.startTime
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.startTime && (
                     <p className="mt-1 text-sm text-red-500">
@@ -489,7 +509,11 @@ export default function AuctionWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, endTime: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.endTime ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.endTime
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.endTime && (
                     <p className="mt-1 text-sm text-red-500">
@@ -772,8 +796,8 @@ export default function AuctionWizard({
                       Enable Auto-Extend
                     </label>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Automatically extend auction time when bids are placed near
-                      the end
+                      Automatically extend auction time when bids are placed
+                      near the end
                     </p>
                   </div>
                 </div>

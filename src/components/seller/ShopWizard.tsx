@@ -1,8 +1,8 @@
 /**
  * ShopWizard Component
- * 
+ *
  * Multi-step wizard for creating and editing shops.
- * 
+ *
  * Features:
  * - 3-step non-linear navigation with step indicators
  * - Step 1: Basic info (name, description, slug, category)
@@ -11,7 +11,7 @@
  * - Inline validation with error badges
  * - Always-visible Save/Finish button
  * - Mobile responsive
- * 
+ *
  * @component ShopWizard
  * @example
  * ```tsx
@@ -21,8 +21,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface ShopFormData {
   // Step 1: Basic Info
@@ -71,13 +71,42 @@ const SHOP_CATEGORIES = [
 ];
 
 const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", "Chandigarh",
-  "Andaman and Nicobar Islands", "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep"
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Puducherry",
+  "Chandigarh",
+  "Andaman and Nicobar Islands",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Lakshadweep",
 ];
 
 export default function ShopWizard({
@@ -103,7 +132,8 @@ export default function ShopWizard({
     shippingCost: 99,
     freeShippingThreshold: 999,
     returnPeriodDays: 7,
-    returnPolicy: "Products can be returned within 7 days of delivery in original condition with tags intact. Refunds will be processed within 5-7 business days.",
+    returnPolicy:
+      "Products can be returned within 7 days of delivery in original condition with tags intact. Refunds will be processed within 5-7 business days.",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -178,17 +208,20 @@ export default function ShopWizard({
       if (!formData.city) newErrors.city = "City is required";
       if (!formData.state) newErrors.state = "State is required";
       if (!formData.pincode) newErrors.pincode = "Pincode is required";
-      
+
       // Email validation
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      if (
+        formData.email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      ) {
         newErrors.email = "Valid email is required";
       }
-      
+
       // Phone validation
       if (formData.phone && !/^[6-9]\d{9}$/.test(formData.phone)) {
         newErrors.phone = "Valid 10-digit Indian mobile number is required";
       }
-      
+
       // Pincode validation
       if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
         newErrors.pincode = "Valid 6-digit pincode is required";
@@ -291,8 +324,8 @@ export default function ShopWizard({
                       step.number === currentStep
                         ? "bg-blue-600 text-white"
                         : step.isComplete
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {step.isComplete && step.number !== currentStep ? (
@@ -359,7 +392,11 @@ export default function ShopWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.name ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.name
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Enter shop name"
                 />
                 {errors.name && (
@@ -404,7 +441,11 @@ export default function ShopWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.description ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.description
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   placeholder="Tell customers about your shop"
                 />
                 {errors.description && (
@@ -427,7 +468,11 @@ export default function ShopWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, categoryId: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.categoryId ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.categoryId
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                 >
                   <option value="">Select category</option>
                   {SHOP_CATEGORIES.map((cat) => (
@@ -579,7 +624,10 @@ export default function ShopWizard({
                       id="primaryColor"
                       value={formData.primaryColor}
                       onChange={(e) =>
-                        setFormData({ ...formData, primaryColor: e.target.value })
+                        setFormData({
+                          ...formData,
+                          primaryColor: e.target.value,
+                        })
                       }
                       className="h-10 w-20 border border-gray-300 dark:border-gray-700 rounded cursor-pointer"
                     />
@@ -587,7 +635,10 @@ export default function ShopWizard({
                       type="text"
                       value={formData.primaryColor}
                       onChange={(e) =>
-                        setFormData({ ...formData, primaryColor: e.target.value })
+                        setFormData({
+                          ...formData,
+                          primaryColor: e.target.value,
+                        })
                       }
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
                     />
@@ -607,7 +658,10 @@ export default function ShopWizard({
                       id="secondaryColor"
                       value={formData.secondaryColor}
                       onChange={(e) =>
-                        setFormData({ ...formData, secondaryColor: e.target.value })
+                        setFormData({
+                          ...formData,
+                          secondaryColor: e.target.value,
+                        })
                       }
                       className="h-10 w-20 border border-gray-300 dark:border-gray-700 rounded cursor-pointer"
                     />
@@ -615,7 +669,10 @@ export default function ShopWizard({
                       type="text"
                       value={formData.secondaryColor}
                       onChange={(e) =>
-                        setFormData({ ...formData, secondaryColor: e.target.value })
+                        setFormData({
+                          ...formData,
+                          secondaryColor: e.target.value,
+                        })
                       }
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
                     />
@@ -687,7 +744,11 @@ export default function ShopWizard({
                       setFormData({ ...formData, phone: e.target.value })
                     }
                     placeholder="9876543210"
-                    className={`w-full px-4 py-2 border ${errors.phone ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.phone
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
@@ -709,7 +770,11 @@ export default function ShopWizard({
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="contact@example.com"
-                    className={`w-full px-4 py-2 border ${errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.email
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -731,7 +796,11 @@ export default function ShopWizard({
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className={`w-full px-4 py-2 border ${errors.address ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-2 border ${
+                    errors.address
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-700"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                 />
                 {errors.address && (
                   <p className="mt-1 text-sm text-red-500">{errors.address}</p>
@@ -753,7 +822,11 @@ export default function ShopWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, city: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.city ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.city
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.city && (
                     <p className="mt-1 text-sm text-red-500">{errors.city}</p>
@@ -773,7 +846,11 @@ export default function ShopWizard({
                     onChange={(e) =>
                       setFormData({ ...formData, state: e.target.value })
                     }
-                    className={`w-full px-4 py-2 border ${errors.state ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.state
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   >
                     <option value="">Select state</option>
                     {INDIAN_STATES.map((state) => (
@@ -803,10 +880,16 @@ export default function ShopWizard({
                     }
                     placeholder="560001"
                     maxLength={6}
-                    className={`w-full px-4 py-2 border ${errors.pincode ? "border-red-500" : "border-gray-300 dark:border-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
+                    className={`w-full px-4 py-2 border ${
+                      errors.pincode
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white`}
                   />
                   {errors.pincode && (
-                    <p className="mt-1 text-sm text-red-500">{errors.pincode}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.pincode}
+                    </p>
                   )}
                 </div>
               </div>
