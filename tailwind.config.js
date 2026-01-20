@@ -256,5 +256,49 @@ module.exports = {
     },
   },
   // Tailwind plugins
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    // Safe area insets plugin for iOS
+    function ({ addUtilities }) {
+      addUtilities({
+        ".pt-safe": {
+          paddingTop: "env(safe-area-inset-top)",
+        },
+        ".pb-safe": {
+          paddingBottom: "env(safe-area-inset-bottom)",
+        },
+        ".pl-safe": {
+          paddingLeft: "env(safe-area-inset-left)",
+        },
+        ".pr-safe": {
+          paddingRight: "env(safe-area-inset-right)",
+        },
+        ".p-safe": {
+          paddingTop: "env(safe-area-inset-top)",
+          paddingRight: "env(safe-area-inset-right)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+          paddingLeft: "env(safe-area-inset-left)",
+        },
+        ".mt-safe": {
+          marginTop: "env(safe-area-inset-top)",
+        },
+        ".mb-safe": {
+          marginBottom: "env(safe-area-inset-bottom)",
+        },
+        ".ml-safe": {
+          marginLeft: "env(safe-area-inset-left)",
+        },
+        ".mr-safe": {
+          marginRight: "env(safe-area-inset-right)",
+        },
+        ".m-safe": {
+          marginTop: "env(safe-area-inset-top)",
+          marginRight: "env(safe-area-inset-right)",
+          marginBottom: "env(safe-area-inset-bottom)",
+          marginLeft: "env(safe-area-inset-left)",
+        },
+      });
+    },
+  ],
 };
