@@ -48,14 +48,14 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   10. ... (continue for all interactive elements)
   11. Footer links
   12. Back to top button (if visible)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Tab Focus Visibility:**
 
 - [ ] All focused elements have visible outline
   - Recommended: 2px solid ring, offset 2px
   - Color: Blue (#2563eb) or theme-appropriate
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **No Keyboard Traps:**
 
@@ -63,7 +63,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Modals: Esc to close
   - Dropdowns: Esc to close
   - Carousels: Tab to exit
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 #### Navigation Testing:
 
@@ -72,61 +72,61 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Tab to each nav item
 - [ ] Press Enter on "Products"
 - [ ] **Expected**: Navigate to Products page
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Tab to "Categories" (if has dropdown)
 - [ ] Press Enter or Arrow Down to open dropdown
 - [ ] **Expected**: Dropdown opens, focus moves to first item
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Arrow Down/Up to navigate dropdown
 - [ ] Press Enter to select item
 - [ ] **Expected**: Navigate to selected category
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Press Esc in dropdown
 - [ ] **Expected**: Dropdown closes, focus returns to "Categories"
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Search:**
 
 - [ ] Tab to search button
 - [ ] Press Enter
 - [ ] **Expected**: Search modal opens, focus in input
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Type search query
 - [ ] Arrow Down to navigate suggestions
 - [ ] Press Enter on suggestion
 - [ ] **Expected**: Navigate to selected result
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Press Esc in search modal
 - [ ] **Expected**: Modal closes, focus returns to search button
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Product Cards:**
 
 - [ ] Tab to product card
 - [ ] Press Enter on card
 - [ ] **Expected**: Navigate to product details
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Tab to "Add to Cart" button
 - [ ] Press Enter
 - [ ] **Expected**: Product added to cart, toast notification
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Carousel:**
 
 - [ ] Tab to previous/next buttons
 - [ ] Press Enter to navigate slides
 - [ ] **Expected**: Slide changes
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Arrow Left/Right to navigate (if implemented)
 - [ ] **Expected**: Slide changes
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Forms:**
 
@@ -135,26 +135,26 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Tab to "Submit" button
 - [ ] Press Enter
 - [ ] **Expected**: Form submits
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Tab to checkbox/radio
 - [ ] Press Space to toggle
 - [ ] **Expected**: Checkbox/radio toggles
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Modals:**
 
 - [ ] Open modal (e.g., Add to Cart confirmation)
 - [ ] **Expected**: Focus moves inside modal
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Tab through modal elements
 - [ ] **Expected**: Focus stays within modal (focus trap)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 - [ ] Press Esc
 - [ ] **Expected**: Modal closes, focus returns to trigger button
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -169,7 +169,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Nav uses `<nav>` with `aria-label="Main navigation"`
 - [ ] Search uses `<button>` or `<a>` with `aria-label="Search"`
 - [ ] Cart uses `<a>` with `aria-label="Cart, X items"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Main Content:**
 
@@ -179,7 +179,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - H1: "LetItRip - E-Commerce Platform" (only one per page)
   - H2: "Featured Products", "Popular Categories"
   - H3: Product titles, category names
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Product Cards:**
 
@@ -187,7 +187,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Image has `alt` text describing product
 - [ ] Price has `aria-label="Price: Rupees 12,999"`
 - [ ] Add to Cart button: `<button>` with clear label
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Forms:**
 
@@ -196,14 +196,14 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Or wrapped in `<label>` tag
 - [ ] Required fields have `aria-required="true"`
 - [ ] Error messages have `aria-live="polite"` or `aria-describedby`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Footer:**
 
 - [ ] Uses `<footer>` tag
 - [ ] Link sections use `<nav>` with `aria-label="Footer navigation"`
 - [ ] Social links have `aria-label` (e.g., "Facebook", "Twitter")
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 #### ARIA Labels Testing:
 
@@ -213,28 +213,28 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Cart icon: `aria-label="Cart, 3 items"` (dynamic count)
 - [ ] User icon: `aria-label="User menu"`
 - [ ] Close icon: `aria-label="Close"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Buttons:**
 
 - [ ] "Add to Cart": `aria-label="Add iPhone 15 to cart"` (specific product)
 - [ ] "Buy Now": `aria-label="Buy iPhone 15 now"`
 - [ ] "Remove": `aria-label="Remove from cart"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Links:**
 
 - [ ] "Learn More": `aria-label="Learn more about iPhone 15"`
 - [ ] "View Details": `aria-label="View details of iPhone 15"`
 - [ ] External links: `aria-label="Opens in new window"` or icon
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Images:**
 
 - [ ] Product images: `alt="iPhone 15 Pro Max in Blue"`
 - [ ] Decorative images: `alt=""` (empty, screen reader ignores)
 - [ ] Logo: `alt="LetItRip Logo"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 #### Screen Reader Testing (NVDA/VoiceOver):
 
@@ -251,7 +251,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - "Featured Products, heading level 2"
   - "iPhone 15 Pro Max, article" (product card)
   - "Add to cart, button"
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Product Details:**
 
@@ -262,7 +262,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - "4.5 out of 5 stars, 1,234 reviews"
   - "In stock, 15 available"
   - "Add to cart, button"
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Forms:**
 
@@ -272,7 +272,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - "Password, required, password, blank" (password input)
   - "Login, button"
   - "Invalid email format" (error message, if present)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Modals:**
 
@@ -282,7 +282,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - "iPhone 15 Pro Max added to cart"
   - "View cart, button"
   - "Continue shopping, button"
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -297,7 +297,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Width: 2px or more
   - Color: High contrast (blue, black, or theme color)
   - Offset: 2px from element (using `ring-offset`)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Component-Specific Focus:**
 
@@ -306,7 +306,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] Default links:
   - Focus: Blue ring, 2px
   - Underline appears/thickens
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Buttons:**
 
@@ -315,7 +315,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Example: Blue button → Blue ring
 - [ ] Secondary button:
   - Focus: Ring matches border color
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Input Fields:**
 
@@ -324,7 +324,7 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Box shadow for depth
 - [ ] Checkbox/Radio:
   - Focus: Ring around input (4px)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Custom Components:**
 
@@ -334,13 +334,13 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Focus: Ring around entire card or image
 - [ ] Dropdown menus:
   - Focus: Ring on current item
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Focus Visible vs Always:**
 
 - [ ] Mouse click: No focus ring (`:focus-visible` not triggered)
 - [ ] Keyboard Tab: Focus ring visible (`:focus-visible` triggered)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Tailwind CSS Focus Classes:**
 
@@ -363,20 +363,20 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Left to right
   - Top to bottom
 - [ ] No elements out of order
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Hidden Elements:**
 
 - [ ] Off-screen elements not focusable
   - Use `hidden`, `display: none`, or `visibility: hidden`
   - NOT `opacity: 0` or `position: absolute; left: -9999px`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Dynamic Content:**
 
 - [ ] New elements (e.g., modal) receive focus
 - [ ] Removed elements don't break tab order
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -389,40 +389,40 @@ This document provides comprehensive testing procedures for accessibility (a11y)
 - [ ] **Format**: `alt="[Product Name] in [Color/Variant]"`
   - Example: `alt="iPhone 15 Pro Max in Deep Purple"`
   - Not: `alt="product-image-1.jpg"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Category Images:**
 
 - [ ] **Format**: `alt="[Category Name] category"`
   - Example: `alt="Electronics category"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Banner Images:**
 
 - [ ] **Format**: Describe the offer/message
   - Example: `alt="50% off on all electronics - Limited time offer"`
   - Not: `alt="Banner image"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **User Avatars:**
 
 - [ ] **Format**: `alt="[Username] profile picture"`
   - Example: `alt="John Doe profile picture"`
   - Or: `alt="User avatar"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Logos:**
 
 - [ ] **Format**: `alt="[Company Name] logo"`
   - Example: `alt="LetItRip logo"`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Decorative Images:**
 
 - [ ] **Empty alt**: `alt=""`
   - For images that don't convey information
   - Background patterns, dividers, spacers
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Icons:**
 
@@ -430,14 +430,14 @@ This document provides comprehensive testing procedures for accessibility (a11y)
   - Example: `<ShoppingCart /> Cart` → Icon alt is empty
 - [ ] **Without text**: `alt="[Action]"`
   - Example: `alt="Search"` (search icon only)
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 **Complex Images (Charts, Diagrams):**
 
 - [ ] **Format**: Brief alt + longer description
   - Alt: `alt="Sales chart showing growth in 2024"`
   - Description: Use `aria-describedby` or `<figcaption>`
-- [ ] **Status**: ___________
+- [ ] **Status**: \***\*\_\_\_\*\***
 
 #### Image Alt Text Checklist:
 
@@ -468,13 +468,13 @@ document.querySelectorAll('img[alt=""]').forEach((img) => {
 
 - [ ] Turn off images (Chrome extension)
 - [ ] **Expected**: Alt text displayed in place of images
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Screen Reader Check:**
 
 - [ ] Navigate through page with screen reader
 - [ ] **Expected**: All images announced with descriptive alt text
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 

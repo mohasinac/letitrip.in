@@ -1,14 +1,14 @@
 /**
  * Performance Components - Phase 9.1
- * 
+ *
  * Export all performance optimization components
  */
 
-export { LazyImage, LazyBackgroundImage } from "./LazyImage";
 export {
   LazyComponent,
   LazyComponentSkeleton,
+  LazyModal,
   LazySection,
   LazySectionSkeleton,
-  LazyModal,
 } from "./LazyComponent";
+export { LazyBackgroundImage, LazyImage } from "./LazyImage";

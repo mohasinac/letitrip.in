@@ -1,13 +1,13 @@
 /**
  * useIntersectionObserver Hook - Phase 9.1
- * 
+ *
  * React hook for Intersection Observer API.
  * Used for lazy loading images, components, and triggering animations.
- * 
+ *
  * @example
  * const ref = useRef(null);
  * const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
- * 
+ *
  * return (
  *   <div ref={ref}>
  *     {isVisible && <HeavyComponent />}
@@ -17,7 +17,7 @@
 
 "use client";
 
-import { useEffect, useState, RefObject } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 interface UseIntersectionObserverOptions extends IntersectionObserverInit {
   /** Trigger once and cleanup */

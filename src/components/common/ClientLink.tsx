@@ -2,7 +2,7 @@
 
 /**
  * Client Link Wrapper
- * 
+ *
  * A client component wrapper for Next.js Link that can be passed
  * to other client components without serialization issues.
  */
@@ -27,7 +27,7 @@ export interface ClientLinkProps {
 
 /**
  * ClientLink component
- * 
+ *
  * A client-side wrapper around Next.js Link that can be passed
  * to other client components as the LinkComponent prop.
  */

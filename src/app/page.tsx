@@ -16,16 +16,12 @@
  * @page / - Homepage
  */
 
+import { ClientLink } from "@/components/common";
 import {
   AdvertisementBanner,
-  CategoryCard,
   FAQAccordion,
-  HeroSlide,
-  HorizontalScroller,
-  ProductCard,
 } from "@letitrip/react-library";
 import { Metadata } from "next";
-import { ClientLink } from "@/components/common";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -128,6 +124,7 @@ const heroSlides = [
 // FAQ data
 const faqData = [
   {
+    id: "faq-1",
     question: "How do I place an order?",
     answer:
       "Browse products, add items to cart, proceed to checkout, enter shipping details, and complete payment. You'll receive an order confirmation email.",
@@ -135,6 +132,7 @@ const faqData = [
     order: 1,
   },
   {
+    id: "faq-2",
     question: "What payment methods do you accept?",
     answer:
       "We accept credit/debit cards, UPI, net banking, wallets, and cash on delivery for eligible orders.",
@@ -142,6 +140,7 @@ const faqData = [
     order: 2,
   },
   {
+    id: "faq-3",
     question: "How does the auction system work?",
     answer:
       "Browse live auctions, place bids higher than the current bid. If you have the highest bid when the auction ends, you win! Payment is processed automatically.",
@@ -149,6 +148,7 @@ const faqData = [
     order: 3,
   },
   {
+    id: "faq-4",
     question: "What is your return policy?",
     answer:
       "Most products can be returned within 7-30 days. Check product page for specific return policy. Items must be unused with original packaging.",
@@ -156,6 +156,7 @@ const faqData = [
     order: 4,
   },
   {
+    id: "faq-5",
     question: "How long does shipping take?",
     answer:
       "Standard delivery: 3-7 business days. Express: 1-3 days. Shipping time varies by location and product availability.",
@@ -163,6 +164,7 @@ const faqData = [
     order: 5,
   },
   {
+    id: "faq-6",
     question: "How can I become a seller?",
     answer:
       "Register for a seller account, complete verification, set up your shop, and start listing products. We charge a small commission per sale.",
@@ -179,12 +181,12 @@ export default async function HomePage() {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Advertisement Banner */}
       <AdvertisementBanner
-        message="🎉 New Year Sale! Get up to 50% off on selected products"
+        LinkComponent={ClientLink}
+        content="🎉 New Year Sale! Get up to 50% off on selected products"
         ctaText="Shop Now"
-        ctaLink="/deals"
-        dismissible={true}
-        backgroundColor="bg-gradient-to-r from-blue-600 to-purple-600"
-        height="h-12"
+        ctaHref="/deals"
+        isDismissible={true}
+        backgroundColor="#3b82f6"
       />
 
       {/* Welcome Section */}
@@ -214,18 +216,18 @@ export default async function HomePage() {
               India's Premier Platform for Shopping & Auctions
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Link
+              <ClientLink
                 href="/buy-product-all"
                 className="rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white transition hover:bg-blue-700"
               >
                 Start Shopping
-              </Link>
-              <Link
+              </ClientLink>
+              <ClientLink
                 href="/auctions"
                 className="rounded-lg border-2 border-white bg-white/10 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
               >
                 View Auctions
-              </Link>
+              </ClientLink>
             </div>
           </div>
         </div>
@@ -233,14 +235,11 @@ export default async function HomePage() {
 
       {/* Hero Carousel */}
       <section className="relative h-[60vh] min-h-[500px]">
-        <div className="h-full">
-          <HeroSlide
-            slides={heroSlides}
-            autoPlay={true}
-            interval={5000}
-            showControls={true}
-            showIndicators={true}
-          />
+        <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-4">Hero Carousel</h2>
+            <p className="text-xl">Coming Soon - Carousel implementation in progress</p>
+          </div>
         </div>
       </section>
 
@@ -251,33 +250,32 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Popular Categories
             </h2>
-            <Link
+            <ClientLink
               href="/categories"
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
-            </Link>
+            </ClientLink>
           </div>
 
           {categories.length > 0 ? (
-            <HorizontalScroller
-              items={categories}
-              renderItem={(category: any) => (
-                <CategoryCard
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+              {categories.slice(0, 10).map((category: any) => (
+                <ClientLink
                   key={category.id}
-                  name={category.name}
-                  slug={category.slug}
-                  image={category.image}
-                  icon={category.icon}
-                  itemCount={category.itemCount}
-                  onClick={() => {}}
-                  LinkComponent={ClientLink}
-                />
-              )}
-              itemWidth={250}
-              gap={16}
-              showArrows={true}
-            />
+                  href={`/buy-product-${category.slug}`}
+                  className="rounded-lg border border-gray-200 p-4 text-center transition hover:border-blue-500 hover:shadow-lg dark:border-gray-700"
+                >
+                  <div className="mb-2 text-4xl">{category.icon || "📦"}</div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    {category.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {category.itemCount || 0} items
+                  </p>
+                </ClientLink>
+              ))}
+            </div>
           ) : (
             <p className="text-center text-gray-500 dark:text-gray-400">
               No categories available
@@ -293,41 +291,39 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Featured Products
             </h2>
-            <Link
+            <ClientLink
               href="/buy-product-all?featured=true"
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
-            </Link>
+            </ClientLink>
           </div>
 
           {featuredProducts.length > 0 ? (
-            <HorizontalScroller
-              items={featuredProducts}
-              renderItem={(product: any) => (
-                <ProductCard
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.slice(0, 8).map((product: any) => (
+                <ClientLink
                   key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  image={product.images?.[0]}
-                  images={product.images}
-                  rating={product.rating}
-                  reviewCount={product.reviewCount}
-                  inStock={product.stock > 0}
-                  featured={product.featured}
-                  shopName={product.shopName}
-                  shopSlug={product.shopSlug}
-                  variant="public"
-                  LinkComponent={Link}
-                />
-              )}
-              itemWidth={280}
-              gap={16}
-              showArrows={true}
-            />
+                  href={`/buy-product-${product.slug}`}
+                  className="group rounded-lg border border-gray-200 overflow-hidden transition hover:shadow-lg dark:border-gray-700"
+                >
+                  <div className="aspect-square bg-gray-200 dark:bg-gray-700" />
+                  <div className="p-4">
+                    <h3 className="mb-2 font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      ₹{product.price?.toLocaleString("en-IN")}
+                    </p>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <p className="text-sm text-gray-500 line-through">
+                        ₹{product.originalPrice.toLocaleString("en-IN")}
+                      </p>
+                    )}
+                  </div>
+                </ClientLink>
+              ))}
+            </div>
           ) : (
             <p className="text-center text-gray-500 dark:text-gray-400">
               No featured products available
@@ -343,40 +339,39 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Popular Products
             </h2>
-            <Link
+            <ClientLink
               href="/buy-product-all?sort=popular"
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
               View All →
-            </Link>
+            </ClientLink>
           </div>
 
           {popularProducts.length > 0 ? (
-            <HorizontalScroller
-              items={popularProducts}
-              renderItem={(product: any) => (
-                <ProductCard
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {popularProducts.slice(0, 8).map((product: any) => (
+                <ClientLink
                   key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  image={product.images?.[0]}
-                  images={product.images}
-                  rating={product.rating}
-                  reviewCount={product.reviewCount}
-                  inStock={product.stock > 0}
-                  shopName={product.shopName}
-                  shopSlug={product.shopSlug}
-                  variant="public"
-                  LinkComponent={Link}
-                />
-              )}
-              itemWidth={280}
-              gap={16}
-              showArrows={true}
-            />
+                  href={`/buy-product-${product.slug}`}
+                  className="group rounded-lg border border-gray-200 overflow-hidden transition hover:shadow-lg dark:border-gray-700"
+                >
+                  <div className="aspect-square bg-gray-200 dark:bg-gray-700" />
+                  <div className="p-4">
+                    <h3 className="mb-2 font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      ₹{product.price?.toLocaleString("en-IN")}
+                    </p>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <p className="text-sm text-gray-500 line-through">
+                        ₹{product.originalPrice.toLocaleString("en-IN")}
+                      </p>
+                    )}
+                  </div>
+                </ClientLink>
+              ))}
+            </div>
           ) : (
             <p className="text-center text-gray-500 dark:text-gray-400">
               No popular products available
@@ -394,10 +389,10 @@ export default async function HomePage() {
 
           <div className="mx-auto max-w-4xl">
             <FAQAccordion
-              items={faqData}
-              allowMultipleOpen={false}
-              searchable={true}
-              categoryFilter={true}
+              faqs={faqData}
+              singleOpen={true}
+              showSearch={true}
+              showCategoryFilter={true}
               defaultCategory="all"
             />
           </div>
@@ -414,18 +409,18 @@ export default async function HomePage() {
             Join thousands of happy customers across India
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link
+            <ClientLink
               href="/register"
               className="rounded-lg bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition hover:bg-gray-100"
             >
               Create Account
-            </Link>
-            <Link
+            </ClientLink>
+            <ClientLink
               href="/buy-product-all"
               className="rounded-lg border-2 border-white px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
             >
               Browse Products
-            </Link>
+            </ClientLink>
           </div>
         </div>
       </section>

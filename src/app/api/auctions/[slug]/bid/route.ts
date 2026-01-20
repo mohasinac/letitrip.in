@@ -34,14 +34,14 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const body = await request.json();
     const { bidAmount, userId, userName } = body;
 

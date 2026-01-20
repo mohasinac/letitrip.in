@@ -1,9 +1,9 @@
 /**
  * Caching Strategy - Phase 9.1
- * 
+ *
  * Comprehensive caching utilities for API responses, images, and data.
  * Works with React Query for server state management.
- * 
+ *
  * Features:
  * - Stale-while-revalidate pattern
  * - Cache invalidation strategies
@@ -33,11 +33,11 @@ export const CACHE_TIMES = {
 
 /**
  * React Query default options
- * 
+ *
  * @example
  * import { QueryClient } from '@tanstack/react-query';
  * import { queryClientConfig } from '@/lib/caching';
- * 
+ *
  * const queryClient = new QueryClient({ defaultOptions: queryClientConfig });
  */
 export const queryClientConfig = {
@@ -70,29 +70,31 @@ export const CACHE_KEYS = {
   products: {
     all: ["products"] as const,
     lists: () => ["products", "list"] as const,
-    list: (filters: Record<string, any>) => ["products", "list", filters] as const,
+    list: (filters: Record<string, any>) =>
+      ["products", "list", filters] as const,
     details: () => ["products", "detail"] as const,
     detail: (slug: string) => ["products", "detail", slug] as const,
     search: (query: string) => ["products", "search", query] as const,
   },
-  
+
   // Auctions
   auctions: {
     all: ["auctions"] as const,
     lists: () => ["auctions", "list"] as const,
-    list: (filters: Record<string, any>) => ["auctions", "list", filters] as const,
+    list: (filters: Record<string, any>) =>
+      ["auctions", "list", filters] as const,
     details: () => ["auctions", "detail"] as const,
     detail: (slug: string) => ["auctions", "detail", slug] as const,
     bids: (auctionId: string) => ["auctions", "bids", auctionId] as const,
   },
-  
+
   // Categories
   categories: {
     all: ["categories"] as const,
     tree: () => ["categories", "tree"] as const,
     detail: (slug: string) => ["categories", "detail", slug] as const,
   },
-  
+
   // Shops
   shops: {
     all: ["shops"] as const,
@@ -100,25 +102,25 @@ export const CACHE_KEYS = {
     list: (filters: Record<string, any>) => ["shops", "list", filters] as const,
     detail: (slug: string) => ["shops", "detail", slug] as const,
   },
-  
+
   // Users
   users: {
     current: () => ["users", "current"] as const,
     profile: (userId: string) => ["users", "profile", userId] as const,
     orders: (userId: string) => ["users", "orders", userId] as const,
   },
-  
+
   // Cart
   cart: {
     current: () => ["cart"] as const,
   },
-  
+
   // Orders
   orders: {
     all: (userId: string) => ["orders", userId] as const,
     detail: (orderId: string) => ["orders", "detail", orderId] as const,
   },
-  
+
   // Search
   search: {
     global: (query: string) => ["search", "global", query] as const,
@@ -160,7 +162,7 @@ export class LocalStorageCache {
       if (!itemStr) return null;
 
       const item = JSON.parse(itemStr);
-      
+
       // Check if expired
       if (Date.now() > item.expiresAt) {
         this.remove(key);

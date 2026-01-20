@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * GlobalSearch Component
- * 
+ *
  * Admin-wide search component that searches across all resources:
  * - Users
  * - Products
@@ -15,7 +14,7 @@ import { useRouter } from "next/navigation";
  * - Shops
  * - Categories
  * - Coupons
- * 
+ *
  * Features:
  * - Real-time search with debouncing
  * - Keyboard navigation (arrow keys, enter, escape)
@@ -25,7 +24,7 @@ import { useRouter } from "next/navigation";
  * - Quick actions (view, edit)
  * - Responsive design
  * - Dark mode support
- * 
+ *
  * @example
  * ```tsx
  * <GlobalSearch />
@@ -35,7 +34,14 @@ import { useRouter } from "next/navigation";
 // Types
 interface SearchResult {
   id: string;
-  type: "user" | "product" | "auction" | "order" | "shop" | "category" | "coupon";
+  type:
+    | "user"
+    | "product"
+    | "auction"
+    | "order"
+    | "shop"
+    | "category"
+    | "coupon";
   title: string;
   subtitle: string;
   status?: string;
@@ -49,7 +55,10 @@ interface SearchResponse {
 }
 
 // Mock search function (replace with actual API call)
-const searchAPI = async (query: string, filter: string): Promise<SearchResponse> => {
+const searchAPI = async (
+  query: string,
+  filter: string,
+): Promise<SearchResponse> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -112,14 +121,16 @@ const searchAPI = async (query: string, filter: string): Promise<SearchResponse>
     },
   ];
 
-  const filtered = filter === "all" 
-    ? mockResults 
-    : mockResults.filter((r) => r.type === filter);
+  const filtered =
+    filter === "all"
+      ? mockResults
+      : mockResults.filter((r) => r.type === filter);
 
   const searched = query
-    ? filtered.filter((r) =>
-        r.title.toLowerCase().includes(query.toLowerCase()) ||
-        r.subtitle.toLowerCase().includes(query.toLowerCase())
+    ? filtered.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          r.subtitle.toLowerCase().includes(query.toLowerCase()),
       )
     : filtered.slice(0, 5);
 
@@ -208,7 +219,9 @@ export default function GlobalSearch() {
           setSelectedIndex((prev) => (prev + 1) % results.length);
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
-          setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
+          setSelectedIndex(
+            (prev) => (prev - 1 + results.length) % results.length,
+          );
         } else if (e.key === "Enter") {
           e.preventDefault();
           if (results[selectedIndex]) {
@@ -232,7 +245,8 @@ export default function GlobalSearch() {
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isOpen]);
 
@@ -258,44 +272,114 @@ export default function GlobalSearch() {
     switch (type) {
       case "user":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
           </svg>
         );
       case "product":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            />
           </svg>
         );
       case "auction":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
       case "order":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
           </svg>
         );
       case "shop":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
           </svg>
         );
       case "category":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
           </svg>
         );
       case "coupon":
         return (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+            />
           </svg>
         );
     }
@@ -331,8 +415,18 @@ export default function GlobalSearch() {
         }}
         className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 w-full md:w-auto"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
         <span className="text-sm">Search everything...</span>
         <kbd className="hidden md:inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">
@@ -350,8 +444,18 @@ export default function GlobalSearch() {
             {/* Search Input */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-3">
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   ref={inputRef}
@@ -398,7 +502,9 @@ export default function GlobalSearch() {
               {query.trim() === "" && recentSearches.length > 0 && (
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Recent Searches</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Recent Searches
+                    </h3>
                     <button
                       onClick={clearRecentSearches}
                       className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
@@ -413,10 +519,22 @@ export default function GlobalSearch() {
                         onClick={() => handleRecentSearchClick(search)}
                         className="flex items-center gap-3 w-full px-3 py-2 text-left rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                       >
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{search}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {search}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -435,15 +553,33 @@ export default function GlobalSearch() {
                           : "hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                     >
-                      <div className={`${getTypeColor(result.type)}`}>{getTypeIcon(result.type)}</div>
+                      <div className={`${getTypeColor(result.type)}`}>
+                        {getTypeIcon(result.type)}
+                      </div>
                       <div className="flex-1 text-left">
-                        <div className="font-medium text-gray-900 dark:text-white">{result.title}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{result.subtitle}</div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {result.title}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {result.subtitle}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400 dark:text-gray-500 capitalize">{result.type}</span>
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 capitalize">
+                          {result.type}
+                        </span>
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
                         </svg>
                       </div>
                     </button>
@@ -453,10 +589,22 @@ export default function GlobalSearch() {
 
               {query.trim() !== "" && !isLoading && results.length === 0 && (
                 <div className="p-12 text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No results found</h3>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                    No results found
+                  </h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Try searching with different keywords
                   </p>
@@ -469,16 +617,24 @@ export default function GlobalSearch() {
               <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">↑</kbd>
-                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">↓</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                      ↑
+                    </kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                      ↓
+                    </kbd>
                     <span>Navigate</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">↵</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                      ↵
+                    </kbd>
                     <span>Select</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">ESC</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                      ESC
+                    </kbd>
                     <span>Close</span>
                   </span>
                 </div>

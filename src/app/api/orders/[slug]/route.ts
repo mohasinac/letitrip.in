@@ -16,14 +16,14 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Query order by slug
     const orderQuery = query(

@@ -38,9 +38,9 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 /**
@@ -48,7 +48,7 @@ interface RouteContext {
  */
 export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Get product document
     const productDoc = await getDoc(doc(db, "products", slug));
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
  */
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const body = await request.json();
 
     // Check if product exists
@@ -158,7 +158,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Check if product exists
     const productDoc = await getDoc(doc(db, "products", slug));

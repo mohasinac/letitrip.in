@@ -27,122 +27,135 @@ This document provides comprehensive testing procedures for responsive design ac
 **Header (375px):**
 
 - [ ] **Logo**: Visible, not truncated
+
   - Size: ~30-40px height
   - Position: Left aligned
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Navigation**: Hamburger menu visible
+
   - Icon: 24×24px, right side
   - Opens full-screen overlay on click
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Search**: Icon only (magnifying glass)
+
   - Opens full-screen search on click
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Cart**: Icon with badge
   - Badge: 16px circle, top-right
   - Shows item count
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Hero Section (375px):**
 
 - [ ] **Carousel**: Full width, single image visible
+
   - Height: 50vh (viewport height)
   - Controls: Left/right arrows visible
   - Swipeable on touch
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Hero Text**: Readable, not overlapping
   - Title: 24-28px
   - Subtitle: 14-16px
   - CTA Button: 44px height (touch-friendly)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Product Grid (375px):**
 
 - [ ] **Layout**: 2 columns (no scroll)
+
   - Gap: 12px between cards
   - Card width: ~165px each
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Product Card**: All info visible
+
   - Image: Square aspect ratio
   - Title: 2 lines max, ellipsis
   - Price: Bold, 16px
   - Add to Cart: 40px height button
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Horizontal Scroller**: Swipeable
   - Shows 1.5 products at a time
   - Scroll indicators visible
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Footer (375px):**
 
 - [ ] **Links**: Stacked vertically
+
   - 4 sections, each full width
   - Accordions for mobile (collapsible)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Social Icons**: Visible, 44px touch targets
   - Row of icons, centered
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Bottom Navigation (375px):**
 
 - [ ] **Sticky**: Fixed at bottom
+
   - Height: 64px
   - Background: white/dark (theme aware)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Icons**: 5 items, evenly spaced
   - Icon size: 24px
   - Label: 10-12px below
   - Active state: Color change
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Product Details Page (375px):
 
 - [ ] **Image Gallery**: Full width, swipeable
+
   - Thumbnail strip: Horizontal scroll
   - Lightbox: Full screen on tap
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Product Info**: Stacked vertically
+
   - Title: 20px, 2-3 lines
   - Price: 24px, bold
   - Description: Expandable ("Read more")
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Action Buttons**: Full width
+
   - Add to Cart: 100% width, 48px height
   - Buy Now: 100% width, 48px height
   - Gap: 12px between buttons
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Tabs**: Full width, horizontal scroll
   - Description, Reviews, Specifications
   - Active tab: Underline indicator
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Checkout Page (375px):
 
 - [ ] **Form Fields**: Full width
+
   - Input height: 48px (touch-friendly)
   - Labels: Above input
   - Error messages: Below input, red
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Order Summary**: Collapsed by default
+
   - Expandable accordion
   - Shows item count and total
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Payment Options**: Stacked cards
   - Radio buttons: 24px touch target
   - Card logos visible
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -153,72 +166,77 @@ This document provides comprehensive testing procedures for responsive design ac
 **Header (768px):**
 
 - [ ] **Logo**: Larger, ~50px height
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Navigation**: Visible menu items (5-7 items)
+
   - Inline, horizontal layout
   - No hamburger menu
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Search**: Visible search bar (200px width)
   - Icon + input field
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Hero Section (768px):**
 
 - [ ] **Carousel**: Wider, better aspect ratio
   - Height: 60vh
   - 2 slides visible (if multiple)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Product Grid (768px):**
 
 - [ ] **Layout**: 3-4 columns
+
   - Gap: 16px
   - Card width: ~220px each
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Product Card**: More spacious
   - Larger images
   - Full title visible (no ellipsis)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Footer (768px):**
 
 - [ ] **Links**: 2×2 grid
   - 2 columns, 2 rows
   - No accordions (all visible)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Bottom Navigation (768px):**
 
 - [ ] **Hidden** or **Persistent**:
   - Option 1: Hidden (use header nav only)
   - Option 2: Visible with labels
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Product Details Page (768px):
 
 - [ ] **Image Gallery**: 50% width, left side
+
   - Thumbnails: Vertical on left
   - Main image: Right of thumbnails
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Product Info**: 50% width, right side
+
   - Side-by-side layout
   - More breathing room
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Tabs**: Full width, below product info
   - All tabs visible (no scroll)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Checkout Page (768px):
 
 - [ ] **Two-Column Layout**:
   - Left: Shipping form (60%)
   - Right: Order summary (40%)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -229,65 +247,72 @@ This document provides comprehensive testing procedures for responsive design ac
 **Header (1440px):**
 
 - [ ] **Container**: Max width 1440px, centered
+
   - Padding: 40px left/right
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Logo**: 60px height
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Navigation**: Full menu (8+ items)
+
   - Spacing: 24px between items
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Search**: Wider (300px)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Hero Section (1440px):**
 
 - [ ] **Carousel**: Max width 1440px
+
   - Height: 70vh
   - 3 slides visible (if multiple)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Hero Text**: Larger fonts
   - Title: 48-56px
   - Subtitle: 18-20px
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Product Grid (1440px):**
 
 - [ ] **Layout**: 5-6 columns
+
   - Gap: 24px
   - Card width: ~250px each
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Hover Effects**: Visible and smooth
   - Scale up: 1.05
   - Shadow: Increases
   - Transition: 300ms
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Footer (1440px):**
 
 - [ ] **Links**: 4 columns, single row
   - Even spacing
   - All links visible
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Product Details Page (1440px):
 
 - [ ] **Image Gallery**: 60% width
+
   - Larger main image (800×800px)
   - Grid thumbnails (4×2)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Product Info**: 40% width
+
   - Sticky on scroll
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Related Products**: 4 columns
   - Below product details
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 #### Checkout Page (1440px):
 
@@ -295,7 +320,7 @@ This document provides comprehensive testing procedures for responsive design ac
   - Left: Shipping (50%)
   - Center: Payment (25%)
   - Right: Summary (25%)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -306,115 +331,129 @@ This document provides comprehensive testing procedures for responsive design ac
 **Color Scheme:**
 
 - [ ] **Background**: `bg-gray-50` → `dark:bg-gray-900`
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Text**: `text-gray-900` → `dark:text-gray-100`
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Cards**: `bg-white` → `dark:bg-gray-800`
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Borders**: `border-gray-200` → `dark:border-gray-700`
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Component-Specific Testing:**
 
 **Header (Dark Mode):**
 
 - [ ] **Background**: White → Dark gray/black
+
   - No harsh contrast
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Logo**: Inverts or has dark variant
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Icons**: Light color (white/gray-300)
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Product Card (Dark Mode):**
 
 - [ ] **Card Background**: Dark gray
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Image**: No background change
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Text**: Light color, readable
+
   - Title: white
   - Price: Light gray
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Button**: Dark mode variant
   - Primary: Blue-500 → Blue-400
   - Text: White remains white
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Forms (Dark Mode):**
 
 - [ ] **Input Fields**: Dark background
+
   - Background: gray-800
   - Border: gray-600
   - Text: white
   - Placeholder: gray-400
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Focus State**: Visible in dark mode
   - Border: blue-400 or blue-300
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Modals (Dark Mode):**
 
 - [ ] **Overlay**: Dark with transparency
+
   - Background: `rgba(0, 0, 0, 0.7)`
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Modal Content**: Dark background
   - Background: gray-800
   - Text: white
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Footer (Dark Mode):**
 
 - [ ] **Background**: Dark gray/black
-  - **Status**: ___________
+
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Links**: Light color
   - Hover: Lighter or underline
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Skeletons (Dark Mode):**
 
 - [ ] **Animation**: Visible in dark mode
   - Base: gray-700
   - Highlight: gray-600
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Toasts/Alerts (Dark Mode):**
 
 - [ ] **Success**: Green with dark bg
+
   - Background: green-800
   - Text: white
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Error**: Red with dark bg
+
   - Background: red-800
   - Text: white
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Info**: Blue with dark bg
   - Background: blue-800
   - Text: white
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 **Images (Dark Mode):**
 
 - [ ] **No Inversion**: Images remain normal
+
   - Product images: No filter
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 - [ ] **Icons**: SVG icons change color
   - Using `currentColor` or `fill-current`
-  - **Status**: ___________
+  - **Status**: \***\*\_\_\_\*\***
 
 ---
 
@@ -554,9 +593,9 @@ a {
 ```javascript
 // Add to <head> (before any content)
 <script>
-  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark')
-  }
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches)){" "}
+  {document.documentElement.classList.add("dark")}
 </script>
 ```
 

@@ -26,9 +26,9 @@ import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 /**
@@ -36,7 +36,7 @@ interface RouteContext {
  */
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { quantity } = body;
 
@@ -111,7 +111,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Check if cart item exists
     const cartItemDoc = await getDoc(doc(db, "cart", id));

@@ -1,8 +1,8 @@
 /**
  * Performance Utilities - Phase 9.1
- * 
+ *
  * Utilities for performance optimization, monitoring, and lazy loading.
- * 
+ *
  * Features:
  * - Dynamic imports for code splitting
  * - Lazy component loading
@@ -15,7 +15,7 @@ import { ComponentType, LazyExoticComponent, lazy } from "react";
 
 /**
  * Lazy load a component with optional loading fallback
- * 
+ *
  * @example
  * const ProductList = lazyLoad(() => import('./ProductList'));
  * <Suspense fallback={<Skeleton />}><ProductList /></Suspense>
@@ -28,7 +28,7 @@ export function lazyLoad<T extends ComponentType<any>>(
 
 /**
  * Lazy load a named export from a module
- * 
+ *
  * @example
  * const Button = lazyLoadNamed(() => import('./components'), 'Button');
  */
@@ -46,7 +46,7 @@ export function lazyLoadNamed<T extends ComponentType<any>>(
 /**
  * Preload a component for faster initial render
  * Call this on hover or route prefetch
- * 
+ *
  * @example
  * <Link onMouseEnter={() => preloadComponent(() => import('./ProductDetails'))}>
  *   View Product
@@ -60,7 +60,7 @@ export function preloadComponent<T>(
 
 /**
  * Check if component is within viewport using Intersection Observer
- * 
+ *
  * @example
  * const ref = useRef(null);
  * const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
@@ -141,7 +141,11 @@ export const performance = {
   /**
    * Get current memory usage (Chrome only)
    */
-  getMemoryUsage(): { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } | null {
+  getMemoryUsage(): {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  } | null {
     if (
       typeof window !== "undefined" &&
       "performance" in window &&
@@ -172,7 +176,7 @@ export interface WebVitalsMetric {
 
 /**
  * Report Web Vitals to analytics
- * 
+ *
  * @example
  * // In app/layout.tsx
  * export function reportWebVitals(metric: WebVitalsMetric) {
@@ -216,7 +220,7 @@ export function logWebVital(metric: WebVitalsMetric): void {
 
 /**
  * Prefetch data for a route
- * 
+ *
  * @example
  * <Link href="/products" onMouseEnter={() => prefetchData('/api/products')}>
  *   Products
@@ -237,7 +241,7 @@ export async function prefetchData(url: string): Promise<void> {
  */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
-  
+
   const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   return mediaQuery.matches;
 }
@@ -345,7 +349,7 @@ export function getOptimalImageSize(
 ): number {
   const dpr = getDevicePixelRatio();
   const size = Math.min(Math.ceil(containerWidth * dpr), maxWidth);
-  
+
   // Round to nearest common breakpoint for better caching
   const breakpoints = [320, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
   return breakpoints.find((bp) => bp >= size) || size;

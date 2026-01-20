@@ -1,15 +1,15 @@
 /**
  * LazyComponent - Phase 9.1
- * 
+ *
  * Wrapper for lazy loading heavy components below the fold.
  * Uses Intersection Observer to load components only when needed.
- * 
+ *
  * Features:
  * - Lazy load on scroll into viewport
  * - Customizable loading skeleton
  * - Error boundary integration
  * - Trigger once or continuous
- * 
+ *
  * @example
  * <LazyComponent
  *   loader={() => import('./HeavyChart')}
@@ -22,9 +22,9 @@
 
 "use client";
 
-import { Suspense, useRef, ComponentType, ReactNode } from "react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { cn } from "@/lib/utils";
+import { ReactNode, Suspense, useRef } from "react";
 
 interface LazyComponentProps {
   /** Component children to render when visible */
@@ -63,7 +63,14 @@ export function LazyComponent({
     <div
       ref={ref}
       className={cn("w-full", className)}
-      style={minHeight ? { minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight } : undefined}
+      style={
+        minHeight
+          ? {
+              minHeight:
+                typeof minHeight === "number" ? `${minHeight}px` : minHeight,
+            }
+          : undefined
+      }
     >
       {isVisible ? (
         <Suspense fallback={fallback}>{children}</Suspense>
@@ -87,9 +94,9 @@ export function LazyComponentSkeleton({ className }: { className?: string }) {
 
 /**
  * LazySection - Lazy load entire sections
- * 
+ *
  * Use for heavy sections like product grids, image galleries, etc.
- * 
+ *
  * @example
  * <LazySection title="Featured Products" fallback={<ProductGridSkeleton />}>
  *   <ProductGrid products={products} />
@@ -121,14 +128,16 @@ export function LazySection({
     <section
       ref={ref}
       className={cn("w-full", className)}
-      style={{ minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight }}
+      style={{
+        minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
+      }}
     >
       {title && !isVisible && (
         <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
           {title}
         </h2>
       )}
-      
+
       {isVisible ? (
         <Suspense fallback={fallback}>{children}</Suspense>
       ) : (
@@ -168,9 +177,9 @@ export function LazySectionSkeleton({
 
 /**
  * LazyModal - Lazy load modal content
- * 
+ *
  * Only loads modal content when opened.
- * 
+ *
  * @example
  * <LazyModal isOpen={isOpen} onClose={closeModal}>
  *   <HeavyModalContent />

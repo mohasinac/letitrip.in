@@ -57,7 +57,7 @@ const testProduct = {
   - Name: `Test User`
 - [ ] Submit form
 - [ ] **Expected**: Success message, redirect to `/` or `/user/dashboard`
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Validation Tests:**
 
@@ -75,7 +75,7 @@ const testProduct = {
   - Password: `Test123!`
 - [ ] Submit form
 - [ ] **Expected**: Success message, redirect to previous page or `/`
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Error Handling:**
 
@@ -89,23 +89,23 @@ const testProduct = {
 - [ ] Enter email: `buyer@test.com`
 - [ ] Submit form
 - [ ] **Expected**: "Reset link sent to your email"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Check email for reset link
 - [ ] Click reset link
 - [ ] Enter new password
 - [ ] Submit
 - [ ] **Expected**: "Password reset successfully"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **1.4. Logout**
 
 - [ ] Login as any user
 - [ ] Click user menu → Logout
 - [ ] **Expected**: Redirect to homepage, user menu removed
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Navigate to `/user/dashboard`
 - [ ] **Expected**: Redirect to `/auth/login`
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **1.5. Protected Routes**
 
@@ -115,7 +115,7 @@ const testProduct = {
   - [ ] `/admin/dashboard` → Redirect to `/auth/login`
   - [ ] `/checkout` → Redirect to `/auth/login`
 - [ ] **Expected**: All protected routes redirect to login
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **1.6. Session Persistence**
 
@@ -124,7 +124,7 @@ const testProduct = {
 - [ ] Reopen browser
 - [ ] Navigate to `/user/dashboard`
 - [ ] **Expected**: Still logged in, no redirect
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
@@ -146,7 +146,7 @@ const testProduct = {
   - Images: Upload 3 images
 - [ ] Submit form
 - [ ] **Expected**: Success message, redirect to product list
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Verify product appears in `/seller/products`
 
 **Read Product:**
@@ -157,7 +157,7 @@ const testProduct = {
   - [ ] Images in gallery
   - [ ] Category, seller info
   - [ ] Add to cart button
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Update Product:**
 
@@ -167,10 +167,10 @@ const testProduct = {
 - [ ] Update price to `8888`
 - [ ] Submit form
 - [ ] **Expected**: Success message, changes saved
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Navigate to product page
 - [ ] **Expected**: Updated details displayed
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Delete Product:**
 
@@ -178,10 +178,10 @@ const testProduct = {
 - [ ] Click "Delete" on test product
 - [ ] Confirm deletion in modal
 - [ ] **Expected**: Success message, product removed from list
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Navigate to product page `/buy-product-{slug}`
 - [ ] **Expected**: 404 error or "Product not found"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **2.2. Auction CRUD (Seller)**
 
@@ -198,7 +198,7 @@ const testProduct = {
   - Images: Upload 3 images
 - [ ] Submit form
 - [ ] **Expected**: Success message, redirect to auction list
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Read Auction:**
 
@@ -208,7 +208,7 @@ const testProduct = {
   - [ ] Start/end time, time remaining
   - [ ] Bid history
   - [ ] Place bid button
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Update Auction:**
 
@@ -217,7 +217,7 @@ const testProduct = {
 - [ ] Update reserve price to `12000`
 - [ ] Submit form
 - [ ] **Expected**: Success message, changes saved
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Delete Auction:**
 
@@ -225,7 +225,7 @@ const testProduct = {
 - [ ] Click "Delete" on test auction (if not live)
 - [ ] Confirm deletion
 - [ ] **Expected**: Success message, auction removed
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **2.3. Category CRUD (Admin)**
 
@@ -240,16 +240,16 @@ const testProduct = {
   - Icon: Upload icon
 - [ ] Submit form
 - [ ] **Expected**: Success message, category created
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Read Categories:**
 
 - [ ] Navigate to `/categories`
 - [ ] **Expected**: All categories displayed in grid/list
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Click on test category
 - [ ] **Expected**: Category page with products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Update Category:**
 
@@ -258,7 +258,7 @@ const testProduct = {
 - [ ] Update name to `Updated Test Category`
 - [ ] Submit form
 - [ ] **Expected**: Success message, changes saved
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Delete Category:**
 
@@ -266,7 +266,7 @@ const testProduct = {
 - [ ] Click "Delete" on test category
 - [ ] Confirm deletion
 - [ ] **Expected**: Success message, category removed
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
@@ -282,7 +282,7 @@ const testProduct = {
 - [ ] Select payment method: Razorpay
 - [ ] Click "Place Order"
 - [ ] **Expected**: Razorpay modal opens
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Razorpay Test Cards:**
 
@@ -295,16 +295,16 @@ Failure: 4000 0000 0000 0002
 - [ ] Enter test card details
 - [ ] Complete payment
 - [ ] **Expected**: Success page, order confirmation
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Verify order in `/user/orders`
 - [ ] **Expected**: Order status: "Paid", Payment method: "Razorpay"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **Payment Failure Test:**
 
 - [ ] Use failure test card: `4000 0000 0000 0002`
 - [ ] **Expected**: Error message, order status: "Failed"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **3.2. PhonePe Payment Flow**
 
@@ -313,10 +313,10 @@ Failure: 4000 0000 0000 0002
 - [ ] Select payment method: PhonePe
 - [ ] Click "Place Order"
 - [ ] **Expected**: PhonePe redirect or QR code
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Complete payment (use PhonePe test environment)
 - [ ] **Expected**: Redirect back to success page
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Verify order in `/user/orders`
 
 **3.3. COD (Cash on Delivery)**
@@ -326,24 +326,26 @@ Failure: 4000 0000 0000 0002
 - [ ] Select payment method: Cash on Delivery
 - [ ] Click "Place Order"
 - [ ] **Expected**: Order placed, no payment modal
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Verify order status: "Pending", Payment: "COD"
 
 **3.4. Payment Edge Cases**
 
 - [ ] **Network Failure During Payment**:
+
   - [ ] Disconnect internet mid-payment
   - [ ] **Expected**: Error message, retry option
-  - [ ] **Actual**: ___________
+  - [ ] **Actual**: \***\*\_\_\_\*\***
 
 - [ ] **Duplicate Payment Prevention**:
+
   - [ ] Submit payment twice quickly
   - [ ] **Expected**: Second click ignored
-  - [ ] **Actual**: ___________
+  - [ ] **Actual**: \***\*\_\_\_\*\***
 
 - [ ] **Insufficient Funds** (use specific test card):
   - [ ] **Expected**: Error: "Insufficient funds"
-  - [ ] **Actual**: ___________
+  - [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
@@ -359,45 +361,45 @@ Failure: 4000 0000 0000 0002
   - [ ] Product suggestions
   - [ ] Category suggestions
   - [ ] Seller suggestions
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Press Enter or click suggestion
 - [ ] **Expected**: Search results page with products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.2. Auction Search**
 
 - [ ] Search for: `vintage`
 - [ ] **Expected**: Results include auctions
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Filter by: "Auctions only"
 - [ ] **Expected**: Only auction results
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.3. Category Search**
 
 - [ ] Search for: `electronics`
 - [ ] **Expected**: Electronics category appears
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Click category
 - [ ] **Expected**: Category page with products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.4. Seller/Shop Search**
 
 - [ ] Search for: shop name (e.g., `tech store`)
 - [ ] **Expected**: Shop appears in suggestions
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Click shop
 - [ ] **Expected**: Shop page with products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.5. Empty Search Results**
 
 - [ ] Search for: `xyznonexistent`
 - [ ] **Expected**: "No results found" message
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] **Expected**: Suggestions: "Try different keywords"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.6. Search Filters**
 
@@ -407,17 +409,17 @@ Failure: 4000 0000 0000 0002
   - [ ] Category: Electronics
   - [ ] Condition: New
 - [ ] **Expected**: Filtered results
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **4.7. Search Autocomplete**
 
 - [ ] Type: `ip` (don't press Enter)
 - [ ] **Expected**: Suggestions: "iphone", "ipad", "ipod"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Use arrow keys to navigate
 - [ ] Press Enter on selected
 - [ ] **Expected**: Navigate to selected item
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
@@ -431,66 +433,66 @@ Failure: 4000 0000 0000 0002
 - [ ] Set price range: ₹5,000 - ₹20,000
 - [ ] Click "Apply"
 - [ ] **Expected**: Only products in range displayed
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Verify all products are within range
 
 **5.2. Category Filter**
 
 - [ ] Select category: "Electronics"
 - [ ] **Expected**: Only electronics products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Select sub-category: "Mobile Phones"
 - [ ] **Expected**: Only mobile phones
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.3. Brand Filter**
 
 - [ ] Select brand: "Apple"
 - [ ] **Expected**: Only Apple products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Select multiple brands: "Apple", "Samsung"
 - [ ] **Expected**: Products from both brands
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.4. Condition Filter**
 
 - [ ] Select condition: "New"
 - [ ] **Expected**: Only new products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Select "Used"
 - [ ] **Expected**: Only used products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.5. Color Filter**
 
 - [ ] Select color: "Black"
 - [ ] **Expected**: Products available in black
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Select multiple colors: "Black", "White"
 - [ ] **Expected**: Products in either color
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.6. Size Filter (for applicable products)**
 
 - [ ] Navigate to clothing category
 - [ ] Select size: "Medium"
 - [ ] **Expected**: Only medium-sized items
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.7. Rating Filter**
 
 - [ ] Select rating: "4 stars & above"
 - [ ] **Expected**: Only high-rated products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.8. Availability Filter**
 
 - [ ] Select: "In Stock"
 - [ ] **Expected**: Only available products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Select: "Out of Stock"
 - [ ] **Expected**: Only unavailable products
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.9. Multiple Filters Combined**
 
@@ -501,14 +503,14 @@ Failure: 4000 0000 0000 0002
   - Condition: New
   - Rating: 4+ stars
 - [ ] **Expected**: Products matching ALL criteria
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.10. Clear Filters**
 
 - [ ] Apply multiple filters
 - [ ] Click "Clear All Filters"
 - [ ] **Expected**: All filters reset, full product list
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **5.11. URL Persistence**
 
@@ -516,7 +518,7 @@ Failure: 4000 0000 0000 0002
 - [ ] Copy URL
 - [ ] Open in new tab
 - [ ] **Expected**: Same filters applied
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
@@ -529,25 +531,25 @@ Failure: 4000 0000 0000 0002
 - [ ] Without login, navigate to product page
 - [ ] Click "Add to Cart"
 - [ ] **Expected**: Product added, cart icon badge +1
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Navigate to `/cart`
 - [ ] **Expected**: Product in cart
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.2. Update Cart Quantity**
 
 - [ ] In cart, change quantity from 1 to 3
 - [ ] **Expected**: Total price updated (×3)
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Change quantity to 0
 - [ ] **Expected**: Product removed from cart
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.3. Remove from Cart**
 
 - [ ] Click "Remove" button
 - [ ] **Expected**: Product removed immediately
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.4. Guest Cart Persistence**
 
@@ -555,17 +557,17 @@ Failure: 4000 0000 0000 0002
 - [ ] Close browser
 - [ ] Reopen browser
 - [ ] **Expected**: Cart items still there (localStorage)
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.5. Cart Merge on Login**
 
 - [ ] As guest, add Product A to cart
 - [ ] Login as user
 - [ ] **Expected**: Product A still in cart
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] If user already had Product B in cart
 - [ ] **Expected**: Both Product A and B in cart
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.6. Checkout Flow**
 
@@ -578,16 +580,16 @@ Failure: 4000 0000 0000 0002
 - [ ] Review order summary
 - [ ] Click "Place Order"
 - [ ] **Expected**: Payment modal or success page (COD)
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.7. Checkout Validation**
 
 - [ ] Try to checkout with empty cart
 - [ ] **Expected**: Error: "Your cart is empty"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Try to checkout without address
 - [ ] **Expected**: Error: "Please enter shipping address"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.8. Stock Validation**
 
@@ -595,17 +597,17 @@ Failure: 4000 0000 0000 0002
 - [ ] Set quantity to 10
 - [ ] Try to checkout
 - [ ] **Expected**: Error: "Only 5 items available"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.9. Coupon Code**
 
 - [ ] Enter coupon code: `TEST10` (10% off)
 - [ ] Click "Apply"
 - [ ] **Expected**: Discount applied, total reduced
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Enter invalid coupon
 - [ ] **Expected**: Error: "Invalid coupon code"
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 **6.10. Order Confirmation**
 
@@ -615,23 +617,23 @@ Failure: 4000 0000 0000 0002
   - [ ] Estimated delivery date
   - [ ] Payment status
   - [ ] "View Order" button
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 - [ ] Click "View Order"
 - [ ] **Expected**: Navigate to `/user/orders/{orderId}`
-- [ ] **Actual**: ___________
+- [ ] **Actual**: \***\*\_\_\_\*\***
 
 ---
 
 ## Testing Checklist Summary
 
-| Task | Test Cases | Status | Notes |
-|------|------------|--------|-------|
-| 1. Auth Flows | 6 test cases | ⚪ Not Started | |
-| 2. CRUD Operations | 3 sections (Product, Auction, Category) | ⚪ Not Started | |
-| 3. Payments | 3 payment methods + edge cases | ⚪ Not Started | |
-| 4. Global Search | 7 search scenarios | ⚪ Not Started | |
-| 5. Filters | 11 filter types | ⚪ Not Started | |
-| 6. Cart/Checkout | 10 checkout scenarios | ⚪ Not Started | |
+| Task               | Test Cases                              | Status         | Notes |
+| ------------------ | --------------------------------------- | -------------- | ----- |
+| 1. Auth Flows      | 6 test cases                            | ⚪ Not Started |       |
+| 2. CRUD Operations | 3 sections (Product, Auction, Category) | ⚪ Not Started |       |
+| 3. Payments        | 3 payment methods + edge cases          | ⚪ Not Started |       |
+| 4. Global Search   | 7 search scenarios                      | ⚪ Not Started |       |
+| 5. Filters         | 11 filter types                         | ⚪ Not Started |       |
+| 6. Cart/Checkout   | 10 checkout scenarios                   | ⚪ Not Started |       |
 
 ## Bug Tracking
 
@@ -645,6 +647,7 @@ Use this template for reporting bugs:
 **Affected Pages**: [URLs]
 
 **Steps to Reproduce**:
+
 1. ...
 2. ...
 3. ...
@@ -656,6 +659,7 @@ Use this template for reporting bugs:
 **Console Errors**: [If applicable]
 
 **Environment**:
+
 - Browser: ...
 - Device: ...
 - OS: ...

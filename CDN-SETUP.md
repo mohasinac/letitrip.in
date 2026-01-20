@@ -93,7 +93,8 @@ module.exports = {
   images: {
     domains: ["cdn.letitrip.in"],
   },
-  assetPrefix: process.env.NODE_ENV === "production" ? "https://cdn.letitrip.in" : "",
+  assetPrefix:
+    process.env.NODE_ENV === "production" ? "https://cdn.letitrip.in" : "",
 };
 ```
 

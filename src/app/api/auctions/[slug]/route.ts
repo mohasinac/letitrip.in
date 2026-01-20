@@ -23,14 +23,14 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Get auction document
     const auctionDoc = await getDoc(doc(db, "auctions", slug));

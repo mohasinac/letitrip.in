@@ -197,7 +197,7 @@ const inter = Inter({
 
 ### 5. Remove Console Logs
 
-- **Compiler Option**: Removes console.* in production (keeps error/warn)
+- **Compiler Option**: Removes console.\* in production (keeps error/warn)
 
 ```javascript
 // next.config.js
@@ -232,11 +232,13 @@ experimental: {
 ### Key Metrics to Monitor:
 
 1. **Chunk Sizes**:
+
    - Client bundle: <300KB (gzipped)
    - Server bundle: No limit (not sent to client)
    - Individual chunks: <50KB ideal, <100KB max
 
 2. **Duplicate Dependencies**:
+
    - Check for multiple versions of same package
    - Use `npm dedupe` to remove duplicates
    - Review `package-lock.json` for version conflicts
@@ -263,6 +265,7 @@ const HeavyComponent = dynamic(() => import("./HeavyComponent"), {
 ```
 
 2. **Replace Heavy Libraries**:
+
    - `moment.js` → `date-fns` (50KB → 10KB)
    - `lodash` → `lodash-es` + named imports (70KB → 10KB)
    - `axios` → `fetch` (Built-in, 0KB)
@@ -316,16 +319,16 @@ npm ls problematic-package
 
 ### Version 1.0.0 (Current):
 
-| Chunk          | Size (Gzipped) | Notes                             |
-| -------------- | -------------- | --------------------------------- |
-| react-vendor   | ~60KB          | React 19.2 + Next.js 16           |
-| firebase-vendor| ~45KB          | Firebase SDK (modular)            |
-| ui-vendor      | ~30KB          | Lucide, Recharts                  |
-| dnd-vendor     | ~15KB          | @dnd-kit                          |
-| vendor         | ~80KB          | Remaining node_modules            |
-| common         | ~20KB          | Shared application code           |
-| pages/index    | ~15KB          | Homepage                          |
-| **Total**      | **~265KB**     | **Well under 500KB target ✅**    |
+| Chunk           | Size (Gzipped) | Notes                          |
+| --------------- | -------------- | ------------------------------ |
+| react-vendor    | ~60KB          | React 19.2 + Next.js 16        |
+| firebase-vendor | ~45KB          | Firebase SDK (modular)         |
+| ui-vendor       | ~30KB          | Lucide, Recharts               |
+| dnd-vendor      | ~15KB          | @dnd-kit                       |
+| vendor          | ~80KB          | Remaining node_modules         |
+| common          | ~20KB          | Shared application code        |
+| pages/index     | ~15KB          | Homepage                       |
+| **Total**       | **~265KB**     | **Well under 500KB target ✅** |
 
 ### Future Optimizations:
 

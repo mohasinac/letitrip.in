@@ -1,9 +1,9 @@
 /**
  * LazyImage Component - Phase 9.1
- * 
+ *
  * Optimized image component with lazy loading, blur placeholder,
  * and automatic WebP support.
- * 
+ *
  * Features:
  * - Intersection Observer lazy loading
  * - Blur placeholder while loading
@@ -11,7 +11,7 @@
  * - Responsive sizes
  * - Error handling with fallback
  * - Dark mode support
- * 
+ *
  * @example
  * <LazyImage
  *   src="/products/shoe.jpg"
@@ -24,10 +24,10 @@
 
 "use client";
 
-import Image, { ImageProps } from "next/image";
-import { useState, useRef } from "react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { cn } from "@/lib/utils";
+import Image, { ImageProps } from "next/image";
+import { useRef, useState } from "react";
 
 interface LazyImageProps extends Omit<ImageProps, "onLoad"> {
   /** Blur placeholder data URL (optional) */
@@ -91,7 +91,10 @@ export function LazyImage({
       className={cn("relative overflow-hidden", className)}
       style={
         width && height
-          ? { width: typeof width === "number" ? `${width}px` : width, height: typeof height === "number" ? `${height}px` : height }
+          ? {
+              width: typeof width === "number" ? `${width}px` : width,
+              height: typeof height === "number" ? `${height}px` : height,
+            }
           : undefined
       }
     >
@@ -125,9 +128,9 @@ export function LazyImage({
 
 /**
  * LazyBackgroundImage Component
- * 
+ *
  * Lazy-loaded background image for hero sections, banners, etc.
- * 
+ *
  * @example
  * <LazyBackgroundImage src="/hero.jpg" className="h-96">
  *   <h1>Hero Content</h1>

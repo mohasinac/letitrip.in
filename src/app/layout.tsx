@@ -1,3 +1,4 @@
+import { ClientLink } from "@/components/common/ClientLink";
 import {
   AdvertisementBanner,
   Footer,
@@ -19,11 +20,8 @@ import {
   User,
 } from "lucide-react";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import { ClientLink } from "@/components/common/ClientLink";
 import "./globals.css";
 import { Providers } from "./providers";
-
 
 export const metadata: Metadata = {
   title: "LetItRip - Modern Auction & E-commerce Platform",
