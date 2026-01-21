@@ -16,11 +16,13 @@
  * @page / - Homepage
  */
 
-import { ClientLink } from "@/components/common";
-import { AdvertisementBanner } from "@/components/common/AdvertisementBanner";
-import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { ROUTES } from "@/constants/routes";
 import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+import {
+  AdvertisementBanner,
+  ClientLink,
+  FAQAccordion,
+} from "@mohasinac/react-library";
 import { Metadata } from "next";
 
 // SEO Metadata

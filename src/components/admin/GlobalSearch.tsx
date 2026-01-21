@@ -86,7 +86,7 @@ const searchAPI = async (
       title: "Rare Coin Collection",
       subtitle: "Ends in 2 days • Current bid: ₹15,000",
       status: "live",
-      url: "/buy-auction-rare-coin-collection",
+      url: "/auctions/rare-coin-collection",
     },
     {
       id: "4",

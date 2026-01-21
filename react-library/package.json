@@ -1,6 +1,6 @@
 {
   "name": "@mohasinac/react-library",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Reusable React components and utilities for Letitrip",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -6,6 +6,8 @@
  * All data matches real Firebase schema for type safety.
  */
 
+import { logger } from "./logger";
+
 export const FALLBACK_PRODUCTS = [
   {
     id: "fallback-prod-1",
@@ -928,7 +930,7 @@ export const FALLBACK_NOTIFICATIONS = [
     title: "Flash Sale Alert!",
     message: "50% off on electronics. Limited time offer!",
     read: false,
-    actionUrl: "/buy-product-all?category=electronics",
+    actionUrl: "/products?category=electronics",
     icon: "🎉",
     createdAt: new Date(Date.now() - 3600000 * 5),
   },
@@ -939,7 +941,7 @@ export const FALLBACK_NOTIFICATIONS = [
     title: "Auction Ending Soon",
     message: "Vintage Camera Collection auction ends in 2 hours",
     read: true,
-    actionUrl: "/buy-auction-fallback-auction-1",
+    actionUrl: "/auctions/fallback-auction-1",
     icon: "⏰",
     createdAt: new Date(Date.now() - 86400000 * 5),
   },
@@ -950,7 +952,7 @@ export const FALLBACK_NOTIFICATIONS = [
     title: "Price Drop!",
     message: "Smart Fitness Watch is now ₹3,499 (was ₹5,999)",
     read: true,
-    actionUrl: "/buy-product-smart-fitness-watch",
+    actionUrl: "/products/smart-fitness-watch",
     icon: "💰",
     createdAt: new Date(Date.now() - 86400000 * 7),
   },
@@ -1014,6 +1016,10 @@ export async function fetchWithFallback<T>(
     }
     return data;
   } catch (error) {
+    logger.error(error as Error, {
+      context: "fetchWithFallback",
+      errorMessage: errorMessage || "Error fetching data",
+    });
     console.error(
       errorMessage || "Error fetching data, using fallback:",
       error,

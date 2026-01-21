@@ -36,13 +36,13 @@ function generateBreadcrumbs(currentPath: string): BreadcrumbItem[] {
       .replace(/\b\w/g, (l) => l.toUpperCase());
 
     // Handle special cases
-    if (pathSegments[i] === "buy-product-all") {
+    if (pathSegments[i] === "products") {
       label = "All Products";
-    } else if (pathSegments[i] === "buy-auction-all") {
+    } else if (pathSegments[i] === "auctions") {
       label = "All Auctions";
-    } else if (pathSegments[i].startsWith("buy-product")) {
+    } else if (pathSegments[i].startsWith("product")) {
       label = "Products";
-    } else if (pathSegments[i].startsWith("buy-auction")) {
+    } else if (pathSegments[i].startsWith("auction")) {
       label = "Auctions";
     }
 

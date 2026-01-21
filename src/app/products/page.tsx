@@ -13,14 +13,13 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ProductCard } from "@/components/common/ProductCard";
 
-import { ClientLink } from "@/components/common/ClientLink";
-import { SortDropdown } from "@/components/common/SortDropdown";
 import { ROUTES } from "@/constants/routes";
 import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 // Types
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     sort?: string;
     minPrice?: string;
@@ -31,14 +30,15 @@ interface PageProps {
     featured?: string;
     cursor?: string;
     limit?: string;
-  };
+  }>;
 }
 
 // Generate metadata
 export async function generateMetadata({
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const searchQuery = searchParams.q;
+  const { q } = await searchParams;
+  const searchQuery = q;
 
   let title = "All Products | Let It Rip";
   let description =
@@ -71,22 +71,22 @@ const SORT_OPTIONS = [
 
 // Fetch products server-side
 async function getProducts(searchParams: PageProps["searchParams"]) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const params = await searchParams;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   // Build query params
   const queryParams = new URLSearchParams();
 
-  if (searchParams.q) queryParams.set("search", searchParams.q);
-  if (searchParams.sort) queryParams.set("sort", searchParams.sort);
-  if (searchParams.minPrice) queryParams.set("minPrice", searchParams.minPrice);
-  if (searchParams.maxPrice) queryParams.set("maxPrice", searchParams.maxPrice);
-  if (searchParams.condition)
-    queryParams.set("condition", searchParams.condition);
-  if (searchParams.shopSlug) queryParams.set("shopSlug", searchParams.shopSlug);
-  if (searchParams.inStock === "true") queryParams.set("inStock", "true");
-  if (searchParams.featured === "true") queryParams.set("featured", "true");
-  if (searchParams.cursor) queryParams.set("cursor", searchParams.cursor);
-  if (searchParams.limit) queryParams.set("limit", searchParams.limit);
+  if (params.q) queryParams.set("search", params.q);
+  if (params.sort) queryParams.set("sort", params.sort);
+  if (params.minPrice) queryParams.set("minPrice", params.minPrice);
+  if (params.maxPrice) queryParams.set("maxPrice", params.maxPrice);
+  if (params.condition) queryParams.set("condition", params.condition);
+  if (params.shopSlug) queryParams.set("shopSlug", params.shopSlug);
+  if (params.inStock === "true") queryParams.set("inStock", "true");
+  if (params.featured === "true") queryParams.set("featured", "true");
+  if (params.cursor) queryParams.set("cursor", params.cursor);
+  if (params.limit) queryParams.set("limit", params.limit);
   else queryParams.set("limit", "24");
 
   try {
@@ -127,6 +127,7 @@ async function getProducts(searchParams: PageProps["searchParams"]) {
 export default async function AllProductsPage({ searchParams }: PageProps) {
   // Fetch data
   const { products, hasMore, nextCursor } = await getProducts(searchParams);
+  const { sort = "newest" } = await searchParams;
 
   // Build breadcrumbs
   const breadcrumbs = [
@@ -135,7 +136,7 @@ export default async function AllProductsPage({ searchParams }: PageProps) {
   ];
 
   // Current filters
-  const currentSort = searchParams.sort || "newest";
+  const currentSort = sort;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">

@@ -57,7 +57,7 @@ export function ProductCard({
   onToggleStatus,
 }: ProductCardProps) {
   const productImage = image || images?.[0] || "/placeholder-product.svg";
-  const productUrl = `/buy-product-${slug}`;
+  const productUrl = `/products/${slug}`;
   const shopUrl = shopSlug ? `/shops/${shopSlug}` : "#";
 
   // Calculate discount percentage

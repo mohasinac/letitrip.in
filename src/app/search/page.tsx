@@ -84,15 +84,15 @@ async function searchResults(query: string, type?: string) {
 }
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     type?: string;
-  };
+  }>;
 }
 
 export default async function SearchPage({ searchParams }: PageProps) {
-  const query = searchParams.q || "";
-  const type = searchParams.type;
+  const { q = "", type } = await searchParams;
+  const query = q;
 
   const results = query
     ? await searchResults(query, type)

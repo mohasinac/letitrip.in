@@ -359,7 +359,7 @@ export default function AuctionWizard({
                 </label>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 dark:text-gray-400 text-sm">
-                    letitrip.in/buy-auction-
+                    letitrip.in/auctions/
                   </span>
                   <input
                     type="text"

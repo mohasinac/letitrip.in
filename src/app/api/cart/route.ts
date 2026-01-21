@@ -67,9 +67,10 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId");
 
     if (!userId) {
+      // Return empty cart for guests or unauthenticated users
       return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 },
+        { items: [], message: "Guest cart not implemented" },
+        { status: 200 },
       );
     }
 

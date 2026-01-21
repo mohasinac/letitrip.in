@@ -28,6 +28,9 @@ export type { CouponFilterValues, CouponFiltersProps } from "./CouponFilters";
 export { ReturnFilters } from "./ReturnFilters";
 export type { ReturnFilterValues, ReturnFiltersProps } from "./ReturnFilters";
 
+export { SortDropdown } from "./SortDropdown";
+export type { SortDropdownProps } from "./SortDropdown";
+
 export { ReviewFilters } from "./ReviewFilters";
 export type { ReviewFilterValues, ReviewFiltersProps } from "./ReviewFilters";
 

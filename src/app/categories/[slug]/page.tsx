@@ -12,8 +12,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ClientLink } from "@/components/common/ClientLink";
-import { SortDropdown } from "@/components/common/SortDropdown";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { ROUTES } from "@/constants/routes";
 import {
@@ -21,6 +19,7 @@ import {
   FALLBACK_PRODUCTS,
   fetchWithFallback,
 } from "@/lib/fallback-data";
+import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 interface PageProps {
   params: {

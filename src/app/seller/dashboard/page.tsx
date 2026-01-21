@@ -16,9 +16,9 @@
  * @page /seller/dashboard - Seller dashboard
  */
 
-import { ClientLink } from "@/components/common/ClientLink";
 import { SellerNav } from "@/components/seller/SellerNav";
 import { ROUTES } from "@/constants/routes";
+import { ClientLink } from "@mohasinac/react-library";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,5 +1,5 @@
-import { ClientLink } from "@/components/common/ClientLink";
 import { ROUTES } from "@/constants/routes";
+import { ClientLink } from "@mohasinac/react-library";
 import {
   BarChart3,
   Gavel,

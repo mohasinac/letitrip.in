@@ -24,9 +24,9 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ClientLink } from "@/components/common/ClientLink";
 import { ROUTES } from "@/constants/routes";
 import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+import { ClientLink } from "@mohasinac/react-library";
 
 // Types
 interface PageProps {

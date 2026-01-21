@@ -19,20 +19,21 @@
  * @page /buy-auction-[slug] - Auction details
  */
 
-import { AuctionCard } from "@/components/common/AuctionCard";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
+import { AuctionCard } from "@mohasinac/react-library";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ClientLink } from "@/components/common/ClientLink";
 import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
+import { ClientLink } from "@mohasinac/react-library";
 
 // Types
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 /**
@@ -41,7 +42,8 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const auction = await getAuction(params.slug);
+  const { slug } = await params;
+  const auction = await getAuction(slug);
 
   if (!auction) {
     return {
@@ -190,17 +192,15 @@ function getTimeRemaining(endTime: string | Date) {
 }
 
 export default async function AuctionDetailsPage({ params }: PageProps) {
-  const auction = await getAuction(params.slug);
+  const { slug } = await params;
+  const auction = await getAuction(slug);
 
   if (!auction) {
     notFound();
   }
 
   // Fetch similar auctions
-  const similarAuctions = await getSimilarAuctions(
-    auction.categorySlug,
-    auction.slug,
-  );
+  const similarAuctions = await getSimilarAuctions(auction.categorySlug, slug);
 
   // Calculate time remaining
   const timeRemaining = getTimeRemaining(auction.endTime);
@@ -214,7 +214,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <Breadcrumb
-          currentPath={`/buy-auction-${params.slug}`}
+          currentPath={`/buy-auction-${slug}`}
           LinkComponent={ClientLink}
         />
 
@@ -514,21 +514,8 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                       : undefined,
                   }}
                   variant="compact"
-                  formatTimeRemaining={(endTime) => {
-                    if (!endTime) return "Ended";
-                    const result = getTimeRemaining(endTime);
-                    return result.display;
-                  }}
-                  getTimeRemaining={(endTime) => {
-                    if (!endTime) return { totalMs: 0, isEnded: true };
-                    const end = new Date(endTime);
-                    const now = new Date();
-                    const diff = end.getTime() - now.getTime();
-                    return { totalMs: diff, isEnded: diff <= 0 };
-                  }}
-                  cn={(...classes) =>
-                    classes.filter((c) => typeof c === "string").join(" ")
-                  }
+                  LinkComponent={ClientLink}
+                  ImageComponent={Image}
                 />
               ))}
             </div>

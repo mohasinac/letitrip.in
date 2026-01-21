@@ -20,6 +20,7 @@
  */
 
 import { auth, db } from "@/lib/firebase";
+import { logger } from "@/lib/logger";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
@@ -98,6 +99,17 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    logger.apiError(error, {
+      method: "POST",
+      url: "/api/auth/login",
+      statusCode:
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password"
+          ? 401
+          : 500,
+      ip: request.ip,
+      userAgent: request.headers.get("user-agent") || undefined,
+    });
     console.error("Login error:", error);
 
     // Handle Firebase Auth errors

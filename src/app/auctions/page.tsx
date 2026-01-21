@@ -11,14 +11,13 @@ import { AuctionCard } from "@/components/common/AuctionCard";
 import { Metadata } from "next";
 import Link from "next/link";
 
-import { ClientLink } from "@/components/common/ClientLink";
-import { SortDropdown } from "@/components/common/SortDropdown";
 import { ROUTES } from "@/constants/routes";
 import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
+import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 // Types
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     sort?: string;
     minBid?: string;
@@ -28,14 +27,15 @@ interface PageProps {
     featured?: string;
     cursor?: string;
     limit?: string;
-  };
+  }>;
 }
 
 // Generate metadata
 export async function generateMetadata({
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const searchQuery = searchParams.q;
+  const { q } = await searchParams;
+  const searchQuery = q;
 
   let title = "All Auctions | Let It Rip";
   let description =
@@ -68,20 +68,21 @@ const SORT_OPTIONS = [
 
 // Fetch auctions server-side
 async function getAuctions(searchParams: PageProps["searchParams"]) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const params = await searchParams;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   // Build query params
   const queryParams = new URLSearchParams();
 
-  if (searchParams.q) queryParams.set("search", searchParams.q);
-  if (searchParams.sort) queryParams.set("sort", searchParams.sort);
-  if (searchParams.minBid) queryParams.set("minBid", searchParams.minBid);
-  if (searchParams.maxBid) queryParams.set("maxBid", searchParams.maxBid);
-  if (searchParams.status) queryParams.set("status", searchParams.status);
-  if (searchParams.shopSlug) queryParams.set("shopSlug", searchParams.shopSlug);
-  if (searchParams.featured === "true") queryParams.set("featured", "true");
-  if (searchParams.cursor) queryParams.set("cursor", searchParams.cursor);
-  if (searchParams.limit) queryParams.set("limit", searchParams.limit);
+  if (params.q) queryParams.set("search", params.q);
+  if (params.sort) queryParams.set("sort", params.sort);
+  if (params.minBid) queryParams.set("minBid", params.minBid);
+  if (params.maxBid) queryParams.set("maxBid", params.maxBid);
+  if (params.status) queryParams.set("status", params.status);
+  if (params.shopSlug) queryParams.set("shopSlug", params.shopSlug);
+  if (params.featured === "true") queryParams.set("featured", "true");
+  if (params.cursor) queryParams.set("cursor", params.cursor);
+  if (params.limit) queryParams.set("limit", params.limit);
   else queryParams.set("limit", "24");
 
   try {
@@ -122,6 +123,7 @@ async function getAuctions(searchParams: PageProps["searchParams"]) {
 export default async function AllAuctionsPage({ searchParams }: PageProps) {
   // Fetch data
   const { auctions, hasMore, nextCursor } = await getAuctions(searchParams);
+  const params = await searchParams;
 
   // Build breadcrumbs
   const breadcrumbs = [
@@ -131,12 +133,10 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
 
   // Filter info
   const activeFilters = [];
-  if (searchParams.status) activeFilters.push(`Status: ${searchParams.status}`);
-  if (searchParams.minBid)
-    activeFilters.push(`Min Bid: ₹${searchParams.minBid}`);
-  if (searchParams.maxBid)
-    activeFilters.push(`Max Bid: ₹${searchParams.maxBid}`);
-  if (searchParams.featured) activeFilters.push("Featured");
+  if (params.status) activeFilters.push(`Status: ${params.status}`);
+  if (params.minBid) activeFilters.push(`Min Bid: ₹${params.minBid}`);
+  if (params.maxBid) activeFilters.push(`Max Bid: ₹${params.maxBid}`);
+  if (params.featured) activeFilters.push("Featured");
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

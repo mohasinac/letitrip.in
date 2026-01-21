@@ -4,8 +4,8 @@ export type {
   NotImplementedProps,
 } from "./NotImplemented";
 
-export { ErrorBoundary, withErrorBoundary } from "./ErrorBoundary";
-export type { ErrorBoundaryProps } from "./ErrorBoundary";
+export { ErrorBoundary } from "./ErrorBoundary";
+export type { Props as ErrorBoundaryProps } from "./ErrorBoundary";
 
 export { SimilarItems } from "./SimilarItems";
 export type { SimilarItemsProps } from "./SimilarItems";
@@ -18,3 +18,6 @@ export type {
 
 export { HorizontalScroller } from "./HorizontalScroller";
 export type { HorizontalScrollerProps } from "./HorizontalScroller";
+
+export { ClientLink } from "./ClientLink";
+export type { ClientLinkProps } from "./ClientLink";

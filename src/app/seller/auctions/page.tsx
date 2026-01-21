@@ -428,7 +428,7 @@ export default function SellerAuctionsPage() {
                             </div>
                             <div>
                               <Link
-                                href={`/buy-auction-${auction.slug}`}
+                                href={`/auctions/${auction.slug}`}
                                 className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                                 target="_blank"
                               >

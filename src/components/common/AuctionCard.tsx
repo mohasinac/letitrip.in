@@ -54,7 +54,7 @@ export function AuctionCard({
   onToggleStatus,
 }: AuctionCardProps) {
   const auctionImage = image || images?.[0] || "/placeholder-auction.svg";
-  const auctionUrl = `/buy-auction-${slug}`;
+  const auctionUrl = `/auctions/${slug}`;
   const shopUrl = shopSlug ? `/shops/${shopSlug}` : "#";
 
   // Calculate time remaining

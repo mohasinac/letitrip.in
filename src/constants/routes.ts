@@ -19,16 +19,16 @@ export const ROUTES = {
 
   // Products
   PRODUCTS: {
-    LIST: "/buy-product-all",
-    DETAIL: (slug: string) => `/buy-product-${slug}`,
-    FILTERS: (...filters: string[]) => `/buy-product-${filters.join("/")}`,
+    LIST: "/products",
+    DETAIL: (slug: string) => `/products/${slug}`,
+    FILTERS: (...filters: string[]) => `/products/${filters.join("/")}`,
   },
 
   // Auctions
   AUCTIONS: {
-    LIST: "/buy-auction-all",
-    DETAIL: (slug: string) => `/buy-auction-${slug}`,
-    FILTERS: (...filters: string[]) => `/buy-auction-${filters.join("/")}`,
+    LIST: "/auctions",
+    DETAIL: (slug: string) => `/auctions/${slug}`,
+    FILTERS: (...filters: string[]) => `/auctions/${filters.join("/")}`,
   },
 
   // Shops

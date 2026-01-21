@@ -1,11 +1,13 @@
 "use client";
 
-import { AdvertisementBanner } from "@/components/common/AdvertisementBanner";
-import { ClientLink } from "@/components/common/ClientLink";
-import { Footer } from "@/components/common/Footer";
-import { MobileNavigation } from "@/components/common/MobileNavigation";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { ROUTES } from "@/constants/routes";
+import {
+  AdvertisementBanner,
+  ClientLink,
+  Footer,
+  MobileNavigation,
+} from "@mohasinac/react-library";
 import {
   CreditCard,
   Gavel,
@@ -34,7 +36,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
     {
       label: "Products",
       href: ROUTES.PRODUCTS.LIST,
-      isActive: pathname?.startsWith("/buy-product"),
+      isActive: pathname?.startsWith("/product"),
     },
     {
       label: "Categories",
@@ -44,7 +46,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
     {
       label: "Auctions",
       href: ROUTES.AUCTIONS.LIST,
-      isActive: pathname?.startsWith("/buy-auction"),
+      isActive: pathname?.startsWith("/auction"),
     },
     {
       label: "Shops",

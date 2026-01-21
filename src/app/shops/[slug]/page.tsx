@@ -13,9 +13,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ClientLink } from "@/components/common/ClientLink";
 import { ClientShopHeader } from "@/components/common/ClientShopHeader";
-import { SortDropdown } from "@/components/common/SortDropdown";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { ROUTES } from "@/constants/routes";
 import {
@@ -23,21 +21,22 @@ import {
   FALLBACK_SHOPS,
   fetchWithFallback,
 } from "@/lib/fallback-data";
+import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     sort?: string;
     category?: string;
     cursor?: string;
-  };
+  }>;
 }
 
 // Fetch shop details
 async function getShopDetails(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   return fetchWithFallback(
     async () => {
@@ -59,14 +58,14 @@ async function getShopProducts(
   slug: string,
   searchParams: PageProps["searchParams"],
 ) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const params = await searchParams;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   const queryParams = new URLSearchParams();
   queryParams.set("shopSlug", slug);
-  if (searchParams.sort) queryParams.set("sort", searchParams.sort);
-  if (searchParams.category)
-    queryParams.set("categorySlug", searchParams.category);
-  if (searchParams.cursor) queryParams.set("cursor", searchParams.cursor);
+  if (params.sort) queryParams.set("sort", params.sort);
+  if (params.category) queryParams.set("categorySlug", params.category);
+  if (params.cursor) queryParams.set("cursor", params.cursor);
   queryParams.set("limit", "24");
 
   return fetchWithFallback(
@@ -97,7 +96,8 @@ async function getShopProducts(
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const shop = await getShopDetails(params.slug);
+  const resolvedParams = await params;
+  const shop = await getShopDetails(resolvedParams.slug);
 
   return {
     title: `${shop.name} - Shop | Let It Rip`,
@@ -122,9 +122,12 @@ export default async function ShopDetailPage({
   params,
   searchParams,
 }: PageProps) {
-  const shop = await getShopDetails(params.slug);
+  const { slug } = await params;
+  const { sort = "newest" } = await searchParams;
+
+  const shop = await getShopDetails(slug);
   const { products, hasMore, nextCursor } = await getShopProducts(
-    params.slug,
+    slug,
     searchParams,
   );
 
@@ -132,14 +135,14 @@ export default async function ShopDetailPage({
     notFound();
   }
 
-  const currentSort = searchParams.sort || "newest";
+  const currentSort = sort;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <Breadcrumb
-          currentPath={ROUTES.SHOPS.DETAIL(params.slug)}
+          currentPath={ROUTES.SHOPS.DETAIL(slug)}
           LinkComponent={ClientLink}
         />
 
@@ -204,7 +207,7 @@ export default async function ShopDetailPage({
               <div className="flex justify-center">
                 <Link
                   href={`?${new URLSearchParams({
-                    ...searchParams,
+                    ...(await searchParams),
                     cursor: nextCursor,
                   }).toString()}`}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"

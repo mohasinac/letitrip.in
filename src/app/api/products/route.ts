@@ -30,6 +30,7 @@
  */
 
 import { db } from "@/lib/firebase";
+import { logger } from "@/lib/logger";
 import {
   collection,
   doc,
@@ -166,6 +167,13 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    logger.apiError(error, {
+      method: "GET",
+      url: "/api/products",
+      statusCode: 500,
+      ip: request.ip,
+      userAgent: request.headers.get("user-agent") || undefined,
+    });
     console.error("Error fetching products:", error);
 
     return NextResponse.json(

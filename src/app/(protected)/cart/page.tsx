@@ -44,7 +44,13 @@ async function getCartItems() {
     );
 
     if (!response.ok) {
-      console.error("Failed to fetch cart - Using fallback data");
+      console.error(
+        `Failed to fetch cart: ${response.status} ${response.statusText}`,
+        {
+          url: API_ENDPOINTS.CART.GET,
+          status: response.status,
+        },
+      );
       return FALLBACK_CART_ITEMS;
     }
 
@@ -57,7 +63,9 @@ async function getCartItems() {
     }
     return items;
   } catch (error) {
-    console.error("Error fetching cart:", error, "- Using fallback data");
+    console.error("Error fetching cart:", error, {
+      url: API_ENDPOINTS.CART.GET,
+    });
     return FALLBACK_CART_ITEMS;
   }
 }
