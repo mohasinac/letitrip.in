@@ -28,6 +28,7 @@
  * ```
  */
 
+import { FALLBACK_CATEGORIES } from "@/lib/fallback-data";
 import { db } from "@/lib/firebase";
 import {
   addDoc,
@@ -160,6 +161,23 @@ export async function GET(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error fetching categories:", error);
+
+    // Return fallback data only in development
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Returning fallback data (development only)");
+      const tree = buildCategoryTree(FALLBACK_CATEGORIES as any[]);
+
+      return NextResponse.json(
+        {
+          success: true,
+          fallback: true,
+          data: tree,
+        },
+        { status: 200 },
+      );
+    }
+
+    // In production, return error
     return NextResponse.json(
       { error: "Failed to fetch categories", details: error.message },
       { status: 500 },

@@ -35,7 +35,9 @@ async function getCategories() {
     );
 
     if (!response.ok) {
-      console.error("Failed to fetch categories - Using fallback data");
+      if (process.env.NODE_ENV === "production") {
+        console.error("Failed to fetch categories - Using fallback data");
+      }
       return FALLBACK_CATEGORIES;
     }
 
@@ -43,12 +45,20 @@ async function getCategories() {
     const categories = data.categories || [];
     // If API returns empty array, use fallback data for better UX
     if (categories.length === 0) {
-      console.log("API returned empty categories - Using fallback data");
+      if (process.env.NODE_ENV !== "production") {
+        console.log("API returned empty categories - Using fallback data");
+      }
       return FALLBACK_CATEGORIES;
     }
     return categories;
   } catch (error) {
-    console.error("Error fetching categories:", error, "- Using fallback data");
+    if (process.env.NODE_ENV === "production") {
+      console.error(
+        "Error fetching categories:",
+        error,
+        "- Using fallback data",
+      );
+    }
     return FALLBACK_CATEGORIES;
   }
 }

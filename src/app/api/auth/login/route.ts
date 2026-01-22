@@ -1,153 +1,56 @@
 /**
  * User Login API Route
  *
- * Handles user authentication with email/password.
- * Returns user session data and updates last login timestamp.
+ * Handles user authentication with Firebase ID token.
+ * Creates secure httpOnly session cookie (token never sent to client).
+ * Supports email/password and social login (Google, Facebook).
  *
  * @route POST /api/auth/login
  *
  * @example
  * ```tsx
+ * // Client-side: Sign in with Firebase
+ * const userCredential = await signInWithEmailAndPassword(auth, email, password);
+ * const idToken = await userCredential.user.getIdToken();
+ *
+ * // Send token to server to create session
  * const response = await fetch('/api/auth/login', {
  *   method: 'POST',
  *   headers: { 'Content-Type': 'application/json' },
- *   body: JSON.stringify({
- *     email: 'user@example.com',
- *     password: 'securePassword123'
- *   })
+ *   body: JSON.stringify({ idToken })
  * });
  * ```
  */
 
-import { auth, db } from "@/lib/firebase";
-import { logger } from "@/lib/logger";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { NextRequest, NextResponse } from "next/server";
+import { createSession } from "@/lib/session";
+import { NextResponse } from "next/server";
 
-interface LoginRequestBody {
-  email: string;
-  password: string;
-}
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body: LoginRequestBody = await request.json();
-    const { email, password } = body;
+    const { idToken } = await request.json();
 
-    // Validate required fields
-    if (!email || !password) {
+    if (!idToken) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "ID token is required" },
         { status: 400 },
       );
     }
 
-    // Sign in with Firebase Auth
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-    const user = userCredential.user;
+    // Create secure session (token stored in httpOnly cookie)
+    const sessionData = await createSession(idToken);
 
-    // Get user profile from Firestore
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (!userDoc.exists()) {
-      // Create basic profile if it doesn't exist
-      const newProfile = {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName || "User",
-        role: "user",
-        emailVerified: user.emailVerified,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-      };
-      await updateDoc(userDocRef, newProfile);
-    } else {
-      // Update last login timestamp
-      await updateDoc(userDocRef, {
-        lastLoginAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-    }
-
-    const userData = userDoc.exists() ? userDoc.data() : null;
-
-    // Get ID token for session management
-    const idToken = await user.getIdToken();
-
-    // Return success response with user data
+    return NextResponse.json({
+      success: true,
+      user: sessionData,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
     return NextResponse.json(
       {
-        success: true,
-        message: "Login successful",
-        user: {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName || userData?.name || "User",
-          emailVerified: user.emailVerified,
-          role: userData?.role || "user",
-          profileComplete: userData?.profileComplete || false,
-        },
-        token: idToken,
+        error: "Authentication failed",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 200 },
-    );
-  } catch (error: any) {
-    logger.apiError(error, {
-      method: "POST",
-      url: "/api/auth/login",
-      statusCode:
-        error.code === "auth/user-not-found" ||
-        error.code === "auth/wrong-password"
-          ? 401
-          : 500,
-      ip: request.ip,
-      userAgent: request.headers.get("user-agent") || undefined,
-    });
-    console.error("Login error:", error);
-
-    // Handle Firebase Auth errors
-    if (
-      error.code === "auth/user-not-found" ||
-      error.code === "auth/wrong-password"
-    ) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 },
-      );
-    }
-
-    if (error.code === "auth/invalid-email") {
-      return NextResponse.json(
-        { error: "Invalid email address" },
-        { status: 400 },
-      );
-    }
-
-    if (error.code === "auth/user-disabled") {
-      return NextResponse.json(
-        { error: "This account has been disabled" },
-        { status: 403 },
-      );
-    }
-
-    if (error.code === "auth/too-many-requests") {
-      return NextResponse.json(
-        { error: "Too many failed login attempts. Please try again later." },
-        { status: 429 },
-      );
-    }
-
-    // Generic error response
-    return NextResponse.json(
-      { error: "Login failed. Please try again." },
-      { status: 500 },
+      { status: 401 },
     );
   }
 }

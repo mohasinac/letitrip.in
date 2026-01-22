@@ -1,10 +1,10 @@
 /**
  * Place Bid API Route
  *
- * Places a bid on a live auction.
+ * Places a bid on a live auction. Uses session for authentication.
  * Validates bid amount, auction status, and updates highest bid.
  *
- * @route POST /api/auctions/[slug]/bid
+ * @route POST /api/auctions/[slug]/bid - Place bid (requires auth)
  *
  * @example
  * ```tsx
@@ -12,15 +12,14 @@
  *   method: 'POST',
  *   headers: { 'Content-Type': 'application/json' },
  *   body: JSON.stringify({
- *     bidAmount: 1500,
- *     userId: 'user-id',
- *     userName: 'John Doe'
+ *     bidAmount: 1500
  *   })
  * });
  * ```
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import {
   addDoc,
   collection,
@@ -41,14 +40,18 @@ interface RouteContext {
 
 export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
+    const session = await requireAuth();
+    const userId = session.userId;
+    const userName = session.name || session.email;
+
     const { slug } = await params;
     const body = await request.json();
-    const { bidAmount, userId, userName } = body;
+    const { bidAmount } = body;
 
     // Validate required fields
-    if (!bidAmount || !userId || !userName) {
+    if (!bidAmount || typeof bidAmount !== "number") {
       return NextResponse.json(
-        { error: "Bid amount, user ID, and user name are required" },
+        { error: "Valid bid amount is required" },
         { status: 400 },
       );
     }
@@ -136,6 +139,10 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     );
   } catch (error: any) {
     console.error("Error placing bid:", error);
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     return NextResponse.json(
       {

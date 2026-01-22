@@ -1,32 +1,35 @@
 /**
  * User Addresses API Routes
  *
- * Handles user shipping/billing addresses with create-on-fly support.
+ * Handles user shipping/billing addresses. Uses session for authentication.
  *
- * @route GET /api/user/addresses - List user addresses
- * @route POST /api/user/addresses - Add new address
- * @route PUT /api/user/addresses/[id] - Update address
- * @route DELETE /api/user/addresses/[id] - Delete address
+ * @route GET /api/user/addresses - List current user's addresses (requires auth)
+ * @route POST /api/user/addresses - Add new address (requires auth)
  *
  * @example
  * ```tsx
- * // List addresses
- * const response = await fetch('/api/user/addresses?userId=user-id');
+ * // List addresses (uses session automatically)
+ * const response = await fetch('/api/user/addresses');
  *
  * // Add address
  * const response = await fetch('/api/user/addresses', {
  *   method: 'POST',
  *   body: JSON.stringify({
- *     userId: 'user-id',
  *     type: 'shipping',
  *     fullName: 'John Doe',
- *     ...
+ *     phone: '+91 1234567890',
+ *     addressLine1: '123 Street',
+ *     city: 'Mumbai',
+ *     state: 'Maharashtra',
+ *     zipCode: '400001',
+ *     country: 'India'
  *   })
  * });
  * ```
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import {
   addDoc,
   collection,
@@ -59,24 +62,18 @@ interface Address {
 /**
  * GET /api/user/addresses
  *
- * List all addresses for a user.
+ * List all addresses for current user (requires authentication).
  *
  * Query Parameters:
- * - userId: User ID (required)
- * - type: Filter by address type (shipping/billing/both)
+ * - type: Filter by address type (shipping/billing/both) [optional]
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const type = searchParams.get("type");
+    const session = await requireAuth();
+    const userId = session.userId;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 },
-      );
-    }
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
 
     // Build query
     const constraints: any[] = [
@@ -110,6 +107,11 @@ export async function GET(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error fetching addresses:", error);
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     return NextResponse.json(
       { error: "Failed to fetch addresses", details: error.message },
       { status: 500 },
@@ -120,28 +122,15 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/user/addresses
  *
- * Add a new address for the user.
- * Supports create-on-fly during checkout.
- *
- * Request Body:
- * - userId: User ID (required)
- * - type: Address type (shipping/billing/both) (required)
- * - fullName: Full name (required)
- * - phone: Phone number (required)
- * - addressLine1: Address line 1 (required)
- * - addressLine2: Address line 2 (optional)
- * - city: City (required)
- * - state: State (required)
- * - zipCode: ZIP code (required)
- * - country: Country (required)
- * - isDefault: Set as default address (default false)
- * - label: Address label (e.g., "Home")
+ * Add a new address for current user (requires authentication).
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: Address = await request.json();
+    const session = await requireAuth();
+    const userId = session.userId;
+
+    const body = await request.json();
     const {
-      userId,
       type,
       fullName,
       phone,
@@ -157,7 +146,6 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (
-      !userId ||
       !type ||
       !fullName ||
       !phone ||
@@ -221,6 +209,10 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error adding address:", error);
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (error.code === "permission-denied") {
       return NextResponse.json(

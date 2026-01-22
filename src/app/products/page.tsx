@@ -14,7 +14,6 @@ import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ProductCard } from "@/components/common/ProductCard";
 
 import { ROUTES } from "@/constants/routes";
-import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
 import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 // Types
@@ -98,36 +97,28 @@ async function getProducts(searchParams: PageProps["searchParams"]) {
     );
 
     if (!res.ok) {
-      console.error(
-        "Failed to fetch products:",
-        res.status,
-        "- Using fallback data",
-      );
-      return { products: FALLBACK_PRODUCTS, hasMore: false, nextCursor: null };
+      console.error("Failed to fetch products:", res.status);
+      return { products: [], hasMore: false, nextCursor: null };
     }
 
     const data = await res.json();
-    const products = data.data?.products || [];
-    // If API returns empty array, use fallback data for better UX
-    if (products.length === 0) {
-      console.log("API returned empty array - Using fallback data");
-      return { products: FALLBACK_PRODUCTS, hasMore: false, nextCursor: null };
-    }
+    // API will return fallback data if Firebase fails
     return {
-      products,
+      products: data.data?.products || [],
       hasMore: data.data?.hasMore || false,
       nextCursor: data.data?.nextCursor || null,
+      fallback: data.fallback || false,
     };
   } catch (error) {
-    console.error("Error fetching products:", error, "- Using fallback data");
-    return { products: FALLBACK_PRODUCTS, hasMore: false, nextCursor: null };
+    console.error("Error fetching products:", error);
+    return { products: [], hasMore: false, nextCursor: null };
   }
 }
 
 export default async function AllProductsPage({ searchParams }: PageProps) {
   // Fetch data
   const { products, hasMore, nextCursor } = await getProducts(searchParams);
-  const { sort = "newest" } = await searchParams;
+  const { sort = "newest", q } = await searchParams;
 
   // Build breadcrumbs
   const breadcrumbs = [
@@ -150,7 +141,7 @@ export default async function AllProductsPage({ searchParams }: PageProps) {
         {/* Header */}
         <div className="mt-6 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {searchParams.q ? `Search: "${searchParams.q}"` : "All Products"}
+            {q ? `Search: "${q}"` : "All Products"}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {products.length} {products.length === 1 ? "product" : "products"}{" "}

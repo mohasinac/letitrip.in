@@ -5,9 +5,9 @@
  * Fully responsive with dark mode support.
  *
  * Sections:
- * 1. Advertisement Banner (10% height)
- * 2. Welcome Section with background video/image
- * 3. Hero Carousel (50% height) with video/image slides
+ * 1. Advertisement Banner (dismissible with cookie, 7-day expiry)
+ * 2. Hero Carousel (50% viewport) with video/image slides
+ * 3. Welcome Section (50% viewport) with background video/image
  * 4. Popular Categories (horizontal scroller)
  * 5. Featured Products (horizontal scroller)
  * 6. Popular Products (horizontal scroller)
@@ -16,13 +16,10 @@
  * @page / - Homepage
  */
 
+import { DismissibleBanner } from "@/components/common/DismissibleBanner";
 import { ROUTES } from "@/constants/routes";
 import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@/lib/fallback-data";
-import {
-  AdvertisementBanner,
-  ClientLink,
-  FAQAccordion,
-} from "@mohasinac/react-library";
+import { ClientLink, FAQAccordion } from "@mohasinac/react-library";
 import { Metadata } from "next";
 
 // SEO Metadata
@@ -192,18 +189,30 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Advertisement Banner */}
-      <AdvertisementBanner
-        LinkComponent={ClientLink}
+      {/* Advertisement Banner - Dismissible with Cookie */}
+      <DismissibleBanner
         content="🎉 New Year Sale! Get up to 50% off on selected products"
         ctaText="Shop Now"
         ctaHref={ROUTES.DEALS}
-        isDismissible={true}
         backgroundColor="#3b82f6"
       />
 
+      {/* Hero Carousel */}
+      <section className="relative h-[65vh] min-h-[500px]">
+        <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white">
+          <div className="text-center px-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Hero Carousel
+            </h2>
+            <p className="text-lg md:text-xl">
+              Coming Soon - Carousel implementation in progress
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Welcome Section */}
-      <section className="relative h-screen min-h-[600px] overflow-hidden">
+      <section className="relative h-[30vh] min-h-[250px] overflow-hidden">
         {/* Background Video/Image */}
         <div className="absolute inset-0 z-0">
           <video
@@ -222,38 +231,26 @@ export default async function HomePage() {
         {/* Content */}
         <div className="relative z-10 flex h-full items-center justify-center px-4">
           <div className="text-center">
-            <h1 className="mb-6 text-5xl font-bold text-white md:text-7xl">
+            <h1 className="mb-4 text-3xl font-bold text-white md:text-5xl">
               Welcome to Let It Rip
             </h1>
-            <p className="mb-8 text-xl text-white/90 md:text-2xl">
+            <p className="mb-6 text-lg text-white/90 md:text-xl">
               India's Premier Platform for Shopping & Auctions
             </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <ClientLink
                 href={ROUTES.PRODUCTS.LIST}
-                className="rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white transition hover:bg-blue-700"
+                className="rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-blue-700"
               >
                 Start Shopping
               </ClientLink>
               <ClientLink
                 href={ROUTES.AUCTIONS.LIST}
-                className="rounded-lg border-2 border-white bg-white/10 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+                className="rounded-lg border-2 border-white bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
               >
                 View Auctions
               </ClientLink>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Hero Carousel */}
-      <section className="relative h-[60vh] min-h-[500px]">
-        <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white">
-          <div className="text-center">
-            <h2 className="text-4xl font-bold mb-4">Hero Carousel</h2>
-            <p className="text-xl">
-              Coming Soon - Carousel implementation in progress
-            </p>
           </div>
         </div>
       </section>

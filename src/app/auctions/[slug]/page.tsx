@@ -19,14 +19,13 @@
  * @page /buy-auction-[slug] - Auction details
  */
 
-import { Breadcrumb } from "@/components/common/Breadcrumb";
-import { AuctionCard } from "@mohasinac/react-library";
+import { SimilarAuctions } from "@/components/auctions/SimilarAuctions";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
+import { formatTimeRemaining, getTimeRemaining } from "@/lib/utils";
 import { ClientLink } from "@mohasinac/react-library";
 
 // Types
@@ -122,73 +121,6 @@ async function getAuction(slug: string) {
 async function getSimilarAuctions(categorySlug: string, currentSlug: string) {
   // For development, return fallback data directly
   return FALLBACK_AUCTIONS.filter((a) => a.slug !== currentSlug).slice(0, 4);
-
-  // If not using fallback, try API
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
-
-  try {
-    const res = await fetch(
-      `${baseUrl}/api/auctions?categorySlug=${categorySlug}&status=active&limit=8`,
-      {
-        next: { revalidate: 300 },
-      },
-    );
-
-    if (!res.ok) {
-      console.log("Failed to fetch similar auctions - Using fallback");
-      return FALLBACK_AUCTIONS.slice(1, 5);
-    }
-
-    const data = await res.json();
-    return (data.data?.auctions || []).filter(
-      (a: any) => a.slug !== currentSlug,
-    );
-  } catch (error) {
-    console.error(
-      "Error fetching similar auctions:",
-      error,
-      "- Using fallback",
-    );
-    return FALLBACK_AUCTIONS.slice(1, 5);
-  }
-}
-
-/**
- * Calculate time remaining
- */
-function getTimeRemaining(endTime: string | Date) {
-  const end = new Date(endTime);
-  const now = new Date();
-  const diff = end.getTime() - now.getTime();
-
-  if (diff <= 0) {
-    return { ended: true, display: "Ended" };
-  }
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  if (days > 0) {
-    return {
-      ended: false,
-      display: `${days}d ${hours}h ${minutes}m`,
-      days,
-      hours,
-      minutes,
-      seconds,
-    };
-  }
-
-  return {
-    ended: false,
-    display: `${hours}h ${minutes}m ${seconds}s`,
-    days: 0,
-    hours,
-    minutes,
-    seconds,
-  };
 }
 
 export default async function AuctionDetailsPage({ params }: PageProps) {
@@ -213,7 +145,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
-        <Breadcrumb
+        <BreadcrumbComponent
           currentPath={`/buy-auction-${slug}`}
           LinkComponent={ClientLink}
         />
@@ -366,13 +298,13 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                 </div>
 
                 {/* Countdown Timer */}
-                {!timeRemaining.ended ? (
+                {!timeRemaining.isEnded ? (
                   <div className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg p-4">
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Time Remaining
                     </div>
                     <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                      {timeRemaining.display}
+                      {formatTimeRemaining(auction.endTime)}
                     </div>
                   </div>
                 ) : (
@@ -418,7 +350,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                 )}
 
                 {/* Bidding Form */}
-                {!timeRemaining.ended && auction.status === "active" && (
+                {!timeRemaining.isEnded && auction.status === "active" && (
                   <div className="mb-6">
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                       Next minimum bid: ₹{nextMinimumBid.toLocaleString()}
@@ -486,41 +418,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
         </div>
 
         {/* Similar Auctions */}
-        {similarAuctions.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Similar Auctions
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {similarAuctions.slice(0, 4).map((similarAuction: any) => (
-                <AuctionCard
-                  key={similarAuction.id}
-                  auction={{
-                    id: similarAuction.id,
-                    name: similarAuction.title,
-                    slug: similarAuction.slug,
-                    images: similarAuction.images || [],
-                    currentBid: similarAuction.currentBid,
-                    startingBid: similarAuction.startingBid,
-                    bidCount: similarAuction.bidCount || 0,
-                    endTime: similarAuction.endTime,
-                    featured: similarAuction.featured,
-                    status: similarAuction.status,
-                    shop: similarAuction.shopName
-                      ? {
-                          id: similarAuction.shopId || "",
-                          name: similarAuction.shopName,
-                        }
-                      : undefined,
-                  }}
-                  variant="compact"
-                  LinkComponent={ClientLink}
-                  ImageComponent={Image}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+        <SimilarAuctions auctions={similarAuctions} />
       </div>
     </div>
   );

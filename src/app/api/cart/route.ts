@@ -1,22 +1,21 @@
 /**
  * Cart API Routes
  *
- * Handles cart operations for both guest and authenticated users.
- * Guest carts are stored in localStorage, user carts in Firestore.
+ * Handles cart operations for authenticated users.
+ * User carts are stored in Firestore, linked to session.
  *
- * @route GET /api/cart - Get cart items
- * @route POST /api/cart - Add item to cart
+ * @route GET /api/cart - Get cart items (requires auth)
+ * @route POST /api/cart - Add item to cart (requires auth)
  *
  * @example
  * ```tsx
- * // Get cart
- * const response = await fetch('/api/cart?userId=user-id');
+ * // Get cart (uses session automatically)
+ * const response = await fetch('/api/cart');
  *
  * // Add to cart
  * const response = await fetch('/api/cart', {
  *   method: 'POST',
  *   body: JSON.stringify({
- *     userId: 'user-id',
  *     productSlug: 'laptop-dell',
  *     quantity: 1,
  *     price: 999
@@ -26,6 +25,7 @@
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import {
   addDoc,
   collection,
@@ -59,20 +59,13 @@ interface CartItemWithProduct extends CartItem {
 }
 
 /**
- * GET - Fetch cart items for a user
+ * GET - Fetch cart items for authenticated user
  */
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      // Return empty cart for guests or unauthenticated users
-      return NextResponse.json(
-        { items: [], message: "Guest cart not implemented" },
-        { status: 200 },
-      );
-    }
+    // Get session - throws if not authenticated
+    const session = await requireAuth();
+    const userId = session.userId;
 
     // Query cart items for user
     const cartQuery = query(
@@ -131,6 +124,11 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("Error fetching cart:", error);
 
+    // Handle authentication errors
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     return NextResponse.json(
       {
         error: "Failed to fetch cart",
@@ -142,17 +140,21 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST - Add item to cart
+ * POST - Add item to cart (requires authentication)
  */
 export async function POST(request: NextRequest) {
   try {
+    // Get session - throws if not authenticated
+    const session = await requireAuth();
+    const userId = session.userId;
+
     const body = await request.json();
-    const { userId, productSlug, quantity, price, variantId } = body;
+    const { productSlug, quantity, price, variantId } = body;
 
     // Validate required fields
-    if (!userId || !productSlug || !quantity || !price) {
+    if (!productSlug || !quantity || !price) {
       return NextResponse.json(
-        { error: "User ID, product slug, quantity, and price are required" },
+        { error: "Product slug, quantity, and price are required" },
         { status: 400 },
       );
     }
@@ -216,6 +218,11 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error adding to cart:", error);
+
+    // Handle authentication errors
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     return NextResponse.json(
       {

@@ -2,7 +2,7 @@
 
 **Framework-independent React components, hooks, utilities, and design system for the Letitrip platform.**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/letitrip/react-library)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/mohasinac/letitrip.in)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18%20%7C%2019-blue.svg)](https://react.dev/)

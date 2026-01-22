@@ -1,18 +1,17 @@
 /**
  * Orders API Routes
  *
- * Create orders and list user orders.
+ * Create orders and list user orders. Uses session for authentication.
  *
- * @route POST /api/orders - Create new order
- * @route GET /api/orders - List user orders
+ * @route POST /api/orders - Create new order (requires auth)
+ * @route GET /api/orders - List current user's orders (requires auth)
  *
  * @example
  * ```tsx
- * // Create order
+ * // Create order (uses session automatically)
  * const response = await fetch('/api/orders', {
  *   method: 'POST',
  *   body: JSON.stringify({
- *     userId: 'user-id',
  *     items: [...],
  *     shippingAddress: {...},
  *     paymentMethod: 'card'
@@ -20,11 +19,12 @@
  * });
  *
  * // List orders
- * const response = await fetch('/api/orders?userId=user-id&limit=20');
+ * const response = await fetch('/api/orders?limit=20');
  * ```
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import {
   addDoc,
   collection,
@@ -42,15 +42,17 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * POST - Create new order
+ * POST - Create new order (requires authentication)
  */
 export async function POST(request: NextRequest) {
   try {
+    const session = await requireAuth();
+    const userId = session.userId;
+    const userEmail = session.email;
+    const userName = session.name || userEmail;
+
     const body = await request.json();
     const {
-      userId,
-      userName,
-      userEmail,
       items,
       shippingAddress,
       billingAddress,
@@ -59,9 +61,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!userId || !items || !items.length || !shippingAddress) {
+    if (!items || !items.length || !shippingAddress) {
       return NextResponse.json(
-        { error: "User ID, items, and shipping address are required" },
+        { error: "Items and shipping address are required" },
         { status: 400 },
       );
     }
@@ -127,6 +129,13 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Error creating order:", error);
 
+    if (error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Failed to create order",
@@ -138,22 +147,17 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET - List user orders with pagination
+ * GET - List current user's orders with pagination (requires authentication)
  */
 export async function GET(request: NextRequest) {
   try {
+    const session = await requireAuth();
+    const userId = session.userId;
+
     const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get("userId");
     const cursor = searchParams.get("cursor");
     const limitParam = parseInt(searchParams.get("limit") || "20");
     const status = searchParams.get("status");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 },
-      );
-    }
 
     // Validate and cap limit
     const pageLimit = Math.min(Math.max(limitParam, 1), 100);
@@ -211,6 +215,13 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("Error fetching orders:", error);
 
+    if (error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Failed to fetch orders",
@@ -219,4 +230,5 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
+}
 }

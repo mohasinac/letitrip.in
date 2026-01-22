@@ -1,158 +1,94 @@
 /**
  * User Registration API Route
  *
- * Handles new user registration with email/password authentication.
- * Creates user account in Firebase Auth and user profile in Firestore.
+ * Handles new user registration with Firebase ID token.
+ * Creates user profile in Firestore and sets custom claims.
+ * Supports role selection on localhost for development/testing.
  *
  * @route POST /api/auth/register
  *
  * @example
  * ```tsx
+ * // Client-side: Create user with Firebase
+ * const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+ * const idToken = await userCredential.user.getIdToken();
+ *
+ * // Send token to server to create profile
  * const response = await fetch('/api/auth/register', {
  *   method: 'POST',
  *   headers: { 'Content-Type': 'application/json' },
  *   body: JSON.stringify({
- *     email: 'user@example.com',
- *     password: 'securePassword123',
+ *     idToken,
  *     name: 'John Doe',
- *     phone: '+919876543210'
+ *     phone: '+919876543210',
+ *     role: 'admin' // Only works on localhost
  *   })
  * });
  * ```
  */
 
-import { auth, db } from "@/lib/firebase";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
-} from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { NextRequest, NextResponse } from "next/server";
+import { adminDb, setCustomUserClaims } from "@/lib/firebase-admin";
+import { createSession } from "@/lib/session";
+import { NextResponse } from "next/server";
 
-interface RegisterRequestBody {
-  email: string;
-  password: string;
-  name: string;
-  phone?: string;
-}
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body: RegisterRequestBody = await request.json();
-    const { email, password, name, phone } = body;
+    const { idToken, role, name, phone } = await request.json();
 
-    // Validate required fields
-    if (!email || !password || !name) {
+    if (!idToken) {
       return NextResponse.json(
-        { error: "Email, password, and name are required" },
+        { error: "ID token is required" },
         { status: 400 },
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 },
-      );
-    }
+    // Create session to get user ID
+    const sessionData = await createSession(idToken);
 
-    // Validate password strength (minimum 6 characters)
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "Password must be at least 6 characters long" },
-        { status: 400 },
-      );
-    }
+    // Determine role (only allow role selection on localhost)
+    const isLocalhost =
+      request.headers.get("host")?.includes("localhost") ||
+      request.headers.get("host")?.includes("127.0.0.1");
 
-    // Create user in Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-    const user = userCredential.user;
-
-    // Update user profile with display name
-    await updateProfile(user, {
-      displayName: name,
-    });
-
-    // Send email verification
-    try {
-      await sendEmailVerification(user);
-    } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
-      // Don't fail registration if email verification fails
-    }
+    const userRole = isLocalhost && role ? role : "user";
 
     // Create user profile in Firestore
-    const userProfile = {
-      uid: user.uid,
-      email: user.email,
-      name: name,
-      phone: phone || null,
-      role: "user", // Default role
-      emailVerified: false,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      profileComplete: !!phone, // Consider profile complete if phone is provided
-      // Additional fields
-      addresses: [],
-      wishlist: [],
-      cart: [],
-      // Analytics
-      totalOrders: 0,
-      totalSpent: 0,
-      lastLoginAt: serverTimestamp(),
-    };
+    await adminDb
+      .collection("users")
+      .doc(sessionData.userId)
+      .set(
+        {
+          name: name || sessionData.name || "",
+          email: sessionData.email,
+          phone: phone || "",
+          role: userRole,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isActive: true,
+          emailVerified: false,
+        },
+        { merge: true },
+      );
 
-    await setDoc(doc(db, "users", user.uid), userProfile);
+    // Set custom claims for role-based access control
+    await setCustomUserClaims(sessionData.userId, {
+      role: userRole,
+    });
 
-    // Return success response
+    return NextResponse.json({
+      success: true,
+      user: {
+        ...sessionData,
+        role: userRole,
+      },
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
     return NextResponse.json(
       {
-        success: true,
-        message: "User registered successfully. Please verify your email.",
-        user: {
-          uid: user.uid,
-          email: user.email,
-          name: name,
-          emailVerified: user.emailVerified,
-        },
+        error: "Registration failed",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 201 },
-    );
-  } catch (error: any) {
-    console.error("Registration error:", error);
-
-    // Handle Firebase Auth errors
-    if (error.code === "auth/email-already-in-use") {
-      return NextResponse.json(
-        { error: "Email is already registered" },
-        { status: 409 },
-      );
-    }
-
-    if (error.code === "auth/invalid-email") {
-      return NextResponse.json(
-        { error: "Invalid email address" },
-        { status: 400 },
-      );
-    }
-
-    if (error.code === "auth/weak-password") {
-      return NextResponse.json(
-        { error: "Password is too weak" },
-        { status: 400 },
-      );
-    }
-
-    // Generic error response
-    return NextResponse.json(
-      { error: "Registration failed. Please try again." },
       { status: 500 },
     );
   }

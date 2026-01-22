@@ -29,6 +29,7 @@
  * ```
  */
 
+import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
 import { db } from "@/lib/firebase";
 import { logger } from "@/lib/logger";
 import {
@@ -176,6 +177,36 @@ export async function GET(request: NextRequest) {
     });
     console.error("Error fetching products:", error);
 
+    // Return fallback data only in development
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Returning fallback data (development only)");
+      return NextResponse.json(
+        {
+          success: true,
+          fallback: true,
+          data: {
+            products: FALLBACK_PRODUCTS.slice(0, pageLimit || 20),
+            pagination: {
+              limit: pageLimit || 20,
+              hasMore: false,
+              nextCursor: null,
+            },
+            filters: {
+              category: categorySlug,
+              shop: shopSlug,
+              minPrice,
+              maxPrice,
+              search: searchQuery,
+              sort: sortBy,
+              status,
+            },
+          },
+        },
+        { status: 200 },
+      );
+    }
+
+    // In production, return error
     return NextResponse.json(
       {
         error: "Failed to fetch products",

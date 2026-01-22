@@ -8,6 +8,13 @@
 
 import { logger } from "./logger";
 
+/**
+ * Global flag to enable/disable fallback data
+ * Set to false to disable fallback and see actual errors
+ */
+export const ENABLE_FALLBACK =
+  process.env.NEXT_PUBLIC_ENABLE_FALLBACK !== "false";
+
 export const FALLBACK_PRODUCTS = [
   {
     id: "fallback-prod-1",
@@ -997,6 +1004,139 @@ export const FALLBACK_BIDS = [
 ];
 
 /**
+ * Fallback CMS Pages
+ */
+export const FALLBACK_CMS_PAGES = [
+  {
+    id: "fallback-cms-1",
+    slug: "about-us",
+    title: "About Us",
+    content: `
+      <h1>Welcome to Let It Rip</h1>
+      <p>India's premier auction and marketplace platform. We connect buyers and sellers across the country, offering a secure and transparent platform for auctions and direct sales.</p>
+      <h2>Our Mission</h2>
+      <p>To revolutionize online commerce in India by providing a trusted platform for auctions and sales.</p>
+    `,
+    metaTitle: "About Us - Let It Rip",
+    metaDescription: "Learn about Let It Rip, India's premier auction platform",
+    status: "published" as const,
+    featured: false,
+    createdAt: new Date("2025-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-15T10:00:00Z"),
+  },
+  {
+    id: "fallback-cms-2",
+    slug: "privacy-policy",
+    title: "Privacy Policy",
+    content: `
+      <h1>Privacy Policy</h1>
+      <p>Last updated: January 2026</p>
+      <h2>Information We Collect</h2>
+      <p>We collect information you provide directly to us when you create an account, make purchases, or contact us.</p>
+      <h2>How We Use Your Information</h2>
+      <p>We use the information we collect to provide, maintain, and improve our services.</p>
+    `,
+    metaTitle: "Privacy Policy - Let It Rip",
+    metaDescription: "Our privacy policy and data protection practices",
+    status: "published" as const,
+    featured: false,
+    createdAt: new Date("2025-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-10T14:30:00Z"),
+  },
+  {
+    id: "fallback-cms-3",
+    slug: "terms-of-service",
+    title: "Terms of Service",
+    content: `
+      <h1>Terms of Service</h1>
+      <p>Last updated: January 2026</p>
+      <h2>Acceptance of Terms</h2>
+      <p>By accessing and using Let It Rip, you accept and agree to be bound by these terms.</p>
+      <h2>User Responsibilities</h2>
+      <p>Users must provide accurate information and comply with all applicable laws.</p>
+    `,
+    metaTitle: "Terms of Service - Let It Rip",
+    metaDescription: "Terms and conditions for using our platform",
+    status: "published" as const,
+    featured: false,
+    createdAt: new Date("2025-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-10T14:35:00Z"),
+  },
+  {
+    id: "fallback-cms-4",
+    slug: "how-to-bid",
+    title: "How to Bid",
+    content: `
+      <h1>How to Bid on Auctions</h1>
+      <p>Learn how to participate in our auctions and win amazing items.</p>
+      <h2>Step 1: Create an Account</h2>
+      <p>Sign up for a free account to start bidding.</p>
+      <h2>Step 2: Browse Auctions</h2>
+      <p>Find auctions that interest you and place your bids.</p>
+      <h2>Step 3: Win and Pay</h2>
+      <p>If you win, complete payment within 24 hours.</p>
+    `,
+    metaTitle: "How to Bid - Let It Rip",
+    metaDescription: "Learn how to participate in auctions on our platform",
+    status: "published" as const,
+    featured: true,
+    createdAt: new Date("2025-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-12T09:00:00Z"),
+  },
+  {
+    id: "fallback-cms-5",
+    slug: "seller-guide",
+    title: "Seller Guide",
+    content: `
+      <h1>Selling on Let It Rip</h1>
+      <p>Start selling your products and reaching millions of buyers across India.</p>
+      <h2>Getting Started</h2>
+      <p>Register as a seller and complete your profile verification.</p>
+      <h2>List Your Products</h2>
+      <p>Create compelling listings with high-quality photos.</p>
+      <h2>Manage Orders</h2>
+      <p>Process orders quickly and maintain excellent customer service.</p>
+    `,
+    metaTitle: "Seller Guide - Let It Rip",
+    metaDescription: "Learn how to sell on our platform and grow your business",
+    status: "published" as const,
+    featured: true,
+    createdAt: new Date("2025-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-12T09:15:00Z"),
+  },
+];
+
+/**
+ * Fallback CMS Banners
+ */
+export const FALLBACK_CMS_BANNERS = [
+  {
+    id: "fallback-banner-1",
+    title: "Welcome to Let It Rip",
+    subtitle: "India's Premier Auction Platform",
+    image: "/images/banner-1.jpg",
+    link: "/auctions",
+    buttonText: "Browse Auctions",
+    position: "home-hero" as const,
+    order: 1,
+    active: true,
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+  },
+  {
+    id: "fallback-banner-2",
+    title: "Flash Sale",
+    subtitle: "Up to 50% Off on Electronics",
+    image: "/images/banner-2.jpg",
+    link: "/products?category=electronics",
+    buttonText: "Shop Now",
+    position: "home-secondary" as const,
+    order: 2,
+    active: true,
+    createdAt: new Date("2026-01-15T00:00:00Z"),
+  },
+];
+
+/**
  * Utility function to get data with fallback
  */
 export async function fetchWithFallback<T>(
@@ -1008,11 +1148,17 @@ export async function fetchWithFallback<T>(
     const data = await fetchFn();
     // Check if data is empty/null and use fallback
     if (!data || (Array.isArray(data) && data.length === 0)) {
-      console.warn(
-        errorMessage || "No data received, using fallback data",
-        data,
-      );
-      return fallbackData;
+      if (ENABLE_FALLBACK) {
+        console.warn(
+          errorMessage || "No data received, using fallback data",
+          data,
+        );
+        return fallbackData;
+      } else {
+        throw new Error(
+          errorMessage || "No data received and fallback is disabled",
+        );
+      }
     }
     return data;
   } catch (error) {
@@ -1020,11 +1166,17 @@ export async function fetchWithFallback<T>(
       context: "fetchWithFallback",
       errorMessage: errorMessage || "Error fetching data",
     });
-    console.error(
-      errorMessage || "Error fetching data, using fallback:",
-      error,
-    );
-    return fallbackData;
+
+    if (ENABLE_FALLBACK) {
+      console.error(
+        errorMessage || "Error fetching data, using fallback:",
+        error,
+      );
+      return fallbackData;
+    } else {
+      // Re-throw error if fallback is disabled
+      throw error;
+    }
   }
 }
 

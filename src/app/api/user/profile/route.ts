@@ -1,52 +1,42 @@
 /**
  * User Profile API Routes
  *
- * Handles user profile management including profile data and addresses.
+ * Handles user profile management. Uses session for authentication.
  *
- * @route GET /api/user/profile - Get user profile
- * @route PUT /api/user/profile - Update user profile
+ * @route GET /api/user/profile - Get current user profile (requires auth)
+ * @route PUT /api/user/profile - Update current user profile (requires auth)
  *
  * @example
  * ```tsx
- * // Get profile
- * const response = await fetch('/api/user/profile?userId=user-id');
+ * // Get profile (uses session automatically)
+ * const response = await fetch('/api/user/profile');
  *
  * // Update profile
  * const response = await fetch('/api/user/profile', {
  *   method: 'PUT',
  *   body: JSON.stringify({
- *     userId: 'user-id',
  *     displayName: 'John Doe',
  *     phone: '+91 1234567890',
- *     ...
+ *     bio: 'Software developer'
  *   })
  * });
  * ```
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/user/profile
  *
- * Get user profile data.
- *
- * Query Parameters:
- * - userId: User ID (required)
+ * Get current user's profile data (requires authentication)
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 },
-      );
-    }
+    const session = await requireAuth();
+    const userId = session.userId;
 
     // Get user document
     const userDoc = await getDoc(doc(db, "users", userId));
@@ -73,6 +63,11 @@ export async function GET(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error fetching user profile:", error);
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     return NextResponse.json(
       { error: "Failed to fetch profile", details: error.message },
       { status: 500 },
@@ -81,7 +76,6 @@ export async function GET(request: NextRequest) {
 }
 
 interface UpdateProfileRequest {
-  userId: string;
   displayName?: string;
   phone?: string;
   avatar?: string;
@@ -97,28 +91,16 @@ interface UpdateProfileRequest {
 /**
  * PUT /api/user/profile
  *
- * Update user profile data.
+ * Update current user's profile data (requires authentication).
  * Cannot update: email, role, verified status, or stats.
- *
- * Request Body:
- * - userId: User ID (required)
- * - displayName: Display name
- * - phone: Phone number
- * - avatar: Avatar URL
- * - bio: User biography
- * - preferences: User preferences object
  */
 export async function PUT(request: NextRequest) {
   try {
-    const body: UpdateProfileRequest = await request.json();
-    const { userId, displayName, phone, avatar, bio, preferences } = body;
+    const session = await requireAuth();
+    const userId = session.userId;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 },
-      );
-    }
+    const body: UpdateProfileRequest = await request.json();
+    const { displayName, phone, avatar, bio, preferences } = body;
 
     // Check if user exists
     const userDoc = await getDoc(doc(db, "users", userId));
@@ -162,6 +144,10 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error updating user profile:", error);
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (error.code === "permission-denied") {
       return NextResponse.json(

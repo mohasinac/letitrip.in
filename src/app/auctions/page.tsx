@@ -12,7 +12,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 import { ROUTES } from "@/constants/routes";
-import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
 import { ClientLink, SortDropdown } from "@mohasinac/react-library";
 
 // Types
@@ -94,29 +93,20 @@ async function getAuctions(searchParams: PageProps["searchParams"]) {
     );
 
     if (!res.ok) {
-      console.error(
-        "Failed to fetch auctions:",
-        res.status,
-        "- Using fallback data",
-      );
-      return { auctions: FALLBACK_AUCTIONS, hasMore: false, nextCursor: null };
+      console.error("Failed to fetch auctions:", res.status);
+      return { auctions: [], hasMore: false, nextCursor: null };
     }
 
     const data = await res.json();
-    const auctions = data.data?.auctions || [];
-    // If API returns empty array, use fallback data for better UX
-    if (auctions.length === 0) {
-      console.log("API returned empty array - Using fallback data");
-      return { auctions: FALLBACK_AUCTIONS, hasMore: false, nextCursor: null };
-    }
+    // API will return fallback data if Firebase fails
     return {
-      auctions,
+      auctions: data.data?.auctions || [],
       hasMore: data.data?.hasMore || false,
       nextCursor: data.data?.nextCursor || null,
     };
   } catch (error) {
-    console.error("Error fetching auctions:", error, "- Using fallback data");
-    return { auctions: FALLBACK_AUCTIONS, hasMore: false, nextCursor: null };
+    console.error("Error fetching auctions:", error);
+    return { auctions: [], hasMore: false, nextCursor: null };
   }
 }
 

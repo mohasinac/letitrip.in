@@ -139,6 +139,61 @@ export function getRelativeTime(date: Date | string): string {
 }
 
 /**
+ * Get time remaining until a date
+ *
+ * @param endTime - End date
+ * @returns Object with totalMs and isEnded flag
+ *
+ * @example
+ * ```tsx
+ * getTimeRemaining(new Date(Date.now() + 3600000)) // { totalMs: 3600000, isEnded: false }
+ * ```
+ */
+export function getTimeRemaining(endTime: Date | null): {
+  totalMs: number;
+  isEnded: boolean;
+} {
+  if (!endTime) return { totalMs: 0, isEnded: true };
+
+  const now = new Date().getTime();
+  const end = endTime.getTime();
+  const totalMs = end - now;
+
+  return {
+    totalMs: Math.max(0, totalMs),
+    isEnded: totalMs <= 0,
+  };
+}
+
+/**
+ * Format time remaining in readable format
+ *
+ * @param endTime - End date
+ * @returns Formatted time remaining string
+ *
+ * @example
+ * ```tsx
+ * formatTimeRemaining(new Date(Date.now() + 3600000)) // "1h left"
+ * formatTimeRemaining(new Date(Date.now() - 1000)) // "Ended"
+ * ```
+ */
+export function formatTimeRemaining(endTime: Date | null): string {
+  const { totalMs, isEnded } = getTimeRemaining(endTime);
+
+  if (isEnded) return "Ended";
+
+  const seconds = Math.floor(totalMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d left`;
+  if (hours > 0) return `${hours}h left`;
+  if (minutes > 0) return `${minutes}m left`;
+  return `${seconds}s left`;
+}
+
+/**
  * Convert string to URL-friendly slug
  *
  * @param str - String to slugify

@@ -53,56 +53,59 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-### 🔄 Migration in Progress
+### � Key Files
 
-This project is currently undergoing migration to use `@letitrip/react-library` for all components.
-
-**Migration Documents**:
-
-- [`MIGRATION-STATUS.md`](./MIGRATION-STATUS.md) - Current status & quick start
-- [`MIGRATION-TRACKER.md`](./MIGRATION-TRACKER.md) - Complete tracking
-- [`MIGRATION-QUICK-REFERENCE.md`](./MIGRATION-QUICK-REFERENCE.md) - Patterns & examples
-
-**For Contributors**: See [`CONTINUE-MIGRATION-PROMPT.md`](./CONTINUE-MIGRATION-PROMPT.md) to resume migration work.
+- [.env.local](.env.local) - Environment variables (create from .env.example)
+- [react-library/](./react-library/) - Shared component library v1.0.2
+- [src/lib/fallback-data.ts](./src/lib/fallback-data.ts) - Data fetching with fallbacks
+- [src/lib/logger.ts](./src/lib/logger.ts) - Error logging system
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-**Frontend**: Next.js 16.1 • React 19.2 • TypeScript • Tailwind CSS • @letitrip/react-library
-
-**Backend**: Firebase (Firestore, Storage, Auth, Functions) • Next.js API Routes • Razorpay
-
-**State**: TanStack Query • React Context • React Hook Form • Zod
-
-**Testing**: Playwright • Jest
+- **Framework**: Next.js 16.1.1 with App Router & Turbopack
+- **Language**: TypeScript 5.3
+- **UI**: React 19.2, Tailwind CSS 3.4
+- **Component Library**: @mohasinac/react-library v1.0.2 (115+ components, 19 hooks, 60+ utilities)
+- **Backend**: Firebase (Firestore, Storage, Auth, Functions)
+- **Payments**: Razorpay Integration
+- **Error Logging**: File-based logger with daily rotation
+- **State Management**: React Context, TanStack Query
+- **Forms**: React Hook Form, Zod validation
+- **Testing**: Playwright (E2E), Jest (Unit)
+- **Deployment**: Vercel
 
 ---
 
-## 🏗 Architecture
+## 🏗️ Architecture
 
 ```
 src/
-├── app/
-│   ├── (public)/      # Public pages
-│   ├── (protected)/   # Auth required
-│   ├── (admin)/       # Admin only
-│   ├── (auth)/        # Login/register
-│   └── api/           # API routes
-├── components/        # React components
-│   └── wrappers/      # Next.js wrappers for library components
-├── lib/               # Utilities & helpers
-│   └── adapters/      # Service adapters for library integration
-├── services/          # API services
-├── hooks/             # Custom hooks
-├── constants/         # Application constants and enums
-│   ├── routes.ts          # All route paths
-│   ├── api-endpoints.ts   # All API endpoint paths
-│   ├── status.ts          # Status enums
-│   ├── validation.ts      # Validation rules
-│   ├── config.ts          # App configuration
-│   └── README.md          # Constants documentation
-└── types/             # TypeScript types
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Auth routes (login, register)
+│   ├── (protected)/       # Protected routes (profile, orders)
+│   ├── admin/             # Admin dashboard
+│   ├── seller/            # Seller dashboard
+│   ├── products/          # Product pages
+│   ├── auctions/          # Auction pages
+│   └── api/               # API routes
+├── components/            # Application-specific components
+│   ├── admin/            # Admin-specific components
+│   ├── seller/           # Seller-specific components
+│   ├── layout/           # Layout shells
+│   └── providers/        # Context providers
+├── lib/                   # Utilities & configs
+│   ├── firebase/         # Firebase configuration
+│   ├── logger.ts         # Error logging with daily rotation
+│   └── fallback-data.ts  # Data fetching with fallback system
+├── constants/             # App constants & enums
+│   ├── routes.ts         # All route paths
+│   ├── api-endpoints.ts  # All API endpoint paths
+│   ├── categories.ts     # Category definitions
+│   └── statuses.ts       # Status enums
+├── hooks/                 # Custom React hooks
+└── types/                 # TypeScript type definitions
 ```
 
 ### Constants & Enums
@@ -179,44 +182,33 @@ See [`src/constants/README.md`](./src/constants/README.md) for usage guidelines.
 letitrip.in/
 ├── src/
 │   ├── app/                    # Next.js App Router
-│   │   ├── (public)/          # Public routes
-│   │   ├── (protected)/       # Protected routes
-│   │   ├── (admin)/           # Admin routes
-│   │   ├── (auth)/            # Auth routes
+│   │   ├── (auth)/            # Auth routes (login, register)
+│   │   ├── (protected)/       # Protected routes (profile, orders)
+│   │   ├── admin/             # Admin dashboard
+│   │   ├── seller/            # Seller dashboard
+│   │   ├── products/          # Product pages
+│   │   ├── auctions/          # Auction pages
 │   │   └── api/               # API routes
-│   ├── components/            # React components
-│   │   ├── homepage/          # Homepage components
-│   │   ├── product/           # Product components
-│   │   ├── auction/           # Auction components
-│   │   ├── cart/              # Cart components
-│   │   ├── checkout/          # Checkout components
-│   │   ├── user/              # User components
-│   │   ├── seller/            # Seller components
-│   │   ├── admin/             # Admin components
-│   │   ├── layout/            # Layout components
-│   │   ├── navigation/        # Navigation components
-│   │   └── auth/              # Auth components
-│   ├── lib/                   # Utilities
-│   │   ├── firebase/          # Firebase config & utils
-│   │   ├── utils/             # Helper functions
-│   │   └── validation/        # Validation schemas
-│   ├── services/              # API services
+│   ├── components/            # Application-specific components
+│   │   ├── admin/             # Admin-specific
+│   │   ├── seller/            # Seller-specific
+│   │   ├── layout/            # Layout shells
+│   │   └── providers/         # Context providers
+│   ├── lib/                   # Utilities & configs
+│   │   ├── firebase/          # Firebase setup
+│   │   ├── logger.ts          # Error logging system
+│   │   └── fallback-data.ts   # Data fetching with fallbacks
+│   ├── constants/             # App constants
 │   ├── hooks/                 # Custom React hooks
-│   ├── contexts/              # React contexts
-│   ├── types/                 # TypeScript definitions
-│   └── styles/                # Global styles
-├── scripts/                   # Utility scripts
-│   ├── database/              # Database migrations
-│   ├── deployment/            # Deployment utilities
-│   ├── development/           # Development tools
-│   └── setup/                 # Setup scripts
+│   └── types/                 # TypeScript definitions
+├── react-library/             # Shared component library (v1.0.2)
+│   ├── src/components/        # 115+ reusable components
+│   ├── src/hooks/             # 19 custom hooks
+│   └── src/utils/             # 60+ utility functions
 ├── functions/                 # Firebase Cloud Functions
-├── react-library/             # Custom React component library
-├── tests/                     # Test files
+├── logs/                      # Application logs (git-ignored)
 ├── public/                    # Static assets
-├── refactor/                  # Migration tracker
 └── NDocs/                     # Documentation
-
 ```
 
 ---
@@ -247,8 +239,9 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 
-# App
+# App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_ENABLE_FALLBACK=true  # Enable/disable fallback data (default: true)
 ```
 
 ### Commands
@@ -330,8 +323,51 @@ Make sure to set all required environment variables in your deployment platform:
 
 - **Full Documentation**: [/NDocs/README.md](/NDocs/README.md)
 - **AI Agent Guide**: [/NDocs/getting-started/AI-AGENT-GUIDE.md](/NDocs/getting-started/AI-AGENT-GUIDE.md)
-- **React Library**: [/react-library/README.md](/react-library/README.md)
-- **Functions**: [/functions/README.md](/functions/README.md)
+- **Component Library**: [/react-library/README.md](/react-library/README.md) - 115+ components, 19 hooks, 60+ utilities
+- **Firebase Functions**: [/functions/README.md](/functions/README.md)
+
+## 📊 Error Logging
+
+The application uses a file-based logging system that writes to:
+
+- `logs/error-YYYY-MM-DD.log` - Error logs
+- `logs/warn-YYYY-MM-DD.log` - Warning logs
+- `logs/info-YYYY-MM-DD.log` - Info logs
+- `logs/debug-YYYY-MM-DD.log` - Debug logs
+
+Logs are automatically rotated daily and excluded from git.
+
+## 🔄 Fallback System
+
+The application includes a robust fallback data system for better UX when APIs fail:
+
+- **Automatic Fallback**: Returns mock data when API calls fail or return empty results
+- **Type-Safe**: All fallback data matches real Firebase schema
+- **Global Control**: Enable/disable via environment variable
+- **Categories**: Products, Auctions, Shops, Categories, Blog posts
+
+### Configuration
+
+Add to `.env.local`:
+
+```env
+# Fallback System (default: enabled)
+NEXT_PUBLIC_ENABLE_FALLBACK=true  # Set to false to disable fallback
+```
+
+### Usage
+
+```typescript
+import { fetchWithFallback, FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+
+const products = await fetchWithFallback(
+  () => fetch("/api/products").then((r) => r.json()),
+  FALLBACK_PRODUCTS,
+  "Failed to fetch products",
+);
+```
+
+When `NEXT_PUBLIC_ENABLE_FALLBACK=false`, errors are thrown instead of returning fallback data, useful for development and debugging.
 
 ---
 
@@ -340,16 +376,14 @@ Make sure to set all required environment variables in your deployment platform:
 ### Public Routes
 
 - `/` - Homepage
-- `/products` - Product listings
+- `/products` - Product listings with filters
 - `/products/[slug]` - Product details
-- `/auctions` - Auction listings
-- `/auctions/[id]` - Auction details
-- `/shops` - Shop listings
+- `/auctions` - Auction listings with filters
+- `/auctions/[slug]` - Auction details with bidding
 - `/shops/[slug]` - Shop details
-- `/categories` - Categories
+- `/categories/[slug]` - Category listings
 - `/blog` - Blog posts
 - `/search` - Global search
-- `/compare` - Product comparison
 
 ### Protected Routes (Login Required)
 

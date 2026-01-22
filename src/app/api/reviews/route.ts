@@ -28,6 +28,7 @@
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import {
   addDoc,
   collection,
@@ -172,7 +173,6 @@ export async function GET(request: NextRequest) {
 }
 
 interface CreateReviewRequest {
-  userId: string;
   productSlug?: string;
   auctionSlug?: string;
   shopSlug: string;
@@ -189,9 +189,9 @@ interface CreateReviewRequest {
  * POST /api/reviews
  *
  * Create a new review (requires verified purchase/win).
+ * Uses session for authentication.
  *
  * Request Body:
- * - userId: User ID (required)
  * - productSlug: Product slug (required if not auction)
  * - auctionSlug: Auction slug (required if not product)
  * - shopSlug: Shop slug (required)
@@ -205,9 +205,11 @@ interface CreateReviewRequest {
  */
 export async function POST(request: NextRequest) {
   try {
+    const session = await requireAuth();
+    const userId = session.userId;
+
     const body: CreateReviewRequest = await request.json();
     const {
-      userId,
       productSlug,
       auctionSlug,
       shopSlug,
@@ -221,7 +223,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!userId || !shopSlug || !orderId || !rating || !title || !comment) {
+    if (!shopSlug || !orderId || !rating || !title || !comment) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -348,6 +350,10 @@ export async function POST(request: NextRequest) {
         { error: "Insufficient permissions to create review" },
         { status: 403 },
       );
+    }
+
+    if (error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json(

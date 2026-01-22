@@ -22,6 +22,7 @@
  */
 
 import { db } from "@/lib/firebase";
+import { requireAuth } from "@/lib/session";
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -32,10 +33,11 @@ interface RouteContext {
 }
 
 /**
- * PUT - Update cart item quantity
+ * PUT - Update cart item quantity (requires authentication)
  */
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
+    const session = await requireAuth();
     const { id } = await params;
     const body = await request.json();
     const { quantity } = body;
@@ -46,6 +48,24 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         { error: "Valid quantity is required" },
         { status: 400 },
       );
+    }
+
+    // Get cart item
+    const cartRef = doc(db, "cart", id);
+    const cartDoc = await getDoc(cartRef);
+
+    if (!cartDoc.exists()) {
+      return NextResponse.json(
+        { error: "Cart item not found" },
+        { status: 404 },
+      );
+    }
+
+    const cartData = cartDoc.data();
+
+    // Verify ownership
+    if (cartData.userId !== session.userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Check if cart item exists
