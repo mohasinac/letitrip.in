@@ -18,6 +18,7 @@
 - [Development](#development)
 - [Testing](#testing)
 - [Deployment](#deployment)
+- [Documentation](#documentation)
 
 ---
 
@@ -429,7 +430,37 @@ This project is proprietary and confidential.
 
 ---
 
-## 📞 Support
+## � Documentation
+
+Comprehensive documentation is available in the `/NDocs` directory:
+
+### Getting Started
+
+- [Quick Start Guide](NDocs/README.md) - Complete setup and installation
+- [AI Agent Guide](NDocs/getting-started/AI-AGENT-GUIDE.md) - For AI assistants working on this project
+
+### Implementation Guides
+
+- [API Testing Guide](NDocs/API-TESTING-GUIDE.md) - Testing API endpoints (617 tests across 30 suites)
+- [Logging & Middleware](NDocs/LOGGING-MIDDLEWARE-GUIDE.md) - Error handling and logging setup
+- [Infrastructure Implementation](NDocs/INFRASTRUCTURE-IMPLEMENTATION.md) - Architecture and setup
+- [API Session Audit](NDocs/API-SESSION-AUDIT.md) - Authentication and session management
+
+### Feature Documentation
+
+- [Optional APIs Complete](NDocs/OPTIONAL-APIS-COMPLETE.md) - All 72 API endpoints documented
+- [Optional Features Frontend](NDocs/OPTIONAL-FEATURES-FRONTEND-COMPLETE.md) - Frontend features
+- [Complete Implementation Summary](NDocs/COMPLETE-IMPLEMENTATION-SUMMARY.md) - Full project overview
+
+### Additional Resources
+
+- [Firebase Auth Setup](NDocs/FIREBASE-AUTH-SETUP.md) - Authentication configuration
+- [SEO & UI Improvements](NDocs/SEO-UI-IMPROVEMENTS.md) - Optimization guidelines
+- [Test Suite Documentation](src/__tests__/README.md) - Testing structure and usage
+
+---
+
+## �📞 Support
 
 For issues and questions:
 
