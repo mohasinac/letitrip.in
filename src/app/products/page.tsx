@@ -10,8 +10,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 
-import { Breadcrumb } from "@/components/common/Breadcrumb";
-import { ProductCard } from "@/components/common/ProductCard";
+import { Breadcrumb, ProductCard } from "@mohasinac/react-library";
 
 import { ROUTES } from "@/constants/routes";
 import { ClientLink, SortDropdown } from "@mohasinac/react-library";

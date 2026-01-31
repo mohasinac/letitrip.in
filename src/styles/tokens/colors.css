@@ -7,82 +7,82 @@
 
 :root {
   /* ============================================
-   * Brand Colors - LetItRip Theme
-   * Blue Dragon, Red Accent, Gold Highlight
+   * Brand Colors - Industry Standard Bright Colors
+   * Electric Blue, Vibrant Purple, Bright Orange
    * ============================================ */
-  --color-primary: #2e86ab; /* Dragon Blue - Main brand color */
-  --color-primary-hover: #256d8a; /* Darker blue */
-  --color-primary-light: #a8d4e6; /* Light blue */
-  --color-primary-dark: #1a5066; /* Dark blue */
-  --color-primary-50: #e8f4f8;
-  --color-primary-100: #d1e9f1;
-  --color-primary-200: #a8d4e6;
-  --color-primary-300: #7fbfda;
-  --color-primary-400: #56aace;
-  --color-primary-500: #2e86ab;
-  --color-primary-600: #256d8a;
-  --color-primary-700: #1c5469;
-  --color-primary-800: #1a5066;
-  --color-primary-900: #0f2f3d;
+  --color-primary: #0ea5e9; /* Bright Electric Blue - sky-500 */
+  --color-primary-hover: #0284c7; /* sky-600 */
+  --color-primary-light: #bae6fd; /* sky-200 */
+  --color-primary-dark: #0369a1; /* sky-700 */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
 
-  /* Secondary - Crimson Red */
-  --color-secondary: #c41e3a; /* Logo red */
-  --color-secondary-hover: #a3182f; /* Darker red */
-  --color-secondary-light: #f5b3be; /* Light red/pink */
-  --color-secondary-dark: #8b1528; /* Dark red */
+  /* Secondary - Vibrant Purple */
+  --color-secondary: #a855f7; /* Bright purple - purple-500 */
+  --color-secondary-hover: #9333ea; /* purple-600 */
+  --color-secondary-light: #e9d5ff; /* purple-200 */
+  --color-secondary-dark: #7e22ce; /* purple-700 */
 
-  /* Accent - Gold/Yellow */
-  --color-accent: #f4b942; /* Gold from .IN text */
-  --color-accent-hover: #e5a832;
-  --color-accent-light: #fce6b8;
-  --color-accent-dark: #c4942f;
+  /* Accent - Bright Orange */
+  --color-accent: #f97316; /* Bright orange - orange-500 */
+  --color-accent-hover: #ea580c; /* orange-600 */
+  --color-accent-light: #fdba74; /* orange-300 */
+  --color-accent-dark: #c2410c; /* orange-700 */
 
   /* ============================================
    * Semantic Colors
    * ============================================ */
 
-  /* Success */
-  --color-success: #16a34a; /* green-600 */
-  --color-success-hover: #15803d; /* green-700 */
+  /* Success - Bright Green */
+  --color-success: #22c55e; /* Vibrant green - green-500 */
+  --color-success-hover: #16a34a; /* green-600 */
   --color-success-light: #bbf7d0; /* green-200 */
-  --color-success-dark: #166534; /* green-800 */
+  --color-success-dark: #15803d; /* green-700 */
   --color-success-bg: #f0fdf4; /* green-50 */
 
-  /* Warning */
-  --color-warning: #d97706; /* amber-600 */
-  --color-warning-hover: #b45309; /* amber-700 */
+  /* Warning - Bright Amber */
+  --color-warning: #f59e0b; /* Bright amber - amber-500 */
+  --color-warning-hover: #d97706; /* amber-600 */
   --color-warning-light: #fde68a; /* amber-200 */
-  --color-warning-dark: #92400e; /* amber-800 */
+  --color-warning-dark: #b45309; /* amber-700 */
   --color-warning-bg: #fffbeb; /* amber-50 */
 
-  /* Error/Danger */
-  --color-error: #dc2626; /* red-600 */
-  --color-error-hover: #b91c1c; /* red-700 */
+  /* Error/Danger - Bright Red */
+  --color-error: #ef4444; /* Bright red - red-500 */
+  --color-error-hover: #dc2626; /* red-600 */
   --color-error-light: #fecaca; /* red-200 */
-  --color-error-dark: #991b1b; /* red-800 */
+  --color-error-dark: #b91c1c; /* red-700 */
   --color-error-bg: #fef2f2; /* red-50 */
 
-  /* Info */
-  --color-info: #2563eb; /* blue-600 */
-  --color-info-hover: #1d4ed8; /* blue-700 */
-  --color-info-light: #bfdbfe; /* blue-200 */
-  --color-info-dark: #1e40af; /* blue-800 */
-  --color-info-bg: #eff6ff; /* blue-50 */
+  /* Info - Bright Cyan */
+  --color-info: #06b6d4; /* Bright cyan - cyan-500 */
+  --color-info-hover: #0891b2; /* cyan-600 */
+  --color-info-light: #a5f3fc; /* cyan-200 */
+  --color-info-dark: #0e7490; /* cyan-700 */
+  --color-info-bg: #ecfeff; /* cyan-50 */
 
   /* ============================================
-   * Neutral/Gray Scale
+   * Neutral/Gray Scale - Zinc (modern, cooler tone)
    * ============================================ */
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  --color-gray-950: #030712;
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f4f4f5;
+  --color-gray-200: #e4e4e7;
+  --color-gray-300: #d4d4d8;
+  --color-gray-400: #a1a1aa;
+  --color-gray-500: #71717a;
+  --color-gray-600: #52525b;
+  --color-gray-700: #3f3f46;
+  --color-gray-800: #27272a;
+  --color-gray-900: #18181b;
+  --color-gray-950: #09090b;
 
   /* ============================================
    * Background Colors - White light / Black dark
@@ -99,80 +99,80 @@
   /* ============================================
    * Text Colors
    * ============================================ */
-  --color-text-primary: #0f172a; /* slate-900 */
-  --color-text-secondary: #475569; /* slate-600 */
-  --color-text-tertiary: #64748b; /* slate-500 */
-  --color-text-muted: #94a3b8; /* slate-400 */
+  --color-text-primary: #18181b; /* zinc-900 */
+  --color-text-secondary: #52525b; /* zinc-600 */
+  --color-text-tertiary: #71717a; /* zinc-500 */
+  --color-text-muted: #a1a1aa; /* zinc-400 */
   --color-text-inverse: #ffffff;
-  --color-text-disabled: #94a3b8; /* slate-400 */
-  --color-text-link: #2e86ab; /* primary blue */
-  --color-text-link-hover: #256d8a; /* primary hover */
+  --color-text-disabled: #d4d4d8; /* zinc-300 */
+  --color-text-link: #0ea5e9; /* primary bright blue */
+  --color-text-link-hover: #0284c7; /* primary hover */
 
   /* ============================================
    * Border Colors
    * ============================================ */
-  --color-border-primary: #e2e8f0; /* slate-200 */
-  --color-border-secondary: #cbd5e1; /* slate-300 */
-  --color-border-focus: #2e86ab; /* primary blue */
-  --color-border-error: #dc2626; /* error */
-  --color-border-success: #16a34a; /* success */
-  --color-border-disabled: #e2e8f0; /* slate-200 */
+  --color-border-primary: #e4e4e7; /* zinc-200 */
+  --color-border-secondary: #d4d4d8; /* zinc-300 */
+  --color-border-focus: #0ea5e9; /* primary bright blue */
+  --color-border-error: #ef4444; /* bright red */
+  --color-border-success: #22c55e; /* bright green */
+  --color-border-disabled: #e4e4e7; /* zinc-200 */
 
   /* ============================================
    * Status Colors (Orders, Auctions, etc.)
    * ============================================ */
 
-  /* Order Status */
-  --color-status-pending: #f59e0b; /* amber-500 */
+  /* Order Status - Bright colors */
+  --color-status-pending: #f59e0b; /* bright amber-500 */
   --color-status-pending-bg: #fffbeb;
-  --color-status-processing: #3b82f6; /* blue-500 */
-  --color-status-processing-bg: #eff6ff;
-  --color-status-shipped: #8b5cf6; /* violet-500 */
-  --color-status-shipped-bg: #f5f3ff;
-  --color-status-delivered: #10b981; /* emerald-500 */
-  --color-status-delivered-bg: #ecfdf5;
-  --color-status-cancelled: #ef4444; /* red-500 */
+  --color-status-processing: #0ea5e9; /* bright sky-500 */
+  --color-status-processing-bg: #f0f9ff;
+  --color-status-shipped: #a855f7; /* bright purple-500 */
+  --color-status-shipped-bg: #faf5ff;
+  --color-status-delivered: #22c55e; /* bright green-500 */
+  --color-status-delivered-bg: #f0fdf4;
+  --color-status-cancelled: #ef4444; /* bright red-500 */
   --color-status-cancelled-bg: #fef2f2;
-  --color-status-refunded: #6b7280; /* gray-500 */
-  --color-status-refunded-bg: #f9fafb;
+  --color-status-refunded: #71717a; /* zinc-500 */
+  --color-status-refunded-bg: #fafafa;
 
-  /* Auction Status */
-  --color-auction-active: #16a34a; /* green-600 */
+  /* Auction Status - Bright colors */
+  --color-auction-active: #22c55e; /* bright green-500 */
   --color-auction-active-bg: #f0fdf4;
-  --color-auction-ending: #dc2626; /* red-600 */
-  --color-auction-ending-bg: #fef2f2;
-  --color-auction-ended: #6b7280; /* gray-500 */
-  --color-auction-ended-bg: #f9fafb;
-  --color-auction-upcoming: #2563eb; /* blue-600 */
-  --color-auction-upcoming-bg: #eff6ff;
+  --color-auction-ending: #f97316; /* bright orange-500 */
+  --color-auction-ending-bg: #fff7ed;
+  --color-auction-ended: #71717a; /* zinc-500 */
+  --color-auction-ended-bg: #fafafa;
+  --color-auction-upcoming: #06b6d4; /* bright cyan-500 */
+  --color-auction-upcoming-bg: #ecfeff;
 
-  /* Bid Status */
-  --color-bid-winning: #16a34a; /* green-600 */
+  /* Bid Status - Bright colors */
+  --color-bid-winning: #22c55e; /* bright green-500 */
   --color-bid-winning-bg: #f0fdf4;
-  --color-bid-outbid: #dc2626; /* red-600 */
+  --color-bid-outbid: #ef4444; /* bright red-500 */
   --color-bid-outbid-bg: #fef2f2;
-  --color-bid-placed: #2563eb; /* blue-600 */
-  --color-bid-placed-bg: #eff6ff;
+  --color-bid-placed: #0ea5e9; /* bright sky-500 */
+  --color-bid-placed-bg: #f0f9ff;
 
   /* User/Shop Status */
-  --color-status-active: #16a34a;
+  --color-status-active: #22c55e;
   --color-status-active-bg: #f0fdf4;
-  --color-status-inactive: #6b7280;
-  --color-status-inactive-bg: #f9fafb;
-  --color-status-suspended: #dc2626;
+  --color-status-inactive: #71717a;
+  --color-status-inactive-bg: #fafafa;
+  --color-status-suspended: #ef4444;
   --color-status-suspended-bg: #fef2f2;
-  --color-status-verified: #16a34a;
+  --color-status-verified: #22c55e;
   --color-status-unverified: #f59e0b;
 
   /* ============================================
-   * RipLimit Currency Colors - Gold theme
+   * RipLimit Currency Colors - Bright gold theme
    * ============================================ */
-  --color-riplimit: #f4b942; /* Gold accent */
-  --color-riplimit-bg: #fce6b8;
-  --color-riplimit-blocked: #c41e3a; /* Red */
-  --color-riplimit-blocked-bg: #f5b3be;
-  --color-riplimit-available: #16a34a;
-  --color-riplimit-available-bg: #f0fdf4;
+  --color-riplimit: #f59e0b; /* Bright amber/gold */
+  --color-riplimit-bg: #fde68a;
+  --color-riplimit-blocked: #ef4444; /* Bright red */
+  --color-riplimit-blocked-bg: #fecaca;
+  --color-riplimit-available: #22c55e; /* Bright green */
+  --color-riplimit-available-bg: #bbf7d0;
 
   /* ============================================
    * Overlay Colors
@@ -189,42 +189,42 @@
 .dark {
   /* Background - Pure black */
   --color-bg-primary: #000000; /* Pure black */
-  --color-bg-secondary: #0a0a0a; /* Near black */
-  --color-bg-tertiary: #171717; /* neutral-900 */
+  --color-bg-secondary: #09090B; /* zinc-950 */
+  --color-bg-tertiary: #18181B; /* zinc-900 */
   --color-bg-inverse: #ffffff;
-  --color-bg-elevated: #0a0a0a;
-  --color-bg-hover: #171717;
-  --color-bg-active: #262626; /* neutral-800 */
-  --color-bg-disabled: #171717;
+  --color-bg-elevated: #09090B;
+  --color-bg-hover: #18181B;
+  --color-bg-active: #27272A; /* zinc-800 */
+  --color-bg-disabled: #18181B;
 
-  /* Text */
-  --color-text-primary: #fafafa; /* neutral-50 */
-  --color-text-secondary: #d4d4d4; /* neutral-300 */
-  --color-text-tertiary: #a3a3a3; /* neutral-400 */
-  --color-text-muted: #737373; /* neutral-500 */
+  /* Text - Brighter for better contrast */
+  --color-text-primary: #FAFAFA; /* zinc-50 */
+  --color-text-secondary: #D4D4D8; /* zinc-300 */
+  --color-text-tertiary: #A1A1AA; /* zinc-400 */
+  --color-text-muted: #71717A; /* zinc-500 */
   --color-text-inverse: #000000;
-  --color-text-disabled: #525252;
-  --color-text-link: #56aace; /* Lighter primary blue */
-  --color-text-link-hover: #7fbfda; /* Even lighter blue */
+  --color-text-disabled: #52525B; /* zinc-600 */
+  --color-text-link: #38BDF8; /* Brighter sky-400 */
+  --color-text-link-hover: #7DD3FC; /* Even brighter sky-300 */
 
   /* Border */
-  --color-border-primary: #262626; /* neutral-800 */
-  --color-border-secondary: #404040; /* neutral-700 */
-  --color-border-disabled: #262626;
+  --color-border-primary: #27272A; /* zinc-800 */
+  --color-border-secondary: #3F3F46; /* zinc-700 */
+  --color-border-disabled: #27272A;
 
-  /* Status backgrounds (darker versions) */
-  --color-status-pending-bg: rgba(245, 158, 11, 0.15);
-  --color-status-processing-bg: rgba(59, 130, 246, 0.15);
-  --color-status-shipped-bg: rgba(139, 92, 246, 0.15);
-  --color-status-delivered-bg: rgba(16, 185, 129, 0.15);
-  --color-status-cancelled-bg: rgba(239, 68, 68, 0.15);
-  --color-status-refunded-bg: rgba(107, 114, 128, 0.15);
+  /* Status backgrounds (bright with transparency for dark theme) */
+  --color-status-pending-bg: rgba(245, 158, 11, 0.2);
+  --color-status-processing-bg: rgba(14, 165, 233, 0.2);
+  --color-status-shipped-bg: rgba(168, 85, 247, 0.2);
+  --color-status-delivered-bg: rgba(34, 197, 94, 0.2);
+  --color-status-cancelled-bg: rgba(239, 68, 68, 0.2);
+  --color-status-refunded-bg: rgba(113, 113, 122, 0.2);
 
-  /* Semantic backgrounds (darker versions) */
-  --color-success-bg: rgba(22, 163, 74, 0.15);
-  --color-warning-bg: rgba(217, 119, 6, 0.15);
-  --color-error-bg: rgba(220, 38, 38, 0.15);
-  --color-info-bg: rgba(37, 99, 235, 0.15);
+  /* Semantic backgrounds (bright with transparency for dark theme) */
+  --color-success-bg: rgba(34, 197, 94, 0.2);
+  --color-warning-bg: rgba(245, 158, 11, 0.2);
+  --color-error-bg: rgba(239, 68, 68, 0.2);
+  --color-info-bg: rgba(6, 182, 212, 0.2);
 
   /* Overlay */
   --color-overlay: rgba(0, 0, 0, 0.7);

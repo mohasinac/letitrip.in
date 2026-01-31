@@ -1,16 +1,13 @@
+"use client";
+
 /**
  * Global Error Page - 500
  *
  * Displayed when a fatal server error occurs
+ * Note: global-error.tsx must be a Client Component
  */
 
-import { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Server Error - Let It Rip",
-  description: "An unexpected error occurred",
-};
 
 export default function GlobalError({
   error,

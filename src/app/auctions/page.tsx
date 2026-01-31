@@ -7,7 +7,7 @@
  * @page /buy-auction-all - All auctions listing
  */
 
-import { AuctionCard } from "@/components/common/AuctionCard";
+import { AuctionCard } from "@mohasinac/react-library";
 import { Metadata } from "next";
 import Link from "next/link";
 

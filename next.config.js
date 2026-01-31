@@ -29,11 +29,11 @@ const nextConfig = {
   // Reduce Docker image size
   output: "standalone",
 
-  // Turbopack configuration - npm workspaces handles @letitrip/react-library
+  // Turbopack configuration - npm workspaces handles @mohasinac/react-library
   turbopack: {},
 
   // Transpile workspace packages
-  transpilePackages: ["@letitrip/react-library"],
+  transpilePackages: ["@mohasinac/react-library"],
 
   // Experimental features for faster builds
   experimental: {

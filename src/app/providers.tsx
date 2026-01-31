@@ -65,9 +65,10 @@ export function Providers({ children }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+        defaultTheme="dark"
+        enableSystem={false}
+        storageKey="letitrip-theme"
+        disableTransitionOnChange={false}
       >
         {/* Auth Provider will be added here */}
         {/* Cart Provider will be added here */}

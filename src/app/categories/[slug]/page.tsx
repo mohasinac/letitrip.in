@@ -6,8 +6,7 @@
  * @page /categories/[slug] - Category detail page
  */
 
-import { Breadcrumb } from "@/components/common/Breadcrumb";
-import { ProductCard } from "@/components/common/ProductCard";
+import { Breadcrumb, ProductCard } from "@mohasinac/react-library";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";

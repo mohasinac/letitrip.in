@@ -1,4 +1,5 @@
 import { LayoutShell } from "@/components/layout/LayoutShell";
+import { ThemeScript } from "@/components/theme/ThemeScript";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -16,7 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="antialiased bg-white dark:bg-black text-black dark:text-white">
         <Providers>
           <LayoutShell>{children}</LayoutShell>
         </Providers>

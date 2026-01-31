@@ -1,14 +1,11 @@
+"use client";
+
 /**
  * Custom 404 Not Found Page
+ * Note: This is a Client Component to support interactive elements
  */
 
-import { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Page Not Found - Let It Rip",
-  description: "The page you are looking for does not exist",
-};
 
 export default function NotFound() {
   return (
