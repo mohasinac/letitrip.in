@@ -26,7 +26,6 @@ import { notFound } from "next/navigation";
 
 import { FALLBACK_AUCTIONS } from "@/lib/fallback-data";
 import { formatTimeRemaining, getTimeRemaining } from "@/lib/utils";
-import { ClientLink } from "@mohasinac/react-library";
 
 // Types
 interface PageProps {
@@ -145,10 +144,27 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
-        <BreadcrumbComponent
-          currentPath={`/buy-auction-${slug}`}
-          LinkComponent={ClientLink}
-        />
+        <div className="mb-6">
+          <nav className="text-sm text-gray-600 dark:text-gray-400">
+            <Link
+              href="/"
+              className="hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              Home
+            </Link>
+            <span className="mx-2">/</span>
+            <Link
+              href="/auctions"
+              className="hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              Auctions
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-gray-900 dark:text-white">
+              {auction.title}
+            </span>
+          </nav>
+        </div>
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Media Gallery */}
@@ -372,7 +388,7 @@ export default async function AuctionDetailsPage({ params }: PageProps) {
                 )}
 
                 {/* Quick Bid Buttons */}
-                {!timeRemaining.ended && auction.status === "active" && (
+                {!timeRemaining.isEnded && auction.status === "active" && (
                   <div className="grid grid-cols-3 gap-2 mb-6">
                     <button className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg text-sm font-medium transition">
                       +₹{bidIncrement}

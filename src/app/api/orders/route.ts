@@ -130,10 +130,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating order:", error);
 
     if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json(
@@ -216,10 +213,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching orders:", error);
 
     if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json(
@@ -230,5 +224,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
 }

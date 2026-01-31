@@ -172,7 +172,6 @@ export async function GET(request: NextRequest) {
       method: "GET",
       url: "/api/products",
       statusCode: 500,
-      ip: request.ip,
       userAgent: request.headers.get("user-agent") || undefined,
     });
     console.error("Error fetching products:", error);
@@ -185,21 +184,13 @@ export async function GET(request: NextRequest) {
           success: true,
           fallback: true,
           data: {
-            products: FALLBACK_PRODUCTS.slice(0, pageLimit || 20),
+            products: FALLBACK_PRODUCTS.slice(0, 20),
             pagination: {
-              limit: pageLimit || 20,
+              limit: 20,
               hasMore: false,
               nextCursor: null,
             },
-            filters: {
-              category: categorySlug,
-              shop: shopSlug,
-              minPrice,
-              maxPrice,
-              search: searchQuery,
-              sort: sortBy,
-              status,
-            },
+            filters: {},
           },
         },
         { status: 200 },

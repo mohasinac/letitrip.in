@@ -14,7 +14,7 @@
 export * from "../theme";
 
 // Re-export for convenience
-export { default as ThemeDemo } from "@/components/demo/ThemeDemo";
+// export { default as ThemeDemo } from "@/components/demo/ThemeDemo";
 
 /**
  * Quick reference guide for theme usage

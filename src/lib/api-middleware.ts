@@ -238,7 +238,12 @@ export function withCORS(
     const response = await handler(req);
 
     const headers = new Headers(response.headers);
-    headers.set("Access-Control-Allow-Origin", options?.origin || "*");
+    headers.set(
+      "Access-Control-Allow-Origin",
+      Array.isArray(options?.origin)
+        ? options.origin[0]
+        : options?.origin || "*",
+    );
     headers.set(
       "Access-Control-Allow-Methods",
       options?.methods?.join(", ") || "GET, POST, PUT, DELETE, OPTIONS",

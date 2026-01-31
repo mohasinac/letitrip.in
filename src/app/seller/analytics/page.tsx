@@ -53,12 +53,9 @@ export default function SellerAnalyticsPage() {
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/seller/analytics?period=${period}`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`/api/seller/analytics?period=${period}`, {
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch analytics");
@@ -184,7 +181,8 @@ export default function SellerAnalyticsPage() {
                     }`}
                   >
                     {analytics.revenue.percentChange >= 0 ? "+" : ""}
-                    {analytics.revenue.percentChange.toFixed(1)}% from last period
+                    {analytics.revenue.percentChange.toFixed(1)}% from last
+                    period
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
@@ -202,7 +200,8 @@ export default function SellerAnalyticsPage() {
                     }`}
                   >
                     {analytics.orders.percentChange >= 0 ? "+" : ""}
-                    {analytics.orders.percentChange.toFixed(1)}% from last period
+                    {analytics.orders.percentChange.toFixed(1)}% from last
+                    period
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
@@ -227,7 +226,7 @@ export default function SellerAnalyticsPage() {
                     {analytics.products.totalSold} units sold
                   </div>
                 </div>
-          </div>
+              </div>
 
               {/* Orders by Status & Revenue Chart */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -238,7 +237,10 @@ export default function SellerAnalyticsPage() {
                   <div className="space-y-3">
                     {Object.entries(analytics.orders.byStatus).map(
                       ([status, count]) => (
-                        <div key={status} className="flex items-center justify-between">
+                        <div
+                          key={status}
+                          className="flex items-center justify-between"
+                        >
                           <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
                             {status}
                           </span>
@@ -246,7 +248,7 @@ export default function SellerAnalyticsPage() {
                             {count}
                           </span>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </div>
@@ -256,32 +258,34 @@ export default function SellerAnalyticsPage() {
                     Revenue Trend ({getPeriodLabel(period)})
                   </h3>
                   <div className="h-64 flex items-end gap-2">
-                    {analytics.revenue.byDate.slice(0, 10).map((item, index) => {
-                      const maxRevenue = Math.max(
-                        ...analytics.revenue.byDate.map((d) => d.amount)
-                      );
-                      const height = (item.amount / maxRevenue) * 100;
-                      return (
-                        <div
-                          key={index}
-                          className="flex-1 flex flex-col items-center gap-2"
-                        >
+                    {analytics.revenue.byDate
+                      .slice(0, 10)
+                      .map((item, index) => {
+                        const maxRevenue = Math.max(
+                          ...analytics.revenue.byDate.map((d) => d.amount),
+                        );
+                        const height = (item.amount / maxRevenue) * 100;
+                        return (
                           <div
-                            className="w-full bg-blue-600 rounded-t hover:bg-blue-700 transition-colors cursor-pointer"
-                            style={{ height: `${height}%` }}
-                            title={`${formatPrice(item.amount)} on ${new Date(
-                              item.date
-                            ).toLocaleDateString()}`}
-                          />
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            {new Date(item.date).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                            })}
-                          </span>
-                        </div>
-                      );
-                    })}
+                            key={index}
+                            className="flex-1 flex flex-col items-center gap-2"
+                          >
+                            <div
+                              className="w-full bg-blue-600 rounded-t hover:bg-blue-700 transition-colors cursor-pointer"
+                              style={{ height: `${height}%` }}
+                              title={`${formatPrice(item.amount)} on ${new Date(
+                                item.date,
+                              ).toLocaleDateString()}`}
+                            />
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
+                              {new Date(item.date).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                              })}
+                            </span>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               </div>
@@ -365,5 +369,8 @@ export default function SellerAnalyticsPage() {
               </div>
             </>
           )}
+        </div>
+      </main>
+    </div>
   );
 }

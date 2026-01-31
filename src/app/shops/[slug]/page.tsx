@@ -182,7 +182,7 @@ export default async function ShopDetailPage({
               {products.map((product: any) => (
                 <ProductCard
                   key={product.id}
-                  id={product.id}
+                  {...(product as any)}
                   name={product.name}
                   slug={product.slug}
                   price={product.price}

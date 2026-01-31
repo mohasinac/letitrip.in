@@ -154,9 +154,7 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {searchParams.q
-              ? `Search: "${searchParams.q}"`
-              : "All Live Auctions"}
+            {params.q ? `Search: "${params.q}"` : "All Live Auctions"}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {auctions.length} auctions found
@@ -186,7 +184,7 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
           {/* Sort Dropdown */}
           <SortDropdown
             options={SORT_OPTIONS}
-            currentSort={searchParams.sort || "ending-soon"}
+            currentSort={params.sort || "ending-soon"}
           />
         </div>
 
@@ -197,20 +195,26 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
               {auctions.map((auction: any) => (
                 <AuctionCard
                   key={auction.id}
-                  id={auction.id}
-                  title={auction.title}
-                  slug={auction.slug}
-                  currentBid={auction.currentBid}
-                  startingPrice={auction.startingPrice}
-                  buyNowPrice={auction.buyNowPrice}
-                  image={auction.images?.[0]}
-                  images={auction.images}
-                  endTime={auction.endTime}
-                  bidCount={auction.bidCount}
-                  condition={auction.condition}
-                  shopName={auction.shopName}
-                  shopSlug={auction.shopSlug}
-                  status={auction.status}
+                  {...({ auction } as any)}
+                  auction={{
+                    id: auction.id,
+                    name: auction.title,
+                    slug: auction.slug,
+                    images: auction.images || [],
+                    currentBid: auction.currentBid,
+                    startingBid: auction.startingPrice,
+                    bidCount: auction.bidCount || 0,
+                    endTime: auction.endTime,
+                    condition: auction.condition,
+                    featured: auction.featured,
+                    status: auction.status,
+                    shop: auction.shopName
+                      ? {
+                          id: auction.shopId || "",
+                          name: auction.shopName,
+                        }
+                      : undefined,
+                  }}
                   variant="public"
                 />
               ))}
@@ -221,9 +225,9 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
               <div className="flex justify-center">
                 <Link
                   href={`${ROUTES.AUCTIONS.LIST}?${new URLSearchParams({
-                    ...searchParams,
+                    ...params,
                     cursor: nextCursor,
-                  }).toString()}`}
+                  } as any).toString()}`}
                   className="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition"
                 >
                   Load More
@@ -238,8 +242,8 @@ export default async function AllAuctionsPage({ searchParams }: PageProps) {
               No auctions found
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {searchParams.q
-                ? `No results for "${searchParams.q}"`
+              {params.q
+                ? `No results for "${params.q}"`
                 : "No live auctions available at the moment"}
             </p>
             <Link

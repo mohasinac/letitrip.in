@@ -105,11 +105,11 @@ describe("Shops Page", () => {
     it("should filter by location", () => {
       const location = "Mumbai";
       const localShops = mockShops.filter((s) =>
-        s.location?.toLowerCase().includes(location.toLowerCase()),
+        s.address?.toLowerCase().includes(location.toLowerCase()),
       );
 
       localShops.forEach((shop) => {
-        expect(shop.location?.toLowerCase()).toContain(location.toLowerCase());
+        expect(shop.address?.toLowerCase()).toContain(location.toLowerCase());
       });
     });
   });

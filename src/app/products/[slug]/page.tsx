@@ -461,7 +461,7 @@ export default async function ProductDetailsPage({
               {similarProducts.slice(0, 4).map((similarProduct: any) => (
                 <ProductCard
                   key={similarProduct.id}
-                  id={similarProduct.id}
+                  {...(similarProduct as any)}
                   name={similarProduct.name}
                   slug={similarProduct.slug}
                   price={similarProduct.price}

@@ -137,23 +137,21 @@ describe("Auction Detail Page", () => {
   });
 
   describe("Completed Auctions", () => {
-    it("should identify completed auctions", () => {
-      const completedAuctions = FALLBACK_AUCTIONS.filter(
-        (a) => a.status === "completed",
+    it("should identify ended auctions", () => {
+      const endedAuctions = FALLBACK_AUCTIONS.filter(
+        (a) => a.status === "ended",
       );
 
-      completedAuctions.forEach((auction) => {
-        expect(auction.status).toBe("completed");
+      endedAuctions.forEach((auction) => {
+        expect(auction.status).toBe("ended");
       });
     });
 
-    it("should show winner for completed auctions", () => {
-      const completedAuction = FALLBACK_AUCTIONS.find(
-        (a) => a.status === "completed",
-      );
+    it("should check auction end time", () => {
+      const endedAuction = FALLBACK_AUCTIONS.find((a) => a.status === "ended");
 
-      if (completedAuction && completedAuction.winner) {
-        expect(completedAuction.winner).toBeTruthy();
+      if (endedAuction) {
+        expect(endedAuction.endTime).toBeDefined();
       }
     });
   });

@@ -69,13 +69,11 @@ describe("Auctions Page", () => {
       });
     });
 
-    it("should show completed auctions", () => {
-      const completedAuctions = mockAuctions.filter(
-        (a) => a.status === "completed",
-      );
+    it("should show ended auctions", () => {
+      const endedAuctions = mockAuctions.filter((a) => a.status === "ended");
 
-      completedAuctions.forEach((auction) => {
-        expect(auction.status).toBe("completed");
+      endedAuctions.forEach((auction) => {
+        expect(auction.status).toBe("ended");
       });
     });
 
@@ -96,14 +94,10 @@ describe("Auctions Page", () => {
   describe("Auction Filtering", () => {
     it("should filter by status", () => {
       const activeAuctions = mockAuctions.filter((a) => a.status === "active");
-      const completedAuctions = mockAuctions.filter(
-        (a) => a.status === "completed",
-      );
+      const endedAuctions = mockAuctions.filter((a) => a.status === "ended");
 
       expect(activeAuctions.every((a) => a.status === "active")).toBe(true);
-      expect(completedAuctions.every((a) => a.status === "completed")).toBe(
-        true,
-      );
+      expect(endedAuctions.every((a) => a.status === "ended")).toBe(true);
     });
 
     it("should filter by category", () => {

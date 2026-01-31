@@ -1,7 +1,6 @@
 "use client";
 
 import { AuctionCard, ClientLink } from "@mohasinac/react-library";
-import Image from "next/image";
 
 interface SimilarAuctionsProps {
   auctions: any[];
@@ -19,6 +18,7 @@ export function SimilarAuctions({ auctions }: SimilarAuctionsProps) {
         {auctions.slice(0, 4).map((similarAuction: any) => (
           <AuctionCard
             key={similarAuction.id}
+            {...({ auction: similarAuction } as any)}
             auction={{
               id: similarAuction.id,
               name: similarAuction.title,
@@ -39,7 +39,6 @@ export function SimilarAuctions({ auctions }: SimilarAuctionsProps) {
             }}
             variant="compact"
             LinkComponent={ClientLink}
-            ImageComponent={Image}
           />
         ))}
       </div>

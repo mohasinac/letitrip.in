@@ -93,8 +93,8 @@ describe("Auth Pages", () => {
       const confirmPassword = "Password123!";
       const mismatchPassword = "DifferentPass";
 
-      expect(password === confirmPassword).toBe(true);
-      expect(password === mismatchPassword).toBe(false);
+      expect(password).toBe(confirmPassword);
+      expect(password).not.toBe(mismatchPassword);
     });
 
     it("should validate password strength", () => {

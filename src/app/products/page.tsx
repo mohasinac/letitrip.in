@@ -117,7 +117,8 @@ async function getProducts(searchParams: PageProps["searchParams"]) {
 export default async function AllProductsPage({ searchParams }: PageProps) {
   // Fetch data
   const { products, hasMore, nextCursor } = await getProducts(searchParams);
-  const { sort = "newest", q } = await searchParams;
+  const params = await searchParams;
+  const { sort = "newest", q } = params;
 
   // Build breadcrumbs
   const breadcrumbs = [
@@ -169,7 +170,7 @@ export default async function AllProductsPage({ searchParams }: PageProps) {
               {products.map((product: any) => (
                 <ProductCard
                   key={product.id}
-                  id={product.id}
+                  {...(product as any)}
                   name={product.name}
                   slug={product.slug}
                   price={product.price}
@@ -193,9 +194,17 @@ export default async function AllProductsPage({ searchParams }: PageProps) {
               <div className="flex justify-center">
                 <Link
                   href={`?${new URLSearchParams({
-                    ...searchParams,
+                    q: params.q,
+                    sort: params.sort,
+                    minPrice: params.minPrice,
+                    maxPrice: params.maxPrice,
+                    condition: params.condition,
+                    shopSlug: params.shopSlug,
+                    inStock: params.inStock,
+                    featured: params.featured,
+                    limit: params.limit,
                     cursor: nextCursor,
-                  }).toString()}`}
+                  } as any).toString()}`}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
                 >
                   Load More

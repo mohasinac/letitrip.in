@@ -168,19 +168,13 @@ export async function GET(request: NextRequest) {
           success: true,
           fallback: true,
           data: {
-            auctions: FALLBACK_AUCTIONS.slice(0, pageLimit || 20),
+            auctions: FALLBACK_AUCTIONS.slice(0, 20),
             pagination: {
-              limit: pageLimit || 20,
+              limit: 20,
               hasMore: false,
               nextCursor: null,
             },
-            filters: {
-              category: categorySlug,
-              shop: shopSlug,
-              search: searchQuery,
-              sort: sortBy,
-              status,
-            },
+            filters: {},
           },
         },
         { status: 200 },

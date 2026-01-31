@@ -61,10 +61,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const cartData = cartDoc.data();
+    const cartItem = cartDoc.data();
 
     // Verify ownership
-    if (cartData.userId !== session.userId) {
+    if (cartItem.userId !== session.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

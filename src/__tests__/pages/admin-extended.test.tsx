@@ -34,21 +34,21 @@ describe("Admin Auctions Management", () => {
 
   describe("Auction Moderation", () => {
     it("should approve pending auctions", () => {
-      let auction = { id: "1", status: "pending" as const };
+      let auction: any = { id: "1", status: "pending" };
 
       auction.status = "active";
       expect(auction.status).toBe("active");
     });
 
     it("should reject auctions", () => {
-      let auction = { id: "1", status: "pending" as const };
+      let auction: any = { id: "1", status: "pending" };
 
-      auction.status = "rejected" as any;
+      auction.status = "rejected";
       expect(auction.status).toBe("rejected");
     });
 
     it("should cancel active auctions", () => {
-      let auction = { id: "1", status: "active" as const };
+      let auction: any = { id: "1", status: "active" };
 
       auction.status = "cancelled";
       expect(auction.status).toBe("cancelled");
