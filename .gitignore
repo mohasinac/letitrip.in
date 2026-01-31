@@ -94,3 +94,4 @@ test-results*.txt
 # Workspace projects with own repos
 /react-library
 /tests
+.npmrc
