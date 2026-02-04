@@ -28,7 +28,7 @@
     "strings": false
   },
   "editor.parameterHints.enabled": false,
-  "editor.hover.enabled": false,
+  "editor.hover.enabled": "off",
   "editor.suggest.preview": false,
   "editor.suggest.showStatusBar": false,
   

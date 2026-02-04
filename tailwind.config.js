@@ -1,9 +1,28 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/constants/**/*.{js,ts,jsx,tsx}",
+  ],
+  safelist: [
+    'bg-white',
+    'bg-gray-50',
+    'bg-gray-100',
+    'bg-gray-800',
+    'bg-gray-900',
+    'bg-gray-950',
+    'dark:bg-gray-800',
+    'dark:bg-gray-900',
+    'dark:bg-gray-950',
+    'text-gray-900',
+    'text-gray-100',
+    'dark:text-gray-100',
+    'border-gray-200',
+    'border-gray-800',
+    'dark:border-gray-800',
   ],
   theme: {
     extend: {
@@ -47,21 +66,35 @@ module.exports = {
           800: "#991b1b",
           900: "#7f1d1d",
         },
-        background: "hsl(0 0% 98%)",
-        foreground: "hsl(222.2 84% 4.9%)",
-        border: "hsl(214.3 31.8% 91.4%)",
-        muted: "hsl(210 40% 96.1%)",
-        "muted-foreground": "hsl(215.4 16.3% 46.9%)",
+      },
+      spacing: {
+        '18': '4.5rem',
+        '112': '28rem',
+        '128': '32rem',
+      },
+      zIndex: {
+        '60': '60',
+        '70': '70',
+      },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '0.75rem' }],
+      },
+      borderRadius: {
+        '4xl': '2rem',
       },
       boxShadow: {
         soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
         glow: "0 0 20px rgba(59, 130, 246, 0.5)",
         "inner-soft": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)",
       },
+      transitionDuration: {
+        '400': '400ms',
+      },
       animation: {
         "fade-in": "fadeIn 0.3s ease-in-out",
         "slide-down": "slideDown 0.3s ease-out",
         "slide-up": "slideUp 0.3s ease-out",
+        "scale-up": "scaleUp 0.2s ease-out",
       },
       keyframes: {
         fadeIn: {
@@ -75,6 +108,10 @@ module.exports = {
         slideUp: {
           "0%": { transform: "translateY(10px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        scaleUp: {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
         },
       },
     },
