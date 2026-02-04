@@ -1,0 +1,62 @@
+{
+  // Disable file watching in large folders
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.hg/store/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.next/**": true
+  },
+  
+  // Reduce file search scope
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true
+  },
+  
+  // Disable telemetry
+  "telemetry.telemetryLevel": "off",
+  
+  // Limit editor features for performance
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.parameterHints.enabled": false,
+  "editor.hover.enabled": false,
+  "editor.suggest.preview": false,
+  "editor.suggest.showStatusBar": false,
+  
+  // Disable extensions auto-updates
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  
+  // Disable breadcrumbs
+  "breadcrumbs.enabled": false,
+  
+  // Reduce git operations
+  "git.autorefresh": false,
+  "git.autofetch": false,
+  
+  // Disable minimap
+  "editor.minimap.enabled": false,
+  
+  // Limit concurrent file changes
+  "files.maxConcurrentWrites": 1,
+  
+  // Disable semantic highlighting for performance
+  "editor.semanticHighlighting.enabled": false,
+  
+  // Reduce TypeScript server memory usage
+  "typescript.tsserver.maxTsServerMemory": 2048,
+  
+  // Disable unused language features
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false
+}
