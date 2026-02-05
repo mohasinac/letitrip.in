@@ -1,10 +1,10 @@
 /**
  * Authentication Hooks
- * 
+ *
  * Custom hooks for authentication operations using the centralized API client.
  * These hooks provide a clean interface for auth-related API calls with
  * proper loading/error states and callbacks.
- * 
+ *
  * @example
  * ```tsx
  * const { mutate, isLoading } = useLogin({
@@ -14,17 +14,18 @@
  * ```
  */
 
-import { useApiMutation } from './useApiMutation';
-import { apiClient, API_ENDPOINTS } from '@/lib/api-client';
-import { 
-  signInWithEmail, 
-  signInWithGoogle, 
+import { useState, useEffect } from "react";
+import { useApiMutation } from "./useApiMutation";
+import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
+import {
+  signInWithEmail,
+  signInWithGoogle,
   signInWithApple,
   registerWithEmail,
   resetPassword as firebaseResetPassword,
   signOut as firebaseSignOut,
-  onAuthStateChanged
-} from '@/lib/firebase/auth-helpers';
+  onAuthStateChanged,
+} from "@/lib/firebase/auth-helpers";
 
 // ============================================================================
 // Types
@@ -74,13 +75,16 @@ export function useLogin(options?: {
 }) {
   return useApiMutation<any, LoginCredentials>({
     mutationFn: async (credentials) => {
-      const isEmail = credentials.emailOrPhone.includes('@');
-      
+      const isEmail = credentials.emailOrPhone.includes("@");
+
       if (isEmail) {
-        const result = await signInWithEmail(credentials.emailOrPhone, credentials.password);
+        const result = await signInWithEmail(
+          credentials.emailOrPhone,
+          credentials.password,
+        );
         return { success: true, user: result.user };
       } else {
-        throw new Error('Phone login not yet implemented');
+        throw new Error("Phone login not yet implemented");
       }
     },
     onSuccess: options?.onSuccess,
@@ -101,13 +105,13 @@ export function useRegister(options?: {
         const result = await registerWithEmail(
           data.email,
           data.password,
-          data.displayName || 'User'
+          data.displayName || "User",
         );
         return { success: true, user: result.user };
       } else if (data.phoneNumber) {
-        throw new Error('Phone registration not yet implemented');
+        throw new Error("Phone registration not yet implemented");
       } else {
-        throw new Error('Email or phone number required');
+        throw new Error("Email or phone number required");
       }
     },
     onSuccess: options?.onSuccess,
@@ -123,7 +127,8 @@ export function useVerifyEmail(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, { token: string }>({
-    mutationFn: ({ token }) => apiClient.get(`${API_ENDPOINTS.AUTH.VERIFY_EMAIL}?token=${token}`),
+    mutationFn: ({ token }) =>
+      apiClient.get(`${API_ENDPOINTS.AUTH.VERIFY_EMAIL}?token=${token}`),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -137,7 +142,7 @@ export function useResendVerification(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ResendVerificationData>({
-    mutationFn: (data) => apiClient.post('/api/auth/send-verification', data),
+    mutationFn: (data) => apiClient.post("/api/auth/send-verification", data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -168,7 +173,8 @@ export function useResetPassword(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ResetPasswordData>({
-    mutationFn: (data) => apiClient.put(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
+    mutationFn: (data) =>
+      apiClient.put(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -182,10 +188,35 @@ export function useChangePassword(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ChangePasswordData>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data),
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
+}
+
+// ============================================================================
+// Main useAuth Hook (Authentication State)
+// ============================================================================
+
+/**
+ * Hook for accessing current authentication state
+ * Returns the current user and loading state from Firebase
+ */
+export function useAuth() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((authUser) => {
+      setUser(authUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return { user, loading };
 }
 
 // Export types

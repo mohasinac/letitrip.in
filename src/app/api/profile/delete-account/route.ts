@@ -1,29 +1,36 @@
 /**
  * API Route: Delete User Account
  * DELETE /api/profile/delete-account
- * 
+ *
  * Permanently deletes user account and all associated data
  * Implements cascade delete pattern from schema documentation
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { getAuthenticatedUser } from '@/lib/firebase/auth-server';
-import { userRepository, tokenRepository } from '@/repositories';
-import { getFirestore, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
+import { userRepository, tokenRepository } from "@/repositories";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
 import {
   ValidationError,
   AuthenticationError,
   handleApiError,
-} from '@/lib/errors';
-import { applyRateLimit } from '@/lib/security/rate-limit';
+} from "@/lib/errors";
+import { applyRateLimit } from "@/lib/security/rate-limit";
 
 // Validation schema
 const deleteAccountSchema = z.object({
-  password: z.string().min(1, 'Password is required for account deletion'),
-  confirmation: z.literal('DELETE', {
-    errorMap: () => ({ message: 'Type DELETE to confirm' }),
+  password: z.string().min(1, "Password is required for account deletion"),
+  confirmation: z.literal("DELETE").refine((val) => val === "DELETE", {
+    message: "Type DELETE to confirm",
   }),
 });
 
@@ -31,24 +38,24 @@ export async function DELETE(request: NextRequest) {
   try {
     // Rate limiting: 3 attempts per hour
     const rateLimitResult = await applyRateLimit(request, {
-      maxRequests: 3,
-      windowMs: 60 * 60 * 1000,
+      limit: 3,
+      window: 60 * 60,
     });
 
     if (!rateLimitResult.success) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Too many deletion attempts. Please try again later.',
+          error: "Too many deletion attempts. Please try again later.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
     // Authenticate user
-    const user = await getAuthenticatedUser(request);
+    const user = await getAuthenticatedUser();
     if (!user) {
-      throw new AuthenticationError('Authentication required');
+      throw new AuthenticationError("Authentication required");
     }
 
     // Parse and validate request body
@@ -57,8 +64,11 @@ export async function DELETE(request: NextRequest) {
 
     if (!validationResult.success) {
       throw new ValidationError(
-        'Invalid input',
-        validationResult.error.flatten().fieldErrors
+        "Invalid input",
+        validationResult.error.flatten().fieldErrors as Record<
+          string,
+          string[]
+        >,
       );
     }
 
@@ -70,7 +80,7 @@ export async function DELETE(request: NextRequest) {
 
     /**
      * CASCADE DELETE PATTERN (from users schema)
-     * 
+     *
      * When deleting a user, we must delete:
      * 1. User document in users collection
      * 2. All trips where userId = user.uid
@@ -83,12 +93,12 @@ export async function DELETE(request: NextRequest) {
     const batch = writeBatch(db);
 
     // 1. Delete user tokens
-    await tokenRepository.deleteByUserId(user.uid);
+    await tokenRepository.email.deleteAllForUser(user.uid);
 
     // 2. Delete trips (if trips collection exists)
     const tripsQuery = query(
-      collection(db, 'trips'),
-      where('userId', '==', user.uid)
+      collection(db, "trips"),
+      where("userId", "==", user.uid),
     );
     const tripsSnapshot = await getDocs(tripsQuery);
     tripsSnapshot.docs.forEach((doc) => {
@@ -97,8 +107,8 @@ export async function DELETE(request: NextRequest) {
 
     // 3. Delete bookings (if bookings collection exists)
     const bookingsQuery = query(
-      collection(db, 'bookings'),
-      where('userId', '==', user.uid)
+      collection(db, "bookings"),
+      where("userId", "==", user.uid),
     );
     const bookingsSnapshot = await getDocs(bookingsQuery);
     bookingsSnapshot.docs.forEach((doc) => {
@@ -120,7 +130,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Account deleted successfully',
+      message: "Account deleted successfully",
       data: {
         deletedAt: new Date().toISOString(),
       },

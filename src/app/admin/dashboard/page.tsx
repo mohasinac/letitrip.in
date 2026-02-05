@@ -1,19 +1,21 @@
 /**
  * Admin Dashboard Page
  * Path: /admin/dashboard
- * 
+ *
  * Overview statistics and quick actions for admins
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, Typography, Button } from '@/components';
-import { useAuth } from '@/hooks/useAuth';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import { apiClient } from '@/lib/api-client';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Card, Button } from "@/components";
+import { Heading } from "@/components/typography/Typography";
+import Text from "@/components/Text";
+import { useAuth } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { apiClient } from "@/lib/api-client";
 
 interface DashboardStats {
   users: {
@@ -41,13 +43,13 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'admin')) {
-      router.push('/');
+    if (!authLoading && (!user || user.role !== "admin")) {
+      router.push("/");
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user && user.role === 'admin') {
+    if (user && user.role === "admin") {
       loadStats();
     }
   }, [user]);
@@ -57,15 +59,15 @@ export default function AdminDashboardPage() {
       setLoading(true);
       setError(null);
 
-      const response = await apiClient.get('/api/admin/dashboard');
+      const response = await apiClient.get("/api/admin/dashboard");
 
       if (response.success) {
         setStats(response.data);
       } else {
-        throw new Error(response.error || 'Failed to load statistics');
+        throw new Error(response.error || "Failed to load statistics");
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load dashboard');
+      setError(err.message || "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
@@ -73,13 +75,17 @@ export default function AdminDashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}>
-        <Typography variant="primary">Loading dashboard...</Typography>
+      <div
+        className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}
+      >
+        <Heading level={2} variant="primary">
+          Loading dashboard...
+        </Heading>
       </div>
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== "admin") {
     return null;
   }
 
@@ -87,9 +93,9 @@ export default function AdminDashboardPage() {
     return (
       <div className={`min-h-screen ${themed.bgPrimary} p-8`}>
         <Card>
-          <Typography variant="primary" className="text-red-600">
+          <Heading level={3} variant="primary" className="text-red-600">
             {error}
-          </Typography>
+          </Heading>
           <Button onClick={loadStats} variant="primary" className="mt-4">
             Retry
           </Button>
@@ -104,12 +110,12 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <Typography variant="h1" className="mb-2">
+            <Heading level={1} variant="primary" className="mb-2">
               Admin Dashboard
-            </Typography>
-            <Typography variant="secondary" className={themed.textSecondary}>
+            </Heading>
+            <Text className={themed.textSecondary}>
               System overview and management
-            </Typography>
+            </Text>
           </div>
 
           <Link href="/admin/users">
@@ -122,51 +128,45 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Total Users */}
             <Card>
-              <Typography variant="secondary" className={themed.textSecondary}>
-                Total Users
-              </Typography>
-              <Typography variant="h1" className="mt-2">
+              <Text className={themed.textSecondary}>Total Users</Text>
+              <Heading level={1} variant="primary" className="mt-2">
                 {stats.users.total.toLocaleString()}
-              </Typography>
-              <Typography variant="secondary" className="mt-1 text-green-600">
+              </Heading>
+              <Text className="mt-1 text-green-600">
                 +{stats.users.newThisMonth} this month
-              </Typography>
+              </Text>
             </Card>
 
             {/* Active Users */}
             <Card>
-              <Typography variant="secondary" className={themed.textSecondary}>
-                Active Users
-              </Typography>
-              <Typography variant="h1" className="mt-2">
+              <Text className={themed.textSecondary}>Active Users</Text>
+              <Heading level={1} variant="primary" className="mt-2">
                 {stats.users.active.toLocaleString()}
-              </Typography>
-              <Typography variant="secondary" className="mt-1">
-                {((stats.users.active / stats.users.total) * 100).toFixed(1)}% of total
-              </Typography>
+              </Heading>
+              <Text className="mt-1">
+                {((stats.users.active / stats.users.total) * 100).toFixed(1)}%
+                of total
+              </Text>
             </Card>
 
             {/* Disabled Users */}
             <Card>
-              <Typography variant="secondary" className={themed.textSecondary}>
-                Disabled Users
-              </Typography>
-              <Typography variant="h1" className="mt-2">
+              <Text className={themed.textSecondary}>Disabled Users</Text>
+              <Heading level={1} variant="primary" className="mt-2">
                 {stats.users.disabled.toLocaleString()}
-              </Typography>
-              <Typography variant="secondary" className="mt-1 text-red-600">
-                {((stats.users.disabled / stats.users.total) * 100).toFixed(1)}% of total
-              </Typography>
+              </Heading>
+              <Text className="mt-1 text-red-600">
+                {((stats.users.disabled / stats.users.total) * 100).toFixed(1)}%
+                of total
+              </Text>
             </Card>
 
             {/* Admin Users */}
             <Card>
-              <Typography variant="secondary" className={themed.textSecondary}>
-                Administrators
-              </Typography>
-              <Typography variant="h1" className="mt-2">
+              <Text className={themed.textSecondary}>Administrators</Text>
+              <Heading level={1} variant="primary" className="mt-2">
                 {stats.users.admins.toLocaleString()}
-              </Typography>
+              </Heading>
             </Card>
           </div>
         )}
@@ -176,28 +176,28 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Trips */}
             <Card>
-              <Typography variant="h2" className="mb-4">
+              <Heading level={2} variant="primary" className="mb-4">
                 Trips
-              </Typography>
-              <Typography variant="primary" className="text-3xl">
+              </Heading>
+              <Heading level={3} variant="primary" className="text-3xl">
                 {stats.trips.total.toLocaleString()}
-              </Typography>
-              <Typography variant="secondary" className={`mt-2 ${themed.textSecondary}`}>
+              </Heading>
+              <Text className={`mt-2 ${themed.textSecondary}`}>
                 Total trips created
-              </Typography>
+              </Text>
             </Card>
 
             {/* Bookings */}
             <Card>
-              <Typography variant="h2" className="mb-4">
+              <Heading level={2} variant="primary" className="mb-4">
                 Bookings
-              </Typography>
-              <Typography variant="primary" className="text-3xl">
+              </Heading>
+              <Heading level={3} variant="primary" className="text-3xl">
                 {stats.bookings.total.toLocaleString()}
-              </Typography>
-              <Typography variant="secondary" className={`mt-2 ${themed.textSecondary}`}>
+              </Heading>
+              <Text className={`mt-2 ${themed.textSecondary}`}>
                 Total bookings made
-              </Typography>
+              </Text>
             </Card>
           </div>
         )}
@@ -205,9 +205,9 @@ export default function AdminDashboardPage() {
         {/* Quick Actions */}
         <div className="mt-8">
           <Card>
-            <Typography variant="h2" className="mb-4">
+            <Heading level={2} variant="primary" className="mb-4">
               Quick Actions
-            </Typography>
+            </Heading>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link href="/admin/users">
                 <Button variant="secondary" className="w-full">

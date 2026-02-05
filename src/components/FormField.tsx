@@ -1,18 +1,18 @@
 /**
  * Form Field Component
- * 
+ *
  * Reusable form field with label, input, error, and validation
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Input, Textarea } from '@/components';
+import React from "react";
+import { Input, Textarea } from "@/components";
 
 interface FormFieldProps {
   label: string;
   name: string;
-  type?: 'text' | 'email' | 'password' | 'tel' | 'number' | 'textarea';
+  type?: "text" | "email" | "password" | "tel" | "number" | "textarea";
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
@@ -29,7 +29,7 @@ interface FormFieldProps {
 export const FormField: React.FC<FormFieldProps> = ({
   label,
   name,
-  type = 'text',
+  type = "text",
   value,
   onChange,
   onBlur,
@@ -55,7 +55,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
 
-      {type === 'textarea' ? (
+      {type === "textarea" ? (
         <Textarea
           id={inputId}
           name={name}
@@ -65,7 +65,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           rows={rows}
-          className={showError ? 'border-red-500' : ''}
+          className={showError ? "border-red-500" : ""}
         />
       ) : (
         <Input
@@ -78,7 +78,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
-          className={showError ? 'border-red-500' : ''}
+          className={showError ? "border-red-500" : ""}
         />
       )}
 
@@ -94,3 +94,5 @@ export const FormField: React.FC<FormFieldProps> = ({
     </div>
   );
 };
+
+export default FormField;

@@ -1,13 +1,13 @@
 /**
  * Authorization Utilities
- * 
+ *
  * Helper functions for checking user permissions and roles.
  * Use these in API routes and middleware for access control.
- * 
+ *
  * @example
  * ```ts
  * import { requireAuth, requireRole, can } from '@/lib/security';
- * 
+ *
  * export async function GET(request: Request) {
  *   const user = await requireAuth(request);
  *   await requireRole(user, 'admin');
@@ -16,10 +16,10 @@
  * ```
  */
 
-import { auth } from '@/lib/auth';
-import { UserRole } from '@/types/auth';
-import { AuthenticationError, AuthorizationError } from '@/lib/errors';
-import { userRepository } from '@/repositories';
+import { auth } from "@/lib/auth";
+import { UserRole } from "@/types/auth";
+import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { userRepository } from "@/repositories";
 
 /**
  * Get current user session or throw error
@@ -28,7 +28,7 @@ export async function requireAuth() {
   const session = await auth();
 
   if (!session || !session.user) {
-    throw new AuthenticationError('Authentication required');
+    throw new AuthenticationError("Authentication required");
   }
 
   return session.user;
@@ -37,13 +37,19 @@ export async function requireAuth() {
 /**
  * Check if user has required role
  */
-export async function requireRole(userId: string, requiredRole: UserRole | UserRole[]) {
-  const user = await userRepository.findByIdOrFail(userId);
+export async function requireRole(
+  user: any,
+  requiredRole: UserRole | UserRole[],
+) {
+  if (!user) {
+    throw new AuthenticationError("Authentication required");
+  }
 
   const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+  const userRole = user.role || "user";
 
-  if (!roles.includes(user.role)) {
-    throw new AuthorizationError(`Requires one of: ${roles.join(', ')}`);
+  if (!roles.includes(userRole)) {
+    throw new AuthorizationError(`Requires one of: ${roles.join(", ")}`);
   }
 
   return user;
@@ -53,7 +59,7 @@ export async function requireRole(userId: string, requiredRole: UserRole | UserR
  * Check if user is admin
  */
 export async function requireAdmin(userId: string) {
-  return requireRole(userId, 'admin');
+  return requireRole(userId, "admin");
 }
 
 /**
@@ -61,18 +67,21 @@ export async function requireAdmin(userId: string) {
  */
 export function requireOwnership(userId: string, resourceOwnerId: string) {
   if (userId !== resourceOwnerId) {
-    throw new AuthorizationError('You do not own this resource');
+    throw new AuthorizationError("You do not own this resource");
   }
 }
 
 /**
  * Check if user can perform action (ownership OR admin)
  */
-export async function canModifyResource(userId: string, resourceOwnerId: string): Promise<boolean> {
+export async function canModifyResource(
+  userId: string,
+  resourceOwnerId: string,
+): Promise<boolean> {
   try {
     // Check if user is admin
     const user = await userRepository.findByIdOrFail(userId);
-    if (user.role === 'admin') {
+    if (user.role === "admin") {
       return true;
     }
 
@@ -86,11 +95,14 @@ export async function canModifyResource(userId: string, resourceOwnerId: string)
 /**
  * Require user to own resource OR be admin
  */
-export async function requireOwnershipOrAdmin(userId: string, resourceOwnerId: string) {
+export async function requireOwnershipOrAdmin(
+  userId: string,
+  resourceOwnerId: string,
+) {
   const allowed = await canModifyResource(userId, resourceOwnerId);
-  
+
   if (!allowed) {
-    throw new AuthorizationError('Insufficient permissions');
+    throw new AuthorizationError("Insufficient permissions");
   }
 }
 
@@ -101,7 +113,7 @@ export async function requireActiveAccount(userId: string) {
   const user = await userRepository.findByIdOrFail(userId);
 
   if (user.disabled) {
-    throw new AuthorizationError('Account is disabled');
+    throw new AuthorizationError("Account is disabled");
   }
 
   return user;
@@ -114,7 +126,7 @@ export async function requireVerifiedEmail(userId: string) {
   const user = await userRepository.findByIdOrFail(userId);
 
   if (!user.emailVerified) {
-    throw new AuthorizationError('Email verification required');
+    throw new AuthorizationError("Email verification required");
   }
 
   return user;
@@ -139,27 +151,32 @@ export async function checkPermissions(check: PermissionCheck) {
 
   // Check if account is active
   if (check.requireActive && user.disabled) {
-    throw new AuthorizationError('Account is disabled');
+    throw new AuthorizationError("Account is disabled");
   }
 
   // Check if email is verified
   if (check.requireVerified && !user.emailVerified) {
-    throw new AuthorizationError('Email verification required');
+    throw new AuthorizationError("Email verification required");
   }
 
   // Check role
   if (check.requiredRole) {
-    const roles = Array.isArray(check.requiredRole) ? check.requiredRole : [check.requiredRole];
+    const roles = Array.isArray(check.requiredRole)
+      ? check.requiredRole
+      : [check.requiredRole];
     if (!roles.includes(user.role)) {
-      throw new AuthorizationError(`Requires one of: ${roles.join(', ')}`);
+      throw new AuthorizationError(`Requires one of: ${roles.join(", ")}`);
     }
   }
 
   // Check ownership
   if (check.resourceOwnerId) {
-    const canModify = await canModifyResource(check.userId, check.resourceOwnerId);
+    const canModify = await canModifyResource(
+      check.userId,
+      check.resourceOwnerId,
+    );
     if (!canModify) {
-      throw new AuthorizationError('Insufficient permissions');
+      throw new AuthorizationError("Insufficient permissions");
     }
   }
 
@@ -178,7 +195,10 @@ const roleHierarchy: Record<UserRole, number> = {
 /**
  * Check if user role is higher than or equal to required role
  */
-export async function hasRoleLevel(userId: string, minRole: UserRole): Promise<boolean> {
+export async function hasRoleLevel(
+  userId: string,
+  minRole: UserRole,
+): Promise<boolean> {
   try {
     const user = await userRepository.findByIdOrFail(userId);
     return roleHierarchy[user.role] >= roleHierarchy[minRole];

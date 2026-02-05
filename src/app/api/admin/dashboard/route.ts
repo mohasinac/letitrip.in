@@ -1,26 +1,31 @@
 /**
  * API Route: Admin Dashboard Statistics
  * GET /api/admin/dashboard
- * 
+ *
  * Returns statistics for admin dashboard:
  * - Total users, active users, new users (last 30 days)
  * - Total trips, bookings
  * - Recent activity
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser } from '@/lib/firebase/auth-server';
-import { requireRole } from '@/lib/security/authorization';
-import { handleApiError } from '@/lib/errors';
-import { collection, getCountFromServer, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
-import { USER_COLLECTION } from '@/db/schema/users';
+import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
+import { requireRole } from "@/lib/security/authorization";
+import { handleApiError } from "@/lib/errors";
+import {
+  collection,
+  getCountFromServer,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
+import { USER_COLLECTION } from "@/db/schema/users";
 
 export async function GET(request: NextRequest) {
   try {
     // Authenticate and authorize
-    const user = await getAuthenticatedUser(request);
-    requireRole(user, ['admin', 'moderator']);
+    const user = await getAuthenticatedUser();
+    requireRole(user, ["admin", "moderator"]);
 
     // Get date 30 days ago
     const thirtyDaysAgo = new Date();
@@ -38,35 +43,39 @@ export async function GET(request: NextRequest) {
     ] = await Promise.all([
       // Total users
       getCountFromServer(collection(db, USER_COLLECTION)),
-      
+
       // Active users (not disabled)
       getCountFromServer(
-        query(collection(db, USER_COLLECTION), where('disabled', '==', false))
+        query(collection(db, USER_COLLECTION), where("disabled", "==", false)),
       ),
-      
+
       // New users (last 30 days)
       getCountFromServer(
         query(
           collection(db, USER_COLLECTION),
-          where('createdAt', '>=', thirtyDaysAgo)
-        )
+          where("createdAt", ">=", thirtyDaysAgo),
+        ),
       ),
-      
+
       // Disabled users
       getCountFromServer(
-        query(collection(db, USER_COLLECTION), where('disabled', '==', true))
+        query(collection(db, USER_COLLECTION), where("disabled", "==", true)),
       ),
-      
+
       // Admin users
       getCountFromServer(
-        query(collection(db, USER_COLLECTION), where('role', '==', 'admin'))
+        query(collection(db, USER_COLLECTION), where("role", "==", "admin")),
       ),
-      
+
       // Trips (if collection exists)
-      getCountFromServer(collection(db, 'trips')).catch(() => ({ data: () => ({ count: 0 }) })),
-      
+      getCountFromServer(collection(db, "trips")).catch(() => ({
+        data: () => ({ count: 0 }),
+      })),
+
       // Bookings (if collection exists)
-      getCountFromServer(collection(db, 'bookings')).catch(() => ({ data: () => ({ count: 0 }) })),
+      getCountFromServer(collection(db, "bookings")).catch(() => ({
+        data: () => ({ count: 0 }),
+      })),
     ]);
 
     return NextResponse.json({
