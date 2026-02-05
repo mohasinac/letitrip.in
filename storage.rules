@@ -1,0 +1,142 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ============================================
+    // Helper Functions
+    // ============================================
+    
+    /**
+     * Check if user is authenticated
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    /**
+     * Check if user owns the resource
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Validate image file
+     */
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+    
+    /**
+     * Validate document file
+     */
+    function isValidDocument() {
+      return (request.resource.contentType.matches('application/pdf') ||
+              request.resource.contentType.matches('application/msword') ||
+              request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document') ||
+              request.resource.contentType.matches('text/plain')) &&
+             request.resource.size < 50 * 1024 * 1024; // 50MB limit
+    }
+    
+    // ============================================
+    // Users Storage
+    // ============================================
+    
+    // User profile photos
+    match /users/{userId}/profile.jpg {
+      // Anyone can read profile photos
+      allow read: if true;
+      
+      // Only the user can upload/update their profile photo
+      allow write: if isOwner(userId) && isValidImage();
+      
+      // Only the user can delete their profile photo
+      allow delete: if isOwner(userId);
+    }
+    
+    // User documents folder
+    match /users/{userId}/documents/{document} {
+      // Only the user can read their documents
+      allow read: if isOwner(userId);
+      
+      // Only the user can upload/update their documents
+      allow write: if isOwner(userId) && isValidDocument();
+      
+      // Only the user can delete their documents
+      allow delete: if isOwner(userId);
+    }
+    
+    // User's uploaded images
+    match /users/{userId}/images/{image} {
+      // Only the user can read their images
+      allow read: if isOwner(userId);
+      
+      // Only the user can upload/update their images
+      allow write: if isOwner(userId) && isValidImage();
+      
+      // Only the user can delete their images
+      allow delete: if isOwner(userId);
+    }
+    
+    // ============================================
+    // Trips Storage
+    // ============================================
+    
+    // Trip cover images
+    match /trips/{tripId}/cover.jpg {
+      // Anyone can read trip cover images
+      allow read: if true;
+      
+      // Only authenticated users can upload trip covers
+      allow write: if isSignedIn() && isValidImage();
+      
+      // Only authenticated users can delete (will check ownership via Firestore)
+      allow delete: if isSignedIn();
+    }
+    
+    // Trip gallery images
+    match /trips/{tripId}/gallery/{image} {
+      // Anyone can read trip gallery images
+      allow read: if true;
+      
+      // Only authenticated users can upload trip images
+      allow write: if isSignedIn() && isValidImage();
+      
+      // Only authenticated users can delete
+      allow delete: if isSignedIn();
+    }
+    
+    // ============================================
+    // Bookings Storage
+    // ============================================
+    
+    // Booking documents (receipts, tickets, etc.)
+    match /bookings/{bookingId}/{document} {
+      // Only authenticated users can read (will verify ownership in app)
+      allow read: if isSignedIn();
+      
+      // Only authenticated users can upload booking documents
+      allow write: if isSignedIn() && (isValidDocument() || isValidImage());
+      
+      // Only authenticated users can delete
+      allow delete: if isSignedIn();
+    }
+    
+    // ============================================
+    // Public Storage
+    // ============================================
+    
+    // Public assets (logos, banners, etc.)
+    match /public/{allPaths=**} {
+      // Anyone can read public assets
+      allow read: if true;
+      
+      // Only admins can write (manage via Firebase Console)
+      allow write: if false;
+      
+      // Only admins can delete (manage via Firebase Console)
+      allow delete: if false;
+    }
+  }
+}

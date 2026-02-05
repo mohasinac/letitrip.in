@@ -22,6 +22,12 @@ Welcome to the comprehensive documentation for LetItRip - a modern travel compan
 - [Testing Guide](./guides/testing.md)
 - [Accessibility](./guides/accessibility.md)
 
+### Firebase Backend
+- **[Firebase Setup Guide](./guides/FIREBASE_SETUP.md)** ⭐ **COMPLETE GUIDE**
+- [Firebase Auth Integration](./guides/firebase-auth-migration.md)
+- [Firebase Auth Quick Setup](./guides/firebase-auth-setup-quick.md)
+- [Firebase Auth Complete](./guides/FIREBASE_AUTH_COMPLETE.md)
+
 ### API Reference
 - **[API Client Guide](./API_CLIENT.md)** - Centralized API client
 - [Gesture Hooks](./api/hooks.md)
@@ -46,16 +52,25 @@ npm run build
 
 ## 🎯 Key Features
 
+### Frontend
 - ✅ **40+ Production-Ready Components**
 - ✅ **Full TypeScript Support with Type Utilities**
-- ✅ **Repository Pattern for Data Access**
 - ✅ **Mobile-First Design with Gesture Support**
 - ✅ **Dark Mode Built-in**
 - ✅ **Comprehensive Test Coverage (301 tests)**
 - ✅ **Accessibility Compliant (ARIA)**
 - ✅ **Performance Optimized (Next.js 16 + Turbopack)**
-- ✅ **Security (Rate Limiting + Authorization)**
 - ✅ **100% Coding Standards Compliance**
+
+### Backend (Firebase)
+- ✅ **Firebase Authentication** (Google, Apple, Email - Zero OAuth setup!)
+- ✅ **Cloud Firestore** with optimized indices
+- ✅ **Realtime Database** for presence & chat
+- ✅ **Cloud Storage** with security rules
+- ✅ **Repository Pattern** for data access
+- ✅ **Comprehensive Security Rules** (Firestore, Storage, Database)
+- ✅ **Rate Limiting + Authorization**
+- ✅ **Server-Side Token Verification**
 
 ## 🎨 Component Categories
 
@@ -76,12 +91,21 @@ Heading, Text, Label, Caption
 
 ## 🔧 Tech Stack
 
+### Frontend
 - **Framework:** Next.js 16.1.1 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v3
 - **Build Tool:** Turbopack
 - **Testing:** Jest + React Testing Library
 - **State Management:** React Context API
+
+### Backend (Firebase)
+- **Authentication:** Firebase Auth (Google, Apple, Email/Password)
+- **Primary Database:** Cloud Firestore (NoSQL with indices)
+- **Realtime Database:** Firebase Realtime DB (presence, chat, notifications)
+- **Storage:** Firebase Cloud Storage (images, documents)
+- **Security:** Firebase Security Rules (Firestore, Storage, Database)
+- **Admin SDK:** Firebase Admin (server-side operations)
 
 ## 📱 Mobile Optimizations
 

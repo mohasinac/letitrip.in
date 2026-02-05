@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // Helper Functions
+    // ============================================
+    
+    /**
+     * Check if user is authenticated
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    /**
+     * Check if user owns the resource
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Check if user is admin
+     */
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    /**
+     * Check if user is moderator or admin
+     */
+    function isModerator() {
+      let role = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return isSignedIn() && (role == 'admin' || role == 'moderator');
+    }
+    
+    /**
+     * Validate required fields for user creation
+     */
+    function hasRequiredUserFields() {
+      return request.resource.data.keys().hasAll(['uid', 'email', 'role', 'emailVerified', 'disabled']);
+    }
+    
+    // ============================================
+    // Users Collection
+    // ============================================
+    
+    match /users/{userId} {
+      // Anyone authenticated can read user profiles
+      allow read: if isSignedIn();
+      
+      // Only the user themselves can create their profile
+      allow create: if isSignedIn() && 
+                      request.auth.uid == userId &&
+                      hasRequiredUserFields() &&
+                      request.resource.data.role == 'user'; // Default role
+      
+      // Users can update their own profile (limited fields)
+      // Admins can update any profile
+      allow update: if (isOwner(userId) && 
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'disabled', 'uid'])) ||
+                      isAdmin();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // Trips Collection
+    // ============================================
+    
+    match /trips/{tripId} {
+      // Trips are publicly readable
+      allow read: if true;
+      
+      // Only authenticated users can create trips
+      allow create: if isSignedIn() &&
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Users can update/delete their own trips
+      // Admins can update/delete any trip
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // ============================================
+    // Bookings Collection
+    // ============================================
+    
+    match /bookings/{bookingId} {
+      // Users can only read their own bookings
+      // Admins can read all bookings
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Only authenticated users can create bookings
+      allow create: if isSignedIn() &&
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Users can update their own bookings (limited fields)
+      // Admins can update any booking
+      allow update: if (isOwner(resource.data.userId) && 
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'tripId', 'price'])) ||
+                      isAdmin();
+      
+      // Only admins can delete bookings
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // Email Verification Tokens
+    // ============================================
+    
+    match /emailVerificationTokens/{tokenId} {
+      // Only the user themselves can read their tokens
+      allow read: if isOwner(resource.data.userId);
+      
+      // System creates tokens (via Cloud Functions or Admin SDK)
+      allow create: if false;
+      
+      // No updates allowed
+      allow update: if false;
+      
+      // Users can delete their own tokens
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // ============================================
+    // Password Reset Tokens
+    // ============================================
+    
+    match /passwordResetTokens/{tokenId} {
+      // Tokens are not directly readable
+      allow read: if false;
+      
+      // System creates tokens (via Cloud Functions or Admin SDK)
+      allow create: if false;
+      
+      // No updates allowed
+      allow update: if false;
+      
+      // System deletes tokens after use
+      allow delete: if false;
+    }
+  }
+}
