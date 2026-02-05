@@ -12,7 +12,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button, Select } from "@/components";
 import { Heading } from "@/components/typography/Typography";
@@ -23,7 +23,7 @@ import { THEME_CONSTANTS } from "@/constants/theme";
 import { apiClient } from "@/lib/api-client";
 import type { UserDocument } from "@/db/schema/users";
 
-export default function AdminUsersPage() {
+function AdminUsersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
@@ -185,6 +185,7 @@ export default function AdminUsersPage() {
                 >
                   <option value="">All Roles</option>
                   <option value="user">User</option>
+                  <option value="seller">Seller</option>
                   <option value="moderator">Moderator</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -279,6 +280,7 @@ export default function AdminUsersPage() {
                         className={`px-2 py-1 border rounded text-sm ${themed.bgSecondary} ${themed.textPrimary}`}
                       >
                         <option value="user">User</option>
+                        <option value="seller">Seller</option>
                         <option value="moderator">Moderator</option>
                         <option value="admin">Admin</option>
                       </select>
@@ -354,5 +356,15 @@ export default function AdminUsersPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense
+      fallback={<div className="p-6 text-center">Loading users...</div>}
+    >
+      <AdminUsersContent />
+    </Suspense>
   );
 }

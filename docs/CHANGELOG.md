@@ -9,33 +9,147 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+#### 🐛 Fixed Build Errors - Firebase Admin Initialization
+
+- **Issue**: Build failing with "The default Firebase app does not exist" error
+- **Root Cause**: `BaseRepository` was initializing `getFirestore()` at class definition time, causing Firebase Admin to initialize during build process
+- **Fix**:
+  - Changed `protected db = getFirestore()` to lazy initialization via getter
+  - Firebase Admin now only initializes when repository methods are actually called (runtime, not build time)
+- **Files Modified**:
+  - `src/repositories/base.repository.ts` - Lazy initialization of Firestore instance
+- **Impact**: Build now succeeds, Firebase Admin only initializes on server-side API calls
+
+#### 🐛 Fixed Admin Users Page - Suspense Boundary
+
+- **Issue**: Build failing with "useSearchParams() should be wrapped in a suspense boundary"
+- **Fix**:
+  - Wrapped admin users page with Suspense boundary
+  - Separated content into `AdminUsersContent` component
+  - Added loading fallback for better UX
+- **Files Modified**:
+  - `src/app/admin/users/page.tsx` - Added Suspense wrapper
+- **Impact**: Admin users page now renders correctly during build
+
+#### ✅ User Role Confirmed Admin in Firestore
+
+- User successfully updated role from "user" to "admin" in Firebase Console
+- Manual fix completed as documented in [docs/FIX_ADMIN_ROLE.md](docs/FIX_ADMIN_ROLE.md)
+- Future registrations with admin@letitrip.in will automatically get admin role via `getDefaultRole()`
+
+#### 🐛 Fixed Session Cookie Creation Error
+
+- **Issue**: `createSessionCookie is not defined` error on registration/login
+- **Root Cause**: Client-side code trying to call server-side function directly
+- **Fix**:
+  - Created `/api/auth/session` API route for session management
+  - Added `createSession()` helper function in auth-helpers.ts
+  - All auth methods now create session cookies via API call
+- **Files Created**:
+  - `src/app/api/auth/session/route.ts` - Session API endpoint (POST/DELETE)
+- **Files Modified**:
+  - `src/lib/firebase/auth-helpers.ts` - Added createSession() helper, replaced all createSessionCookie() calls
+- **Impact**: Email, Google, and Apple authentication now work correctly with proper session management
+
+#### 🐛 Fixed Build Errors and Syntax Issues
+
+- **Issues**: Multiple syntax errors, duplicate functions, missing imports
+- **Fixes**:
+  - Fixed corrupted `getDefaultRole()` function after merge
+  - Removed duplicate function declarations
+  - Fixed session API cookie handling
+  - Removed broken phone verification API routes (add-phone, verify-phone)
+  - Removed `updateSession()` leftover from NextAuth
+  - Fixed `useCurrentUser` hook to use `user` instead of `session`
+  - Fixed ProfilePhoneSection unsupported props
+  - Added missing `signInWithPhoneNumber` import
+- **Result**: Build now compiles successfully with 0 TypeScript errors
+
+#### 📝 Existing Users with admin@letitrip.in Need Manual Role Update
+
+- **Issue**: Users who registered with `admin@letitrip.in` BEFORE the role system was implemented have role="user" in database
+- **Solution**: Manual update required in Firebase Console
+- **Documentation**: Created [docs/FIX_ADMIN_ROLE.md](docs/FIX_ADMIN_ROLE.md) with step-by-step instructions
+- **Note**: Future registrations with admin@letitrip.in will automatically get admin role
+
+#### 🐛 Removed Phone UI from Login/Registration Pages
+
+- **Issue**: Phone fields were still visible on login and registration pages
+- **Fix**: Removed all phone-related UI elements from auth pages
+- **Changes**:
+  - Login: Changed "Email or Phone" field to "Email Address" only
+  - Register: Removed "Email/Phone" toggle, now only email registration
+  - Phone verification is now ONLY available in user profile settings
+- **Files Modified**:
+  - `src/app/auth/login/page.tsx` - Email-only login
+  - `src/app/auth/register/page.tsx` - Email-only registration
+- **Note**: Users can add/verify phone numbers after registration in Profile → Security tab
+
 ### Added
 
+#### 🎉 4-Role System with Permission Hierarchy
+
+- **Complete Role-Based Access Control (RBAC)**:
+  - 4 roles: `user`, `seller`, `moderator`, `admin`
+  - Admin: Full permissions (can change any role including making other admins)
+  - Moderator: Limited permissions (can only promote users to sellers)
+  - Seller: New role for users who want to sell services/products
+  - User: Default role for all new registrations
+
+- **Special Admin Email Logic**:
+  - `admin@letitrip.in` automatically gets `admin` role on registration
+  - Applies to all auth methods: Email/Password, Google OAuth, Apple OAuth
+  - Implemented via `getDefaultRole()` helper function
+
+- **Role Permission System**:
+  - `canChangeRole()` function for permission checking
+  - Role hierarchy: user (0) < seller (1) < moderator (2) < admin (3)
+  - Moderators cannot promote users to moderator or admin
+  - Users cannot modify their own role (prevents privilege escalation)
+
+- **Admin API Updates**:
+  - `PATCH /api/admin/users/[uid]` now supports moderator access
+  - Permission checks before role changes
+  - Returns 403 if moderator tries to assign unauthorized role
+
+- **Admin UI Updates**:
+  - Added "Seller" role to filter dropdown
+  - Added "Seller" role to user management table
+  - Role dropdown now shows all 4 roles: User, Seller, Moderator, Admin
+
+- **Files Created/Modified**:
+  - `src/types/auth.ts` - Added "seller" to UserRole type
+  - `src/lib/security/authorization.ts` - Added canChangeRole() and role hierarchy
+  - `src/lib/firebase/auth-helpers.ts` - Added getDefaultRole() for admin email check
+  - `src/app/api/admin/users/[uid]/route.ts` - Added moderator access + permission checks
+  - `src/app/admin/users/page.tsx` - Added seller role to UI
+
 #### 🎉 Complete Firebase Backend Integration
+
 - **Firebase Services Fully Configured**:
   - ✅ Firebase Authentication (Google, Apple, Email/Password)
   - ✅ Cloud Firestore (primary database with optimized indices)
   - ✅ Cloud Storage (images, documents with security rules)
   - ✅ Realtime Database (presence, chat, notifications)
-  
 - **Security Rules & Configuration**:
   - `firestore.rules` - Comprehensive Firestore security rules with helper functions
   - `firestore.indexes.json` - 11 optimized composite indices for all collections
   - `storage.rules` - Cloud Storage security rules (5MB images, 10MB docs)
   - `database.rules.json` - Realtime Database security rules for presence/chat
-  
 - **Firebase Documentation**:
   - `docs/guides/FIREBASE_SETUP.md` - Complete 10-minute setup guide (500+ lines)
   - `docs/guides/FIREBASE_SERVICES.md` - Comprehensive services reference
   - Updated all project documentation to reflect complete Firebase stack
   - Environment variable configuration guide (.env.example)
-  
 - **Firebase Client SDK Updates**:
   - `src/lib/firebase/config.ts` - Added Storage and Realtime DB exports
   - All Firebase services initialized and ready to use
   - Single configuration file for all services
 
 #### 🎉 Firebase Auth Migration Complete
+
 - **Complete Firebase Authentication System**
   - Replaced NextAuth with native Firebase Auth
   - Email/password authentication
@@ -44,7 +158,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic session management with secure cookies
   - Server-side token verification
   - Protected route middleware
-  
 - **New Files Created**:
   - `src/lib/firebase/auth-helpers.ts` - Client-side auth functions (256 lines)
   - `src/lib/firebase/auth-server.ts` - Server-side auth utilities
@@ -70,6 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ✅ Secure server-side token verification
 
 #### 🎉 Perfect Compliance (110/110 - 100%)
+
 - **Type Utilities** for all Firestore schemas
   - `UserCreateInput`, `UserUpdateInput`, `UserAdminUpdateInput` types
   - `EmailVerificationTokenCreateInput`, `PasswordResetTokenCreateInput` types
@@ -139,6 +253,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive migration guide in comments
 
 ### Changed
+
 - Renamed `src/middleware.ts` to `src/proxy.ts` (Next.js 16+ convention)
 - Configured Next.js to properly handle Node.js core modules with Turbopack
 - Removed webpack configuration in favor of native Turbopack support
@@ -150,6 +265,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Audit report updated** with Firebase compliance - score improved from 69/110 to 85/110
 
 ### Fixed
+
 - Fixed "Cannot find module 'node:process'" Turbopack error by configuring serverExternalPackages
 - Resolved Next.js 16 Turbopack compatibility with Node.js modules (crypto, bcryptjs, firebase-admin)
 - Fixed navigation routes consistency across all components
@@ -164,6 +280,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-02-05
 
 ### Added
+
 - Centralized API client system (`src/lib/api-client.ts`)
 - API endpoint constants (`src/constants/api-endpoints.ts`)
 - React hooks for data fetching (`useApiQuery`) and mutations (`useApiMutation`)
@@ -175,6 +292,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Request timeout handling (30s default)
 
 ### Changed
+
 - Refactored profile page to use new hooks and components
 - Refactored auth pages (forgot-password, reset-password, register, verify-email)
 - Updated all pages to use `FormField` component
@@ -184,21 +302,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorganized hook exports in `src/hooks/index.ts`
 
 ### Fixed
+
 - TypeScript errors in FormField component usage
 - Error message constant references
 - Password validation edge cases
 - Form field type validation
 
 ### Deprecated
+
 - `useApiRequest` hook (use `useApiQuery` or `useApiMutation`)
 - Direct usage of `auth-utils` functions (use `useAuth` hooks)
 
 ### Removed
+
 - Direct fetch calls from all pages
 - Duplicate form validation logic
 - Manual password strength calculations
 
 ### Security
+
 - Added centralized error handling with status codes
 - Implemented proper input validation on all forms
 - Added timeout protection for API calls
@@ -208,16 +330,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-01-15
 
 ### Added
+
 - Profile page with avatar upload
 - Email verification functionality
 - Password change feature
 - Display name and phone number updates
 
 ### Changed
+
 - Updated user profile schema
 - Enhanced authentication flow
 
 ### Fixed
+
 - Session persistence issues
 - Profile image upload errors
 
@@ -226,6 +351,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-01-01
 
 ### Added
+
 - Initial project setup with Next.js 16.1.1
 - Authentication system with NextAuth v5
 - User registration and login
@@ -237,6 +363,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation structure
 
 ### Security
+
 - CSRF protection
 - Secure password hashing
 - Environment variable management
@@ -257,13 +384,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - `Security` - Security improvements
 
 3. **Example Entry**:
+
 ```markdown
 ## [Unreleased]
 
 ### Added
+
 - New useDebounce hook for search optimization
 
 ### Fixed
+
 - Fixed theme switching bug in mobile view
 ```
 

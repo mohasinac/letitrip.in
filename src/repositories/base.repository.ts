@@ -1,9 +1,9 @@
 /**
  * Base Repository
- * 
+ *
  * Generic repository interface for Firestore operations.
  * All repositories should extend this base for consistent CRUD operations.
- * 
+ *
  * @example
  * ```ts
  * class UserRepository extends BaseRepository<UserDocument> {
@@ -14,15 +14,29 @@
  * ```
  */
 
-import { getFirestore, DocumentData } from 'firebase-admin/firestore';
-import { DatabaseError, NotFoundError } from '@/lib/errors';
+import {
+  getFirestore,
+  DocumentData,
+  Firestore,
+} from "firebase-admin/firestore";
+import { DatabaseError, NotFoundError } from "@/lib/errors";
 
 export abstract class BaseRepository<T extends DocumentData> {
-  protected db = getFirestore();
+  private _db: Firestore | null = null;
   protected collection: string;
 
   constructor(collectionName: string) {
     this.collection = collectionName;
+  }
+
+  /**
+   * Get Firestore instance (lazy initialization)
+   */
+  protected get db(): Firestore {
+    if (!this._db) {
+      this._db = getFirestore();
+    }
+    return this._db;
   }
 
   /**
@@ -38,7 +52,7 @@ export abstract class BaseRepository<T extends DocumentData> {
   async findById(id: string): Promise<T | null> {
     try {
       const doc = await this.getCollection().doc(id).get();
-      
+
       if (!doc.exists) {
         return null;
       }
@@ -54,7 +68,7 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async findByIdOrFail(id: string): Promise<T> {
     const doc = await this.findById(id);
-    
+
     if (!doc) {
       throw new NotFoundError(`Document not found: ${id}`);
     }
@@ -68,10 +82,12 @@ export abstract class BaseRepository<T extends DocumentData> {
   async findBy(field: string, value: any): Promise<T[]> {
     try {
       const snapshot = await this.getCollection()
-        .where(field, '==', value)
+        .where(field, "==", value)
         .get();
 
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as T));
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as unknown as T,
+      );
     } catch (error) {
       throw new DatabaseError(`Failed to find documents by ${field}`, error);
     }
@@ -83,7 +99,7 @@ export abstract class BaseRepository<T extends DocumentData> {
   async findOneBy(field: string, value: any): Promise<T | null> {
     try {
       const snapshot = await this.getCollection()
-        .where(field, '==', value)
+        .where(field, "==", value)
         .limit(1)
         .get();
 
@@ -110,9 +126,11 @@ export abstract class BaseRepository<T extends DocumentData> {
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as T));
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as unknown as T,
+      );
     } catch (error) {
-      throw new DatabaseError('Failed to fetch all documents', error);
+      throw new DatabaseError("Failed to fetch all documents", error);
     }
   }
 
@@ -130,7 +148,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       const doc = await docRef.get();
       return { id: doc.id, ...doc.data() } as unknown as T;
     } catch (error) {
-      throw new DatabaseError('Failed to create document', error);
+      throw new DatabaseError("Failed to create document", error);
     }
   }
 
@@ -139,16 +157,21 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async createWithId(id: string, data: Partial<T>): Promise<T> {
     try {
-      await this.getCollection().doc(id).set({
-        ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await this.getCollection()
+        .doc(id)
+        .set({
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
 
       const doc = await this.getCollection().doc(id).get();
       return { id: doc.id, ...doc.data() } as unknown as T;
     } catch (error) {
-      throw new DatabaseError(`Failed to create document with ID: ${id}`, error);
+      throw new DatabaseError(
+        `Failed to create document with ID: ${id}`,
+        error,
+      );
     }
   }
 
@@ -157,10 +180,12 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async update(id: string, data: Partial<T>): Promise<T> {
     try {
-      await this.getCollection().doc(id).update({
-        ...data,
-        updatedAt: new Date(),
-      });
+      await this.getCollection()
+        .doc(id)
+        .update({
+          ...data,
+          updatedAt: new Date(),
+        });
 
       return this.findByIdOrFail(id);
     } catch (error) {
@@ -187,7 +212,10 @@ export abstract class BaseRepository<T extends DocumentData> {
       const doc = await this.getCollection().doc(id).get();
       return doc.exists;
     } catch (error) {
-      throw new DatabaseError(`Failed to check document existence: ${id}`, error);
+      throw new DatabaseError(
+        `Failed to check document existence: ${id}`,
+        error,
+      );
     }
   }
 
@@ -199,9 +227,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       const snapshot = await this.getCollection().get();
       return snapshot.size;
     } catch (error) {
-      throw new DatabaseError('Failed to count documents', error);
+      throw new DatabaseError("Failed to count documents", error);
     }
   }
 }
-
-

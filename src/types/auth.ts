@@ -4,7 +4,7 @@
  * TypeScript interfaces for user data, roles, and authentication.
  */
 
-export type UserRole = "user" | "admin" | "moderator";
+export type UserRole = "user" | "seller" | "moderator" | "admin";
 
 export interface UserProfile {
   uid: string;

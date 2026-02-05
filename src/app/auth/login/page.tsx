@@ -1,11 +1,11 @@
 /**
  * Login Page
- * 
+ *
  * Comprehensive login interface with multiple authentication methods:
- * - Email/Phone + Password
+ * - Email + Password
  * - Google OAuth
  * - Apple OAuth
- * 
+ *
  * Features:
  * - Form validation
  * - Loading states
@@ -13,25 +13,32 @@
  * - Redirect to callback URL after login
  * - Remember me option
  * - Link to registration
+ *
+ * Note: Phone login removed - phone is only used in user profile for verification
  */
 
-'use client';
+"use client";
 
-import { useState, FormEvent, Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { Input, Button, Alert } from '@/components';
-import { signInWithEmail, signInWithGoogle, signInWithApple, onAuthStateChanged } from '@/lib/firebase/auth-helpers';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import { useState, FormEvent, Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Input, Button, Alert } from "@/components";
+import {
+  signInWithEmail,
+  signInWithGoogle,
+  signInWithApple,
+  onAuthStateChanged,
+} from "@/lib/firebase/auth-helpers";
+import { THEME_CONSTANTS } from "@/constants/theme";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const [formData, setFormData] = useState({
-    emailOrPhone: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
 
@@ -55,18 +62,10 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const isEmail = formData.emailOrPhone.includes('@');
-      
-      if (isEmail) {
-        // Email login with Firebase Auth
-        await signInWithEmail(formData.emailOrPhone, formData.password);
-      } else {
-        // Phone login not yet implemented in this flow
-        setError('Phone login coming soon. Please use email.');
-        setLoading(false);
-      }
+      // Email login with Firebase Auth
+      await signInWithEmail(formData.email, formData.password);
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || "Login failed. Please check your credentials.");
       setLoading(false);
     }
   };
@@ -78,7 +77,7 @@ function LoginForm() {
       await signInWithGoogle();
       // Auth state listener will handle redirect
     } catch (err: any) {
-      setError(err.message || 'Google login failed');
+      setError(err.message || "Google login failed");
       setLoading(false);
     }
   };
@@ -90,7 +89,7 @@ function LoginForm() {
       await signInWithApple();
       // Auth state listener will handle redirect
     } catch (err: any) {
-      setError(err.message || 'Apple login failed');
+      setError(err.message || "Apple login failed");
       setLoading(false);
     }
   };
@@ -109,7 +108,7 @@ function LoginForm() {
             Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Or{' '}
+            Or{" "}
             <Link
               href="/auth/register"
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
@@ -130,17 +129,17 @@ function LoginForm() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <Input
-              id="emailOrPhone"
-              name="emailOrPhone"
-              type="text"
-              label="Email or Phone Number"
-              value={formData.emailOrPhone}
+              id="email"
+              name="email"
+              type="email"
+              label="Email Address"
+              value={formData.email}
               onChange={(e) =>
-                setFormData({ ...formData, emailOrPhone: e.target.value })
+                setFormData({ ...formData, email: e.target.value })
               }
               required
               autoComplete="username"
-              placeholder="your@email.com or +1234567890"
+              placeholder="your@email.com"
             />
 
             <Input
@@ -195,7 +194,7 @@ function LoginForm() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
 
@@ -246,7 +245,11 @@ function LoginForm() {
             onClick={handleAppleLogin}
             disabled={loading}
           >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+            <svg
+              className="w-5 h-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
               <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
             </svg>
             Apple

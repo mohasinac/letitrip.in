@@ -60,7 +60,6 @@ function ProfilePageContent() {
         text: SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
       });
       await refetch();
-      await updateSession();
     },
     onError: (error) => {
       setMessage({

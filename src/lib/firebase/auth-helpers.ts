@@ -22,6 +22,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithPhoneNumber,
   GoogleAuthProvider,
   OAuthProvider,
   RecaptchaVerifier,
@@ -37,6 +38,38 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "./config";
 import { UserRole } from "@/types/auth";
 import { USER_COLLECTION } from "@/db/schema/users";
+
+/**
+ * Helper: Create session cookie via API call
+ * (Session cookies must be created server-side)
+ */
+async function createSession(idToken: string): Promise<void> {
+  try {
+    const response = await fetch("/api/auth/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create session");
+    }
+  } catch (error) {
+    console.error("Session creation error:", error);
+    // Don't throw - allow auth to succeed even if session creation fails
+  }
+}
+
+/**
+ * Get default role based on email
+ * Special case: admin@letitrip.in gets admin role
+ */
+function getDefaultRole(email: string | null): UserRole {
+  if (email === "admin@letitrip.in") {
+    return "admin";
+  }
+  return "user";
+}
 
 /**
  * Sign in with email and password
@@ -78,15 +111,15 @@ export async function registerWithEmail(
     // Update profile
     await updateProfile(user, { displayName });
 
-    // Create Firestore user document
-    await createUserProfile(user, { role: "user" });
+    // Create Firestore user document with appropriate role
+    await createUserProfile(user, { role: getDefaultRole(email) });
 
     // Send verification email
     await sendEmailVerification(user);
 
-    // Create session cookie
+    // Create session cookie via API
     const idToken = await user.getIdToken();
-    await createSessionCookie(idToken);
+    await createSession(idToken);
 
     return userCredential;
   } catch (error: any) {
@@ -108,12 +141,15 @@ export async function signInWithGoogle(): Promise<UserCredential> {
     provider.addScope("email");
 
     const userCredential = await signInWithPopup(auth, provider);
-    // Create session cookie
-    const idToken = await userCredential.user.getIdToken();
-    await createSessionCookie(idToken);
 
-    // Create/update user profile in Firestore
-    await createUserProfile(userCredential.user, { role: "user" });
+    // Create session cookie via API
+    const idToken = await userCredential.user.getIdToken();
+    await createSession(idToken);
+
+    // Create/update user profile in Firestore with appropriate role
+    await createUserProfile(userCredential.user, {
+      role: getDefaultRole(userCredential.user.email),
+    });
 
     return userCredential;
   } catch (error: any) {
@@ -145,12 +181,15 @@ export async function signInWithApple(): Promise<UserCredential> {
     provider.addScope("name");
 
     const userCredential = await signInWithPopup(auth, provider);
-    // Create session cookie
-    const idToken = await userCredential.user.getIdToken();
-    await createSessionCookie(idToken);
 
-    // Create/update user profile in Firestore
-    await createUserProfile(userCredential.user, { role: "user" });
+    // Create session cookie via API
+    const idToken = await userCredential.user.getIdToken();
+    await createSession(idToken);
+
+    // Create/update user profile in Firestore with appropriate role
+    await createUserProfile(userCredential.user, {
+      role: getDefaultRole(userCredential.user.email),
+    });
 
     return userCredential;
   } catch (error: any) {

@@ -162,7 +162,7 @@ export function ProfilePhoneSection({
               onChange={setPhoneNumber}
               disabled={isAddingPhone}
               placeholder="+919876543210"
-              helperText="Format: +[country code][number] (e.g., +919876543210 for India)"
+              helpText="Format: +[country code][number] (e.g., +919876543210 for India)"
             />
 
             <Button
@@ -184,15 +184,13 @@ export function ProfilePhoneSection({
         {showVerificationInput && (
           <div className="space-y-4 border-t pt-4">
             <FormField
-              label="Verification Code"
+              label="Verification Code (6 digits)"
               name="verificationCode"
               type="text"
               value={verificationCode}
               onChange={setVerificationCode}
               disabled={isVerifying}
               placeholder="Enter 6-digit code"
-              maxLength={6}
-              helperText="Enter the 6-digit code sent to your phone"
             />
 
             <div className="flex gap-3">

@@ -104,7 +104,7 @@ export function useCurrentUser() {
   return {
     user,
     isLoading: loading,
-    isAuthenticated: !!session,
-    role: (session?.user as any)?.role as UserRole | undefined,
+    isAuthenticated: !!user,
+    role: user?.role as UserRole | undefined,
   };
 }

@@ -1,28 +1,28 @@
 /**
  * Navigation Constants
- * 
+ *
  * Centralized navigation configuration for the application.
  * Contains all navigation items with their routes, labels, and SVG icons.
- * 
+ *
  * Exports:
  * - MAIN_NAV_ITEMS: Used in MainNavbar (desktop horizontal navigation)
  * - SIDEBAR_NAV_GROUPS: Used in Sidebar (grouped navigation items)
- * 
+ *
  * All icons are SVG path elements to be used within svg elements.
- * 
+ *
  * @constant
  * @example
  * ```tsx
  * import { MAIN_NAV_ITEMS } from '@/constants/navigation';
- * 
+ *
  * {MAIN_NAV_ITEMS.map(item => (
  *   <NavItem key={item.href} {...item} />
  * ))}
  * ```
  */
 
-import { ReactNode } from 'react';
-import { SITE_CONFIG } from './site';
+import { ReactNode } from "react";
+import { SITE_CONFIG } from "./site";
 
 /**
  * Navigation Item Interface
@@ -45,17 +45,17 @@ export interface NavGroup {
 
 /**
  * Main Navigation Items
- * 
+ *
  * Array of navigation items displayed in the main navbar (desktop/tablet).
  * Each item includes href, label, and SVG icon path.
- * 
+ *
  * Used by: MainNavbar component
  */
 // Main Navigation Items (for navbar)
 export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     href: SITE_CONFIG.nav.home,
-    label: 'Home',
+    label: "Home",
     icon: (
       <path
         strokeLinecap="round"
@@ -67,7 +67,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.destinations,
-    label: 'Destinations',
+    label: "Destinations",
     icon: (
       <path
         strokeLinecap="round"
@@ -79,7 +79,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.categories,
-    label: 'Categories',
+    label: "Categories",
     icon: (
       <path
         strokeLinecap="round"
@@ -91,7 +91,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.services,
-    label: 'Services',
+    label: "Services",
     icon: (
       <path
         strokeLinecap="round"
@@ -103,7 +103,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.contact,
-    label: 'Contact',
+    label: "Contact",
     icon: (
       <path
         strokeLinecap="round"
@@ -117,62 +117,21 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
 
 /**
  * Sidebar Navigation Groups
- * 
+ *
  * Grouped navigation items displayed in the sidebar menu.
  * Organized into three sections: Main, Account, and Support.
  * Each group has a title and array of navigation items with icons.
- * 
+ *
  * Used by: Sidebar component
  */
 // Sidebar Navigation Groups
 export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
   {
-    title: 'Main',
-    items: [
-      {
-        href: SITE_CONFIG.nav.home,
-        label: 'Dashboard',
-        icon: (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        ),
-      },
-      {
-        href: SITE_CONFIG.nav.destinations,
-        label: 'Destinations',
-        icon: (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-          />
-        ),
-      },
-      {
-        href: SITE_CONFIG.nav.services,
-        label: 'Services',
-        icon: (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-          />
-        ),
-      },
-    ],
-  },
-  {
-    title: 'Account',
+    title: "Account",
     items: [
       {
         href: SITE_CONFIG.account.profile,
-        label: 'Profile',
+        label: "Profile",
         icon: (
           <path
             strokeLinecap="round"
@@ -184,7 +143,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: SITE_CONFIG.account.orders,
-        label: 'Orders',
+        label: "Orders",
         icon: (
           <path
             strokeLinecap="round"
@@ -196,7 +155,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: SITE_CONFIG.account.wishlist,
-        label: 'Wishlist',
+        label: "Wishlist",
         icon: (
           <path
             strokeLinecap="round"
@@ -208,7 +167,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: SITE_CONFIG.account.settings,
-        label: 'Settings',
+        label: "Settings",
         icon: (
           <>
             <path
@@ -229,11 +188,11 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: 'Support',
+    title: "Support",
     items: [
       {
         href: SITE_CONFIG.nav.contact,
-        label: 'Contact Us',
+        label: "Contact Us",
         icon: (
           <path
             strokeLinecap="round"
@@ -244,8 +203,8 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: '/help',
-        label: 'Help Center',
+        href: "/help",
+        label: "Help Center",
         icon: (
           <path
             strokeLinecap="round"

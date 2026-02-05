@@ -24,9 +24,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    registrationType: "email" as "email" | "phone",
     email: "",
-    phoneNumber: "",
     password: "",
     confirmPassword: "",
     displayName: "",
@@ -84,15 +82,7 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.registrationType === "email" && !formData.email) {
-      setMessage({
-        type: "error",
-        text: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD,
-      });
-      return;
-    }
-
-    if (formData.registrationType === "phone" && !formData.phoneNumber) {
+    if (!formData.email) {
       setMessage({
         type: "error",
         text: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD,
@@ -103,20 +93,12 @@ export default function RegisterPage() {
     // Register user with Firebase Auth
     setIsLoading(true);
     try {
-      if (formData.registrationType === "email") {
-        await registerWithEmail(
-          formData.email,
-          formData.password,
-          formData.displayName || "User",
-        );
-        // Auth state listener will handle redirect
-      } else {
-        setMessage({
-          type: "error",
-          text: "Phone registration coming soon. Please use email.",
-        });
-        setIsLoading(false);
-      }
+      await registerWithEmail(
+        formData.email,
+        formData.password,
+        formData.displayName || "User",
+      );
+      // Auth state listener will handle redirect
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -192,36 +174,6 @@ export default function RegisterPage() {
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
-            {/* Registration Type Toggle */}
-            <div className="flex gap-2 p-1 bg-gray-200 dark:bg-gray-800 rounded-lg">
-              <button
-                type="button"
-                onClick={() =>
-                  setFormData({ ...formData, registrationType: "email" })
-                }
-                className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-                  formData.registrationType === "email"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow"
-                    : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                Email
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setFormData({ ...formData, registrationType: "phone" })
-                }
-                className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-                  formData.registrationType === "phone"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow"
-                    : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                Phone
-              </button>
-            </div>
-
             {/* Display Name */}
             <FormField
               label="Display Name (Optional)"
@@ -237,36 +189,19 @@ export default function RegisterPage() {
               placeholder="John Doe"
             />
 
-            {/* Email or Phone */}
-            {formData.registrationType === "email" ? (
-              <FormField
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={(value) => setFormData({ ...formData, email: value })}
-                onBlur={handleBlur("email")}
-                touched={touched.email}
-                disabled={isLoading}
-                placeholder="your@email.com"
-                required
-              />
-            ) : (
-              <FormField
-                label="Phone Number"
-                name="phoneNumber"
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(value) =>
-                  setFormData({ ...formData, phoneNumber: value })
-                }
-                onBlur={handleBlur("phoneNumber")}
-                touched={touched.phoneNumber}
-                disabled={isLoading}
-                placeholder="+1234567890"
-                required
-              />
-            )}
+            {/* Email Address */}
+            <FormField
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={(value) => setFormData({ ...formData, email: value })}
+              onBlur={handleBlur("email")}
+              touched={touched.email}
+              disabled={isLoading}
+              placeholder="your@email.com"
+              required
+            />
 
             {/* Password */}
             <FormField
