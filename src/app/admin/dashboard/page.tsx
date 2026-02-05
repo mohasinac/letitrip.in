@@ -7,71 +7,48 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, Button } from "@/components";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
-import { useAuth } from "@/hooks";
+import { useAuth, useAdminStats } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants/theme";
-import { apiClient } from "@/lib/api-client";
 
-interface DashboardStats {
-  users: {
-    total: number;
-    active: number;
-    newThisMonth: number;
-    disabled: number;
-    admins: number;
-  };
-  trips: {
-    total: number;
-  };
-  bookings: {
-    total: number;
-  };
+interface StatsCardProps {
+  label: string;
+  value: number;
+  subtitle?: string;
+  subtitleColor?: string;
+}
+
+function StatsCard({ label, value, subtitle, subtitleColor }: StatsCardProps) {
+  const { themed } = THEME_CONSTANTS;
+  return (
+    <Card>
+      <Text className={themed.textSecondary}>{label}</Text>
+      <Heading level={1} variant="primary" className="mt-2">
+        {value.toLocaleString()}
+      </Heading>
+      {subtitle && (
+        <Text className={`mt-1 ${subtitleColor || ""}`}>{subtitle}</Text>
+      )}
+    </Card>
+  );
 }
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { stats, loading, error, refresh } = useAdminStats();
   const { themed } = THEME_CONSTANTS;
-
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== "admin")) {
       router.push("/");
     }
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user && user.role === "admin") {
-      loadStats();
-    }
-  }, [user]);
-
-  const loadStats = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await apiClient.get("/api/admin/dashboard");
-
-      if (response.success) {
-        setStats(response.data);
-      } else {
-        throw new Error(response.error || "Failed to load statistics");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to load dashboard");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (authLoading || loading) {
     return (
@@ -96,7 +73,7 @@ export default function AdminDashboardPage() {
           <Heading level={3} variant="primary" className="text-red-600">
             {error}
           </Heading>
-          <Button onClick={loadStats} variant="primary" className="mt-4">
+          <Button onClick={refresh} variant="primary" className="mt-4">
             Retry
           </Button>
         </Card>
@@ -127,47 +104,24 @@ export default function AdminDashboardPage() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Total Users */}
-            <Card>
-              <Text className={themed.textSecondary}>Total Users</Text>
-              <Heading level={1} variant="primary" className="mt-2">
-                {stats.users.total.toLocaleString()}
-              </Heading>
-              <Text className="mt-1 text-green-600">
-                +{stats.users.newThisMonth} this month
-              </Text>
-            </Card>
-
-            {/* Active Users */}
-            <Card>
-              <Text className={themed.textSecondary}>Active Users</Text>
-              <Heading level={1} variant="primary" className="mt-2">
-                {stats.users.active.toLocaleString()}
-              </Heading>
-              <Text className="mt-1">
-                {((stats.users.active / stats.users.total) * 100).toFixed(1)}%
-                of total
-              </Text>
-            </Card>
-
-            {/* Disabled Users */}
-            <Card>
-              <Text className={themed.textSecondary}>Disabled Users</Text>
-              <Heading level={1} variant="primary" className="mt-2">
-                {stats.users.disabled.toLocaleString()}
-              </Heading>
-              <Text className="mt-1 text-red-600">
-                {((stats.users.disabled / stats.users.total) * 100).toFixed(1)}%
-                of total
-              </Text>
-            </Card>
-
-            {/* Admin Users */}
-            <Card>
-              <Text className={themed.textSecondary}>Administrators</Text>
-              <Heading level={1} variant="primary" className="mt-2">
-                {stats.users.admins.toLocaleString()}
-              </Heading>
-            </Card>
+            <StatsCard
+              label="Total Users"
+              value={stats.users.total}
+              subtitle={`+${stats.users.new} new`}
+              subtitleColor="text-green-600"
+            />
+            <StatsCard
+              label="Active Users"
+              value={stats.users.active}
+              subtitle={`${((stats.users.active / stats.users.total) * 100).toFixed(1)}% of total`}
+            />
+            <StatsCard
+              label="Disabled Users"
+              value={stats.users.disabled}
+              subtitle={`${((stats.users.disabled / stats.users.total) * 100).toFixed(1)}% of total`}
+              subtitleColor="text-red-600"
+            />
+            <StatsCard label="Administrators" value={stats.users.total} />
           </div>
         )}
 
@@ -219,11 +173,7 @@ export default function AdminDashboardPage() {
                   Review Disabled Accounts
                 </Button>
               </Link>
-              <Button
-                variant="secondary"
-                onClick={loadStats}
-                className="w-full"
-              >
+              <Button variant="secondary" onClick={refresh} className="w-full">
                 Refresh Statistics
               </Button>
             </div>
