@@ -1,21 +1,36 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Input, Heading, Text, THEME_CONSTANTS } from '@/index';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Input,
+  Heading,
+  Text,
+  THEME_CONSTANTS,
+} from "@/index";
+import { UI_PLACEHOLDERS } from "@/constants";
 
 export default function Page() {
   const { themed } = THEME_CONSTANTS;
-  
+
   return (
     <div className={THEME_CONSTANTS.spacing.section}>
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-700 -m-6 mb-8 p-8 md:p-12 rounded-2xl text-white shadow-lg">
         <div className={THEME_CONSTANTS.layout.maxContentWidth}>
-          <h1 className={`${THEME_CONSTANTS.typography.h1} mb-4 animate-fade-in`}>
+          <h1
+            className={`${THEME_CONSTANTS.typography.h1} mb-4 animate-fade-in`}
+          >
             Welcome to Your App
           </h1>
           <p className="text-xl text-white/90 mb-6 animate-fade-in">
             Build amazing experiences with our modern component library and
             responsive layout system.
           </p>
-          <div className={`flex flex-wrap ${THEME_CONSTANTS.spacing.inline} animate-fade-in`}>
+          <div
+            className={`flex flex-wrap ${THEME_CONSTANTS.spacing.inline} animate-fade-in`}
+          >
             <Button size="lg">
               Get Started
               <svg
@@ -32,7 +47,11 @@ export default function Page() {
                 />
               </svg>
             </Button>
-            <Button variant="outline" size="lg" className="bg-white/10 border-white text-white hover:bg-white/20">
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-white/10 border-white text-white hover:bg-white/20"
+            >
               Learn More
             </Button>
           </div>
@@ -107,9 +126,7 @@ export default function Page() {
             <Card key={i} hover>
               <CardHeader>
                 <div className="text-3xl mb-2">{feature.icon}</div>
-                <Heading level={4}>
-                  {feature.title}
-                </Heading>
+                <Heading level={4}>{feature.title}</Heading>
               </CardHeader>
               <CardBody>
                 <Text size="sm" variant="secondary">
@@ -132,10 +149,12 @@ export default function Page() {
               <Text variant="secondary" className="mb-6">
                 Subscribe to our newsletter for the latest updates and features.
               </Text>
-              <form className={`flex flex-col sm:flex-row ${THEME_CONSTANTS.spacing.inline} max-w-md mx-auto`}>
+              <form
+                className={`flex flex-col sm:flex-row ${THEME_CONSTANTS.spacing.inline} max-w-md mx-auto`}
+              >
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={UI_PLACEHOLDERS.EMAIL}
                   className="flex-1"
                   icon={
                     <svg
@@ -165,9 +184,7 @@ export default function Page() {
       {/* Recent Activity */}
       <section>
         <div className="flex items-center justify-between mb-6">
-          <Heading level={2}>
-            Recent Activity
-          </Heading>
+          <Heading level={2}>Recent Activity</Heading>
           <Button variant="ghost" size="sm">
             View All
             <svg
@@ -204,8 +221,13 @@ export default function Page() {
                 time: "6 hours ago",
               },
             ].map((activity, i) => (
-              <div key={i} className={`py-4 first:pt-0 last:pb-0 flex items-center gap-4`}>
-                <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 flex items-center justify-center text-white font-semibold`}>
+              <div
+                key={i}
+                className={`py-4 first:pt-0 last:pb-0 flex items-center gap-4`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 flex items-center justify-center text-white font-semibold`}
+                >
                   {activity.user.charAt(0)}
                 </div>
                 <div className="flex-1">
@@ -213,7 +235,9 @@ export default function Page() {
                     <span className="font-semibold">{activity.user}</span>{" "}
                     {activity.action}
                   </Text>
-                  <Text size="xs" variant="muted">{activity.time}</Text>
+                  <Text size="xs" variant="muted">
+                    {activity.time}
+                  </Text>
                 </div>
               </div>
             ))}

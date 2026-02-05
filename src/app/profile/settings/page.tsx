@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import Alert from "@/components/feedback/Alert";
 import { Heading } from "@/components/typography/Typography";
 import { useAuth, useMessage } from "@/hooks";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { ProfileGeneralSection } from "@/components/profile/ProfileGeneralSection";
 import { ProfileSecuritySection } from "@/components/profile/ProfileSecuritySection";
 import { ProfilePhoneSection } from "@/components/profile/ProfilePhoneSection";
@@ -47,7 +47,7 @@ export default function ProfileSettingsPage() {
         className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}
       >
         <Heading level={2} variant="primary">
-          Loading...
+          {UI_LABELS.LOADING.DEFAULT}
         </Heading>
       </div>
     );

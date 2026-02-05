@@ -14,7 +14,7 @@ import { Heading, Text } from "@/components/typography";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useChangePassword, useResendVerification } from "@/hooks/useAuth";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, UI_PLACEHOLDERS } from "@/constants";
 
 function ProfilePageContent() {
   // Fetch profile data
@@ -221,7 +221,7 @@ function ProfilePageContent() {
               onBlur={handleBlur("displayName")}
               touched={touched.displayName}
               disabled={isSaving}
-              placeholder="Enter your name"
+              placeholder={UI_PLACEHOLDERS.NAME}
             />
 
             <FormField
@@ -299,7 +299,7 @@ function ProfilePageContent() {
                 onBlur={handlePasswordBlur("currentPassword")}
                 touched={passwordTouched.currentPassword}
                 disabled={isChangingPassword}
-                placeholder="Enter current password"
+                placeholder={UI_PLACEHOLDERS.PASSWORD}
                 required
               />
 
@@ -314,7 +314,7 @@ function ProfilePageContent() {
                 onBlur={handlePasswordBlur("newPassword")}
                 touched={passwordTouched.newPassword}
                 disabled={isChangingPassword}
-                placeholder="Enter new password"
+                placeholder={UI_PLACEHOLDERS.PASSWORD}
                 required
               />
 

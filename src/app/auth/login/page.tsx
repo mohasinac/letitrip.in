@@ -23,6 +23,7 @@ import { useState, FormEvent, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
+import { UI_LABELS } from "@/constants";
 import {
   signInWithEmail,
   signInWithGoogle,
@@ -262,7 +263,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>{UI_LABELS.LOADING.DEFAULT}</div>}>
       <LoginForm />
     </Suspense>
   );
