@@ -155,7 +155,26 @@ export const THEME_CONSTANTS = {
     section: "space-y-8",
     formGroup: "space-y-6",
     stack: "space-y-4",
+    stackSmall: "space-y-2",
     inline: "gap-3",
+    inlineSmall: "gap-2",
+    inlineLarge: "gap-4",
+    // Padding presets
+    padding: {
+      xs: "p-2",
+      sm: "p-3",
+      md: "p-4",
+      lg: "p-6",
+      xl: "p-8",
+    },
+    // Margin presets
+    margin: {
+      xs: "m-2",
+      sm: "m-3",
+      md: "m-4",
+      lg: "m-6",
+      xl: "m-8",
+    },
   },
 
   /**
@@ -317,6 +336,42 @@ export const THEME_CONSTANTS = {
     safeAreaBottom: "pb-[env(safe-area-inset-bottom)]",
     gradientText:
       "bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent",
+  },
+
+  /**
+   * Border radius presets
+   * Standard border radius values for consistent rounding
+   */
+  borderRadius: {
+    none: "rounded-none",
+    sm: "rounded-sm",
+    base: "rounded",
+    md: "rounded-md",
+    lg: "rounded-lg",
+    xl: "rounded-xl",
+    "2xl": "rounded-2xl",
+    "3xl": "rounded-3xl",
+    full: "rounded-full",
+  },
+
+  /**
+   * Container and section widths
+   * Standard width constraints for content areas
+   */
+  container: {
+    xs: "max-w-xs",
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
+    "2xl": "max-w-2xl",
+    "3xl": "max-w-3xl",
+    "4xl": "max-w-4xl",
+    "5xl": "max-w-5xl",
+    "6xl": "max-w-6xl",
+    "7xl": "max-w-7xl",
+    full: "max-w-full",
+    screen: "max-w-screen-2xl",
   },
 
   /**
