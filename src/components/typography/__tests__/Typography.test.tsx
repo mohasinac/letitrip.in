@@ -60,8 +60,8 @@ describe('Typography Components', () => {
     });
 
     it('renders different text variants', () => {
-      render(<Text variant="body1">Body 1</Text>);
-      expect(screen.getByText('Body 1')).toBeInTheDocument();
+      render(<Text variant="primary">Primary Text</Text>);
+      expect(screen.getByText('Primary Text')).toBeInTheDocument();
     });
 
     it('accepts custom className', () => {

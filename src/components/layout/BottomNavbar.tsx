@@ -82,7 +82,7 @@ const bottomNavLinks: BottomNavLink[] = [
 ];
 
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
-  const { layout, zIndex, colors } = THEME_CONSTANTS;
+  const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
   const pathname = usePathname();
   
   return (
@@ -102,6 +102,31 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             />
           </li>
         ))}
+        
+        {/* Search Button */}
+        <li className="flex-1">
+          <button
+            onClick={onSearchToggle}
+            className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary} hover:${themed.textPrimary}`}
+            aria-label="Search"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <span className={typography.xs}>Search</span>
+          </button>
+        </li>
       </ul>
     </nav>
   );
