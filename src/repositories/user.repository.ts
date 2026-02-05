@@ -1,9 +1,9 @@
 /**
  * User Repository
- * 
+ *
  * Repository for user-related database operations.
  * Provides type-safe methods for user CRUD operations.
- * 
+ *
  * @example
  * ```ts
  * const userRepo = new UserRepository();
@@ -11,10 +11,10 @@
  * ```
  */
 
-import { BaseRepository } from './base.repository';
-import { UserDocument, USER_COLLECTION } from '@/db/schema/users';
-import { UserRole } from '@/types/auth';
-import { DatabaseError } from '@/lib/errors';
+import { BaseRepository } from "./base.repository";
+import { UserDocument, USER_COLLECTION } from "@/db/schema/users";
+import { UserRole } from "@/types/auth";
+import { DatabaseError } from "@/lib/errors";
 
 export class UserRepository extends BaseRepository<UserDocument> {
   constructor() {
@@ -25,21 +25,14 @@ export class UserRepository extends BaseRepository<UserDocument> {
    * Find user by email
    */
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.findOneBy('email', email);
-  }
-
-  /**
-   * Find user by phone number
-   */
-  async findByPhone(phoneNumber: string): Promise<UserDocument | null> {
-    return this.findOneBy('phoneNumber', phoneNumber);
+    return this.findOneBy("email", email);
   }
 
   /**
    * Find users by role
    */
   async findByRole(role: UserRole): Promise<UserDocument[]> {
-    return this.findBy('role', role);
+    return this.findBy("role", role);
   }
 
   /**
@@ -47,16 +40,18 @@ export class UserRepository extends BaseRepository<UserDocument> {
    */
   async findVerified(limit?: number): Promise<UserDocument[]> {
     try {
-      let query = this.getCollection().where('emailVerified', '==', true);
+      let query = this.getCollection().where("emailVerified", "==", true);
 
       if (limit) {
         query = query.limit(limit);
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserDocument));
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as UserDocument,
+      );
     } catch (error) {
-      throw new DatabaseError('Failed to fetch verified users', error);
+      throw new DatabaseError("Failed to fetch verified users", error);
     }
   }
 
@@ -65,16 +60,18 @@ export class UserRepository extends BaseRepository<UserDocument> {
    */
   async findActive(limit?: number): Promise<UserDocument[]> {
     try {
-      let query = this.getCollection().where('disabled', '==', false);
+      let query = this.getCollection().where("disabled", "==", false);
 
       if (limit) {
         query = query.limit(limit);
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserDocument));
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as UserDocument,
+      );
     } catch (error) {
-      throw new DatabaseError('Failed to fetch active users', error);
+      throw new DatabaseError("Failed to fetch active users", error);
     }
   }
 
@@ -109,7 +106,10 @@ export class UserRepository extends BaseRepository<UserDocument> {
   /**
    * Update user profile (displayName, photoURL)
    */
-  async updateProfile(uid: string, data: { displayName?: string; photoURL?: string }): Promise<UserDocument> {
+  async updateProfile(
+    uid: string,
+    data: { displayName?: string; photoURL?: string },
+  ): Promise<UserDocument> {
     return this.update(uid, data as Partial<UserDocument>);
   }
 
@@ -122,23 +122,15 @@ export class UserRepository extends BaseRepository<UserDocument> {
   }
 
   /**
-   * Check if phone is already registered
-   */
-  async isPhoneRegistered(phoneNumber: string): Promise<boolean> {
-    const user = await this.findByPhone(phoneNumber);
-    return user !== null;
-  }
-
-  /**
    * Get user count by role
    */
   async countByRole(role: UserRole): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where('role', '==', role)
+        .where("role", "==", role)
         .count()
         .get();
-      
+
       return snapshot.data().count;
     } catch (error) {
       throw new DatabaseError(`Failed to count users by role: ${role}`, error);
@@ -148,4 +140,3 @@ export class UserRepository extends BaseRepository<UserDocument> {
 
 // Export singleton instance
 export const userRepository = new UserRepository();
-

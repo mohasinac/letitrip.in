@@ -1,6 +1,5 @@
-import './globals.css';
-import { LayoutClient, ThemeProvider, ToastProvider } from '@/index';
-import { AuthProvider } from '@/components/providers/AuthProvider';
+import "./globals.css";
+import { LayoutClient, ThemeProvider, ToastProvider } from "@/index";
 
 export default function RootLayout({
   children,
@@ -24,13 +23,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AuthProvider>
-          <ThemeProvider>
-            <ToastProvider position="top-right">
-              <LayoutClient>{children}</LayoutClient>
-            </ToastProvider>
-          </ThemeProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <ToastProvider position="top-right">
+            <LayoutClient>{children}</LayoutClient>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

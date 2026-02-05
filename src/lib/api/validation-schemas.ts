@@ -17,17 +17,6 @@ export const passwordSchema = z
   .regex(/[0-9]/, "Password must contain at least one number");
 
 /**
- * Phone number validation (E.164 format)
- */
-export const phoneSchema = z
-  .string()
-  .min(10, "Phone number must be at least 10 digits")
-  .regex(
-    /^\+[1-9]\d{9,14}$/,
-    "Phone number must include country code (e.g., +1234567890)",
-  );
-
-/**
  * Email validation
  */
 export const emailSchema = z
@@ -48,21 +37,6 @@ export const updatePasswordSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
-/**
- * Add phone number schema
- */
-export const addPhoneSchema = z.object({
-  phoneNumber: phoneSchema,
-});
-
-/**
- * Verify phone schema
- */
-export const verifyPhoneSchema = z.object({
-  verificationId: z.string().min(1, "Verification ID required"),
-  code: z.string().length(6, "Verification code must be 6 digits"),
-});
 
 /**
  * Delete account confirmation schema

@@ -1,12 +1,16 @@
 /**
  * Validation Schemas
- * 
+ *
  * Centralized validation using Zod
  */
 
-import { z } from 'zod';
-import { NextRequest } from 'next/server';
-import { ERROR_MESSAGES, PASSWORD_CONFIG, VALIDATION_CONFIG } from '@/constants';
+import { z } from "zod";
+import { NextRequest } from "next/server";
+import {
+  ERROR_MESSAGES,
+  PASSWORD_CONFIG,
+  VALIDATION_CONFIG,
+} from "@/constants";
 
 /**
  * Password validation rules
@@ -21,14 +25,7 @@ export const passwordSchema = z
 /**
  * Email validation
  */
-export const emailSchema = z.string().email('Invalid email address');
-
-/**
- * Phone number validation (international format)
- */
-export const phoneSchema = z
-  .string()
-  .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number');
+export const emailSchema = z.string().email("Invalid email address");
 
 /**
  * Profile update schema
@@ -36,18 +33,17 @@ export const phoneSchema = z
 export const updateProfileSchema = z.object({
   displayName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters')
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters")
     .optional(),
-  phoneNumber: phoneSchema.optional(),
-  photoURL: z.string().url('Invalid photo URL').optional(),
+  photoURL: z.string().url("Invalid photo URL").optional(),
 });
 
 /**
  * Change password schema
  */
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
+  currentPassword: z.string().min(1, "Current password is required"),
   newPassword: passwordSchema,
 });
 
@@ -62,7 +58,7 @@ export const requestResetSchema = z.object({
  * Complete password reset schema
  */
 export const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Token is required'),
+  token: z.string().min(1, "Token is required"),
   newPassword: passwordSchema,
 });
 
@@ -70,7 +66,7 @@ export const resetPasswordSchema = z.object({
  * Verify email schema
  */
 export const verifyEmailSchema = z.object({
-  token: z.string().min(1, 'Token is required'),
+  token: z.string().min(1, "Token is required"),
 });
 
 /**
@@ -78,8 +74,10 @@ export const verifyEmailSchema = z.object({
  */
 export async function validateRequest<T>(
   request: Request,
-  schema: z.ZodSchema<T>
-): Promise<{ success: true; data: T } | { success: false; error: string; details: any }> {
+  schema: z.ZodSchema<T>,
+): Promise<
+  { success: true; data: T } | { success: false; error: string; details: any }
+> {
   try {
     const body = await request.json();
     const result = schema.safeParse(body);
@@ -87,7 +85,7 @@ export async function validateRequest<T>(
     if (!result.success) {
       return {
         success: false,
-        error: 'Validation failed',
+        error: "Validation failed",
         details: result.error.issues,
       };
     }
@@ -96,8 +94,8 @@ export async function validateRequest<T>(
   } catch (error) {
     return {
       success: false,
-      error: 'Invalid request body',
-      details: error instanceof Error ? error.message : 'Unknown error',
+      error: "Invalid request body",
+      details: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

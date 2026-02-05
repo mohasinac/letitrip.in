@@ -1,7 +1,9 @@
+"use client";
+
 /**
  * useApiQuery Hook
  * React hook for fetching data with automatic loading, error states, and refetching
- * 
+ *
  * Usage:
  * ```tsx
  * const { data, isLoading, error, refetch } = useApiQuery({
@@ -9,15 +11,15 @@
  *   queryFn: () => apiClient.get(API_ENDPOINTS.USER.PROFILE),
  *   enabled: true,
  * });
- * 
+ *
  * if (isLoading) return <Spinner />;
  * if (error) return <Alert>{error.message}</Alert>;
  * return <div>{data.name}</div>;
  * ```
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { ApiClientError } from '@/lib/api-client';
+import { useState, useEffect, useCallback } from "react";
+import { ApiClientError } from "@/lib/api-client";
 
 interface UseApiQueryOptions<TData> {
   queryKey: string[];
@@ -37,10 +39,17 @@ interface UseApiQueryResult<TData> {
 }
 
 export function useApiQuery<TData = any>(
-  options: UseApiQueryOptions<TData>
+  options: UseApiQueryOptions<TData>,
 ): UseApiQueryResult<TData> {
-  const { queryKey, queryFn, enabled = true, refetchInterval, onSuccess, onError } = options;
-  
+  const {
+    queryKey,
+    queryFn,
+    enabled = true,
+    refetchInterval,
+    onSuccess,
+    onError,
+  } = options;
+
   const [data, setData] = useState<TData | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
@@ -58,20 +67,21 @@ export function useApiQuery<TData = any>(
       const result = await queryFn();
       setData(result);
       setError(null);
-      
+
       if (onSuccess) {
         onSuccess(result);
       }
     } catch (err) {
-      const apiError = err instanceof ApiClientError
-        ? err
-        : new ApiClientError(
-            err instanceof Error ? err.message : 'An error occurred',
-            500
-          );
-      
+      const apiError =
+        err instanceof ApiClientError
+          ? err
+          : new ApiClientError(
+              err instanceof Error ? err.message : "An error occurred",
+              500,
+            );
+
       setError(apiError);
-      
+
       if (onError) {
         onError(apiError);
       }
@@ -84,7 +94,7 @@ export function useApiQuery<TData = any>(
   // Initial fetch
   useEffect(() => {
     fetchData();
-  }, [queryKey.join(','), enabled]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [queryKey.join(","), enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refetch interval
   useEffect(() => {

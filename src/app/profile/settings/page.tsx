@@ -4,7 +4,7 @@
  *
  * Comprehensive user profile management:
  * - General: Display name, photo, email status
- * - Security: Password change, phone verification
+ * - Security: Password change
  * - Account: Delete account
  */
 
@@ -18,7 +18,6 @@ import { useAuth, useMessage } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { ProfileGeneralSection } from "@/components/profile/ProfileGeneralSection";
 import { ProfileSecuritySection } from "@/components/profile/ProfileSecuritySection";
-import { ProfilePhoneSection } from "@/components/profile/ProfilePhoneSection";
 import { ProfileAccountSection } from "@/components/profile/ProfileAccountSection";
 
 type Tab = "general" | "security" | "account";
@@ -96,17 +95,10 @@ export default function ProfileSettingsPage() {
           )}
 
           {activeTab === "security" && (
-            <>
-              <ProfileSecuritySection
-                onSuccess={showSuccess}
-                onError={showError}
-              />
-              <ProfilePhoneSection
-                currentPhone={user.phoneNumber}
-                onSuccess={showSuccess}
-                onError={showError}
-              />
-            </>
+            <ProfileSecuritySection
+              onSuccess={showSuccess}
+              onError={showError}
+            />
           )}
 
           {activeTab === "account" && (

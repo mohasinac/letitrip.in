@@ -1,17 +1,16 @@
 /**
  * Firebase Authentication Helper Functions
- * 
+ *
  * Client-side authentication utilities using Firebase Auth SDK.
  * All credentials are securely managed through environment variables.
- * 
+ *
  * Features:
  * - Email/Password authentication
  * - Google OAuth (no manual setup needed)
  * - Apple OAuth (no manual setup needed)
- * - Phone authentication
  * - Email verification
  * - Password reset
- * 
+ *
  * Benefits over NextAuth:
  * - No OAuth client ID/secret needed
  * - Built-in provider configuration
@@ -23,7 +22,6 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
-  signInWithPhoneNumber,
   GoogleAuthProvider,
   OAuthProvider,
   RecaptchaVerifier,
@@ -34,43 +32,29 @@ import {
   UserCredential,
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from './config';
-import { UserRole } from '@/types/auth';
-import { USER_COLLECTION } from '@/db/schema/users';
-
-/**
- * Create session cookie by calling API route
- */
-async function createSessionCookie(idToken: string): Promise<void> {
-  try {
-    await fetch('/api/auth/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken }),
-    });
-  } catch (error) {
-    console.error('Failed to create session cookie:', error);
-    // Don't throw - session cookie is optional
-  }
-}
+} from "firebase/auth";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "./config";
+import { UserRole } from "@/types/auth";
+import { USER_COLLECTION } from "@/db/schema/users";
 
 /**
  * Sign in with email and password
  */
-export async function signInWithEmail(email: string, password: string): Promise<UserCredential> {
+export async function signInWithEmail(
+  email: string,
+  password: string,
+): Promise<UserCredential> {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    // Create session cookie
-    const idToken = await userCredential.user.getIdToken();
-    await createSessionCookie(idToken);
-    
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
     return userCredential;
   } catch (error: any) {
-    console.error('Email sign in error:', error);
-    throw new Error(error.message || 'Failed to sign in with email');
+    console.error("Email sign in error:", error);
+    throw new Error(error.message || "Failed to sign in with email");
   }
 }
 
@@ -80,18 +64,22 @@ export async function signInWithEmail(email: string, password: string): Promise<
 export async function registerWithEmail(
   email: string,
   password: string,
-  displayName: string
+  displayName: string,
 ): Promise<UserCredential> {
   try {
     // Create user account
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
     const user = userCredential.user;
 
     // Update profile
     await updateProfile(user, { displayName });
 
     // Create Firestore user document
-    await createUserProfile(user, { role: 'user' });
+    await createUserProfile(user, { role: "user" });
 
     // Send verification email
     await sendEmailVerification(user);
@@ -102,8 +90,8 @@ export async function registerWithEmail(
 
     return userCredential;
   } catch (error: any) {
-    console.error('Email registration error:', error);
-    throw new Error(error.message || 'Failed to register with email');
+    console.error("Email registration error:", error);
+    throw new Error(error.message || "Failed to register with email");
   }
 }
 
@@ -114,32 +102,33 @@ export async function registerWithEmail(
 export async function signInWithGoogle(): Promise<UserCredential> {
   try {
     const provider = new GoogleAuthProvider();
-    
+
     // Optional: Request additional scopes
-    provider.addScope('profile');
-    provider.addScope('email');
+    provider.addScope("profile");
+    provider.addScope("email");
 
     const userCredential = await signInWithPopup(auth, provider);
     // Create session cookie
     const idToken = await userCredential.user.getIdToken();
     await createSessionCookie(idToken);
 
-    
     // Create/update user profile in Firestore
-    await createUserProfile(userCredential.user, { role: 'user' });
+    await createUserProfile(userCredential.user, { role: "user" });
 
     return userCredential;
   } catch (error: any) {
-    console.error('Google sign in error:', error);
-    
-    if (error.code === 'auth/popup-closed-by-user') {
-      throw new Error('Sign-in cancelled');
+    console.error("Google sign in error:", error);
+
+    if (error.code === "auth/popup-closed-by-user") {
+      throw new Error("Sign-in cancelled");
     }
-    if (error.code === 'auth/popup-blocked') {
-      throw new Error('Pop-up blocked by browser. Please allow pop-ups and try again.');
+    if (error.code === "auth/popup-blocked") {
+      throw new Error(
+        "Pop-up blocked by browser. Please allow pop-ups and try again.",
+      );
     }
-    
-    throw new Error(error.message || 'Failed to sign in with Google');
+
+    throw new Error(error.message || "Failed to sign in with Google");
   }
 }
 
@@ -149,33 +138,34 @@ export async function signInWithGoogle(): Promise<UserCredential> {
  */
 export async function signInWithApple(): Promise<UserCredential> {
   try {
-    const provider = new OAuthProvider('apple.com');
-    
+    const provider = new OAuthProvider("apple.com");
+
     // Optional: Request additional scopes
-    provider.addScope('email');
-    provider.addScope('name');
+    provider.addScope("email");
+    provider.addScope("name");
 
     const userCredential = await signInWithPopup(auth, provider);
     // Create session cookie
     const idToken = await userCredential.user.getIdToken();
     await createSessionCookie(idToken);
 
-    
     // Create/update user profile in Firestore
-    await createUserProfile(userCredential.user, { role: 'user' });
+    await createUserProfile(userCredential.user, { role: "user" });
 
     return userCredential;
   } catch (error: any) {
-    console.error('Apple sign in error:', error);
-    
-    if (error.code === 'auth/popup-closed-by-user') {
-      throw new Error('Sign-in cancelled');
+    console.error("Apple sign in error:", error);
+
+    if (error.code === "auth/popup-closed-by-user") {
+      throw new Error("Sign-in cancelled");
     }
-    if (error.code === 'auth/popup-blocked') {
-      throw new Error('Pop-up blocked by browser. Please allow pop-ups and try again.');
+    if (error.code === "auth/popup-blocked") {
+      throw new Error(
+        "Pop-up blocked by browser. Please allow pop-ups and try again.",
+      );
     }
-    
-    throw new Error(error.message || 'Failed to sign in with Apple');
+
+    throw new Error(error.message || "Failed to sign in with Apple");
   }
 }
 
@@ -185,18 +175,26 @@ export async function signInWithApple(): Promise<UserCredential> {
  */
 export async function signInWithPhone(
   phoneNumber: string,
-  recaptchaContainerId: string
+  recaptchaContainerId: string,
 ): Promise<any> {
   try {
-    const recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
-      size: 'invisible',
-    });
+    const recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      recaptchaContainerId,
+      {
+        size: "invisible",
+      },
+    );
 
-    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    const confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      recaptchaVerifier,
+    );
     return confirmationResult;
   } catch (error: any) {
-    console.error('Phone sign in error:', error);
-    throw new Error(error.message || 'Failed to sign in with phone');
+    console.error("Phone sign in error:", error);
+    throw new Error(error.message || "Failed to sign in with phone");
   }
 }
 
@@ -207,8 +205,8 @@ export async function resetPassword(email: string): Promise<void> {
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
-    console.error('Password reset error:', error);
-    throw new Error(error.message || 'Failed to send password reset email');
+    console.error("Password reset error:", error);
+    throw new Error(error.message || "Failed to send password reset email");
   }
 }
 
@@ -219,8 +217,8 @@ export async function verifyEmail(user: User): Promise<void> {
   try {
     await sendEmailVerification(user);
   } catch (error: any) {
-    console.error('Email verification error:', error);
-    throw new Error(error.message || 'Failed to send verification email');
+    console.error("Email verification error:", error);
+    throw new Error(error.message || "Failed to send verification email");
   }
 }
 
@@ -229,14 +227,10 @@ export async function verifyEmail(user: User): Promise<void> {
  */
 export async function signOut(): Promise<void> {
   try {
-    // Delete session cookie first
-    await fetch('/api/auth/session', { method: 'DELETE' });
-    
-    // Then sign out from Firebase
     await firebaseSignOut(auth);
   } catch (error: any) {
-    console.error('Sign out error:', error);
-    throw new Error(error.message || 'Failed to sign out');
+    console.error("Sign out error:", error);
+    throw new Error(error.message || "Failed to sign out");
   }
 }
 
@@ -245,7 +239,7 @@ export async function signOut(): Promise<void> {
  */
 async function createUserProfile(
   user: User,
-  additionalData: { role: UserRole }
+  additionalData: { role: UserRole },
 ): Promise<void> {
   const userRef = doc(db, USER_COLLECTION, user.uid);
   const userSnap = await getDoc(userRef);
@@ -258,7 +252,6 @@ async function createUserProfile(
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
-        phoneNumber: user.phoneNumber,
         emailVerified: user.emailVerified,
         role: additionalData.role,
         disabled: false,
@@ -266,7 +259,7 @@ async function createUserProfile(
         updatedAt: serverTimestamp(),
       });
     } catch (error) {
-      console.error('Error creating user profile:', error);
+      console.error("Error creating user profile:", error);
       throw error;
     }
   } else {
@@ -278,10 +271,10 @@ async function createUserProfile(
           updatedAt: serverTimestamp(),
           emailVerified: user.emailVerified,
         },
-        { merge: true }
+        { merge: true },
       );
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error("Error updating user profile:", error);
     }
   }
 }
@@ -296,6 +289,8 @@ export function getCurrentUser(): User | null {
 /**
  * Listen for auth state changes
  */
-export function onAuthStateChanged(callback: (user: User | null) => void): () => void {
+export function onAuthStateChanged(
+  callback: (user: User | null) => void,
+): () => void {
   return firebaseOnAuthStateChanged(auth, callback);
 }

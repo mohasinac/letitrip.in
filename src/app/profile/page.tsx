@@ -1,89 +1,112 @@
-'use client';
+"use client";
 
 /**
  * User Profile Page
- * 
+ *
  * Refactored to use centralized API client, hooks, and reusable components
  */
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Card, Button, Alert } from '@/components';
-import { FormField } from '@/components/FormField';
-import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { Heading, Text } from '@/components/typography';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
-import { useChangePassword, useResendVerification } from '@/hooks/useAuth';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '@/constants';
+import { useState, useEffect } from "react";
+import { Card, Button, Alert } from "@/components";
+import { FormField } from "@/components/FormField";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import { Heading, Text } from "@/components/typography";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
+import { useChangePassword, useResendVerification } from "@/hooks/useAuth";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 
 function ProfilePageContent() {
-  const { update: updateSession } = useSession();
-  
   // Fetch profile data
   const { data: profile, isLoading, refetch } = useProfile();
-  
+
   // Profile form state
-  const [displayName, setDisplayName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [photoURL, setPhotoURL] = useState('');
+  const [displayName, setDisplayName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  
+
   // Password form state
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState<Record<string, boolean>>({});
-  
+  const [passwordTouched, setPasswordTouched] = useState<
+    Record<string, boolean>
+  >({});
+
   // Messages
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Initialize form when profile loads
   useEffect(() => {
     if (profile) {
-      setDisplayName(profile.displayName || '');
-      setPhoneNumber(profile.phoneNumber || '');
-      setPhotoURL(profile.photoURL || '');
+      setDisplayName(profile.displayName || "");
+      setPhoneNumber(profile.phoneNumber || "");
+      setPhotoURL(profile.photoURL || "");
     }
   }, [profile]);
 
   // Update profile mutation
   const { mutate: updateProfile, isLoading: isSaving } = useUpdateProfile({
     onSuccess: async () => {
-      setMessage({ type: 'success', text: SUCCESS_MESSAGES.USER.PROFILE_UPDATED });
+      setMessage({
+        type: "success",
+        text: SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
+      });
       await refetch();
       await updateSession();
     },
     onError: (error) => {
-      setMessage({ type: 'error', text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR });
+      setMessage({
+        type: "error",
+        text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+      });
     },
   });
 
   // Change password mutation
-  const { mutate: changePassword, isLoading: isChangingPassword } = useChangePassword({
-    onSuccess: () => {
-      setMessage({ type: 'success', text: 'Password changed successfully!' });
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setPasswordTouched({});
-      setShowPasswordForm(false);
-    },
-    onError: (error) => {
-      setMessage({ type: 'error', text: error.message || ERROR_MESSAGES.PASSWORD.CHANGE_FAILED });
-    },
-  });
+  const { mutate: changePassword, isLoading: isChangingPassword } =
+    useChangePassword({
+      onSuccess: () => {
+        setMessage({ type: "success", text: "Password changed successfully!" });
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setPasswordTouched({});
+        setShowPasswordForm(false);
+      },
+      onError: (error) => {
+        setMessage({
+          type: "error",
+          text: error.message || ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
+        });
+      },
+    });
 
   // Resend verification mutation
-  const { mutate: resendVerification, isLoading: isSendingVerification } = useResendVerification({
-    onSuccess: () => {
-      setMessage({ type: 'success', text: SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT });
-    },
-    onError: (error) => {
-      setMessage({ type: 'error', text: error.message || ERROR_MESSAGES.EMAIL.SEND_FAILED });
-    },
-  });
+  const { mutate: resendVerification, isLoading: isSendingVerification } =
+    useResendVerification({
+      onSuccess: () => {
+        setMessage({
+          type: "success",
+          text: SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT,
+        });
+      },
+      onError: (error) => {
+        setMessage({
+          type: "error",
+          text: error.message || ERROR_MESSAGES.EMAIL.SEND_FAILED,
+        });
+      },
+    });
 
   // Handlers
   const handleBlur = (field: string) => () => {
@@ -97,7 +120,7 @@ function ProfilePageContent() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
-    
+
     await updateProfile({
       displayName: displayName.trim(),
       phoneNumber: phoneNumber.trim(),
@@ -111,7 +134,7 @@ function ProfilePageContent() {
 
     // Validate passwords match
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ type: 'error', text: 'Passwords do not match' });
+      setMessage({ type: "error", text: "Passwords do not match" });
       return;
     }
 
@@ -165,13 +188,13 @@ function ProfilePageContent() {
                 label="Email"
                 name="email"
                 type="email"
-                value={profile?.email || ''}
+                value={profile?.email || ""}
                 onChange={() => {}}
                 disabled
                 helpText={
                   profile?.emailVerified
-                    ? '✓ Verified'
-                    : '⚠ Not verified - Check your inbox or resend verification'
+                    ? "✓ Verified"
+                    : "⚠ Not verified - Check your inbox or resend verification"
                 }
               />
               {!profile?.emailVerified && (
@@ -183,7 +206,9 @@ function ProfilePageContent() {
                   disabled={isSendingVerification}
                   className="mt-2"
                 >
-                  {isSendingVerification ? 'Sending...' : 'Send Verification Email'}
+                  {isSendingVerification
+                    ? "Sending..."
+                    : "Send Verification Email"}
                 </Button>
               )}
             </div>
@@ -194,7 +219,7 @@ function ProfilePageContent() {
               type="text"
               value={displayName}
               onChange={setDisplayName}
-              onBlur={handleBlur('displayName')}
+              onBlur={handleBlur("displayName")}
               touched={touched.displayName}
               disabled={isSaving}
               placeholder="Enter your name"
@@ -206,7 +231,7 @@ function ProfilePageContent() {
               type="tel"
               value={phoneNumber}
               onChange={setPhoneNumber}
-              onBlur={handleBlur('phoneNumber')}
+              onBlur={handleBlur("phoneNumber")}
               touched={touched.phoneNumber}
               disabled={isSaving}
               placeholder="+1234567890"
@@ -218,7 +243,7 @@ function ProfilePageContent() {
               type="text"
               value={photoURL}
               onChange={setPhotoURL}
-              onBlur={handleBlur('photoURL')}
+              onBlur={handleBlur("photoURL")}
               touched={touched.photoURL}
               disabled={isSaving}
               placeholder="https://example.com/photo.jpg"
@@ -228,7 +253,7 @@ function ProfilePageContent() {
               label="Role"
               name="role"
               type="text"
-              value={profile?.role || 'user'}
+              value={profile?.role || "user"}
               onChange={() => {}}
               disabled
               helpText="Your account role (read-only)"
@@ -240,7 +265,7 @@ function ProfilePageContent() {
               disabled={isSaving}
               className="w-full"
             >
-              {isSaving ? 'Saving...' : 'Update Profile'}
+              {isSaving ? "Saving..." : "Update Profile"}
             </Button>
           </div>
         </form>
@@ -269,8 +294,10 @@ function ProfilePageContent() {
                 name="currentPassword"
                 type="password"
                 value={passwordData.currentPassword}
-                onChange={(value) => setPasswordData({ ...passwordData, currentPassword: value })}
-                onBlur={handlePasswordBlur('currentPassword')}
+                onChange={(value) =>
+                  setPasswordData({ ...passwordData, currentPassword: value })
+                }
+                onBlur={handlePasswordBlur("currentPassword")}
                 touched={passwordTouched.currentPassword}
                 disabled={isChangingPassword}
                 placeholder="Enter current password"
@@ -282,8 +309,10 @@ function ProfilePageContent() {
                 name="newPassword"
                 type="password"
                 value={passwordData.newPassword}
-                onChange={(value) => setPasswordData({ ...passwordData, newPassword: value })}
-                onBlur={handlePasswordBlur('newPassword')}
+                onChange={(value) =>
+                  setPasswordData({ ...passwordData, newPassword: value })
+                }
+                onBlur={handlePasswordBlur("newPassword")}
                 touched={passwordTouched.newPassword}
                 disabled={isChangingPassword}
                 placeholder="Enter new password"
@@ -291,7 +320,9 @@ function ProfilePageContent() {
               />
 
               {passwordData.newPassword && (
-                <PasswordStrengthIndicator password={passwordData.newPassword} />
+                <PasswordStrengthIndicator
+                  password={passwordData.newPassword}
+                />
               )}
 
               <FormField
@@ -299,13 +330,15 @@ function ProfilePageContent() {
                 name="confirmNewPassword"
                 type="password"
                 value={passwordData.confirmPassword}
-                onChange={(value) => setPasswordData({ ...passwordData, confirmPassword: value })}
-                onBlur={handlePasswordBlur('confirmPassword')}
+                onChange={(value) =>
+                  setPasswordData({ ...passwordData, confirmPassword: value })
+                }
+                onBlur={handlePasswordBlur("confirmPassword")}
                 touched={passwordTouched.confirmPassword}
                 error={
                   passwordData.confirmPassword &&
                   passwordData.newPassword !== passwordData.confirmPassword
-                    ? 'Passwords do not match'
+                    ? "Passwords do not match"
                     : undefined
                 }
                 disabled={isChangingPassword}
@@ -320,14 +353,18 @@ function ProfilePageContent() {
                   disabled={isChangingPassword}
                   className="flex-1"
                 >
-                  {isChangingPassword ? 'Changing...' : 'Change Password'}
+                  {isChangingPassword ? "Changing..." : "Change Password"}
                 </Button>
                 <Button
                   type="button"
                   variant="secondary"
                   onClick={() => {
                     setShowPasswordForm(false);
-                    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                    setPasswordData({
+                      currentPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
+                    });
                     setPasswordTouched({});
                     setMessage(null);
                   }}

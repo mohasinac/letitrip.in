@@ -1,14 +1,14 @@
 /**
  * Role-Based Access Control Component
- * 
+ *
  * Conditionally renders content based on user role.
  * Useful for showing/hiding UI elements based on permissions.
  */
 
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { UserRole } from '@/types/auth';
+import { useAuth } from "@/hooks";
+import { UserRole } from "@/types/auth";
 
 interface RoleGateProps {
   children: React.ReactNode;
@@ -16,14 +16,18 @@ interface RoleGateProps {
   fallback?: React.ReactNode;
 }
 
-export function RoleGate({ children, allowedRoles, fallback = null }: RoleGateProps) {
-  const { data: session } = useSession();
+export function RoleGate({
+  children,
+  allowedRoles,
+  fallback = null,
+}: RoleGateProps) {
+  const { user } = useAuth();
 
-  if (!session) {
+  if (!user) {
     return <>{fallback}</>;
   }
 
-  const userRole = (session.user as any).role as UserRole;
+  const userRole = user.role as UserRole;
   const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
   if (!roles.includes(userRole)) {
@@ -36,7 +40,13 @@ export function RoleGate({ children, allowedRoles, fallback = null }: RoleGatePr
 /**
  * Admin Only Component
  */
-export function AdminOnly({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
+export function AdminOnly({
+  children,
+  fallback,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}) {
   return (
     <RoleGate allowedRoles="admin" fallback={fallback}>
       {children}
@@ -47,9 +57,15 @@ export function AdminOnly({ children, fallback }: { children: React.ReactNode; f
 /**
  * Moderator or Admin Only Component
  */
-export function ModeratorOnly({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
+export function ModeratorOnly({
+  children,
+  fallback,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}) {
   return (
-    <RoleGate allowedRoles={['admin', 'moderator']} fallback={fallback}>
+    <RoleGate allowedRoles={["admin", "moderator"]} fallback={fallback}>
       {children}
     </RoleGate>
   );
