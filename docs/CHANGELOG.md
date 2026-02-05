@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 📋 Firebase Schema & Index Organization Standard
+
+- **Complete Guidelines** for organizing Firebase schemas and indices:
+  - Schema file template with 6 required sections
+  - Index synchronization workflow (schema → firestore.indexes.json → deploy)
+  - Clear DO/DON'T rules for file organization
+  - Collection naming conventions (camelCase, plural form)
+- **Organization Rules**:
+  - One schema file per collection in `src/db/schema/`
+  - Document `INDEXED_FIELDS` in each schema file with purposes
+  - Keep `firestore.indexes.json` in sync with schema `INDEXED_FIELDS`
+  - Update both files together when queries change
+  - Export all constants from schema files (no hardcoding)
+- **Documentation Standards**:
+  - In schema files: Document WHAT fields are indexed and WHY
+  - In firestore.indexes.json: Define HOW fields are indexed (composite patterns)
+  - Pre-commit checklist includes schema/index sync verification
+  - Common sync issues documented with solutions
+- **Schema File Structure** (6 sections):
+  1. Collection interface & name constant
+  2. Indexed fields with purposes
+  3. Relationships with diagram & foreign keys
+  4. Helper constants (defaults, public fields, updatable)
+  5. Type utilities (CreateInput, UpdateInput)
+  6. Query helpers for common queries
+- **Sync Workflow**:
+  1. Update `INDEXED_FIELDS` in schema file
+  2. Update `firestore.indexes.json` with composite indices
+  3. Deploy: `firebase deploy --only firestore:indexes`
+  4. Verify in Firebase Console
+- **Benefits**:
+  - Prevents schema/index drift
+  - Documents all indexed fields with purposes
+  - Easy to see which queries need indices
+  - Type-safe query building
+  - Single source of truth for collections
+
+- **Files Updated**:
+  - `.github/copilot-instructions.md` - New section "Firebase Schema & Index Organization"
+  - Pre-commit checklist enhanced with Firebase sync checks
+
 ### Fixed
 
 #### 🐛 Fixed Build Errors - Firebase Admin Initialization
