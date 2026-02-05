@@ -7,6 +7,7 @@
 import { Timestamp } from 'firebase-admin/firestore';
 
 export interface EmailVerificationTokenDocument {
+  id?: string;  // Document ID (optional, added by Firestore)
   userId: string;
   email: string;
   token: string;
@@ -15,6 +16,7 @@ export interface EmailVerificationTokenDocument {
 }
 
 export interface PasswordResetTokenDocument {
+  id?: string;  // Document ID (optional, added by Firestore)
   userId: string;
   email: string;
   token: string;
@@ -48,3 +50,42 @@ export const TOKEN_INDEXED_FIELDS = [
  * - emailVerificationTokens/{tokenId}.userId references users/{uid}
  * - passwordResetTokens/{tokenId}.userId references users/{uid}
  */
+
+// ============================================
+// TYPE UTILITIES
+// ============================================
+
+/**
+ * Type for creating email verification tokens
+ */
+export type EmailVerificationTokenCreateInput = Omit<EmailVerificationTokenDocument, 'id' | 'createdAt'>;
+
+/**
+ * Type for creating password reset tokens
+ */
+export type PasswordResetTokenCreateInput = Omit<PasswordResetTokenDocument, 'id' | 'createdAt' | 'used' | 'usedAt'>;
+
+// ============================================
+// QUERY HELPERS
+// ============================================
+
+/**
+ * Firestore query helper functions for tokens
+ * Use with Firestore where() clauses
+ * 
+ * @example
+ * ```typescript
+ * import { collection, query } from 'firebase-admin/firestore';
+ * import { EMAIL_VERIFICATION_COLLECTION, tokenQueryHelpers } from '@/db/schema/tokens';
+ * 
+ * const tokensRef = collection(db, EMAIL_VERIFICATION_COLLECTION);
+ * const q = query(tokensRef, tokenQueryHelpers.byUserId('user123'));
+ * ```
+ */
+export const tokenQueryHelpers = {
+  byUserId: (userId: string) => ['userId', '==', userId] as const,
+  byEmail: (email: string) => ['email', '==', email] as const,
+  byToken: (token: string) => ['token', '==', token] as const,
+  unused: () => ['used', '==', false] as const,
+  expired: (now: Date) => ['expiresAt', '<', now] as const,
+} as const;
