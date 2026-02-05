@@ -9,6 +9,8 @@ export type UserRole = "user" | "admin" | "moderator";
 export interface UserProfile {
   uid: string;
   email: string | null;
+  phoneNumber: string | null;
+  phoneVerified: boolean;
   displayName: string | null;
   photoURL: string | null;
   role: UserRole;
@@ -40,8 +42,8 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  email?: string;
-  phonering;
+  email: string;
+  password: string;
   displayName?: string;
   acceptTerms: boolean;
 }

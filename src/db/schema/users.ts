@@ -50,6 +50,7 @@ export const USER_INDEXED_FIELDS = [
   "role",
   "disabled",
   "emailVerified",
+  "phoneVerified",
 ] as const;
 
 /**
@@ -59,6 +60,7 @@ export const USER_PUBLIC_FIELDS = [
   "uid",
   "email",
   "phoneNumber",
+  "phoneVerified",
   "displayName",
   "photoURL",
   "role",

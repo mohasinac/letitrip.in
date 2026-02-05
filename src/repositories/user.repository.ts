@@ -29,6 +29,13 @@ export class UserRepository extends BaseRepository<UserDocument> {
   }
 
   /**
+   * Find user by phone number
+   */
+  async findByPhone(phoneNumber: string): Promise<UserDocument | null> {
+    return this.findOneBy("phoneNumber", phoneNumber);
+  }
+
+  /**
    * Find users by role
    */
   async findByRole(role: UserRole): Promise<UserDocument[]> {

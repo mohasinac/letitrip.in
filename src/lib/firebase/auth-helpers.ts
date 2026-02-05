@@ -252,6 +252,8 @@ async function createUserProfile(
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        phoneNumber: null,
+        phoneVerified: false,
         emailVerified: user.emailVerified,
         role: additionalData.role,
         disabled: false,
