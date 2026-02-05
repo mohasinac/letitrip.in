@@ -15,18 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This changelog file
 - 11-point coding standards and best practices
 - Pre-commit audit checklist
-- Node.js core module polyfills (process, buffer, stream-browserify, crypto-browserify)
-- cross-env package for cross-platform environment variables
+- `serverExternalPackages` configuration for Turbopack compatibility
 
 ### Changed
 - Renamed `src/middleware.ts` to `src/proxy.ts` (Next.js 16+ convention)
-- Updated `next.config.js` with webpack polyfills and turbopack config
-- Updated dev script to use webpack instead of Turbopack for compatibility
+- Configured Next.js to properly handle Node.js core modules with Turbopack
+- Removed webpack configuration in favor of native Turbopack support
 
 ### Fixed
-- Fixed "Cannot find module 'node:process'" Turbopack error
-- Fixed middleware deprecation warning by migrating to proxy.ts
-- Fixed webpack/turbopack conflict in Next.js 16.1.1
+- Fixed "Cannot find module 'node:process'" Turbopack error by configuring serverExternalPackages
+- Resolved Next.js 16 Turbopack compatibility with Node.js modules (crypto, bcryptjs, firebase-admin)
 
 ---
 
