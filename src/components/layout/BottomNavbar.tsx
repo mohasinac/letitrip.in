@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import { SITE_CONFIG } from '@/constants/site';
-import { ReactNode } from 'react';
-import NavItem from './NavItem';
+import { usePathname } from "next/navigation";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { SITE_CONFIG } from "@/constants/site";
+import { ReactNode } from "react";
+import NavItem from "./NavItem";
 
 /**
  * BottomNavbar Component
- * 
+ *
  * The mobile navigation bar fixed at the bottom of the screen.
  * Contains main navigation links and search button, all with icons and labels.
  * Visible only on mobile devices (hidden on desktop where MainNavbar is shown).
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -33,7 +33,7 @@ interface BottomNavLink {
 const bottomNavLinks: BottomNavLink[] = [
   {
     href: SITE_CONFIG.nav.home,
-    label: 'Home',
+    label: "Home",
     icon: (
       <path
         strokeLinecap="round"
@@ -44,32 +44,32 @@ const bottomNavLinks: BottomNavLink[] = [
     ),
   },
   {
-    href: SITE_CONFIG.nav.destinations,
-    label: 'Destinations',
+    href: SITE_CONFIG.nav.products,
+    label: "Products",
     icon: (
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
       />
     ),
   },
   {
-    href: SITE_CONFIG.nav.services,
-    label: 'Services',
+    href: SITE_CONFIG.nav.auctions,
+    label: "Auctions",
     icon: (
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
+        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
       />
     ),
   },
   {
     href: SITE_CONFIG.account.profile,
-    label: 'Profile',
+    label: "Profile",
     icon: (
       <path
         strokeLinecap="round"
@@ -84,13 +84,15 @@ const bottomNavLinks: BottomNavLink[] = [
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
   const pathname = usePathname();
-  
+
   return (
-    <nav 
-      id="bottom-navbar" 
+    <nav
+      id="bottom-navbar"
       className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} shadow-lg`}
     >
-      <ul className={`flex justify-around items-center ${layout.bottomNavHeight}`}>
+      <ul
+        className={`flex justify-around items-center ${layout.bottomNavHeight}`}
+      >
         {bottomNavLinks.map((link) => (
           <li key={link.href} className="flex-1">
             <NavItem
@@ -102,7 +104,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             />
           </li>
         ))}
-        
+
         {/* Search Button */}
         <li className="flex-1">
           <button
