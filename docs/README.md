@@ -5,9 +5,11 @@ Welcome to the comprehensive documentation for LetItRip - a modern travel compan
 ## 📖 Table of Contents
 
 ### Getting Started
+- **[Development Instructions](./INSTRUCTIONS.md)** ⭐ **MUST READ** - Coding standards & best practices
 - [Installation & Setup](./getting-started.md)
 - [Project Structure](./project-structure.md)
 - [Development Guide](./development.md)
+- [Changelog](./CHANGELOG.md) - Version history
 
 ### Component Library
 - [Components Overview](./components/README.md)
@@ -19,6 +21,7 @@ Welcome to the comprehensive documentation for LetItRip - a modern travel compan
 - [Accessibility](./guides/accessibility.md)
 
 ### API Reference
+- **[API Client Guide](./API_CLIENT.md)** - Centralized API client
 - [Gesture Hooks](./api/hooks.md)
 - [Context API](./api/contexts.md)
 - [Constants](./api/constants.md)

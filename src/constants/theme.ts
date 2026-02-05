@@ -102,8 +102,8 @@ export const THEME_CONSTANTS = {
    */
   // Layout constants
   layout: {
-    titleBarHeight: 'h-16',
-    navbarHeight: 'h-16 md:h-20',
+    titleBarHeight: 'h-14',
+    navbarHeight: 'h-12 md:h-14',
     sidebarWidth: 'w-80',
     bottomNavHeight: 'h-16',
     maxContentWidth: 'max-w-7xl',

@@ -38,7 +38,8 @@ export * from './typography';
 // ==================== FEEDBACK COMPONENTS ====================
 // Re-export from feedback subdirectory
 export * from './feedback';
-
+// Error Handling
+export { ErrorBoundary } from './ErrorBoundary';
 // ==================== UTILITY COMPONENTS ====================
 // Re-export from utility subdirectory
 export * from './utility';

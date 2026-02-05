@@ -1,53 +1,67 @@
-# LetItRip
+# Letitrip.in - Travel Platform
 
-A modern, mobile-optimized component library built with Next.js 16, React 19, and TypeScript.
+A modern Next.js 16 travel platform with comprehensive authentication, user management, and professional software engineering practices.
 
-## ✨ Highlights
+## 🚀 Features
 
-- 🎨 **40+ Production-Ready Components** - Complete UI library with dark mode
-- 📱 **Mobile Gestures** - Advanced touch interactions (swipe, pinch, rotate, long-press)
-- 🎯 **100% TypeScript** - Full type safety with strict mode
-- ⚡ **Performance** - Optimized with Turbopack, tree-shaking, lazy loading
-- ♿ **Accessible** - WCAG compliant with ARIA labels and keyboard navigation
-- 🧪 **Well Tested** - 301+ tests with Jest and React Testing Library
+- ⚡️ **Next.js 16** with App Router & Turbopack
+- 🔐 **NextAuth v5** with multiple providers (Credentials, Google, Apple)
+- 🎨 **Tailwind CSS** with custom design system
+- 📦 **Custom Component Library** with 40+ reusable components
+- 🔥 **TypeScript** with full type safety
+- 🗄️ **Firebase/Firestore** for database and auth
+- 📧 **Resend** for email service
+- 🛡️ **Security Best Practices** with bcrypt password hashing
+- 🎯 **Professional Architecture** following SOLID principles
 
 ## 📚 Documentation
 
-Complete documentation available in the [`/docs`](./docs) folder:
+**Start Here:**
+- 🌟 **[Quick Reference Guide](./docs/QUICK_REFERENCE.md)** - Common patterns and quick lookups
+- 📖 **[Getting Started](./docs/getting-started.md)** - Installation and setup
+- 🏗️ **[Engineering Guide](./docs/ENGINEERING_IMPROVEMENTS.md)** - Architecture and best practices
+- 🤝 **[Contributing](./CONTRIBUTING.md)** - How to contribute
 
-- **[Getting Started](./docs/getting-started.md)** - Installation and setup
-- **[Project Structure](./docs/project-structure.md)** - Directory organization
-- **[Components](./docs/components/README.md)** - Component library overview
-- **[Mobile Gestures](./docs/guides/mobile-gestures.md)** - Touch interaction guide
-- **[Theming](./docs/guides/theming.md)** - Theme system and dark mode
-- **[Testing](./docs/guides/testing.md)** - Testing patterns and best practices
-- **[API Reference](./docs/api/)** - Hooks, contexts, and constants
+**Full Documentation:**
+- [Documentation Index](./docs/README.md) - Complete documentation navigation
+- [Project Structure](./docs/project-structure.md) - Directory organization
+- [Component Library](./docs/components/README.md) - UI components
+- [API Documentation](./docs/api/) - API reference
+- [Refactoring Summary](./docs/REFACTORING_SUMMARY.md) - Code evolution
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Node.js 18+
+- Firebase project with Firestore
+- Resend account (for emails)
+
+### Installation
+
 ```bash
-# Install dependencies
+# 1. Clone the repository
+git clone <repository-url>
+cd letitrip.in
+
+# 2. Install dependencies
 npm install
 
-# Run development server
+# 3. Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# 4. Run development server
 npm run dev
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
 ```
 
-## 🛠️ Tech Stack
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-- **Next.js 16.1.1** - App Router with Turbopack
-- **React 19.2.0** - Server & client components
-- **TypeScript 5.x** - Strict mode enabled
-- **Tailwind CSS v3** - Utility-first styling
-- **Jest + RTL** - Comprehensive testing suite
+### Build for Production
 
-## 📦 Component Categories
+```bash
+npm run build
+npm start
+```
 
 ### Theme System
 

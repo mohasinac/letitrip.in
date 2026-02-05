@@ -69,7 +69,7 @@ export default function NavItem({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg ${
+      className={`flex items-center gap-2 md:gap-2.5 px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
         isActive 
           ? colors.navbar.active
           : colors.navbar.inactive
