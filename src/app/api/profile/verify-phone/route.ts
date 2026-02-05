@@ -1,69 +1,24 @@
 /**
  * API Route: Verify Phone Number
  * POST /api/profile/verify-phone
- *
- * Confirms phone number verification after OTP is verified client-side
- * Updates user profile in Firestore
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
+import { createApiHandler, successResponse } from "@/lib/api/api-handler";
+import { verifyPhoneSchema } from "@/lib/api/validation-schemas";
 import { userRepository } from "@/repositories";
-import {
-  ValidationError,
-  AuthenticationError,
-  handleApiError,
-} from "@/lib/errors";
 
-// Validation schema
-const verifyPhoneSchema = z.object({
-  phoneNumber: z
-    .string()
-    .regex(/^\+[1-9]\d{9,14}$/, "Invalid phone number format"),
-  verified: z.boolean(),
-});
-
-export async function POST(request: NextRequest) {
-  try {
-    // Authenticate user
-    const user = await getAuthenticatedUser();
-    if (!user) {
-      throw new AuthenticationError("Authentication required");
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = verifyPhoneSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid input",
-        validationResult.error.flatten().fieldErrors as Record<
-          string,
-          string[]
-        >,
-      );
-    }
-
-    const { phoneNumber, verified } = validationResult.data;
-
-    // Update user profile in Firestore
+export const POST = createApiHandler({
+  auth: true,
+  schema: verifyPhoneSchema,
+  handler: async ({ body, user }) => {
     await userRepository.update(user.uid, {
-      phoneNumber,
-      phoneVerified: verified,
+      phoneVerified: true,
       updatedAt: new Date(),
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "Phone number verified successfully",
-      data: {
-        phoneNumber,
-        verified,
-      },
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+    return successResponse(
+      { phoneVerified: true },
+      "Phone number verified successfully",
+    );
+  },
+});

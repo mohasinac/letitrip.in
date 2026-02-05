@@ -1,92 +1,56 @@
 /**
  * API Route: Get All Users (Admin Only)
  * GET /api/admin/users
- *
- * Returns paginated list of users with search/filter capabilities
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
-import { requireRole } from "@/lib/security/authorization";
-import { handleApiError, AuthorizationError } from "@/lib/errors";
+import { createApiHandler, successResponse } from "@/lib/api/api-handler";
+import { db as adminDb } from "@/lib/firebase/config";
 import {
   collection,
   query,
+  where,
   orderBy,
   limit,
-  startAfter,
-  where,
   getDocs,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
 import { USER_COLLECTION } from "@/db/schema/users";
 
-export async function GET(request: NextRequest) {
-  try {
-    // Authenticate and authorize
-    const user = await getAuthenticatedUser();
-    requireRole(user, ["admin", "moderator"]);
+export const GET = createApiHandler({
+  auth: true,
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const roleFilter = searchParams.get("role");
+    const disabledFilter = searchParams.get("disabled");
+    const searchTerm = searchParams.get("search");
+    const pageLimit = parseInt(searchParams.get("limit") || "20");
 
-    // Get query parameters
-    const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "20");
-    const searchEmail = searchParams.get("email") || "";
-    const filterRole = searchParams.get("role") || "";
-    const filterStatus = searchParams.get("status") || ""; // active, disabled
-
-    // Build query
     let usersQuery = query(
-      collection(db, USER_COLLECTION),
+      collection(adminDb, USER_COLLECTION),
       orderBy("createdAt", "desc"),
+      limit(pageLimit),
     );
 
-    // Apply filters
-    if (filterRole) {
-      usersQuery = query(usersQuery, where("role", "==", filterRole));
-    }
+    if (roleFilter)
+      usersQuery = query(usersQuery, where("role", "==", roleFilter));
+    if (disabledFilter !== null)
+      usersQuery = query(
+        usersQuery,
+        where("disabled", "==", disabledFilter === "true"),
+      );
 
-    if (filterStatus === "disabled") {
-      usersQuery = query(usersQuery, where("disabled", "==", true));
-    } else if (filterStatus === "active") {
-      usersQuery = query(usersQuery, where("disabled", "==", false));
-    }
-
-    // Apply pagination
-    const skip = (page - 1) * pageSize;
-    usersQuery = query(usersQuery, limit(pageSize));
-
-    // Execute query
     const snapshot = await getDocs(usersQuery);
-    let users = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    let users = snapshot.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
 
-    // Client-side search (Firestore doesn't support text search)
-    if (searchEmail) {
-      users = users.filter((u: any) =>
-        u.email?.toLowerCase().includes(searchEmail.toLowerCase()),
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      users = users.filter(
+        (u: any) =>
+          u.email?.toLowerCase().includes(term) ||
+          u.displayName?.toLowerCase().includes(term),
       );
     }
 
-    // Get total count
-    const totalSnapshot = await getDocs(collection(db, USER_COLLECTION));
-    const total = totalSnapshot.size;
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        users,
-        pagination: {
-          page,
-          pageSize,
-          total,
-          totalPages: Math.ceil(total / pageSize),
-        },
-      },
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+    return successResponse({ users, total: users.length });
+  },
+});

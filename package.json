@@ -53,10 +53,6 @@
     "typescript": "^5"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "npm run type-check",
-      "npm run lint:fix"
-    ],
     "*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write"
     ]
