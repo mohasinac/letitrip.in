@@ -84,7 +84,7 @@ export default function RegisterPage() {
         await registerWithEmail(
           formData.email,
           formData.password,
-          formData.displayName || undefined
+          formData.displayName || 'User'
         );
         // Auth state listener will handle redirect
       } else {

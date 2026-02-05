@@ -101,7 +101,7 @@ export function useRegister(options?: {
         const result = await registerWithEmail(
           data.email,
           data.password,
-          data.displayName
+          data.displayName || 'User'
         );
         return { success: true, user: result.user };
       } else if (data.phoneNumber) {
