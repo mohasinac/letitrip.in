@@ -6,13 +6,13 @@
 
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button, Alert, Checkbox } from '@/components';
 import { FormField } from '@/components/FormField';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { useRegister, useLogin } from '@/hooks/useAuth';
+import { registerWithEmail, onAuthStateChanged } from '@/lib/firebase/auth-helpers';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from '@/constants';
 
 export default function RegisterPage() {
@@ -29,35 +29,19 @@ export default function RegisterPage() {
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Register mutation
-  const { mutate: register, isLoading: isRegistering } = useRegister({
-    onSuccess: async () => {
-      // Auto-login after registration
-      await login({
-        emailOrPhone: formData.registrationType === 'email' ? formData.email : formData.phoneNumber,
-        password: formData.password,
-      });
-    },
-    onError: (error) => {
-      setMessage({ type: 'error', text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR });
-    },
-  });
-
-  // Login mutation (for auto-login after registration)
-  const { mutate: login, isLoading: isLoggingIn } = useLogin({
-    onSuccess: () => {
-      setMessage({ type: 'success', text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS });
-      router.push(ROUTES.USER.PROFILE);
-    },
-    onError: (error) => {
-      // Registration succeeded but login failed - still redirect to login page
-      setMessage({ type: 'success', text: 'Registration successful! Please login.' });
-      setTimeout(() => router.push(ROUTES.AUTH.LOGIN), 2000);
-    },
-  });
-
-  const isLoading = isRegistering || isLoggingIn;
+  // Listen for auth state changes (auto-login after registration)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((user) => {
+      if (user && isLoading) {
+        // User registered and logged in successfully
+        setMessage({ type: 'success', text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS });
+        setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
+      }
+    });
+    return () => unsubscribe();
+  }, [isLoading, router]);
 
   const handleBlur = (field: string) => () => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -93,14 +77,24 @@ export default function RegisterPage() {
       return;
     }
 
-    // Register user
-    await register({
-      email: formData.registrationType === 'email' ? formData.email : undefined,
-      phoneNumber: formData.registrationType === 'phone' ? formData.phoneNumber : undefined,
-      password: formData.password,
-      displayName: formData.displayName || undefined,
-      acceptTerms: formData.acceptTerms,
-    });
+    // Register user with Firebase Auth
+    setIsLoading(true);
+    try {
+      if (formData.registrationType === 'email') {
+        await registerWithEmail(
+          formData.email,
+          formData.password,
+          formData.displayName || undefined
+        );
+        // Auth state listener will handle redirect
+      } else {
+        setMessage({ type: 'error', text: 'Phone registration coming soon. Please use email.' });
+        setIsLoading(false);
+      }
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR });
+      setIsLoading(false);
+    }
   };
 
   return (

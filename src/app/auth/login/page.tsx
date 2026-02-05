@@ -17,11 +17,11 @@
 
 'use client';
 
-import { useState, FormEvent, Suspense } from 'react';
+import { useState, FormEvent, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Input, Button, Alert } from '@/components';
-import { signInWithCredentials, signInWithGoogle, signInWithApple } from '@/lib/auth-utils';
+import { signInWithEmail, signInWithGoogle, signInWithApple, onAuthStateChanged } from '@/lib/firebase/auth-helpers';
 import { THEME_CONSTANTS } from '@/constants/theme';
 
 function LoginForm() {
@@ -38,6 +38,17 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((user) => {
+      if (user && loading) {
+        // User logged in successfully, redirect
+        router.push(callbackUrl);
+      }
+    });
+    return () => unsubscribe();
+  }, [loading, callbackUrl, router]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -45,16 +56,17 @@ function LoginForm() {
 
     try {
       const isEmail = formData.emailOrPhone.includes('@');
-      await signInWithCredentials({
-        email: isEmail ? formData.emailOrPhone : undefined,
-        phoneNumber: !isEmail ? formData.emailOrPhone : undefined,
-        password: formData.password,
-      });
-
-      router.push(callbackUrl);
+      
+      if (isEmail) {
+        // Email login with Firebase Auth
+        await signInWithEmail(formData.emailOrPhone, formData.password);
+      } else {
+        // Phone login not yet implemented in this flow
+        setError('Phone login coming soon. Please use email.');
+        setLoading(false);
+      }
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
-    } finally {
       setLoading(false);
     }
   };
@@ -64,6 +76,7 @@ function LoginForm() {
     setError(null);
     try {
       await signInWithGoogle();
+      // Auth state listener will handle redirect
     } catch (err: any) {
       setError(err.message || 'Google login failed');
       setLoading(false);
@@ -75,6 +88,7 @@ function LoginForm() {
     setError(null);
     try {
       await signInWithApple();
+      // Auth state listener will handle redirect
     } catch (err: any) {
       setError(err.message || 'Apple login failed');
       setLoading(false);

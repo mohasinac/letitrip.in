@@ -10,7 +10,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, Button, Alert } from '@/components';
 import { Heading, Text } from '@/components/typography';
-import { useVerifyEmail } from '@/hooks/useAuth';
+import { onAuthStateChanged, getCurrentUser } from '@/lib/firebase/auth-helpers';
 import { ROUTES } from '@/constants';
 
 function VerifyEmailContent() {
@@ -18,18 +18,41 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const [tokenError, setTokenError] = useState('');
-
-  const { mutate: verifyEmail, isLoading, error, data } = useVerifyEmail();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
+    // Firebase Auth handles email verification automatically
+    // Just check if user is authenticated and email is verified
+    const checkVerification = async () => {
+      try {
+        const user = getCurrentUser();
+        if (user) {
+          await user.reload(); // Refresh user data
+          if (user.emailVerified) {
+            setIsSuccess(true);
+          } else {
+            setError('Email not yet verified. Please check your email.');
+          }
+        } else {
+          setError('Please sign in to verify your email.');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Verification check failed');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (token) {
-      verifyEmail({ token });
+      // Token is in URL (from email link)
+      checkVerification();
     } else {
       setTokenError('No verification token provided');
+      setIsLoading(false);
     }
-  }, [token, verifyEmail]);
-
-  const isSuccess = !!data && !error;
+  }, [token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8">
@@ -85,7 +108,7 @@ function VerifyEmailContent() {
               Verification Failed
             </Heading>
             <Alert variant="error" className="mb-6">
-              {error?.message || tokenError}
+              {error || tokenError}
             </Alert>
             <Text className="text-gray-600 mb-6">
               The verification link may have expired or is invalid. Please request a new verification email.

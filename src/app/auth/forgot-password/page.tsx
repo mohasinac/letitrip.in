@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { Card, Button, Alert } from '@/components';
 import { FormField } from '@/components/FormField';
 import { Heading, Text } from '@/components/typography';
-import { useForgotPassword } from '@/hooks/useAuth';
+import { resetPassword } from '@/lib/firebase/auth-helpers';
 import { SUCCESS_MESSAGES, ROUTES } from '@/constants';
 
 export default function ForgotPasswordPage() {
@@ -20,16 +20,22 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [touched, setTouched] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const { mutate: requestReset, isLoading, error } = useForgotPassword({
-    onSuccess: () => {
-      setSuccess(true);
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await requestReset({ email: email.trim() });
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      await resetPassword(email.trim());
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (success) {
@@ -92,7 +98,7 @@ export default function ForgotPasswordPage() {
 
         {error && (
           <Alert variant="error" className="mb-4">
-            {error.message}
+            {error}
           </Alert>
         )}
 

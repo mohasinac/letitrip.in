@@ -16,7 +16,15 @@
 
 import { useApiMutation } from './useApiMutation';
 import { apiClient, API_ENDPOINTS } from '@/lib/api-client';
-import { signIn as nextAuthSignIn } from 'next-auth/react';
+import { 
+  signInWithEmail, 
+  signInWithGoogle, 
+  signInWithApple,
+  registerWithEmail,
+  resetPassword as firebaseResetPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged
+} from '@/lib/firebase/auth-helpers';
 
 // ============================================================================
 // Types
@@ -58,8 +66,7 @@ interface ResendVerificationData {
 // ============================================================================
 
 /**
- * Hook for user login
- * Note: This handles the API registration but NextAuth handles the actual session
+ * Hook for user login with Firebase Auth
  */
 export function useLogin(options?: {
   onSuccess?: () => void;
@@ -67,18 +74,14 @@ export function useLogin(options?: {
 }) {
   return useApiMutation<any, LoginCredentials>({
     mutationFn: async (credentials) => {
-      // Use NextAuth signIn
-      const result = await nextAuthSignIn('credentials', {
-        emailOrPhone: credentials.emailOrPhone,
-        password: credentials.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        throw new Error(result.error);
+      const isEmail = credentials.emailOrPhone.includes('@');
+      
+      if (isEmail) {
+        const result = await signInWithEmail(credentials.emailOrPhone, credentials.password);
+        return { success: true, user: result.user };
+      } else {
+        throw new Error('Phone login not yet implemented');
       }
-
-      return { success: true };
     },
     onSuccess: options?.onSuccess,
     onError: options?.onError,
@@ -86,14 +89,27 @@ export function useLogin(options?: {
 }
 
 /**
- * Hook for user registration
+ * Hook for user registration with Firebase Auth
  */
 export function useRegister(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, RegisterData>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.AUTH.REGISTER, data),
+    mutationFn: async (data) => {
+      if (data.email) {
+        const result = await registerWithEmail(
+          data.email,
+          data.password,
+          data.displayName
+        );
+        return { success: true, user: result.user };
+      } else if (data.phoneNumber) {
+        throw new Error('Phone registration not yet implemented');
+      } else {
+        throw new Error('Email or phone number required');
+      }
+    },
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -128,14 +144,17 @@ export function useResendVerification(options?: {
 }
 
 /**
- * Hook for forgot password (request reset link)
+ * Hook for forgot password with Firebase Auth
  */
 export function useForgotPassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ForgotPasswordData>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
+    mutationFn: async (data) => {
+      await firebaseResetPassword(data.email);
+      return { success: true };
+    },
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
