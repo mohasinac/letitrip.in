@@ -10,12 +10,13 @@ Welcome to LetItRip - a modern travel companion application with production-read
 
 ### 🎯 Core Documentation
 
-| Document                                       | Description            | Audience   |
-| ---------------------------------------------- | ---------------------- | ---------- |
-| **[AUDIT_REPORT.md](./AUDIT_REPORT.md)**       | 100% compliance status | Developers |
-| **[CHANGELOG.md](./CHANGELOG.md)**             | Version history        | All        |
-| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** | Quick lookups          | Developers |
-| **[API_CLIENT.md](./API_CLIENT.md)**           | API usage guide        | Developers |
+| Document                                                    | Description            | Audience   |
+| ----------------------------------------------------------- | ---------------------- | ---------- |
+| **[COMPLIANCE_CHECKLIST.md](./COMPLIANCE_CHECKLIST.md)** ⭐ | **Pre-task checklist** | Developers |
+| **[AUDIT_REPORT.md](./AUDIT_REPORT.md)**                    | 100% compliance status | Developers |
+| **[CHANGELOG.md](./CHANGELOG.md)**                          | Version history        | All        |
+| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**              | Quick lookups          | Developers |
+| **[API_CLIENT.md](./API_CLIENT.md)**                        | API usage guide        | Developers |
 
 ### 🚀 Getting Started
 
