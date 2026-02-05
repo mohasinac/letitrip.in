@@ -71,3 +71,18 @@ export const USER_UPDATABLE_FIELDS = [
   'displayName',
   'photoURL',
 ] as const;
+
+/**
+ * RELATIONSHIPS:
+ * 
+ * users (1) ----< (N) trips
+ *       (1) ----< (N) bookings
+ *       (1) ----< (N) emailVerificationTokens
+ *       (1) ----< (N) passwordResetTokens
+ * 
+ * Foreign Key Pattern (Firestore):
+ * - trips/{tripId}.userId references users/{uid}
+ * - bookings/{bookingId}.userId references users/{uid}
+ * - emailVerificationTokens/{tokenId}.userId references users/{uid}
+ * - passwordResetTokens/{tokenId}.userId references users/{uid}
+ */

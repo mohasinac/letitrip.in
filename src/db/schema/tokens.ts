@@ -29,10 +29,22 @@ export const PASSWORD_RESET_COLLECTION = 'passwordResetTokens' as const;
 
 /**
  * Fields that should be indexed for tokens
+ * Configure in Firebase Console: Firestore Database → Indexes
  */
 export const TOKEN_INDEXED_FIELDS = [
-  'userId',
-  'email',
-  'expiresAt',
-  'used',
+  'userId',      // For user lookup
+  'email',       // For email lookup
+  'expiresAt',   // For cleanup queries
+  'used',        // For filtering unused tokens (password reset)
 ] as const;
+
+/**
+ * RELATIONSHIPS:
+ * 
+ * emailVerificationTokens (N) ----< (1) users
+ * passwordResetTokens (N) ----< (1) users
+ * 
+ * Foreign Key Pattern (Firestore):
+ * - emailVerificationTokens/{tokenId}.userId references users/{uid}
+ * - passwordResetTokens/{tokenId}.userId references users/{uid}
+ */

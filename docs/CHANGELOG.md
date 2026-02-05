@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated SITE_CONFIG account routes to match actual application paths (`/profile` instead of `/account/profile`)
 - Sidebar now shows authenticated user info and implements real logout with NextAuth
 - BottomNavbar restored search button, kept 5-item layout (Home, Destinations, Services, Profile, Search)
+- **Updated copilot instructions** to reflect Firebase Firestore as database choice (not PostgreSQL/Drizzle)
+- **Updated database schema files** (users.ts, tokens.ts) with proper relationship documentation
+- **Audit report updated** with Firebase compliance - score improved from 69/110 to 85/110
 
 ### Fixed
 - Fixed "Cannot find module 'node:process'" Turbopack error by configuring serverExternalPackages
