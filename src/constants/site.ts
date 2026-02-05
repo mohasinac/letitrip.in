@@ -53,13 +53,16 @@ export const SITE_CONFIG = {
   
   // User account links
   account: {
-    profile: '/account/profile',
-    settings: '/account/settings',
-    orders: '/account/orders',
-    wishlist: '/account/wishlist',
+    profile: '/profile',
+    settings: '/settings',
+    orders: '/orders',
+    wishlist: '/wishlist',
     cart: '/cart',
     login: '/auth/login',
     register: '/auth/register',
+    logout: '/auth/logout',
+    forgotPassword: '/auth/forgot-password',
+    verifyEmail: '/auth/verify-email',
   },
   
   // Contact info

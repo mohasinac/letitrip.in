@@ -68,14 +68,14 @@ const bottomNavLinks: BottomNavLink[] = [
     ),
   },
   {
-    href: SITE_CONFIG.nav.contact,
-    label: 'Contact',
+    href: SITE_CONFIG.account.profile,
+    label: 'Profile',
     icon: (
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
       />
     ),
   },
@@ -102,31 +102,6 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             />
           </li>
         ))}
-        {/* Search Button - Mobile Only */}
-        <li className="flex-1">
-          <button
-            onClick={onSearchToggle}
-            className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
-            aria-label="Search"
-          >
-            <svg
-              className={`${colors.bottomNav.icon} ${colors.bottomNav.inactive}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <span className={`${colors.bottomNav.text} ${colors.bottomNav.inactive}`}>
-              Search
-            </span>
-          </button>
-        </li>
       </ul>
     </nav>
   );

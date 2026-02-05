@@ -16,15 +16,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 11-point coding standards and best practices
 - Pre-commit audit checklist
 - `serverExternalPackages` configuration for Turbopack compatibility
+- Profile link in BottomNavbar for mobile access
+- Login/Logout functionality in Sidebar with NextAuth integration
+- User authentication state display in navigation components
 
 ### Changed
 - Renamed `src/middleware.ts` to `src/proxy.ts` (Next.js 16+ convention)
 - Configured Next.js to properly handle Node.js core modules with Turbopack
 - Removed webpack configuration in favor of native Turbopack support
+- Updated SITE_CONFIG account routes to match actual application paths (`/profile` instead of `/account/profile`)
+- Sidebar now shows authenticated user info and implements real logout with NextAuth
+- BottomNavbar now includes Profile link and removed search button for better UX
 
 ### Fixed
 - Fixed "Cannot find module 'node:process'" Turbopack error by configuring serverExternalPackages
 - Resolved Next.js 16 Turbopack compatibility with Node.js modules (crypto, bcryptjs, firebase-admin)
+- Fixed navigation routes consistency across all components
 
 ---
 

@@ -3,8 +3,10 @@
 import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { THEME_CONSTANTS } from '@/constants/theme';
 import { SIDEBAR_NAV_GROUPS } from '@/constants/navigation';
+import { SITE_CONFIG } from '@/constants/site';
 import { useSwipe } from '@/hooks';
 import { preventBodyScroll } from '@/utils/eventHandlers';
 
@@ -34,6 +36,8 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   const sidebarRef = useRef<HTMLElement>(null);
 
   // Swipe right to close sidebar
@@ -111,33 +115,35 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
 
       {/* User Profile Section */}
       <div className={`flex-shrink-0 px-6 py-4 border-b ${THEME_CONSTANTS.themed.border}`}>
-        <div className={`flex items-center gap-3 p-3 rounded-lg ${THEME_CONSTANTS.themed.bgTertiary}`}>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold text-sm">
-            U
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className={`${THEME_CONSTANTS.typography.small} font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}>
-              Guest User
-            </p>
-            <p className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} truncate`}>
-              guest@letitrip.in
-            </p>
-          </div>
-        </div>
-        <button
-          className={`
-            w-full mt-3 px-4 py-2.5 rounded-lg
-            ${THEME_CONSTANTS.themed.bgPrimary}
-            ${THEME_CONSTANTS.themed.textPrimary}
-            hover:bg-red-50 dark:hover:bg-red-950/30
-            hover:text-red-600 dark:hover:text-red-400
-            border ${THEME_CONSTANTS.themed.border}
-            transition-all duration-200
-            flex items-center justify-center gap-2
-            font-medium ${THEME_CONSTANTS.typography.small}
-          `}
-          onClick={() => console.log('Logout clicked')}
-        >
+        {isAuthenticated ? (
+          <>
+            <div className={`flex items-center gap-3 p-3 rounded-lg ${THEME_CONSTANTS.themed.bgTertiary}`}>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold text-sm">
+                {session.user?.name?.[0]?.toUpperCase() || session.user?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`${THEME_CONSTANTS.typography.small} font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}>
+                  {session.user?.name || 'User'}
+                </p>
+                <p className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} truncate`}>
+                  {session.user?.email || ''}
+                </p>
+              </div>
+            </div>
+            <button
+              className={`
+                w-full mt-3 px-4 py-2.5 rounded-lg
+                ${THEME_CONSTANTS.themed.bgPrimary}
+                ${THEME_CONSTANTS.themed.textPrimary}
+                hover:bg-red-50 dark:hover:bg-red-950/30
+                hover:text-red-600 dark:hover:text-red-400
+                border ${THEME_CONSTANTS.themed.border}
+                transition-all duration-200
+                flex items-center justify-center gap-2
+                font-medium ${THEME_CONSTANTS.typography.small}
+              `}
+              onClick={() => signOut({ callbackUrl: SITE_CONFIG.account.login })}
+            >
           <svg
             className="w-4 h-4"
             fill="none"
@@ -153,6 +159,44 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
           </svg>
           Logout
         </button>
+          </>
+        ) : (
+          <>
+            <div className={`flex items-center gap-3 p-3 rounded-lg ${THEME_CONSTANTS.themed.bgTertiary}`}>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-semibold text-sm">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`${THEME_CONSTANTS.typography.small} font-medium ${THEME_CONSTANTS.themed.textPrimary}`}>
+                  Guest User
+                </p>
+                <p className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}>
+                  Not logged in
+                </p>
+              </div>
+            </div>
+            <Link
+              href={SITE_CONFIG.account.login}
+              className={`
+                w-full mt-3 px-4 py-2.5 rounded-lg
+                bg-primary-600 hover:bg-primary-700
+                text-white
+                transition-all duration-200
+                flex items-center justify-center gap-2
+                font-medium ${THEME_CONSTANTS.typography.small}
+                shadow-md hover:shadow-lg
+              `}
+              onClick={onClose}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Sign In
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Scrollable Content */}
