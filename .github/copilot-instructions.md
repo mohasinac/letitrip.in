@@ -220,6 +220,254 @@ query(
 
 ---
 
+## Firebase Schema & Index Organization
+
+**Principle:** Keep schema definitions and index requirements co-located and synchronized
+
+### File Organization Rules
+
+✅ **DO**:
+- **One schema file per collection** in `src/db/schema/`
+- **Document indexed fields** in each schema file using `INDEXED_FIELDS` constant
+- **Keep firestore.indexes.json in sync** with schema INDEXED_FIELDS
+- **Update both files together** when queries change
+- **Export all constants** from schema files (collection names, defaults, helpers)
+
+❌ **DON'T**:
+- Create indices without documenting in schema files
+- Add fields to INDEXED_FIELDS without adding to firestore.indexes.json
+- Scatter collection definitions across multiple files
+- Hardcode collection names (use exported constants)
+
+### Schema File Template
+
+Every collection schema file must follow this structure:
+
+```typescript
+// src/db/schema/collectionName.ts
+
+// ============================================
+// 1. COLLECTION INTERFACE & NAME
+// ============================================
+export interface CollectionNameDocument {
+  id: string;
+  // ... fields
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const COLLECTION_NAME_COLLECTION = 'collectionName' as const;
+
+// ============================================
+// 2. INDEXED FIELDS (Must match firestore.indexes.json)
+// ============================================
+/**
+ * Fields indexed in Firestore for query performance
+ * 
+ * SYNC REQUIRED: Update firestore.indexes.json when changing these
+ * Deploy: firebase deploy --only firestore:indexes
+ */
+export const COLLECTION_NAME_INDEXED_FIELDS = [
+  'fieldName',   // Purpose: describe query pattern
+  'createdAt',   // Purpose: date sorting
+] as const;
+
+// ============================================
+// 3. RELATIONSHIPS
+// ============================================
+/**
+ * RELATIONSHIPS:
+ * 
+ * parentCollection (1) ----< (N) collectionName
+ * 
+ * Foreign Keys:
+ * - collectionName/{id}.parentId references parentCollection/{id}
+ * 
+ * CASCADE BEHAVIOR:
+ * - When parent deleted: [describe behavior]
+ */
+
+// ============================================
+// 4. HELPER CONSTANTS
+// ============================================
+export const DEFAULT_COLLECTION_NAME_DATA: Partial<CollectionNameDocument> = {
+  // defaults
+};
+
+export const COLLECTION_NAME_PUBLIC_FIELDS = [
+  // publicly readable fields
+] as const;
+
+// ============================================
+// 5. TYPE UTILITIES
+// ============================================
+export type CollectionNameCreateInput = Omit<CollectionNameDocument, 'id' | 'createdAt' | 'updatedAt'>;
+export type CollectionNameUpdateInput = Partial<Pick<CollectionNameDocument, 'field1' | 'field2'>>;
+
+// ============================================
+// 6. QUERY HELPERS
+// ============================================
+export const collectionNameQueryHelpers = {
+  byField: (value: string) => ['fieldName', '==', value] as const,
+  active: () => ['status', '==', 'active'] as const,
+} as const;
+```
+
+### Index Synchronization Workflow
+
+When adding/modifying queries that need indices:
+
+**Step 1: Update Schema File**
+```typescript
+// src/db/schema/trips.ts
+export const TRIPS_INDEXED_FIELDS = [
+  'userId',      // For user's trips
+  'destination', // For destination filtering
+  'status',      // For status filtering
+  'createdAt',   // For date sorting
+] as const;
+```
+
+**Step 2: Update firestore.indexes.json**
+```json
+{
+  "indexes": [
+    {
+      "collectionGroup": "trips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
+```
+
+**Step 3: Deploy Indices**
+```bash
+firebase deploy --only firestore:indexes
+```
+
+**Step 4: Verify in Firebase Console**
+- Navigate to Firestore → Indexes
+- Wait for index build to complete (2-5 minutes)
+- Test queries in development
+
+### Index Documentation Standards
+
+**In Schema Files** - Document WHAT fields are indexed:
+```typescript
+/**
+ * INDEXED FIELDS:
+ * - userId: Required for fetching user's trips
+ * - status + createdAt: Required for filtered listings
+ * - destination + createdAt: Required for destination searches
+ */
+export const TRIPS_INDEXED_FIELDS = [
+  'userId',
+  'status',
+  'destination',
+  'createdAt',
+] as const;
+```
+
+**In firestore.indexes.json** - Define HOW they are indexed (composite patterns):
+```json
+{
+  "indexes": [
+    {
+      "collectionGroup": "trips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
+```
+
+### Maintaining Sync
+
+**Pre-Commit Checklist:**
+```bash
+# 1. Check schema INDEXED_FIELDS match queries
+grep -r "INDEXED_FIELDS" src/db/schema/
+
+# 2. Verify firestore.indexes.json has matching indices
+cat firestore.indexes.json
+
+# 3. Deploy if changes made
+firebase deploy --only firestore:indexes
+```
+
+**Common Sync Issues:**
+
+❌ **Problem**: Query fails with "index required" error
+✅ **Solution**: 
+1. Add fields to schema INDEXED_FIELDS
+2. Add composite index to firestore.indexes.json
+3. Deploy indices
+
+❌ **Problem**: Unused indices in Firebase Console
+✅ **Solution**:
+1. Check if fields still in INDEXED_FIELDS
+2. Remove from firestore.indexes.json if unused
+3. Delete from Firebase Console
+
+❌ **Problem**: INDEXED_FIELDS don't match firestore.indexes.json
+✅ **Solution**:
+1. Review queries that need indices
+2. Update schema file to match actual needs
+3. Update firestore.indexes.json
+4. Deploy and verify
+
+### Collection Naming Conventions
+
+✅ **DO**:
+```typescript
+// Use camelCase for collection names
+export const USER_COLLECTION = 'users' as const;
+export const TRIP_COLLECTION = 'trips' as const;
+export const BOOKING_COLLECTION = 'bookings' as const;
+
+// Use plural form
+export const EMAIL_VERIFICATION_TOKEN_COLLECTION = 'emailVerificationTokens' as const;
+```
+
+❌ **DON'T**:
+```typescript
+// Don't use snake_case or kebab-case
+const USER_COLLECTION = 'user_data'; // ❌
+const TRIP_COLLECTION = 'trip-items'; // ❌
+
+// Don't hardcode collection names in queries
+collection(db, 'users'); // ❌ - use USER_COLLECTION constant
+```
+
+### Quick Reference: Schema Checklist
+
+Before creating/updating a schema file:
+
+- [ ] Collection interface defined
+- [ ] Collection name constant exported
+- [ ] INDEXED_FIELDS documented with purposes
+- [ ] Relationships documented with diagram
+- [ ] Foreign keys documented
+- [ ] Cascade behavior described
+- [ ] Default data constants defined
+- [ ] Public/updatable fields listed
+- [ ] Type utilities created (CreateInput, UpdateInput)
+- [ ] Query helpers implemented
+- [ ] firestore.indexes.json updated to match
+- [ ] Indices deployed to Firebase
+- [ ] Repository pattern implemented (if needed)
+
+---
+
 ## Firebase Security Rules
 
 ### Firestore Rules (`firestore.rules`)
@@ -1342,10 +1590,15 @@ All notable changes to this project will be documented in this file.
 □ All tests passing?
 
 # 5. Database Schema
-□ Schema includes table definition?
-□ Indices defined and commented?
-□ Relationships documented?
-□ Types exported?
+□ Schema includes collection definition?
+□ INDEXED_FIELDS documented with purposes?
+□ firestore.indexes.json in sync with schema?
+□ Indices deployed to Firebase?
+□ Relationships documented with diagram?
+□ Foreign keys documented?
+□ Cascade behavior described?
+□ Type utilities created (CreateInput, UpdateInput)?
+□ Query helpers implemented?
 
 # 6. Error Handling
 □ Using error classes?
@@ -1436,12 +1689,16 @@ npm run pre-commit
 2. 📝 **Document** - Update docs/, use CHANGELOG
 3. 🏗️ **Patterns** - Follow design patterns & security
 4. ✅ **TypeScript** - Check types before build
-5. 🗄️ **Database** - Co-locate schema, indices, relations
+5. 🗄️ **Database** - Co-locate schema, indices, relations (Firebase sync required)
 6. 🚨 **Errors** - Use error classes & constants
 7. 🎨 **Styling** - Use components & theme
 7.5. 📋 **Constants** - ALWAYS use constants, NEVER hardcode
 8. 🔀 **Proxy** - Prefer proxy over middleware
 9. 🧪 **Quality** - SOLID, loosely coupled, testable
+10. 📚 **Docs** - Living docs, no session files
+11. ✔️ **Audit** - Check all points before commit
+
+**These guidelines ensure our codebase remains clean, maintainable, and scalable.**
 10. 📚 **Docs** - Living docs, no session files
 11. ✔️ **Audit** - Check all points before commit
 
