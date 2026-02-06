@@ -9,7 +9,8 @@ import { SITE_CONFIG } from "@/constants/site";
 import { useSwipe, useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils/eventHandlers";
-import { signOut } from "@/lib/firebase/auth-helpers";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 
 /**
  * Sidebar Component
@@ -62,11 +63,14 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      router.push(SITE_CONFIG.account.login);
-      onClose();
+      // Backend logout - clears session cookie and revokes tokens
+      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {});
+      // Force reload to clear client-side state
+      window.location.href = SITE_CONFIG.account.login;
     } catch (error) {
       console.error("Sign out error:", error);
+      // Even on error, redirect to login (session might be cleared)
+      window.location.href = SITE_CONFIG.account.login;
     }
   };
 

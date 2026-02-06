@@ -39,6 +39,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ✅ Better audit trail and monitoring
   - ✅ Protection against client-side tampering
 
+#### 🎨 Frontend Migration to Backend-Only Auth (Feb 6, 2026)
+
+**Complete UI Migration**
+
+- **Login Page** (`/auth/login`):
+  - Migrated from `signInWithEmail()` to `POST /api/auth/login`
+  - Direct redirect after successful login (no auth state listener)
+  - Session cookie automatically set by backend
+  - Improved error handling with centralized error messages
+- **Registration Page** (`/auth/register`):
+  - Migrated from `registerWithEmail()` to `POST /api/auth/register`
+  - Backend handles user creation, Firestore profile, and session
+  - Removed client-side auth state listener
+  - Success message with auto-redirect to profile
+
+- **Forgot Password Page** (`/auth/forgot-password`):
+  - Migrated from `resetPassword()` to `POST /api/auth/forgot-password`
+  - Server-side reset link generation
+  - Always shows success (security best practice - doesn't leak user existence)
+
+- **Logout Functionality** (Sidebar):
+  - Migrated from `signOut()` to `POST /api/auth/logout`
+  - Backend revokes all refresh tokens
+  - Force reload with `window.location.href` to clear all client state
+  - Graceful error handling (redirects even if API fails)
+
+- **OAuth Integration**:
+  - Google and Apple OAuth still use client-side Firebase Auth
+  - OAuth callback automatically creates session cookie
+  - Direct redirect after OAuth success
+
+- **Removed Client-Side Firebase Auth Imports**:
+  - `signInWithEmail` - replaced with API endpoint
+  - `registerWithEmail` - replaced with API endpoint
+  - `signOut` - replaced with API endpoint
+  - `resetPassword` - replaced with API endpoint
+  - `onAuthStateChanged` - no longer needed (session-based auth)
+
+- **Benefits**:
+  - ✅ Zero password exposure in client code
+  - ✅ Simpler code - no auth state listeners
+  - ✅ Better error handling
+  - ✅ Centralized validation
+  - ✅ Instant session invalidation capability
+
 #### 🔐 Profile Update API with Verification Reset (Feb 6, 2026)
 
 - **`PATCH /api/profile/update`** - Server-side profile update endpoint

@@ -12,13 +12,14 @@ import Link from "next/link";
 import { Button, Alert, Checkbox } from "@/components";
 import { FormField } from "@/components/FormField";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import {
-  registerWithEmail,
-  signInWithGoogle,
-  signInWithApple,
-  onAuthStateChanged,
-} from "@/lib/firebase/auth-helpers";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/constants";
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  ROUTES,
+  API_ENDPOINTS,
+} from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -36,21 +37,6 @@ export default function RegisterPage() {
     text: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Listen for auth state changes (auto-login after registration)
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged((user) => {
-      if (user && isLoading) {
-        // User registered and logged in successfully
-        setMessage({
-          type: "success",
-          text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS,
-        });
-        setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
-      }
-    });
-    return () => unsubscribe();
-  }, [isLoading, router]);
 
   const handleBlur = (field: string) => () => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -90,15 +76,30 @@ export default function RegisterPage() {
       return;
     }
 
-    // Register user with Firebase Auth
+    // Register user with backend API
     setIsLoading(true);
     try {
-      await registerWithEmail(
-        formData.email,
-        formData.password,
-        formData.displayName || "User",
-      );
-      // Auth state listener will handle redirect
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
+        email: formData.email.trim(),
+        password: formData.password,
+        displayName: formData.displayName.trim() || undefined,
+      });
+
+      if (response.success) {
+        // Session cookie set automatically by API
+        setMessage({
+          type: "success",
+          text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS,
+        });
+        setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
+      } else {
+        setMessage({
+          type: "error",
+          text:
+            response.error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        });
+        setIsLoading(false);
+      }
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -113,8 +114,8 @@ export default function RegisterPage() {
     setMessage(null);
     try {
       await signInWithGoogle();
-      // Auth state listener will handle redirect
-      // User profile created automatically with "user" role
+      // OAuth creates session automatically, redirect after callback
+      router.push(ROUTES.USER.PROFILE);
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -129,8 +130,8 @@ export default function RegisterPage() {
     setMessage(null);
     try {
       await signInWithApple();
-      // Auth state listener will handle redirect
-      // User profile created automatically with "user" role
+      // OAuth creates session automatically, redirect after callback
+      router.push(ROUTES.USER.PROFILE);
     } catch (error: any) {
       setMessage({
         type: "error",

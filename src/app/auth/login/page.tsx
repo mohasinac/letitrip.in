@@ -23,14 +23,10 @@ import { useState, FormEvent, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
-import { UI_LABELS } from "@/constants";
-import {
-  signInWithEmail,
-  signInWithGoogle,
-  signInWithApple,
-  onAuthStateChanged,
-} from "@/lib/firebase/auth-helpers";
+import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
+import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import { THEME_CONSTANTS } from "@/constants/theme";
+import { apiClient } from "@/lib/api-client";
 
 function LoginForm() {
   const router = useRouter();
@@ -46,27 +42,27 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Listen for auth state changes
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged((user) => {
-      if (user && loading) {
-        // User logged in successfully, redirect
-        router.push(callbackUrl);
-      }
-    });
-    return () => unsubscribe();
-  }, [loading, callbackUrl, router]);
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // Email login with Firebase Auth
-      await signInWithEmail(formData.email, formData.password);
+      // Backend API login with session cookie
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
+        email: formData.email.trim(),
+        password: formData.password,
+      });
+
+      if (response.success) {
+        // Session cookie set automatically by API, redirect immediately
+        router.push(callbackUrl);
+      } else {
+        setError(response.error?.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
+        setLoading(false);
+      }
     } catch (err: any) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
       setLoading(false);
     }
   };
@@ -76,7 +72,8 @@ function LoginForm() {
     setError(null);
     try {
       await signInWithGoogle();
-      // Auth state listener will handle redirect
+      // OAuth will redirect back and create session automatically
+      router.push(callbackUrl);
     } catch (err: any) {
       setError(err.message || "Google login failed");
       setLoading(false);

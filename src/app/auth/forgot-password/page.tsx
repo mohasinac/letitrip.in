@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
 /**
  * Forgot Password Page
- * 
+ *
  * Refactored to use API client, hooks, and reusable components
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, Button, Alert } from '@/components';
-import { FormField } from '@/components/FormField';
-import { Heading, Text } from '@/components/typography';
-import { resetPassword } from '@/lib/firebase/auth-helpers';
-import { SUCCESS_MESSAGES, ROUTES } from '@/constants';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Card, Button, Alert } from "@/components";
+import { FormField } from "@/components/FormField";
+import { Heading, Text } from "@/components/typography";
+import { SUCCESS_MESSAGES, ROUTES, API_ENDPOINTS } from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,12 +27,22 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      await resetPassword(email.trim());
-      setSuccess(true);
+      const response = await apiClient.post(
+        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+        {
+          email: email.trim(),
+        },
+      );
+
+      if (response.success) {
+        setSuccess(true);
+      } else {
+        setError(response.error?.message || "Failed to send reset email");
+      }
     } catch (err: any) {
-      setError(err.message || 'Failed to send reset email');
+      setError(err.message || "Failed to send reset email");
     } finally {
       setIsLoading(false);
     }
@@ -44,15 +54,26 @@ export default function ForgotPasswordPage() {
         <Card className="max-w-md w-full p-8">
           <div className="text-center mb-6">
             <div className="mb-4 text-green-500">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <svg
+                className="w-16 h-16 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <Heading level={4} className="mb-2">
               Check Your Email
             </Heading>
             <Text className="text-gray-600 mb-6">
-              If an account exists with <strong>{email}</strong>, you will receive a password reset link shortly.
+              If an account exists with <strong>{email}</strong>, you will
+              receive a password reset link shortly.
             </Text>
             <Text className="text-gray-500 mb-6 block text-sm">
               The link will expire in 1 hour for security reasons.
@@ -71,7 +92,7 @@ export default function ForgotPasswordPage() {
               variant="ghost"
               onClick={() => {
                 setSuccess(false);
-                setEmail('');
+                setEmail("");
                 setTouched(false);
               }}
               className="w-full"
@@ -92,7 +113,8 @@ export default function ForgotPasswordPage() {
             Forgot Your Password?
           </Heading>
           <Text className="text-gray-600">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we'll send you a link to reset your
+            password.
           </Text>
         </div>
 
@@ -122,14 +144,17 @@ export default function ForgotPasswordPage() {
             disabled={isLoading || !email}
             className="w-full"
           >
-            {isLoading ? 'Sending...' : 'Send Reset Link'}
+            {isLoading ? "Sending..." : "Send Reset Link"}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
-            Remember your password?{' '}
-            <Link href={ROUTES.AUTH.LOGIN} className="text-blue-600 hover:underline">
+            Remember your password?{" "}
+            <Link
+              href={ROUTES.AUTH.LOGIN}
+              className="text-blue-600 hover:underline"
+            >
               Sign in
             </Link>
           </Text>
