@@ -22,9 +22,7 @@ import {
   ERROR_MESSAGES,
   UI_PLACEHOLDERS,
 } from "@/constants";
-import { db } from "@/lib/firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
-import { USER_COLLECTION } from "@/db/schema/users";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 export default function UserSettingsPage() {
   const { user: profile, loading, refreshUser } = useAuth();
@@ -146,11 +144,21 @@ export default function UserSettingsPage() {
     };
 
     try {
-      const userDocRef = doc(db, USER_COLLECTION, profile.uid);
-      await updateDoc(userDocRef, {
-        ...data,
-        updatedAt: new Date(),
+      // Use API endpoint to update profile
+      const response = await fetch(API_ENDPOINTS.PROFILE.UPDATE, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update profile");
+      }
+
+      const result = await response.json();
 
       // Success — show toast and mark form as clean
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
@@ -158,6 +166,9 @@ export default function UserSettingsPage() {
       // Update the initial-values snapshot so the form is no longer "dirty"
       initialFormRef.current = { displayName, phoneNumber };
       markClean();
+
+      // Refresh user data to get updated verification flags
+      await refreshUser();
     } catch (error) {
       console.error("Profile update error:", error);
 

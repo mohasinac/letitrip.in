@@ -13,6 +13,8 @@ export const ERROR_MESSAGES = {
     INVALID_CREDENTIALS: "Invalid email or password",
     ACCOUNT_DISABLED: "Your account has been disabled",
     EMAIL_NOT_VERIFIED: "Please verify your email address to continue",
+    REGISTRATION_FAILED: "Registration failed. Please try again",
+    LOGIN_FAILED: "Login failed. Please try again",
   },
 
   // Validation Errors
@@ -34,16 +36,23 @@ export const ERROR_MESSAGES = {
   USER: {
     NOT_FOUND: "User not found",
     ALREADY_EXISTS: "A user with this email or phone already exists",
+    EMAIL_ALREADY_REGISTERED: "This email is already registered",
     UPDATE_FAILED: "Failed to update user profile",
     PROFILE_INCOMPLETE: "Please complete your profile",
     NOT_AUTHENTICATED: "User not authenticated",
     CANNOT_MODIFY_SELF: "You cannot modify your own account",
     INSUFFICIENT_ROLE_PERMISSION:
       "You do not have permission to assign this role",
+    ACCOUNT_DISABLED: "Your account has been disabled",
   },
 
   // Password Errors
   PASSWORD: {
+    REQUIRED: "Password is required",
+    TOO_SHORT: "Password must be at least 8 characters",
+    NO_UPPERCASE: "Password must contain at least one uppercase letter",
+    NO_LOWERCASE: "Password must contain at least one lowercase letter",
+    NO_NUMBER: "Password must contain at least one number",
     INCORRECT: "Current password is incorrect",
     CHANGE_FAILED: "Failed to change password",
     RESET_FAILED: "Failed to reset password",
@@ -120,6 +129,7 @@ export const SUCCESS_MESSAGES = {
   // Password Reset Success
   PASSWORD: {
     RESET_SUCCESS: "Password reset successfully",
+    RESET_EMAIL_SENT: "Password reset link sent to your email",
     UPDATED: "Password updated successfully",
   },
 
