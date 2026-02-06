@@ -137,13 +137,14 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
 
-    // Set session cookie
+    // Set session cookie with enhanced security
     response.cookies.set("__session", sessionCookie, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      httpOnly: true, // Prevent JavaScript access (XSS protection)
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: "strict", // CSRF protection (changed from 'lax' to 'strict')
       maxAge: 60 * 60 * 24 * 5, // 5 days
       path: "/",
+      // priority: 'high', // Uncomment if using Next.js 13.4+
     });
 
     return response;
