@@ -1,10 +1,12 @@
+"use client";
+
 /**
  * Form State Hook
- * 
+ *
  * Reusable hook for managing form state with validation
  */
 
-import { useState, useCallback, ChangeEvent } from 'react';
+import { useState, useCallback, ChangeEvent } from "react";
 
 interface FormConfig<T> {
   initialValues: T;
@@ -12,17 +14,23 @@ interface FormConfig<T> {
   validate?: (values: T) => Record<keyof T, string> | {};
 }
 
-export function useFormState<T extends Record<string, any>>(config: FormConfig<T>) {
+export function useFormState<T extends Record<string, any>>(
+  config: FormConfig<T>,
+) {
   const [values, setValues] = useState<T>(config.initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    (
+      e: ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >,
+    ) => {
       const { name, value, type } = e.target;
       const newValue =
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
 
       setValues((prev) => ({
         ...prev,
@@ -37,7 +45,7 @@ export function useFormState<T extends Record<string, any>>(config: FormConfig<T
         }));
       }
     },
-    [errors]
+    [errors],
   );
 
   const handleBlur = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +89,7 @@ export function useFormState<T extends Record<string, any>>(config: FormConfig<T
           ...acc,
           [key]: true,
         }),
-        {}
+        {},
       );
       setTouched(allTouched);
 
@@ -97,7 +105,7 @@ export function useFormState<T extends Record<string, any>>(config: FormConfig<T
         setIsSubmitting(false);
       }
     },
-    [values, config, validateForm]
+    [values, config, validateForm],
   );
 
   const reset = useCallback(() => {

@@ -43,7 +43,19 @@ service firebase.storage {
     // Users Storage
     // ============================================
     
-    // User profile photos
+    // User profile photos (any filename in profile folder)
+    match /users/{userId}/profile/{filename} {
+      // Anyone can read profile photos
+      allow read: if true;
+      
+      // Only the user can upload/update their profile photo
+      allow write: if isOwner(userId) && isValidImage();
+      
+      // Only the user can delete their profile photo
+      allow delete: if isOwner(userId);
+    }
+    
+    // User profile photo (legacy path support)
     match /users/{userId}/profile.jpg {
       // Anyone can read profile photos
       allow read: if true;

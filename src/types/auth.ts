@@ -13,14 +13,44 @@ export interface UserProfile {
   phoneVerified: boolean;
   displayName: string | null;
   photoURL: string | null;
+  avatarMetadata?: {
+    url: string;
+    position: { x: number; y: number };
+    zoom: number;
+  } | null;
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
   emailVerified: boolean;
   disabled: boolean;
+  publicProfile?: {
+    isPublic: boolean;
+    showEmail: boolean;
+    showPhone: boolean;
+    showOrders: boolean;
+    showWishlist: boolean;
+    bio?: string;
+    location?: string;
+    website?: string;
+    socialLinks?: {
+      twitter?: string;
+      instagram?: string;
+      facebook?: string;
+      linkedin?: string;
+    };
+  };
+  stats?: {
+    totalOrders: number;
+    auctionsWon: number;
+    itemsSold: number;
+    reviewsCount: number;
+    rating?: number;
+  };
   metadata?: {
     lastSignInTime?: string;
     creationTime?: string;
+    lastLoginAt?: string;
+    loginCount?: number;
   };
 }
 

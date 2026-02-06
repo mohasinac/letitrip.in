@@ -21,8 +21,10 @@ export type { UseLongPressOptions } from "./useLongPress";
 
 export { useApiQuery } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
+export { useApiRequest } from "./useApiRequest";
 export { useProfile } from "./useProfile";
 export { useForm } from "./useForm";
+export { useFormState } from "./useFormState";
 export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
 
@@ -32,4 +34,36 @@ export type { UseClickOutsideOptions } from "./useClickOutside";
 export { useKeyPress } from "./useKeyPress";
 export type { UseKeyPressOptions, KeyModifiers } from "./useKeyPress";
 
-export { useAuth } from "./useAuth";
+export {
+  useAuth,
+  useLogin,
+  useRegister,
+  useVerifyEmail,
+  useResendVerification,
+  useForgotPassword,
+  useResetPassword,
+  useChangePassword,
+} from "./useAuth";
+
+export {
+  useAddresses,
+  useAddress,
+  useCreateAddress,
+  useUpdateAddress,
+  useDeleteAddress,
+  useSetDefaultAddress,
+} from "./useAddresses";
+export type {
+  Address,
+  CreateAddressInput,
+  UpdateAddressInput,
+} from "./useAddresses";
+
+export { useStorageUpload } from "./useStorageUpload";
+export type { UploadOptions, UploadState } from "./useStorageUpload";
+
+export { useUnsavedChanges } from "./useUnsavedChanges";
+export type {
+  UseUnsavedChangesOptions,
+  UseUnsavedChangesReturn,
+} from "./useUnsavedChanges";

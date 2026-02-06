@@ -7,14 +7,26 @@
 "use client";
 
 import React from "react";
-import { Input, Textarea } from "@/components";
+import { Input, Textarea, Select } from "@/components";
 
-interface FormFieldProps {
-  label: string;
-  name: string;
-  type?: "text" | "email" | "password" | "tel" | "number" | "textarea";
+export interface SelectOption {
   value: string;
-  onChange: (value: string) => void;
+  label: string;
+}
+
+export interface FormFieldProps {
+  label?: string;
+  name: string;
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "tel"
+    | "number"
+    | "textarea"
+    | "select";
+  value?: string;
+  onChange?: (value: string) => void;
   onBlur?: () => void;
   error?: string;
   touched?: boolean;
@@ -24,13 +36,14 @@ interface FormFieldProps {
   autoComplete?: string;
   rows?: number;
   helpText?: string;
+  options?: SelectOption[];
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
   label,
   name,
   type = "text",
-  value,
+  value = "",
   onChange,
   onBlur,
   error,
@@ -41,31 +54,58 @@ export const FormField: React.FC<FormFieldProps> = ({
   autoComplete,
   rows,
   helpText,
+  options = [],
 }) => {
-  const showError = touched && error;
+  const showError = error
+    ? touched !== undefined
+      ? touched && !!error
+      : !!error
+    : false;
   const inputId = `field-${name}`;
+  const errorId = `${inputId}-error`;
+
+  const ariaProps = {
+    "aria-required": required || undefined,
+    "aria-invalid": showError || undefined,
+    "aria-describedby": showError ? errorId : undefined,
+  };
 
   return (
     <div className="mb-4">
-      <label
-        htmlFor={inputId}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+      {label && (
+        <label
+          htmlFor={inputId}
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
 
-      {type === "textarea" ? (
+      {type === "select" ? (
+        <Select
+          id={inputId}
+          name={name}
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+          onBlur={onBlur}
+          disabled={disabled}
+          options={options}
+          className={showError ? "border-red-500" : ""}
+          {...ariaProps}
+        />
+      ) : type === "textarea" ? (
         <Textarea
           id={inputId}
           name={name}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange?.(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
           rows={rows}
           className={showError ? "border-red-500" : ""}
+          {...ariaProps}
         />
       ) : (
         <Input
@@ -73,12 +113,13 @@ export const FormField: React.FC<FormFieldProps> = ({
           name={name}
           type={type}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange?.(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
           className={showError ? "border-red-500" : ""}
+          {...ariaProps}
         />
       )}
 
@@ -87,7 +128,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       )}
 
       {showError && (
-        <p className="mt-1 text-sm text-red-600" role="alert">
+        <p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
           {error}
         </p>
       )}

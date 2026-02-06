@@ -57,10 +57,11 @@ export const SITE_CONFIG = {
 
   // User account links
   account: {
-    profile: "/profile",
-    settings: "/settings",
-    orders: "/orders",
-    wishlist: "/wishlist",
+    profile: "/user/profile",
+    settings: "/user/settings",
+    orders: "/user/orders",
+    wishlist: "/user/wishlist",
+    addresses: "/user/addresses",
     cart: "/cart",
     login: "/auth/login",
     register: "/auth/register",

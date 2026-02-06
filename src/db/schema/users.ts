@@ -6,6 +6,15 @@
 
 import { UserRole } from "@/types/auth";
 
+export interface AvatarMetadata {
+  url: string;
+  position: {
+    x: number; // percentage (0-100)
+    y: number; // percentage (0-100)
+  };
+  zoom: number; // 0.1 to 3.0
+}
+
 export interface UserDocument {
   id?: string; // Document ID (optional, added by Firestore, same as uid)
   uid: string;
@@ -14,12 +23,41 @@ export interface UserDocument {
   phoneVerified?: boolean;
   displayName: string | null;
   photoURL: string | null;
+  avatarMetadata?: AvatarMetadata | null; // Crop/position data for avatar
   role: UserRole;
   passwordHash?: string; // Only for credentials auth
   emailVerified: boolean;
   disabled: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  // Public profile settings
+  publicProfile?: {
+    isPublic: boolean; // Whether profile is publicly viewable
+    showEmail: boolean; // Show email on public profile
+    showPhone: boolean; // Show phone on public profile
+    showOrders: boolean; // Show order count/stats
+    showWishlist: boolean; // Show wishlist count
+    bio?: string; // Short bio for public profile
+    location?: string; // User location (city, country)
+    website?: string; // Personal website URL
+    socialLinks?: {
+      twitter?: string;
+      instagram?: string;
+      facebook?: string;
+      linkedin?: string;
+    };
+  };
+
+  // User statistics (for public display)
+  stats?: {
+    totalOrders: number;
+    auctionsWon: number;
+    itemsSold: number;
+    reviewsCount: number;
+    rating?: number; // Average rating (0-5)
+  };
+
   metadata?: {
     lastSignInTime?: string;
     creationTime?: string;
@@ -39,6 +77,19 @@ export const DEFAULT_USER_DATA: Partial<UserDocument> = {
   disabled: false,
   photoURL: null,
   displayName: null,
+  publicProfile: {
+    isPublic: true, // Public by default
+    showEmail: false, // Email private by default
+    showPhone: false, // Phone private by default
+    showOrders: true, // Show order stats
+    showWishlist: true, // Show wishlist count
+  },
+  stats: {
+    totalOrders: 0,
+    auctionsWon: 0,
+    itemsSold: 0,
+    reviewsCount: 0,
+  },
 };
 
 /**
@@ -58,14 +109,16 @@ export const USER_INDEXED_FIELDS = [
  */
 export const USER_PUBLIC_FIELDS = [
   "uid",
-  "email",
-  "phoneNumber",
-  "phoneVerified",
   "displayName",
   "photoURL",
+  "avatarMetadata",
   "role",
-  "emailVerified",
   "createdAt",
+  "publicProfile", // Includes visibility settings
+  "stats", // Public statistics
+  // Conditionally include based on publicProfile settings:
+  // - email (if showEmail is true)
+  // - phoneNumber (if showPhone is true)
 ] as const;
 
 /**

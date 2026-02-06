@@ -23,6 +23,7 @@
 
 import { ReactNode } from "react";
 import { SITE_CONFIG } from "./site";
+import { UI_LABELS } from "./ui";
 
 /**
  * Navigation Item Interface
@@ -55,7 +56,7 @@ export interface NavGroup {
 export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     href: SITE_CONFIG.nav.home,
-    label: "Home",
+    label: UI_LABELS.NAV.HOME,
     icon: (
       <path
         strokeLinecap="round"
@@ -67,7 +68,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.products,
-    label: "Products",
+    label: UI_LABELS.NAV.PRODUCTS,
     icon: (
       <path
         strokeLinecap="round"
@@ -79,7 +80,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.auctions,
-    label: "Auctions",
+    label: UI_LABELS.NAV.AUCTIONS,
     icon: (
       <path
         strokeLinecap="round"
@@ -91,7 +92,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.shops,
-    label: "Shops",
+    label: UI_LABELS.NAV.SHOPS,
     icon: (
       <path
         strokeLinecap="round"
@@ -103,7 +104,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   },
   {
     href: SITE_CONFIG.nav.stickers,
-    label: "Stickers",
+    label: UI_LABELS.NAV.STICKERS,
     icon: (
       <path
         strokeLinecap="round"
@@ -127,11 +128,11 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
 // Sidebar Navigation Groups
 export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
   {
-    title: "Account",
+    title: UI_LABELS.NAV.ACCOUNT,
     items: [
       {
         href: SITE_CONFIG.account.profile,
-        label: "Profile",
+        label: UI_LABELS.NAV.PROFILE,
         icon: (
           <path
             strokeLinecap="round"
@@ -143,7 +144,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: SITE_CONFIG.account.orders,
-        label: "Orders",
+        label: UI_LABELS.NAV.ORDERS,
         icon: (
           <path
             strokeLinecap="round"
@@ -155,7 +156,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: SITE_CONFIG.account.wishlist,
-        label: "Wishlist",
+        label: UI_LABELS.NAV.WISHLIST,
         icon: (
           <path
             strokeLinecap="round"
@@ -166,8 +167,20 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
+        href: SITE_CONFIG.account.addresses,
+        label: UI_LABELS.NAV.ADDRESSES,
+        icon: (
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        ),
+      },
+      {
         href: SITE_CONFIG.account.settings,
-        label: "Settings",
+        label: UI_LABELS.NAV.SETTINGS,
         icon: (
           <>
             <path
@@ -188,11 +201,11 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: "Support",
+    title: UI_LABELS.NAV.SUPPORT,
     items: [
       {
         href: SITE_CONFIG.nav.contact,
-        label: "Contact Us",
+        label: UI_LABELS.NAV.CONTACT_US,
         icon: (
           <path
             strokeLinecap="round"
@@ -204,7 +217,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
       },
       {
         href: "/help",
-        label: "Help Center",
+        label: UI_LABELS.NAV.HELP_CENTER,
         icon: (
           <path
             strokeLinecap="round"

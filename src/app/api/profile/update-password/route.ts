@@ -15,6 +15,7 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 export const POST = createApiHandler({
   auth: true,
@@ -25,7 +26,7 @@ export const POST = createApiHandler({
 
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      return errorResponse("User not found in auth context", 401);
+      return errorResponse(ERROR_MESSAGES.USER.NOT_FOUND, 401);
     }
 
     const emailProvider = currentUser.providerData.find(
@@ -33,7 +34,7 @@ export const POST = createApiHandler({
     );
     if (!emailProvider || !currentUser.email) {
       return errorResponse(
-        "Password change not available. You signed in with a social provider.",
+        ERROR_MESSAGES.PASSWORD.SOCIAL_PROVIDER_NO_PASSWORD,
         400,
       );
     }
@@ -45,13 +46,13 @@ export const POST = createApiHandler({
       );
       await reauthenticateWithCredential(currentUser, credential);
       await updatePassword(currentUser, newPassword);
-      return successResponse(null, "Password updated successfully");
+      return successResponse(null, SUCCESS_MESSAGES.PASSWORD.UPDATED);
     } catch (error: any) {
       if (
         error.code === "auth/wrong-password" ||
         error.code === "auth/invalid-credential"
       ) {
-        return errorResponse("Current password is incorrect", 401);
+        return errorResponse(ERROR_MESSAGES.PASSWORD.INCORRECT, 401);
       }
       throw error;
     }

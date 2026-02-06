@@ -1,5 +1,13 @@
 import "./globals.css";
 import { LayoutClient, ThemeProvider, ToastProvider } from "@/index";
+import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = genMetadata({
+  title: SEO_CONFIG.defaultTitle,
+  description: SEO_CONFIG.defaultDescription,
+  path: "/",
+});
 
 export default function RootLayout({
   children,

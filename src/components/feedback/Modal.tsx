@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import { useSwipe } from '@/hooks';
-import { preventBodyScroll } from '@/utils/eventHandlers';
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { useSwipe } from "@/hooks";
+import { preventBodyScroll } from "@/utils/eventHandlers";
 
 /**
  * Modal Component
- * 
+ *
  * A flexible modal dialog component with backdrop, multiple sizes, and keyboard support.
  * Automatically manages body scroll lock and supports ESC key to close.
  * Renders using React Portal for proper z-index layering.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -32,7 +32,7 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
 }
 
@@ -41,28 +41,59 @@ export default function Modal({
   onClose,
   title,
   children,
-  size = 'md',
+  size = "md",
   showCloseButton = true,
 }: ModalProps) {
   const { themed, card, typography } = THEME_CONSTANTS;
   const modalRef = useRef<HTMLDivElement>(null);
   const [translateY, setTranslateY] = useState(0);
 
-  // Swipe down to close modal on mobile
+  // Check if swipe should be disabled (e.g., during image crop)
+  const [isSwipeDisabled, setIsSwipeDisabled] = useState(false);
+
+  useEffect(() => {
+    // Check if any child element has data-disable-swipe attribute
+    const checkSwipeDisabled = () => {
+      if (modalRef.current) {
+        const hasDisableSwipe = modalRef.current.querySelector(
+          '[data-disable-swipe="true"]',
+        );
+        setIsSwipeDisabled(!!hasDisableSwipe);
+      }
+    };
+
+    checkSwipeDisabled();
+
+    // Use MutationObserver to detect changes
+    const observer = new MutationObserver(checkSwipeDisabled);
+    if (modalRef.current) {
+      observer.observe(modalRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+    }
+
+    return () => observer.disconnect();
+  }, [isOpen]);
+
+  // Swipe down to close modal on mobile (only when not disabled)
   useSwipe(modalRef, {
     onSwiping: (deltaX, deltaY) => {
-      if (deltaY > 0) {
+      if (!isSwipeDisabled && deltaY > 0) {
         setTranslateY(deltaY);
       }
     },
     onSwipeDown: (distance) => {
-      if (distance > 100) {
+      if (!isSwipeDisabled && distance > 100) {
         onClose();
       }
       setTranslateY(0);
     },
     onSwipeEnd: () => {
-      setTranslateY(0);
+      if (!isSwipeDisabled) {
+        setTranslateY(0);
+      }
     },
     minSwipeDistance: 100,
   });
@@ -74,30 +105,34 @@ export default function Modal({
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    full: 'max-w-full mx-4',
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    full: "max-w-full mx-4",
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ position: "fixed" }}
+    >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 transition-opacity"
+        style={{ position: "fixed" }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -106,18 +141,24 @@ export default function Modal({
       <div
         ref={modalRef}
         className={`
-          relative w-full ${sizeClasses[size]}
+          w-full ${sizeClasses[size]}
           ${themed.bgSecondary}
           ${card.base}
           shadow-2xl
           transform transition-all
-          max-h-[90vh] flex flex-col
+          max-h-[85vh] flex flex-col
           animate-fade-in
           touch-pan-y
         `}
         style={{
-          transform: translateY > 0 ? `translateY(${translateY}px)` : undefined,
-          transition: translateY > 0 ? 'none' : undefined,
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform:
+            translateY > 0
+              ? `translate(-50%, calc(-50% + ${translateY}px))`
+              : "translate(-50%, -50%)",
+          transition: translateY > 0 ? "none" : undefined,
         }}
         role="dialog"
         aria-modal="true"
@@ -125,9 +166,13 @@ export default function Modal({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className={`flex items-center justify-between p-6 border-b ${themed.borderLight}`}>
+          <div
+            className={`flex items-center justify-between p-6 border-b ${themed.borderLight}`}
+          >
             {title && (
-              <h2 className={`${THEME_CONSTANTS.typography.h4} ${themed.textPrimary}`}>
+              <h2
+                className={`${THEME_CONSTANTS.typography.h4} ${themed.textPrimary}`}
+              >
                 {title}
               </h2>
             )}
@@ -156,9 +201,7 @@ export default function Modal({
         )}
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
-          {children}
-        </div>
+        <div className="p-6 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );
@@ -167,10 +210,18 @@ export default function Modal({
 }
 
 // Modal Footer Component
-export function ModalFooter({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function ModalFooter({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const { themed, spacing } = THEME_CONSTANTS;
   return (
-    <div className={`p-6 border-t ${themed.borderLight} flex items-center justify-end ${spacing.inline} ${className}`}>
+    <div
+      className={`p-6 border-t ${themed.borderLight} flex items-center justify-end ${spacing.inline} ${className}`}
+    >
       {children}
     </div>
   );

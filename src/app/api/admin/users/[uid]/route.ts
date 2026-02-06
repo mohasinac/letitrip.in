@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/api-handler";
 import { userRepository } from "@/repositories";
 import { canChangeRole } from "@/lib/security/authorization";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
 
 const updateUserSchema = z.object({
@@ -26,13 +27,13 @@ export const PATCH = createApiHandler({
     const uid = request.url.split("/").pop()!;
 
     if (user && user.uid === uid) {
-      return errorResponse("You cannot modify your own account", 403);
+      return errorResponse(ERROR_MESSAGES.USER.CANNOT_MODIFY_SELF, 403);
     }
 
     // Get target user's current data
     const targetUser = await userRepository.findById(uid);
     if (!targetUser) {
-      return errorResponse("User not found", 404);
+      return errorResponse(ERROR_MESSAGES.USER.NOT_FOUND, 404);
     }
 
     // Check role change permissions
@@ -41,7 +42,7 @@ export const PATCH = createApiHandler({
 
       if (!canChange) {
         return errorResponse(
-          "You do not have permission to assign this role",
+          ERROR_MESSAGES.USER.INSUFFICIENT_ROLE_PERMISSION,
           403,
         );
       }
@@ -50,6 +51,6 @@ export const PATCH = createApiHandler({
     await userRepository.update(uid, body!);
     const updatedUser = await userRepository.findById(uid);
 
-    return successResponse(updatedUser, "User updated successfully");
+    return successResponse(updatedUser, SUCCESS_MESSAGES.USER.USER_UPDATED);
   },
 });

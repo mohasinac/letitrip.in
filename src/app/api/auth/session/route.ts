@@ -6,7 +6,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { cookies } from "next/headers";
+import { handleApiError } from "@/lib/errors";
+import { ValidationError } from "@/lib/errors";
+import { UI_LABELS } from "@/constants";
 
 /**
  * Create session cookie
@@ -16,10 +18,7 @@ export async function POST(request: NextRequest) {
     const { idToken } = await request.json();
 
     if (!idToken) {
-      return NextResponse.json(
-        { success: false, error: "ID token required" },
-        { status: 400 },
-      );
+      throw new ValidationError(UI_LABELS.AUTH.ID_TOKEN_REQUIRED);
     }
 
     // Create session cookie (5 days expiry)
@@ -36,12 +35,8 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error: any) {
-    console.error("Session creation error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Failed to create session" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    return handleApiError(error);
   }
 }
 
@@ -56,11 +51,7 @@ export async function DELETE(request: NextRequest) {
     response.cookies.delete("__session");
 
     return response;
-  } catch (error: any) {
-    console.error("Session deletion error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Failed to clear session" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    return handleApiError(error);
   }
 }

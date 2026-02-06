@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { SITE_CONFIG } from "@/constants/site";
 import { ReactNode } from "react";
+import { useAuth } from "@/hooks";
+import { AvatarDisplay } from "@/components";
 import NavItem from "./NavItem";
 
 /**
@@ -67,23 +69,12 @@ const bottomNavLinks: BottomNavLink[] = [
       />
     ),
   },
-  {
-    href: SITE_CONFIG.account.profile,
-    label: "Profile",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-      />
-    ),
-  },
 ];
 
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <nav
@@ -128,6 +119,65 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             </svg>
             <span className={typography.xs}>Search</span>
           </button>
+        </li>
+
+        {/* Profile Link - last position */}
+        <li className="flex-1">
+          {user ? (
+            <a
+              href={SITE_CONFIG.account.profile}
+              className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
+                pathname === SITE_CONFIG.account.profile
+                  ? themed.textPrimary
+                  : themed.textSecondary
+              } hover:${themed.textPrimary}`}
+            >
+              <div className="flex flex-col items-center gap-0.5">
+                <AvatarDisplay
+                  cropData={
+                    user.avatarMetadata ||
+                    (user.photoURL
+                      ? {
+                          url: user.photoURL,
+                          position: { x: 50, y: 50 },
+                          zoom: 1,
+                        }
+                      : null)
+                  }
+                  size="sm"
+                  alt={user.displayName || "User"}
+                  displayName={user.displayName}
+                  email={user.email}
+                />
+                <span
+                  className={`text-[7px] font-semibold uppercase leading-none ${
+                    user.role === "admin"
+                      ? "text-red-500"
+                      : user.role === "moderator" || user.role === "seller"
+                        ? "text-yellow-500"
+                        : "text-green-500"
+                  }`}
+                >
+                  {user.role || "user"}
+                </span>
+              </div>
+            </a>
+          ) : (
+            <NavItem
+              href={SITE_CONFIG.account.profile}
+              label="Profile"
+              icon={
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              }
+              isActive={pathname === SITE_CONFIG.account.profile}
+              variant="vertical"
+            />
+          )}
         </li>
       </ul>
     </nav>

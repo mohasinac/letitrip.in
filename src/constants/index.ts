@@ -32,6 +32,9 @@ export type { ThemeMode } from "./theme";
 // Site configuration
 export { SITE_CONFIG } from "./site";
 
+// SEO configuration
+export { SEO_CONFIG, generateMetadata, generateProfileMetadata } from "./seo";
+
 // Navigation constants
 export { MAIN_NAV_ITEMS, SIDEBAR_NAV_GROUPS } from "./navigation";
 export type { NavGroup } from "./navigation";

@@ -18,6 +18,7 @@ import {
   AuthenticationError,
   ValidationError,
 } from "@/lib/errors";
+import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
 import type { UserRole } from "@/types/auth";
 
 interface RateLimitConfig {
@@ -60,7 +61,7 @@ export function createApiHandler<TInput = any>(
           return NextResponse.json(
             {
               success: false,
-              error: "Too many requests. Please try again later.",
+              error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED,
             },
             { status: 429 },
           );
@@ -72,7 +73,7 @@ export function createApiHandler<TInput = any>(
       if (options.auth) {
         user = await getAuthenticatedUser();
         if (!user) {
-          throw new AuthenticationError("Authentication required");
+          throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
         }
 
         // Role-based authorization
@@ -89,7 +90,7 @@ export function createApiHandler<TInput = any>(
 
         if (!result.success) {
           throw new ValidationError(
-            "Invalid input",
+            ERROR_MESSAGES.VALIDATION.INVALID_INPUT,
             result.error.flatten().fieldErrors as Record<string, string[]>,
           );
         }

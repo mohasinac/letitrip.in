@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import Button from '../ui/Button';
+import { useState, useRef, useEffect } from "react";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import Button from "../ui/Button";
 
 /**
  * Search Component
- * 
+ *
  * A sticky search bar that appears below the title bar when opened.
  * Features auto-focus, ESC key support, and Enter key submission.
  * Includes animated slide-down entrance and backdrop for mobile.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -29,7 +29,7 @@ interface SearchProps {
 }
 
 export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -43,14 +43,14 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
   }, [isOpen, onClose]);
 
@@ -61,7 +61,7 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -70,8 +70,11 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
 
   return (
     <>
-      {/* Search Bar - sticky below title bar */}
-      <div className={`sticky top-16 ${THEME_CONSTANTS.zIndex.search} ${THEME_CONSTANTS.layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} shadow-md animate-slide-down`}>
+      {/* Search Bar - sticky positioning after TitleBar */}
+      {/* Appears after TitleBar on both mobile and desktop (navbar hides on scroll) */}
+      <div
+        className={`sticky top-20 ${THEME_CONSTANTS.zIndex.search} ${THEME_CONSTANTS.layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} shadow-md animate-slide-down`}
+      >
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center gap-2 md:gap-3">
             <div className="flex-1 relative">
@@ -133,7 +136,9 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
 
           {/* Search Results Preview */}
           {query && (
-            <div className={`mt-4 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl p-4 max-h-96 overflow-y-auto`}>
+            <div
+              className={`mt-4 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl p-4 max-h-96 overflow-y-auto`}
+            >
               <p className={`${THEME_CONSTANTS.themed.textSecondary} text-sm`}>
                 Searching for "{query}"...
               </p>

@@ -11,6 +11,477 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🔒 Authorization Utilities Enhancement
+
+- **`requireAuth()`** - Validates user is authenticated, throws `AuthenticationError`
+- **`requireOwnership()`** - Validates user owns the resource, throws `AuthorizationError`
+- **`requireEmailVerified()`** - Validates user email is verified
+- **`requireActiveAccount()`** - Validates user account is not disabled
+- All functions use typed error classes and centralized error constants
+
+#### 📋 New Constants Added
+
+- **`UI_LABELS.NAV`** - 14 navigation label constants (Home, Products, Auctions, etc.)
+- **`UI_LABELS.AUTH`** - 8 auth-related message constants (phone not implemented, rate limit, etc.)
+- **`ERROR_MESSAGES.USER`** - 3 new entries (NOT_AUTHENTICATED, CANNOT_MODIFY_SELF, INSUFFICIENT_ROLE_PERMISSION)
+- **`ERROR_MESSAGES.PASSWORD.SOCIAL_PROVIDER_NO_PASSWORD`** - Social auth password change error
+- **`ERROR_MESSAGES.GENERIC.USER_ID_REQUIRED`** - Validation constant
+- **`ERROR_MESSAGES.GENERIC.PROFILE_PRIVATE`** - Privacy error constant
+- **`SUCCESS_MESSAGES.USER.USER_UPDATED`** - Admin user update success
+- **`SUCCESS_MESSAGES.PASSWORD.UPDATED`** - Password update success
+- **`SUCCESS_MESSAGES.ACCOUNT.DELETED`** - Account deletion success
+
+#### 🎨 FormField Component Enhancement
+
+- Added `select` type support with `options` prop
+- Made `value` and `onChange` optional (with defaults) for simpler usage
+- Made `label` optional for minimal form fields
+- Exported `FormFieldProps` and `SelectOption` interfaces
+- Added to components barrel export (`src/components/index.ts`)
+
+#### 🗄️ Token Schema Enhancement
+
+- Added `DEFAULT_EMAIL_VERIFICATION_TOKEN_DATA` constant
+- Added `DEFAULT_PASSWORD_RESET_TOKEN_DATA` constant
+- Added `TOKEN_PUBLIC_FIELDS` constant (empty - tokens are private)
+- Added `TOKEN_UPDATABLE_FIELDS` constant (used, usedAt)
+- Added cascade behavior documentation
+
+#### 🔌 Hook Exports
+
+- Added `useFormState` to hooks barrel export
+- Added `useApiRequest` (deprecated) to hooks barrel export
+- Added `"use client"` directive to `useFormState.ts` and `useApiRequest.ts`
+
+### Changed
+
+#### 🔄 Hardcoded Strings → Constants (Standards #7.5, #6)
+
+- **`navigation.tsx`** - All 14 labels replaced with `UI_LABELS.NAV.*` constants
+- **`useAuth.ts`** - 5 hardcoded strings replaced with `UI_LABELS.AUTH.*` constants
+- **`session/route.ts`** - Migrated to `handleApiError()` + `ValidationError` class
+- **`api-handler.ts`** - 3 hardcoded strings replaced with constants
+- **`admin/users/[uid]/route.ts`** - All strings use `ERROR_MESSAGES`/`SUCCESS_MESSAGES`
+- **`profile/update-password/route.ts`** - 4 hardcoded strings replaced with constants
+- **`profile/delete-account/route.ts`** - Success message uses constant
+- **`profile/[userId]/route.ts`** - Migrated to error classes + `handleApiError()`
+
+#### 🔐 Authorization Module Improvements
+
+- `requireRole()` now uses `AuthenticationError` (was plain `AuthorizationError` for missing user)
+- Removed `any` type from `requireRole()` parameter, uses `Record<string, unknown>`
+- All authorization functions use `ERROR_MESSAGES` constants instead of hardcoded strings
+
+#### 📊 Type Safety Improvements
+
+- `useAuth()` hook now returns `UserProfile | null` (was `any`)
+- `UserProfile` type extended with `avatarMetadata`, `publicProfile`, `stats`, `metadata`
+- Test file null checks updated with non-null assertions
+
+#### 🛤️ Route Consistency Fix
+
+- `ROUTES.USER.PROFILE` corrected to `/user/profile` (was `/profile`)
+- `ROUTES.USER.SETTINGS` corrected to `/user/settings` (was `/settings`)
+- Now matches actual app routes and `SITE_CONFIG.account.*`
+
+### Fixed
+
+- **25 TypeScript errors → 0**: All FormField.test.tsx type errors resolved
+- **Build errors**: Added `"use client"` to `useFormState.ts` and `useApiRequest.ts`
+- **Type mismatch**: `api-handler.ts` requireRole compatible with `DecodedIdToken`
+
+#### �️ Unsaved Changes Protection & Save Feedback
+
+- **Navigation Guard** for user settings page:
+  - Browser `beforeunload` event fires when form has unsaved changes
+  - Prevents accidental data loss on refresh, tab close, or URL navigation
+  - Tracks both profile form changes (displayName, phoneNumber) and pending avatar uploads
+
+- **Unsaved Changes Banner**:
+  - Yellow warning alert appears at the top of settings when changes are detected
+  - Shows "You have unsaved changes — Save your changes before leaving, or they will be lost."
+  - Disappears automatically once changes are saved
+
+- **Form Revert on Save Error**:
+  - If Firestore `updateDoc` fails, form fields revert to the last-known good values
+  - Prevents the UI from showing unsaved data that didn't persist to Firebase
+  - Error alert still displayed for user awareness
+
+- **Toast Notifications** for all success actions:
+  - Profile save → "Settings saved successfully" toast
+  - Password change → "Password changed successfully" toast
+  - Email verification resend → "Verification email sent successfully" toast
+  - Replaced inline Alert-based success messages with toasts for better UX
+  - Error messages remain as inline Alerts for visibility
+
+- **`useUnsavedChanges` Hook** (`src/hooks/useUnsavedChanges.ts`):
+  - Generic, reusable hook for any form with unsaved-changes protection
+  - Compares current form values against an initial snapshot
+  - Supports `extraDirty` flag for non-form dirty state (e.g. pending avatar)
+  - `markClean()` — call after successful save to reset dirty tracking
+  - `confirmLeave()` — programmatic navigation guard with `window.confirm`
+  - `isDirty` / `isFormDirty` — computed booleans for UI indicators
+  - Automatically manages `beforeunload` event listener lifecycle
+
+- **`onPendingStateChange` Callback** on `AvatarUpload` component:
+  - New optional prop notifies parent when avatar has pending (unsaved) crop
+  - Settings page uses it to include avatar state in dirty-check logic
+
+- **New UI Constants** (`src/constants/ui.ts`):
+  - `UI_LABELS.CONFIRM.UNSAVED_CHANGES` — browser leave prompt
+  - `UI_LABELS.SETTINGS.UNSAVED_BANNER` — banner title
+  - `UI_LABELS.SETTINGS.UNSAVED_DETAIL` — banner detail text
+  - `UI_LABELS.SETTINGS.SAVE_CHANGES` / `SAVING` — button labels
+
+- **New Success Constant** (`src/constants/messages.ts`):
+  - `SUCCESS_MESSAGES.USER.SETTINGS_SAVED` — "Settings saved successfully"
+
+- **Files Created**:
+  - `src/hooks/useUnsavedChanges.ts` — New reusable hook
+
+- **Files Modified**:
+  - `src/app/user/settings/page.tsx` — Integrated unsaved-changes guard, toasts, revert logic
+  - `src/components/AvatarUpload.tsx` — Added `onPendingStateChange` prop + effect
+  - `src/hooks/index.ts` — Exported new hook
+  - `src/constants/ui.ts` — Added SETTINGS and CONFIRM constants
+  - `src/constants/messages.ts` — Added SETTINGS_SAVED constant
+
+#### �🖼️ Avatar Upload Save Confirmation Flow
+
+- **Explicit Save Step** for avatar uploads:
+  - User picks image → crop modal → preview shown with "Save Avatar" button
+  - Avatar is NOT uploaded until user explicitly clicks "Save Avatar"
+  - Cancel button discards pending change without uploading
+  - Pending avatar preview highlighted with blue border + ring
+  - Helpful hint text: "Click Save Avatar to apply your new profile picture."
+
+- **Progress Bar** during avatar save:
+  - Shows upload/save progress with percentage indicator
+  - Uses existing `Progress` component from UI library
+  - Displays "Uploading..." and "Saving..." labels during each phase
+  - Turns green on completion (success variant)
+
+- **Toast Notification** on successful save:
+  - Success toast via `useToast` hook: "Avatar uploaded successfully"
+  - Uses existing `ToastProvider` already configured in app layout
+
+- **User Data Reload** after save:
+  - New `refreshUser()` function added to `useAuth` hook
+  - Manually re-fetches Firestore user data after profile changes
+  - Called automatically after avatar save completes
+  - Available to any component via `const { refreshUser } = useAuth()`
+
+- **New UI Constants** (`src/constants/ui.ts`):
+  - `UI_LABELS.AVATAR.SAVE_AVATAR` — "Save Avatar"
+  - `UI_LABELS.AVATAR.CANCEL_CHANGE` — "Cancel"
+  - `UI_LABELS.AVATAR.READY_TO_SAVE` — Hint text for pending save
+
+- **Files Modified**:
+  - `src/components/AvatarUpload.tsx` — New pending state + Save/Cancel flow + progress bar + toast
+  - `src/hooks/useAuth.ts` — Added `refreshUser()` function + `useCallback` import
+  - `src/app/user/settings/page.tsx` — Passes `onSaveComplete={refreshUser}` to AvatarUpload
+  - `src/constants/ui.ts` — 3 new avatar-related constants
+  - `src/components/auth/__tests__/RoleGate.test.tsx` — Updated mocks for new `refreshUser` return value
+
+#### 🧪 Major Test Suite Expansion
+
+- **New Component Tests** (`src/components/__tests__/`):
+  - `FormField.test.tsx` - 10 test groups, 50+ test cases
+    - All input types (text, email, password, textarea, select)
+    - Label, help text, and error handling
+    - Required field indicators
+    - Disabled state
+    - Value handling and onChange
+    - Accessibility (ARIA attributes)
+    - Edge cases
+  - `PasswordStrengthIndicator.test.tsx` - 7 test groups, 40+ test cases
+    - Password strength levels (too weak → strong)
+    - Progress bar visualization
+    - Requirements checklist
+    - Real-world password scenarios
+    - Edge cases (empty, very long, unicode)
+    - Accessibility features
+  - `ErrorBoundary.test.tsx` - 9 test groups, 35+ test cases
+    - Error catching and display
+    - Fallback UI rendering
+    - Custom fallback support
+    - Error recovery mechanism
+    - Nested error boundaries
+    - Accessibility compliance
+    - Edge cases (null children, lifecycle errors)
+
+- **Auth Component Tests** (`src/components/auth/__tests__/`):
+  - `RoleGate.test.tsx` - 5 test suites, 35+ test cases
+    - Role-based rendering (single and multiple roles)
+    - Fallback rendering for unauthorized access
+    - All 4 role types (user, seller, moderator, admin)
+    - `AdminOnly` wrapper component
+    - `ModeratorOnly` wrapper component
+    - Unauthenticated user handling
+
+#### ✅ Comprehensive Test Suite for Avatar System & Hooks
+
+- **useStorageUpload Hook Tests** (`src/hooks/__tests__/useStorageUpload.test.ts`):
+  - 28 test cases covering upload flow, validation, callbacks
+  - File validation (size, type checking)
+  - Authentication requirement tests
+  - Upload success and error handling
+  - Save callback handling with cleanup
+  - Old file deletion with error silencing
+  - Cancel and cleanup operations
+  - State management across upload lifecycle
+- **useAuth Hook Tests** (`src/hooks/__tests__/useAuth.test.ts`):
+  - 13 test cases covering authentication state
+  - Initial loading state tests
+  - Firestore data fetching and merging
+  - Fallback handling when Firestore unavailable
+  - Unauthenticated user handling
+  - Loading state management
+  - Cleanup and unsubscribe tests
+  - Data merging priority (Auth vs Firestore)
+  - Auth state change reactivity
+- **AvatarUpload Component Tests** (`src/components/__tests__/AvatarUpload.test.tsx`):
+  - 25 test cases covering component behavior
+  - File selection and preview generation
+  - Image crop modal integration
+  - Upload flow with Firebase Storage
+  - Error handling and display
+  - Loading states (uploading, saving)
+  - Cleanup on unmount
+  - File extension preservation
+  - Accessibility features
+- **Test Infrastructure**:
+  - Firebase mocking strategy (Storage, Auth, Firestore)
+  - Component mocking to avoid circular dependencies
+  - React Testing Library best practices
+  - Comprehensive coverage of edge cases
+
+- **Total Test Coverage**: 66 new tests added for avatar system
+  - Previous tests: 60 (AvatarDisplay + ImageCropModal)
+  - New tests: 66 (useStorageUpload + useAuth + AvatarUpload)
+  - **Total**: 126 tests for complete avatar system
+
+#### 🎨 Avatar System UX Improvements
+
+- **Initials Display** when no avatar is uploaded:
+  - Extracts initials from user's displayName (first + last name)
+  - Falls back to email if no displayName
+  - Shows consistent gradient backgrounds based on name/email
+  - 8 gradient color schemes for variety
+  - Responsive text sizing for all avatar sizes (sm, md, lg, xl, 2xl)
+- **Fixed Position Modal** for image cropping:
+  - Modal now has `position: fixed` to prevent movement during drag
+  - Backdrop also fixed to prevent scroll issues
+  - Smooth drag experience without page jumping
+  - Centered positioning with `translate(-50%, -50%)`
+- **Compact Modal Layout** - everything fits in viewport without scrolling:
+  - Reduced preview container to max 280px height
+  - Smaller text and spacing (text-xs instead of text-sm)
+  - Compact zoom controls (1px spacing instead of 2px)
+  - Compact warning alerts (p-2 instead of p-3)
+  - Compact action buttons (pt-2 instead of pt-4)
+  - Modal max-height reduced to 85vh from 90vh
+  - All content visible without scrolling
+- **Enhanced AvatarDisplay Props**:
+  - Added optional `displayName` prop for initials generation
+  - Added optional `email` prop as fallback for initials
+  - Updated all AvatarDisplay usages across app:
+    - Sidebar navigation
+    - Bottom navbar (mobile)
+    - Title bar (desktop)
+    - User profile page
+    - Avatar upload preview
+- **Benefits**:
+  - ✅ Better UX - users see initials instead of generic avatar icon
+  - ✅ No modal scrolling - entire crop interface visible at once
+  - ✅ Smooth dragging - modal stays fixed during image positioning
+  - ✅ Visual identity - consistent colors per user
+  - ✅ Professional appearance - gradient backgrounds look modern
+  - ✅ Accessibility - text-based initials work with screen readers
+
+### Changed
+
+#### 🎯 Avatar System Compliance Updates
+
+- **Constants for Avatar Components** - Following coding standard 7.5:
+  - Added `UI_LABELS.AVATAR.FALLBACK_USER` constant for default name
+  - Added `UI_LABELS.AVATAR.DEFAULT_INITIAL` constant for default initial letter
+  - Replaced all hardcoded strings with constants in AvatarDisplay
+  - **100% compliance** - No hardcoded strings remaining
+
+#### ✅ Comprehensive Test Coverage
+
+- **AvatarDisplay Component Tests** (`src/components/__tests__/AvatarDisplay.test.tsx`):
+  - 31 test cases covering all functionality
+  - Tests for image display with crop metadata
+  - Tests for initials generation (full name, single name, email)
+  - Tests for gradient background colors (8 color schemes)
+  - Tests for responsive text sizing (5 sizes)
+  - Tests for edge cases (null values, empty strings, undefined)
+  - Tests for accessibility (alt text, non-selectable elements)
+  - **100% code coverage** for AvatarDisplay component
+
+- **ImageCropModal Component Tests** (`src/components/modals/__tests__/ImageCropModal.test.tsx`):
+  - 42 test cases covering all functionality
+  - Tests for modal rendering and visibility
+  - Tests for zoom controls (slider, buttons, presets, limits)
+  - Tests for zoom warning display (< 50%)
+  - Tests for position display and reset
+  - Tests for action buttons (save, cancel)
+  - Tests for image display properties
+  - Tests for compact layout styling
+  - Tests for accessibility (aria labels, slider attributes)
+  - **100% code coverage** for ImageCropModal component
+
+- **Test Utilities**:
+  - Mocked Modal component to avoid portal issues
+  - Mocked Button component for consistent testing
+  - Used React Testing Library best practices
+  - All tests pass successfully
+
+### Changed
+
+#### 📋 Constants System Enhanced
+
+- **UI_LABELS.AVATAR** additions:
+  - Added `CHANGE_PHOTO` constant for upload button label
+  - Ensures all avatar-related strings are centralized
+
+- **UI_LABELS.LOADING** additions:
+  - Added `UPLOADING` constant for file upload state
+  - Added `SAVING` constant for save operation state
+  - Consolidates all loading state messages
+
+**Benefits**:
+
+- ✅ Complete i18n readiness
+- ✅ No hardcoded strings in avatar system
+- ✅ Type-safe constant usage throughout
+
+### Changed
+
+#### 🧪 Test Infrastructure Improvements
+
+- **AvatarUpload Test Fixes**:
+  - Fixed component mocking strategy to import test subject after mocks
+  - Mock @/components barrel export before importing AvatarUpload
+  - Properly structured mock returns for ImageCropModal and AvatarDisplay
+  - All component dependencies now properly mocked
+
+- **PasswordStrengthIndicator Test Fixes** (Partial):
+  - Fixed text matching (uses "Contains" not "One")
+  - Fixed color class checks (text-green-600 not text-green-500)
+  - Fixed strength level expectations (password gets Fair not Weak)
+  - Fixed empty password test (component returns null)
+  - Fixed accessibility tests (no role=progressbar, uses styled divs)
+
+**Note**: 46 failing tests remain (PasswordStrengthIndicator: 13, useStorageUpload: 10, AvatarUpload: 23). Tests need further investigation for SVG selector issues and mock setup problems.
+
+### Fixed
+
+#### 🐛 TypeScript Errors Resolved (26 → 0)
+
+- **AvatarUpload Test Fixes**:
+  - Fixed `ImageCropData` interface to use `position: { x, y }` object instead of flat `x, y`
+  - Added missing `UI_HELP_TEXT` import
+  - Updated mock to return correct structure with `position` object
+  - Fixed all test assertions to use proper data structure
+
+- **useStorageUpload Test Fixes**:
+  - Fixed callback type errors (Mock return types)
+  - Changed `jest.fn()` to `jest.fn<void, [string]>()` for proper typing
+  - All 3 occurrences fixed (lines 260, 401, and mock setup)
+
+- **ConfirmDeleteModal Fix**:
+  - Removed invalid `onClick` prop from `Card` component
+  - Wrapped Card in div with `onClick` handler for click propagation
+  - Fixed TypeScript error for CardProps interface
+
+- **Address Edit Page Fix**:
+  - Fixed `addressType` type error by casting to union type
+  - Updated `updateAddress` call with proper type: `'home' | 'work' | 'other'`
+
+**Result**: Build now succeeds with **0 TypeScript errors** ✅
+
+#### � Comprehensive SEO & Public Profiles System
+
+- **SEO Configuration** (`src/constants/seo.ts`):
+  - Centralized SEO metadata for all pages
+  - Page-specific title, description, keywords
+  - Open Graph tags for social media sharing
+  - Twitter Card support with large images
+  - Canonical URLs for SEO
+  - Site-wide defaults (siteName, siteUrl, defaultImage)
+  - `generateMetadata()` helper for dynamic metadata
+  - `generateProfileMetadata()` for user profiles
+
+- **Public User Profiles**:
+  - New route: `/profile/[userId]` for public profiles
+  - API endpoint: `/api/profile/[userId]` for fetching public data
+  - Privacy controls in user schema:
+    - `publicProfile.isPublic` - Enable/disable public profile
+    - `publicProfile.showEmail` - Show/hide email
+    - `publicProfile.showPhone` - Show/hide phone
+    - `publicProfile.showOrders` - Show/hide order stats
+    - `publicProfile.showWishlist` - Show/hide wishlist
+  - Profile features:
+    - Bio, location, website URL
+    - Social links (Twitter, Instagram, Facebook, LinkedIn)
+    - User statistics (orders, auctions won, items sold, reviews, rating)
+    - Member since date
+    - Role badge display
+    - Avatar with crop metadata
+    - Shareable profile URLs
+- **Enhanced User Schema** (`src/db/schema/users.ts`):
+  - `publicProfile` object for privacy settings
+  - `stats` object for user statistics
+  - Default values for new users (public by default)
+  - Updated PUBLIC_FIELDS to respect privacy settings
+
+- **SEO Features**:
+  - Dynamic page titles with site name
+  - Meta descriptions optimized for search
+  - Keywords for better discoverability
+  - Open Graph images (1200x630)
+  - Twitter Cards with summary_large_image
+  - noIndex option for private pages (auth, user dashboards)
+  - Locale support (en_US)
+  - Canonical URLs
+  - Article metadata (publishedTime, modifiedTime, author)
+
+- **Benefits**:
+  - ✅ Better search engine rankings
+  - ✅ Rich social media previews when sharing
+  - ✅ User profiles shareable across platforms
+  - ✅ Privacy controls for sensitive data
+  - ✅ Professional public presence for users
+  - ✅ Statistics showcase (orders, auctions, ratings)
+  - ✅ Social proof with ratings and reviews
+
+#### �🎯 Avatar System Compliance Updates
+
+- **Constants for Avatar Components** - Following coding standard 7.5:
+  - Added `UI_LABELS.AVATAR` with all avatar-related labels
+  - Added `UI_HELP_TEXT.AVATAR_UPLOAD` and `UI_HELP_TEXT.AVATAR_FORMATS`
+  - Added `ERROR_MESSAGES.UPLOAD` for file upload errors
+  - Added `SUCCESS_MESSAGES.UPLOAD` for upload success messages
+  - **Files Updated**:
+    - `src/constants/ui.ts` - Added 16 avatar-specific labels
+    - `src/constants/messages.ts` - Added upload error and success messages
+
+- **Updated Components to Use Constants**:
+  - `ImageCropModal.tsx` - All hardcoded strings replaced with `UI_LABELS.AVATAR.*`
+  - `AvatarUpload.tsx` - All labels now use `UI_LABELS.AVATAR.*` and `UI_HELP_TEXT.*`
+  - `AvatarDisplay.tsx` - Default alt text uses `UI_LABELS.AVATAR.ALT_TEXT`
+  - `useStorageUpload.ts` - All error messages use `ERROR_MESSAGES.UPLOAD.*`
+
+- **Compliance Benefits**:
+  - ✅ i18n Ready - All strings centralized for easy translation
+  - ✅ Consistency - Same text everywhere
+  - ✅ Maintainability - Update once, apply everywhere
+  - ✅ Type Safety - TypeScript autocomplete for all labels
+  - ✅ DRY Principle - No duplicate strings
+
 #### 📋 Firebase Schema & Index Organization Standard
 
 - **Complete Guidelines** for organizing Firebase schemas and indices:

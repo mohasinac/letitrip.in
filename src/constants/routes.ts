@@ -1,40 +1,40 @@
 /**
  * Application Routes Constants
- * 
+ *
  * Centralized route paths for consistency across the application
  */
 
 export const ROUTES = {
   // Public Routes
-  HOME: '/',
-  
+  HOME: "/",
+
   // Auth Routes
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email',
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
+    FORGOT_PASSWORD: "/auth/forgot-password",
+    RESET_PASSWORD: "/auth/reset-password",
+    VERIFY_EMAIL: "/auth/verify-email",
   },
 
   // User Routes
   USER: {
-    PROFILE: '/profile',
-    SETTINGS: '/settings',
+    PROFILE: "/user/profile",
+    SETTINGS: "/user/settings",
   },
 
   // API Routes
   API: {
     AUTH: {
-      LOGIN: '/api/auth/login',
-      REGISTER: '/api/auth/register',
-      LOGOUT: '/api/auth/logout',
-      VERIFY_EMAIL: '/api/auth/verify-email',
-      RESET_PASSWORD: '/api/auth/reset-password',
+      LOGIN: "/api/auth/login",
+      REGISTER: "/api/auth/register",
+      LOGOUT: "/api/auth/logout",
+      VERIFY_EMAIL: "/api/auth/verify-email",
+      RESET_PASSWORD: "/api/auth/reset-password",
     },
     USER: {
-      PROFILE: '/api/user/profile',
-      CHANGE_PASSWORD: '/api/user/change-password',
+      PROFILE: "/api/user/profile",
+      CHANGE_PASSWORD: "/api/user/change-password",
     },
   },
 } as const;
@@ -62,7 +62,4 @@ export const PROTECTED_ROUTES = [
 /**
  * Auth routes that should redirect to home if already authenticated
  */
-export const AUTH_ROUTES = [
-  ROUTES.AUTH.LOGIN,
-  ROUTES.AUTH.REGISTER,
-] as const;
+export const AUTH_ROUTES = [ROUTES.AUTH.LOGIN, ROUTES.AUTH.REGISTER] as const;

@@ -3,7 +3,8 @@
  */
 
 import { UserRole } from "@/types/auth";
-import { AuthorizationError } from "@/lib/errors";
+import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
 
 /**
  * Role hierarchy (higher number = more permissions)
@@ -15,18 +16,59 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
   admin: 3,
 };
 
-export function requireRole(user: any, roles: UserRole | UserRole[]): void {
+export function requireAuth(user: unknown): void {
   if (!user) {
-    throw new AuthorizationError("User not authenticated");
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+}
+
+export function requireRole(
+  user: Record<string, unknown> | null | undefined,
+  roles: UserRole | UserRole[],
+): void {
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
   }
 
   const requiredRoles = Array.isArray(roles) ? roles : [roles];
-  const userRole = user.role || "user";
+  const userRole = (user.role as UserRole) || "user";
 
   if (!requiredRoles.includes(userRole)) {
-    throw new AuthorizationError(
-      "Access denied. Required role: " + requiredRoles.join(" or "),
-    );
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.FORBIDDEN);
+  }
+}
+
+export function requireOwnership(
+  user: Record<string, unknown> | null | undefined,
+  resourceOwnerId: string,
+): void {
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+  if (user.uid !== resourceOwnerId) {
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.FORBIDDEN);
+  }
+}
+
+export function requireEmailVerified(
+  user: Record<string, unknown> | null | undefined,
+): void {
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+  if (!user.emailVerified) {
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.EMAIL_NOT_VERIFIED);
+  }
+}
+
+export function requireActiveAccount(
+  user: Record<string, unknown> | null | undefined,
+): void {
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+  if (user.disabled) {
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.ACCOUNT_DISABLED);
   }
 }
 

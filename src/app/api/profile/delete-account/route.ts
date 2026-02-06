@@ -15,6 +15,7 @@ import {
   getDocs,
   writeBatch,
 } from "firebase/firestore";
+import { SUCCESS_MESSAGES } from "@/constants";
 
 export const DELETE = createApiHandler({
   auth: true,
@@ -45,6 +46,6 @@ export const DELETE = createApiHandler({
     await userRepository.delete(user.uid);
     await adminAuth.deleteUser(user.uid);
 
-    return successResponse(null, "Account deleted successfully");
+    return successResponse(null, SUCCESS_MESSAGES.ACCOUNT.DELETED);
   },
 });

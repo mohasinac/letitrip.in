@@ -108,7 +108,8 @@ export const THEME_CONSTANTS = {
     navbarHeight: "h-12 md:h-14",
     sidebarWidth: "w-80",
     bottomNavHeight: "h-16",
-    maxContentWidth: "max-w-7xl",
+    maxContentWidth: "max-w-7xl 2xl:max-w-[1600px]",
+    contentPadding: "px-4 md:px-6 lg:px-8 2xl:px-12",
     titleBarBg:
       "bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800",
     navbarBg:
@@ -152,46 +153,47 @@ export const THEME_CONSTANTS = {
    */
   // Spacing
   spacing: {
-    section: "space-y-8",
-    formGroup: "space-y-6",
-    stack: "space-y-4",
-    stackSmall: "space-y-2",
-    inline: "gap-3",
-    inlineSmall: "gap-2",
-    inlineLarge: "gap-4",
+    section: "space-y-8 lg:space-y-12 2xl:space-y-16",
+    formGroup: "space-y-6 lg:space-y-8",
+    stack: "space-y-4 lg:space-y-6",
+    stackSmall: "space-y-2 lg:space-y-3",
+    inline: "gap-3 lg:gap-4",
+    inlineSmall: "gap-2 lg:gap-3",
+    inlineLarge: "gap-4 lg:gap-6",
     // Padding presets
     padding: {
-      xs: "p-2",
-      sm: "p-3",
-      md: "p-4",
-      lg: "p-6",
-      xl: "p-8",
+      xs: "p-2 lg:p-3",
+      sm: "p-3 lg:p-4",
+      md: "p-4 lg:p-6",
+      lg: "p-6 lg:p-8 2xl:p-10",
+      xl: "p-8 lg:p-10 2xl:p-12",
     },
     // Margin presets
     margin: {
-      xs: "m-2",
-      sm: "m-3",
-      md: "m-4",
-      lg: "m-6",
-      xl: "m-8",
+      xs: "m-2 lg:m-3",
+      sm: "m-3 lg:m-4",
+      md: "m-4 lg:m-6",
+      lg: "m-6 lg:m-8 2xl:m-10",
+      xl: "m-8 lg:m-10 2xl:m-12",
     },
   },
 
   /**
    * Typography
    * Heading and text size scales with responsive breakpoints
+   * Scales up on larger screens for better readability
    */
   // Typography
   typography: {
-    h1: "text-4xl md:text-5xl font-bold",
-    h2: "text-3xl md:text-4xl font-bold",
-    h3: "text-2xl md:text-3xl font-semibold",
-    h4: "text-xl md:text-2xl font-semibold",
-    h5: "text-lg md:text-xl font-medium",
-    h6: "text-base md:text-lg font-medium",
-    body: "text-base",
-    small: "text-sm",
-    xs: "text-xs",
+    h1: "text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-bold",
+    h2: "text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl font-bold",
+    h3: "text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+    h4: "text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-semibold",
+    h5: "text-lg md:text-xl lg:text-2xl 2xl:text-3xl font-medium",
+    h6: "text-base md:text-lg lg:text-xl 2xl:text-2xl font-medium",
+    body: "text-base lg:text-lg",
+    small: "text-sm lg:text-base",
+    xs: "text-xs lg:text-sm",
   },
 
   /**
@@ -314,13 +316,21 @@ export const THEME_CONSTANTS = {
   /**
    * Breakpoints
    * Reference for responsive design breakpoints (matches Tailwind defaults)
+   * sm: Mobile landscape / Small tablets
+   * md: Tablets
+   * lg: Laptops / Small desktops
+   * xl: Desktops
+   * 2xl: Large desktops / Widescreens
+   * 3xl: Ultra-wide / 4K displays
    */
   // Breakpoints (for reference)
   breakpoints: {
-    sm: "640px",
-    md: "768px",
-    lg: "1024px",
-    xl: "1280px",
+    sm: "640px", // Mobile landscape
+    md: "768px", // Tablets
+    lg: "1024px", // Laptops
+    xl: "1280px", // Desktops
+    "2xl": "1536px", // Widescreens
+    "3xl": "1920px", // 4K displays
   },
 
   /**
@@ -357,21 +367,24 @@ export const THEME_CONSTANTS = {
   /**
    * Container and section widths
    * Standard width constraints for content areas
+   * Responsive max-widths for different screen sizes
    */
   container: {
-    xs: "max-w-xs",
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-xl",
-    "2xl": "max-w-2xl",
-    "3xl": "max-w-3xl",
-    "4xl": "max-w-4xl",
-    "5xl": "max-w-5xl",
-    "6xl": "max-w-6xl",
-    "7xl": "max-w-7xl",
+    xs: "max-w-xs", // ~320px
+    sm: "max-w-sm", // ~384px
+    md: "max-w-md", // ~448px
+    lg: "max-w-lg", // ~512px
+    xl: "max-w-xl", // ~576px
+    "2xl": "max-w-2xl", // ~672px
+    "3xl": "max-w-3xl", // ~768px
+    "4xl": "max-w-4xl", // ~896px
+    "5xl": "max-w-5xl", // ~1024px
+    "6xl": "max-w-6xl", // ~1152px
+    "7xl": "max-w-7xl", // ~1280px
     full: "max-w-full",
-    screen: "max-w-screen-2xl",
+    screen: "max-w-screen-xl", // Viewport width at xl breakpoint
+    ultrawide: "max-w-[1600px]", // For 2xl+ screens
+    "4k": "max-w-[1920px]", // For 4K displays
   },
 
   /**
