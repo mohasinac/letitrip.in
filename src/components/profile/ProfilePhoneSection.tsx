@@ -90,7 +90,10 @@ export function ProfilePhoneSection({
       setShowVerificationInput(false);
       setVerificationCode("");
       // Refresh page to update verified status
-      window.location.reload();
+      // Refresh user data to show updated phone verification status
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
     } catch (error: any) {
       onError(error.message || "Failed to verify phone number");
     } finally {

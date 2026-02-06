@@ -65,12 +65,18 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
     try {
       // Backend logout - clears session cookie and revokes tokens
       await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {});
-      // Force reload to clear client-side state
-      window.location.href = SITE_CONFIG.account.login;
+
+      // Close sidebar first for better UX
+      onClose();
+
+      // Use router.push instead of window.location for better performance
+      // This avoids full page reload and preserves Next.js app state
+      router.push(SITE_CONFIG.account.login);
     } catch (error) {
       console.error("Sign out error:", error);
       // Even on error, redirect to login (session might be cleared)
-      window.location.href = SITE_CONFIG.account.login;
+      onClose();
+      router.push(SITE_CONFIG.account.login);
     }
   };
 

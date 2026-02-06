@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Alert, Checkbox } from "@/components";
@@ -38,9 +38,12 @@ export default function RegisterPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleBlur = (field: string) => () => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
+  const handleBlur = useCallback(
+    (field: string) => () => {
+      setTouched((prev) => ({ ...prev, [field]: true }));
+    },
+    [],
+  );
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

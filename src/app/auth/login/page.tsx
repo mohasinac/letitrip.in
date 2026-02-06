@@ -19,7 +19,7 @@
 
 "use client";
 
-import { useState, FormEvent, Suspense, useEffect } from "react";
+import { useState, FormEvent, Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
@@ -42,32 +42,35 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      setError(null);
+      setLoading(true);
 
-    try {
-      // Backend API login with session cookie
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
-        email: formData.email.trim(),
-        password: formData.password,
-      });
+      try {
+        // Backend API login with session cookie
+        const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
+          email: formData.email.trim(),
+          password: formData.password,
+        });
 
-      if (response.success) {
-        // Session cookie set automatically by API, redirect immediately
-        router.push(callbackUrl);
-      } else {
-        setError(response.error?.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
+        if (response.success) {
+          // Session cookie set automatically by API, redirect immediately
+          router.push(callbackUrl);
+        } else {
+          setError(response.error?.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
+          setLoading(false);
+        }
+      } catch (err: any) {
+        setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
         setLoading(false);
       }
-    } catch (err: any) {
-      setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
-      setLoading(false);
-    }
-  };
+    },
+    [formData.email, formData.password, router, callbackUrl],
+  );
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -78,9 +81,9 @@ function LoginForm() {
       setError(err.message || "Google login failed");
       setLoading(false);
     }
-  };
+  }, [router, callbackUrl]);
 
-  const handleAppleLogin = async () => {
+  const handleAppleLogin = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -90,7 +93,7 @@ function LoginForm() {
       setError(err.message || "Apple login failed");
       setLoading(false);
     }
-  };
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
