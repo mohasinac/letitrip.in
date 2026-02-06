@@ -18,6 +18,7 @@ import { Card, Button, Select } from "@/components";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
 import FormField from "@/components/FormField";
+import { AdminTabs } from "@/components/admin";
 import { useAuth } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { apiClient } from "@/lib/api-client";
@@ -128,37 +129,40 @@ function AdminUsersContent() {
 
   if (authLoading || loading) {
     return (
-      <div
-        className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}
-      >
-        <Heading level={3} variant="primary">
-          Loading users...
-        </Heading>
+      <div className={`min-h-screen ${themed.bgPrimary}`}>
+        <AdminTabs />
+        <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl flex items-center justify-center min-h-[400px]">
+          <Heading level={3} variant="primary">
+            Loading users...
+          </Heading>
+        </div>
       </div>
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role !== "admin" && user.role !== "moderator")) {
     return null;
   }
 
   return (
-    <div className={`min-h-screen ${themed.bgPrimary} py-8 px-4`}>
-      <div className="max-w-7xl mx-auto">
+    <div className={`min-h-screen ${themed.bgPrimary}`}>
+      <AdminTabs />
+
+      <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl space-y-6">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
-            <Heading level={1} variant="primary" className="mb-2">
+            <Heading level={2} variant="primary">
               User Management
             </Heading>
-            <Text className={themed.textSecondary}>
+            <Text className={`${themed.textSecondary} mt-1`}>
               View and manage all user accounts
             </Text>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-6">
+        <Card>
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search by email */}
@@ -218,7 +222,7 @@ function AdminUsersContent() {
 
         {/* Error */}
         {error && (
-          <Card className="mb-6 bg-red-50 dark:bg-red-900/20">
+          <Card className="bg-red-50 dark:bg-red-900/20">
             <Heading level={3} variant="primary" className="text-red-600">
               {error}
             </Heading>
@@ -362,7 +366,14 @@ function AdminUsersContent() {
 export default function AdminUsersPage() {
   return (
     <Suspense
-      fallback={<div className="p-6 text-center">Loading users...</div>}
+      fallback={
+        <div className="min-h-screen bg-white dark:bg-gray-900">
+          <AdminTabs />
+          <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+            <div className="text-center">Loading users...</div>
+          </div>
+        </div>
+      }
     >
       <AdminUsersContent />
     </Suspense>

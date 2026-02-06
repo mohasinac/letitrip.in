@@ -14,29 +14,8 @@ import { Card, Button } from "@/components";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
 import { useAuth, useAdminStats } from "@/hooks";
+import { AdminStatsCards, AdminTabs } from "@/components/admin";
 import { THEME_CONSTANTS } from "@/constants/theme";
-
-interface StatsCardProps {
-  label: string;
-  value: number;
-  subtitle?: string;
-  subtitleColor?: string;
-}
-
-function StatsCard({ label, value, subtitle, subtitleColor }: StatsCardProps) {
-  const { themed } = THEME_CONSTANTS;
-  return (
-    <Card>
-      <Text className={themed.textSecondary}>{label}</Text>
-      <Heading level={1} variant="primary" className="mt-2">
-        {value.toLocaleString()}
-      </Heading>
-      {subtitle && (
-        <Text className={`mt-1 ${subtitleColor || ""}`}>{subtitle}</Text>
-      )}
-    </Card>
-  );
-}
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -45,7 +24,10 @@ export default function AdminDashboardPage() {
   const { themed } = THEME_CONSTANTS;
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== "admin")) {
+    if (
+      !authLoading &&
+      (!user || (user.role !== "admin" && user.role !== "moderator"))
+    ) {
       router.push("/");
     }
   }, [user, authLoading, router]);
@@ -62,123 +44,161 @@ export default function AdminDashboardPage() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role !== "admin" && user.role !== "moderator")) {
     return null;
   }
 
   if (error) {
     return (
-      <div className={`min-h-screen ${themed.bgPrimary} p-8`}>
-        <Card>
-          <Heading level={3} variant="primary" className="text-red-600">
-            {error}
-          </Heading>
-          <Button onClick={refresh} variant="primary" className="mt-4">
-            Retry
-          </Button>
-        </Card>
+      <div className={`min-h-screen ${themed.bgPrimary}`}>
+        <AdminTabs />
+        <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+          <Card>
+            <Heading level={3} variant="primary" className="text-red-600">
+              {error}
+            </Heading>
+            <Button onClick={refresh} variant="primary" className="mt-4">
+              Retry
+            </Button>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${themed.bgPrimary} py-8 px-4`}>
-      <div className="max-w-7xl mx-auto">
+    <div className={`min-h-screen ${themed.bgPrimary}`}>
+      <AdminTabs />
+
+      <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl space-y-6">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
-            <Heading level={1} variant="primary" className="mb-2">
-              Admin Dashboard
+            <Heading level={2} variant="primary">
+              Dashboard Overview
             </Heading>
-            <Text className={themed.textSecondary}>
-              System overview and management
+            <Text className={`${themed.textSecondary} mt-1`}>
+              System statistics and quick actions
             </Text>
           </div>
-
-          <Link href="/admin/users">
-            <Button variant="primary">Manage Users</Button>
-          </Link>
+          <Button onClick={refresh} variant="secondary" size="sm">
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Refresh
+          </Button>
         </div>
 
         {/* Stats Grid */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Total Users */}
-            <StatsCard
-              label="Total Users"
-              value={stats.users.total}
-              subtitle={`+${stats.users.new} new`}
-              subtitleColor="text-green-600"
-            />
-            <StatsCard
-              label="Active Users"
-              value={stats.users.active}
-              subtitle={`${((stats.users.active / stats.users.total) * 100).toFixed(1)}% of total`}
-            />
-            <StatsCard
-              label="Disabled Users"
-              value={stats.users.disabled}
-              subtitle={`${((stats.users.disabled / stats.users.total) * 100).toFixed(1)}% of total`}
-              subtitleColor="text-red-600"
-            />
-            <StatsCard label="Administrators" value={stats.users.total} />
-          </div>
-        )}
-
-        {/* Additional Stats */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Trips */}
-            <Card>
-              <Heading level={2} variant="primary" className="mb-4">
-                Trips
-              </Heading>
-              <Heading level={3} variant="primary" className="text-3xl">
-                {stats.trips.total.toLocaleString()}
-              </Heading>
-              <Text className={`mt-2 ${themed.textSecondary}`}>
-                Total trips created
-              </Text>
-            </Card>
-
-            {/* Bookings */}
-            <Card>
-              <Heading level={2} variant="primary" className="mb-4">
-                Bookings
-              </Heading>
-              <Heading level={3} variant="primary" className="text-3xl">
-                {stats.bookings.total.toLocaleString()}
-              </Heading>
-              <Text className={`mt-2 ${themed.textSecondary}`}>
-                Total bookings made
-              </Text>
-            </Card>
-          </div>
-        )}
+        {stats && <AdminStatsCards stats={stats} />}
 
         {/* Quick Actions */}
-        <div className="mt-8">
-          <Card>
-            <Heading level={2} variant="primary" className="mb-4">
-              Quick Actions
-            </Heading>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link href="/admin/users">
-                <Button variant="secondary" className="w-full">
-                  View All Users
-                </Button>
-              </Link>
-              <Link href="/admin/users?filter=disabled">
-                <Button variant="secondary" className="w-full">
-                  Review Disabled Accounts
-                </Button>
-              </Link>
-              <Button variant="secondary" onClick={refresh} className="w-full">
-                Refresh Statistics
+        <Card>
+          <Heading level={3} variant="primary" className="mb-4">
+            Quick Actions
+          </Heading>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link href="/admin/users" className="block">
+              <Button variant="secondary" className="w-full justify-start">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                Manage Users
               </Button>
+            </Link>
+            <Link href="/admin/users?status=disabled" className="block">
+              <Button variant="secondary" className="w-full justify-start">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                  />
+                </svg>
+                Review Disabled Accounts
+              </Button>
+            </Link>
+            <Link href="/admin/content" className="block">
+              <Button variant="secondary" className="w-full justify-start">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Manage Content
+              </Button>
+            </Link>
+          </div>
+        </Card>
+
+        {/* Recent Activity */}
+        <Card>
+          <Heading level={3} variant="primary" className="mb-4">
+            Recent Activity
+          </Heading>
+          <div className="space-y-3">
+            {stats && stats.users.new > 0 && (
+              <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                  <span className="text-xl">👤</span>
+                </div>
+                <div className="flex-1">
+                  <Text className="font-medium">New Users</Text>
+                  <Text className={`${themed.textSecondary} text-sm`}>
+                    {stats.users.new} new{" "}
+                    {stats.users.new === 1 ? "user" : "users"} registered in the
+                    last 30 days
+                  </Text>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <span className="text-xl">📊</span>
+              </div>
+              <div className="flex-1">
+                <Text className="font-medium">System Status</Text>
+                <Text className={`${themed.textSecondary} text-sm`}>
+                  All systems operational
+                </Text>
+              </div>
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
