@@ -15,6 +15,9 @@
 export * from "./base.repository";
 export * from "./user.repository";
 export * from "./token.repository";
+export * from "./product.repository";
+export * from "./booking.repository";
+export * from "./review.repository";
 
 // Re-export singleton instances for convenience
 export { userRepository } from "./user.repository";
@@ -23,3 +26,6 @@ export {
   passwordResetTokenRepository,
   tokenRepository,
 } from "./token.repository";
+export { productRepository } from "./product.repository";
+export { orderRepository } from "./booking.repository";
+export { reviewRepository } from "./review.repository";

@@ -1,0 +1,146 @@
+/**
+ * Product Repository
+ *
+ * Data access layer for product documents in Firestore
+ */
+
+import { BaseRepository } from "./base.repository";
+import type {
+  ProductDocument,
+  ProductCreateInput,
+  ProductUpdateInput,
+  ProductStatus,
+  PRODUCT_COLLECTION,
+} from "@/db/schema/products";
+
+class ProductRepository extends BaseRepository<ProductDocument> {
+  constructor() {
+    super("products" as typeof PRODUCT_COLLECTION);
+  }
+
+  /**
+   * Find products by seller ID
+   */
+  async findBySeller(sellerId: string): Promise<ProductDocument[]> {
+    return this.findBy("sellerId", sellerId);
+  }
+
+  /**
+   * Find products by status
+   */
+  async findByStatus(status: ProductStatus): Promise<ProductDocument[]> {
+    return this.findBy("status", status);
+  }
+
+  /**
+   * Find published products
+   */
+  async findPublished(): Promise<ProductDocument[]> {
+    return this.findBy("status", "published");
+  }
+
+  /**
+   * Find featured products
+   */
+  async findFeatured(): Promise<ProductDocument[]> {
+    return this.findBy("featured", true);
+  }
+
+  /**
+   * Find products by category
+   */
+  async findByCategory(category: string): Promise<ProductDocument[]> {
+    return this.findBy("category", category);
+  }
+
+  /**
+   * Find auction products
+   */
+  async findAuctions(): Promise<ProductDocument[]> {
+    return this.findBy("isAuction", true);
+  }
+
+  /**
+   * Find promoted/advertisement products
+   */
+  async findPromoted(): Promise<ProductDocument[]> {
+    return this.findBy("isPromoted", true);
+  }
+
+  /**
+   * Update product with validation
+   */
+  async updateProduct(
+    productId: string,
+    data: ProductUpdateInput,
+  ): Promise<ProductDocument> {
+    // Calculate available quantity if stockQuantity changed
+    const updateData: Partial<ProductDocument> = {
+      ...data,
+      updatedAt: new Date(),
+    };
+
+    return this.update(productId, updateData);
+  }
+
+  /**
+   * Update available quantity (after order)
+   */
+  async updateAvailableQuantity(
+    productId: string,
+    quantity: number,
+  ): Promise<void> {
+    await this.update(productId, { availableQuantity: quantity });
+  }
+
+  /**
+   * Update auction bid
+   */
+  async updateBid(
+    productId: string,
+    bidAmount: number,
+    bidCount: number,
+  ): Promise<void> {
+    await this.update(productId, {
+      currentBid: bidAmount,
+      bidCount: bidCount,
+      updatedAt: new Date(),
+    });
+  }
+
+  /**
+   * Get products with available quantity
+   */
+  async findAvailable(): Promise<ProductDocument[]> {
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where("status", "==", "published")
+      .where("availableQuantity", ">", 0)
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ProductDocument[];
+  }
+
+  /**
+   * Get active auctions
+   */
+  async findActiveAuctions(): Promise<ProductDocument[]> {
+    const now = new Date();
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where("isAuction", "==", true)
+      .where("auctionEndDate", ">=", now)
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ProductDocument[];
+  }
+}
+
+// Export singleton instance
+export const productRepository = new ProductRepository();

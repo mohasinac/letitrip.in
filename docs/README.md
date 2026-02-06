@@ -1,8 +1,8 @@
 # LetItRip Documentation
 
-🎉 **100% Coding Standards Compliance (110/110)** - [View Audit Report](./AUDIT_REPORT.md)
+🎉 **100% Coding Standards Compliance (11/11)** - [View Latest Audit](./COMPLIANCE_AUDIT_REPORT.md) | [Summary](./COMPLIANCE_SUMMARY.md)
 
-Welcome to LetItRip - a modern travel companion application with production-ready architecture, complete Firebase backend, and mobile-first design.
+Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with production-ready architecture, complete Firebase backend, and mobile-first design.
 
 ---
 
@@ -10,13 +10,15 @@ Welcome to LetItRip - a modern travel companion application with production-read
 
 ### 🎯 Core Documentation
 
-| Document                                                    | Description            | Audience   |
-| ----------------------------------------------------------- | ---------------------- | ---------- |
-| **[COMPLIANCE_CHECKLIST.md](./COMPLIANCE_CHECKLIST.md)** ⭐ | **Pre-task checklist** | Developers |
-| **[AUDIT_REPORT.md](./AUDIT_REPORT.md)**                    | 100% compliance status | Developers |
-| **[CHANGELOG.md](./CHANGELOG.md)**                          | Version history        | All        |
-| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**              | Quick lookups          | Developers |
-| **[API_CLIENT.md](./API_CLIENT.md)**                        | API usage guide        | Developers |
+| Document                                                       | Description                    | Audience   |
+| -------------------------------------------------------------- | ------------------------------ | ---------- |
+| **[COMPLIANCE_CHECKLIST.md](./COMPLIANCE_CHECKLIST.md)** ⭐    | **Pre-task checklist**         | Developers |
+| **[COMPLIANCE_AUDIT_REPORT.md](./COMPLIANCE_AUDIT_REPORT.md)** | **Latest audit (Feb 6, 2026)** | Developers |
+| **[COMPLIANCE_SUMMARY.md](./COMPLIANCE_SUMMARY.md)**           | **Quick compliance overview**  | All        |
+| **[CHANGELOG.md](./CHANGELOG.md)**                             | Version history                | All        |
+| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**                 | Quick lookups                  | Developers |
+| **[API_CLIENT.md](./API_CLIENT.md)**                           | API usage guide                | Developers |
+| [AUDIT_REPORT.md](./AUDIT_REPORT.md)                           | Previous audit (archived)      | Reference  |
 
 ### 🚀 Getting Started
 

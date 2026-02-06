@@ -130,14 +130,14 @@ export const USER_UPDATABLE_FIELDS = ["displayName", "photoURL"] as const;
 /**
  * RELATIONSHIPS:
  *
- * users (1) ----< (N) trips
- *       (1) ----< (N) bookings
+ * users (1) ----< (N) products
+ *       (1) ----< (N) orders
  *       (1) ----< (N) emailVerificationTokens
  *       (1) ----< (N) passwordResetTokens
  *
  * Foreign Key Pattern (Firestore):
- * - trips/{tripId}.userId references users/{uid}
- * - bookings/{bookingId}.userId references users/{uid}
+ * - products/{productId}.sellerId references users/{uid}
+ * - orders/{orderId}.userId references users/{uid}
  * - emailVerificationTokens/{tokenId}.userId references users/{uid}
  * - passwordResetTokens/{tokenId}.userId references users/{uid}
  *
@@ -145,14 +145,14 @@ export const USER_UPDATABLE_FIELDS = ["displayName", "photoURL"] as const;
  * When a user is deleted, the following related documents must be deleted:
  * 1. All emailVerificationTokens where userId = user.uid
  * 2. All passwordResetTokens where userId = user.uid
- * 3. All trips where userId = user.uid
- * 4. All bookings where userId = user.uid
+ * 3. All products where sellerId = user.uid
+ * 4. All orders where userId = user.uid
  *
  * Implementation: UserRepository.delete() should:
  * - Delete user document
  * - Batch delete all related tokens (both collections)
- * - Batch delete all related trips
- * - Batch delete all related bookings
+ * - Batch delete all related products
+ * - Batch delete all related orders
  * - Use Firestore batch writes for atomicity
  */
 

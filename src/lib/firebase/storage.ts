@@ -1,33 +1,33 @@
 /**
  * Firebase Cloud Storage Helpers
- * 
+ *
  * Utilities for uploading, downloading, and managing files in Firebase Storage.
  * Supports user profile photos, trip images, and document uploads.
  */
 
-import { 
-  ref, 
-  uploadBytes, 
+import {
+  ref,
+  uploadBytes,
   uploadBytesResumable,
-  getDownloadURL, 
+  getDownloadURL,
   deleteObject,
   listAll,
   getMetadata,
   updateMetadata,
   UploadResult,
   UploadTask,
-  StorageReference
-} from 'firebase/storage';
-import { storage } from './config';
+  StorageReference,
+} from "firebase/storage";
+import { storage } from "./config";
 
 /**
  * Storage folder structure
  */
 export const STORAGE_PATHS = {
-  USERS: 'users',
-  TRIPS: 'trips',
-  PUBLIC: 'public',
-  BOOKINGS: 'bookings',
+  USERS: "users",
+  PRODUCTS: "products",
+  ORDERS: "orders",
+  PUBLIC: "public",
 } as const;
 
 /**
@@ -36,11 +36,11 @@ export const STORAGE_PATHS = {
 export async function uploadFile(
   path: string,
   file: File,
-  metadata?: { contentType?: string; customMetadata?: Record<string, string> }
+  metadata?: { contentType?: string; customMetadata?: Record<string, string> },
 ): Promise<{ url: string; ref: StorageReference; uploadResult: UploadResult }> {
   try {
     const storageRef = ref(storage, path);
-    
+
     const uploadMetadata = {
       contentType: metadata?.contentType || file.type,
       customMetadata: metadata?.customMetadata || {},
@@ -51,8 +51,8 @@ export async function uploadFile(
 
     return { url, ref: uploadResult.ref, uploadResult };
   } catch (error: any) {
-    console.error('Upload error:', error);
-    throw new Error(error.message || 'Failed to upload file');
+    console.error("Upload error:", error);
+    throw new Error(error.message || "Failed to upload file");
   }
 }
 
@@ -63,10 +63,10 @@ export function uploadFileWithProgress(
   path: string,
   file: File,
   onProgress?: (progress: number) => void,
-  metadata?: { contentType?: string; customMetadata?: Record<string, string> }
+  metadata?: { contentType?: string; customMetadata?: Record<string, string> },
 ): UploadTask {
   const storageRef = ref(storage, path);
-  
+
   const uploadMetadata = {
     contentType: metadata?.contentType || file.type,
     customMetadata: metadata?.customMetadata || {},
@@ -74,12 +74,10 @@ export function uploadFileWithProgress(
 
   const uploadTask = uploadBytesResumable(storageRef, file, uploadMetadata);
 
-  uploadTask.on('state_changed', 
-    (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      onProgress?.(progress);
-    }
-  );
+  uploadTask.on("state_changed", (snapshot) => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    onProgress?.(progress);
+  });
 
   return uploadTask;
 }
@@ -89,30 +87,12 @@ export function uploadFileWithProgress(
  */
 export async function uploadProfilePhoto(
   userId: string,
-  file: File
+  file: File,
 ): Promise<string> {
   const path = `${STORAGE_PATHS.USERS}/${userId}/profile.jpg`;
   const { url } = await uploadFile(path, file, {
-    contentType: 'image/jpeg',
-    customMetadata: { userId, type: 'profile' },
-  });
-  return url;
-}
-
-/**
- * Upload trip image
- */
-export async function uploadTripImage(
-  tripId: string,
-  file: File,
-  isCover: boolean = false
-): Promise<string> {
-  const fileName = isCover ? 'cover.jpg' : `${Date.now()}_${file.name}`;
-  const path = `${STORAGE_PATHS.TRIPS}/${tripId}/${isCover ? '' : 'gallery/'}${fileName}`;
-  
-  const { url } = await uploadFile(path, file, {
-    contentType: file.type,
-    customMetadata: { tripId, isCover: isCover.toString() },
+    contentType: "image/jpeg",
+    customMetadata: { userId, type: "profile" },
   });
   return url;
 }
@@ -123,7 +103,7 @@ export async function uploadTripImage(
 export async function uploadDocument(
   userId: string,
   file: File,
-  folder: string = 'documents'
+  folder: string = "documents",
 ): Promise<string> {
   const path = `${STORAGE_PATHS.USERS}/${userId}/${folder}/${Date.now()}_${file.name}`;
   const { url } = await uploadFile(path, file, {
@@ -141,8 +121,8 @@ export async function getFileUrl(path: string): Promise<string> {
     const storageRef = ref(storage, path);
     return await getDownloadURL(storageRef);
   } catch (error: any) {
-    console.error('Get URL error:', error);
-    throw new Error(error.message || 'Failed to get file URL');
+    console.error("Get URL error:", error);
+    throw new Error(error.message || "Failed to get file URL");
   }
 }
 
@@ -154,8 +134,8 @@ export async function deleteFile(path: string): Promise<void> {
     const storageRef = ref(storage, path);
     await deleteObject(storageRef);
   } catch (error: any) {
-    console.error('Delete error:', error);
-    throw new Error(error.message || 'Failed to delete file');
+    console.error("Delete error:", error);
+    throw new Error(error.message || "Failed to delete file");
   }
 }
 
@@ -170,14 +150,16 @@ export async function deleteProfilePhoto(userId: string): Promise<void> {
 /**
  * List all files in a folder
  */
-export async function listFiles(folderPath: string): Promise<StorageReference[]> {
+export async function listFiles(
+  folderPath: string,
+): Promise<StorageReference[]> {
   try {
     const folderRef = ref(storage, folderPath);
     const result = await listAll(folderRef);
     return result.items;
   } catch (error: any) {
-    console.error('List files error:', error);
-    throw new Error(error.message || 'Failed to list files');
+    console.error("List files error:", error);
+    throw new Error(error.message || "Failed to list files");
   }
 }
 
@@ -189,8 +171,8 @@ export async function getFileMetadata(path: string) {
     const storageRef = ref(storage, path);
     return await getMetadata(storageRef);
   } catch (error: any) {
-    console.error('Get metadata error:', error);
-    throw new Error(error.message || 'Failed to get file metadata');
+    console.error("Get metadata error:", error);
+    throw new Error(error.message || "Failed to get file metadata");
   }
 }
 
@@ -199,14 +181,14 @@ export async function getFileMetadata(path: string) {
  */
 export async function updateFileMetadata(
   path: string,
-  metadata: { contentType?: string; customMetadata?: Record<string, string> }
+  metadata: { contentType?: string; customMetadata?: Record<string, string> },
 ) {
   try {
     const storageRef = ref(storage, path);
     return await updateMetadata(storageRef, metadata);
   } catch (error: any) {
-    console.error('Update metadata error:', error);
-    throw new Error(error.message || 'Failed to update file metadata');
+    console.error("Update metadata error:", error);
+    throw new Error(error.message || "Failed to update file metadata");
   }
 }
 
@@ -216,22 +198,15 @@ export async function updateFileMetadata(
 export async function deleteFolder(folderPath: string): Promise<void> {
   try {
     const files = await listFiles(folderPath);
-    await Promise.all(files.map(file => deleteObject(file)));
+    await Promise.all(files.map((file) => deleteObject(file)));
   } catch (error: any) {
-    console.error('Delete folder error:', error);
-    throw new Error(error.message || 'Failed to delete folder');
+    console.error("Delete folder error:", error);
+    throw new Error(error.message || "Failed to delete folder");
   }
 }
 
 /**
- * Delete all trip images
- */
-export async function deleteTripImages(tripId: string): Promise<void> {
-  const path = `${STORAGE_PATHS.TRIPS}/${tripId}`;
-  await deleteFolder(path);
-}
 
-/**
  * Validate file size
  */
 export function validateFileSize(file: File, maxSizeMB: number = 10): boolean {
@@ -244,7 +219,7 @@ export function validateFileSize(file: File, maxSizeMB: number = 10): boolean {
  */
 export function validateFileType(
   file: File,
-  allowedTypes: string[] = ['image/jpeg', 'image/png', 'image/webp']
+  allowedTypes: string[] = ["image/jpeg", "image/png", "image/webp"],
 ): boolean {
   return allowedTypes.includes(file.type);
 }
@@ -252,37 +227,56 @@ export function validateFileType(
 /**
  * Validate image file
  */
-export function validateImage(file: File, maxSizeMB: number = 10): { valid: boolean; error?: string } {
-  if (!validateFileType(file, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'])) {
-    return { valid: false, error: 'Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.' };
+export function validateImage(
+  file: File,
+  maxSizeMB: number = 10,
+): { valid: boolean; error?: string } {
+  if (
+    !validateFileType(file, [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ])
+  ) {
+    return {
+      valid: false,
+      error: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.",
+    };
   }
-  
+
   if (!validateFileSize(file, maxSizeMB)) {
     return { valid: false, error: `File size exceeds ${maxSizeMB}MB limit.` };
   }
-  
+
   return { valid: true };
 }
 
 /**
  * Validate document file
  */
-export function validateDocument(file: File, maxSizeMB: number = 50): { valid: boolean; error?: string } {
+export function validateDocument(
+  file: File,
+  maxSizeMB: number = 50,
+): { valid: boolean; error?: string } {
   const allowedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain",
   ];
-  
+
   if (!validateFileType(file, allowedTypes)) {
-    return { valid: false, error: 'Invalid file type. Only PDF, DOC, DOCX, and TXT are allowed.' };
+    return {
+      valid: false,
+      error: "Invalid file type. Only PDF, DOC, DOCX, and TXT are allowed.",
+    };
   }
-  
+
   if (!validateFileSize(file, maxSizeMB)) {
     return { valid: false, error: `File size exceeds ${maxSizeMB}MB limit.` };
   }
-  
+
   return { valid: true };
 }
 
@@ -292,6 +286,6 @@ export function validateDocument(file: File, maxSizeMB: number = 50): { valid: b
 export function generateUniqueFilename(originalName: string): string {
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2, 15);
-  const extension = originalName.split('.').pop();
+  const extension = originalName.split(".").pop();
   return `${timestamp}_${randomString}.${extension}`;
 }

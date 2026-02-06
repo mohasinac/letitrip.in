@@ -21,7 +21,6 @@ export type { UseLongPressOptions } from "./useLongPress";
 
 export { useApiQuery } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
-export { useApiRequest } from "./useApiRequest";
 export { useProfile } from "./useProfile";
 export { useForm } from "./useForm";
 export { useFormState } from "./useFormState";

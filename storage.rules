@@ -92,27 +92,27 @@ service firebase.storage {
     }
     
     // ============================================
-    // Trips Storage
+    // Products Storage
     // ============================================
     
-    // Trip cover images
-    match /trips/{tripId}/cover.jpg {
-      // Anyone can read trip cover images
+    // Product cover images
+    match /products/{productId}/cover.jpg {
+      // Anyone can read product cover images
       allow read: if true;
       
-      // Only authenticated users can upload trip covers
+      // Only authenticated sellers can upload product covers
       allow write: if isSignedIn() && isValidImage();
       
       // Only authenticated users can delete (will check ownership via Firestore)
       allow delete: if isSignedIn();
     }
     
-    // Trip gallery images
-    match /trips/{tripId}/gallery/{image} {
-      // Anyone can read trip gallery images
+    // Product gallery images
+    match /products/{productId}/gallery/{image} {
+      // Anyone can read product gallery images
       allow read: if true;
       
-      // Only authenticated users can upload trip images
+      // Only authenticated sellers can upload product images
       allow write: if isSignedIn() && isValidImage();
       
       // Only authenticated users can delete
@@ -120,15 +120,15 @@ service firebase.storage {
     }
     
     // ============================================
-    // Bookings Storage
+    // Orders Storage
     // ============================================
     
-    // Booking documents (receipts, tickets, etc.)
-    match /bookings/{bookingId}/{document} {
+    // Order documents (receipts, invoices, etc.)
+    match /orders/{orderId}/{document} {
       // Only authenticated users can read (will verify ownership in app)
       allow read: if isSignedIn();
       
-      // Only authenticated users can upload booking documents
+      // Only authenticated users can upload order documents
       allow write: if isSignedIn() && (isValidDocument() || isValidImage());
       
       // Only authenticated users can delete

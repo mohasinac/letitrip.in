@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks";
 import { Card, Heading, Text, Button } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
 
 export default function UserAddressesPage() {
   const { user, loading } = useAuth();
@@ -12,7 +13,7 @@ export default function UserAddressesPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, loading, router]);
 

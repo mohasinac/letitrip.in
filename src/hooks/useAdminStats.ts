@@ -17,10 +17,10 @@ interface AdminStats {
     disabled: number;
     admins: number;
   };
-  trips: {
+  products: {
     total: number;
   };
-  bookings: {
+  orders: {
     total: number;
   };
 }

@@ -21,6 +21,18 @@ export const ROUTES = {
   USER: {
     PROFILE: "/user/profile",
     SETTINGS: "/user/settings",
+    ORDERS: "/user/orders",
+    WISHLIST: "/user/wishlist",
+    ADDRESSES: "/user/addresses",
+  },
+
+  // Admin Routes
+  ADMIN: {
+    DASHBOARD: "/admin/dashboard",
+    USERS: "/admin/users",
+    CONTENT: "/admin/content",
+    ANALYTICS: "/admin/analytics",
+    SETTINGS: "/admin/settings",
   },
 
   // API Routes

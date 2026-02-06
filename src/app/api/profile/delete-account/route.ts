@@ -16,6 +16,8 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { SUCCESS_MESSAGES } from "@/constants";
+import { PRODUCT_COLLECTION } from "@/db/schema/products";
+import { ORDER_COLLECTION } from "@/db/schema/bookings";
 
 export const DELETE = createApiHandler({
   auth: true,
@@ -28,19 +30,21 @@ export const DELETE = createApiHandler({
     await tokenRepository.email.deleteAllForUser(user.uid);
     await tokenRepository.password.deleteAllForUser(user.uid);
 
-    const tripsQuery = query(
-      collection(adminDb, "trips"),
-      where("userId", "==", user.uid),
+    // Delete user's products (if seller)
+    const productsQuery = query(
+      collection(adminDb, PRODUCT_COLLECTION),
+      where("sellerId", "==", user.uid),
     );
-    const tripsSnapshot = await getDocs(tripsQuery);
-    tripsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    const productsSnapshot = await getDocs(productsQuery);
+    productsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
 
-    const bookingsQuery = query(
-      collection(adminDb, "bookings"),
+    // Delete user's orders
+    const ordersQuery = query(
+      collection(adminDb, ORDER_COLLECTION),
       where("userId", "==", user.uid),
     );
-    const bookingsSnapshot = await getDocs(bookingsQuery);
-    bookingsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    const ordersSnapshot = await getDocs(ordersQuery);
+    ordersSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
 
     await batch.commit();
     await userRepository.delete(user.uid);

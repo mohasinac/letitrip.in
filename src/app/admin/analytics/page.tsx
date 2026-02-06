@@ -93,7 +93,7 @@ export default function AdminAnalyticsPage() {
                   Revenue Analytics
                 </Heading>
                 <Text className={themed.textSecondary}>
-                  Booking trends and revenue reports
+                  Order trends and revenue reports
                 </Text>
               </div>
               <span className="text-3xl">💰</span>
@@ -104,7 +104,7 @@ export default function AdminAnalyticsPage() {
                 <Text className="font-semibold">Coming Soon</Text>
               </div>
               <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded">
-                <Text>Avg. Booking Value</Text>
+                <Text>Avg. Order Value</Text>
                 <Text className="font-semibold">Coming Soon</Text>
               </div>
               <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded">

@@ -1,37 +1,56 @@
-# Letitrip.in - Travel Platform
+# LetItRip.in - Multi-Seller E-commerce & Auction Platform
 
-A modern Next.js 16 travel platform with comprehensive authentication, user management, and professional software engineering practices.
+A modern Next.js 16 e-commerce platform with multi-seller marketplace, auction system, and promotional advertisements.
 
 ## 🚀 Features
 
 - ⚡️ **Next.js 16** with App Router & Turbopack
-- 🔐 **NextAuth v5** with multiple providers (Credentials, Google, Apple)
+- 🛍️ **Multi-Seller Marketplace** - Sellers can list and manage products
+- 🎯 **Auction System** - Time-based bidding for auction items
+- 📢 **Advertisement/Promotion System** - Featured and promoted products
+- 🔐 **Firebase Authentication** - Google, Apple, Email/Password
 - 🎨 **Tailwind CSS** with custom design system
 - 📦 **Custom Component Library** with 40+ reusable components
 - 🔥 **TypeScript** with full type safety
-- 🗄️ **Firebase/Firestore** for database and auth
+- 🗄️ **Firebase/Firestore** for database and real-time updates
 - 📧 **Resend** for email service
-- 🛡️ **Security Best Practices** with bcrypt password hashing
+- 🛡️ **Security Best Practices** with HTTP-only cookies
 - 🎯 **Professional Architecture** following SOLID principles
+- 📊 **Admin Dashboard** for platform management
+
+## 🏪 Platform Overview
+
+**Core Features:**
+
+- **Products** - Standard product listings with inventory management
+- **Auctions** - Time-limited bidding system with real-time updates
+- **Orders** - Complete order management with shipping tracking
+- **Reviews** - Product reviews and ratings
+- **Categories** - Organized product categorization
+- **Promotions** - Featured and promoted product listings
+- **Seller Management** - Multi-vendor support with individual storefronts
 
 ## 📚 Documentation
 
 **Start Here:**
+
 - 🌟 **[Quick Reference Guide](./docs/QUICK_REFERENCE.md)** - Common patterns and quick lookups
 - 📖 **[Getting Started](./docs/getting-started.md)** - Installation and setup
-- 🏗️ **[Engineering Guide](./docs/ENGINEERING_IMPROVEMENTS.md)** - Architecture and best practices
+- 📋 **[Changelog](./docs/CHANGELOG.md)** - Version history and updates
 - 🤝 **[Contributing](./CONTRIBUTING.md)** - How to contribute
 
 **Full Documentation:**
+
 - [Documentation Index](./docs/README.md) - Complete documentation navigation
 - [Project Structure](./docs/project-structure.md) - Directory organization
 - [Component Library](./docs/components/README.md) - UI components
 - [API Documentation](./docs/api/) - API reference
-- [Refactoring Summary](./docs/REFACTORING_SUMMARY.md) - Code evolution
+- [Firebase Complete Stack](./docs/guides/FIREBASE_COMPLETE_STACK.md) - Backend services
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - Firebase project with Firestore
 - Resend account (for emails)
@@ -90,19 +109,19 @@ npm start
 ## 📖 Example Usage
 
 ```tsx
-import { Button, Card, Input, useSwipe } from '@/index';
-import { useTheme } from '@/contexts';
-import { useRef } from 'react';
+import { Button, Card, Input, useSwipe } from "@/index";
+import { useTheme } from "@/contexts";
+import { useRef } from "react";
 
 function ExampleComponent() {
   const { theme, toggleTheme } = useTheme();
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   useSwipe(cardRef, {
-    onSwipeLeft: () => console.log('Swiped left!'),
+    onSwipeLeft: () => console.log("Swiped left!"),
     minSwipeDistance: 50,
   });
-  
+
   return (
     <Card ref={cardRef}>
       <h1>Current theme: {theme}</h1>
@@ -153,12 +172,12 @@ MIT
 
 **Built with ❤️ using Next.js, React, and TypeScript**
 
-
 ## 🎨 Styling System
 
 ### Theme Constants
+
 All styling uses centralized `THEME_CONSTANTS`:
+
 - Automatic dark mode support
 - No hardcoded colors or spacing
 - Consistent design system
-

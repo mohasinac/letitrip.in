@@ -29,7 +29,8 @@ export const SITE_CONFIG = {
     name: "LetItRip",
     shortName: "L",
     logoUrl: "/logo.png",
-    logoAlt: "LetItRip Logo",
+    logoAlt: "LetItRip - Multi-Seller E-commerce & Auction Platform",
+    tagline: "Buy, Sell, Bid - All in One Place",
   },
 
   // Navigation links
@@ -37,14 +38,12 @@ export const SITE_CONFIG = {
     home: "/",
     products: "/products",
     auctions: "/auctions",
-    shops: "/shops",
-    stickers: "/stickers",
+    sellers: "/sellers",
+    categories: "/categories",
+    promotions: "/promotions",
     about: "/about",
-    services: "/services",
     contact: "/contact",
     blog: "/blog",
-    destinations: "/destinations",
-    categories: "/categories",
   },
 
   // Social media links
@@ -74,14 +73,14 @@ export const SITE_CONFIG = {
   contact: {
     email: "info@letitrip.in",
     phone: "+1 (555) 123-4567",
-    address: "123 Travel Street, City, Country",
+    address: "123 Marketplace Street, City, Country",
   },
 
   // SEO
   seo: {
-    title: "LetItRip - Your Travel Companion",
+    title: "LetItRip - Multi-Seller E-commerce & Auction Platform",
     description:
-      "Discover amazing travel experiences and destinations with LetItRip",
-    keywords: "travel, destinations, trips, vacation",
+      "Discover unique products, join exciting auctions, and shop from multiple sellers on LetItRip",
+    keywords: "e-commerce, marketplace, auctions, products, sellers",
   },
 } as const;

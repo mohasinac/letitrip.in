@@ -81,7 +81,7 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
               <input
                 ref={inputRef}
                 type="search"
-                placeholder="Search products, categories, destinations..."
+                placeholder="Search products, categories, sellers..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyPress={handleKeyPress}

@@ -6,6 +6,7 @@ import UserTabs from "@/components/user/UserTabs";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { ROUTES } from "@/constants/routes";
 
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
@@ -13,7 +14,7 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, loading, router]);
 
@@ -39,7 +40,7 @@ export default function UserProfilePage() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => router.push("/user/settings")}
+            onClick={() => router.push(ROUTES.USER.SETTINGS)}
           >
             Edit Profile
           </Button>

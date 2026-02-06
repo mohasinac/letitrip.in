@@ -24,6 +24,7 @@
 import { ReactNode } from "react";
 import { SITE_CONFIG } from "./site";
 import { UI_LABELS } from "./ui";
+import { ROUTES } from "./routes";
 
 /**
  * Navigation Item Interface
@@ -91,8 +92,8 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    href: SITE_CONFIG.nav.shops,
-    label: UI_LABELS.NAV.SHOPS,
+    href: SITE_CONFIG.nav.sellers,
+    label: UI_LABELS.NAV.SELLERS,
     icon: (
       <path
         strokeLinecap="round"
@@ -103,8 +104,8 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    href: SITE_CONFIG.nav.stickers,
-    label: UI_LABELS.NAV.STICKERS,
+    href: SITE_CONFIG.nav.promotions,
+    label: UI_LABELS.NAV.PROMOTIONS,
     icon: (
       <path
         strokeLinecap="round"
@@ -131,7 +132,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
     title: UI_LABELS.NAV.ACCOUNT,
     items: [
       {
-        href: SITE_CONFIG.account.profile,
+        href: ROUTES.USER.PROFILE,
         label: UI_LABELS.NAV.PROFILE,
         icon: (
           <path
@@ -143,7 +144,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: SITE_CONFIG.account.orders,
+        href: "/user/orders",
         label: UI_LABELS.NAV.ORDERS,
         icon: (
           <path
@@ -155,7 +156,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: SITE_CONFIG.account.wishlist,
+        href: "/user/wishlist",
         label: UI_LABELS.NAV.WISHLIST,
         icon: (
           <path
@@ -167,7 +168,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: SITE_CONFIG.account.addresses,
+        href: "/user/addresses",
         label: UI_LABELS.NAV.ADDRESSES,
         icon: (
           <path
@@ -179,7 +180,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: SITE_CONFIG.account.settings,
+        href: ROUTES.USER.SETTINGS,
         label: UI_LABELS.NAV.SETTINGS,
         icon: (
           <>

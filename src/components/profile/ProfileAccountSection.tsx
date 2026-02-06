@@ -57,7 +57,7 @@ export function ProfileAccountSection({
 
       <Text className={`${themed.textSecondary} mt-4`}>
         Once you delete your account, there is no going back. This action is
-        permanent and will delete all your data including trips, bookings, and
+        permanent and will delete all your data including products, orders, and
         profile information.
       </Text>
 

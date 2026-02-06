@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks";
 import { Card, Heading, Text, Button } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
+import { SITE_CONFIG } from "@/constants/site";
 
 export default function UserWishlistPage() {
   const { user, loading } = useAuth();
@@ -12,7 +14,7 @@ export default function UserWishlistPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, loading, router]);
 
@@ -55,7 +57,7 @@ export default function UserWishlistPage() {
               Your wishlist is empty
             </Heading>
             <Text className="mb-6">Save items you love to your wishlist</Text>
-            <Button onClick={() => router.push("/products")}>
+            <Button onClick={() => router.push(SITE_CONFIG.nav.products)}>
               Browse Products
             </Button>
           </div>

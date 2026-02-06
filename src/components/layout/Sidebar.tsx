@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { SIDEBAR_NAV_GROUPS } from "@/constants/navigation";
 import { SITE_CONFIG } from "@/constants/site";
+import { ROUTES } from "@/constants/routes";
 import { useSwipe, useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils/eventHandlers";
@@ -71,12 +72,12 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
 
       // Use router.push instead of window.location for better performance
       // This avoids full page reload and preserves Next.js app state
-      router.push(SITE_CONFIG.account.login);
+      router.push(ROUTES.AUTH.LOGIN);
     } catch (error) {
       console.error("Sign out error:", error);
       // Even on error, redirect to login (session might be cleared)
       onClose();
-      router.push(SITE_CONFIG.account.login);
+      router.push(ROUTES.AUTH.LOGIN);
     }
   };
 
@@ -440,12 +441,12 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
                 {(user.role === "admin" || user.role === "moderator") && (
                   <li>
                     <Link
-                      href="/admin"
+                      href="/admin/dashboard"
                       className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
-                          pathname === "/admin" ||
+                          pathname === "/admin/dashboard" ||
                           pathname?.startsWith("/admin/")
                             ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
                             : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
@@ -457,7 +458,7 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
                         className={`
                         flex-shrink-0 p-1.5 rounded-md transition-colors
                         ${
-                          pathname === "/admin" ||
+                          pathname === "/admin/dashboard" ||
                           pathname?.startsWith("/admin/")
                             ? "bg-primary-100 dark:bg-primary-900/50"
                             : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
@@ -465,7 +466,7 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
                       `}
                       >
                         <svg
-                          className={`w-4 h-4 ${pathname === "/admin" || pathname?.startsWith("/admin/") ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                          className={`w-4 h-4 ${pathname === "/admin/dashboard" || pathname?.startsWith("/admin/") ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"

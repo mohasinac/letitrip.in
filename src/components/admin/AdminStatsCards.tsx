@@ -10,8 +10,8 @@ import { THEME_CONSTANTS } from "@/constants/theme";
 interface StatsCardsProps {
   stats: {
     users: { total: number; active: number; new: number; disabled: number };
-    trips: { total: number };
-    bookings: { total: number };
+    products: { total: number };
+    orders: { total: number };
   };
 }
 
@@ -44,16 +44,16 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
       icon: "🚫",
     },
     {
-      label: "Total Trips",
-      value: stats.trips.total,
+      label: "Total Products",
+      value: stats.products.total,
       color: "text-indigo-600",
-      icon: "✈️",
+      icon: "📦",
     },
     {
-      label: "Total Bookings",
-      value: stats.bookings.total,
+      label: "Total Orders",
+      value: stats.orders.total,
       color: "text-pink-600",
-      icon: "📅",
+      icon: "🛒",
     },
   ];
 

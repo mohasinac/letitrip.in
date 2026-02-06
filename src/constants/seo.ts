@@ -11,9 +11,9 @@ export const SEO_CONFIG = {
   // Site-wide defaults
   siteName: "LetItRip",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in",
-  defaultTitle: "LetItRip - Your Ultimate Travel & E-commerce Platform",
+  defaultTitle: "LetItRip - Multi-Seller E-commerce & Auction Platform",
   defaultDescription:
-    "Discover amazing travel destinations, shop products, join auctions, and explore unique services on LetItRip.",
+    "Discover unique products, join exciting auctions, and shop from multiple sellers on LetItRip. Your one-stop marketplace for deals and bidding.",
   defaultImage: "/og-image.jpg",
   twitterHandle: "@letitrip",
   locale: "en_US",
@@ -21,12 +21,12 @@ export const SEO_CONFIG = {
   // Page-specific metadata
   pages: {
     home: {
-      title: "LetItRip - Your Ultimate Travel & E-commerce Platform",
+      title: "LetItRip - Multi-Seller E-commerce & Auction Platform",
       description:
-        "Discover amazing travel destinations, shop products, join auctions, and explore unique services.",
+        "Discover unique products, join exciting auctions, and shop from multiple sellers. Your one-stop marketplace for deals and bidding.",
       keywords: [
-        "travel",
         "e-commerce",
+        "marketplace",
         "auctions",
         "shopping",
         "destinations",
@@ -34,16 +34,16 @@ export const SEO_CONFIG = {
       ],
     },
     destinations: {
-      title: "Travel Destinations - Explore the World",
+      title: "Product Categories - Browse All Products",
       description:
-        "Browse amazing travel destinations around the world. Find your next adventure with LetItRip.",
-      keywords: ["travel destinations", "vacation", "tourism", "explore"],
+        "Browse products by category. Find amazing deals and unique items from multiple sellers on LetItRip.",
+      keywords: ["categories", "products", "shopping", "browse"],
     },
     services: {
       title: "Services - Find What You Need",
       description:
         "Discover a wide range of services from trusted providers. Book services for your needs.",
-      keywords: ["services", "booking", "providers", "local services"],
+      keywords: ["services", "sellers", "providers", "marketplace"],
     },
     auctions: {
       title: "Auctions - Bid and Win",

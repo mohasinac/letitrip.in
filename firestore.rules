@@ -68,42 +68,42 @@ service cloud.firestore {
     }
     
     // ============================================
-    // Trips Collection
+    // Products Collection
     // ============================================
     
-    match /trips/{tripId} {
-      // Trips are publicly readable
+    match /products/{productId} {
+      // Products are publicly readable
       allow read: if true;
       
-      // Only authenticated users can create trips
+      // Only authenticated sellers/admins can create products
       allow create: if isSignedIn() &&
-                      request.resource.data.userId == request.auth.uid;
+                      request.resource.data.sellerId == request.auth.uid;
       
-      // Users can update/delete their own trips
-      // Admins can update/delete any trip
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+      // Sellers can update/delete their own products
+      // Admins can update/delete any product
+      allow update, delete: if isOwner(resource.data.sellerId) || isAdmin();
     }
     
     // ============================================
-    // Bookings Collection
+    // Orders Collection
     // ============================================
     
-    match /bookings/{bookingId} {
-      // Users can only read their own bookings
-      // Admins can read all bookings
+    match /orders/{orderId} {
+      // Users can only read their own orders
+      // Admins can read all orders
       allow read: if isOwner(resource.data.userId) || isAdmin();
       
-      // Only authenticated users can create bookings
+      // Only authenticated users can create orders
       allow create: if isSignedIn() &&
                       request.resource.data.userId == request.auth.uid;
       
-      // Users can update their own bookings (limited fields)
-      // Admins can update any booking
+      // Users can update their own orders (limited fields)
+      // Admins can update any order
       allow update: if (isOwner(resource.data.userId) && 
-                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'tripId', 'price'])) ||
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'productId', 'unitPrice'])) ||
                       isAdmin();
       
-      // Only admins can delete bookings
+      // Only admins can delete orders
       allow delete: if isAdmin();
     }
     

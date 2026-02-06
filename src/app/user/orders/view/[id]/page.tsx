@@ -6,6 +6,7 @@ import { Card, Heading, Text, Button, Badge } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter, useParams } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants/theme";
+import { ROUTES } from "@/constants/routes";
 
 interface OrderItem {
   id: string;
@@ -48,7 +49,7 @@ export default function OrderViewPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, loading, router]);
 
@@ -95,7 +96,7 @@ export default function OrderViewPage() {
         <div className={THEME_CONSTANTS.spacing.stack}>
           <Button
             variant="secondary"
-            onClick={() => router.push("/user/orders")}
+            onClick={() => router.push(ROUTES.USER.ORDERS)}
             className="w-fit"
           >
             ← Back to Orders
@@ -122,7 +123,7 @@ export default function OrderViewPage() {
               <Text className="mb-6">
                 The order you're looking for doesn't exist or has been removed.
               </Text>
-              <Button onClick={() => router.push("/user/orders")}>
+              <Button onClick={() => router.push(ROUTES.USER.ORDERS)}>
                 View All Orders
               </Button>
             </div>
@@ -139,7 +140,7 @@ export default function OrderViewPage() {
       <div className={THEME_CONSTANTS.spacing.stack}>
         <Button
           variant="secondary"
-          onClick={() => router.push("/user/orders")}
+          onClick={() => router.push(ROUTES.USER.ORDERS)}
           className="w-fit"
         >
           ← Back to Orders

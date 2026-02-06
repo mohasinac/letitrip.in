@@ -23,7 +23,7 @@ import { useState, FormEvent, Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
-import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
+import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES, ROUTES } from "@/constants";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { apiClient } from "@/lib/api-client";
@@ -31,7 +31,7 @@ import { apiClient } from "@/lib/api-client";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
 
   const [formData, setFormData] = useState({
     email: "",
@@ -111,7 +111,7 @@ function LoginForm() {
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{" "}
             <Link
-              href="/auth/register"
+              href={ROUTES.AUTH.REGISTER}
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
             >
               create a new account
@@ -180,7 +180,7 @@ function LoginForm() {
 
             <div className="text-sm">
               <Link
-                href="/auth/forgot-password"
+                href={ROUTES.AUTH.FORGOT_PASSWORD}
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
               >
                 Forgot password?

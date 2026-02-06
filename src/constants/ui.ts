@@ -105,8 +105,9 @@ export const UI_LABELS = {
     HOME: "Home",
     PRODUCTS: "Products",
     AUCTIONS: "Auctions",
-    SHOPS: "Shops",
-    STICKERS: "Stickers",
+    SELLERS: "Sellers",
+    CATEGORIES: "Categories",
+    PROMOTIONS: "Promotions",
     PROFILE: "Profile",
     ORDERS: "Orders",
     WISHLIST: "Wishlist",
@@ -165,6 +166,47 @@ export const UI_LABELS = {
     ZOOM_OUT: "Zoom out",
     FALLBACK_USER: "User",
     DEFAULT_INITIAL: "U",
+  },
+
+  // Admin content management
+  ADMIN: {
+    CONTENT: {
+      TITLE: "Content Management",
+      SUBTITLE: "Manage products, orders, and reviews",
+      PRODUCTS: {
+        TITLE: "Products",
+        SUBTITLE: "Manage all product listings",
+        VIEW: "View Products",
+        CREATE: "Create Product",
+        EDIT: "Edit Product",
+        DELETE: "Delete Product",
+        ICON: "📦",
+      },
+      ORDERS: {
+        TITLE: "Orders",
+        SUBTITLE: "Manage all orders",
+        VIEW: "View Orders",
+        DETAILS: "Order Details",
+        APPROVE: "Approve Order",
+        REJECT: "Reject Order",
+        ICON: "🛒",
+      },
+      REVIEWS: {
+        TITLE: "Reviews",
+        SUBTITLE: "Moderate user reviews",
+        VIEW: "View Reviews",
+        APPROVE: "Approve Review",
+        REJECT: "Reject Review",
+        DELETE: "Delete Review",
+        ICON: "⭐",
+      },
+      COMING_SOON: {
+        TITLE: "Content Management Coming Soon",
+        MESSAGE:
+          "Advanced content management features are currently under development",
+        ICON: "🚧",
+      },
+    },
   },
 } as const;
 

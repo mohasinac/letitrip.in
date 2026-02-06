@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { SITE_CONFIG } from "@/constants/site";
+import { ROUTES } from "@/constants/routes";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
@@ -125,9 +126,9 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         <li className="flex-1">
           {user ? (
             <a
-              href={SITE_CONFIG.account.profile}
+              href={ROUTES.USER.PROFILE}
               className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
-                pathname === SITE_CONFIG.account.profile
+                pathname === ROUTES.USER.PROFILE
                   ? themed.textPrimary
                   : themed.textSecondary
               } hover:${themed.textPrimary}`}

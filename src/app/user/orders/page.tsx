@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks";
 import { Card, Heading, Text, Button } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
+import { SITE_CONFIG } from "@/constants/site";
 
 export default function UserOrdersPage() {
   const { user, loading } = useAuth();
@@ -12,7 +14,7 @@ export default function UserOrdersPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, loading, router]);
 
@@ -55,7 +57,7 @@ export default function UserOrdersPage() {
               No orders yet
             </Heading>
             <Text className="mb-6">Start shopping to see your orders here</Text>
-            <Button onClick={() => router.push("/products")}>
+            <Button onClick={() => router.push(SITE_CONFIG.nav.products)}>
               Browse Products
             </Button>
           </div>

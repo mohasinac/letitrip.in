@@ -16,6 +16,7 @@ import { useToast } from "@/components/feedback";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants/theme";
+import { ROUTES } from "@/constants/routes";
 import {
   UI_LABELS,
   SUCCESS_MESSAGES,
