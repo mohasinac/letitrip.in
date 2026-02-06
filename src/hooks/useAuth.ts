@@ -27,9 +27,6 @@ import {
   resetPassword as firebaseResetPassword,
 } from "@/lib/firebase/auth-helpers";
 
-// Re-export useAuth from SessionContext for backward compatibility
-export { useAuth } from "@/contexts/SessionContext";
-
 // ============================================================================
 // Types
 // ============================================================================

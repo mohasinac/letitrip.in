@@ -16,4 +16,4 @@ export { ThemeProvider, useTheme } from "./ThemeContext";
 
 // Session Context
 export { SessionProvider, useSession, useAuth } from "./SessionContext";
-export type { SessionUser } from "./SessionContext";
+export type { SessionUser, SessionContextValue } from "./SessionContext";

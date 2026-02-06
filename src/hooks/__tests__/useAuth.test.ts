@@ -11,7 +11,7 @@
  */
 
 import { renderHook, waitFor } from "@testing-library/react";
-import { useAuth } from "../useAuth";
+import { useAuth } from "@/contexts/SessionContext";
 import { onAuthStateChanged } from "@/lib/firebase/auth-helpers";
 import { db } from "@/lib/firebase/config";
 import { doc, getDoc } from "firebase/firestore";

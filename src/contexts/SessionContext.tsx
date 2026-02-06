@@ -89,7 +89,7 @@ export interface SessionUser {
   } | null;
 }
 
-interface SessionContextValue {
+export interface SessionContextValue {
   user: SessionUser | null;
   loading: boolean;
   sessionId: string | null;
@@ -441,8 +441,8 @@ export function useSession(): SessionContextValue {
 }
 
 /**
- * Hook for backward compatibility with useAuth
- * Returns the same shape as the old useAuth hook
+ * Hook to access authentication state
+ * Provides user, loading state, and refresh functionality
  */
 export function useAuth() {
   const { user, loading, refreshUser } = useSession();

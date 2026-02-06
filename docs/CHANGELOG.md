@@ -35,8 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Session Context** (`src/contexts/SessionContext.tsx`):
   - `SessionProvider` - Wraps app for cross-component state sync
-  - `useSession()` hook - Access session state and actions
-  - `useAuth()` - Backward compatible, re-exported from SessionContext
+  - `useSession()` hook - Access full session state and actions
+  - `useAuth()` hook - Simplified access to user, loading, refreshUser
   - Real-time Firestore subscription for user updates
   - Session activity tracking every 5 minutes
   - Session validation with server
@@ -99,10 +99,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `src/repositories/index.ts` - Export sessionRepository
   - `src/lib/firebase/auth-helpers.ts` - Session creation in auth methods
   - `src/app/api/auth/session/route.ts` - Firestore session storage
-  - `src/contexts/index.ts` - Export SessionProvider
+  - `src/contexts/index.ts` - Export SessionProvider, useSession, useAuth
   - `src/app/layout.tsx` - Add SessionProvider
   - `src/hooks/index.ts` - Export session hooks
-  - `src/hooks/useAuth.ts` - Re-export from SessionContext
   - `src/constants/routes.ts` - Add ADMIN.SESSIONS route
   - `firestore.indexes.json` - Add session indexes
 

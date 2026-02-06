@@ -42,7 +42,6 @@ export { useKeyPress } from "./useKeyPress";
 export type { UseKeyPressOptions, KeyModifiers } from "./useKeyPress";
 
 export {
-  useAuth,
   useLogin,
   useRegister,
   useVerifyEmail,
@@ -52,8 +51,8 @@ export {
   useChangePassword,
 } from "./useAuth";
 
-// Session management hooks (re-exported from SessionContext)
-export { useSession } from "@/contexts/SessionContext";
+// Session hooks from SessionContext
+export { useSession, useAuth } from "@/contexts/SessionContext";
 
 export {
   useAddresses,
