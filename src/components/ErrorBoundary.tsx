@@ -1,14 +1,15 @@
 /**
  * Error Boundary Component
- * 
+ *
  * Catches and handles React errors in the component tree
  */
 
-'use client';
+"use client";
 
-import React, { Component, ReactNode } from 'react';
-import { Button } from '@/components';
-import { ERROR_MESSAGES } from '@/constants';
+import React, { Component, ReactNode } from "react";
+import { Button } from "@/components";
+import { ERROR_MESSAGES } from "@/constants";
+import { Logger } from "@/classes";
 
 interface Props {
   children: ReactNode;
@@ -22,6 +23,11 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  private logger = Logger.getInstance({
+    enableConsole: true,
+    enableFileLogging: true, // Write errors to files
+  });
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -38,8 +44,14 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    // Log to Logger class for centralized error tracking
+    this.logger.error("ErrorBoundary caught an error", {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+    });
+
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
@@ -83,8 +95,8 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-gray-600 mb-6">
                 {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
               </p>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg text-left">
                   <p className="text-sm font-mono text-red-600 break-all">
                     {this.state.error.message}
@@ -94,15 +106,12 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                variant="primary"
-                onClick={this.handleReset}
-              >
+              <Button variant="primary" onClick={this.handleReset}>
                 Try Again
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => window.location.href = '/'}
+                onClick={() => (window.location.href = "/")}
               >
                 Go Home
               </Button>

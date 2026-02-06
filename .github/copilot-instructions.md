@@ -22,6 +22,79 @@
 
 ---
 
+## Code Organization Structure
+
+### 📁 Codebase Architecture
+
+The project follows a highly organized structure with clear separation of concerns:
+
+```
+src/
+├── app/                    # Next.js App Router pages & API routes
+├── components/             # React components (40+ reusable UI components)
+├── hooks/                  # Custom React hooks
+├── contexts/               # React Context providers (Theme, Session, Auth)
+├── constants/              # App-wide constants (UI labels, routes, theme, messages)
+├── lib/                    # External libraries & services (Firebase, API client, errors, security)
+├── repositories/           # Data access layer (Repository pattern for Firestore)
+├── db/schema/              # Firestore collection schemas with types
+├── types/                  # TypeScript type definitions
+│
+├── utils/                  # 🆕 Pure utility functions (validators, formatters, converters)
+│   ├── validators/         #    Email, password, phone, URL, input validation
+│   ├── formatters/         #    Date, number, string formatting
+│   ├── converters/         #    Type conversions (array↔object, CSV, timestamps)
+│   └── events/             #    Global event management (throttle/debounce)
+│
+├── helpers/                # 🆕 Business logic helpers
+│   ├── auth/               #    Authentication logic (role hierarchy, tokens)
+│   ├── data/               #    Data manipulation (array, object, pagination, sorting)
+│   └── ui/                 #    UI utilities (color, style, animation)
+│
+├── classes/                # 🆕 Singleton class modules
+│   ├── CacheManager.ts     #    In-memory caching with TTL
+│   ├── StorageManager.ts   #    localStorage/sessionStorage wrapper
+│   ├── Logger.ts           #    Application logging system
+│   ├── EventBus.ts         #    Event-driven communication
+│   └── Queue.ts            #    Priority task queue
+│
+└── snippets/               # 🆕 Reusable code patterns
+    ├── react-hooks.snippet.ts      #    10 custom React hooks (useDebounce, useLocalStorage, etc.)
+    ├── api-requests.snippet.ts     #    API request patterns (retry, timeout, batch)
+    ├── form-validation.snippet.ts  #    Form validation patterns
+    └── performance.snippet.ts      #    Performance optimization patterns
+```
+
+### Import Patterns
+
+```typescript
+// Utilities - Pure functions
+import { isValidEmail, formatDate, formatCurrency } from '@/utils';
+
+// Helpers - Business logic
+import { hasRole, groupBy, classNames } from '@/helpers';
+
+// Classes - Singletons
+import { CacheManager, Logger, EventBus } from '@/classes';
+
+// Snippets - Reusable patterns
+import { useDebounce, useLocalStorage } from '@/snippets/react-hooks.snippet';
+import { apiRequest, retryRequest } from '@/snippets/api-requests.snippet';
+```
+
+### Key Features
+
+- ✅ **30+ Pure Functions** - Validators, formatters, converters
+- ✅ **5 Singleton Classes** - Cache, storage, logging, events, queue
+- ✅ **10 Custom React Hooks** - Debounce, localStorage, media queries, etc.
+- ✅ **DRY Principle** - No duplicate code across codebase
+- ✅ **Tree-Shaking** - Only import what you use
+- ✅ **Type Safety** - Full TypeScript support throughout
+
+**Documentation**: See `docs/CODEBASE_ORGANIZATION.md` for complete usage guide
+
+---
+
 ## Firebase Services Architecture
 
 ### 🔥 Firebase Stack Overview

@@ -1,32 +1,104 @@
 /**
  * Firebase Admin SDK Configuration
- * 
+ *
  * Server-side Firebase Admin for secure operations.
  * Used for user management, custom claims, and server-side verification.
+ *
+ * Supports two initialization methods:
+ * 1. Environment variables (recommended for production)
+ * 2. Service account JSON file (easier for development)
  */
 
-import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
-import { getAuth, Auth } from 'firebase-admin/auth';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, cert, App } from "firebase-admin/app";
+import { getAuth, Auth } from "firebase-admin/auth";
+import { getFirestore, Firestore } from "firebase-admin/firestore";
+import * as path from "path";
+import * as fs from "fs";
 
-let adminApp: App;
-let adminAuth: Auth;
-let adminDb: Firestore;
+let _adminApp: App | null = null;
+let _adminAuth: Auth | null = null;
+let _adminDb: Firestore | null = null;
 
-if (!getApps().length) {
-  adminApp = initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
-  adminAuth = getAuth(adminApp);
-  adminDb = getFirestore(adminApp);
-} else {
-  adminApp = getApps()[0];
-  adminAuth = getAuth(adminApp);
-  adminDb = getFirestore(adminApp);
+/**
+ * Get Firebase Admin App instance (lazy initialization)
+ */
+export function getAdminApp(): App {
+  if (!_adminApp) {
+    if (!getApps().length) {
+      try {
+        // Method 1: Try service account JSON file (for development)
+        const serviceAccountPath = path.join(
+          process.cwd(),
+          "firebase-admin-key.json",
+        );
+        if (fs.existsSync(serviceAccountPath)) {
+          console.log(
+            "🔑 Initializing Firebase Admin with service account JSON file",
+          );
+          _adminApp = initializeApp({
+            credential: cert(serviceAccountPath),
+          });
+        }
+        // Method 2: Use environment variables (for production)
+        else if (
+          process.env.FIREBASE_ADMIN_PROJECT_ID &&
+          process.env.FIREBASE_ADMIN_CLIENT_EMAIL &&
+          process.env.FIREBASE_ADMIN_PRIVATE_KEY
+        ) {
+          console.log(
+            "🔑 Initializing Firebase Admin with environment variables",
+          );
+          _adminApp = initializeApp({
+            credential: cert({
+              projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+              clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+              privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY.replace(
+                /\\n/g,
+                "\n",
+              ),
+            }),
+          });
+        } else {
+          throw new Error(
+            "Firebase Admin credentials not found. Please either:\n" +
+              "1. Add firebase-admin-key.json to project root (development), OR\n" +
+              "2. Set FIREBASE_ADMIN_* environment variables (production)\n" +
+              "See FIREBASE_KEY_SETUP.md for instructions.",
+          );
+        }
+      } catch (error) {
+        console.error("❌ Failed to initialize Firebase Admin SDK:", error);
+        throw error;
+      }
+    } else {
+      _adminApp = getApps()[0];
+    }
+  }
+  return _adminApp;
 }
 
-export { adminApp, adminAuth, adminDb };
+/**
+ * Get Firebase Admin Auth instance (lazy initialization)
+ */
+export function getAdminAuth(): Auth {
+  if (!_adminAuth) {
+    _adminAuth = getAuth(getAdminApp());
+  }
+  return _adminAuth;
+}
+
+/**
+ * Get Firebase Admin Firestore instance (lazy initialization)
+ *
+ * Admin SDK automatically bypasses security rules when properly authenticated.
+ */
+export function getAdminDb(): Firestore {
+  if (!_adminDb) {
+    _adminDb = getFirestore(getAdminApp());
+    // Configure settings for better performance
+    _adminDb.settings({
+      ignoreUndefinedProperties: true,
+    });
+  }
+  return _adminDb;
+}

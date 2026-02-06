@@ -9,7 +9,7 @@ import { SITE_CONFIG } from "@/constants/site";
 import { ROUTES } from "@/constants/routes";
 import { useSwipe, useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
-import { preventBodyScroll } from "@/utils/eventHandlers";
+import { preventBodyScroll } from "@/utils/events";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
 

@@ -1,8 +1,8 @@
 # LetItRip Documentation
 
-🎉 **100% Coding Standards Compliance (11/11)** - [View Latest Audit](./COMPLIANCE_AUDIT_REPORT.md) | [Summary](./COMPLIANCE_SUMMARY.md)
+🎉 **100% Coding Standards Compliance (11/11)** - [View Latest Audit](./AUDIT_REPORT.md) | [Changelog](./CHANGELOG.md)
 
-Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with production-ready architecture, complete Firebase backend, and mobile-first design.
+Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with production-ready architecture, complete Firebase backend, organized codebase, and mobile-first design.
 
 ---
 
@@ -10,15 +10,14 @@ Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with
 
 ### 🎯 Core Documentation
 
-| Document                                                       | Description                    | Audience   |
-| -------------------------------------------------------------- | ------------------------------ | ---------- |
-| **[COMPLIANCE_CHECKLIST.md](./COMPLIANCE_CHECKLIST.md)** ⭐    | **Pre-task checklist**         | Developers |
-| **[COMPLIANCE_AUDIT_REPORT.md](./COMPLIANCE_AUDIT_REPORT.md)** | **Latest audit (Feb 6, 2026)** | Developers |
-| **[COMPLIANCE_SUMMARY.md](./COMPLIANCE_SUMMARY.md)**           | **Quick compliance overview**  | All        |
-| **[CHANGELOG.md](./CHANGELOG.md)**                             | Version history                | All        |
-| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**                 | Quick lookups                  | Developers |
-| **[API_CLIENT.md](./API_CLIENT.md)**                           | API usage guide                | Developers |
-| [AUDIT_REPORT.md](./AUDIT_REPORT.md)                           | Previous audit (archived)      | Reference  |
+| Document                                                           | Description                    | Audience   |
+| ------------------------------------------------------------------ | ------------------------------ | ---------- |
+| **[AUDIT_REPORT.md](./AUDIT_REPORT.md)** ⭐                        | **Latest audit (Feb 7, 2026)** | Developers |
+| **[CHANGELOG.md](./CHANGELOG.md)**                                 | **Version history**            | All        |
+| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)**                     | Quick lookups                  | Developers |
+| **[CODEBASE_ORGANIZATION.md](./CODEBASE_ORGANIZATION.md)**         | **Code structure guide**       | Developers |
+| **[QUICK_REFERENCE_UTILITIES.md](./QUICK_REFERENCE_UTILITIES.md)** | **Utility quick reference**    | Developers |
+| **[API_CLIENT.md](./API_CLIENT.md)**                               | API usage guide                | Developers |
 
 ### 🚀 Getting Started
 
@@ -27,7 +26,6 @@ Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with
 | [getting-started.md](./getting-started.md)     | Installation & setup   |
 | [development.md](./development.md)             | Development workflow   |
 | [project-structure.md](./project-structure.md) | Directory organization |
-| [FILE_STRUCTURE.md](./FILE_STRUCTURE.md)       | Complete file tree     |
 
 ### 🔥 Firebase Backend
 
@@ -35,8 +33,8 @@ Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with
 | ---------------------------------------------------------------------------- | -------------------- | ----------- |
 | **[guides/FIREBASE_COMPLETE_STACK.md](./guides/FIREBASE_COMPLETE_STACK.md)** | Complete stack guide | ✅ Live     |
 | **[guides/FIREBASE_AUTH_COMPLETE.md](./guides/FIREBASE_AUTH_COMPLETE.md)**   | Auth integration     | ✅ Complete |
-| [AUTH_IMPLEMENTATION.md](./AUTH_IMPLEMENTATION.md)                           | Auth patterns        | Reference   |
 | [guides/ROLE_SYSTEM.md](./guides/ROLE_SYSTEM.md)                             | 4-role RBAC          | ✅ Active   |
+| [BACKEND_AUTH_ARCHITECTURE.md](./BACKEND_AUTH_ARCHITECTURE.md)               | Backend auth design  | ✅ Complete |
 
 ### 📱 Feature Guides
 
@@ -49,15 +47,18 @@ Welcome to LetItRip - a modern multi-seller e-commerce and auction platform with
 | [guides/theming.md](./guides/theming.md)                                                 | Dark mode & themes  |
 | [guides/testing.md](./guides/testing.md)                                                 | Test strategies     |
 | [guides/accessibility.md](./guides/accessibility.md)                                     | WCAG compliance     |
+| [SECURITY.md](./SECURITY.md)                                                             | Security practices  |
+| [PERFORMANCE_OPTIMIZATION.md](./PERFORMANCE_OPTIMIZATION.md)                             | Performance guide   |
 
-### 📦 Component Library
+### 📦 Code Reference
 
-| Resource                                       | Description           |
-| ---------------------------------------------- | --------------------- |
-| [components/README.md](./components/README.md) | Components overview   |
-| [api/hooks.md](./api/hooks.md)                 | React hooks reference |
-| [api/contexts.md](./api/contexts.md)           | Context API docs      |
-| [api/constants.md](./api/constants.md)         | Constants reference   |
+| Resource                                                     | Description           |
+| ------------------------------------------------------------ | --------------------- |
+| [components/README.md](./components/README.md)               | Components overview   |
+| [api/hooks.md](./api/hooks.md)                               | React hooks reference |
+| [api/contexts.md](./api/contexts.md)                         | Context API docs      |
+| [api/constants.md](./api/constants.md)                       | Constants reference   |
+| [schemas/addresses-schema.md](./schemas/addresses-schema.md) | Address schema docs   |
 
 ---
 
@@ -87,12 +88,21 @@ firebase deploy --only "firestore,storage,database"
 
 ## 🏆 Key Features
 
+### ✅ Code Organization (NEW - Feb 7, 2026)
+
+- **30+ Utility Functions** - Validators, formatters, converters organized by purpose
+- **5 Singleton Classes** - CacheManager, StorageManager, Logger, EventBus, Queue
+- **10 Custom React Hooks** - useDebounce, useLocalStorage, useToggle, and more
+- **Reusable Snippets** - API patterns, form validation, performance optimizations
+- **Tree-Shakeable** - Import only what you need
+- **DRY Principle** - Zero code duplication
+
 ### ✅ Frontend Excellence
 
 - **40+ Production Components** - Mobile-first UI library
-- **TypeScript 100%** - Complete type safety
+- **TypeScript 100%** - Complete type safety (0 errors)
 - **Dark Mode** - Full theme system with THEME_CONSTANTS
-- **301 Tests Passing** - Comprehensive coverage
+- **507 Tests Passing** - Comprehensive coverage
 - **Accessibility** - WCAG compliant
 - **Performance** - Next.js 16 + Turbopack
 - **Constants System** - UI_LABELS, UI_PLACEHOLDERS, UI_HELP_TEXT

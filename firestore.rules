@@ -142,5 +142,64 @@ service cloud.firestore {
       // System deletes tokens after use
       allow delete: if false;
     }
+    
+    // ============================================
+    // Sessions Collection
+    // ============================================
+    
+    match /sessions/{sessionId} {
+      // Users can read their own sessions
+      // Admins can read all sessions
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Server can create sessions via Admin SDK (bypasses rules)
+      // This rule is kept as false since we use Admin SDK with auth disabled
+      allow create: if false;
+      
+      // Server updates sessions via Admin SDK (bypasses rules)
+      allow update: if false;
+      
+      // Users can delete their own sessions (logout from device)
+      // Admins can delete any session
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // ============================================
+    // Reviews Collection
+    // ============================================
+    
+    match /reviews/{reviewId} {
+      // Published reviews are publicly readable
+      allow read: if resource.data.status == 'approved' || 
+                    isOwner(resource.data.userId) || 
+                    isAdmin() || 
+                    isModerator();
+      
+      // Authenticated users can create reviews
+      allow create: if isSignedIn() &&
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.status == 'pending';
+      
+      // Users can update their own reviews (limited)
+      // Moderators/admins can approve/reject
+      allow update: if (isOwner(resource.data.userId) && 
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'userId', 'productId'])) ||
+                      isModerator();
+      
+      // Only admins can delete reviews
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // Addresses Collection (subcollection of users)
+    // ============================================
+    
+    match /users/{userId}/addresses/{addressId} {
+      // Users can only access their own addresses
+      allow read, write: if isOwner(userId);
+      
+      // Admins can read any addresses
+      allow read: if isAdmin();
+    }
   }
 }

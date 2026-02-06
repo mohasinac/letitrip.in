@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { adminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@/lib/firebase/admin";
 import { handleApiError } from "@/lib/errors";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const { email } = validation.data;
 
     // Get Firebase Admin instance
-    const auth = getAuth(adminApp);
+    const auth = getAuth(getAdminApp());
 
     // Generate password reset link
     // Always return success even if user doesn't exist (security best practice)

@@ -14,15 +14,11 @@
  * ```
  */
 
-import {
-  getFirestore,
-  DocumentData,
-  Firestore,
-} from "firebase-admin/firestore";
+import { DocumentData, Firestore } from "firebase-admin/firestore";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
 
 export abstract class BaseRepository<T extends DocumentData> {
-  private _db: Firestore | null = null;
   protected collection: string;
 
   constructor(collectionName: string) {
@@ -30,13 +26,10 @@ export abstract class BaseRepository<T extends DocumentData> {
   }
 
   /**
-   * Get Firestore instance (lazy initialization)
+   * Get Firestore instance (uses admin SDK)
    */
   protected get db(): Firestore {
-    if (!this._db) {
-      this._db = getFirestore();
-    }
-    return this._db;
+    return getAdminDb();
   }
 
   /**

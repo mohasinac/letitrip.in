@@ -11,21 +11,32 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { adminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@/lib/firebase/admin";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
+import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors";
 import { SUCCESS_MESSAGES } from "@/constants";
 
 export async function POST(request: NextRequest) {
   try {
     const sessionCookie = request.cookies.get("__session")?.value;
+    const sessionId = request.cookies.get("__session_id")?.value;
+
+    // Revoke session in Firestore
+    if (sessionId) {
+      try {
+        await sessionRepository.revokeSession(sessionId, "user");
+      } catch (error) {
+        console.error("Session revocation error:", error);
+      }
+    }
 
     // Optionally revoke refresh tokens for extra security
     if (sessionCookie) {
       try {
         const decodedClaims = await verifySessionCookie(sessionCookie);
         if (decodedClaims) {
-          const auth = getAuth(adminApp);
+          const auth = getAuth(getAdminApp());
           await auth.revokeRefreshTokens(decodedClaims.uid);
         }
       } catch (error) {
@@ -34,7 +45,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Clear session cookie
+    // Clear session cookies
     const response = NextResponse.json(
       {
         success: true,
@@ -44,6 +55,7 @@ export async function POST(request: NextRequest) {
     );
 
     response.cookies.delete("__session");
+    response.cookies.delete("__session_id");
 
     return response;
   } catch (error: unknown) {

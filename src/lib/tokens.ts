@@ -1,17 +1,17 @@
 /**
  * Token Management Utilities
- * 
+ *
  * Centralized token generation and validation
  */
 
-import crypto from 'crypto';
-import { adminDb } from '@/lib/firebase/admin';
-import { Timestamp } from 'firebase-admin/firestore';
-import { TOKEN_CONFIG, ERROR_MESSAGES } from '@/constants';
+import crypto from "crypto";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { Timestamp } from "firebase-admin/firestore";
+import { TOKEN_CONFIG, ERROR_MESSAGES } from "@/constants";
 import {
   EMAIL_VERIFICATION_COLLECTION,
   PASSWORD_RESET_COLLECTION,
-} from '@/db/schema';
+} from "@/db/schema";
 
 export interface TokenData {
   userId: string;
@@ -30,7 +30,7 @@ export interface PasswordResetTokenData extends TokenData {
  * Generate a secure random token
  */
 export function generateToken(length: number = 32): string {
-  return crypto.randomBytes(length).toString('hex');
+  return crypto.randomBytes(length).toString("hex");
 }
 
 /**
@@ -38,12 +38,14 @@ export function generateToken(length: number = 32): string {
  */
 export async function createVerificationToken(
   userId: string,
-  email: string
+  email: string,
 ): Promise<string> {
   const token = generateToken();
-  const expiresAt = new Date(Date.now() + TOKEN_CONFIG.EMAIL_VERIFICATION.EXPIRY_MS);
+  const expiresAt = new Date(
+    Date.now() + TOKEN_CONFIG.EMAIL_VERIFICATION.EXPIRY_MS,
+  );
 
-  await adminDb.collection(EMAIL_VERIFICATION_COLLECTION).doc(token).set({
+  await getAdminDb().collection(EMAIL_VERIFICATION_COLLECTION).doc(token).set({
     userId,
     email,
     token,
@@ -59,12 +61,14 @@ export async function createVerificationToken(
  */
 export async function createPasswordResetToken(
   userId: string,
-  email: string
+  email: string,
 ): Promise<string> {
   const token = generateToken();
-  const expiresAt = new Date(Date.now() + TOKEN_CONFIG.PASSWORD_RESET.EXPIRY_MS);
+  const expiresAt = new Date(
+    Date.now() + TOKEN_CONFIG.PASSWORD_RESET.EXPIRY_MS,
+  );
 
-  await adminDb.collection(PASSWORD_RESET_COLLECTION).doc(token).set({
+  await getAdminDb().collection(PASSWORD_RESET_COLLECTION).doc(token).set({
     userId,
     email,
     token,
@@ -84,7 +88,7 @@ export async function verifyEmailToken(token: string): Promise<{
   userId?: string;
   error?: string;
 }> {
-  const tokenDoc = await adminDb
+  const tokenDoc = await getAdminDb()
     .collection(EMAIL_VERIFICATION_COLLECTION)
     .doc(token)
     .get();
@@ -100,17 +104,24 @@ export async function verifyEmailToken(token: string): Promise<{
   }
 
   // Check expiration
-  const expiresAt = tokenData.expiresAt instanceof Date 
-    ? tokenData.expiresAt 
-    : tokenData.expiresAt.toDate();
+  const expiresAt =
+    tokenData.expiresAt instanceof Date
+      ? tokenData.expiresAt
+      : tokenData.expiresAt.toDate();
 
   if (expiresAt < new Date()) {
-    await adminDb.collection(EMAIL_VERIFICATION_COLLECTION).doc(token).delete();
+    await getAdminDb()
+      .collection(EMAIL_VERIFICATION_COLLECTION)
+      .doc(token)
+      .delete();
     return { valid: false, error: ERROR_MESSAGES.EMAIL.TOKEN_EXPIRED };
   }
 
   // Delete token after use
-  await adminDb.collection(EMAIL_VERIFICATION_COLLECTION).doc(token).delete();
+  await getAdminDb()
+    .collection(EMAIL_VERIFICATION_COLLECTION)
+    .doc(token)
+    .delete();
 
   return { valid: true, userId: tokenData?.userId };
 }
@@ -123,7 +134,7 @@ export async function verifyPasswordResetToken(token: string): Promise<{
   userId?: string;
   error?: string;
 }> {
-  const tokenDoc = await adminDb
+  const tokenDoc = await getAdminDb()
     .collection(PASSWORD_RESET_COLLECTION)
     .doc(token)
     .get();
@@ -139,12 +150,16 @@ export async function verifyPasswordResetToken(token: string): Promise<{
   }
 
   // Check expiration
-  const expiresAt = tokenData.expiresAt instanceof Date 
-    ? tokenData.expiresAt 
-    : tokenData.expiresAt.toDate();
+  const expiresAt =
+    tokenData.expiresAt instanceof Date
+      ? tokenData.expiresAt
+      : tokenData.expiresAt.toDate();
 
   if (expiresAt < new Date()) {
-    await adminDb.collection(PASSWORD_RESET_COLLECTION).doc(token).delete();
+    await getAdminDb()
+      .collection(PASSWORD_RESET_COLLECTION)
+      .doc(token)
+      .delete();
     return { valid: false, error: ERROR_MESSAGES.PASSWORD.TOKEN_EXPIRED };
   }
 
@@ -159,8 +174,10 @@ export async function verifyPasswordResetToken(token: string): Promise<{
 /**
  * Mark a password reset token as used
  */
-export async function markPasswordResetTokenAsUsed(token: string): Promise<void> {
-  await adminDb.collection(PASSWORD_RESET_COLLECTION).doc(token).update({
+export async function markPasswordResetTokenAsUsed(
+  token: string,
+): Promise<void> {
+  await getAdminDb().collection(PASSWORD_RESET_COLLECTION).doc(token).update({
     used: true,
     usedAt: new Date(),
   });
@@ -170,8 +187,8 @@ export async function markPasswordResetTokenAsUsed(token: string): Promise<void>
  * Delete a token (cleanup on failure)
  */
 export async function deleteToken(
-  collection: 'emailVerificationTokens' | 'passwordResetTokens',
-  token: string
+  collection: "emailVerificationTokens" | "passwordResetTokens",
+  token: string,
 ): Promise<void> {
-  await adminDb.collection(collection).doc(token).delete();
+  await getAdminDb().collection(collection).doc(token).delete();
 }

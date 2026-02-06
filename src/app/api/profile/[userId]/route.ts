@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@/lib/firebase/admin";
 import { USER_COLLECTION } from "@/db/schema/users";
 import type { UserDocument } from "@/db/schema/users";
 import { handleApiError } from "@/lib/errors";
@@ -23,7 +23,7 @@ export async function GET(
     }
 
     // Get Firestore instance
-    const db = getFirestore(adminApp);
+    const db = getFirestore(getAdminApp());
 
     // Fetch user document
     const userDoc = await db.collection(USER_COLLECTION).doc(userId).get();

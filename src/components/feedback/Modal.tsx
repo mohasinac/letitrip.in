@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { useSwipe } from "@/hooks";
-import { preventBodyScroll } from "@/utils/eventHandlers";
+import { preventBodyScroll } from "@/utils/events";
 
 /**
  * Modal Component

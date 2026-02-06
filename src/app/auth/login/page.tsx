@@ -25,6 +25,8 @@ import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
 import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES, ROUTES } from "@/constants";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { apiClient } from "@/lib/api-client";
 
@@ -49,19 +51,22 @@ function LoginForm() {
       setLoading(true);
 
       try {
-        // Backend API login with session cookie
-        const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
+        // 1. Backend API login - sets session cookie
+        await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
           email: formData.email.trim(),
           password: formData.password,
         });
 
-        if (response.success) {
-          // Session cookie set automatically by API, redirect immediately
-          router.push(callbackUrl);
-        } else {
-          setError(response.error?.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
-          setLoading(false);
-        }
+        // 2. Sign in client-side so Firebase SDK knows user is logged in
+        // This triggers onAuthStateChanged in SessionContext
+        await signInWithEmailAndPassword(
+          auth,
+          formData.email.trim(),
+          formData.password,
+        );
+
+        // 3. Redirect to callback URL
+        router.push(callbackUrl);
       } catch (err: any) {
         setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
         setLoading(false);

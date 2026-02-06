@@ -15,9 +15,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@/lib/firebase/admin";
 import { USER_COLLECTION } from "@/db/schema/users";
+import { parseUserAgent } from "@/db/schema/sessions";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
+import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors";
 import { ValidationError, AuthenticationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -41,8 +43,8 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
 
     // Get Firebase Admin instances
-    const auth = getAuth(adminApp);
-    const db = getFirestore(adminApp);
+    const auth = getAuth(getAdminApp());
+    const db = getFirestore(getAdminApp());
 
     // Verify user exists
     let userRecord;
@@ -61,7 +63,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password using Firebase REST API
-    const apiKey = process.env.FIREBASE_API_KEY;
+    const apiKey =
+      process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey) {
+      console.error("FIREBASE_API_KEY not configured");
+      throw new Error("Server configuration error");
+    }
     const verifyPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
 
     const verifyResponse = await fetch(verifyPasswordUrl, {
@@ -103,6 +110,13 @@ export async function POST(request: NextRequest) {
     // Create session cookie
     const sessionCookie = await createSessionCookie(idToken);
 
+    // Create session in Firestore for tracking
+    const session = await sessionRepository.createSession(userRecord.uid, {
+      deviceInfo: parseUserAgent(
+        request.headers.get("user-agent") || "Unknown",
+      ),
+    });
+
     // Return success with session
     const response = NextResponse.json(
       {
@@ -117,6 +131,7 @@ export async function POST(request: NextRequest) {
           emailVerified: userRecord.emailVerified,
           phoneVerified: userData?.phoneVerified || false,
         },
+        sessionId: session.id,
       },
       { status: 200 },
     );
@@ -128,7 +143,15 @@ export async function POST(request: NextRequest) {
       sameSite: "strict", // CSRF protection (changed from 'lax' to 'strict')
       maxAge: 60 * 60 * 24 * 5, // 5 days
       path: "/",
-      // priority: 'high', // Uncomment if using Next.js 13.4+
+    });
+
+    // Set session ID cookie (readable by client for tracking)
+    response.cookies.set("__session_id", session.id, {
+      httpOnly: false, // Client needs to read this for activity tracking
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 5, // 5 days
+      path: "/",
     });
 
     return response;

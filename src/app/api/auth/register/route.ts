@@ -15,10 +15,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@/lib/firebase/admin";
 import { USER_COLLECTION, DEFAULT_USER_DATA } from "@/db/schema/users";
+import { parseUserAgent } from "@/db/schema/sessions";
 import { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
+import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -48,8 +50,8 @@ export async function POST(request: NextRequest) {
     const { email, password, displayName } = validation.data;
 
     // Get Firebase Admin instances
-    const auth = getAuth(adminApp);
-    const db = getFirestore(adminApp);
+    const auth = getAuth(getAdminApp());
+    const db = getFirestore(getAdminApp());
 
     // Check if user already exists
     try {
@@ -110,6 +112,13 @@ export async function POST(request: NextRequest) {
     // Create session cookie
     const sessionCookie = await createSessionCookie(idToken);
 
+    // Create session in Firestore for tracking
+    const session = await sessionRepository.createSession(userRecord.uid, {
+      deviceInfo: parseUserAgent(
+        request.headers.get("user-agent") || "Unknown",
+      ),
+    });
+
     // Send verification email (async, don't wait)
     auth
       .generateEmailVerificationLink(email)
@@ -133,6 +142,7 @@ export async function POST(request: NextRequest) {
           role,
           emailVerified: false,
         },
+        sessionId: session.id,
       },
       { status: 201 },
     );
@@ -144,7 +154,15 @@ export async function POST(request: NextRequest) {
       sameSite: "strict", // CSRF protection (changed from 'lax' to 'strict')
       maxAge: 60 * 60 * 24 * 5, // 5 days
       path: "/",
-      // priority: 'high', // Uncomment if using Next.js 13.4+
+    });
+
+    // Set session ID cookie (readable by client for tracking)
+    response.cookies.set("__session_id", session.id, {
+      httpOnly: false, // Client needs to read this for activity tracking
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 5, // 5 days
+      path: "/",
     });
 
     return response;

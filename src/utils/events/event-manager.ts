@@ -1,6 +1,6 @@
 /**
  * Global Event Handlers Utility
- * 
+ *
  * Centralized event handler management to avoid duplicate listeners
  * and improve performance across the application.
  */
@@ -33,8 +33,8 @@ class GlobalEventManager {
    * Get unique identifier for event target
    */
   private getTargetId(target: EventTarget): string {
-    if (target === window) return 'window';
-    if (target === document) return 'document';
+    if (target === window) return "window";
+    if (target === document) return "document";
     if (target instanceof HTMLElement && target.id) return target.id;
     return `element-${Math.random().toString(36).substr(2, 9)}`;
   }
@@ -47,7 +47,7 @@ class GlobalEventManager {
     target: EventTarget,
     type: string,
     callback: EventListener,
-    options?: AddEventListenerOptions
+    options?: AddEventListenerOptions,
   ): string {
     const id = this.generateId(type, target);
     const handler: EventHandler = { type, target, callback, options };
@@ -131,7 +131,7 @@ export const globalEventManager = new GlobalEventManager();
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
   let lastRun = 0;
@@ -149,7 +149,7 @@ export function throttle<T extends (...args: any[]) => any>(
           func.apply(this, args);
           lastRun = Date.now();
         },
-        delay - (now - lastRun)
+        delay - (now - lastRun),
       );
     }
   };
@@ -160,7 +160,7 @@ export function throttle<T extends (...args: any[]) => any>(
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
 
@@ -178,12 +178,15 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function addGlobalScrollHandler(
   callback: (event: Event) => void,
-  options?: { throttle?: number; target?: EventTarget }
+  options?: { throttle?: number; target?: EventTarget },
 ): string {
   const { throttle: throttleDelay = 100, target = window } = options || {};
-  const handler = throttleDelay > 0 ? throttle(callback, throttleDelay) : callback;
+  const handler =
+    throttleDelay > 0 ? throttle(callback, throttleDelay) : callback;
 
-  return globalEventManager.add(target, 'scroll', handler as EventListener, { passive: true });
+  return globalEventManager.add(target, "scroll", handler as EventListener, {
+    passive: true,
+  });
 }
 
 /**
@@ -191,12 +194,15 @@ export function addGlobalScrollHandler(
  */
 export function addGlobalResizeHandler(
   callback: (event: Event) => void,
-  options?: { throttle?: number }
+  options?: { throttle?: number },
 ): string {
   const { throttle: throttleDelay = 200 } = options || {};
-  const handler = throttleDelay > 0 ? throttle(callback, throttleDelay) : callback;
+  const handler =
+    throttleDelay > 0 ? throttle(callback, throttleDelay) : callback;
 
-  return globalEventManager.add(window, 'resize', handler as EventListener, { passive: true });
+  return globalEventManager.add(window, "resize", handler as EventListener, {
+    passive: true,
+  });
 }
 
 /**
@@ -205,7 +211,7 @@ export function addGlobalResizeHandler(
 export function addGlobalClickHandler(
   selector: string,
   callback: (event: MouseEvent, element: Element) => void,
-  options?: { preventDefault?: boolean }
+  options?: { preventDefault?: boolean },
 ): string {
   const handler = (event: Event) => {
     const target = event.target as Element;
@@ -219,7 +225,7 @@ export function addGlobalClickHandler(
     }
   };
 
-  return globalEventManager.add(document, 'click', handler as EventListener);
+  return globalEventManager.add(document, "click", handler as EventListener);
 }
 
 /**
@@ -234,7 +240,7 @@ export function addGlobalKeyHandler(
     shift?: boolean;
     alt?: boolean;
     meta?: boolean;
-  }
+  },
 ): string {
   const keys = Array.isArray(key) ? key : [key];
   const {
@@ -247,7 +253,9 @@ export function addGlobalKeyHandler(
 
   const handler = (event: Event) => {
     const keyEvent = event as KeyboardEvent;
-    const isKeyMatch = keys.some((k) => keyEvent.key === k || keyEvent.code === k);
+    const isKeyMatch = keys.some(
+      (k) => keyEvent.key === k || keyEvent.code === k,
+    );
 
     if (!isKeyMatch) return;
 
@@ -266,7 +274,7 @@ export function addGlobalKeyHandler(
     callback(keyEvent);
   };
 
-  return globalEventManager.add(document, 'keydown', handler as EventListener);
+  return globalEventManager.add(document, "keydown", handler as EventListener);
 }
 
 /**
@@ -280,10 +288,10 @@ export function removeGlobalHandler(id: string): void {
  * Helper: Detect mobile device
  */
 export function isMobileDevice(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
 
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
+    navigator.userAgent,
   );
 }
 
@@ -291,10 +299,10 @@ export function isMobileDevice(): boolean {
  * Helper: Detect touch support
  */
 export function hasTouchSupport(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
 
   return (
-    'ontouchstart' in window ||
+    "ontouchstart" in window ||
     navigator.maxTouchPoints > 0 ||
     (navigator as any).msMaxTouchPoints > 0
   );
@@ -304,7 +312,7 @@ export function hasTouchSupport(): boolean {
  * Helper: Get viewport dimensions
  */
 export function getViewportDimensions() {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return { width: 0, height: 0 };
   }
 
@@ -318,7 +326,7 @@ export function getViewportDimensions() {
  * Helper: Check if element is in viewport
  */
 export function isInViewport(element: HTMLElement, offset = 0): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
 
   const rect = element.getBoundingClientRect();
   const { width, height } = getViewportDimensions();
@@ -336,18 +344,20 @@ export function isInViewport(element: HTMLElement, offset = 0): boolean {
  */
 export function smoothScrollTo(
   element: HTMLElement | string,
-  options?: { offset?: number; duration?: number }
+  options?: { offset?: number; duration?: number },
 ): void {
-  const target = typeof element === 'string' ? document.querySelector(element) : element;
+  const target =
+    typeof element === "string" ? document.querySelector(element) : element;
   if (!target) return;
 
   const { offset = 0 } = options || {};
-  const targetPosition = (target as HTMLElement).getBoundingClientRect().top + window.pageYOffset;
+  const targetPosition =
+    (target as HTMLElement).getBoundingClientRect().top + window.pageYOffset;
   const offsetPosition = targetPosition - offset;
 
   window.scrollTo({
     top: offsetPosition,
-    behavior: 'smooth',
+    behavior: "smooth",
   });
 }
 
@@ -355,13 +365,13 @@ export function smoothScrollTo(
  * Helper: Prevent body scroll (for modals, drawers, etc.)
  */
 export function preventBodyScroll(prevent: boolean): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
 
   if (prevent) {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
   } else {
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
   }
 }
