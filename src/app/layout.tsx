@@ -1,5 +1,10 @@
 import "./globals.css";
-import { LayoutClient, ThemeProvider, ToastProvider } from "@/index";
+import {
+  LayoutClient,
+  ThemeProvider,
+  ToastProvider,
+  SessionProvider,
+} from "@/index";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 
@@ -32,9 +37,11 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <ToastProvider position="top-right">
-            <LayoutClient>{children}</LayoutClient>
-          </ToastProvider>
+          <SessionProvider>
+            <ToastProvider position="top-right">
+              <LayoutClient>{children}</LayoutClient>
+            </ToastProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

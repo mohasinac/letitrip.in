@@ -33,6 +33,7 @@ export const ROUTES = {
     CONTENT: "/admin/content",
     ANALYTICS: "/admin/analytics",
     SETTINGS: "/admin/settings",
+    SESSIONS: "/admin/sessions",
   },
 
   // API Routes

@@ -9,6 +9,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🔐 Session ID-Based Session Management (Feb 7, 2026)
+
+**Complete session tracking system with admin monitoring**
+
+- **Session Schema** (`src/db/schema/sessions.ts`):
+  - `SessionDocument` interface with device info, location, timestamps
+  - Session expiration: 5 days (`SESSION_EXPIRATION_MS`)
+  - `generateSessionId()` using UUID v4
+  - `parseUserAgent()` helper for device detection
+  - Session query helpers for common queries
+
+- **Session Repository** (`src/repositories/session.repository.ts`):
+  - `createSession()` - Creates session with auto-generated ID
+  - `updateActivity()` - Updates last activity timestamp
+  - `revokeSession()` - Marks session as revoked
+  - `revokeAllUserSessions()` - Revokes all sessions for a user
+  - `findActiveByUser()` - Active sessions for a user
+  - `findAllByUser()` - All sessions including expired
+  - `getAllActiveSessions()` - Admin: list all active sessions
+  - `getStats()` - Session statistics (active, expired, unique users)
+  - `cleanupExpiredSessions()` - Remove old sessions
+
+- **Session Context** (`src/contexts/SessionContext.tsx`):
+  - `SessionProvider` - Wraps app for cross-component state sync
+  - `useSession()` hook - Access session state and actions
+  - `useAuth()` - Backward compatible, re-exported from SessionContext
+  - Real-time Firestore subscription for user updates
+  - Session activity tracking every 5 minutes
+  - Session validation with server
+  - Automatic cleanup on signout
+
+- **Session API Endpoints**:
+  - `POST /api/auth/session` - Create session (updated to store in Firestore)
+  - `DELETE /api/auth/session` - Destroy session with revocation
+  - `POST /api/auth/session/activity` - Update session activity
+  - `GET /api/auth/session/validate` - Validate current session
+
+- **Admin Session Management**:
+  - `GET /api/admin/sessions` - List all active sessions with user data
+  - `GET /api/admin/sessions/[id]` - Get session details
+  - `DELETE /api/admin/sessions/[id]` - Revoke specific session
+  - `POST /api/admin/sessions/revoke-user` - Revoke all user sessions
+  - Admin sessions page at `/admin/sessions`
+  - `AdminSessionsManager` component with stats and table
+
+- **User Session Management**:
+  - `GET /api/user/sessions` - List my sessions
+  - `DELETE /api/user/sessions/[id]` - Revoke my session (logout from device)
+  - Hooks: `useMySessions()`, `useRevokeMySession()`
+
+- **Session Hooks** (`src/hooks/useSessions.ts`):
+  - `useAdminSessions()` - Fetch all sessions (admin)
+  - `useUserSessions()` - Fetch sessions for user (admin)
+  - `useRevokeSession()` - Revoke a session (admin)
+  - `useRevokeUserSessions()` - Revoke all user sessions (admin)
+  - `useMySessions()` - Fetch my sessions (user)
+  - `useRevokeMySession()` - Revoke my session (user)
+
+- **Dual Cookie System**:
+  - `__session` - httpOnly Firebase session cookie (secure, cannot access via JS)
+  - `__session_id` - Session ID cookie for tracking (readable by client)
+
+- **Firestore Indexes** for sessions:
+  - `userId + isActive + lastActivity DESC`
+  - `userId + createdAt DESC`
+  - `isActive + expiresAt ASC`
+  - `isActive + expiresAt DESC + lastActivity DESC`
+
+- **Files Created**:
+  - `src/db/schema/sessions.ts`
+  - `src/repositories/session.repository.ts`
+  - `src/contexts/SessionContext.tsx`
+  - `src/app/api/auth/session/activity/route.ts`
+  - `src/app/api/auth/session/validate/route.ts`
+  - `src/app/api/admin/sessions/route.ts`
+  - `src/app/api/admin/sessions/[id]/route.ts`
+  - `src/app/api/admin/sessions/revoke-user/route.ts`
+  - `src/app/api/user/sessions/route.ts`
+  - `src/app/api/user/sessions/[id]/route.ts`
+  - `src/app/admin/sessions/page.tsx`
+  - `src/components/admin/AdminSessionsManager.tsx`
+  - `src/hooks/useSessions.ts`
+
+- **Files Modified**:
+  - `src/db/schema/index.ts` - Export sessions
+  - `src/repositories/index.ts` - Export sessionRepository
+  - `src/lib/firebase/auth-helpers.ts` - Session creation in auth methods
+  - `src/app/api/auth/session/route.ts` - Firestore session storage
+  - `src/contexts/index.ts` - Export SessionProvider
+  - `src/app/layout.tsx` - Add SessionProvider
+  - `src/hooks/index.ts` - Export session hooks
+  - `src/hooks/useAuth.ts` - Re-export from SessionContext
+  - `src/constants/routes.ts` - Add ADMIN.SESSIONS route
+  - `firestore.indexes.json` - Add session indexes
+
+- **Benefits**:
+  - ✅ Session state syncs across all components
+  - ✅ Admins can see and revoke active sessions
+  - ✅ Users can manage their own sessions
+  - ✅ Proper session tracking with device info
+  - ✅ Session activity monitoring
+  - ✅ Secure session revocation
+
 ### Fixed
 
 #### 🧹 Complete Backward Compatibility Removal (Feb 6, 2026)

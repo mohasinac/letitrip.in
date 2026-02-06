@@ -10,12 +10,14 @@
  * - Apple OAuth (no manual setup needed)
  * - Email verification
  * - Password reset
+ * - Session ID-based tracking
  *
  * Benefits over NextAuth:
  * - No OAuth client ID/secret needed
  * - Built-in provider configuration
  * - Single authentication system
  * - Direct Firebase integration
+ * - Session tracking in Firestore
  */
 
 import {
@@ -40,23 +42,46 @@ import { UserRole } from "@/types/auth";
 import { USER_COLLECTION } from "@/db/schema/users";
 
 /**
- * Helper: Create session cookie via API call
- * (Session cookies must be created server-side)
+ * Helper: Create session via API call
+ * Creates both Firebase session cookie AND tracks session in Firestore
+ * Returns the session ID for client-side tracking
  */
-async function createSession(idToken: string): Promise<void> {
+async function createSession(idToken: string): Promise<string | null> {
   try {
     const response = await fetch("/api/auth/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken }),
+      credentials: "include", // Important for cookies
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create session");
+      const error = await response.json();
+      console.error("Session creation failed:", error);
+      throw new Error(error.message || "Failed to create session");
     }
+
+    const data = await response.json();
+    return data.sessionId || null;
   } catch (error) {
     console.error("Session creation error:", error);
     // Don't throw - allow auth to succeed even if session creation fails
+    return null;
+  }
+}
+
+/**
+ * Helper: Destroy session via API call
+ * Clears both Firebase session cookie AND marks session as revoked in Firestore
+ */
+async function destroySession(): Promise<void> {
+  try {
+    await fetch("/api/auth/session", {
+      method: "DELETE",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Session destruction error:", error);
   }
 }
 
@@ -73,18 +98,24 @@ function getDefaultRole(email: string | null): UserRole {
 
 /**
  * Sign in with email and password
+ * Creates session after successful authentication
  */
 export async function signInWithEmail(
   email: string,
   password: string,
-): Promise<UserCredential> {
+): Promise<UserCredential & { sessionId?: string }> {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password,
     );
-    return userCredential;
+
+    // Create session cookie and track in Firestore
+    const idToken = await userCredential.user.getIdToken();
+    const sessionId = await createSession(idToken);
+
+    return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Email sign in error:", error);
     throw new Error(error.message || "Failed to sign in with email");
@@ -93,12 +124,13 @@ export async function signInWithEmail(
 
 /**
  * Register with email and password
+ * Creates user profile, sends verification, and establishes session
  */
 export async function registerWithEmail(
   email: string,
   password: string,
   displayName: string,
-): Promise<UserCredential> {
+): Promise<UserCredential & { sessionId?: string }> {
   try {
     // Create user account
     const userCredential = await createUserWithEmailAndPassword(
@@ -117,11 +149,11 @@ export async function registerWithEmail(
     // Send verification email
     await sendEmailVerification(user);
 
-    // Create session cookie via API
+    // Create session cookie via API and track in Firestore
     const idToken = await user.getIdToken();
-    await createSession(idToken);
+    const sessionId = await createSession(idToken);
 
-    return userCredential;
+    return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Email registration error:", error);
     throw new Error(error.message || "Failed to register with email");
@@ -131,8 +163,11 @@ export async function registerWithEmail(
 /**
  * Sign in with Google
  * No OAuth credentials needed - Firebase handles everything!
+ * Creates session after successful authentication
  */
-export async function signInWithGoogle(): Promise<UserCredential> {
+export async function signInWithGoogle(): Promise<
+  UserCredential & { sessionId?: string }
+> {
   try {
     const provider = new GoogleAuthProvider();
 
@@ -142,16 +177,16 @@ export async function signInWithGoogle(): Promise<UserCredential> {
 
     const userCredential = await signInWithPopup(auth, provider);
 
-    // Create session cookie via API
-    const idToken = await userCredential.user.getIdToken();
-    await createSession(idToken);
-
     // Create/update user profile in Firestore with appropriate role
     await createUserProfile(userCredential.user, {
       role: getDefaultRole(userCredential.user.email),
     });
 
-    return userCredential;
+    // Create session cookie via API and track in Firestore
+    const idToken = await userCredential.user.getIdToken();
+    const sessionId = await createSession(idToken);
+
+    return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Google sign in error:", error);
 
@@ -171,8 +206,11 @@ export async function signInWithGoogle(): Promise<UserCredential> {
 /**
  * Sign in with Apple
  * No OAuth credentials needed - Firebase handles everything!
+ * Creates session after successful authentication
  */
-export async function signInWithApple(): Promise<UserCredential> {
+export async function signInWithApple(): Promise<
+  UserCredential & { sessionId?: string }
+> {
   try {
     const provider = new OAuthProvider("apple.com");
 
@@ -182,16 +220,16 @@ export async function signInWithApple(): Promise<UserCredential> {
 
     const userCredential = await signInWithPopup(auth, provider);
 
-    // Create session cookie via API
-    const idToken = await userCredential.user.getIdToken();
-    await createSession(idToken);
-
     // Create/update user profile in Firestore with appropriate role
     await createUserProfile(userCredential.user, {
       role: getDefaultRole(userCredential.user.email),
     });
 
-    return userCredential;
+    // Create session cookie via API and track in Firestore
+    const idToken = await userCredential.user.getIdToken();
+    const sessionId = await createSession(idToken);
+
+    return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Apple sign in error:", error);
 
@@ -263,9 +301,14 @@ export async function verifyEmail(user: User): Promise<void> {
 
 /**
  * Sign out
+ * Destroys session in Firestore and clears cookies
  */
 export async function signOut(): Promise<void> {
   try {
+    // Destroy session first (while we still have auth context)
+    await destroySession();
+
+    // Then sign out from Firebase
     await firebaseSignOut(auth);
   } catch (error: any) {
     console.error("Sign out error:", error);

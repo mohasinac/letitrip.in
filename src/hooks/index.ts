@@ -26,6 +26,14 @@ export { useForm } from "./useForm";
 export { useFormState } from "./useFormState";
 export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
+export {
+  useAdminSessions,
+  useUserSessions,
+  useRevokeSession,
+  useRevokeUserSessions,
+  useMySessions,
+  useRevokeMySession,
+} from "./useSessions";
 
 export { useClickOutside } from "./useClickOutside";
 export type { UseClickOutsideOptions } from "./useClickOutside";
@@ -43,6 +51,9 @@ export {
   useResetPassword,
   useChangePassword,
 } from "./useAuth";
+
+// Session management hooks (re-exported from SessionContext)
+export { useSession } from "@/contexts/SessionContext";
 
 export {
   useAddresses,
