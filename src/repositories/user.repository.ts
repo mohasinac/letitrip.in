@@ -121,6 +121,42 @@ export class UserRepository extends BaseRepository<UserDocument> {
   }
 
   /**
+   * Update user profile with email/phone verification reset
+   * Resets emailVerified when email changes
+   * Resets phoneVerified when phoneNumber changes
+   */
+  async updateProfileWithVerificationReset(
+    uid: string,
+    data: {
+      displayName?: string;
+      email?: string;
+      phoneNumber?: string;
+      photoURL?: string;
+      avatarMetadata?: any;
+    },
+  ): Promise<UserDocument> {
+    // Get current user data to check if email/phone changed
+    const currentUser = await this.findById(uid);
+    if (!currentUser) {
+      throw new DatabaseError(`User not found: ${uid}`);
+    }
+
+    const updateData: Partial<UserDocument> = { ...data };
+
+    // Reset emailVerified if email changed
+    if (data.email && data.email !== currentUser.email) {
+      updateData.emailVerified = false;
+    }
+
+    // Reset phoneVerified if phoneNumber changed
+    if (data.phoneNumber && data.phoneNumber !== currentUser.phoneNumber) {
+      updateData.phoneVerified = false;
+    }
+
+    return this.update(uid, updateData as Partial<UserDocument>);
+  }
+
+  /**
    * Check if email is already registered
    */
   async isEmailRegistered(email: string): Promise<boolean> {

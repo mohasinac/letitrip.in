@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🔐 Profile Update API with Verification Reset (Feb 6, 2026)
+
+- **`PATCH /api/profile/update`** - Server-side profile update endpoint
+- **Automatic verification reset** - When user changes email or phone number:
+  - `emailVerified` flag is reset to `false` when email changes
+  - `phoneVerified` flag is reset to `false` when phoneNumber changes
+- **`UserRepository.updateProfileWithVerificationReset()`** - New method that compares old vs new email/phone and resets verification flags accordingly
+- Validates authentication via session token
+- Returns updated user data including verification status
+- Added `API_ENDPOINTS.PROFILE.UPDATE` constant
+- Added `phoneVerified: false` to `DEFAULT_USER_DATA` in users schema
+
 #### 🔒 Authorization Utilities Enhancement
 
 - **`requireAuth()`** - Validates user is authenticated, throws `AuthenticationError`
@@ -300,6 +312,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ✅ Accessibility - text-based initials work with screen readers
 
 ### Changed
+
+#### 🔄 Profile Update Migration to API Endpoint
+
+- **User Settings Page** (`src/app/user/settings/page.tsx`):
+  - Migrated from direct Firestore `updateDoc()` to server-side API endpoint
+  - Now uses `API_ENDPOINTS.PROFILE.UPDATE` for all profile updates
+  - Automatically refreshes user data after update to get verification status
+  - Backend validates changes and resets verification flags when needed
+  - Better error handling with server-side validation
 
 #### 🎯 Avatar System Compliance Updates
 

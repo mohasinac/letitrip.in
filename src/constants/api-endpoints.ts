@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
 
   // Profile endpoints
   PROFILE: {
+    UPDATE: "/api/profile/update",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",
     UPDATE_PASSWORD: "/api/profile/update-password",

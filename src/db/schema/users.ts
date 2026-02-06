@@ -74,6 +74,7 @@ export const USER_COLLECTION = "users" as const;
 export const DEFAULT_USER_DATA: Partial<UserDocument> = {
   role: "user",
   emailVerified: false,
+  phoneVerified: false,
   disabled: false,
   photoURL: null,
   displayName: null,
