@@ -19,6 +19,7 @@ import {
   ValidationError,
 } from "@/lib/errors";
 import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
+import { userRepository } from "@/repositories";
 import type { UserRole } from "@/types/auth";
 
 interface RateLimitConfig {
@@ -71,10 +72,25 @@ export function createApiHandler<TInput = any>(
       // Authentication
       let user;
       if (options.auth) {
-        user = await getAuthenticatedUser();
-        if (!user) {
+        const authUser = await getAuthenticatedUser();
+        if (!authUser) {
           throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
         }
+
+        // Fetch user data from Firestore to get role
+        const firestoreUser = await userRepository.findById(authUser.uid);
+        if (!firestoreUser) {
+          throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+        }
+
+        // Merge auth token with Firestore data (Firestore role takes priority)
+        user = {
+          ...authUser,
+          role: firestoreUser.role || "user",
+          displayName: firestoreUser.displayName,
+          email: firestoreUser.email,
+          disabled: firestoreUser.disabled,
+        };
 
         // Role-based authorization
         if (options.roles && options.roles.length > 0) {
