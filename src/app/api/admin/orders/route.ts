@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { orderRepository } from "@/repositories";
 import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
 import { handleApiError } from "@/lib/errors";
-import type { OrderStatus } from "@/db/schema/bookings";
+import type { OrderStatus } from "@/db/schema/orders";
 
 /**
  * GET /api/admin/orders

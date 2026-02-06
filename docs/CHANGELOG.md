@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### 🔄 Final File Naming Cleanup (Feb 7, 2026)
+
+**Renamed schema and repository files for consistency**
+
+- **File Renames**:
+  - `src/db/schema/bookings.ts` → `src/db/schema/orders.ts`
+  - `src/repositories/booking.repository.ts` → `src/repositories/order.repository.ts`
+
+- **Updated Imports**:
+  - All API routes now import from `@/db/schema/orders`
+  - Repository index exports from `./order.repository`
+  - Schema index exports from `./orders`
+
+- **Documentation Updates**:
+  - `.github/copilot-instructions.md` - Updated all references from trips/bookings to products/orders/sessions
+  - `docs/AUDIT_REPORT.md` - Updated index list to include sessions, use products/orders terminology
+
+- **Benefits**:
+  - ✅ File names match export names
+  - ✅ Consistent e-commerce terminology throughout
+  - ✅ No backward compatibility aliases needed
+
 ### Added
 
 #### 🔐 Session ID-Based Session Management (Feb 7, 2026)

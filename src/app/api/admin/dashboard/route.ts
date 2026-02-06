@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { USER_COLLECTION } from "@/db/schema/users";
 import { PRODUCT_COLLECTION } from "@/db/schema/products";
-import { ORDER_COLLECTION } from "@/db/schema/bookings";
+import { ORDER_COLLECTION } from "@/db/schema/orders";
 
 export const GET = createApiHandler({
   auth: true,

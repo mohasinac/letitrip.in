@@ -47,8 +47,10 @@ This project uses Firebase as the complete backend solution:
 
 **Collections**:
 - `users` - User profiles and roles
-- `trips` - Trip data and itineraries
-- `bookings` - Booking records
+- `products` - Product listings and auctions
+- `orders` - Order records
+- `sessions` - User sessions
+- `reviews` - Product reviews
 - `emailVerificationTokens` - Email verification tokens
 - `passwordResetTokens` - Password reset tokens
 
@@ -62,7 +64,7 @@ This project uses Firebase as the complete backend solution:
 
 **Use Cases**:
 - Real-time chat messages
-- Live trip updates
+- Live product/auction updates
 - User presence/online status
 - Live notifications
 
@@ -71,7 +73,7 @@ This project uses Firebase as the complete backend solution:
 #### 4. **Firebase Cloud Storage**
 - **File uploads** (images, documents, PDFs)
 - **User profile photos**
-- **Trip images and galleries**
+- **Product images and galleries**
 - **Secure URL generation**
 - **Automatic image optimization** (via Firebase Extensions)
 
@@ -81,7 +83,7 @@ storage/
 ├── users/{uid}/
 │   ├── profile.jpg
 │   └── documents/
-├── trips/{tripId}/
+├── products/{productId}/
 │   ├── cover.jpg
 │   └── gallery/
 └── public/
@@ -121,15 +123,15 @@ Firestore requires indices for:
 {
   "indexes": [
     {
-      "collectionGroup": "trips",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
     {
-      "collectionGroup": "bookings",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "userId", "order": "ASCENDING" },
@@ -161,24 +163,24 @@ firebase firestore:indexes
 
 ### Common Index Patterns
 
-**Pattern 1: User's Items with Sorting**
+**Pattern 1: Seller's Products with Sorting**
 ```typescript
-// Query: Get user's trips sorted by date
+// Query: Get seller's products sorted by date
 query(
-  collection(db, 'trips'),
-  where('userId', '==', uid),
+  collection(db, 'products'),
+  where('sellerId', '==', uid),
   orderBy('createdAt', 'desc')
 )
-// Index: [userId ASC, createdAt DESC]
+// Index: [sellerId ASC, createdAt DESC]
 ```
 
-**Pattern 2: Filtered List with Sorting**
+**Pattern 2: User's Orders with Status Filter**
 ```typescript
-// Query: Get active bookings sorted by date
+// Query: Get user's active orders sorted by date
 query(
-  collection(db, 'bookings'),
+  collection(db, 'orders'),
   where('userId', '==', uid),
-  where('status', '==', 'active'),
+  where('status', '==', 'confirmed'),
   orderBy('createdAt', 'desc')
 )
 // Index: [userId ASC, status ASC, createdAt DESC]
@@ -319,10 +321,10 @@ When adding/modifying queries that need indices:
 
 **Step 1: Update Schema File**
 ```typescript
-// src/db/schema/trips.ts
-export const TRIPS_INDEXED_FIELDS = [
-  'userId',      // For user's trips
-  'destination', // For destination filtering
+// src/db/schema/products.ts
+export const PRODUCT_INDEXED_FIELDS = [
+  'sellerId',    // For seller's products
+  'category',    // For category filtering
   'status',      // For status filtering
   'createdAt',   // For date sorting
 ] as const;
@@ -333,10 +335,10 @@ export const TRIPS_INDEXED_FIELDS = [
 {
   "indexes": [
     {
-      "collectionGroup": "trips",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
@@ -361,14 +363,14 @@ firebase deploy --only firestore:indexes
 ```typescript
 /**
  * INDEXED FIELDS:
- * - userId: Required for fetching user's trips
+ * - sellerId: Required for fetching seller's products
  * - status + createdAt: Required for filtered listings
- * - destination + createdAt: Required for destination searches
+ * - category + createdAt: Required for category searches
  */
-export const TRIPS_INDEXED_FIELDS = [
-  'userId',
+export const PRODUCT_INDEXED_FIELDS = [
+  'sellerId',
   'status',
-  'destination',
+  'category',
   'createdAt',
 ] as const;
 ```
@@ -378,10 +380,10 @@ export const TRIPS_INDEXED_FIELDS = [
 {
   "indexes": [
     {
-      "collectionGroup": "trips",
+      "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]

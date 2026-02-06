@@ -12,7 +12,7 @@ import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
 import { handleApiError } from "@/lib/errors";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants/messages";
-import type { OrderStatus, PaymentStatus } from "@/db/schema/bookings";
+import type { OrderStatus, PaymentStatus } from "@/db/schema/orders";
 
 /**
  * GET /api/admin/orders/[id]

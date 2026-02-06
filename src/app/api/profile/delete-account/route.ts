@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { PRODUCT_COLLECTION } from "@/db/schema/products";
-import { ORDER_COLLECTION } from "@/db/schema/bookings";
+import { ORDER_COLLECTION } from "@/db/schema/orders";
 
 export const DELETE = createApiHandler({
   auth: true,

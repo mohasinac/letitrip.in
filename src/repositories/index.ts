@@ -16,7 +16,7 @@ export * from "./base.repository";
 export * from "./user.repository";
 export * from "./token.repository";
 export * from "./product.repository";
-export * from "./booking.repository";
+export * from "./order.repository";
 export * from "./review.repository";
 export * from "./session.repository";
 
@@ -28,6 +28,6 @@ export {
   tokenRepository,
 } from "./token.repository";
 export { productRepository } from "./product.repository";
-export { orderRepository } from "./booking.repository";
+export { orderRepository } from "./order.repository";
 export { reviewRepository } from "./review.repository";
 export { sessionRepository } from "./session.repository";

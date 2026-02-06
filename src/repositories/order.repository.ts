@@ -11,7 +11,7 @@ import type {
   OrderStatus,
   PaymentStatus,
   ORDER_COLLECTION,
-} from "@/db/schema/bookings";
+} from "@/db/schema/orders";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
   constructor() {

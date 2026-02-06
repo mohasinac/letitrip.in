@@ -7,6 +7,6 @@
 export * from "./users";
 export * from "./tokens";
 export * from "./products";
-export * from "./bookings";
+export * from "./orders";
 export * from "./reviews";
 export * from "./sessions";
