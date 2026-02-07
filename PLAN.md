@@ -573,7 +573,7 @@ interface UserDocumentEnhancement {
 
 ## 4. Admin Dashboard Structure
 
-### 4.1 Admin Tabs Navigation
+### 4.1 Admin Tabs Navigation (with Sub-tabs)
 
 ```typescript
 const ADMIN_TABS = [
@@ -582,19 +582,116 @@ const ADMIN_TABS = [
     label: "Dashboard",
     icon: "LayoutDashboard",
     path: "/admin",
+    subTabs: [], // No sub-tabs, just analytics
   },
-  { id: "users", label: "Users", icon: "Users", path: "/admin/users" },
+  {
+    id: "users",
+    label: "Users",
+    icon: "Users",
+    path: "/admin/users",
+    subTabs: [
+      { id: "all", label: "All Users", path: "/admin/users" },
+      { id: "active", label: "Active Users", path: "/admin/users/active" },
+      { id: "banned", label: "Banned Users", path: "/admin/users/banned" },
+      { id: "admins", label: "Administrators", path: "/admin/users/admins" },
+    ],
+  },
   {
     id: "products",
     label: "Products",
     icon: "Package",
     path: "/admin/products",
+    subTabs: [
+      { id: "all", label: "All Products", path: "/admin/products" },
+      {
+        id: "published",
+        label: "Published",
+        path: "/admin/products/published",
+      },
+      {
+        id: "pending",
+        label: "Pending Review",
+        path: "/admin/products/pending",
+      },
+      { id: "flagged", label: "Flagged", path: "/admin/products/flagged" },
+      { id: "featured", label: "Featured", path: "/admin/products/featured" },
+    ],
   },
-  { id: "auctions", label: "Auctions", icon: "Gavel", path: "/admin/auctions" },
-  { id: "site", label: "Site Settings", icon: "Settings", path: "/admin/site" },
-  { id: "content", label: "Content", icon: "Layout", path: "/admin/content" },
-  { id: "reviews", label: "Reviews", icon: "Star", path: "/admin/reviews" },
-  { id: "coupons", label: "Coupons", icon: "Tag", path: "/admin/coupons" },
+  {
+    id: "auctions",
+    label: "Auctions",
+    icon: "Gavel",
+    path: "/admin/auctions",
+    subTabs: [
+      { id: "all", label: "All Auctions", path: "/admin/auctions" },
+      { id: "active", label: "Active", path: "/admin/auctions/active" },
+      { id: "ended", label: "Ended", path: "/admin/auctions/ended" },
+      { id: "flagged", label: "Flagged", path: "/admin/auctions/flagged" },
+      { id: "featured", label: "Featured", path: "/admin/auctions/featured" },
+    ],
+  },
+  {
+    id: "site",
+    label: "Site Settings",
+    icon: "Settings",
+    path: "/admin/site",
+    subTabs: [
+      { id: "general", label: "General Info", path: "/admin/site" },
+      { id: "branding", label: "Branding", path: "/admin/site/branding" },
+      { id: "email", label: "Email Settings", path: "/admin/site/email" },
+      { id: "seo", label: "SEO", path: "/admin/site/seo" },
+      { id: "features", label: "Features", path: "/admin/site/features" },
+      { id: "legal", label: "Legal Pages", path: "/admin/site/legal" },
+    ],
+  },
+  {
+    id: "content",
+    label: "Content",
+    icon: "Layout",
+    path: "/admin/content",
+    subTabs: [
+      {
+        id: "carousel",
+        label: "Hero Carousel",
+        path: "/admin/content/carousel",
+      },
+      {
+        id: "sections",
+        label: "Section Order",
+        path: "/admin/content/sections",
+      },
+      { id: "banners", label: "Banners", path: "/admin/content/banners" },
+      { id: "faq", label: "FAQ", path: "/admin/content/faq" },
+    ],
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    icon: "Star",
+    path: "/admin/reviews",
+    subTabs: [
+      { id: "all", label: "All Reviews", path: "/admin/reviews" },
+      {
+        id: "pending",
+        label: "Pending Approval",
+        path: "/admin/reviews/pending",
+      },
+      { id: "featured", label: "Featured", path: "/admin/reviews/featured" },
+      { id: "flagged", label: "Flagged", path: "/admin/reviews/flagged" },
+    ],
+  },
+  {
+    id: "coupons",
+    label: "Coupons",
+    icon: "Tag",
+    path: "/admin/coupons",
+    subTabs: [
+      { id: "all", label: "All Coupons", path: "/admin/coupons" },
+      { id: "active", label: "Active", path: "/admin/coupons/active" },
+      { id: "expired", label: "Expired", path: "/admin/coupons/expired" },
+      { id: "create", label: "Create New", path: "/admin/coupons/create" },
+    ],
+  },
 ];
 ```
 
@@ -620,6 +717,10 @@ const ADMIN_TABS = [
 
 ### 4.3 Users Management (`/admin/users`)
 
+**Sub-tabs**:
+
+#### 4.3.1 All Users (`/admin/users`)
+
 **Features**:
 
 - User list with filters (role, status, banned)
@@ -638,7 +739,37 @@ const ADMIN_TABS = [
 - `BanUserModal` with reason and duration
 - `DeleteUserModal` with confirmation
 
+#### 4.3.2 Active Users (`/admin/users/active`)
+
+**Features**:
+
+- Pre-filtered to show only active (non-banned, non-disabled) users
+- Same actions as All Users tab
+- Quick promote to seller/moderator
+
+#### 4.3.3 Banned Users (`/admin/users/banned`)
+
+**Features**:
+
+- Show all soft-banned and permanently banned users
+- Ban details (reason, duration, banned by)
+- Unban action
+- Edit ban duration
+
+#### 4.3.4 Administrators (`/admin/users/admins`)
+
+**Features**:
+
+- Show all users with admin or moderator roles
+- Quick demote option
+- Activity log
+- Permission management
+
 ### 4.4 Products Management (`/admin/products`)
+
+**Sub-tabs**:
+
+#### 4.4.1 All Products (`/admin/products`)
 
 **Features**:
 
@@ -661,126 +792,320 @@ const ADMIN_TABS = [
 - `FlagProductModal`
 - `FeatureProductModal`
 
+#### 4.4.2 Published Products (`/admin/products/published`)
+
+**Features**:
+
+- Pre-filtered to show only published products
+- Quick unpublish action
+- Mark as featured
+
+#### 4.4.3 Pending Review (`/admin/products/pending`)
+
+**Features**:
+
+- Products awaiting moderation
+- Quick approve/reject actions
+- Bulk moderation
+- Add moderation notes
+
+#### 4.4.4 Flagged Products (`/admin/products/flagged`)
+
+**Features**:
+
+- Products flagged by users or system
+- Flag details and reasons
+- Review and resolve flags
+- Contact seller option
+
+#### 4.4.5 Featured Products (`/admin/products/featured`)
+
+**Features**:
+
+- Products marked as featured/top products
+- Manage featured duration
+- Reorder featured items
+- Remove from featured list
+
 ### 4.5 Auctions Management (`/admin/auctions`)
 
-Similar to products but with auction-specific features:
+**Sub-tabs**:
 
-- Bid history
-- Extend auction time
-- Cancel auction (with refund)
-- Feature on homepage
-- Mark as top auction
+#### 4.5.1 All Auctions (`/admin/auctions`)
+
+**Features**:
+
+- All auctions from all sellers
+- Filters: status, category, seller
+- Search by name, auction ID
+- Actions:
+  - Extend auction time
+  - Cancel auction (with refund)
+  - Flag auction
+  - Feature on homepage
+  - Mark as top auction
+
+**Components**:
+
+- `AuctionListTable` with countdown timers
+- `AuctionModerationPanel`
+- `ExtendAuctionModal`
+- `CancelAuctionModal`
+
+#### 4.5.2 Active Auctions (`/admin/auctions/active`)
+
+**Features**:
+
+- Pre-filtered to show only active auctions
+- Real-time bid monitoring
+- Quick extend time action
+- Bid history view
+
+#### 4.5.3 Ended Auctions (`/admin/auctions/ended`)
+
+**Features**:
+
+- Completed auctions
+- Winner information
+- Payment status
+- Archive/delete options
+
+#### 4.5.4 Flagged Auctions (`/admin/auctions/flagged`)
+
+**Features**:
+
+- Auctions flagged for review
+- Flag details and reasons
+- Investigate and resolve
+- Automatic refund option
+
+#### 4.5.5 Featured Auctions (`/admin/auctions/featured`)
+
+**Features**:
+
+- Auctions marked as featured
+- Manage featured duration
+- Reorder featured items
+- Remove from featured list
 
 ### 4.6 Site Settings (`/admin/site`)
 
-**Sections**:
+**Sub-tabs**:
 
-1. **Basic Info**
-   - Site name, motto
-   - Contact email, phone, address
-   - Social media links
+#### 4.6.1 General Info (`/admin/site`)
 
-2. **Branding**
-   - Logo upload (SVG preferred)
-   - Favicon
-   - Brand colors
+**Features**:
 
-3. **Email Settings**
-   - From name, email
-   - SMTP settings (if not using Resend)
-   - Email templates
-
-4. **SEO**
-   - Default title, description
-   - Keywords
-   - Open Graph image
-   - Structured data
-
-5. **Features**
-   - Checkboxes for site features
-   - Secure checkout, Fast shipping, etc.
-
-6. **Legal Pages** (Rich text editor)
-   - Terms of Service
-   - Privacy Policy
-   - Refund Policy
-   - Shipping Policy
+- Site name, motto, tagline
+- Contact email, phone, address
+- Social media links
+- Business hours
+- Primary currency
 
 **Components**:
 
 - `SiteInfoForm`
+- `ContactInfoSection`
+- `SocialLinksEditor`
+
+#### 4.6.2 Branding (`/admin/site/branding`)
+
+**Features**:
+
+- Logo upload (SVG preferred, PNG/JPG fallback)
+- Favicon upload
+- Brand colors (primary, secondary, accent)
+- Font selection
+- Logo variations (light/dark mode)
+
+**Components**:
+
 - `LogoUploadSection`
+- `ColorPicker`
+- `FontSelector`
+- `BrandPreview`
+
+#### 4.6.3 Email Settings (`/admin/site/email`)
+
+**Features**:
+
+- From name, email
+- Reply-to address
+- SMTP settings (if not using Resend)
+- Email templates (order confirmation, shipping, etc.)
+- Test email functionality
+
+**Components**:
+
 - `EmailSettingsForm`
+- `SMTPConfigSection`
+- `EmailTemplateEditor`
+- `TestEmailButton`
+
+#### 4.6.4 SEO (`/admin/site/seo`)
+
+**Features**:
+
+- Default title, description
+- Keywords management
+- Open Graph image
+- Twitter Card settings
+- Structured data (JSON-LD)
+- Sitemap configuration
+- Robots.txt editor
+
+**Components**:
+
 - `SEOConfigForm`
+- `MetaTagsPreview`
+- `StructuredDataEditor`
+- `RobotsEditor`
+
+#### 4.6.5 Features (`/admin/site/features`)
+
+**Features**:
+
+- Checkboxes for site features
+- Secure checkout, Fast shipping, 24/7 support, etc.
+- Feature icon selection
+- Feature descriptions
+- Enable/disable features for homepage display
+
+**Components**:
+
 - `FeaturesChecklistEditor`
-- `RichTextEditor` (Draft.js or Tiptap)
+- `FeatureIconPicker`
+- `FeaturePreview`
+
+#### 4.6.6 Legal Pages (`/admin/site/legal`)
+
+**Features**:
+
+- Terms of Service (Rich text editor)
+- Privacy Policy
+- Refund Policy
+- Shipping Policy
+- Cookie Policy
+- Version history
+- Last updated tracking
+
+**Components**:
+
+- `RichTextEditor` (Tiptap)
+- `LegalPageSelector`
+- `VersionHistory`
 
 ### 4.7 Content Management (`/admin/content`)
 
 **Sub-tabs**:
 
-1. **Carousel** - Manage hero slides
-2. **Sections** - Homepage section ordering
-3. **Banners** - Advertisement banners
-4. **FAQ** - FAQ management
+#### 4.7.1 Hero Carousel (`/admin/content/carousel`)
 
-#### Carousel Editor
+**Features**:
 
-- List of slides with preview
+- List of slides with preview thumbnails
 - Add/Edit/Delete slides
-- Drag-and-drop ordering
+- Drag-and-drop slide ordering
 - Grid editor (9x9) for card placement
 - Card designer with:
   - Background color/gradient/image
   - Text content (title, subtitle, description)
-  - Up to 2 buttons
+  - Up to 2 buttons per card
   - Button-only mode
+  - Position on grid
 - Mobile preview (2x2 grid)
 - Publish/Unpublish slides
-
-#### Section Manager
-
-- Drag-and-drop section reordering
-- Enable/Disable sections
-- Configure section-specific settings
-- Preview mode
-
-#### Banner Editor
-
-- Create custom banners
-- Set height (sm, md, lg, xl)
-- Background image/color/gradient
-- Add content and buttons
-- Link configuration
-
-#### FAQ Manager
-
-- Add/Edit/Delete FAQs
-- Categorize FAQs
-- Rich text answers
-- Drag-and-drop ordering
+- Schedule slides (start/end dates)
 
 **Components**:
 
 - `CarouselSlideList`
-- `CarouselSlideEditor` with grid system
-- `GridCardEditor`
+- `CarouselSlideEditor`
+- `GridCardEditor` (9x9 desktop, 2x2 mobile)
+- `CardDesigner`
+- `SlidePreview`
+
+#### 4.7.2 Section Order (`/admin/content/sections`)
+
+**Features**:
+
+- Drag-and-drop section reordering
+- Enable/Disable sections
+- Configure section-specific settings:
+  - Welcome section (H1, description, CTA)
+  - Categories section (which categories, auto-scroll)
+  - Products section (count, layout)
+  - Auctions section (count, layout)
+  - Reviews section (count, display)
+  - Features section (which features)
+- Live preview mode
+- Save as template
+
+**Components**:
+
 - `SectionOrderManager` (drag-and-drop)
+- `SectionConfigPanel`
+- `SectionPreview`
+- `TemplateSelector`
+
+#### 4.7.3 Advertisement Banners (`/admin/content/banners`)
+
+**Features**:
+
+- Create custom banners
+- Set height (sm: 200px, md: 300px, lg: 400px, xl: 500px)
+- Background image/color/gradient
+- Add content (title, subtitle, description)
+- Up to 3 buttons per banner
+- Link configuration (banner clickable)
+- Position in homepage (between sections)
+- Schedule banners (start/end dates)
+- A/B testing support
+
+**Components**:
+
+- `BannerListTable`
 - `BannerEditor`
-- `FAQEditor`
+- `BannerPreview`
+- `BannerScheduler`
+
+#### 4.7.4 FAQ Management (`/admin/content/faq`)
+
+**Features**:
+
+- Add/Edit/Delete FAQs
+- Categorize FAQs (general, shipping, returns, payment, account)
+- Rich text answers with formatting
+- Drag-and-drop ordering within categories
+- Search functionality preview
+- Import/Export FAQs (JSON)
+
+**Components**:
+
+- `FAQListTable`
+- `FAQEditor` with rich text
+- `FAQCategoryManager`
+- `FAQPreview`
+- `FAQImportExport`
 
 ### 4.8 Reviews Management (`/admin/reviews`)
+
+**Sub-tabs**:
+
+#### 4.8.1 All Reviews (`/admin/reviews`)
 
 **Features**:
 
 - All reviews from all orders
-- Filters: rating, status, featured
+- Filters: rating, status, featured, date range
+- Search by product, user, review text
 - Actions:
   - Approve/Reject
   - Feature on homepage
   - Request rewrite (with reason)
   - Delete
-- Moderation queue view
+- Bulk moderation
+- Export to CSV
 
 **Components**:
 
@@ -789,33 +1114,107 @@ Similar to products but with auction-specific features:
 - `FeatureReviewModal`
 - `RequestRewriteModal`
 
-### 4.9 Coupons Management (`/admin/coupons`)
+#### 4.8.2 Pending Approval (`/admin/reviews/pending`)
 
 **Features**:
 
-- Create complex coupons
-- Coupon types:
-  - Percentage discount
-  - Fixed amount discount
-  - Free shipping
-  - Buy X Get Y
-  - Tiered discounts
-- Set restrictions:
-  - Applicable products/categories/sellers
-  - Usage limits (total, per user)
-  - Validity dates
-  - First-time users only
-  - Combine with seller coupons
-- View usage statistics
-- Deactivate/Delete coupons
+- Pre-filtered to show only pending reviews
+- Quick approve/reject actions
+- Bulk approve
+- Review text analysis (sentiment, spam detection)
+
+#### 4.8.3 Featured Reviews (`/admin/reviews/featured`)
+
+**Features**:
+
+- Reviews currently featured on homepage
+- Manage featured duration
+- Reorder featured reviews
+- Remove from featured list
+- Featured expiry dates
+
+#### 4.8.4 Flagged Reviews (`/admin/reviews/flagged`)
+
+**Features**:
+
+- Reviews flagged by users or system
+- Flag reasons (inappropriate, spam, fake)
+- Investigate and resolve
+- Contact reviewer option
+- Delete or request rewrite
+
+### 4.9 Coupons Management (`/admin/coupons`)
+
+**Sub-tabs**:
+
+#### 4.9.1 All Coupons (`/admin/coupons`)
+
+**Features**:
+
+- List all coupons (active, expired, scheduled)
+- Filters: type, status, date range
+- Search by code, name
+- Quick actions:
+  - Activate/Deactivate
+  - Edit
+  - Clone
+  - Delete
+- Usage statistics overview
 
 **Components**:
 
 - `CouponListTable`
-- `CouponCreator` wizard
 - `CouponStatsCard`
+- `QuickActionsMenu`
+
+#### 4.9.2 Active Coupons (`/admin/coupons/active`)
+
+**Features**:
+
+- Pre-filtered to show only active coupons
+- Real-time usage tracking
+- Quick deactivate action
+- Performance metrics (conversion rate, revenue impact)
+
+#### 4.9.3 Expired Coupons (`/admin/coupons/expired`)
+
+**Features**:
+
+- Expired coupons list
+- Historical usage data
+- Clone and reschedule option
+- Archive/delete options
+
+#### 4.9.4 Create New Coupon (`/admin/coupons/create`)
+
+**Features**:
+
+- Coupon creation wizard (step-by-step)
+- Coupon types:
+  - Percentage discount (5%, 10%, 20%, etc.)
+  - Fixed amount discount ($5 off, $10 off, etc.)
+  - Free shipping
+  - Buy X Get Y (BOGO)
+  - Tiered discounts (spend $50 get 10% off, $100 get 20% off)
+- Set restrictions:
+  - Applicable products/categories/sellers
+  - Usage limits (total uses, per user)
+  - Validity dates (start/end)
+  - First-time users only
+  - Minimum purchase amount
+  - Combine with seller coupons (yes/no)
+- Preview before creating
+- Test coupon functionality
+
+**Components**:
+
+- `CouponCreatorWizard`
+- `CouponTypeSelector`
+- `DiscountConfigurator`
 - `TieredDiscountEditor`
 - `BXGYConfigEditor`
+- `RestrictionsPanel`
+- `CouponPreview`
 
 ---
 
