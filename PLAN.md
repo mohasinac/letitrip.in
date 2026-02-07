@@ -502,6 +502,283 @@ interface CategoryDocument {
 // All updates use Firestore batch writes for atomicity
 ```
 
+#### `products` Collection (Unified Products & Auctions)
+
+**Note**: Products and auctions share the same collection with `isAuction` flag to differentiate.
+
+```typescript
+interface ProductDocument {
+  // 1. Unique Identification
+  id: string; // Auto-generated unique ID
+
+  // 2. Basic Information
+  name: string; // Product name
+  shortDescription: string; // Brief description (160 chars max)
+
+  // 3. Seller
+  sellerId: string; // User ID of seller
+  sellerName: string; // Denormalized for display
+  sellerRating: number; // Denormalized for filters
+
+  // 4. Pricing
+  currentPrice: number; // Current price (for products) or current bid (for auctions)
+  actualPrice: number; // Original price (for products) or starting price (for auctions)
+  soldPrice?: number; // Final sold price (set when sold)
+  currency: "INR"; // Only INR supported
+
+  // 5. Product Flags
+  flags: {
+    couponEligible: boolean; // Can apply coupons
+    returnable: boolean; // Can be returned
+    refundable: boolean; // Can get refund
+    freeShipping: boolean; // Free shipping
+    expedited: boolean; // Expedited shipping available
+    indiaPost: boolean; // India Post shipping option
+    shiprocket: boolean; // Shiprocket shipping option
+    prepaid: boolean; // Prepaid orders accepted
+    cod: boolean; // Cash on delivery accepted
+    codDeposit: number; // 10% deposit for COD (auto-calculated: currentPrice * 0.1 + shippingFee)
+  };
+
+  // 6. Condition Flags
+  condition: {
+    status: "new" | "used" | "refurbished" | "open_box";
+    details?: "mint" | "like_new" | "good" | "fair" | "broken" | "for_parts";
+    description?: string; // Condition notes
+  };
+
+  // 7. Inventory
+  itemCount: number; // Default 1 for single items
+  inStock: boolean; // Availability status
+  isMultiple: boolean; // True if selling multiple units
+  stockQuantity: number; // Available quantity (if isMultiple = true)
+
+  // 8. Auction Specifics
+  isAuction: boolean; // True for auctions, false for products
+  auction?: {
+    startTime: Date; // Auction start time
+    endTime: Date; // Auction end time
+    currentBid: number; // Highest bid amount
+    bidCount: number; // Total number of bids
+    highestBidder?: string; // User ID of highest bidder
+    bidIncrement: number; // Minimum bid increment
+    reservePrice?: number; // Minimum acceptable price (hidden)
+    reserveMet: boolean; // True if current bid >= reserve price
+    autoExtend: boolean; // Extend auction if bid in last 5 minutes
+    bidTableRef: string; // Reference to bids subcollection
+  };
+
+  // 9. Listing Expiration (for products)
+  listingExpiration?: {
+    startTime: Date; // Listing start date
+    endTime?: Date; // Auto-delist date (null = permanent)
+    autoRelist: boolean; // Automatically relist after expiration
+  };
+
+  // 10. Rich Text Description
+  description: string; // Rich text JSON (Tiptap format)
+
+  // 11. Shipping Information
+  shipping: {
+    isFree: boolean; // Free shipping flag
+    fee?: number; // Shipping cost (if not free)
+    weight?: number; // Package weight (kg)
+    dimensions?: { length: number; width: number; height: number }; // cm
+    estimatedDelivery: string; // "3-5 days", "1 week", etc.
+    serviceable: string[]; // Pincode prefixes or "PAN India"
+  };
+
+  // 12. Offers System
+  offerable: boolean; // Allow price offers
+  offers: {
+    userId: string;
+    amount: number;
+    message?: string;
+    status: "pending" | "accepted" | "rejected" | "countered";
+    counterOffer?: number;
+    createdAt: Date;
+    expiresAt: Date;
+  }[];
+
+  // 13. Categories (Max 5)
+  categories: {
+    id: string;
+    name: string; // Denormalized
+    path: string; // Full path for breadcrumbs
+    tier: number; // Category level
+  }[]; // Maximum 5 categories
+  primaryCategory: string; // Main category ID
+
+  // 14. SEO Information (Auto-generated + Editable)
+  seo: {
+    title: string; // Auto: "{name} - {condition} - {shortDescription}"
+    description: string; // Auto: First 160 chars of description
+    keywords: string[]; // Auto: [name words, category, brand, condition]
+    canonicalUrl: string; // "/products/{id}/{slug}"
+    ogImage: string; // First image URL
+    schema: {
+      "@context": "https://schema.org/";
+      "@type": "Product";
+      name: string;
+      description: string;
+      image: string[];
+      brand?: string;
+      offers: {
+        "@type": "Offer";
+        price: number;
+        priceCurrency: "INR";
+        availability: string; // "InStock" | "OutOfStock"
+        seller: { "@type": "Person"; name: string };
+      };
+    };
+  };
+
+  // 15. Barcode (Auto-generated for scanning)
+  barcode: {
+    type: "CODE128" | "EAN13" | "QR"; // Barcode format
+    value: string; // Auto-generated unique code
+    image: string; // Base64 barcode image
+  };
+
+  // 16. QR Code (Auto-generated for tracking & sharing)
+  qrCode: {
+    value: string; // Unique tracking code
+    url: string; // Product page URL
+    image: string; // Base64 QR code image
+    shortUrl: string; // Shortened URL for sharing
+  };
+
+  // 17. Bulk Discounts
+  bulkDiscount?: {
+    enabled: boolean;
+    tiers: {
+      minQuantity: number; // Buy 3
+      discount: number; // Get 5%
+    }[]; // Example: [{3, 5}, {5, 10}, {10, 15}]
+  };
+
+  // 18. Media
+  media: {
+    images: {
+      url: string;
+      alt: string;
+      order: number;
+      thumbnail: string; // Resized version
+    }[];
+    videos?: {
+      url: string;
+      thumbnail: string;
+      duration: number;
+    }[];
+  };
+
+  // 19. Status & Moderation
+  status: "draft" | "published" | "sold" | "expired" | "suspended";
+  moderationStatus: "approved" | "pending" | "flagged" | "rejected";
+  moderationNotes?: string;
+  moderatedBy?: string; // Admin user ID
+  moderatedAt?: Date;
+
+  // 20. Admin Flags
+  flags_admin?: {
+    isFeatured: boolean; // Show in featured section
+    isTopProduct: boolean; // Show in top products (promoted ad)
+    featuredUntil?: Date; // Expiry for featured status
+    reason?: string; // Flag reason
+    flaggedBy?: string;
+    flaggedAt?: Date;
+  };
+
+  // 21. Verification Requirements (for buyers)
+  buyerRequirements: {
+    emailVerified: boolean; // Buyer must have verified email (always true)
+    phoneVerified: boolean; // Buyer must have verified phone (always true)
+    minAccountAge?: number; // Minimum account age in days
+    minRating?: number; // Minimum buyer rating
+  };
+
+  // 22. Statistics
+  stats: {
+    views: number; // Total views
+    favorites: number; // Wishlisted count
+    shares: number; // Share count
+    questions: number; // Q&A count
+    offers_count: number; // Total offers received
+  };
+
+  // 23. Metadata
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt?: Date;
+  soldAt?: Date;
+
+  // 24. Search & Filtering (Denormalized)
+  search: {
+    text: string; // Combined searchable text
+    tags: string[]; // Search tags
+    filters: {
+      priceRange: string; // "0-1000", "1000-5000", etc.
+      hasDiscount: boolean;
+      isFreeShipping: boolean;
+      isReturnable: boolean;
+      condition: string;
+      categoryIds: string[];
+      sellerId: string;
+    };
+  };
+}
+```
+
+**Auto-Generated Fields**:
+
+```typescript
+// On product creation:
+// 1. Generate unique barcode (CODE128 format)
+// 2. Generate QR code with product URL
+// 3. Calculate SEO schema.org JSON-LD
+// 4. Auto-generate SEO title/description/keywords
+// 5. Calculate COD deposit (10% + shipping)
+// 6. Set buyerRequirements (email + phone always true)
+// 7. Initialize stats (all zeros)
+// 8. Generate search.text (name + description + categories)
+
+// On product update:
+// 1. Update denormalized fields (seller name, rating)
+// 2. Recalculate COD deposit if price/shipping changes
+// 3. Update category metrics (batch write)
+// 4. Update search.filters for fast queries
+```
+
+**Business Rules**:
+
+```typescript
+// COD Orders:
+// - Require 10% deposit of (currentPrice + shippingFee)
+// - Deposit is non-refundable
+// - Calculated automatically: flags.codDeposit = (currentPrice * 0.1) + (shipping.fee || 0)
+
+// Buyer Requirements:
+// - Email verified: ALWAYS required
+// - Phone verified: ALWAYS required
+// - Check verification status before checkout
+
+// Auction-specific:
+// - isAuction = true: Requires auction object
+// - Bidding closes at auction.endTime
+// - Auto-extend if bid within last 5 minutes
+// - Reserve price hidden from buyers
+
+// Product-specific:
+// - isAuction = false: Regular buy-now product
+// - Can have listing expiration
+// - Auto-relist option available
+
+// Offers:
+// - Available for products with 0 inventory OR auctions with 0 bids
+// - Seller can accept/reject/counter from dashboard
+// - Offers expire after 48 hours
+```
+
 **Firestore Indices Required**:
 
 ```json
@@ -762,6 +1039,200 @@ interface UserDocumentEnhancement {
       "fields": [
         { "fieldPath": "validity.isActive", "order": "ASCENDING" },
         { "fieldPath": "validity.endDate", "order": "ASCENDING" }
+      ]
+    },
+
+    // ==========================================
+    // PRODUCTS & AUCTIONS INDICES (Comprehensive)
+    // ==========================================
+
+    // Published products by price (for sorting)
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by category + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "primaryCategory", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by seller + date
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+
+    // Products by condition + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "condition.status", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products with free shipping + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "shipping.isFree", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products in stock + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "inStock", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Auctions by end time (for "ending soon")
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isAuction", "order": "ASCENDING" },
+        { "fieldPath": "auction.endTime", "order": "ASCENDING" }
+      ]
+    },
+
+    // Auctions with reserve met + end time
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "auction.reserveMet", "order": "ASCENDING" },
+        { "fieldPath": "auction.endTime", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by moderation status + date
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "moderationStatus", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+
+    // Products by seller + status
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products with offers enabled + date
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "offerable", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+
+    // Featured products by expiry
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "flags_admin.isFeatured", "order": "ASCENDING" },
+        { "fieldPath": "flags_admin.featuredUntil", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by category + stock
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "primaryCategory", "order": "ASCENDING" },
+        { "fieldPath": "inStock", "order": "DESCENDING" }
+      ]
+    },
+
+    // Products by seller + moderation status
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ASCENDING" },
+        { "fieldPath": "moderationStatus", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by auction type + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isAuction", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products returnable + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "flags.returnable", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products with COD + price
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "flags.cod", "order": "ASCENDING" },
+        { "fieldPath": "currentPrice", "order": "ASCENDING" }
+      ]
+    },
+
+    // Products by views (most viewed)
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "stats.views", "order": "DESCENDING" }
+      ]
+    },
+
+    // Auctions by bid count
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isAuction", "order": "ASCENDING" },
+        { "fieldPath": "auction.bidCount", "order": "DESCENDING" }
       ]
     }
   ]
@@ -1049,7 +1520,7 @@ const ADMIN_TABS = [
 
 ### 4.4 Products Management (`/admin/products`)
 
-**⚠️ Implementation Status**: Schema design in Phase 1, full implementation deferred to Phase 2
+**⚠️ Implementation Status**: Full implementation now (no longer deferred)
 
 **Sub-tabs**:
 
@@ -1057,30 +1528,91 @@ const ADMIN_TABS = [
 
 **Features**:
 
-- All products from all sellers
-- Filters: category, status, seller, moderation status
-- Search by name, SKU
-- Actions:
+- **Unified Products & Auctions View** (filter by `isAuction` flag)
+- **Advanced Filters** (eBay-style sidebar):
+  - Price range slider (min-max)
+  - Categories (multi-select with hierarchy)
+  - Condition (new, used, refurbished, etc.)
+  - Shipping options (free, expedited, India Post, Shiprocket)
+  - Seller (search/select)
+  - Type: Auction or Buy Now
+  - Time left (for auctions: ending soon, < 1 hour, < 24 hours)
+  - Listing status (published, draft, sold, expired)
+  - Moderation status (approved, pending, flagged)
+  - In stock / Out of stock
+  - Returnable / Non-returnable
+  - COD available / Prepaid only
+  - Offers enabled / disabled
+  - Featured / Non-featured
+- **Sorting Options**:
+  - Price: Low to High / High to Low
+  - Stock: Available first / Out of stock first
+  - Date: Newest first / Oldest first
+  - Views: Most viewed / Least viewed
+  - Auction: Ending soon first
+- **Search**:
+  - By name, description, barcode, QR code
+  - Apply filter button (not real-time)
+- **View Modes**:
+  - Grid view with product cards
+  - Table view with detailed rows
+  - Toggle button between views
+- **Pagination**:
+  - Numbered pagination (1, 2, 3...)
+  - Items per page: 10, 20, 50, 100 (dropdown)
+  - Jump to page input
+- **Actions**:
   - Publish/Unpublish
   - Delete (archive)
   - Flag (with reason)
   - Request review (with comments)
   - Feature on homepage
   - Mark as top product (promoted ad)
-- Bulk actions support
+  - Edit product details
+  - View seller profile
+  - View bidding history (for auctions)
+- **Bulk Actions**:
+  - Publish selected
+  - Unpublish selected
+  - Delete selected
+  - Feature selected
+  - Change category
+  - Export to CSV
 
 **Components**:
 
-- `ProductListTable` with images
-- `ProductModerationPanel`
-- `FlagProductModal`
-- `FeatureProductModal`
+- `ResourceListView<ProductDocument>` - Main container with filters
+- `ProductCard` - Grid view card with:
+  - Image thumbnail
+  - Name + short description
+  - Current price (or current bid)
+  - Condition badge
+  - Shipping badges (free shipping, COD, etc.)
+  - Stock status
+  - Action buttons (quick edit, view, delete)
+  - Auction timer (if isAuction)
+- `ProductRow` - Table view row with:
+  - Checkbox for bulk selection
+  - Image thumbnail
+  - Name + ID
+  - Seller name (link)
+  - Price / Bid
+  - Stock
+  - Status badges
+  - Category tags
+  - Actions dropdown
+- `ProductFilterSidebar` - Collapsible filter groups
+- `ProductModerationPanel` - Moderation actions
+- `FlagProductModal` - Flag with reason
+- `FeatureProductModal` - Feature duration picker
+- `BulkActionsBar` - Sticky bottom bar for bulk actions
 
 #### 4.4.2 Published Products (`/admin/products/published`)
 
 **Features**:
 
-- Pre-filtered to show only published products
+- Pre-filtered to `status: "published"`
+- All filters from All Products section
 - Quick unpublish action
 - Mark as featured
 
@@ -1088,28 +1620,59 @@ const ADMIN_TABS = [
 
 **Features**:
 
+- Pre-filtered to `moderationStatus: "pending"`
 - Products awaiting moderation
 - Quick approve/reject actions
 - Bulk moderation
 - Add moderation notes
+- View seller history (other products, ratings)
 
 #### 4.4.4 Flagged Products (`/admin/products/flagged`)
 
 **Features**:
 
+- Pre-filtered to `moderationStatus: "flagged"`
 - Products flagged by users or system
 - Flag details and reasons
 - Review and resolve flags
 - Contact seller option
+- Bulk resolve flags
 
 #### 4.4.5 Featured Products (`/admin/products/featured`)
 
 **Features**:
 
+- Pre-filtered to `flags_admin.isFeatured: true`
 - Products marked as featured/top products
-- Manage featured duration
-- Reorder featured items
+- Manage featured duration (datepicker)
+- Drag-and-drop to reorder featured items
 - Remove from featured list
+- Set expiration date
+
+#### 4.4.6 Auctions Only (`/admin/products/auctions`)
+
+**NEW SUB-TAB**
+
+**Features**:
+
+- Pre-filtered to `isAuction: true`
+- All auction-specific filters:
+  - Time left (ending soon, < 1 hour, < 6 hours, < 24 hours, > 24 hours)
+  - Bid count (0 bids, 1-5 bids, 5+ bids)
+  - Reserve met / not met
+  - Auto-extend enabled / disabled
+- Show auction-specific data:
+  - Current bid vs starting price
+  - Number of bids
+  - Highest bidder (masked)
+  - Time remaining (live countdown)
+  - Reserve price status (admin only)
+- Actions:
+  - End auction early
+  - Extend auction duration
+  - Cancel auction (with refunds)
+  - View bid history
+  - Contact highest bidder
 
 ### 4.5 Categories Management (`/admin/categories`)
 
@@ -2196,7 +2759,199 @@ interface CategoryTreeViewProps {
 // - Context menu (right-click actions)
 ```
 
-#### CategoryCard
+#### ProductCard (Reusable Grid Item)
+
+```typescript
+interface ProductCardProps {
+  product: ProductDocument;
+  variant: "default" | "compact" | "featured";
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (product: ProductDocument) => void;
+    variant?: "primary" | "secondary" | "danger";
+  }[];
+  onCardClick?: (product: ProductDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+}
+
+// Features:
+// - Responsive card with image, title, price
+// - Condition badge (new, used, etc.)
+// - Shipping badges (free shipping, COD, expedited)
+// - Stock status indicator
+// - Auction timer (if isAuction)
+// - Quick action buttons (edit, view, delete)
+// - Hover effects with elevation
+// - Checkbox for bulk selection
+// - Image lazy loading
+// - Price with discount display
+// - Seller name and rating
+// - View count and favorites count
+```
+
+#### ProductRow (Reusable Table Row)
+
+```typescript
+interface ProductRowProps {
+  product: ProductDocument;
+  columns: string[]; // Which columns to show
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (product: ProductDocument) => void;
+  }[];
+  onRowClick?: (product: ProductDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+}
+
+// Features:
+// - Table row with customizable columns
+// - Checkbox for bulk selection
+// - Image thumbnail (48x48)
+// - Inline editing for quick updates
+// - Status badges with colors
+// - Actions dropdown menu
+// - Expandable details (click to expand)
+// - Striped/hover styles
+// - Responsive (collapses on mobile)
+```
+
+#### CategoryCard (Reusable Grid Item)
+
+```typescript
+interface CategoryCardProps {
+  category: CategoryDocument;
+  variant: "default" | "compact" | "featured";
+  showMetrics?: boolean;
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (category: CategoryDocument) => void;
+  }[];
+  onCardClick?: (category: CategoryDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+}
+
+// Features:
+// - Visual card with category icon/image
+// - SEO data preview (title, description, keywords)
+// - Metrics overlay (product count, auction count)
+// - Featured badge
+// - Tier level indicator
+// - Full path breadcrumbs
+// - Action buttons (edit, delete, add child)
+// - Hover effects
+// - Checkbox for bulk selection
+// - Color-coded by tier level
+```
+
+#### CategoryRow (Reusable Table Row)
+
+```typescript
+interface CategoryRowProps {
+  category: CategoryDocument;
+  columns: string[]; // Which columns to show
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (category: CategoryDocument) => void;
+  }[];
+  onRowClick?: (category: CategoryDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+  indentLevel?: number; // For tree view in table
+}
+
+// Features:
+// - Table row with customizable columns
+// - Checkbox for bulk selection
+// - Indentation for tree hierarchy
+// - Expand/collapse icon for children
+// - Metrics badges (product/auction counts)
+// - SEO data tooltip
+// - Featured badge
+// - Actions dropdown
+// - Drag handle for reordering
+// - Tier level color indicator
+```
+
+#### UserCard (Reusable Grid Item)
+
+```typescript
+interface UserCardProps {
+  user: UserDocument;
+  variant: "default" | "compact" | "profile";
+  showStats?: boolean;
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (user: UserDocument) => void;
+    variant?: "primary" | "secondary" | "danger";
+  }[];
+  onCardClick?: (user: UserDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+}
+
+// Features:
+// - Avatar with fallback initials
+// - Name and email display
+// - Role badge with color coding
+// - Verification badges (email, phone)
+// - Ban status indicator
+// - Statistics (orders, sales, rating)
+// - Last login timestamp
+// - Action buttons (edit, ban, delete)
+// - Hover effects with elevation
+// - Checkbox for bulk selection
+// - Online status indicator (green dot)
+```
+
+#### UserRow (Reusable Table Row)
+
+```typescript
+interface UserRowProps {
+  user: UserDocument;
+  columns: string[]; // Which columns to show
+  showActions?: boolean;
+  actions?: {
+    label: string;
+    icon: string;
+    onClick: (user: UserDocument) => void;
+  }[];
+  onRowClick?: (user: UserDocument) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (selected: boolean) => void;
+}
+
+// Features:
+// - Table row with customizable columns
+// - Checkbox for bulk selection
+// - Avatar thumbnail (32x32)
+// - Inline role editing (dropdown)
+// - Status badges (active, banned, verified)
+// - Statistics display (orders, sales, rating)
+// - Actions dropdown menu
+// - Quick ban/unban toggle
+// - Expandable details (click to expand)
+// - Color-coded row by ban status
+// - Last activity timestamp
+```
 
 ```typescript
 interface CategoryCardProps {
