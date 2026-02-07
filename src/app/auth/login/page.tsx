@@ -19,7 +19,7 @@
 
 "use client";
 
-import { useState, FormEvent, Suspense, useCallback } from "react";
+import { useState, FormEvent, Suspense, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert } from "@/components";
@@ -29,11 +29,13 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { apiClient } from "@/lib/api-client";
+import { useAuth } from "@/hooks";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
+  const { user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,6 +45,32 @@ function LoginForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push(callbackUrl);
+    }
+  }, [user, authLoading, router, callbackUrl]);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
+            {UI_LABELS.LOADING.DEFAULT}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render login form if user is authenticated
+  if (user) {
+    return null;
+  }
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {

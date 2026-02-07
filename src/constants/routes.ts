@@ -29,11 +29,6 @@ export const ROUTES = {
   // Admin Routes
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
-    USERS: "/admin/users",
-    CONTENT: "/admin/content",
-    ANALYTICS: "/admin/analytics",
-    SETTINGS: "/admin/settings",
-    SESSIONS: "/admin/sessions",
   },
 
   // API Routes

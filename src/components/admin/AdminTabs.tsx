@@ -6,7 +6,7 @@ import Link from "next/link";
 /**
  * AdminTabs Component
  *
- * Navigation tabs for admin section pages (Dashboard, Users, Content, Analytics, Settings)
+ * Navigation tabs for admin section pages (Dashboard only)
  * Automatically highlights the active tab based on current pathname
  *
  * @component
@@ -16,13 +16,7 @@ import Link from "next/link";
  * ```
  */
 
-const ADMIN_TABS = [
-  { label: "Dashboard", href: "/admin/dashboard" },
-  { label: "Users", href: "/admin/users" },
-  { label: "Content", href: "/admin/content" },
-  { label: "Analytics", href: "/admin/analytics" },
-  { label: "Settings", href: "/admin/settings" },
-] as const;
+const ADMIN_TABS = [{ label: "Dashboard", href: "/admin/dashboard" }] as const;
 
 export default function AdminTabs() {
   const pathname = usePathname();

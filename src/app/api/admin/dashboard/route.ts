@@ -4,15 +4,8 @@
  */
 
 import { createApiHandler, successResponse } from "@/lib/api/api-handler";
-import { db as adminDb } from "@/lib/firebase/config";
-import {
-  collection,
-  query,
-  where,
-  getCountFromServer,
-  Timestamp,
-} from "firebase/firestore";
-import { USER_COLLECTION } from "@/db/schema/users";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { USER_COLLECTION, userQueryHelpers } from "@/db/schema/users";
 import { PRODUCT_COLLECTION } from "@/db/schema/products";
 import { ORDER_COLLECTION } from "@/db/schema/orders";
 
@@ -20,51 +13,72 @@ export const GET = createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {
-    const thirtyDaysAgo = Timestamp.fromDate(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    );
-    const usersRef = collection(adminDb, USER_COLLECTION);
-    const productsRef = collection(adminDb, PRODUCT_COLLECTION);
-    const ordersRef = collection(adminDb, ORDER_COLLECTION);
+    const db = getAdminDb();
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
+    // Use count() aggregation queries instead of fetching all documents
+    const usersRef = db.collection(USER_COLLECTION);
+
+    // Parallel execution of all count queries for speed
     const [
-      totalUsers,
-      activeUsers,
-      newUsers,
-      disabledUsers,
-      adminUsers,
-      totalProducts,
-      totalOrders,
+      totalUsersSnap,
+      activeUsersSnap,
+      newUsersSnap,
+      disabledUsersSnap,
+      adminUsersSnap,
+      productsSnap,
+      ordersSnap,
     ] = await Promise.all([
-      getCountFromServer(usersRef),
-      getCountFromServer(query(usersRef, where("disabled", "==", false))),
-      getCountFromServer(
-        query(usersRef, where("createdAt", ">=", thirtyDaysAgo)),
-      ),
-      getCountFromServer(query(usersRef, where("disabled", "==", true))),
-      getCountFromServer(query(usersRef, where("role", "==", "admin"))),
-      getCountFromServer(productsRef).catch(() => ({
-        data: () => ({ count: 0 }),
-      })),
-      getCountFromServer(ordersRef).catch(() => ({
-        data: () => ({ count: 0 }),
-      })),
+      usersRef
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      usersRef
+        .where("disabled", "==", false)
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      usersRef
+        .where("createdAt", ">=", thirtyDaysAgo)
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      usersRef
+        .where("disabled", "==", true)
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      usersRef
+        .where("role", "==", "admin")
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      db
+        .collection(PRODUCT_COLLECTION)
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
+      db
+        .collection(ORDER_COLLECTION)
+        .count()
+        .get()
+        .catch(() => ({ data: () => ({ count: 0 }) })),
     ]);
 
     return successResponse({
       users: {
-        total: totalUsers.data().count,
-        active: activeUsers.data().count,
-        new: newUsers.data().count,
-        newThisMonth: newUsers.data().count, // Same as new for now
-        disabled: disabledUsers.data().count,
-        admins: adminUsers.data().count,
+        total: totalUsersSnap.data().count,
+        active: activeUsersSnap.data().count,
+        new: newUsersSnap.data().count,
+        newThisMonth: newUsersSnap.data().count,
+        disabled: disabledUsersSnap.data().count,
+        admins: adminUsersSnap.data().count,
       },
       products: {
-        total: totalProducts.data().count,
+        total: productsSnap.data().count,
       },
       orders: {
-        total: totalOrders.data().count,
+        total: ordersSnap.data().count,
       },
     });
   },

@@ -2,20 +2,20 @@
  * API Client
  * Centralized API client for making HTTP requests with consistent error handling,
  * authentication, and response parsing.
- * 
+ *
  * Usage:
  * ```ts
  * import { apiClient, API_ENDPOINTS } from '@/lib/api-client';
- * 
+ *
  * // GET request
  * const profile = await apiClient.get(API_ENDPOINTS.USER.PROFILE);
- * 
+ *
  * // POST request
  * const result = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
  *   email: 'user@example.com',
  *   password: 'password123'
  * });
- * 
+ *
  * // With error handling
  * try {
  *   const data = await apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, body);
@@ -27,7 +27,7 @@
  * ```
  */
 
-import { API_ENDPOINTS } from '@/constants/api-endpoints';
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 export { API_ENDPOINTS };
 
@@ -51,10 +51,10 @@ export class ApiClientError extends Error {
   constructor(
     message: string,
     public status: number,
-    public data?: any
+    public data?: any,
   ) {
     super(message);
-    this.name = 'ApiClientError';
+    this.name = "ApiClientError";
   }
 }
 
@@ -67,22 +67,25 @@ class ApiClient {
   private defaultTimeout: number;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || '';
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "";
     this.defaultTimeout = 30000; // 30 seconds
   }
 
   /**
    * Build URL with query parameters
    */
-  private buildURL(endpoint: string, params?: Record<string, string | number | boolean>): string {
+  private buildURL(
+    endpoint: string,
+    params?: Record<string, string | number | boolean>,
+  ): string {
     const url = new URL(endpoint, window.location.origin);
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, String(value));
       });
     }
-    
+
     return url.toString();
   }
 
@@ -91,7 +94,7 @@ class ApiClient {
    */
   private async getHeaders(customHeaders?: HeadersInit): Promise<HeadersInit> {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...customHeaders,
     };
 
@@ -110,10 +113,15 @@ class ApiClient {
    */
   private async request<T>(
     endpoint: string,
-    config: RequestConfig = {}
+    config: RequestConfig = {},
   ): Promise<T> {
-    const { params, timeout = this.defaultTimeout, headers: customHeaders, ...fetchConfig } = config;
-    
+    const {
+      params,
+      timeout = this.defaultTimeout,
+      headers: customHeaders,
+      ...fetchConfig
+    } = config;
+
     const url = this.buildURL(endpoint, params);
     const headers = await this.getHeaders(customHeaders);
 
@@ -121,12 +129,26 @@ class ApiClient {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+    // Merge external signal with timeout signal if provided
+    const externalSignal = config?.signal;
+    let combinedSignal = controller.signal;
+
+    if (externalSignal) {
+      // If external signal is already aborted, abort our controller
+      if (externalSignal.aborted) {
+        controller.abort();
+      } else {
+        // Listen to external signal and abort our controller if it fires
+        externalSignal.addEventListener("abort", () => controller.abort());
+      }
+    }
+
     try {
       const response = await fetch(url, {
         ...fetchConfig,
         headers,
-        signal: controller.signal,
-        credentials: 'include', // Include cookies for NextAuth
+        signal: combinedSignal,
+        credentials: "include", // Include cookies for NextAuth
       });
 
       clearTimeout(timeoutId);
@@ -134,23 +156,25 @@ class ApiClient {
       // Parse response
       const data: ApiResponse<T> = await response.json().catch(() => ({
         success: false,
-        error: 'Invalid JSON response',
+        error: "Invalid JSON response",
       }));
 
       // Handle error responses
       if (!response.ok) {
         throw new ApiClientError(
-          data.error || data.message || `Request failed with status ${response.status}`,
+          data.error ||
+            data.message ||
+            `Request failed with status ${response.status}`,
           response.status,
-          data
+          data,
         );
       }
 
       if (!data.success) {
         throw new ApiClientError(
-          data.error || data.message || 'Request failed',
+          data.error || data.message || "Request failed",
           response.status,
-          data
+          data,
         );
       }
 
@@ -158,14 +182,22 @@ class ApiClient {
     } catch (error) {
       clearTimeout(timeoutId);
 
-      // Handle timeout
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiClientError('Request timeout', 408);
+      // Handle abort errors (timeout or external cancellation)
+      if (error instanceof Error && error.name === "AbortError") {
+        // Check if it was external cancellation vs timeout
+        if (externalSignal?.aborted) {
+          // External cancellation - don't throw, just return
+          throw error; // Let caller handle it
+        }
+        throw new ApiClientError("Request timeout", 408);
       }
 
       // Handle network errors
       if (error instanceof TypeError) {
-        throw new ApiClientError('Network error. Please check your connection.', 0);
+        throw new ApiClientError(
+          "Network error. Please check your connection.",
+          0,
+        );
       }
 
       // Re-throw ApiClientError
@@ -175,8 +207,8 @@ class ApiClient {
 
       // Unknown error
       throw new ApiClientError(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-        500
+        error instanceof Error ? error.message : "An unexpected error occurred",
+        500,
       );
     }
   }
@@ -187,17 +219,21 @@ class ApiClient {
   async get<T = any>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
-      method: 'GET',
+      method: "GET",
     });
   }
 
   /**
    * POST request
    */
-  async post<T = any>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async post<T = any>(
+    endpoint: string,
+    data?: any,
+    config?: RequestConfig,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -205,10 +241,14 @@ class ApiClient {
   /**
    * PUT request
    */
-  async put<T = any>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async put<T = any>(
+    endpoint: string,
+    data?: any,
+    config?: RequestConfig,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
-      method: 'PUT',
+      method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -216,10 +256,14 @@ class ApiClient {
   /**
    * PATCH request
    */
-  async patch<T = any>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async patch<T = any>(
+    endpoint: string,
+    data?: any,
+    config?: RequestConfig,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
-      method: 'PATCH',
+      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -230,23 +274,27 @@ class ApiClient {
   async delete<T = any>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   /**
    * Upload file(s)
    */
-  async upload<T = any>(endpoint: string, formData: FormData, config?: RequestConfig): Promise<T> {
+  async upload<T = any>(
+    endpoint: string,
+    formData: FormData,
+    config?: RequestConfig,
+  ): Promise<T> {
     const { headers, ...restConfig } = config || {};
-    
+
     // Remove Content-Type header to let browser set it with boundary
     const uploadHeaders = await this.getHeaders(headers);
-    delete (uploadHeaders as any)['Content-Type'];
+    delete (uploadHeaders as any)["Content-Type"];
 
     return this.request<T>(endpoint, {
       ...restConfig,
-      method: 'POST',
+      method: "POST",
       body: formData,
       headers: uploadHeaders,
     });

@@ -152,11 +152,10 @@ service cloud.firestore {
       // Admins can read all sessions
       allow read: if isOwner(resource.data.userId) || isAdmin();
       
-      // Server can create sessions via Admin SDK (bypasses rules)
-      // This rule is kept as false since we use Admin SDK with auth disabled
+      // Server-only operations via Admin SDK
+      // Note: Admin SDK bypasses these rules, but we set them for clarity
+      // Only server can create/update sessions (no client-side session creation)
       allow create: if false;
-      
-      // Server updates sessions via Admin SDK (bypasses rules)
       allow update: if false;
       
       // Users can delete their own sessions (logout from device)

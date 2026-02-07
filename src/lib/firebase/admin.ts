@@ -35,8 +35,18 @@ export function getAdminApp(): App {
           console.log(
             "🔑 Initializing Firebase Admin with service account JSON file",
           );
+          const serviceAccount = JSON.parse(
+            fs.readFileSync(serviceAccountPath, "utf8"),
+          );
           _adminApp = initializeApp({
             credential: cert(serviceAccountPath),
+            databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
+          });
+
+          // Initialize Firestore with settings BEFORE any other operations
+          _adminDb = getFirestore(_adminApp);
+          _adminDb.settings({
+            ignoreUndefinedProperties: true,
           });
         }
         // Method 2: Use environment variables (for production)
@@ -48,15 +58,23 @@ export function getAdminApp(): App {
           console.log(
             "🔑 Initializing Firebase Admin with environment variables",
           );
+          const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
           _adminApp = initializeApp({
             credential: cert({
-              projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+              projectId,
               clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
               privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY.replace(
                 /\\n/g,
                 "\n",
               ),
             }),
+            databaseURL: `https://${projectId}.firebaseio.com`,
+          });
+
+          // Initialize Firestore with settings BEFORE any other operations
+          _adminDb = getFirestore(_adminApp);
+          _adminDb.settings({
+            ignoreUndefinedProperties: true,
           });
         } else {
           throw new Error(
@@ -95,10 +113,6 @@ export function getAdminAuth(): Auth {
 export function getAdminDb(): Firestore {
   if (!_adminDb) {
     _adminDb = getFirestore(getAdminApp());
-    // Configure settings for better performance
-    _adminDb.settings({
-      ignoreUndefinedProperties: true,
-    });
   }
   return _adminDb;
 }

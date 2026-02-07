@@ -1,13 +1,13 @@
 /**
  * Centralized Error Handler
- * 
+ *
  * Handles all errors consistently across the application.
  * Provides formatted responses for API routes and logging for unexpected errors.
- * 
+ *
  * @example
  * ```ts
  * import { handleApiError } from '@/lib/errors';
- * 
+ *
  * export async function GET() {
  *   try {
  *     // ... your code
@@ -18,9 +18,10 @@
  * ```
  */
 
-import { NextResponse } from 'next/server';
-import { AppError } from './base-error';
-import { ERROR_CODES, ERROR_MESSAGES } from './error-codes';
+import { NextResponse } from "next/server";
+import { AppError } from "./base-error";
+import { ERROR_CODES, ERROR_MESSAGES } from "./error-codes";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * Handle API errors with consistent response format
@@ -28,27 +29,43 @@ import { ERROR_CODES, ERROR_MESSAGES } from './error-codes';
 export function handleApiError(error: unknown): NextResponse {
   // Handle known AppError instances
   if (error instanceof AppError) {
-    return NextResponse.json(
-      error.toJSON(),
-      { status: error.statusCode }
-    );
+    // Log non-400 errors to file
+    if (error.statusCode >= 500) {
+      serverLogger.error("API Error", {
+        code: error.code,
+        message: error.message,
+        statusCode: error.statusCode,
+        data: error.data,
+      });
+    }
+
+    return NextResponse.json(error.toJSON(), { status: error.statusCode });
   }
 
   // Handle validation errors (Zod, etc.)
-  if (error && typeof error === 'object' && 'issues' in error) {
+  if (error && typeof error === "object" && "issues" in error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Validation failed',
+        error: "Validation failed",
         code: ERROR_CODES.VALIDATION_INVALID_INPUT,
         data: error,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // Log unexpected errors for debugging
-  console.error('Unexpected error:', error);
+  serverLogger.error("Unexpected API error", {
+    error:
+      error instanceof Error
+        ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
+        : error,
+  });
 
   // Return generic error response
   return NextResponse.json(
@@ -57,7 +74,7 @@ export function handleApiError(error: unknown): NextResponse {
       error: ERROR_MESSAGES[ERROR_CODES.GEN_INTERNAL_ERROR],
       code: ERROR_CODES.GEN_INTERNAL_ERROR,
     },
-    { status: 500 }
+    { status: 500 },
   );
 }
 
@@ -65,18 +82,19 @@ export function handleApiError(error: unknown): NextResponse {
  * Log errors with context
  */
 export function logError(error: unknown, context?: Record<string, unknown>) {
-  const timestamp = new Date().toISOString();
-  const errorInfo = {
-    timestamp,
+  const errorData = {
     ...(context && { context }),
-    error: error instanceof Error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    } : error,
+    error:
+      error instanceof Error
+        ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
+        : error,
   };
 
-  console.error('[Error]', JSON.stringify(errorInfo, null, 2));
+  serverLogger.error("Application error", errorData);
 }
 
 /**

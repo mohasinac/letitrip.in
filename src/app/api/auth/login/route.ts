@@ -111,11 +111,22 @@ export async function POST(request: NextRequest) {
     const sessionCookie = await createSessionCookie(idToken);
 
     // Create session in Firestore for tracking
-    const session = await sessionRepository.createSession(userRecord.uid, {
-      deviceInfo: parseUserAgent(
-        request.headers.get("user-agent") || "Unknown",
-      ),
-    });
+    let session;
+    try {
+      session = await sessionRepository.createSession(userRecord.uid, {
+        deviceInfo: parseUserAgent(
+          request.headers.get("user-agent") || "Unknown",
+        ),
+      });
+      console.log("✅ Session created successfully:", session.id);
+    } catch (sessionError: any) {
+      console.error("❌ Session creation failed:", {
+        error: sessionError.message,
+        code: sessionError.code,
+        details: sessionError.details || sessionError,
+      });
+      throw sessionError;
+    }
 
     // Return success with session
     const response = NextResponse.json(

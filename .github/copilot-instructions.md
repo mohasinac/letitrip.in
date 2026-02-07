@@ -165,13 +165,65 @@ storage/
 
 **Location**: `src/lib/firebase/storage.ts` (create when needed)
 
-#### 5. **Firebase Admin SDK** (Server-Side)
+#### 5. **Firebase Admin SDK** (Server-Side ONLY)
 - **Token verification**
 - **User management**
 - **Firestore admin operations**
 - **Custom claims (roles)**
 
 **Location**: `src/lib/firebase/admin.ts`
+
+**⚠️ CRITICAL RULE: Firebase SDK Usage**
+
+**✅ DO:**
+- Use **Firebase Admin SDK** in API routes (`src/app/api/**`)
+  - Import from `firebase-admin/auth`, `firebase-admin/firestore`
+  - Import helpers from `@/lib/firebase/admin`
+- Use **Firebase Client SDK** in client components (`src/app/**, src/components/**`)
+  - Import from `firebase/auth`, `firebase/firestore`
+  - Import helpers from `@/lib/firebase/config`, `@/lib/firebase/auth-helpers`
+
+**❌ DON'T:**
+- Never use client SDK (`@/lib/firebase/config`) in API routes
+- Never use Admin SDK in client components
+- Never import `firebase/firestore` in `src/app/api/**`
+- Never import `firebase-admin` in client-side code
+
+**Why?**
+- Admin SDK bypasses security rules (server-side only)
+- Client SDK respects security rules (client-side only)
+- Mixing them causes permission errors and security issues
+
+**Examples:**
+
+```typescript
+// ✅ GOOD: API route using Admin SDK
+// src/app/api/admin/users/route.ts
+import { getAdminDb } from "@/lib/firebase/admin";
+
+export async function GET() {
+  const db = getAdminDb();
+  const users = await db.collection('users').get();
+  // ...
+}
+
+// ✅ GOOD: Client component using Client SDK
+// src/components/UserProfile.tsx
+"use client";
+import { db } from "@/lib/firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+
+const users = await getDocs(collection(db, 'users'));
+
+// ❌ BAD: API route using Client SDK
+// src/app/api/admin/users/route.ts
+import { db } from "@/lib/firebase/config"; // WRONG!
+import { collection, getDocs } from "firebase/firestore"; // WRONG!
+
+// ❌ BAD: Client component using Admin SDK
+// src/components/UserProfile.tsx
+import { getAdminDb } from "@/lib/firebase/admin"; // WRONG!
+```
 
 ---
 

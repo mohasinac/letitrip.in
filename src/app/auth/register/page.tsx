@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, FormEvent, useCallback } from "react";
+import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Alert, Checkbox } from "@/components";
@@ -20,9 +20,13 @@ import {
   API_ENDPOINTS,
 } from "@/constants";
 import { apiClient } from "@/lib/api-client";
+import { useAuth } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { UI_LABELS } from "@/constants";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -37,6 +41,32 @@ export default function RegisterPage() {
     text: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push(ROUTES.USER.PROFILE);
+    }
+  }, [user, authLoading, router]);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
+            {UI_LABELS.LOADING.DEFAULT}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render register form if user is authenticated
+  if (user) {
+    return null;
+  }
 
   const handleBlur = useCallback(
     (field: string) => () => {

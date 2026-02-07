@@ -17,6 +17,7 @@
 import { DocumentData, Firestore } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 
 export abstract class BaseRepository<T extends DocumentData> {
   protected collection: string;
@@ -132,11 +133,13 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async create(data: Partial<T>): Promise<T> {
     try {
-      const docRef = await this.getCollection().add({
+      const cleanData = prepareForFirestore({
         ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+
+      const docRef = await this.getCollection().add(cleanData);
 
       const doc = await docRef.get();
       return { id: doc.id, ...doc.data() } as unknown as T;
@@ -150,17 +153,30 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async createWithId(id: string, data: Partial<T>): Promise<T> {
     try {
-      await this.getCollection()
-        .doc(id)
-        .set({
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+      const now = new Date();
+      const cleanData = prepareForFirestore({
+        ...data,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      console.log(
+        `📝 Creating document with ID: ${id} in collection: ${this.collection}`,
+      );
+
+      await this.getCollection().doc(id).set(cleanData);
+
+      console.log(`✅ Document created successfully: ${id}`);
 
       const doc = await this.getCollection().doc(id).get();
       return { id: doc.id, ...doc.data() } as unknown as T;
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`❌ Failed to create document with ID: ${id}`, {
+        collection: this.collection,
+        error: error.message,
+        code: error.code,
+        stack: error.stack,
+      });
       throw new DatabaseError(
         `Failed to create document with ID: ${id}`,
         error,
@@ -173,12 +189,12 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async update(id: string, data: Partial<T>): Promise<T> {
     try {
-      await this.getCollection()
-        .doc(id)
-        .update({
-          ...data,
-          updatedAt: new Date(),
-        });
+      const cleanData = prepareForFirestore({
+        ...data,
+        updatedAt: new Date(),
+      });
+
+      await this.getCollection().doc(id).update(cleanData);
 
       return this.findByIdOrFail(id);
     } catch (error) {

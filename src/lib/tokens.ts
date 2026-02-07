@@ -12,6 +12,7 @@ import {
   EMAIL_VERIFICATION_COLLECTION,
   PASSWORD_RESET_COLLECTION,
 } from "@/db/schema";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 
 export interface TokenData {
   userId: string;
@@ -45,13 +46,18 @@ export async function createVerificationToken(
     Date.now() + TOKEN_CONFIG.EMAIL_VERIFICATION.EXPIRY_MS,
   );
 
-  await getAdminDb().collection(EMAIL_VERIFICATION_COLLECTION).doc(token).set({
+  const tokenData = prepareForFirestore({
     userId,
     email,
     token,
     expiresAt,
     createdAt: new Date(),
   });
+
+  await getAdminDb()
+    .collection(EMAIL_VERIFICATION_COLLECTION)
+    .doc(token)
+    .set(tokenData);
 
   return token;
 }
@@ -68,7 +74,7 @@ export async function createPasswordResetToken(
     Date.now() + TOKEN_CONFIG.PASSWORD_RESET.EXPIRY_MS,
   );
 
-  await getAdminDb().collection(PASSWORD_RESET_COLLECTION).doc(token).set({
+  const tokenData = prepareForFirestore({
     userId,
     email,
     token,
@@ -76,6 +82,11 @@ export async function createPasswordResetToken(
     createdAt: new Date(),
     used: false,
   });
+
+  await getAdminDb()
+    .collection(PASSWORD_RESET_COLLECTION)
+    .doc(token)
+    .set(tokenData);
 
   return token;
 }
@@ -177,10 +188,15 @@ export async function verifyPasswordResetToken(token: string): Promise<{
 export async function markPasswordResetTokenAsUsed(
   token: string,
 ): Promise<void> {
-  await getAdminDb().collection(PASSWORD_RESET_COLLECTION).doc(token).update({
+  const updateData = prepareForFirestore({
     used: true,
     usedAt: new Date(),
   });
+
+  await getAdminDb()
+    .collection(PASSWORD_RESET_COLLECTION)
+    .doc(token)
+    .update(updateData);
 }
 
 /**
