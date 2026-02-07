@@ -12,7 +12,25 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
+    // Increase WebSocket payload size limit for HMR in development
+    // Fixes "Max payload size exceeded" error
+    webpackBuildWorker: true,
   },
+
+  // Development server configuration
+  ...(process.env.NODE_ENV === "development" && {
+    webpack: (config, { dev, isServer }) => {
+      if (dev && !isServer) {
+        // Increase WebSocket payload size limit
+        config.devServer = config.devServer || {};
+        config.devServer.client = config.devServer.client || {};
+        config.devServer.client.webSocketURL =
+          config.devServer.client.webSocketURL || {};
+        config.devServer.client.webSocketURL.maxPayloadSize = 50 * 1024 * 1024; // 50MB
+      }
+      return config;
+    },
+  }),
 
   // Security headers
   async headers() {
