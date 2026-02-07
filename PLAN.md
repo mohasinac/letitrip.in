@@ -51,11 +51,12 @@ Transform LetItRip into a comprehensive multi-seller e-commerce and auction plat
 
 ### Core Features
 
-1. **Admin Dashboard** (8 tabs)
+1. **Admin Dashboard** (9 tabs)
    - Dashboard Analytics
    - User Management
    - Products Management
    - Auctions Management
+   - Categories Management (Hierarchical Trees)
    - Site Settings
    - Content Management (Carousel, Sections, Banners)
    - Review Management
@@ -64,7 +65,7 @@ Transform LetItRip into a comprehensive multi-seller e-commerce and auction plat
 2. **Dynamic Homepage** (10 sections)
    - Hero Carousel (9x9 grid system)
    - Welcome Section
-   - Top Categories (4 max, auto-scroll)
+   - Top Categories (4 max, auto-scroll from featured categories)
    - Featured Products (18 max, promoted)
    - Featured Auctions (18 max, promoted)
    - Site Features
@@ -397,6 +398,157 @@ interface CouponUsageDocument {
 }
 ```
 
+#### `categories` Collection
+
+```typescript
+interface CategoryDocument {
+  id: string; // Unique category ID
+  name: string;
+  slug: string; // URL-friendly name
+  description?: string;
+
+  // Hierarchical Structure (Multiple Independent Trees)
+  rootId: string; // ID of root category (identifies which tree it belongs to)
+  parentIds: string[]; // Array of parent IDs from root to immediate parent (materialized path)
+  childrenIds: string[]; // Array of direct children IDs
+  tier: number; // Depth level in tree (0 = root, 1 = first level, etc.)
+  path: string; // Materialized path (e.g., "electronics/laptops/gaming")
+  order: number; // Sort order among siblings
+  isLeaf: boolean; // True if has no children (auto-calculated)
+
+  // Product & Auction Counts (Denormalized for Performance)
+  metrics: {
+    // Direct counts (items directly in this category)
+    productCount: number;
+    productIds: string[]; // List of product IDs in this category
+    auctionCount: number;
+    auctionIds: string[]; // List of auction IDs in this category
+
+    // Aggregate counts (includes all descendant categories)
+    totalProductCount: number; // This category + all children
+    totalAuctionCount: number; // This category + all children
+    totalItemCount: number; // totalProductCount + totalAuctionCount
+
+    // Last updated timestamp for cache invalidation
+    lastUpdated: Date;
+  };
+
+  // Featured Flag (Homepage Display)
+  isFeatured: boolean; // Requires totalItemCount >= 8
+  featuredPriority?: number; // Order in featured categories (lower = higher priority)
+
+  // SEO & Metadata
+  seo: {
+    title: string; // SEO title
+    description: string; // Meta description
+    keywords: string[]; // SEO keywords
+    ogImage?: string; // Open Graph image
+    canonicalUrl?: string;
+  };
+
+  // Display Settings
+  display: {
+    icon?: string; // Category icon/emoji
+    coverImage?: string; // Category cover image
+    color?: string; // Brand color for category
+    showInMenu: boolean; // Show in navigation menu
+    showInFooter: boolean; // Show in footer
+  };
+
+  // Status
+  isActive: boolean;
+  isSearchable: boolean; // Include in search results
+
+  // Metadata
+  createdBy: string; // Admin user ID
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Tree Navigation Helper (for fast queries)
+  ancestors: {
+    id: string;
+    name: string;
+    tier: number;
+  }[]; // All ancestors from root to parent
+}
+```
+
+**Data Structure Strategy**:
+
+1. **Materialized Path** - `parentIds` array allows fast ancestor queries
+2. **Denormalized Counts** - Pre-calculated aggregates avoid recursive queries
+3. **Root ID Indexing** - Fast tree isolation with `rootId` field
+4. **Tier Level** - Quick filtering by depth (tier 0 = roots, leaf = no children)
+5. **Path String** - Human-readable and SEO-friendly URLs
+
+**Update Strategy** (Fast Category Creation):
+
+```typescript
+// When creating new category:
+// 1. Calculate parentIds (copy from parent + add parent ID)
+// 2. Calculate tier (parent.tier + 1)
+// 3. Set rootId (parent.rootId or self.id if root)
+// 4. Update parent's childrenIds array
+// 5. Update all ancestor metrics (batch write)
+
+// When adding product to category:
+// 1. Add product ID to category.metrics.productIds
+// 2. Increment category.metrics.productCount
+// 3. Batch update all ancestors:
+//    - Increment totalProductCount
+//    - Increment totalItemCount
+//    - Update isFeatured flag if >= 8
+
+// All updates use Firestore batch writes for atomicity
+```
+
+**Firestore Indices Required**:
+
+```json
+[
+  // Root categories (tier 0)
+  {
+    "collectionGroup": "categories",
+    "fields": [
+      { "fieldPath": "tier", "order": "ASCENDING" },
+      { "fieldPath": "order", "order": "ASCENDING" }
+    ]
+  },
+  // Categories by tree
+  {
+    "collectionGroup": "categories",
+    "fields": [
+      { "fieldPath": "rootId", "order": "ASCENDING" },
+      { "fieldPath": "tier", "order": "ASCENDING" }
+    ]
+  },
+  // Featured categories
+  {
+    "collectionGroup": "categories",
+    "fields": [
+      { "fieldPath": "isFeatured", "order": "ASCENDING" },
+      { "fieldPath": "featuredPriority", "order": "ASCENDING" }
+    ]
+  },
+  // Leaf categories (for product filtering)
+  {
+    "collectionGroup": "categories",
+    "fields": [
+      { "fieldPath": "isLeaf", "order": "ASCENDING" },
+      { "fieldPath": "name", "order": "ASCENDING" }
+    ]
+  },
+  // Searchable categories
+  {
+    "collectionGroup": "categories",
+    "fields": [
+      { "fieldPath": "isSearchable", "order": "ASCENDING" },
+      { "fieldPath": "metrics.totalItemCount", "order": "DESCENDING" }
+    ]
+  }
+]
+```
+
 ### 3.2 Enhanced Existing Collections
 
 #### Update `products` Collection
@@ -646,6 +798,23 @@ const ADMIN_TABS = [
     ],
   },
   {
+    id: "categories",
+    label: "Categories",
+    icon: "FolderTree",
+    path: "/admin/categories",
+    subTabs: [
+      { id: "all", label: "All Categories", path: "/admin/categories" },
+      {
+        id: "roots",
+        label: "Root Categories",
+        path: "/admin/categories/roots",
+      },
+      { id: "leaf", label: "Leaf Categories", path: "/admin/categories/leaf" },
+      { id: "featured", label: "Featured", path: "/admin/categories/featured" },
+      { id: "create", label: "Create New", path: "/admin/categories/create" },
+    ],
+  },
+  {
     id: "site",
     label: "Site Settings",
     icon: "Settings",
@@ -844,7 +1013,158 @@ const ADMIN_TABS = [
 - Reorder featured items
 - Remove from featured list
 
-### 4.5 Auctions Management (`/admin/auctions`)
+### 4.5 Categories Management (`/admin/categories`)
+
+**Purpose**: Manage hierarchical category trees for products and auctions
+
+**Sub-tabs**:
+
+#### 4.5.1 All Categories (`/admin/categories`)
+
+**Features**:
+
+- Tree view with expandable/collapsible nodes
+- Toggle between Tree View and Table View
+- Filters:
+  - By tier level (0, 1, 2, 3+)
+  - By tree (root category)
+  - Featured categories only
+  - Leaf categories only
+  - Searchable categories only
+- Search by name, slug, description
+- Metrics display:
+  - Direct product/auction count
+  - Total product/auction count (with descendants)
+  - Featured status
+- Actions:
+  - Add child category
+  - Edit category
+  - Move to different parent
+  - Delete (with cascade options)
+  - Toggle featured
+  - Toggle searchable
+
+**View Modes**:
+
+**Tree View**:
+
+- Hierarchical tree with indentation
+- Expand/collapse controls
+- Drag-and-drop to reorder or move
+- Inline metrics badges (product/auction counts)
+- Click to view category details
+
+**Table View**:
+
+- Flat list with tier column
+- Full path displayed (e.g., "Electronics > Laptops > Gaming")
+- Sortable columns: name, tier, products, auctions, total items
+- Filterable and searchable
+- Bulk actions available
+
+**Grid View** (Card Mode):
+
+- Visual cards with category icon/image
+- SEO data preview:
+  - Title
+  - Description (truncated)
+  - Keywords (first 3)
+  - Cover image
+- Metrics overlay:
+  - Product count
+  - Auction count
+  - Featured badge
+- Click to open category details
+
+**Components**:
+
+- `CategoryTreeView` - Hierarchical tree component
+- `CategoryTableView` - Table with metrics
+- `CategoryGridView` - Card-based grid
+- `CategoryCard` - Single category card with SEO data
+- `CategoryMetricsBadge` - Product/auction count display
+- `ViewModeToggle` - Switch between tree/table/grid
+
+#### 4.5.2 Root Categories (`/admin/categories/roots`)
+
+**Features**:
+
+- Pre-filtered to tier 0 categories only
+- Shows independent category trees
+- Create new tree (root category)
+- Manage tree-level settings
+- View tree statistics:
+  - Total categories in tree
+  - Total products across tree
+  - Total auctions across tree
+  - Tree depth (max tier level)
+
+#### 4.5.3 Leaf Categories (`/admin/categories/leaf`)
+
+**Features**:
+
+- Pre-filtered to categories with no children
+- These are categories where products/auctions are assigned
+- Bulk operations:
+  - Make featured (if >= 8 items)
+  - Toggle searchable
+  - Merge categories
+- Show full path for each leaf
+
+#### 4.5.4 Featured Categories (`/admin/categories/featured`)
+
+**Features**:
+
+- Pre-filtered to `isFeatured = true`
+- Drag-and-drop to reorder (sets featuredPriority)
+- Remove from featured
+- Preview how they appear on homepage
+- Must have >= 8 total items (products + auctions)
+- Auto-unfeature if item count drops below 8
+
+#### 4.5.5 Create New Category (`/admin/categories/create`)
+
+**Features**:
+
+- Category creation wizard (step-by-step)
+- Step 1: Basic Info
+  - Name, slug (auto-generated, editable)
+  - Description
+  - Select parent (or create root)
+- Step 2: Display Settings
+  - Icon/emoji picker
+  - Cover image upload
+  - Brand color picker
+  - Show in menu/footer toggles
+- Step 3: SEO Settings
+  - SEO title (auto-filled from name)
+  - Meta description
+  - Keywords (tag input)
+  - OG image upload
+- Step 4: Review & Create
+  - Preview category card
+  - Show calculated fields (tier, path, rootId)
+  - Confirm and create
+
+**Auto-calculations on Create**:
+
+- `tier` = parent.tier + 1 (or 0 if root)
+- `parentIds` = [...parent.parentIds, parent.id]
+- `rootId` = parent.rootId (or self.id if root)
+- `path` = parent.path + "/" + slug
+- `ancestors` = [...parent.ancestors, {id: parent.id, name: parent.name, tier: parent.tier}]
+- Update parent's `childrenIds` array
+
+**Components**:
+
+- `CategoryCreatorWizard` (4 steps)
+- `CategoryBasicInfoForm`
+- `CategoryDisplaySettingsForm`
+- `CategorySEOForm`
+- `CategoryPreviewCard`
+- `ParentCategorySelector` (tree picker)
+
+### 4.6 Auctions Management (`/admin/auctions`)
 
 **⚠️ Implementation Status**: Schema design in Phase 1, full implementation deferred to Phase 2
 
@@ -1521,6 +1841,32 @@ interface FAQSectionProps {
 - `GET /api/homepage/features` - Site features
 - `GET /api/homepage/faq` - Public FAQs
 
+#### Categories
+
+- `GET /api/admin/categories?tier=0&rootId=xxx&isFeatured=true&isLeaf=true&search=electronics`
+  - Query params: tier, rootId, isFeatured, isLeaf, isSearchable, search
+  - Returns: { data: Category[], trees: CategoryTree[] }
+- `GET /api/admin/categories/roots` - Get all root categories (tier 0)
+- `GET /api/admin/categories/leaf` - Get all leaf categories
+- `GET /api/admin/categories/featured` - Get featured categories (ordered by priority)
+- `GET /api/admin/categories/tree/[rootId]` - Get entire category tree
+- `POST /api/admin/categories` - Create new category (auto-calculates hierarchy fields)
+- `GET /api/admin/categories/[id]` - Get category details with metrics
+- `PATCH /api/admin/categories/[id]` - Update category
+- `PATCH /api/admin/categories/[id]/move` - Move to different parent (recalculates path, tier)
+- `DELETE /api/admin/categories/[id]` - Delete category (cascade options)
+- `PATCH /api/admin/categories/[id]/toggle-featured` - Toggle featured status (validates >= 8 items)
+- `PATCH /api/admin/categories/[id]/reorder` - Update sibling order
+- `PATCH /api/admin/categories/featured/reorder` - Reorder featured categories (sets priority)
+- `POST /api/admin/categories/[id]/add-product` - Add product to category (updates metrics)
+- `POST /api/admin/categories/[id]/remove-product` - Remove product (updates metrics)
+- `POST /api/admin/categories/[id]/add-auction` - Add auction to category (updates metrics)
+- `POST /api/admin/categories/[id]/remove-auction` - Remove auction (updates metrics)
+- `POST /api/admin/categories/[id]/recalculate-metrics` - Manually recalculate all metrics
+- `GET /api/admin/categories/[id]/ancestors` - Get full ancestor chain
+- `GET /api/admin/categories/[id]/descendants` - Get all descendants (recursive)
+- `GET /api/admin/categories/stats` - Overall category statistics
+
 #### Coupons
 
 - `POST /api/coupons/validate` - Validate coupon code
@@ -1701,6 +2047,115 @@ interface DataTableProps<T> {
 // - Export to CSV
 ```
 
+#### CategoryTreeView
+
+```typescript
+interface CategoryTreeViewProps {
+  categories: CategoryDocument[];
+  selectedId?: string;
+  onSelect: (category: CategoryDocument) => void;
+  onExpand: (categoryId: string) => void;
+  onCollapse: (categoryId: string) => void;
+  expandedIds: string[];
+  showMetrics?: boolean;
+  draggable?: boolean;
+  onMove?: (categoryId: string, newParentId: string) => void;
+  onReorder?: (categoryId: string, newOrder: number) => void;
+}
+
+// Features:
+// - Hierarchical tree with indentation
+// - Expand/collapse controls with animation
+// - Drag-and-drop to reorder or move
+// - Inline metrics badges (product/auction counts)
+// - Click to select/view details
+// - Keyboard navigation (arrow keys)
+// - Search highlighting
+// - Virtualized rendering for large trees
+// - Context menu (right-click actions)
+```
+
+#### CategoryCard
+
+```typescript
+interface CategoryCardProps {
+  category: CategoryDocument;
+  onClick?: () => void;
+  showMetrics?: boolean;
+  showSEO?: boolean;
+  variant?: "default" | "compact" | "detailed";
+}
+
+// Features:
+// - Visual card with icon/cover image
+// - Category name and description
+// - SEO data display (title, description, keywords)
+// - Metrics overlay (product/auction counts)
+// - Featured badge
+// - Tier and path breadcrumb
+// - Hover effects
+// - Responsive sizing
+```
+
+#### CategoryMetricsBadge
+
+```typescript
+interface CategoryMetricsBadgeProps {
+  productCount: number;
+  auctionCount: number;
+  totalProductCount: number;
+  totalAuctionCount: number;
+  showTotals?: boolean;
+  variant?: "inline" | "stacked";
+}
+
+// Features:
+// - Product count with icon
+// - Auction count with icon
+// - Total counts (with descendants)
+// - Tooltip explaining direct vs total
+// - Color-coded (green = healthy, yellow = low, red = empty)
+```
+
+#### ParentCategorySelector
+
+```typescript
+interface ParentCategorySelectorProps {
+  value?: string; // Selected parent ID
+  onChange: (parentId: string | null) => void;
+  excludeIds?: string[]; // Prevent circular references
+  allowRoot?: boolean; // Allow "No parent" (root category)
+  filterByTree?: string; // Limit to specific tree (rootId)
+}
+
+// Features:
+// - Tree picker with search
+// - Shows full path for each option
+// - Disables invalid selections (self, descendants)
+// - "Create new root" option
+// - Visual hierarchy with indentation
+// - Async loading for large trees
+```
+
+#### CategoryCreatorWizard
+
+```typescript
+interface CategoryCreatorWizardProps {
+  onComplete: (category: Partial<CategoryDocument>) => void;
+  onCancel: () => void;
+  defaultParentId?: string;
+}
+
+// Features:
+// - 4-step wizard (Basic, Display, SEO, Review)
+// - Progress indicator
+// - Form validation at each step
+// - Back/Next navigation
+// - Auto-save to draft
+// - Preview mode
+// - Shows auto-calculated fields (tier, path, rootId)
+```
+
 ### 7.2 Custom Hooks
 
 #### useUrlSearch
@@ -1795,10 +2250,13 @@ function useUrlSearch() {
 - `src/db/schema/carousel-slides.ts`
 - `src/db/schema/homepage-sections.ts`
 - `src/db/schema/coupons.ts`
+- `src/db/schema/categories.ts` (with hierarchy logic)
 - `src/repositories/site-settings.repository.ts`
 - `src/repositories/carousel.repository.ts`
 - `src/repositories/homepage-sections.repository.ts`
 - `src/repositories/coupons.repository.ts`
+- `src/repositories/categories.repository.ts` (with metrics update logic)
+- `src/lib/helpers/category-metrics.ts` (helper for batch metric updates)
 
 ### Phase 2: Admin Infrastructure (Week 2)
 
@@ -1809,6 +2267,9 @@ function useUrlSearch() {
 - [ ] Implement `GridEditor` component
 - [ ] Implement `ImageUpload` component
 - [ ] Implement `DataTable` component
+- [ ] Implement `CategoryTreeView` component
+- [ ] Implement `CategoryCard` component
+- [ ] Implement `ParentCategorySelector` component
 - [ ] Create admin hooks (useAdminAnalytics, useAdminUsers, etc.)
 - [ ] Implement authentication middleware for admin routes
 - [ ] Create admin-specific constants and utilities
@@ -1819,6 +2280,9 @@ function useUrlSearch() {
 - `src/components/admin/RichTextEditor.tsx`
 - `src/components/admin/GridEditor.tsx`
 - `src/components/admin/DataTable.tsx`
+- `src/components/admin/CategoryTreeView.tsx`
+- `src/components/admin/CategoryCard.tsx`
+- `src/components/admin/ParentCategorySelector.tsx`
 - `src/hooks/useAdminAnalytics.ts`
 - `src/hooks/useAdminProducts.ts`
 - `src/hooks/useAdminCoupons.ts`
@@ -1869,6 +2333,109 @@ function useUrlSearch() {
 - Auctions management (schema complete, implementation later)
 - Reasoning: Focus on core CMS and site management first, then add marketplace features
 - When implementing: Use ResourceListView component for consistency
+
+### Phase 4.5: Categories Management (Week 4.5)
+
+**Goal**: Complete hierarchical category system
+
+- [ ] Category list page with Tree/Table/Grid views
+- [ ] Category creation wizard (4 steps)
+- [ ] Category editor with hierarchy management
+- [ ] Move category to different parent (recalculate all fields)
+- [ ] Featured categories management
+- [ ] Root categories view (independent trees)
+- [ ] Leaf categories view (product assignment points)
+- [ ] Implement API endpoints with batch metric updates
+- [ ] Write tests for hierarchy logic
+- [ ] Test metric calculations (direct + aggregate counts)
+
+**Features to Implement**:
+
+- Auto-calculate hierarchy fields (tier, parentIds, path, rootId, ancestors)
+- Batch update parent's childrenIds on create/move
+- Batch update all ancestor metrics when adding/removing products/auctions
+- Validate featured flag (requires >= 8 total items)
+- Prevent circular references when moving categories
+- Cascade delete options (delete subtree or reassign children)
+- Drag-and-drop reordering within siblings
+- Real-time metrics updates
+
+**Files to Create**:
+
+- `src/app/admin/categories/page.tsx` (with sub-tabs)
+- `src/app/admin/categories/create/page.tsx` (wizard)
+- `src/app/admin/categories/[id]/page.tsx` (edit)
+- `src/app/api/admin/categories/*` (all endpoints)
+- `src/components/admin/CategoryTreeView.tsx` (if not in Phase 2)
+- `src/components/admin/CategoryCard.tsx` (if not in Phase 2)
+- `src/components/admin/CategoryMetricsBadge.tsx`
+- `src/components/admin/CategoryCreatorWizard.tsx`
+- `src/components/admin/CategoryMoveModal.tsx`
+- `src/hooks/useCategories.ts`
+- `src/hooks/useCategoryMetrics.ts`
+- `src/lib/helpers/category-metrics.ts` (batch update logic)
+
+**Critical Logic to Implement**:
+
+```typescript
+// Auto-calculate on category create
+function calculateCategoryFields(parentId: string | null, name: string) {
+  if (!parentId) {
+    // Root category
+    return {
+      tier: 0,
+      parentIds: [],
+      rootId: newCategoryId, // Self
+      path: slugify(name),
+      ancestors: [],
+    };
+  }
+
+  const parent = await getCategory(parentId);
+  return {
+    tier: parent.tier + 1,
+    parentIds: [...parent.parentIds, parent.id],
+    rootId: parent.rootId,
+    path: `${parent.path}/${slugify(name)}`,
+    ancestors: [
+      ...parent.ancestors,
+      { id: parent.id, name: parent.name, tier: parent.tier },
+    ],
+  };
+}
+
+// Batch update metrics up the tree
+async function updateAncestorMetrics(
+  categoryId: string,
+  productDelta: number,
+  auctionDelta: number,
+) {
+  const category = await getCategory(categoryId);
+  const batch = firestore.batch();
+
+  // Update self
+  batch.update(categoryRef(categoryId), {
+    "metrics.productCount": increment(productDelta),
+    "metrics.totalProductCount": increment(productDelta),
+    "metrics.auctionCount": increment(auctionDelta),
+    "metrics.totalAuctionCount": increment(auctionDelta),
+    "metrics.totalItemCount": increment(productDelta + auctionDelta),
+    "metrics.lastUpdated": serverTimestamp(),
+  });
+
+  // Update all ancestors
+  for (const ancestorId of category.parentIds) {
+    batch.update(categoryRef(ancestorId), {
+      "metrics.totalProductCount": increment(productDelta),
+      "metrics.totalAuctionCount": increment(auctionDelta),
+      "metrics.totalItemCount": increment(productDelta + auctionDelta),
+      "metrics.lastUpdated": serverTimestamp(),
+    });
+  }
+
+  await batch.commit();
+}
+```
 
 ### Phase 5: Content Management (Week 5)
 
