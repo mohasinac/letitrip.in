@@ -32,6 +32,17 @@ const nextConfig = {
     },
   }),
 
+  // Exclude directories from file watching to improve performance
+  watchOptions: {
+    ignored: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/.git/**",
+      "**/logs/**", // Ignore log files to prevent WebSocket issues
+      "**/*.log",
+    ],
+  },
+
   // Security headers
   async headers() {
     return [
