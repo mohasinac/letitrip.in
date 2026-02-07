@@ -16,12 +16,27 @@
 6. [API Endpoints](#api-endpoints)
 7. [Component Architecture](#component-architecture)
 8. [Implementation Phases](#implementation-phases)
-9. [Technical Requirements](#technical-requirements)
-10. [Timeline & Milestones](#timeline--milestones)
+9. [Resource Management Pattern](#resource-management-pattern-reusable-architecture)
+10. [Technical Requirements](#technical-requirements)
+11. [Timeline & Milestones](#timeline--milestones)
 
 ---
 
 ## 1. Executive Summary
+
+### Implementation Status
+
+**Phase 1 Priority**: Core Infrastructure & Site Management
+
+- Site Settings, Content Management (Carousel, Sections, Banners)
+- User Management, Reviews, Coupons
+- Reusable resource management components
+
+**Deferred to Phase 2**: Products & Auctions Management
+
+- Schema design completed in Phase 1
+- Full implementation (CRUD, moderation, etc.) in Phase 2
+- Allows focus on core CMS functionality first
 
 ### Project Goals
 
@@ -144,7 +159,7 @@ interface CarouselSlideDocument {
   id: string;
   title: string;
   order: number; // Display order
-  active: boolean;
+  active: boolean; // Only max 5 slides can be active at once
   media: {
     type: "image" | "video";
     url: string;
@@ -767,6 +782,8 @@ const ADMIN_TABS = [
 
 ### 4.4 Products Management (`/admin/products`)
 
+**⚠️ Implementation Status**: Schema design in Phase 1, full implementation deferred to Phase 2
+
 **Sub-tabs**:
 
 #### 4.4.1 All Products (`/admin/products`)
@@ -828,6 +845,8 @@ const ADMIN_TABS = [
 - Remove from featured list
 
 ### 4.5 Auctions Management (`/admin/auctions`)
+
+**⚠️ Implementation Status**: Schema design in Phase 1, full implementation deferred to Phase 2
 
 **Sub-tabs**:
 
@@ -1005,7 +1024,8 @@ const ADMIN_TABS = [
 
 - List of slides with preview thumbnails
 - Add/Edit/Delete slides
-- Drag-and-drop slide ordering
+- Active flag (max 5 slides can be active at once)
+- Drag-and-drop slide ordering (for active slides)
 - Grid editor (9x9) for card placement
 - Card designer with:
   - Background color/gradient/image
@@ -1017,6 +1037,15 @@ const ADMIN_TABS = [
 - Publish/Unpublish slides
 - Schedule slides (start/end dates)
 
+**Active Slide Management**:
+
+- Admin can create unlimited slides
+- Only 5 slides can be marked as active at once
+- When trying to activate 6th slide, show warning
+- API validation prevents exceeding limit
+- Inactive slides stored for future use/rotation
+- Active slides shown on homepage in order
+
 **Components**:
 
 - `CarouselSlideList`
@@ -1024,6 +1053,7 @@ const ADMIN_TABS = [
 - `GridCardEditor` (9x9 desktop, 2x2 mobile)
 - `CardDesigner`
 - `SlidePreview`
+- `ActiveSlideCounter` (shows X/5 active)
 
 #### 4.7.2 Section Order (`/admin/content/sections`)
 
@@ -1375,15 +1405,17 @@ interface FAQSectionProps {
 
 #### Carousel
 
-- `GET /api/admin/carousel` - List all slides
+- `GET /api/admin/carousel` - List all slides (with ?active=true for active only)
+- `GET /api/admin/carousel/stats` - Get carousel stats (total, active count)
 - `POST /api/admin/carousel` - Create slide
 - `GET /api/admin/carousel/[id]` - Get slide details
 - `PATCH /api/admin/carousel/[id]` - Update slide
+- `PATCH /api/admin/carousel/[id]/toggle-active` - Toggle active status (validates max 5)
 - `DELETE /api/admin/carousel/[id]` - Delete slide
 - `POST /api/admin/carousel/[id]/cards` - Add card to slide
 - `PATCH /api/admin/carousel/[id]/cards/[cardId]` - Update card
 - `DELETE /api/admin/carousel/[id]/cards/[cardId]` - Delete card
-- `PATCH /api/admin/carousel/reorder` - Reorder slides
+- `PATCH /api/admin/carousel/reorder` - Reorder active slides
 
 #### Homepage Sections
 
@@ -1415,31 +1447,45 @@ interface FAQSectionProps {
 - `POST /api/admin/users/[uid]/unban` - Unban user
 - `DELETE /api/admin/users/[uid]` - Delete user
 
-#### Products Management
+#### Products Management (⚠️ Phase 2 Implementation)
 
-- `GET /api/admin/products` - List all products
+**Generic Resource API Pattern** (reusable for products, auctions):
+
+- `GET /api/admin/products?page=1&pageSize=20&status=published&category=electronics&search=laptop`
+  - Query params: page, pageSize, status, category, search, sortBy, sortOrder
+  - Returns: { data: Product[], pagination: { currentPage, totalPages, totalItems, pageSize } }
+- `GET /api/admin/products/[id]` - Get product details
 - `PATCH /api/admin/products/[id]` - Update product
 - `POST /api/admin/products/[id]/flag` - Flag product
 - `POST /api/admin/products/[id]/feature` - Feature product
-- `POST /api/admin/products/[id]/moderate` - Moderate product
+- `POST /api/admin/products/[id]/moderate` - Moderate product (approve/reject)
 - `DELETE /api/admin/products/[id]` - Delete product
 
-#### Auctions Management
+#### Auctions Management (⚠️ Phase 2 Implementation)
 
-- `GET /api/admin/auctions` - List all auctions
+**Generic Resource API Pattern** (same as products):
+
+- `GET /api/admin/auctions?page=1&pageSize=20&status=active&search=vintage`
+  - Query params: page, pageSize, status, category, search, sortBy, sortOrder
+  - Returns: { data: Auction[], pagination: { currentPage, totalPages, totalItems, pageSize } }
+- `GET /api/admin/auctions/[id]` - Get auction details
 - `PATCH /api/admin/auctions/[id]` - Update auction
 - `POST /api/admin/auctions/[id]/flag` - Flag auction
 - `POST /api/admin/auctions/[id]/feature` - Feature auction
-- `POST /api/admin/auctions/[id]/extend` - Extend auction
-- `POST /api/admin/auctions/[id]/cancel` - Cancel auction
+- `POST /api/admin/auctions/[id]/extend` - Extend auction time
+- `POST /api/admin/auctions/[id]/cancel` - Cancel auction with refund
 - `DELETE /api/admin/auctions/[id]` - Delete auction
 
 #### Reviews Management
 
-- `GET /api/admin/reviews` - List all reviews
+- `GET /api/admin/reviews?page=1&pageSize=20&status=approved&rating=5&search=excellent`
+  - Query params: page, pageSize, status (approved/pending/flagged), rating, productId, search
+  - Returns: { data: Review[], pagination: { currentPage, totalPages, totalItems, pageSize } }
+- `GET /api/admin/reviews/[id]` - Get review details
 - `PATCH /api/admin/reviews/[id]` - Update review
-- `POST /api/admin/reviews/[id]/feature` - Feature review
-- `POST /api/admin/reviews/[id]/request-rewrite` - Request rewrite
+- `POST /api/admin/reviews/[id]/feature` - Feature review on homepage
+- `POST /api/admin/reviews/[id]/moderate` - Approve/reject review
+- `POST /api/admin/reviews/[id]/request-rewrite` - Request rewrite from reviewer
 - `POST /api/admin/reviews/[id]/approve` - Approve review
 - `POST /api/admin/reviews/[id]/reject` - Reject review
 - `DELETE /api/admin/reviews/[id]` - Delete review
@@ -1485,6 +1531,74 @@ interface FAQSectionProps {
 ## 7. Component Architecture
 
 ### 7.1 Shared Components
+
+#### ResourceListView (Reusable for Products, Auctions, Reviews, etc.)
+
+```typescript
+interface ResourceListViewProps<T> {
+  // Data
+  data: T[];
+  loading: boolean;
+  error?: string;
+
+  // View mode
+  viewMode: "grid" | "table";
+  onViewModeChange: (mode: "grid" | "table") => void;
+
+  // URL-based search and filters
+  searchParams: URLSearchParams;
+  onSearchParamsChange: (params: URLSearchParams) => void;
+
+  // Sidebar filters (eBay-style)
+  filterGroups: FilterGroup[];
+
+  // Pagination (numbered, not cursor-based)
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  onPageChange: (page: number) => void;
+
+  // Search (apply on button click, not on change)
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
+  onApplySearch: () => void;
+
+  // Rendering
+  renderGridItem: (item: T) => React.ReactNode;
+  renderTableRow: (item: T) => React.ReactNode;
+  tableColumns?: TableColumn[];
+}
+
+interface FilterGroup {
+  id: string;
+  label: string;
+  type: "checkbox" | "radio" | "range" | "select";
+  options: FilterOption[];
+  collapsible: boolean;
+  defaultExpanded: boolean;
+}
+
+interface FilterOption {
+  id: string;
+  label: string;
+  value: string;
+  count?: number; // Number of items with this filter
+}
+
+// Features:
+// - Sidebar with collapsible filter groups (like eBay)
+// - Toggle between grid and table view
+// - URL-based search params (for bookmarking/sharing)
+// - Numbered pagination (page 1, 2, 3... not cursor-based)
+// - Search input with "Apply Filter" / "Search" button
+// - Filter changes update URL params
+// - Responsive design (filters collapse on mobile)
+// - Active filters shown with "Clear All" option
+// - Export functionality (CSV/Excel)
+```
 
 #### RichTextEditor
 
@@ -1587,7 +1701,56 @@ interface DataTableProps<T> {
 // - Export to CSV
 ```
 
-### 7.2 Admin-Specific Components
+### 7.2 Custom Hooks
+
+#### useUrlSearch
+
+```typescript
+function useUrlSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const updateSearchParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+
+    router.push(`?${params.toString()}`);
+  };
+
+  const getParam = (key: string): string | null => {
+    return searchParams.get(key);
+  };
+
+  const getAllParams = (): Record<string, string> => {
+    const params: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+    return params;
+  };
+
+  return {
+    searchParams,
+    updateSearchParams,
+    getParam,
+    getAllParams,
+  };
+}
+
+// Usage:
+// const { updateSearchParams, getParam } = useUrlSearch();
+// updateSearchParams({ page: '2', category: 'electronics' });
+// const currentPage = getParam('page') || '1';
+```
+
+### 7.3 Admin-Specific Components
 
 - `AdminLayout` - Sidebar navigation + content area
 - `AdminTabs` - Top navigation tabs
@@ -1682,23 +1845,30 @@ interface DataTableProps<T> {
 
 ### Phase 4: Admin Pages - Part 2 (Week 4)
 
-**Goal**: Products, Auctions, and Reviews
+**Goal**: User Management, Reviews (Products/Auctions deferred to later phase)
 
-- [ ] Products management page
-- [ ] Auctions management page
-- [ ] Reviews management page
-- [ ] Implement moderation workflows
+- [ ] Complete user management with sub-tabs (All, Active, Banned, Admins)
+- [ ] Review moderation page with filters
+- [ ] Implement soft ban system for users
+- [ ] Featured reviews management
+- [ ] Request rewrite functionality
 - [ ] Implement corresponding API endpoints
 - [ ] Write tests
 
-**Files to Create**:
+**Immediate Implementation**:
 
-- `src/app/admin/products/page.tsx`
-- `src/app/admin/auctions/page.tsx`
-- `src/app/admin/reviews/page.tsx`
-- `src/app/api/admin/products/*`
-- `src/app/api/admin/auctions/*`
+- `src/app/admin/users/page.tsx` (with sub-tabs)
+- `src/app/admin/reviews/page.tsx` (with sub-tabs)
 - `src/app/api/admin/reviews/*`
+- `src/components/admin/ReviewModerationPanel.tsx`
+- `src/components/admin/UserManagementTable.tsx`
+
+**⚠️ Deferred to Phase 2 (After Core CMS Complete)**:
+
+- Products management (schema complete, implementation later)
+- Auctions management (schema complete, implementation later)
+- Reasoning: Focus on core CMS and site management first, then add marketplace features
+- When implementing: Use ResourceListView component for consistency
 
 ### Phase 5: Content Management (Week 5)
 
@@ -1806,9 +1976,80 @@ interface DataTableProps<T> {
 
 ---
 
-## 9. Technical Requirements
+## 9. Resource Management Pattern (Reusable Architecture)
 
-### 9.1 Rich Text Editor
+### 9.1 Overview
+
+All admin resource pages (Products, Auctions, Reviews, Users, etc.) will share a common architecture:
+
+- **Sidebar Filters** - eBay-style collapsible filter groups
+- **View Toggle** - Switch between grid and table views
+- **URL-Based Search** - All filters reflected in URL params (bookmarkable)
+- **Numbered Pagination** - Page 1, 2, 3... (not cursor-based, suitable for low user count)
+- **Search on Action** - Apply filters/search via button click (not on every keystroke)
+- **Responsive Design** - Filters collapse on mobile, grid adjusts to screen size
+
+### 9.2 Key Components
+
+#### ResourceListView Component
+
+**Purpose**: Generic list view for any resource type (products, auctions, reviews, users)
+
+**Features**:
+
+- ✅ Sidebar with filter groups (checkbox, radio, range, select types)
+- ✅ Toggle between grid and table layouts
+- ✅ URL search params integration (`useUrlSearch` hook)
+- ✅ Numbered pagination with page size selector
+- ✅ Search input with "Apply" button
+- ✅ Active filters display with "Clear All" option
+- ✅ Export to CSV/Excel
+- ✅ Responsive collapsible sidebar on mobile
+
+**Usage Example**:
+
+```typescript
+<ResourceListView
+  data={products}
+  viewMode="grid"
+  filterGroups={productFilters}
+  pagination={paginationData}
+  renderGridItem={(product) => <ProductCard product={product} />}
+  renderTableRow={(product) => <ProductTableRow product={product} />}
+/>
+```
+
+#### useUrlSearch Hook
+
+**Purpose**: Manage search params in URL for bookmarkable/shareable filters
+
+**Features**:
+
+- ✅ Update multiple params at once
+- ✅ Get single param or all params
+- ✅ Delete params (set to null)
+- ✅ Automatically updates URL without page reload
+- ✅ Works with Next.js App Router
+
+### 9.3 Implementation Strategy
+
+**Phase 1**: Build ResourceListView and useUrlSearch for Reviews (simpler resource)
+**Phase 2**: Extend to Products and Auctions (more complex with variants, bids)
+**Phase 3**: Apply to Users, Coupons (administrative resources)
+
+**Benefits**:
+
+- 🔄 Consistent UX across all admin pages
+- 📦 Reduced code duplication (DRY principle)
+- 🔗 Shareable filter states via URL
+- 📊 Easy to add new resources (just define filter groups)
+- 🧪 Single component to test thoroughly
+
+---
+
+## 10. Technical Requirements
+
+### 10.1 Rich Text Editor
 
 **Recommended Library**: Tiptap (React-based, extensible)
 
@@ -1829,7 +2070,7 @@ interface DataTableProps<T> {
 npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-image @tiptap/extension-link
 ```
 
-### 9.2 Drag-and-Drop
+### 10.2 Drag-and-Drop
 
 **Recommended Library**: dnd-kit
 
@@ -1846,7 +2087,7 @@ npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-image @tiptap/ex
 npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 ```
 
-### 9.3 Image Optimization
+### 10.3 Image Optimization
 
 **Strategy**:
 
@@ -1856,7 +2097,7 @@ npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 - WebP format with fallbacks
 - Lazy loading with blur placeholders
 
-### 9.4 Caching Strategy
+### 10.4 Caching Strategy
 
 **Levels**:
 
@@ -1871,7 +2112,7 @@ npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 - Event-based (on content update)
 - Manual purge option in admin
 
-### 9.5 Performance Targets
+### 10.5 Performance Targets
 
 - **First Contentful Paint**: < 1.5s
 - **Largest Contentful Paint**: < 2.5s
@@ -1889,7 +2130,7 @@ npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 
 ---
 
-## 10. Timeline & Milestones
+## 11. Timeline & Milestones
 
 ### Week 1-2: Foundation & Infrastructure
 
