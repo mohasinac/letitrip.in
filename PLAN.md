@@ -306,13 +306,20 @@ interface BannerSectionConfig {
 
 interface FAQSectionConfig {
   title: string;
-  faqs: {
-    id: string;
-    question: string;
-    answer: string; // Rich text JSON
-    category: "general" | "shipping" | "returns" | "payment" | "account";
-    order: number;
-  }[];
+  subtitle?: string;
+  showOnHomepage: boolean;
+  displayCount: number; // How many FAQs to show on homepage (default: 6)
+  expandedByDefault: boolean; // All FAQs open or closed initially
+  linkToFullPage: boolean; // Show "View All FAQs" link
+  categories: (
+    | "general"
+    | "shipping"
+    | "returns"
+    | "payment"
+    | "account"
+    | "products"
+    | "sellers"
+  )[];
 }
 ```
 
@@ -500,6 +507,135 @@ interface CategoryDocument {
 //    - Update isFeatured flag if >= 8
 
 // All updates use Firestore batch writes for atomicity
+```
+
+#### `faqs` Collection
+
+```typescript
+interface FAQDocument {
+  id: string; // Auto-generated
+  question: string; // FAQ question
+  answer: string; // Rich text JSON (Tiptap format) - pulls from siteSettings
+  category:
+    | "general"
+    | "shipping"
+    | "returns"
+    | "payment"
+    | "account"
+    | "products"
+    | "sellers";
+
+  // Display Settings
+  showOnHomepage: boolean; // Show in homepage FAQ section
+  showInFooter: boolean; // Show in footer quick links
+  isPinned: boolean; // Always show at top of category
+
+  // Order & Priority
+  order: number; // Display order within category
+  priority: "high" | "medium" | "low"; // For sorting
+
+  // Search & Tags
+  tags: string[]; // Search tags (e.g., "refund", "delivery", "COD")
+  relatedFAQs: string[]; // IDs of related FAQs
+
+  // Dynamic Content from Site Settings
+  useSiteSettings: boolean; // Use variables from siteSettings
+  variables: {
+    // Example: "Shipping takes {shippingDays} days"
+    shippingDays?: number; // From siteSettings.shipping.estimatedDays
+    minOrderValue?: number; // From siteSettings.shipping.minOrderForFree
+    returnWindow?: number; // From siteSettings.returns.windowDays
+    supportEmail?: string; // From siteSettings.contact.email
+    supportPhone?: string; // From siteSettings.contact.phone
+    codDeposit?: number; // From product settings (10%)
+  };
+
+  // Statistics
+  stats: {
+    views: number; // How many times viewed
+    helpful: number; // "Was this helpful?" yes count
+    notHelpful: number; // "Was this helpful?" no count
+  };
+
+  // SEO
+  seo: {
+    slug: string; // URL-friendly slug
+    metaTitle?: string;
+    metaDescription?: string;
+  };
+
+  // Status
+  isActive: boolean; // Published or draft
+
+  // Metadata
+  createdBy: string; // Admin user ID
+  createdAt: Date;
+  updatedAt: Date;
+  lastModifiedBy?: string;
+}
+```
+
+**FAQ Variable Interpolation** (Dynamic from Site Settings):
+
+```typescript
+// Example FAQ with variables:
+{
+  question: "How long does shipping take?",
+  answer: "Standard shipping takes {shippingDays} business days. Free shipping on orders above ₹{minOrderValue}. Express shipping available at checkout.",
+  useSiteSettings: true,
+  variables: {
+    shippingDays: 5, // Pulled from siteSettings.shipping.estimatedDays
+    minOrderValue: 1000 // Pulled from siteSettings.shipping.minOrderForFree
+  }
+}
+
+// Rendered output:
+"Standard shipping takes 5 business days. Free shipping on orders above ₹1000. Express shipping available at checkout."
+
+// When admin updates siteSettings.shipping.estimatedDays to 3:
+"Standard shipping takes 3 business days. Free shipping on orders above ₹1000. Express shipping available at checkout."
+```
+
+**Pre-defined FAQ Categories**:
+
+```typescript
+const FAQ_CATEGORIES = {
+  general: {
+    label: "General",
+    icon: "info-circle",
+    description: "About our platform, services, and policies",
+  },
+  products: {
+    label: "Products & Auctions",
+    icon: "shopping-bag",
+    description: "Product listings, auctions, bidding, and quality",
+  },
+  shipping: {
+    label: "Shipping & Delivery",
+    icon: "truck",
+    description: "Delivery times, tracking, shipping options, and COD",
+  },
+  returns: {
+    label: "Returns & Refunds",
+    icon: "refresh",
+    description: "Return policy, refund process, and timelines",
+  },
+  payment: {
+    label: "Payment & Coupons",
+    icon: "credit-card",
+    description: "Payment methods, COD deposit, coupons, and pricing",
+  },
+  account: {
+    label: "Account & Security",
+    icon: "user",
+    description: "Registration, login, verification, and profile",
+  },
+  sellers: {
+    label: "For Sellers",
+    icon: "store",
+    description: "Selling guidelines, fees, payouts, and dashboard",
+  },
+} as const;
 ```
 
 #### `products` Collection (Unified Products & Auctions)
@@ -1233,6 +1369,52 @@ interface UserDocumentEnhancement {
       "fields": [
         { "fieldPath": "isAuction", "order": "ASCENDING" },
         { "fieldPath": "auction.bidCount", "order": "DESCENDING" }
+      ]
+    },
+
+    // ==========================================
+    // FAQ INDICES
+    // ==========================================
+
+    // FAQs by category + order
+    {
+      "collectionGroup": "faqs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "order", "order": "ASCENDING" }
+      ]
+    },
+
+    // FAQs for homepage (active + homepage)
+    {
+      "collectionGroup": "faqs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "showOnHomepage", "order": "ASCENDING" },
+        { "fieldPath": "priority", "order": "DESCENDING" }
+      ]
+    },
+
+    // FAQs by helpful rating
+    {
+      "collectionGroup": "faqs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "stats.helpful", "order": "DESCENDING" }
+      ]
+    },
+
+    // Pinned FAQs by category
+    {
+      "collectionGroup": "faqs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "isPinned", "order": "DESCENDING" },
+        { "fieldPath": "order", "order": "ASCENDING" }
       ]
     }
   ]
@@ -2082,22 +2264,126 @@ const ADMIN_TABS = [
 
 #### 4.7.4 FAQ Management (`/admin/content/faq`)
 
+**Purpose**: Manage dynamic FAQ system with variable interpolation from site settings
+
 **Features**:
 
-- Add/Edit/Delete FAQs
-- Categorize FAQs (general, shipping, returns, payment, account)
-- Rich text answers with formatting
-- Drag-and-drop ordering within categories
-- Search functionality preview
-- Import/Export FAQs (JSON)
+**FAQ List & Filtering**:
+
+- List all FAQs with status badges (active/inactive)
+- Filters:
+  - Category: general/shipping/returns/payment/account/products/sellers
+  - Display: showOnHomepage, showInFooter, isPinned
+  - Priority: high/medium/low
+  - Status: active/inactive
+- Search: question text, tags, category
+- Sort: order, priority, helpful count, views, date
+- Bulk actions:
+  - Publish/Unpublish
+  - Change category
+  - Change priority
+  - Add/Remove from homepage
+  - Delete
+
+**Create/Edit FAQ Modal**:
+
+- Question field (plain text)
+- Answer field (Tiptap rich text editor with formatting)
+- Category dropdown (7 categories)
+- Display options:
+  - Show on homepage (checkbox)
+  - Show in footer (checkbox)
+  - Pin to top (checkbox)
+- Priority selector (high/medium/low)
+- Order number (manual or auto-assign)
+- Tags input (multi-select or comma-separated)
+- Related FAQs selector (multi-select)
+- **Variable Manager**:
+  - "Insert Variable" dropdown showing available siteSettings variables
+  - Variables: {shippingDays}, {minOrderValue}, {returnWindow}, {supportEmail}, {supportPhone}, {codDeposit}
+  - Preview panel showing interpolated text
+  - Validation: warn if variable used but not in siteSettings
+- SEO fields:
+  - Slug (auto-generated from question, editable)
+  - Meta title (default: question)
+  - Meta description (first 160 chars of answer)
+- Status toggle (active/inactive)
+
+**Variable Interpolation System**:
+
+- Define variables in siteSettings collection:
+  ```typescript
+  siteSettings.faq.variables = {
+    shippingDays: 5,
+    minOrderValue: 1000,
+    returnWindow: 7,
+    supportEmail: "support@example.com",
+    supportPhone: "+91-XXXXXXXXXX",
+    codDeposit: 0.1, // 10%
+  };
+  ```
+- Use in FAQ answers: "Shipping takes {shippingDays} business days"
+- Admin preview shows: "Shipping takes 5 business days"
+- If variable missing, show warning: "Variable {varName} not found in site settings"
+
+**Statistics Dashboard**:
+
+- Total FAQs (by category)
+- Homepage FAQs count (6 displayed)
+- Footer FAQs count
+- Top 10 most viewed FAQs
+- Top 10 most helpful FAQs (helpful/notHelpful ratio)
+- Least helpful FAQs (for review)
+- Total views, helpful clicks, notHelpful clicks
+
+**Category Management**:
+
+- 7 predefined categories (cannot add/remove, only reorder):
+  1. General (site info, account)
+  2. Shipping (delivery, tracking)
+  3. Returns (refund, return policy)
+  4. Payment (methods, COD, security)
+  5. Account (profile, verification)
+  6. Products (conditions, authenticity)
+  7. Sellers (how to sell, fees)
+- Reorder categories for display priority
+- Set icon for each category (from icon library)
+- Set description for category (shown on FAQ page)
+
+**Reordering FAQs**:
+
+- Drag-and-drop within category
+- "Move to Top" / "Move to Bottom" buttons
+- Reorder by priority (high → medium → low)
+- Auto-assign order numbers
+
+**Preview Modal**:
+
+- Live preview of FAQ with variable interpolation
+- Shows how it appears on:
+  - Homepage (if showOnHomepage = true)
+  - Dedicated FAQ page (/faqs)
+  - Footer (if showInFooter = true)
+- Mobile and desktop views
+- "Was this helpful?" buttons
+
+**Import/Export**:
+
+- Export all FAQs to JSON (with variables intact)
+- Import FAQs from JSON (validates structure)
+- Bulk upload via CSV (question, answer, category, tags)
+- Template download for CSV format
 
 **Components**:
 
-- `FAQListTable`
-- `FAQEditor` with rich text
-- `FAQCategoryManager`
-- `FAQPreview`
-- `FAQImportExport`
+- `FAQListTable` - Data table with filters, search, bulk actions
+- `FAQEditorModal` - Full modal with Tiptap editor, variable manager
+- `VariableManagerPanel` - Insert variables dropdown, preview, validation
+- `FAQCategoryManager` - Reorder categories, set icons/descriptions
+- `FAQPreview` - Live preview with variable interpolation
+- `FAQStatsDashboard` - Charts and metrics (views, helpful ratio)
+- `FAQImportExport` - JSON/CSV upload/download
+- `FAQBulkActions` - Multi-select actions menu
 
 ### 4.8 Reviews Management (`/admin/reviews`)
 
@@ -2233,17 +2519,146 @@ const ADMIN_TABS = [
 
 ### 5.1 Section Order (Configurable)
 
-1. **Hero Carousel** (9x9 grid system)
-2. **Welcome Section** (H1 + description)
-3. **Top Categories** (4 max, auto-scroll)
-4. **Featured Products** (18 max, 2 rows)
-5. **Advertisement Banner 1**
-6. **Featured Auctions** (18 max, 2 rows)
-7. **Site Features** (icons + text)
-8. **Advertisement Banner 2**
-9. **Customer Reviews** (18 max, horizontal scroll)
-10. **FAQ Section**
-11. **Footer** (site info, links, social)
+1. **Hero Carousel** (9x9 grid system with overlay cards)
+2. **Welcome Section** (H1 + subtitle + description with CTA)
+3. **Trust Indicators** (NEW - Feature badges: Wide Range, Fast Shipping, Original Products, Customer Count)
+4. **Top Categories** (4 max, auto-scroll from featured categories >= 8 items)
+5. **Featured Products** (18 max, 2 rows x 9 columns with horizontal scroll)
+6. **Special Collections** (NEW - Quick links: NiB Collection, Under ₹1000, Bladebreakers-style featured collections)
+7. **Featured Auctions** (18 max, 2 rows with ending soon badge)
+8. **Advertisement Banner 1** (Full-width promotional banner)
+9. **Site Features** (Icons + descriptions: Free Shipping, COD, Returns, Support)
+10. **Customer Reviews** (18 max, horizontal scroll with ratings)
+11. **WhatsApp Community** (NEW - Join group CTA with benefits)
+12. **FAQ Section** (6 most helpful FAQs with "View All" link)
+13. **Blog Articles** (NEW - Latest 4 articles with thumbnails)
+14. **Newsletter Subscription** (NEW - Email signup with benefits)
+15. **Footer** (Site info, quick links, social media, legal pages)
+
+### 5.2 New Homepage Sections (Inspired by Beyblade Art Shop)
+
+#### TrustIndicatorsSection Component
+
+```typescript
+interface TrustIndicatorsSectionProps {
+  indicators: {
+    id: string;
+    icon: string; // Icon name or SVG
+    title: string; // "Wide Range", "Fast Shipping", etc.
+    description: string; // Brief description
+    stat?: string; // "4000+ Products Sold", "200+ Countries", etc.
+    link?: string; // Optional link
+  }[];
+}
+
+// Features:
+// - 4 column grid (2x2 on mobile)
+// - Icons with hover effects
+// - Dynamic stats from siteSettings
+// - Example: "Shipping to {shippingCountries}+ Countries"
+// - Example: "{totalOrders}+ Orders Delivered"
+// - Example: "Selling Since {foundingYear}"
+```
+
+#### SpecialCollectionsSection Component
+
+```typescript
+interface SpecialCollectionsSectionProps {
+  collections: {
+    id: string;
+    title: string; // "Exclusive NiB Collection", "Under ₹1000", etc.
+    description: string; // Rich text
+    image?: string; // Optional banner image
+    link: string; // Collection page link
+    products?: ProductDocument[]; // Preview products
+    badge?: string; // "New", "Hot", "Limited", etc.
+  }[];
+}
+
+// Features:
+// - Visual cards with hover effects
+// - CTA buttons "Shop Now", "View Collection"
+// - Product count badges
+// - Background gradients or images
+// - Example collections:
+//   * NiB (New in Box) Products
+//   * Budget-Friendly (Under ₹X)
+//   * Limited Edition
+//   * Clearance Sale
+//   * Trending Now
+```
+
+#### WhatsAppCommunitySection Component
+
+```typescript
+interface WhatsAppCommunitySectionProps {
+  title: string;
+  subtitle?: string;
+  benefits: {
+    title: string; // "Regular Updates", "Exclusive Deals"
+    description: string;
+    icon: string;
+  }[];
+  groupLink: string; // WhatsApp group invite link
+  memberCount?: number; // "Join 5000+ members"
+}
+
+// Features:
+// - WhatsApp icon with animation
+// - Benefit cards (2 columns)
+// - Large CTA button "Join WhatsApp Group"
+// - Member count badge
+// - Social proof: "5000+ Happy Customers"
+```
+
+#### BlogArticlesSection Component
+
+```typescript
+interface BlogArticlesSectionProps {
+  title: string;
+  articles: {
+    id: string;
+    title: string;
+    excerpt: string; // First 160 chars
+    thumbnail: string;
+    author?: string;
+    publishedAt: Date;
+    category: string; // "Guides", "News", "Tips"
+    readTime: string; // "5 min read"
+    link: string; // Article URL
+  }[];
+  maxArticles: number; // Default 4
+}
+
+// Features:
+// - Card grid (4 columns, 2 on tablet, 1 on mobile)
+// - Thumbnail images with lazy loading
+// - Category badges
+// - Read time estimates
+// - "View All Articles" link to blog page
+// - Hover effects with image zoom
+```
+
+#### NewsletterSection Component
+
+```typescript
+interface NewsletterSectionProps {
+  title: string; // "Stay in the Loop"
+  description: string;
+  benefits: string[]; // ["Exclusive deals", "New arrivals", "Tips & guides"]
+  placeholder: string; // "Enter your email"
+  buttonText: string; // "Subscribe"
+  privacyText: string; // "We respect your privacy. Unsubscribe anytime."
+}
+
+// Features:
+// - Email input with validation
+// - Submit button with loading state
+// - Success/error messages
+// - Privacy policy link
+// - Benefit checkmarks
+// - Optional: popup modal variant
+```
 
 ### 5.2 Component Breakdown
 
@@ -2352,23 +2767,208 @@ interface CustomerReviewsSectionProps {
 // - Product links
 ```
 
-#### FAQSection Component
+#### FAQSection Component (Homepage Version)
 
 ```typescript
 interface FAQSectionProps {
-  title: string;
-  faqs: {
-    question: string;
-    answer: string; // HTML
-    category: string;
-  }[];
+  title: string; // "Frequently Asked Questions"
+  subtitle?: string; // "Get answers to common questions"
+  faqs: FAQDocument[]; // Top 6 most helpful FAQs
+  showCategories?: boolean; // Show category tabs
+  linkToFullPage: boolean; // Show "View All FAQs" button
+  expandedByDefault?: boolean; // All FAQs open or closed
 }
 
 // Features:
-// - Accordion UI
-// - Category tabs
-// - Search functionality
-// - Rich text answers
+// - Accordion UI with smooth animations
+// - Search bar (filters locally)
+// - Category tabs (if enabled)
+// - Rich text answers with formatting
+// - "Was this helpful?" buttons (Yes/No)
+// - Related FAQs suggestions
+// - "View All FAQs" link to /faqs page
+// - Auto-scroll to opened FAQ
+// - Keyboard navigation (arrow keys)
+```
+
+### 5.3 Dedicated FAQ Page (`/faqs`)
+
+#### FAQPage Component (Full Version)
+
+```typescript
+interface FAQPageProps {
+  faqs: FAQDocument[]; // All active FAQs
+  categories: typeof FAQ_CATEGORIES;
+  siteSettings: SiteSettingsDocument; // For variable interpolation
+}
+
+// Features:
+// - SEO-optimized FAQ page
+// - Category navigation sidebar (sticky on scroll)
+// - Search bar with real-time filtering
+// - Filter by category (multi-select)
+// - Sort by: Most Helpful, Newest, A-Z
+// - FAQ accordion with rich text answers
+// - "Was this helpful?" feedback system
+// - Related FAQs section per FAQ
+// - Jump to category links
+// - Print-friendly view
+// - Share individual FAQ (copy link)
+// - Contact support CTA at bottom
+
+// Layout:
+// - Sidebar (30%): Category navigation + search
+// - Main content (70%): FAQ list with accordions
+// - Mobile: Sticky category dropdown at top
+
+// URL Structure:
+// - /faqs - All FAQs
+// - /faqs?category=shipping - Filtered by category
+// - /faqs?search=refund - Search results
+// - /faqs#general-1 - Direct link to specific FAQ
+
+// Dynamic Content Examples:
+// - "Shipping takes {shippingDays} business days" (from siteSettings.shipping.estimatedDays)
+// - "Free shipping on orders above ₹{minOrderValue}" (from siteSettings.shipping.minOrderForFree)
+// - "Contact us at {supportEmail} or {supportPhone}" (from siteSettings.contact)
+// - "COD requires 10% deposit" (from product settings)
+```
+
+#### FAQ Quick Links in Footer
+
+```typescript
+interface FooterFAQLinksProps {
+  topFAQs: FAQDocument[]; // Top 5 FAQs marked as showInFooter=true
+  allFAQsLink: string; // Link to /faqs page
+}
+
+// Features:
+// - "Quick Help" section in footer
+// - Top 5 most helpful FAQs as links
+// - Each FAQ opens in modal or navigates to /faqs#id
+// - "View All FAQs" link
+// - Optional: Live chat widget trigger
+```
+
+### 5.4 Link Structure Throughout Site
+
+**Navigation Menu Links**:
+
+```typescript
+const navigationLinks = {
+  main: [
+    { label: "Home", path: "/" },
+    { label: "Products", path: "/products" }, // All products
+    { label: "Auctions", path: "/auctions" }, // Active auctions
+    { label: "Categories", path: "/categories" }, // Browse by category
+    { label: "Sellers", path: "/sellers" }, // Seller directory
+    { label: "Deals", path: "/deals" }, // Coupons & offers
+  ],
+  quickLinks: [
+    { label: "FAQ", path: "/faqs" },
+    { label: "About Us", path: "/about" },
+    { label: "Contact", path: "/contact" },
+    { label: "Blog", path: "/blog" },
+    { label: "Track Order", path: "/track" },
+    { label: "Sell on LetItRip", path: "/become-seller" },
+  ],
+  footer: {
+    company: [
+      { label: "About Us", path: "/about" },
+      { label: "Careers", path: "/careers" },
+      { label: "Press & Media", path: "/press" },
+      { label: "Blog", path: "/blog" },
+    ],
+    support: [
+      { label: "FAQ", path: "/faqs" },
+      { label: "Contact Us", path: "/contact" },
+      { label: "Shipping Info", path: "/faqs?category=shipping" },
+      { label: "Returns & Refunds", path: "/faqs?category=returns" },
+      { label: "Track Order", path: "/track" },
+    ],
+    sellers: [
+      { label: "Become a Seller", path: "/become-seller" },
+      { label: "Seller Dashboard", path: "/seller" },
+      { label: "Seller Guidelines", path: "/seller-guidelines" },
+      { label: "Fee Structure", path: "/seller-fees" },
+    ],
+    legal: [
+      { label: "Terms & Conditions", path: "/terms" },
+      { label: "Privacy Policy", path: "/privacy" },
+      { label: "Cancellation & Refund Policy", path: "/refund-policy" },
+      { label: "Shipping Policy", path: "/shipping-policy" },
+      { label: "Cookie Policy", path: "/cookie-policy" },
+    ],
+  },
+};
+```
+
+**Breadcrumb Navigation** (All Pages):
+
+```typescript
+// Product Page: Home > Category > Subcategory > Product Name
+// FAQ Page: Home > FAQ > Category Name
+// Seller Page: Home > Sellers > Seller Name
+// Blog Article: Home > Blog > Category > Article Title
+
+// All breadcrumbs clickable and linked
+// Schema.org BreadcrumbList markup for SEO
+```
+
+**Contextual Links** (Product/Category Cards):
+
+```typescript
+// Product Card Links:
+// - Product image -> Product page
+// - Product title -> Product page
+// - Seller name -> Seller profile
+// - Category tag -> Category page
+// - "Ask Question" -> Product Q&A
+// - "Make Offer" -> Offer modal
+
+// Category Card Links:
+// - Category image -> Category page
+// - Category name -> Category page
+// - Parent category -> Parent page
+// - "View All {count} Products" -> Category page
+```
+
+**Call-to-Action Links** (Throughout Site):
+
+```typescript
+// Homepage CTAs:
+// - "Shop Now" -> /products or specific category
+// - "View Collection" -> Special collection page
+// - "Join WhatsApp" -> WhatsApp group invite
+// - "Read Article" -> Blog article page
+// - "Subscribe" -> Newsletter signup (inline or modal)
+// - "View All FAQs" -> /faqs page
+
+// Product Page CTAs:
+// - "Contact Seller" -> Seller profile or chat
+// - "Report Product" -> Report modal
+// - "Similar Products" -> Category page with filters
+// - "View Seller's Shop" -> Seller storefront
+
+// Checkout CTAs:
+// - "Apply Coupon" -> Coupon input field
+// - "Have a question? Check FAQ" -> /faqs?category=payment
+// - "Track Your Order" -> Order tracking page
+```
+
+**Social Media & External Links**:
+
+```typescript
+// All social links in footer:
+// - Instagram, Facebook, Twitter, LinkedIn
+// - WhatsApp community group
+// - YouTube channel
+// - Pinterest boards
+
+// All external links:
+// - Open in new tab (target="_blank")
+// - Add rel="noopener noreferrer"
+// - Add external link icon
 ```
 
 ---
@@ -2413,11 +3013,44 @@ interface FAQSectionProps {
 
 #### FAQ
 
-- `GET /api/admin/faq` - List all FAQs
+**Admin FAQ Management APIs** ✨ **ENHANCED**:
+
+- `GET /api/admin/faq` - List all FAQs with filters
+  - Query params: category (general/shipping/returns/payment/account/products/sellers), showOnHomepage (true/false), showInFooter (true/false), isPinned (true/false), priority (high/medium/low), status (active/inactive), search (question/tags), sortBy (order/priority/helpful/views/createdAt), sortOrder (asc/desc)
+  - Returns: `{ data: FAQ[], pagination: { currentPage, totalPages, totalItems, pageSize } }`
+- `GET /api/admin/faq/stats` ✨ **NEW** - Get FAQ statistics
+  - Returns: `{ total, byCategory: { general: 12, shipping: 8, ... }, homepage: 6, footer: 10, views: 15234, helpfulRatio: 0.87 }`
+- `GET /api/admin/faq/variables` ✨ **NEW** - Get available siteSettings variables
+  - Returns: `{ variables: [{ key: "shippingDays", path: "shipping.estimatedDays", value: 5, type: "number" }, ...] }`
+  - Used by VariableManagerPanel to populate dropdown
 - `POST /api/admin/faq` - Create FAQ
+  - Body: `{ question, answer (Tiptap JSON), category, showOnHomepage, showInFooter, isPinned, order, priority, tags[], relatedFAQs[], useSiteSettings, variables: { shippingDays: 5 }, seo: { slug, metaTitle, metaDescription } }`
+  - Auto-generates slug from question if not provided
+  - Validates: unique slug, category exists, relatedFAQs exist
+- `GET /api/admin/faq/[id]` ✨ **NEW** - Get FAQ details
+  - Returns: Full FAQ document with variable interpolation preview
 - `PATCH /api/admin/faq/[id]` - Update FAQ
+  - Body: Partial FAQ document
+  - Validates: slug uniqueness if changed, variables exist in siteSettings
+- `PATCH /api/admin/faq/[id]/reorder` ✨ **NEW** - Change FAQ order within category
+  - Body: `{ newOrder: number }`
+  - Reorders all FAQs in same category
 - `DELETE /api/admin/faq/[id]` - Delete FAQ
-- `PATCH /api/admin/faq/reorder` - Reorder FAQs
+  - Soft delete (sets isActive: false)
+  - Hard delete option: ?permanent=true
+- `PATCH /api/admin/faq/bulk` ✨ **NEW** - Bulk update FAQs
+  - Body: `{ faqIds: string[], action: "publish" | "unpublish" | "changeCategory" | "changePriority" | "delete", data?: { category?, priority? } }`
+  - Updates multiple FAQs atomically
+
+**FAQ Import/Export** ✨ **NEW**:
+
+- `POST /api/admin/faq/import` - Import FAQs from JSON/CSV
+  - Accepts: JSON array of FAQs or CSV file
+  - Validates: structure, unique slugs, category exists
+  - Returns: `{ imported: 15, skipped: 2, errors: [{ row: 3, error: "Duplicate slug" }] }`
+- `GET /api/admin/faq/export?format=json|csv` - Export all FAQs
+  - Query param: format (json or csv)
+  - Returns: File download with all FAQs
 
 #### Users Management
 
@@ -2523,7 +3156,22 @@ interface FAQSectionProps {
 - `GET /api/homepage/auctions` - Featured auctions
 - `GET /api/homepage/reviews` - Featured reviews
 - `GET /api/homepage/features` - Site features
-- `GET /api/homepage/faq` - Public FAQs
+- `GET /api/homepage/faq` - Top 6 FAQs for homepage
+- `GET /api/homepage/trust-indicators` - Trust badges with stats
+- `GET /api/homepage/special-collections` - Featured collections
+- `GET /api/homepage/blog-articles` - Latest 4 blog articles
+
+#### FAQ Pages
+
+- `GET /api/faqs` - Get all active FAQs
+  - Query params: category, search, sortBy (helpful, newest, alphabetical)
+  - Returns: { data: FAQ[], categories: FAQ_CATEGORIES, stats: { total, byCategory } }
+- `GET /api/faqs/[id]` - Get single FAQ with related FAQs
+- `GET /api/faqs/category/[category]` - Get FAQs by category
+- `GET /api/faqs/search?q=refund` - Search FAQs
+- `POST /api/faqs/[id]/helpful` - Mark FAQ as helpful (yes/no)
+- `GET /api/faqs/popular` - Get most helpful FAQs (for homepage)
+- `GET /api/faqs/footer` - Get FAQs marked for footer display
 
 #### Categories
 
@@ -3127,12 +3775,15 @@ function useUrlSearch() {
 - `src/db/schema/homepage-sections.ts`
 - `src/db/schema/coupons.ts`
 - `src/db/schema/categories.ts` (with hierarchy logic)
+- `src/db/schema/faqs.ts` ✨ **NEW**
 - `src/repositories/site-settings.repository.ts`
 - `src/repositories/carousel.repository.ts`
 - `src/repositories/homepage-sections.repository.ts`
 - `src/repositories/coupons.repository.ts`
 - `src/repositories/categories.repository.ts` (with metrics update logic)
+- `src/repositories/faqs.repository.ts` ✨ **NEW**
 - `src/lib/helpers/category-metrics.ts` (helper for batch metric updates)
+- `src/lib/helpers/faq-variables.ts` ✨ **NEW** (variable interpolation helper)
 
 ### Phase 2: Admin Infrastructure (Week 2)
 
@@ -3320,10 +3971,23 @@ async function updateAncestorMetrics(
 - [ ] Carousel editor with grid system
 - [ ] Section order manager
 - [ ] Banner editor
-- [ ] FAQ manager
+- [ ] **FAQ manager with variable interpolation system** ✨ **ENHANCED**
 - [ ] Implement drag-and-drop functionality
 - [ ] Implement corresponding API endpoints
 - [ ] Write tests
+
+**FAQ-Specific Tasks** ✨ **NEW**:
+
+- [ ] Implement `FAQListTable` with filters (category, showOnHomepage, isPinned)
+- [ ] Build `FAQEditorModal` with Tiptap rich text editor
+- [ ] Create `VariableManagerPanel` for siteSettings variable insertion
+- [ ] Implement `FAQPreview` with live variable interpolation
+- [ ] Build `FAQStatsDashboard` showing views, helpful ratio
+- [ ] Implement `FAQCategoryManager` for reordering 7 categories
+- [ ] Add `FAQImportExport` for JSON/CSV bulk operations
+- [ ] Create variable interpolation helper (`faq-variables.ts`)
+- [ ] Add FAQ APIs (7 public + 8 admin endpoints)
+- [ ] Implement "Was this helpful?" tracking system
 
 **Files to Create**:
 
@@ -3332,11 +3996,19 @@ async function updateAncestorMetrics(
 - `src/components/admin/GridCardEditor.tsx`
 - `src/components/admin/SectionOrderManager.tsx`
 - `src/components/admin/BannerEditor.tsx`
-- `src/components/admin/FAQEditor.tsx`
+- `src/components/admin/FAQEditor.tsx` ⚠️ **REPLACE with new FAQ components:**
+  - `src/components/admin/FAQListTable.tsx` ✨ **NEW**
+  - `src/components/admin/FAQEditorModal.tsx` ✨ **NEW**
+  - `src/components/admin/VariableManagerPanel.tsx` ✨ **NEW**
+  - `src/components/admin/FAQPreview.tsx` ✨ **NEW**
+  - `src/components/admin/FAQStatsDashboard.tsx` ✨ **NEW**
+  - `src/components/admin/FAQCategoryManager.tsx` ✨ **NEW**
+  - `src/components/admin/FAQImportExport.tsx` ✨ **NEW**
+  - `src/components/admin/FAQBulkActions.tsx` ✨ **NEW**
 - `src/app/api/admin/carousel/*`
 - `src/app/api/admin/homepage/*`
 - `src/app/api/admin/banners/*`
-- `src/app/api/admin/faq/*`
+- `src/app/api/admin/faq/*` ⚠️ **8 admin FAQ endpoints (see Admin FAQ APIs section)**
 
 ### Phase 6: Coupon System (Week 6)
 
@@ -3360,36 +4032,86 @@ async function updateAncestorMetrics(
 - `src/app/api/admin/coupons/*`
 - `src/app/api/coupons/*` (public)
 
-### Phase 7: Homepage Implementation (Week 7-8)
+### Phase 7: Homepage & Public Pages Implementation (Week 7-8)
 
-**Goal**: Build all homepage sections
+**Goal**: Build all homepage sections and public FAQ page
 
-- [ ] Hero carousel with grid system
-- [ ] Welcome section
-- [ ] Top categories section
-- [ ] Featured products section
-- [ ] Featured auctions section
-- [ ] Advertisement banners
-- [ ] Customer reviews section
-- [ ] Site features section
-- [ ] FAQ section
-- [ ] Enhanced footer
-- [ ] Implement lazy loading
-- [ ] Optimize performance
+**Homepage Sections** (15 total - 6 new):
+
+- [ ] Hero carousel with 9x9 grid system
+- [ ] Welcome section (H1 + CTA)
+- [ ] **Trust Indicators section** ✨ **NEW** (Wide Range, Fast Shipping, Original Products, Customer Count)
+- [ ] Top categories section (4 max, auto-scroll)
+- [ ] Featured products section (18 max, 2 rows)
+- [ ] **Special Collections section** ✨ **NEW** (NiB, Under ₹1000, Limited Edition, Clearance)
+- [ ] Featured auctions section (18 max)
+- [ ] Advertisement banner 1
+- [ ] Site features section (icons + descriptions)
+- [ ] Customer reviews section (18 max, horizontal scroll)
+- [ ] **WhatsApp Community section** ✨ **NEW** (Join group CTA with benefits, member count)
+- [ ] FAQ section (6 most helpful FAQs with "View All" link)
+- [ ] **Blog Articles section** ✨ **NEW** (Latest 4 articles with thumbnails, read time)
+- [ ] **Newsletter Subscription section** ✨ **NEW** (Email signup with privacy link)
+- [ ] Enhanced footer (4 sections: Company, Support, Sellers, Legal)
+
+**Public FAQ Page** ✨ **NEW**:
+
+- [ ] Dedicated `/faqs` route with category filtering (?category=shipping)
+- [ ] Search bar with query parameter (?search=refund)
+- [ ] Category sidebar (30% width) with 7 categories
+- [ ] FAQ accordion main area (70% width)
+- [ ] Sort options (Most Helpful, Newest, A-Z)
+- [ ] "Was this helpful?" interactive buttons
+- [ ] Related FAQs suggestions
+- [ ] Contact CTA for unanswered questions
+- [ ] Anchor links for direct FAQ access (#general-1)
+- [ ] Mobile: Sticky category dropdown
+- [ ] Schema.org FAQPage structured data
+
+**Performance & UX**:
+
+- [ ] Implement lazy loading for all sections
+- [ ] Optimize images with next/image
+- [ ] Add skeleton loaders for dynamic content
+- [ ] Implement infinite scroll for products/auctions
+- [ ] Add "Back to Top" button
+- [ ] Optimize Core Web Vitals (LCP, FID, CLS)
 - [ ] Write tests
 
 **Files to Create**:
 
+**Homepage Components**:
+
 - `src/components/homepage/HeroCarousel.tsx`
 - `src/components/homepage/WelcomeSection.tsx`
+- `src/components/homepage/TrustIndicatorsSection.tsx` ✨ **NEW**
 - `src/components/homepage/TopCategoriesSection.tsx`
 - `src/components/homepage/FeaturedProductsSection.tsx`
+- `src/components/homepage/SpecialCollectionsSection.tsx` ✨ **NEW**
 - `src/components/homepage/FeaturedAuctionsSection.tsx`
 - `src/components/homepage/AdvertisementBanner.tsx`
-- `src/components/homepage/CustomerReviewsSection.tsx`
 - `src/components/homepage/SiteFeaturesSection.tsx`
-- `src/components/homepage/FAQSection.tsx`
-- `src/app/api/homepage/*`
+- `src/components/homepage/CustomerReviewsSection.tsx`
+- `src/components/homepage/WhatsAppCommunitySection.tsx` ✨ **NEW**
+- `src/components/homepage/FAQSection.tsx` ⚠️ **ENHANCED** (6 FAQs + "View All" link)
+- `src/components/homepage/BlogArticlesSection.tsx` ✨ **NEW**
+- `src/components/homepage/NewsletterSection.tsx` ✨ **NEW**
+
+**FAQ Page Components** ✨ **NEW**:
+
+- `src/app/faqs/page.tsx` (main FAQ page)
+- `src/components/faq/FAQCategorySidebar.tsx`
+- `src/components/faq/FAQAccordion.tsx`
+- `src/components/faq/FAQSearchBar.tsx`
+- `src/components/faq/FAQSortDropdown.tsx`
+- `src/components/faq/FAQHelpfulButtons.tsx`
+- `src/components/faq/RelatedFAQs.tsx`
+- `src/components/faq/ContactCTA.tsx`
+
+**API Endpoints**:
+
+- `src/app/api/homepage/*` (fetch homepage data)
+- `src/app/api/faqs/*` ✨ **NEW** (7 public FAQ endpoints - see Public FAQ APIs section)
 
 ### Phase 8: Testing & Optimization (Week 9)
 
