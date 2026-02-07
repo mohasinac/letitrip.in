@@ -665,6 +665,18 @@ interface UserDocumentEnhancement {
     totalSales: number; // For sellers
     averageRating: number;
   };
+
+  // Role Change Requests
+  roleRequest?: {
+    requestedRole: "seller" | "moderator";
+    requestedAt: Date;
+    status: "pending" | "approved" | "rejected";
+    reason: string; // User's explanation for requesting role
+    reviewedBy?: string; // Admin user ID who reviewed
+    reviewedAt?: Date;
+    reviewNotes?: string; // Admin's notes on approval/rejection
+    rejectionReason?: string; // Reason for rejection (shown to user)
+  };
 }
 ```
 
@@ -723,6 +735,26 @@ interface UserDocumentEnhancement {
       ]
     },
 
+    // Role requests (pending)
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roleRequest.status", "order": "ASCENDING" },
+        { "fieldPath": "roleRequest.requestedAt", "order": "DESCENDING" }
+      ]
+    },
+
+    // Role requests by requested role
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roleRequest.requestedRole", "order": "ASCENDING" },
+        { "fieldPath": "roleRequest.requestedAt", "order": "DESCENDING" }
+      ]
+    },
+
     // Active coupons
     {
       "collectionGroup": "coupons",
@@ -761,6 +793,7 @@ const ADMIN_TABS = [
       { id: "active", label: "Active Users", path: "/admin/users/active" },
       { id: "banned", label: "Banned Users", path: "/admin/users/banned" },
       { id: "admins", label: "Administrators", path: "/admin/users/admins" },
+      { id: "requests", label: "Role Requests", path: "/admin/users/requests" },
     ],
   },
   {
@@ -948,6 +981,71 @@ const ADMIN_TABS = [
 - Quick demote option
 - Activity log
 - Permission management
+
+#### 4.3.5 Role Requests (`/admin/users/requests`)
+
+**Features**:
+
+- List of users requesting to become sellers or moderators
+- Pre-filtered to `roleRequest.status = "pending"`
+- Request details:
+  - User information (name, email, current role)
+  - Requested role (seller or moderator)
+  - Request date
+  - User's reason/explanation
+  - User statistics (orders, activity, rating)
+- Actions:
+  - Approve request (promotes user to requested role)
+  - Reject request (with reason shown to user)
+  - View user profile
+  - Contact user
+- Filters:
+  - By requested role (seller, moderator)
+  - By request date
+  - Search by user name/email
+- Sorting:
+  - By request date (oldest first, newest first)
+  - By user rating
+  - By user activity (total orders)
+- Bulk actions:
+  - Approve multiple requests
+  - Reject multiple requests (with bulk reason)
+
+**Components**:
+
+- `RoleRequestListTable` - Table with request details
+- `RoleRequestCard` - Card view with user info and reason
+- `ApproveRequestModal` - Confirmation with optional notes
+- `RejectRequestModal` - Rejection with required reason
+- `UserRequestDetailsPanel` - Detailed view of request and user stats
+
+**Request Approval Flow**:
+
+1. Admin reviews request details and user statistics
+2. Admin clicks "Approve" or "Reject"
+3. For approval:
+   - User role is updated to requested role
+   - `roleRequest.status` set to "approved"
+   - `roleRequest.reviewedBy` and `reviewedAt` set
+   - Email notification sent to user ("Your request has been approved")
+4. For rejection:
+   - Admin must provide rejection reason
+   - `roleRequest.status` set to "rejected"
+   - `roleRequest.rejectionReason` set
+   - Email notification sent to user with reason
+5. Request moves out of pending list
+
+**Email Notifications**:
+
+- **Approval**: "Your request to become a [seller/moderator] has been approved!"
+- **Rejection**: "Your request to become a [seller/moderator] was not approved. Reason: [reason]"
+
+**Statistics Card**:
+
+- Total pending requests
+- Requests by role (sellers vs moderators)
+- Average review time
+- Approval rate
 
 ### 4.4 Products Management (`/admin/products`)
 
@@ -1766,6 +1864,29 @@ interface FAQSectionProps {
 - `POST /api/admin/users/[uid]/ban` - Ban user
 - `POST /api/admin/users/[uid]/unban` - Unban user
 - `DELETE /api/admin/users/[uid]` - Delete user
+
+**Role Requests**:
+
+- `GET /api/admin/users/requests` - List all role requests (pending, approved, rejected)
+  - Query params: status (pending/approved/rejected), requestedRole (seller/moderator), sortBy, sortOrder
+  - Returns: { data: RoleRequest[], stats: { pending, approved, rejected, avgReviewTime } }
+- `GET /api/admin/users/requests/pending` - List pending role requests only
+- `POST /api/admin/users/requests/[uid]/approve` - Approve role request
+  - Body: { reviewNotes?: string }
+  - Updates user role to requested role
+  - Sends approval email to user
+- `POST /api/admin/users/requests/[uid]/reject` - Reject role request
+  - Body: { rejectionReason: string, reviewNotes?: string }
+  - Sends rejection email with reason
+- `GET /api/admin/users/requests/stats` - Role request statistics
+
+**User-Side API** (for requesting role):
+
+- `POST /api/user/request-role` - Submit role request (seller or moderator)
+  - Body: { requestedRole: \"seller\" | \"moderator\", reason: string }
+  - Validates: User must not have pending request, must be \"user\" role
+- `GET /api/user/request-role` - Get current user's role request status
+- `DELETE /api/user/request-role` - Cancel pending role request
 
 #### Products Management (⚠️ Phase 2 Implementation)
 
