@@ -12,7 +12,8 @@ import { useState } from "react";
 import { Button, Card } from "@/components";
 import { FormField } from "@/components/FormField";
 import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
+import { classNames } from "@/helpers";
 
 interface ProfilePhoneSectionProps {
   currentPhone: string | null;
@@ -108,7 +109,7 @@ export function ProfilePhoneSection({
 
   return (
     <Card>
-      <div className="p-6 space-y-4">
+      <div className={`p-6 ${THEME_CONSTANTS.spacing.stack}`}>
         <div>
           <h3 className={`text-lg font-semibold ${themed.textPrimary}`}>
             Phone Number
@@ -122,17 +123,32 @@ export function ProfilePhoneSection({
         {/* Current Phone Status */}
         {currentPhone && (
           <div
-            className={`p-3 rounded-lg ${phoneVerified ? "bg-green-50 dark:bg-green-900/20" : "bg-yellow-50 dark:bg-yellow-900/20"}`}
+            className={classNames(
+              "p-3 rounded-lg",
+              phoneVerified
+                ? "bg-green-50 dark:bg-green-900/20"
+                : "bg-yellow-50 dark:bg-yellow-900/20",
+            )}
           >
             <div className="flex items-center justify-between">
               <div>
                 <p
-                  className={`text-sm font-medium ${phoneVerified ? "text-green-800 dark:text-green-200" : "text-yellow-800 dark:text-yellow-200"}`}
+                  className={classNames(
+                    "text-sm font-medium",
+                    phoneVerified
+                      ? "text-green-800 dark:text-green-200"
+                      : "text-yellow-800 dark:text-yellow-200",
+                  )}
                 >
                   {currentPhone}
                 </p>
                 <p
-                  className={`text-xs ${phoneVerified ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}`}
+                  className={classNames(
+                    "text-xs",
+                    phoneVerified
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-yellow-600 dark:text-yellow-400",
+                  )}
                 >
                   {phoneVerified ? "✓ Verified" : "⚠ Not verified"}
                 </p>
@@ -156,7 +172,7 @@ export function ProfilePhoneSection({
 
         {/* Add/Update Phone */}
         {!showVerificationInput && (
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <FormField
               label="Phone Number (with country code)"
               name="phoneNumber"
@@ -185,7 +201,7 @@ export function ProfilePhoneSection({
 
         {/* Verification Code Input */}
         {showVerificationInput && (
-          <div className="space-y-4 border-t pt-4">
+          <div className={`${THEME_CONSTANTS.spacing.stack} border-t pt-4`}>
             <FormField
               label="Verification Code (6 digits)"
               name="verificationCode"

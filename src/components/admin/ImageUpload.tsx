@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 
 interface ImageUploadProps {
   currentImage?: string;
@@ -174,7 +174,7 @@ export function ImageUpload({
             type="button"
             onClick={handleClick}
             disabled={uploading}
-            className="w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800"
+            className={`w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 ${THEME_CONSTANTS.themed.bgTertiary}`}
           >
             <svg
               className="w-12 h-12 mb-3"

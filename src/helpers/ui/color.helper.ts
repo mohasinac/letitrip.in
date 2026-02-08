@@ -5,7 +5,16 @@
  */
 
 /**
- * Convert hex color to RGB
+ * Converts a hexadecimal color to RGB values
+ *
+ * @param hex - The hex color string (with or without '#')
+ * @returns An object with r, g, b values, or null if invalid
+ *
+ * @example
+ * ```typescript
+ * const rgb = hexToRgb('#FF5733');
+ * console.log(rgb); // { r: 255, g: 87, b: 51 }
+ * ```
  */
 export function hexToRgb(
   hex: string,
@@ -21,7 +30,18 @@ export function hexToRgb(
 }
 
 /**
- * Convert RGB to hex color
+ * Converts RGB values to a hexadecimal color string
+ *
+ * @param r - Red value (0-255)
+ * @param g - Green value (0-255)
+ * @param b - Blue value (0-255)
+ * @returns The hex color string with '#' prefix
+ *
+ * @example
+ * ```typescript
+ * const hex = rgbToHex(255, 87, 51);
+ * console.log(hex); // '#ff5733'
+ * ```
  */
 export function rgbToHex(r: number, g: number, b: number): string {
   return (
@@ -36,7 +56,17 @@ export function rgbToHex(r: number, g: number, b: number): string {
 }
 
 /**
- * Lighten a hex color
+ * Lightens a hex color by a specified percentage
+ *
+ * @param hex - The hex color to lighten
+ * @param percent - Percentage to lighten (0-100)
+ * @returns The lightened hex color
+ *
+ * @example
+ * ```typescript
+ * const lighter = lightenColor('#FF5733', 20);
+ * console.log(lighter); // '#ff7d5c' (lighter version)
+ * ```
  */
 export function lightenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
@@ -50,7 +80,17 @@ export function lightenColor(hex: string, percent: number): string {
 }
 
 /**
- * Darken a hex color
+ * Darkens a hex color by a specified percentage
+ *
+ * @param hex - The hex color to darken
+ * @param percent - Percentage to darken (0-100)
+ * @returns The darkened hex color
+ *
+ * @example
+ * ```typescript
+ * const darker = darkenColor('#FF5733', 20);
+ * console.log(darker); // '#cc4629' (darker version)
+ * ```
  */
 export function darkenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
@@ -64,7 +104,15 @@ export function darkenColor(hex: string, percent: number): string {
 }
 
 /**
- * Generate random color
+ * Generates a random hex color
+ *
+ * @returns A random hex color string with '#' prefix
+ *
+ * @example
+ * ```typescript
+ * const color = randomColor();
+ * console.log(color); // '#a3f2c1' (random)
+ * ```
  */
 export function randomColor(): string {
   return (
@@ -76,7 +124,16 @@ export function randomColor(): string {
 }
 
 /**
- * Get contrasting text color (black or white) for background
+ * Determines the best contrasting text color (black or white) for a background
+ *
+ * @param hex - The background hex color
+ * @returns '#000000' for light backgrounds, '#ffffff' for dark backgrounds
+ *
+ * @example
+ * ```typescript
+ * const textColor = getContrastColor('#FF5733');
+ * console.log(textColor); // '#ffffff' (white text for dark red background)
+ * ```
  */
 export function getContrastColor(hex: string): "#000000" | "#ffffff" {
   const rgb = hexToRgb(hex);
@@ -89,7 +146,18 @@ export function getContrastColor(hex: string): "#000000" | "#ffffff" {
 }
 
 /**
- * Generate gradient colors between two colors
+ * Generates a gradient array of colors between two colors
+ *
+ * @param startHex - The starting hex color
+ * @param endHex - The ending hex color
+ * @param steps - Number of color steps in the gradient
+ * @returns An array of hex colors forming a gradient
+ *
+ * @example
+ * ```typescript
+ * const gradient = generateGradient('#FF0000', '#0000FF', 5);
+ * console.log(gradient); // ['#ff0000', '#bf003f', '#7f007f', '#3f00bf', '#0000ff']
+ * ```
  */
 export function generateGradient(
   startHex: string,

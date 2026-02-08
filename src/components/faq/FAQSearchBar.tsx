@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { UI_PLACEHOLDERS } from "@/constants/ui";
+import { THEME_CONSTANTS, UI_PLACEHOLDERS } from "@/constants";
 
 interface FAQSearchBarProps {
   onSearch: (query: string) => void;

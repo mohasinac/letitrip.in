@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import Link from "next/link";
 import type { FAQDocument } from "@/db/schema/faqs";
 

@@ -22,6 +22,8 @@ export const ERROR_MESSAGES = {
     REQUIRED_FIELD: "This field is required",
     INVALID_EMAIL: "Please enter a valid email address",
     INVALID_PHONE: "Please enter a valid phone number",
+    INVALID_INDIAN_MOBILE: "Enter a valid 10-digit mobile number",
+    INVALID_PINCODE: "Enter a valid 6-digit pincode",
     PASSWORD_TOO_SHORT: "Password must be at least 8 characters",
     PASSWORD_NO_LOWERCASE:
       "Password must contain at least one lowercase letter",
@@ -78,9 +80,13 @@ export const ERROR_MESSAGES = {
     INVALID_TYPE: "Invalid file type",
     FILE_TOO_LARGE: "File size exceeds maximum allowed",
     UPLOAD_FAILED: "Failed to upload file",
+    UPLOAD_ERROR: "Upload error:",
     SAVE_FAILED: "Failed to save. Upload has been rolled back",
+    SAVE_ROLLBACK: "Save failed, cleaning up:",
     AUTH_REQUIRED: "Authentication required. Please sign in and try again",
     DELETE_FAILED: "Failed to remove photo",
+    DELETE_OLD_FILE_FAILED: "Failed to delete old file:",
+    CLEANUP_FAILED: "Failed to cleanup uploaded file:",
   },
 
   // Generic Errors
@@ -93,6 +99,61 @@ export const ERROR_MESSAGES = {
     UNKNOWN: "An unknown error occurred",
     USER_ID_REQUIRED: "User ID is required",
     PROFILE_PRIVATE: "This profile is private",
+  },
+
+  // Database Errors
+  DATABASE: {
+    FETCH_FAILED: "Failed to fetch data",
+    NOT_FOUND: "Record not found",
+    CONNECTION_ERROR: "Database connection error",
+  },
+
+  // Session Errors
+  SESSION: {
+    FETCH_USER_PROFILE_ERROR: "Error fetching user profile",
+    FIRESTORE_SUBSCRIPTION_ERROR: "Firestore subscription error",
+    VALIDATION_FAILED: "Session validation failed",
+    SERVER_LOGOUT_ERROR: "Server logout error",
+    SIGN_OUT_ERROR: "Sign out error",
+    CREATION_ERROR: "Session creation error",
+  },
+
+  // FAQ Errors
+  FAQ: {
+    VOTE_FAILED: "Failed to submit vote",
+  },
+
+  // Admin Errors
+  ADMIN: {
+    REVOKE_SESSION_FAILED: "Failed to revoke session",
+    REVOKE_USER_SESSIONS_FAILED: "Failed to revoke user sessions",
+  },
+
+  // API Route Errors (server-side logging)
+  API: {
+    ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
+    CAROUSEL_GET_ERROR: "GET /api/carousel error:",
+    CAROUSEL_POST_ERROR: "POST /api/carousel error:",
+    CAROUSEL_ID_GET_ERROR: "error:", // Template: `GET /api/carousel/${id} error:`
+    CAROUSEL_ID_PATCH_ERROR: "error:", // Template: `PATCH /api/carousel/${id} error:`
+    CAROUSEL_ID_DELETE_ERROR: "error:", // Template: `DELETE /api/carousel/${id} error:`
+    SITE_SETTINGS_GET_ERROR: "GET /api/site-settings error:",
+    SITE_SETTINGS_PATCH_ERROR: "PATCH /api/site-settings error:",
+    REVIEWS_GET_ERROR: "GET /api/reviews error:",
+    REVIEWS_POST_ERROR: "POST /api/reviews error:",
+    REVIEWS_ID_GET_ERROR: "error:", // Template: `GET /api/reviews/${id} error:`
+    REVIEWS_ID_PATCH_ERROR: "error:", // Template: `PATCH /api/reviews/${id} error:`
+    REVIEWS_ID_DELETE_ERROR: "error:", // Template: `DELETE /api/reviews/${id} error:`
+    REVIEWS_VOTE_POST_ERROR: "error:", // Template: `POST /api/reviews/${id}/vote error:`
+    PRODUCTS_GET_ERROR: "GET /api/products error:",
+    PRODUCTS_POST_ERROR: "POST /api/products error:",
+    PRODUCTS_ID_GET_ERROR: "error:", // Template: `GET /api/products/${id} error:`
+    PRODUCTS_ID_PATCH_ERROR: "error:", // Template: `PATCH /api/products/${id} error:`
+    PRODUCTS_ID_DELETE_ERROR: "error:", // Template: `DELETE /api/products/${id} error:`
+    MEDIA_UPLOAD_ERROR: "POST /api/media/upload error:",
+    MEDIA_TRIM_ERROR: "POST /api/media/trim error:",
+    MEDIA_CROP_ERROR: "POST /api/media/crop error:",
+    PROFILE_UPDATE_ERROR: "Profile update error:",
   },
 } as const;
 
@@ -123,7 +184,14 @@ export const SUCCESS_MESSAGES = {
   EMAIL: {
     VERIFICATION_SENT: "Verification email sent successfully",
     VERIFIED: "Email verified successfully",
+    VERIFIED_SUCCESS: "Your email address has been successfully verified.",
     RESET_SENT: "Password reset link sent to your email",
+  },
+
+  // Phone Success
+  PHONE: {
+    VERIFIED: "Phone verified successfully",
+    VERIFIED_SUCCESS: "Your phone number has been successfully verified.",
   },
 
   // Password Reset Success

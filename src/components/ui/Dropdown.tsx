@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import { useClickOutside, useKeyPress } from '@/hooks';
+import React, { useState, useRef, useEffect } from "react";
+import { THEME_CONSTANTS } from "@/constants";
+import { useClickOutside, useKeyPress } from "@/hooks";
 
 /**
  * Dropdown Component
- * 
+ *
  * A dropdown menu with trigger button and menu items.
  * Supports keyboard navigation and click-outside-to-close.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -30,12 +30,16 @@ interface DropdownContextValue {
   setIsOpen: (open: boolean) => void;
 }
 
-const DropdownContext = React.createContext<DropdownContextValue | undefined>(undefined);
+const DropdownContext = React.createContext<DropdownContextValue | undefined>(
+  undefined,
+);
 
 const useDropdownContext = () => {
   const context = React.useContext(DropdownContext);
   if (!context) {
-    throw new Error('Dropdown compound components must be used within Dropdown');
+    throw new Error(
+      "Dropdown compound components must be used within Dropdown",
+    );
   }
   return context;
 };
@@ -46,7 +50,7 @@ interface DropdownProps {
   className?: string;
 }
 
-export default function Dropdown({ children, className = '' }: DropdownProps) {
+export default function Dropdown({ children, className = "" }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +58,7 @@ export default function Dropdown({ children, className = '' }: DropdownProps) {
   useClickOutside(dropdownRef, () => setIsOpen(false), { enabled: isOpen });
 
   // Close on Escape key
-  useKeyPress('Escape', () => setIsOpen(false), { enabled: isOpen });
+  useKeyPress("Escape", () => setIsOpen(false), { enabled: isOpen });
 
   return (
     <DropdownContext.Provider value={{ isOpen, setIsOpen }}>
@@ -71,28 +75,31 @@ interface DropdownTriggerProps {
   className?: string;
 }
 
-export function DropdownTrigger({ children, className = '' }: DropdownTriggerProps) {
+export function DropdownTrigger({
+  children,
+  className = "",
+}: DropdownTriggerProps) {
   const { isOpen, setIsOpen } = useDropdownContext();
 
   return React.cloneElement(children, {
     onClick: () => setIsOpen(!isOpen),
-    'aria-expanded': isOpen,
-    'aria-haspopup': 'true' as const,
-    className: `${(children.props as any).className || ''} ${className}`,
+    "aria-expanded": isOpen,
+    "aria-haspopup": "true" as const,
+    className: `${(children.props as any).className || ""} ${className}`,
   } as any);
 }
 
 // DropdownMenu - Menu container
 interface DropdownMenuProps {
   children: React.ReactNode;
-  align?: 'left' | 'right';
+  align?: "left" | "right";
   className?: string;
 }
 
 export function DropdownMenu({
   children,
-  align = 'left',
-  className = '',
+  align = "left",
+  className = "",
 }: DropdownMenuProps) {
   const { isOpen } = useDropdownContext();
   const { themed } = THEME_CONSTANTS;
@@ -100,8 +107,8 @@ export function DropdownMenu({
   if (!isOpen) return null;
 
   const alignClasses = {
-    left: 'left-0',
-    right: 'right-0',
+    left: "left-0",
+    right: "right-0",
   };
 
   return (
@@ -136,7 +143,7 @@ export function DropdownItem({
   disabled = false,
   destructive = false,
   icon,
-  className = '',
+  className = "",
 }: DropdownItemProps) {
   const { setIsOpen } = useDropdownContext();
   const { themed } = THEME_CONSTANTS;
@@ -158,10 +165,10 @@ export function DropdownItem({
         transition-colors duration-150
         ${
           disabled
-            ? 'opacity-50 cursor-not-allowed'
+            ? "opacity-50 cursor-not-allowed"
             : destructive
-            ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950'
-            : `${themed.textPrimary} hover:${themed.bgSecondary}`
+              ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
+              : `${themed.textPrimary} hover:${themed.bgSecondary}`
         }
         ${className}
       `}
@@ -177,7 +184,7 @@ interface DropdownSeparatorProps {
   className?: string;
 }
 
-export function DropdownSeparator({ className = '' }: DropdownSeparatorProps) {
+export function DropdownSeparator({ className = "" }: DropdownSeparatorProps) {
   const { themed } = THEME_CONSTANTS;
 
   return (

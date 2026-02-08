@@ -82,6 +82,36 @@ npm run build
 npm start
 ```
 
+### Firebase Deployment
+
+Deploy Firestore rules and indices using the provided PowerShell scripts:
+
+```powershell
+# Deploy composite indices (firestore.indexes.json)
+.\scripts\deploy-firestore-indices.ps1
+
+# Deploy security rules (firestore.rules, storage.rules, database.rules.json)
+.\scripts\deploy-firestore-rules.ps1
+
+# Check deployment status and view active indices
+.\scripts\check-firestore-status.ps1
+```
+
+Or use Firebase CLI directly:
+
+```bash
+# Deploy all Firestore resources
+firebase deploy --only firestore
+
+# Deploy specific resources
+firebase deploy --only firestore:rules
+firebase deploy --only firestore:indexes
+firebase deploy --only storage:rules
+firebase deploy --only database:rules
+```
+
+**Note:** Index creation can take several minutes. Monitor progress in Firebase Console.
+
 ### Theme System
 
 - **Dark Mode** - Automatic system detection with manual toggle

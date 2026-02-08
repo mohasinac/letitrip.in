@@ -64,3 +64,11 @@ export { default as LayoutClient } from "./LayoutClient";
 
 // Re-export all layout components
 export * from "./layout";
+
+// ==================== ADMIN COMPONENTS ====================
+// Re-export from admin subdirectory
+export * from "./admin";
+
+// ==================== USER COMPONENTS ====================
+// Re-export from user subdirectory
+export * from "./user";

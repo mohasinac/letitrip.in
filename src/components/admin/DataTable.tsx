@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface Column<T> {
   key: string;
@@ -77,7 +78,9 @@ export function DataTable<T extends Record<string, any>>({
 
   if (loading) {
     return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <div
+        className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
+      >
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3">
             <svg
@@ -99,7 +102,7 @@ export function DataTable<T extends Record<string, any>>({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
               Loading...
             </span>
           </div>
@@ -110,7 +113,9 @@ export function DataTable<T extends Record<string, any>>({
 
   if (data.length === 0) {
     return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <div
+        className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
+      >
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <svg
@@ -126,7 +131,9 @@ export function DataTable<T extends Record<string, any>>({
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               />
             </svg>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p
+              className={`mt-4 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+            >
               {emptyMessage}
             </p>
           </div>
@@ -136,10 +143,12 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+    <div
+      className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
+    >
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+          <thead className={THEME_CONSTANTS.themed.bgTertiary}>
             <tr>
               {columns.map((column) => (
                 <th
@@ -180,7 +189,9 @@ export function DataTable<T extends Record<string, any>>({
               )}
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody
+            className={`${THEME_CONSTANTS.themed.bgSecondary} divide-y divide-gray-200 dark:divide-gray-700`}
+          >
             {sortedData.map((item) => (
               <tr
                 key={keyExtractor(item)}

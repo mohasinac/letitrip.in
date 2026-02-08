@@ -9,8 +9,7 @@
 
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import { UI_LABELS, ROUTES } from "@/constants";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function NotFound() {
   const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;

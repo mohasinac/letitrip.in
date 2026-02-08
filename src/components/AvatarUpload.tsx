@@ -12,8 +12,12 @@ import {
 import type { ImageCropData } from "@/components";
 import { useToast } from "@/components/feedback";
 import { Text } from "@/components/typography";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { UI_LABELS, UI_HELP_TEXT, SUCCESS_MESSAGES } from "@/constants";
+import {
+  THEME_CONSTANTS,
+  UI_LABELS,
+  UI_HELP_TEXT,
+  SUCCESS_MESSAGES,
+} from "@/constants";
 
 interface AvatarUploadProps {
   currentPhotoURL?: string | null;

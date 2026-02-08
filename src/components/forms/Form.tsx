@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Form Component
- * 
+ *
  * A wrapper component for forms with consistent spacing between form elements.
  * Use with FormGroup and FormActions for structured form layouts.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -28,13 +28,14 @@ interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
 }
 
-export default function Form({ children, className = '', ...props }: FormProps) {
+export default function Form({
+  children,
+  className = "",
+  ...props
+}: FormProps) {
   const { spacing } = THEME_CONSTANTS;
   return (
-    <form 
-      className={`${spacing.formGroup} ${className}`}
-      {...props}
-    >
+    <form className={`${spacing.formGroup} ${className}`} {...props}>
       {children}
     </form>
   );
@@ -47,12 +48,16 @@ interface FormGroupProps {
   className?: string;
 }
 
-export function FormGroup({ children, columns = 1, className = '' }: FormGroupProps) {
+export function FormGroup({
+  children,
+  columns = 1,
+  className = "",
+}: FormGroupProps) {
   const gridClasses = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+    1: "grid-cols-1",
+    2: "grid-cols-1 md:grid-cols-2",
+    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
   };
 
   return (
@@ -65,22 +70,28 @@ export function FormGroup({ children, columns = 1, className = '' }: FormGroupPr
 // Form Actions Component (for buttons at bottom of form)
 interface FormActionsProps {
   children: React.ReactNode;
-  align?: 'left' | 'center' | 'right' | 'between';
+  align?: "left" | "center" | "right" | "between";
   className?: string;
 }
 
-export function FormActions({ children, align = 'right', className = '' }: FormActionsProps) {
+export function FormActions({
+  children,
+  align = "right",
+  className = "",
+}: FormActionsProps) {
   const { themed, spacing } = THEME_CONSTANTS;
-  
+
   const alignClasses = {
-    left: 'justify-start',
-    center: 'justify-center',
-    right: 'justify-end',
-    between: 'justify-between',
+    left: "justify-start",
+    center: "justify-center",
+    right: "justify-end",
+    between: "justify-between",
   };
 
   return (
-    <div className={`flex items-center ${spacing.inline} pt-4 border-t ${themed.borderLight} ${alignClasses[align]} ${className}`}>
+    <div
+      className={`flex items-center ${spacing.inline} pt-4 border-t ${themed.borderLight} ${alignClasses[align]} ${className}`}
+    >
       {children}
     </div>
   );

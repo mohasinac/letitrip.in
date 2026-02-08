@@ -6,6 +6,7 @@ import { Card, Badge, Alert } from "@/components";
 import { Text } from "@/components/typography";
 import { AvatarDisplay } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { formatDate } from "@/utils";
 import type { UserDocument } from "@/db/schema/users";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
@@ -76,10 +77,7 @@ export default function PublicProfilePage() {
   }
 
   const profileName = user.displayName || user.email?.split("@")[0] || "User";
-  const memberSince = new Date(user.createdAt).toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
+  const memberSince = formatDate(user.createdAt, "MMMM yyyy");
 
   const avatarCropData: ImageCropData | null =
     user.avatarMetadata ||

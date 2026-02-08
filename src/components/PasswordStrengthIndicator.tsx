@@ -7,7 +7,7 @@
 "use client";
 
 import React from "react";
-import { PASSWORD_CONFIG, ERROR_MESSAGES } from "@/constants";
+import { PASSWORD_CONFIG, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 interface PasswordStrengthIndicatorProps {
   password: string;
@@ -77,7 +77,9 @@ export const PasswordStrengthIndicator: React.FC<
           />
         </div>
         {password && (
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <span
+            className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+          >
             {getStrengthLabel()}
           </span>
         )}

@@ -1,12 +1,12 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Alert Component
- * 
+ *
  * A flexible alert/notification component with multiple variants and optional dismiss functionality.
  * Supports info, success, warning, and error states with appropriate icons and styling.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -18,7 +18,7 @@ import { THEME_CONSTANTS } from '@/constants/theme';
 
 interface AlertProps {
   children: React.ReactNode;
-  variant?: 'info' | 'success' | 'warning' | 'error';
+  variant?: "info" | "success" | "warning" | "error";
   title?: string;
   onClose?: () => void;
   className?: string;
@@ -26,13 +26,13 @@ interface AlertProps {
 
 export default function Alert({
   children,
-  variant = 'info',
+  variant = "info",
   title,
   onClose,
-  className = '',
+  className = "",
 }: AlertProps) {
   const { colors } = THEME_CONSTANTS;
-  
+
   const variantStyles = {
     info: colors.alert.info,
     success: colors.alert.success,
@@ -91,9 +91,7 @@ export default function Alert({
       role="alert"
     >
       <div className="flex gap-3">
-        <div className={`flex-shrink-0 ${styles.icon}`}>
-          {icons[variant]}
-        </div>
+        <div className={`flex-shrink-0 ${styles.icon}`}>{icons[variant]}</div>
 
         <div className="flex-1 min-w-0">
           {title && (
@@ -101,9 +99,7 @@ export default function Alert({
               {title}
             </h3>
           )}
-          <div className={`text-sm ${styles.text}`}>
-            {children}
-          </div>
+          <div className={`text-sm ${styles.text}`}>{children}</div>
         </div>
 
         {onClose && (

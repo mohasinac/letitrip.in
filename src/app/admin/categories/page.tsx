@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { CategoryTreeView, DataTable, ImageUpload } from "@/components/admin";
 import { Card, Button } from "@/components";
 
@@ -180,7 +180,9 @@ export default function AdminCategoriesPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             {isCreating ? "Create Category" : "Edit Category"}
           </h1>
           <div className="flex gap-2">
@@ -200,7 +202,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         <Card>
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Name
@@ -351,10 +353,12 @@ export default function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Categories
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
             Manage product categories hierarchy
           </p>
         </div>

@@ -14,6 +14,8 @@ export const UI_LABELS = {
     CONTENT: "Loading content...",
     UPLOADING: "Uploading...",
     SAVING: "Saving...",
+    SENDING: "Sending...",
+    CHANGING: "Changing...",
   },
 
   // Empty states
@@ -22,6 +24,10 @@ export const UI_LABELS = {
     NO_USERS: "No users found",
     NO_RESULTS: "No results found",
     NO_ITEMS: "No items to display",
+    NO_EMAIL: "No email address",
+    NO_PHONE: "No phone number",
+    NO_ADDRESSES: "No saved addresses",
+    NOT_SET: "Not set",
   },
 
   // Error pages
@@ -46,6 +52,11 @@ export const UI_LABELS = {
     GENERIC_ERROR: {
       TITLE: "Oops! Something Went Wrong",
       DESCRIPTION: "An unexpected error occurred. Please try again.",
+    },
+    CRITICAL_ERROR: {
+      TITLE: "Critical Error",
+      DESCRIPTION:
+        "A critical error occurred. Please try refreshing the page or contact support if the problem persists.",
     },
   },
 
@@ -76,6 +87,16 @@ export const UI_LABELS = {
     IMPORT: "Import",
     YES: "Yes",
     NO: "No",
+    LOGIN: "Login",
+    LOGOUT: "Logout",
+    GO_HOME: "Go Home",
+    GO_HOME_NOW: "Go Home Now",
+    CHANGE_PASSWORD: "Change Password",
+    RESEND_VERIFICATION: "Resend Verification Email",
+    EDIT_PROFILE: "Edit Profile",
+    VIEW_DETAILS: "View Details",
+    MANAGE: "Manage",
+    UPDATE_PASSWORD: "Update Password",
   },
 
   // Form labels
@@ -94,6 +115,8 @@ export const UI_LABELS = {
     STATE: "State",
     ZIP_CODE: "ZIP Code",
     COUNTRY: "Country",
+    EMAIL_VERIFICATION: "Email Verification",
+    PHONE_VERIFICATION: "Phone Verification",
   },
 
   // Status labels
@@ -107,6 +130,11 @@ export const UI_LABELS = {
     CANCELLED: "Cancelled",
     DRAFT: "Draft",
     PUBLISHED: "Published",
+    EMAIL_VERIFIED: "Email Verified ✓",
+    EMAIL_NOT_VERIFIED: "Email Not Verified",
+    PHONE_VERIFIED: "Phone Verified ✓",
+    PHONE_NOT_VERIFIED: "Phone Not Verified",
+    VERIFIED: "✓ Verified",
   },
 
   // Role labels
@@ -146,20 +174,68 @@ export const UI_LABELS = {
     SUPPORT: "Support",
   },
 
+  // Profile section
+  PROFILE: {
+    EDIT_PROFILE: "Edit Profile",
+    VIEW_PROFILE: "View Profile",
+    MY_PROFILE: "My Profile",
+    PROFILE_SETTINGS: "Profile Settings",
+    PROFILE_INFORMATION: "Profile Information",
+    ACCOUNT_INFORMATION: "Account Information",
+    SAVED_ADDRESSES: "Saved Addresses",
+    SECURITY_SETTINGS: "Security Settings",
+    USER_ID: "User ID",
+    ROLE: "Role",
+    ACCOUNT_ROLE: "Account Role",
+    TOTAL_ORDERS: "Total Orders",
+  },
+
+  // Wishlist section
+  WISHLIST: {
+    TITLE: "My Wishlist",
+    DESCRIPTION: "Save items you love to your wishlist",
+    EMPTY: "Your wishlist is empty",
+    ADD_TO_WISHLIST: "Add to Wishlist",
+    REMOVE_FROM_WISHLIST: "Remove from Wishlist",
+    ITEMS_COUNT: "Wishlist Items",
+  },
+
+  // Messages
+  MESSAGES: {
+    EMAIL_VERIFICATION_REQUIRED:
+      "Please verify your email address to access all features. Check your inbox for a verification link.",
+    PHONE_VERIFICATION_REQUIRED:
+      "Verify your phone number to enable additional security features.",
+    UNSAVED_CHANGES_WARNING:
+      "You have unsaved changes. Are you sure you want to leave?",
+    EMAIL_VERIFIED_SUCCESS:
+      "Your email address has been successfully verified.",
+    PHONE_VERIFIED_SUCCESS: "Your phone number has been successfully verified.",
+  },
+
   // Auth messages
   AUTH: {
     PHONE_LOGIN_NOT_IMPLEMENTED: "Phone login not yet implemented",
     PHONE_REGISTER_NOT_IMPLEMENTED: "Phone registration not yet implemented",
     EMAIL_OR_PHONE_REQUIRED: "Email or phone number required",
     DEFAULT_DISPLAY_NAME: "User",
+    DEFAULT_ROLE: "user",
     ID_TOKEN_REQUIRED: "ID token required",
     SESSION_CREATE_FAILED: "Failed to create session",
     SESSION_CLEAR_FAILED: "Failed to clear session",
     RATE_LIMIT_EXCEEDED: "Too many requests. Please try again later.",
+    AUTHENTICATION_REQUIRED: "Authentication required",
+    ACCOUNT_DISABLED: "Account disabled",
+    EMAIL_VERIFICATION_REQUIRED_SHORT: "Email verification required",
+    INSUFFICIENT_PERMISSIONS: "Insufficient permissions",
+    ACCESS_DENIED: "Access Denied",
+    REDIRECTING_IN: "Redirecting to home page in",
+    SECONDS: "seconds...",
   },
 
   // Settings page
   SETTINGS: {
+    TITLE: "Account Settings",
     UNSAVED_BANNER: "You have unsaved changes",
     UNSAVED_DETAIL: "Save your changes before leaving, or they will be lost.",
     SAVE_CHANGES: "Save Changes",
@@ -261,6 +337,7 @@ export const UI_HELP_TEXT = {
   PASSWORD_REQUIREMENTS:
     "Must be at least 8 characters with uppercase, lowercase, and number",
   PHONE_FORMAT: "Format: +[country code][number]",
+  PHONE_10_DIGIT: "Enter 10-digit mobile number",
   EMAIL_VERIFICATION: "Please verify your email to access all features",
   AVATAR_UPLOAD: "Upload a profile picture. Recommended size: 400x400px",
   AVATAR_FORMATS: "Supported formats: JPEG, PNG, WebP, GIF (max 5MB)",

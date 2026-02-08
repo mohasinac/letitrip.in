@@ -1,13 +1,13 @@
-import React from 'react';
-import { Label } from '../typography/Typography';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { Label } from "../typography/Typography";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Input Component
- * 
+ *
  * A styled text input with optional label, error message, helper text, and icon.
  * Supports all native HTML input attributes and includes error state styling.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -34,30 +34,33 @@ export default function Input({
   error,
   helperText,
   icon,
-  className = '',
+  className = "",
   required,
   ...props
 }: InputProps) {
   const { input, themed } = THEME_CONSTANTS;
-  
+
   return (
     <div className="w-full">
       {label && <Label required={required}>{label}</Label>}
-      
+
       <div className="relative">
         {icon && (
-          <div className={`absolute left-3 top-1/2 -translate-y-1/2 ${themed.textMuted}`}>
+          <div
+            className={`absolute left-3 top-1/2 -translate-y-1/2 ${themed.textMuted}`}
+          >
             {icon}
           </div>
         )}
-        
+
         <input
           className={`
             ${input.base}
-            ${icon ? input.withIcon : ''}
-            ${error 
-              ? `${themed.borderError} focus:ring-red-500` 
-              : `${themed.border} ${themed.focusRing}`
+            ${icon ? input.withIcon : ""}
+            ${
+              error
+                ? `${themed.borderError} focus:ring-red-500`
+                : `${themed.border} ${themed.focusRing}`
             }
             ${themed.bgInput}
             ${themed.textPrimary}
@@ -70,7 +73,9 @@ export default function Input({
       </div>
 
       {error && (
-        <p className={`mt-1.5 text-sm ${themed.textError} flex items-center gap-1`}>
+        <p
+          className={`mt-1.5 text-sm ${themed.textError} flex items-center gap-1`}
+        >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -81,7 +86,7 @@ export default function Input({
           {error}
         </p>
       )}
-      
+
       {helperText && !error && (
         <p className={`mt-1.5 text-sm ${themed.textMuted}`}>{helperText}</p>
       )}

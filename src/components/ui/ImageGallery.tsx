@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useSwipe, useGesture } from '@/hooks';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React, { useState, useRef, useEffect } from "react";
+import { useSwipe, useGesture } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * ImageGallery Component
- * 
+ *
  * Touch-optimized image gallery with swipe navigation, pinch-to-zoom,
  * and thumbnail preview. Fully responsive with mobile gesture support.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -46,7 +46,7 @@ export default function ImageGallery({
   showThumbnails = true,
   showCaptions = true,
   allowZoom = true,
-  className = '',
+  className = "",
   onImageChange,
 }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -124,18 +124,20 @@ export default function ImageGallery({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') goToPrevious();
-      if (e.key === 'ArrowRight') goToNext();
-      if (e.key === 'Escape') resetZoom();
+      if (e.key === "ArrowLeft") goToPrevious();
+      if (e.key === "ArrowRight") goToNext();
+      if (e.key === "Escape") resetZoom();
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentIndex, isZoomed]);
 
   if (images.length === 0) {
     return (
-      <div className={`flex items-center justify-center p-8 ${themed.bgTertiary} rounded-lg ${className}`}>
+      <div
+        className={`flex items-center justify-center p-8 ${themed.bgTertiary} rounded-lg ${className}`}
+      >
         <p className={themed.textMuted}>No images to display</p>
       </div>
     );
@@ -147,7 +149,7 @@ export default function ImageGallery({
       <div
         ref={imageContainerRef}
         className={`relative ${themed.bgSecondary} rounded-lg overflow-hidden touch-pan-y`}
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: "none" }}
       >
         {/* Image */}
         <div className="relative aspect-video md:aspect-[16/10] overflow-hidden">
@@ -157,7 +159,11 @@ export default function ImageGallery({
             className="w-full h-full object-contain transition-transform duration-200"
             style={{
               transform: `scale(${scale})`,
-              cursor: allowZoom ? (isZoomed ? 'zoom-out' : 'zoom-in') : 'default',
+              cursor: allowZoom
+                ? isZoomed
+                  ? "zoom-out"
+                  : "zoom-in"
+                : "default",
             }}
             draggable={false}
           />
@@ -180,8 +186,18 @@ export default function ImageGallery({
                 `}
                 aria-label="Previous image"
               >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 md:w-6 md:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
 
@@ -200,8 +216,18 @@ export default function ImageGallery({
                 `}
                 aria-label="Next image"
               >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5 md:w-6 md:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </>
@@ -209,24 +235,28 @@ export default function ImageGallery({
 
           {/* Image Counter */}
           {images.length > 1 && (
-            <div className={`
+            <div
+              className={`
               absolute bottom-2 md:bottom-4 right-2 md:right-4
               px-3 py-1.5 rounded-full
               ${themed.bgSecondary} bg-opacity-80 backdrop-blur-sm
               ${themed.textPrimary} text-xs md:text-sm font-medium
-            `}>
+            `}
+            >
               {currentIndex + 1} / {images.length}
             </div>
           )}
 
           {/* Zoom Indicator */}
           {allowZoom && isZoomed && (
-            <div className={`
+            <div
+              className={`
               absolute top-2 md:top-4 right-2 md:right-4
               px-3 py-1.5 rounded-full
               ${themed.bgSecondary} bg-opacity-80 backdrop-blur-sm
               ${themed.textPrimary} text-xs md:text-sm font-medium
-            `}>
+            `}
+            >
               {Math.round(scale * 100)}%
             </div>
           )}
@@ -254,7 +284,7 @@ export default function ImageGallery({
                 border-2 transition-all snap-center touch-manipulation
                 ${
                   index === currentIndex
-                    ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800'
+                    ? "border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800"
                     : `${themed.border} hover:border-primary-300 dark:hover:border-primary-700`
                 }
               `}
@@ -273,7 +303,9 @@ export default function ImageGallery({
 
       {/* Mobile Help Text */}
       <div className={`mt-2 text-center ${themed.textMuted} text-xs md:hidden`}>
-        {allowZoom ? 'Swipe to navigate • Double tap to zoom' : 'Swipe to navigate'}
+        {allowZoom
+          ? "Swipe to navigate • Double tap to zoom"
+          : "Swipe to navigate"}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface GridCell {
   row: number;
@@ -130,7 +131,9 @@ export function GridEditor({
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Grid Canvas */}
       <div className="flex-1">
-        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div
+          className={`bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border ${THEME_CONSTANTS.themed.borderColor}`}
+        >
           <div
             className="grid gap-1"
             style={{
@@ -145,9 +148,13 @@ export function GridEditor({
 
       {/* Cell Editor Panel */}
       {editMode && currentCell && (
-        <div className="w-full lg:w-80 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div
+          className={`w-full lg:w-80 bg-white dark:bg-gray-800 p-4 rounded-lg border ${THEME_CONSTANTS.themed.borderColor}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3
+              className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
+            >
               Edit Cell ({currentCell.row}, {currentCell.col})
             </h3>
             <button

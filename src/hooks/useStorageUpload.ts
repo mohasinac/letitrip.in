@@ -93,7 +93,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
       await deleteObject(fileRef);
       console.log("Cleaned up uploaded file:", filePath);
     } catch (err) {
-      console.error("Failed to cleanup uploaded file:", err);
+      console.error(ERROR_MESSAGES.UPLOAD.CLEANUP_FAILED, err);
     }
   };
 
@@ -139,7 +139,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
           } catch (err: any) {
             // Silence 'object not found' errors - this is expected for first uploads
             if (err?.code !== "storage/object-not-found") {
-              console.error("Failed to delete old file:", err);
+              console.error(ERROR_MESSAGES.UPLOAD.DELETE_OLD_FILE_FAILED, err);
             }
           }
         }
@@ -185,7 +185,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
             onSaveSuccess?.();
           } catch (saveError) {
             // Save failed - cleanup uploaded file
-            console.error("Save failed, cleaning up:", saveError);
+            console.error(ERROR_MESSAGES.UPLOAD.SAVE_ROLLBACK, saveError);
 
             await cleanupUploadedFile(storagePath);
             uploadedFileRef.current = null;
@@ -211,7 +211,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
           setState((prev) => ({ ...prev, uploading: false }));
         }
       } catch (uploadError) {
-        console.error("Upload error:", uploadError);
+        console.error(ERROR_MESSAGES.UPLOAD.UPLOAD_ERROR, uploadError);
 
         const errorMessage =
           uploadError instanceof Error

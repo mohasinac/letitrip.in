@@ -6,6 +6,7 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface RichTextEditorProps {
   content: string;
@@ -37,7 +38,9 @@ function MenuBar({ editor }: MenuBarProps) {
   }, [editor]);
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2 flex flex-wrap gap-1">
+    <div
+      className={`border-b ${THEME_CONSTANTS.themed.borderColor} ${THEME_CONSTANTS.themed.bgTertiary} p-2 flex flex-wrap gap-1`}
+    >
       {/* Text Formatting */}
       <button
         type="button"
@@ -268,7 +271,9 @@ export function RichTextEditor({
   });
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900">
+    <div
+      className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden ${THEME_CONSTANTS.themed.bgSecondary}`}
+    >
       {editable && <MenuBar editor={editor} />}
       <EditorContent editor={editor} />
     </div>

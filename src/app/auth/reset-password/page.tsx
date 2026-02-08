@@ -19,6 +19,7 @@ import {
   ROUTES,
   UI_LABELS,
   UI_PLACEHOLDERS,
+  THEME_CONSTANTS,
 } from "@/constants";
 
 function ResetPasswordContent() {
@@ -126,7 +127,7 @@ function ResetPasswordContent() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
             label="New Password"
             name="newPassword"

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { THEME_CONSTANTS } from "@/constants";
+import { classNames } from "@/helpers";
 
 interface CategoryNode {
   id: string;
@@ -70,7 +72,10 @@ function TreeNode({
         >
           {hasChildren && (
             <svg
-              className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+              className={classNames(
+                "w-4 h-4 transition-transform duration-200",
+                isExpanded ? "rotate-90" : "",
+              )}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -247,7 +252,9 @@ export function CategoryTreeView({
 }: CategoryTreeViewProps) {
   if (categories.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div
+        className={`flex items-center justify-center h-64 border ${THEME_CONSTANTS.themed.borderColor} rounded-lg`}
+      >
         <div className="text-center">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
@@ -262,7 +269,7 @@ export function CategoryTreeView({
               d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
             />
           </svg>
-          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+          <p className={`mt-4 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             No categories yet
           </p>
         </div>
@@ -271,7 +278,9 @@ export function CategoryTreeView({
   }
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 p-3">
+    <div
+      className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg ${THEME_CONSTANTS.themed.bgSecondary} p-3`}
+    >
       <div className="space-y-1">
         {categories.map((category) => (
           <TreeNodeContainer

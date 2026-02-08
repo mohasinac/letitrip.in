@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { DataTable } from "@/components/admin";
 import { Card, Button } from "@/components";
+import { formatDate, formatDateTime } from "@/utils";
 
 interface User {
   id: string;
@@ -208,16 +209,14 @@ export default function AdminUsersPage() {
       header: "Joined",
       sortable: true,
       width: "15%",
-      render: (user: User) => new Date(user.createdAt).toLocaleDateString(),
+      render: (user: User) => formatDate(user.createdAt),
     },
     {
       key: "lastLoginAt",
       header: "Last Login",
       width: "13%",
       render: (user: User) =>
-        user.lastLoginAt
-          ? new Date(user.lastLoginAt).toLocaleDateString()
-          : "Never",
+        user.lastLoginAt ? formatDate(user.lastLoginAt) : "Never",
     },
   ];
 
@@ -225,7 +224,9 @@ export default function AdminUsersPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             User Details
           </h1>
           <Button onClick={() => setSelectedUser(null)} variant="secondary">
@@ -251,10 +252,12 @@ export default function AdminUsersPage() {
                 </div>
               )}
               <div className="flex-1">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h2
+                  className={`text-xl font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
+                >
                   {selectedUser.displayName || "No name"}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className={THEME_CONSTANTS.themed.textSecondary}>
                   {selectedUser.email}
                 </p>
                 <div className="flex gap-2 mt-2">
@@ -289,12 +292,16 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div
+              className={`grid grid-cols-2 gap-4 pt-4 border-t ${THEME_CONSTANTS.themed.borderColor}`}
+            >
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   User ID
                 </label>
-                <p className="text-gray-900 dark:text-white font-mono text-sm">
+                <p
+                  className={`${THEME_CONSTANTS.themed.textPrimary} font-mono text-sm`}
+                >
                   {selectedUser.uid}
                 </p>
               </div>
@@ -302,7 +309,7 @@ export default function AdminUsersPage() {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Login Count
                 </label>
-                <p className="text-gray-900 dark:text-white">
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedUser.metadata?.loginCount || 0} times
                 </p>
               </div>
@@ -310,23 +317,25 @@ export default function AdminUsersPage() {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Joined
                 </label>
-                <p className="text-gray-900 dark:text-white">
-                  {new Date(selectedUser.createdAt).toLocaleString()}
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
+                  {formatDateTime(selectedUser.createdAt)}
                 </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Last Login
                 </label>
-                <p className="text-gray-900 dark:text-white">
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedUser.lastLoginAt
-                    ? new Date(selectedUser.lastLoginAt).toLocaleString()
+                    ? formatDateTime(selectedUser.lastLoginAt)
                     : "Never"}
                 </p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div
+              className={`pt-4 border-t ${THEME_CONSTANTS.themed.borderColor}`}
+            >
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Change Role
               </label>
@@ -350,7 +359,9 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div
+              className={`flex gap-2 pt-4 border-t ${THEME_CONSTANTS.themed.borderColor}`}
+            >
               <Button
                 onClick={() => handleToggleBan(selectedUser)}
                 variant="secondary"
@@ -377,15 +388,17 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1
+          className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+        >
           Users
         </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
           Manage user accounts ({total} total)
         </p>
       </div>
 
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className={`border-b ${THEME_CONSTANTS.themed.borderColor}`}>
         <div className="flex gap-4">
           {tabs.map((tab) => (
             <button
@@ -394,7 +407,7 @@ export default function AdminUsersPage() {
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.key
                   ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400"
-                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                  : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:text-gray-900 dark:hover:text-gray-200`
               }`}
             >
               {tab.label}

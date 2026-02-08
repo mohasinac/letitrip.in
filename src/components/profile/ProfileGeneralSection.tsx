@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Card, Button } from "@/components";
 import { FormField } from "@/components/FormField";
 import { Heading } from "@/components/typography/Typography";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { useForm } from "@/hooks/useForm";
 import { apiClient } from "@/lib/api-client";
 import { uploadProfilePhoto } from "@/lib/firebase/storage";
@@ -59,7 +59,10 @@ export function ProfileGeneralSection({
         General Information
       </Heading>
 
-      <form onSubmit={form.handleSubmit} className="space-y-4 mt-4">
+      <form
+        onSubmit={form.handleSubmit}
+        className={`${THEME_CONSTANTS.spacing.stack} mt-4`}
+      >
         <FormField
           label="Display Name"
           name="displayName"

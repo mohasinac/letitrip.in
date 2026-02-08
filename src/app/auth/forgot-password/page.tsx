@@ -12,7 +12,12 @@ import Link from "next/link";
 import { Card, Button, Alert } from "@/components";
 import { FormField } from "@/components/FormField";
 import { Heading, Text } from "@/components/typography";
-import { SUCCESS_MESSAGES, ROUTES, API_ENDPOINTS } from "@/constants";
+import {
+  SUCCESS_MESSAGES,
+  ROUTES,
+  API_ENDPOINTS,
+  THEME_CONSTANTS,
+} from "@/constants";
 import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
@@ -124,7 +129,7 @@ export default function ForgotPasswordPage() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
             label="Email Address"
             name="email"

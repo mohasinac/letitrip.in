@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React, { useState, useRef, useEffect } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Tooltip Component
- * 
+ *
  * Displays contextual information on hover or focus.
  * Supports multiple placements and automatic positioning.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -20,7 +20,7 @@ import { THEME_CONSTANTS } from '@/constants/theme';
 
 interface TooltipProps {
   content: React.ReactNode;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  placement?: "top" | "bottom" | "left" | "right";
   delay?: number;
   children: React.ReactElement;
   className?: string;
@@ -28,10 +28,10 @@ interface TooltipProps {
 
 export default function Tooltip({
   content,
-  placement = 'top',
+  placement = "top",
   delay = 200,
   children,
-  className = '',
+  className = "",
 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -59,17 +59,19 @@ export default function Tooltip({
   }, []);
 
   const placementClasses = {
-    top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-    bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-    left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-    right: 'left-full top-1/2 -translate-y-1/2 ml-2',
+    top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
+    bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
+    left: "right-full top-1/2 -translate-y-1/2 mr-2",
+    right: "left-full top-1/2 -translate-y-1/2 ml-2",
   };
 
   const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-t-gray-900 dark:border-t-gray-700',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-gray-900 dark:border-b-gray-700',
-    left: 'left-full top-1/2 -translate-y-1/2 border-l-gray-900 dark:border-l-gray-700',
-    right: 'right-full top-1/2 -translate-y-1/2 border-r-gray-900 dark:border-r-gray-700',
+    top: "top-full left-1/2 -translate-x-1/2 border-t-gray-900 dark:border-t-gray-700",
+    bottom:
+      "bottom-full left-1/2 -translate-x-1/2 border-b-gray-900 dark:border-b-gray-700",
+    left: "left-full top-1/2 -translate-y-1/2 border-l-gray-900 dark:border-l-gray-700",
+    right:
+      "right-full top-1/2 -translate-y-1/2 border-r-gray-900 dark:border-r-gray-700",
   };
 
   return (
@@ -80,7 +82,7 @@ export default function Tooltip({
         onFocus: showTooltip,
         onBlur: hideTooltip,
       } as any)}
-      
+
       {isVisible && (
         <div
           role="tooltip"

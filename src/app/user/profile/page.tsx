@@ -3,10 +3,9 @@
 import { useAuth } from "@/hooks";
 import { Card, Heading, Text, Button, AvatarDisplay } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ROUTES } from "@/constants/routes";
 
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
@@ -21,7 +20,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text>Loading...</Text>
+        <Text>{UI_LABELS.LOADING.DEFAULT}</Text>
       </div>
     );
   }
@@ -36,13 +35,13 @@ export default function UserProfilePage() {
 
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Heading level={3}>My Profile</Heading>
+          <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => router.push(ROUTES.USER.SETTINGS)}
           >
-            Edit Profile
+            {UI_LABELS.ACTIONS.EDIT_PROFILE}
           </Button>
         </div>
 
@@ -84,15 +83,15 @@ export default function UserProfilePage() {
             </div>
 
             {/* User Details */}
-            <div className="flex-1 space-y-4">
+            <div className={`flex-1 ${THEME_CONSTANTS.spacing.stack}`}>
               <div>
                 <Text
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
                 >
-                  Display Name
+                  {UI_LABELS.FORM.DISPLAY_NAME}
                 </Text>
                 <Text className="text-lg font-medium">
-                  {user.displayName || "Not set"}
+                  {user.displayName || UI_LABELS.EMPTY.NOT_SET}
                 </Text>
               </div>
 
@@ -100,12 +99,14 @@ export default function UserProfilePage() {
                 <Text
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
                 >
-                  Email Address
+                  {UI_LABELS.FORM.EMAIL}
                 </Text>
                 <div className="flex items-center gap-2">
                   <Text className="text-lg">{user.email}</Text>
                   {user.emailVerified && (
-                    <span className="text-green-500 text-sm">✓ Verified</span>
+                    <span className="text-green-500 text-sm">
+                      {UI_LABELS.STATUS.VERIFIED}
+                    </span>
                   )}
                 </div>
               </div>
@@ -115,12 +116,14 @@ export default function UserProfilePage() {
                   <Text
                     className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
                   >
-                    Phone Number
+                    {UI_LABELS.FORM.PHONE}
                   </Text>
                   <div className="flex items-center gap-2">
                     <Text className="text-lg">{user.phoneNumber}</Text>
                     {user.phoneVerified && (
-                      <span className="text-green-500 text-sm">✓ Verified</span>
+                      <span className="text-green-500 text-sm">
+                        {UI_LABELS.STATUS.VERIFIED}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -130,7 +133,7 @@ export default function UserProfilePage() {
                 <Text
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
                 >
-                  Account Role
+                  {UI_LABELS.PROFILE.ACCOUNT_ROLE}
                 </Text>
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
@@ -157,7 +160,7 @@ export default function UserProfilePage() {
               0
             </Text>
             <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              Total Orders
+              {UI_LABELS.PROFILE.TOTAL_ORDERS}
             </Text>
           </Card>
           <Card className="p-6 text-center">
@@ -165,7 +168,7 @@ export default function UserProfilePage() {
               0
             </Text>
             <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              Wishlist Items
+              {UI_LABELS.WISHLIST.ITEMS_COUNT}
             </Text>
           </Card>
           <Card className="p-6 text-center">
@@ -173,7 +176,7 @@ export default function UserProfilePage() {
               0
             </Text>
             <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              Saved Addresses
+              {UI_LABELS.PROFILE.SAVED_ADDRESSES}
             </Text>
           </Card>
         </div>

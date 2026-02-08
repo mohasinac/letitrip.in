@@ -1,12 +1,12 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Checkbox Component
- * 
+ *
  * A styled checkbox input with optional label and error messaging.
  * Includes custom checkmark icon and focus/hover states.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -19,7 +19,10 @@ import { THEME_CONSTANTS } from '@/constants/theme';
  * ```
  */
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface CheckboxProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> {
   label?: string;
   error?: string;
 }
@@ -27,11 +30,11 @@ interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>
 export default function Checkbox({
   label,
   error,
-  className = '',
+  className = "",
   ...props
 }: CheckboxProps) {
   const { themed, typography, input, colors } = THEME_CONSTANTS;
-  
+
   return (
     <div className="w-full">
       <label className="flex items-start gap-3 cursor-pointer group">
@@ -41,10 +44,7 @@ export default function Checkbox({
             className={`
               w-5 h-5 rounded border-2 cursor-pointer
               transition-all appearance-none
-              ${error 
-                ? themed.borderError
-                : themed.border
-              }
+              ${error ? themed.borderError : themed.border}
               ${colors.form.checked}
               ${colors.form.focusRing}
               ${input.disabled}
@@ -66,16 +66,20 @@ export default function Checkbox({
             />
           </svg>
         </div>
-        
+
         {label && (
-          <span className={`${typography.small} ${themed.textSecondary} select-none`}>
+          <span
+            className={`${typography.small} ${themed.textSecondary} select-none`}
+          >
             {label}
           </span>
         )}
       </label>
 
       {error && (
-        <p className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1 ml-8`}>
+        <p
+          className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1 ml-8`}
+        >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"

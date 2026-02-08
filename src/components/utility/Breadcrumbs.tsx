@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Breadcrumbs Component

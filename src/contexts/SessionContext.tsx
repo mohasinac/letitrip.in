@@ -28,6 +28,7 @@ import {
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/config";
 import { USER_COLLECTION, UserDocument } from "@/db/schema/users";
+import { ERROR_MESSAGES } from "@/constants";
 
 // ============================================================================
 // Types
@@ -132,10 +133,23 @@ export function SessionProvider({ children }: SessionProviderProps) {
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split("=");
       if (name === "__session_id") {
-        return value;
+        return decodeURIComponent(value);
       }
     }
     return null;
+  }, []);
+
+  // Check if session cookie exists
+  const hasSessionCookie = useCallback((): boolean => {
+    if (typeof document === "undefined") return false;
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      const [name] = cookie.trim().split("=");
+      if (name === "__session") {
+        return true;
+      }
+    }
+    return false;
   }, []);
 
   // Fetch user profile from Firestore
@@ -202,7 +216,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
           sessionId: currentSessionId || undefined,
         };
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        console.error(ERROR_MESSAGES.SESSION.FETCH_USER_PROFILE_ERROR, error);
         return {
           uid: authUser.uid,
           email: authUser.email,
@@ -266,7 +280,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
           }
         },
         (error) => {
-          console.error("Firestore subscription error:", error);
+          console.error(
+            ERROR_MESSAGES.SESSION.FIRESTORE_SUBSCRIPTION_ERROR,
+            error,
+          );
         },
       );
     },
@@ -318,23 +335,27 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSessionId(data.sessionId);
       }
     } catch (error) {
-      console.error("Session validation failed:", error);
+      console.error(ERROR_MESSAGES.SESSION.VALIDATION_FAILED, error);
     }
   }, []);
 
   // Sign out
   const signOut = useCallback(async () => {
     try {
-      // Clear session on server
-      await fetch("/api/auth/session", {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      // Sign out from Firebase
+      // Sign out from Firebase first
       await auth.signOut();
 
-      // Clear state
+      // Clear session on server (with cookies)
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (error) {
+        console.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, error);
+      }
+
+      // Clear state immediately
       setUser(null);
       setSessionId(null);
 
@@ -343,8 +364,25 @@ export function SessionProvider({ children }: SessionProviderProps) {
         firestoreUnsubscribeRef.current();
         firestoreUnsubscribeRef.current = null;
       }
+
+      // Clear activity timer
+      if (activityUpdateRef.current) {
+        clearInterval(activityUpdateRef.current);
+        activityUpdateRef.current = null;
+      }
+
+      // Force clear cookies client-side as backup
+      if (typeof document !== "undefined") {
+        document.cookie =
+          "__session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "__session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
+      // Still clear state even if API call fails
+      setUser(null);
+      setSessionId(null);
       throw error;
     }
   }, []);
@@ -353,13 +391,39 @@ export function SessionProvider({ children }: SessionProviderProps) {
   useEffect(() => {
     const unsubscribe = firebaseOnAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
+        // Verify session cookie exists
+        const hasSession = hasSessionCookie();
+
+        if (!hasSession) {
+          // No session cookie but user is authenticated
+          // Create session automatically
+          try {
+            const idToken = await authUser.getIdToken(true);
+            const response = await fetch("/api/auth/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken }),
+              credentials: "include",
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              setSessionId(data.sessionId);
+            }
+          } catch (error) {
+            console.error(ERROR_MESSAGES.SESSION.CREATION_ERROR, error);
+          }
+        }
+
         // Fetch user profile
         const userData = await fetchUserProfile(authUser);
         setUser(userData);
 
-        // Get session ID
+        // Get session ID from cookie
         const currentSessionId = getSessionIdFromCookie();
-        setSessionId(currentSessionId);
+        if (currentSessionId) {
+          setSessionId(currentSessionId);
+        }
 
         // Subscribe to real-time updates
         subscribeToUserProfile(authUser.uid);
@@ -373,6 +437,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
           5 * 60 * 1000,
         );
       } else {
+        // No auth user - clear everything
         setUser(null);
         setSessionId(null);
 
@@ -384,6 +449,17 @@ export function SessionProvider({ children }: SessionProviderProps) {
         if (activityUpdateRef.current) {
           clearInterval(activityUpdateRef.current);
           activityUpdateRef.current = null;
+        }
+
+        // Clear cookies if they still exist
+        if (typeof document !== "undefined") {
+          const hasSession = hasSessionCookie();
+          if (hasSession) {
+            document.cookie =
+              "__session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie =
+              "__session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          }
         }
       }
 
@@ -402,6 +478,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, [
     fetchUserProfile,
     getSessionIdFromCookie,
+    hasSessionCookie,
     subscribeToUserProfile,
     updateSessionActivity,
   ]);

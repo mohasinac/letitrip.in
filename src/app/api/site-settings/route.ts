@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("GET /api/site-settings error:", error);
+    console.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch site settings" },
       { status: 500 },
@@ -143,7 +144,7 @@ export async function PATCH(request: NextRequest) {
       message: "Site settings updated successfully",
     });
   } catch (error) {
-    console.error("PATCH /api/site-settings error:", error);
+    console.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, error);
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

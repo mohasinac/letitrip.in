@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 
 interface FAQ {
   id: string;
@@ -31,7 +30,7 @@ export function FAQSection() {
       >
         <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs mx-auto animate-pulse" />
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
@@ -74,7 +73,7 @@ export function FAQSection() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="space-y-4 max-w-3xl mx-auto">
+        <div className={`${THEME_CONSTANTS.spacing.stack} max-w-3xl mx-auto`}>
           {faqs.map((faq) => (
             <div
               key={faq.id}
@@ -111,7 +110,7 @@ export function FAQSection() {
               {openFaqId === faq.id && (
                 <div className={`${THEME_CONSTANTS.spacing.padding.lg} pt-0`}>
                   <div
-                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.borderRadius.md} bg-gray-50 dark:bg-gray-800 p-4`}
+                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </div>

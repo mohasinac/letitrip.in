@@ -5,7 +5,17 @@
  */
 
 /**
- * Format date to locale string
+ * Formats a date to a locale-specific date string
+ *
+ * @param date - The date to format (Date object or ISO string)
+ * @param locale - The locale for formatting (default: 'en-US')
+ * @returns The formatted date string
+ *
+ * @example
+ * ```typescript
+ * const result = formatDate(new Date('2024-01-15'));
+ * console.log(result); // '1/15/2024'
+ * ```
  */
 export function formatDate(
   date: Date | string,
@@ -16,7 +26,17 @@ export function formatDate(
 }
 
 /**
- * Format date and time
+ * Formats a date with both date and time
+ *
+ * @param date - The date to format (Date object or ISO string)
+ * @param locale - The locale for formatting (default: 'en-US')
+ * @returns The formatted date and time string
+ *
+ * @example
+ * ```typescript
+ * const result = formatDateTime(new Date('2024-01-15T14:30:00'));
+ * console.log(result); // '1/15/2024, 2:30:00 PM'
+ * ```
  */
 export function formatDateTime(
   date: Date | string,
@@ -27,7 +47,17 @@ export function formatDateTime(
 }
 
 /**
- * Format time only
+ * Formats time only without the date
+ *
+ * @param date - The date to extract time from (Date object or ISO string)
+ * @param locale - The locale for formatting (default: 'en-US')
+ * @returns The formatted time string
+ *
+ * @example
+ * ```typescript
+ * const result = formatTime(new Date('2024-01-15T14:30:00'));
+ * console.log(result); // '2:30:00 PM'
+ * ```
  */
 export function formatTime(
   date: Date | string,
@@ -38,7 +68,17 @@ export function formatTime(
 }
 
 /**
- * Format relative time (e.g., "2 hours ago")
+ * Formats a date as a relative time string (e.g., '2 hours ago')
+ *
+ * @param date - The date to compare with now (Date object or ISO string)
+ * @returns A human-readable relative time string
+ *
+ * @example
+ * ```typescript
+ * const pastDate = new Date(Date.now() - 2 * 60 * 60 * 1000);
+ * const result = formatRelativeTime(pastDate);
+ * console.log(result); // '2 hours ago'
+ * ```
  */
 export function formatRelativeTime(date: Date | string): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -63,7 +103,17 @@ export function formatRelativeTime(date: Date | string): string {
 }
 
 /**
- * Format date range
+ * Formats a date range with start and end dates
+ *
+ * @param startDate - The start date (Date object or ISO string)
+ * @param endDate - The end date (Date object or ISO string)
+ * @returns A formatted date range string
+ *
+ * @example
+ * ```typescript
+ * const result = formatDateRange('2024-01-15', '2024-01-20');
+ * console.log(result); // '1/15/2024 - 1/20/2024'
+ * ```
  */
 export function formatDateRange(
   startDate: Date | string,
@@ -75,7 +125,17 @@ export function formatDateRange(
 }
 
 /**
- * Format date with custom format
+ * Formats a date with custom formatting options
+ *
+ * @param date - The date to format (Date object or ISO string)
+ * @param format - The format type: 'short', 'medium', 'long', or 'full' (default: 'medium')
+ * @returns The formatted date string
+ *
+ * @example
+ * ```typescript
+ * const result = formatCustomDate(new Date('2024-01-15'), 'long');
+ * console.log(result); // 'January 15, 2024'
+ * ```
  */
 export function formatCustomDate(
   date: Date | string,
@@ -96,7 +156,17 @@ export function formatCustomDate(
 }
 
 /**
- * Check if date is today
+ * Checks if a date is today
+ *
+ * @param date - The date to check (Date object or ISO string)
+ * @returns True if the date is today
+ *
+ * @example
+ * ```typescript
+ * const today = new Date();
+ * console.log(isToday(today)); // true
+ * console.log(isToday('2020-01-01')); // false
+ * ```
  */
 export function isToday(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -109,7 +179,16 @@ export function isToday(date: Date | string): boolean {
 }
 
 /**
- * Check if date is in past
+ * Checks if a date is in the past
+ *
+ * @param date - The date to check (Date object or ISO string)
+ * @returns True if the date is before the current time
+ *
+ * @example
+ * ```typescript
+ * const yesterday = new Date(Date.now() - 86400000);
+ * console.log(isPast(yesterday)); // true
+ * ```
  */
 export function isPast(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -117,7 +196,16 @@ export function isPast(date: Date | string): boolean {
 }
 
 /**
- * Check if date is in future
+ * Checks if a date is in the future
+ *
+ * @param date - The date to check (Date object or ISO string)
+ * @returns True if the date is after the current time
+ *
+ * @example
+ * ```typescript
+ * const tomorrow = new Date(Date.now() + 86400000);
+ * console.log(isFuture(tomorrow)); // true
+ * ```
  */
 export function isFuture(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;

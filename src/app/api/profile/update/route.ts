@@ -68,7 +68,7 @@ export const PATCH = createApiHandler({
         SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
       );
     } catch (error) {
-      console.error("Profile update error:", error);
+      console.error(ERROR_MESSAGES.API.PROFILE_UPDATE_ERROR, error);
       return errorResponse(
         error instanceof Error
           ? error.message

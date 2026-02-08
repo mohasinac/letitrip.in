@@ -11,9 +11,9 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
-import { UI_LABELS, ROUTES } from "@/constants";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { Button } from "@/components";
+import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { logger } from "@/classes";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -22,8 +22,14 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log error to console (in production, send to error tracking service)
-    console.error("Application Error:", error);
+    // Log error using centralized Logger with file logging enabled
+    logger.error("Application Runtime Error", {
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+      timestamp: new Date().toISOString(),
+      type: "runtime-error",
+    });
   }, [error]);
 
   const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
@@ -67,7 +73,7 @@ export default function Error({ error, reset }: ErrorProps) {
         {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === "development" && error.message && (
           <div
-            className={`${themed.bgError} ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-6 text-left`}
+            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-6 text-left`}
           >
             <p
               className={`${typography.small} ${themed.textError} font-mono break-all`}

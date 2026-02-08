@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 
 interface BannerData {

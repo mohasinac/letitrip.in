@@ -19,11 +19,17 @@ export * from "./ui";
 // Routes constants
 export * from "./routes";
 
+// RBAC (Role-Based Access Control)
+export * from "./rbac";
+
 // Configuration constants
 export * from "./config";
 
 // API Endpoints constants
 export * from "./api-endpoints";
+
+// Address constants
+export * from "./address";
 
 // Theme constants
 export { THEME_CONSTANTS } from "./theme";

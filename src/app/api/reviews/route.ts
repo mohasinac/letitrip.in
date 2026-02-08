@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -164,7 +165,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("GET /api/reviews error:", error);
+    console.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
       { status: 500 },
@@ -254,7 +255,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("POST /api/reviews error:", error);
+    console.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, error);
 
     // Handle authentication errors
     if (error instanceof AuthenticationError) {

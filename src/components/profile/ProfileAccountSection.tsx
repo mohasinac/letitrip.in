@@ -6,7 +6,7 @@ import { Card, Button } from "@/components";
 import { FormField } from "@/components/FormField";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { useForm } from "@/hooks/useForm";
 import { apiClient } from "@/lib/api-client";
 
@@ -61,7 +61,10 @@ export function ProfileAccountSection({
         profile information.
       </Text>
 
-      <form onSubmit={deleteForm.handleSubmit} className="space-y-4 mt-6">
+      <form
+        onSubmit={deleteForm.handleSubmit}
+        className={`${THEME_CONSTANTS.spacing.stack} mt-6`}
+      >
         <FormField
           label="Password"
           name="password"

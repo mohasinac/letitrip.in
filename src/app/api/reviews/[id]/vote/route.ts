@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -78,7 +79,10 @@ export async function POST(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`POST /api/reviews/${id}/vote error:`, error);
+    console.error(
+      `POST /api/reviews/${id}/vote ${ERROR_MESSAGES.API.REVIEWS_VOTE_POST_ERROR}`,
+      error,
+    );
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

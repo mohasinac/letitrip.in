@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 
 interface Review {
   id: string;

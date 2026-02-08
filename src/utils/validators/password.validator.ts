@@ -27,7 +27,19 @@ const DEFAULT_REQUIREMENTS: PasswordRequirements = {
 };
 
 /**
- * Check if password meets requirements
+ * Checks if a password meets specified security requirements
+ *
+ * @param password - The password to validate
+ * @param requirements - Optional custom requirements (uses defaults if not provided)
+ * @returns An object with valid boolean and array of missing requirements
+ *
+ * @example
+ * ```typescript
+ * const result = meetsPasswordRequirements('Test123!');
+ * console.log(result); // { valid: true, missing: [] }
+ * const result2 = meetsPasswordRequirements('weak');
+ * console.log(result2.missing); // ['At least 8 characters', 'One uppercase letter', ...]
+ * ```
  */
 export function meetsPasswordRequirements(
   password: string,
@@ -65,7 +77,19 @@ export function meetsPasswordRequirements(
 }
 
 /**
- * Calculate password strength
+ * Calculates password strength and provides feedback
+ *
+ * @param password - The password to evaluate
+ * @returns An object with score (0-4), level, and feedback array
+ *
+ * @example
+ * ```typescript
+ * const result = calculatePasswordStrength('MyP@ssw0rd!');
+ * console.log(result.level); // 'strong'
+ * console.log(result.score); // 4
+ * const weakResult = calculatePasswordStrength('password');
+ * console.log(weakResult.feedback); // ['Avoid common passwords']
+ * ```
  */
 export function calculatePasswordStrength(password: string): PasswordStrength {
   let score = 0;
@@ -109,7 +133,16 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
 }
 
 /**
- * Check if password is compromised (basic check)
+ * Checks if a password is in the list of commonly used passwords
+ *
+ * @param password - The password to check
+ * @returns True if the password is a commonly used weak password
+ *
+ * @example
+ * ```typescript
+ * console.log(isCommonPassword('password')); // true
+ * console.log(isCommonPassword('MyUnique!Pass123')); // false
+ * ```
  */
 export function isCommonPassword(password: string): boolean {
   const commonPasswords = [

@@ -1,9 +1,8 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 interface WelcomeSectionData {
   h1: string;

@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, UI_LABELS } from "@/constants";
 import { Button } from "@/components";
-import { UI_LABELS } from "@/constants";
 
 interface CarouselCard {
   id: string;

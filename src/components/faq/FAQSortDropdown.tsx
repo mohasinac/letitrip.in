@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 
 export type FAQSortOption = "helpful" | "newest" | "alphabetical";
 

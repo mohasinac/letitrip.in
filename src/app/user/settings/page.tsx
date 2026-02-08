@@ -22,6 +22,7 @@ import {
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   UI_PLACEHOLDERS,
+  UI_HELP_TEXT,
 } from "@/constants";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
@@ -242,7 +243,7 @@ export default function UserSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text>Loading...</Text>
+        <Text>{UI_LABELS.LOADING.DEFAULT}</Text>
       </div>
     );
   }
@@ -256,7 +257,7 @@ export default function UserSettingsPage() {
       <UserTabs />
 
       <div className={THEME_CONSTANTS.spacing.stack}>
-        <Heading level={3}>Account Settings</Heading>
+        <Heading level={3}>{UI_LABELS.SETTINGS.TITLE}</Heading>
 
         {/* Unsaved changes banner */}
         {isDirty && (
@@ -286,7 +287,7 @@ export default function UserSettingsPage() {
         {/* Email Verification Card */}
         <Card className="p-6">
           <Heading level={5} className="mb-4">
-            Email Verification
+            {UI_LABELS.FORM.EMAIL_VERIFICATION}
           </Heading>
 
           <div
@@ -331,21 +332,20 @@ export default function UserSettingsPage() {
               <div className="flex-1">
                 <div className="font-semibold text-lg mb-1">
                   {profile?.emailVerified
-                    ? "Email Verified ✓"
-                    : "Email Not Verified"}
+                    ? UI_LABELS.STATUS.EMAIL_VERIFIED
+                    : UI_LABELS.STATUS.EMAIL_NOT_VERIFIED}
                 </div>
                 <div className="text-sm mb-3 opacity-80">
-                  {profile?.email || "No email address"}
+                  {profile?.email || UI_LABELS.EMPTY.NO_EMAIL}
                 </div>
                 {profile?.emailVerified ? (
                   <Text className="text-sm">
-                    Your email address has been successfully verified.
+                    {UI_LABELS.MESSAGES.EMAIL_VERIFIED_SUCCESS}
                   </Text>
                 ) : (
                   <>
                     <Text className="text-sm mb-3">
-                      Please verify your email address to access all features.
-                      Check your inbox for a verification link.
+                      {UI_LABELS.MESSAGES.EMAIL_VERIFICATION_REQUIRED}
                     </Text>
                     <Button
                       type="button"
@@ -355,8 +355,8 @@ export default function UserSettingsPage() {
                       disabled={isSendingVerification}
                     >
                       {isSendingVerification
-                        ? "Sending..."
-                        : "Resend Verification Email"}
+                        ? UI_LABELS.LOADING.SENDING
+                        : UI_LABELS.ACTIONS.RESEND_VERIFICATION}
                     </Button>
                   </>
                 )}
@@ -369,14 +369,14 @@ export default function UserSettingsPage() {
         {profile?.phoneNumber && (
           <Card className="p-6">
             <Heading level={5} className="mb-4">
-              Phone Verification
+              {UI_LABELS.FORM.PHONE_VERIFICATION}
             </Heading>
 
             <div
               className={`p-4 rounded-lg border-2 ${
                 profile?.phoneVerified
                   ? "bg-green-50 dark:bg-green-900/20 border-green-500"
-                  : "bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                  : `${THEME_CONSTANTS.themed.bgTertiary} border-gray-300 dark:border-gray-600`
               }`}
             >
               <div className="flex items-start gap-4">
@@ -414,16 +414,16 @@ export default function UserSettingsPage() {
                 <div className="flex-1">
                   <div className="font-semibold text-lg mb-1">
                     {profile?.phoneVerified
-                      ? "Phone Verified ✓"
-                      : "Phone Not Verified"}
+                      ? UI_LABELS.STATUS.PHONE_VERIFIED
+                      : UI_LABELS.STATUS.PHONE_NOT_VERIFIED}
                   </div>
                   <div className="text-sm mb-3 opacity-80">
                     {profile?.phoneNumber}
                   </div>
                   <Text className="text-sm">
                     {profile?.phoneVerified
-                      ? "Your phone number has been successfully verified."
-                      : "Verify your phone number to enable additional security features."}
+                      ? UI_LABELS.MESSAGES.PHONE_VERIFIED_SUCCESS
+                      : UI_LABELS.MESSAGES.PHONE_VERIFICATION_REQUIRED}
                   </Text>
                 </div>
               </div>
@@ -434,7 +434,7 @@ export default function UserSettingsPage() {
         {/* Profile Information */}
         <Card className="p-6">
           <Heading level={5} className="mb-4">
-            Profile Information
+            {UI_LABELS.PROFILE.PROFILE_INFORMATION}
           </Heading>
 
           {/* Avatar Upload */}
@@ -456,7 +456,7 @@ export default function UserSettingsPage() {
           >
             <FormField
               name="displayName"
-              label="Display Name"
+              label={UI_LABELS.FORM.DISPLAY_NAME}
               type="text"
               value={displayName}
               onChange={(value) => setDisplayName(value)}
@@ -465,12 +465,12 @@ export default function UserSettingsPage() {
 
             <FormField
               name="phoneNumber"
-              label="Phone Number"
+              label={UI_LABELS.FORM.PHONE}
               type="tel"
               value={phoneNumber}
               onChange={(value) => setPhoneNumber(value)}
               placeholder={UI_PLACEHOLDERS.PHONE}
-              helpText="Enter 10-digit mobile number"
+              helpText={UI_HELP_TEXT.PHONE_10_DIGIT}
             />
 
             <div className="pt-4">
@@ -486,7 +486,7 @@ export default function UserSettingsPage() {
         {/* Password Change */}
         <Card className="p-6">
           <Heading level={5} className="mb-4">
-            Change Password
+            {UI_LABELS.ACTIONS.CHANGE_PASSWORD}
           </Heading>
 
           {!showPasswordForm ? (
@@ -495,7 +495,7 @@ export default function UserSettingsPage() {
               variant="secondary"
               onClick={() => setShowPasswordForm(true)}
             >
-              Change Password
+              {UI_LABELS.ACTIONS.CHANGE_PASSWORD}
             </Button>
           ) : (
             <form
@@ -504,7 +504,7 @@ export default function UserSettingsPage() {
             >
               <FormField
                 name="currentPassword"
-                label="Current Password"
+                label={UI_LABELS.FORM.CURRENT_PASSWORD}
                 type="password"
                 value={passwordData.currentPassword}
                 onChange={(value) =>
@@ -519,7 +519,7 @@ export default function UserSettingsPage() {
 
               <FormField
                 name="newPassword"
-                label="New Password"
+                label={UI_LABELS.FORM.NEW_PASSWORD}
                 type="password"
                 value={passwordData.newPassword}
                 onChange={(value) =>
@@ -537,7 +537,7 @@ export default function UserSettingsPage() {
 
               <FormField
                 name="confirmPassword"
-                label="Confirm New Password"
+                label={UI_LABELS.FORM.CONFIRM_PASSWORD}
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={(value) =>
@@ -552,7 +552,9 @@ export default function UserSettingsPage() {
 
               <div className="flex gap-3">
                 <Button type="submit" disabled={isChangingPassword}>
-                  {isChangingPassword ? "Changing..." : "Update Password"}
+                  {isChangingPassword
+                    ? UI_LABELS.LOADING.CHANGING
+                    : UI_LABELS.ACTIONS.UPDATE_PASSWORD}
                 </Button>
                 <Button
                   type="button"
@@ -566,7 +568,7 @@ export default function UserSettingsPage() {
                     });
                   }}
                 >
-                  Cancel
+                  {UI_LABELS.ACTIONS.CANCEL}
                 </Button>
               </div>
             </form>
@@ -576,24 +578,28 @@ export default function UserSettingsPage() {
         {/* Account Information */}
         <Card className="p-6">
           <Heading level={5} className="mb-4">
-            Account Information
+            {UI_LABELS.PROFILE.ACCOUNT_INFORMATION}
           </Heading>
 
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Email</p>
+              <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+                {UI_LABELS.FORM.EMAIL}
+              </p>
               <p className="font-medium">{profile.email}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                User ID
+              <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+                {UI_LABELS.PROFILE.USER_ID}
               </p>
               <p className="font-mono text-sm">{profile.uid}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Role</p>
+              <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+                {UI_LABELS.PROFILE.ROLE}
+              </p>
               <p className="font-medium capitalize">{profile.role}</p>
             </div>
           </div>

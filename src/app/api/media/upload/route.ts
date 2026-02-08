@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("POST /api/media/upload error:", error);
+    console.error(ERROR_MESSAGES.API.MEDIA_UPLOAD_ERROR, error);
     return NextResponse.json(
       {
         success: false,

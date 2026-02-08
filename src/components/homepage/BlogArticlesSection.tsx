@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
+import { formatDate } from "@/utils";
 
 interface BlogArticle {
   id: string;
@@ -79,15 +80,6 @@ export function BlogArticlesSection() {
   if (articles.length === 0) {
     return null;
   }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   return (
     <section

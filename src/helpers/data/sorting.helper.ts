@@ -12,7 +12,19 @@ export interface SortConfig<T> {
 }
 
 /**
- * Generic sort function
+ * Sorts an array by a specified property key
+ *
+ * @param array - The array to sort
+ * @param key - The property to sort by
+ * @param order - Sort direction: 'asc' or 'desc' (default: 'asc')
+ * @returns A new sorted array
+ *
+ * @example
+ * ```typescript
+ * const products = [{ price: 30 }, { price: 10 }, { price: 20 }];
+ * const sorted = sort(products, 'price', 'asc');
+ * console.log(sorted); // [{ price: 10 }, { price: 20 }, { price: 30 }]
+ * ```
  */
 export function sort<T>(
   array: T[],
@@ -30,7 +42,20 @@ export function sort<T>(
 }
 
 /**
- * Multi-level sort
+ * Sorts an array by multiple keys in order of priority
+ *
+ * @param array - The array to sort
+ * @param configs - Array of sort configurations, applied in order
+ * @returns A new sorted array
+ *
+ * @example
+ * ```typescript
+ * const users = [{ name: 'Bob', age: 30 }, { name: 'Alice', age: 30 }];
+ * const sorted = multiSort(users, [
+ *   { key: 'age', order: 'desc' },
+ *   { key: 'name', order: 'asc' }
+ * ]);
+ * ```
  */
 export function multiSort<T>(array: T[], configs: SortConfig<T>[]): T[] {
   return [...array].sort((a, b) => {
@@ -47,7 +72,18 @@ export function multiSort<T>(array: T[], configs: SortConfig<T>[]): T[] {
 }
 
 /**
- * Sort by date
+ * Sorts an array by a date property
+ *
+ * @param array - The array to sort
+ * @param key - The date property to sort by
+ * @param order - Sort direction: 'asc' or 'desc' (default: 'asc')
+ * @returns A new sorted array
+ *
+ * @example
+ * ```typescript
+ * const events = [{ date: '2024-03-15' }, { date: '2024-01-10' }];
+ * const sorted = sortByDate(events, 'date', 'asc');
+ * ```
  */
 export function sortByDate<T>(
   array: T[],
@@ -66,7 +102,19 @@ export function sortByDate<T>(
 }
 
 /**
- * Sort by string (case-insensitive)
+ * Sorts an array by a string property (case-insensitive)
+ *
+ * @param array - The array to sort
+ * @param key - The string property to sort by
+ * @param order - Sort direction: 'asc' or 'desc' (default: 'asc')
+ * @returns A new sorted array
+ *
+ * @example
+ * ```typescript
+ * const users = [{ name: 'bob' }, { name: 'Alice' }];
+ * const sorted = sortByString(users, 'name', 'asc');
+ * console.log(sorted); // [{ name: 'Alice' }, { name: 'bob' }]
+ * ```
  */
 export function sortByString<T>(
   array: T[],
@@ -84,7 +132,19 @@ export function sortByString<T>(
 }
 
 /**
- * Sort by number
+ * Sorts an array by a numeric property
+ *
+ * @param array - The array to sort
+ * @param key - The numeric property to sort by
+ * @param order - Sort direction: 'asc' or 'desc' (default: 'asc')
+ * @returns A new sorted array
+ *
+ * @example
+ * ```typescript
+ * const items = [{ quantity: 5 }, { quantity: 2 }, { quantity: 8 }];
+ * const sorted = sortByNumber(items, 'quantity', 'desc');
+ * console.log(sorted); // [{ quantity: 8 }, { quantity: 5 }, { quantity: 2 }]
+ * ```
  */
 export function sortByNumber<T>(
   array: T[],
@@ -103,7 +163,16 @@ export function sortByNumber<T>(
 }
 
 /**
- * Toggle sort order
+ * Toggles the sort order between ascending and descending
+ *
+ * @param currentOrder - The current sort order
+ * @returns The opposite sort order
+ *
+ * @example
+ * ```typescript
+ * const newOrder = toggleSortOrder('asc');
+ * console.log(newOrder); // 'desc'
+ * ```
  */
 export function toggleSortOrder(currentOrder: SortOrder): SortOrder {
   return currentOrder === "asc" ? "desc" : "asc";

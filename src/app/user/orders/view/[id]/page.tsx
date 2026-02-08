@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks";
 import { Card, Heading, Text, Button, Badge } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { ROUTES } from "@/constants/routes";
+import { THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { formatCurrency } from "@/utils";
 
 interface OrderItem {
   id: string;
@@ -171,7 +172,7 @@ export default function OrderViewPage() {
           <Heading level={5} className="mb-4">
             Order Items
           </Heading>
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             {order.items.map((item) => (
               <div
                 key={item.id}
@@ -191,10 +192,10 @@ export default function OrderViewPage() {
                 </div>
                 <div className="text-right">
                   <Text className="font-semibold">
-                    ₹{item.price.toFixed(2)}
+                    {formatCurrency(item.price, "INR")}
                   </Text>
                   <Text className="text-sm">
-                    ₹{(item.price / item.quantity).toFixed(2)} each
+                    {formatCurrency(item.price / item.quantity, "INR")} each
                   </Text>
                 </div>
               </div>
@@ -205,20 +206,20 @@ export default function OrderViewPage() {
           <div className="mt-6 pt-6 border-t space-y-2">
             <div className="flex justify-between">
               <Text>Subtotal</Text>
-              <Text>₹{order.subtotal.toFixed(2)}</Text>
+              <Text>{formatCurrency(order.subtotal, "INR")}</Text>
             </div>
             <div className="flex justify-between">
               <Text>Shipping</Text>
-              <Text>₹{order.shipping.toFixed(2)}</Text>
+              <Text>{formatCurrency(order.shipping, "INR")}</Text>
             </div>
             <div className="flex justify-between">
               <Text>Tax</Text>
-              <Text>₹{order.tax.toFixed(2)}</Text>
+              <Text>{formatCurrency(order.tax, "INR")}</Text>
             </div>
             <div className="flex justify-between pt-2 border-t">
               <Text className="font-semibold text-lg">Total</Text>
               <Text className="font-semibold text-lg">
-                ₹{order.total.toFixed(2)}
+                {formatCurrency(order.total, "INR")}
               </Text>
             </div>
           </div>

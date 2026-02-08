@@ -5,7 +5,17 @@
  */
 
 /**
- * Convert string to boolean
+ * Converts a string to a boolean value
+ *
+ * @param value - The string to convert ('true', 'yes', '1', 'on' are considered true)
+ * @returns The boolean representation
+ *
+ * @example
+ * ```typescript
+ * console.log(stringToBoolean('true')); // true
+ * console.log(stringToBoolean('yes')); // true
+ * console.log(stringToBoolean('false')); // false
+ * ```
  */
 export function stringToBoolean(value: string): boolean {
   const truthyValues = ["true", "yes", "1", "on"];
@@ -13,7 +23,17 @@ export function stringToBoolean(value: string): boolean {
 }
 
 /**
- * Convert boolean to string
+ * Converts a boolean to a string representation
+ *
+ * @param value - The boolean value to convert
+ * @param format - The output format: 'yesno', 'truefalse', or 'onoff' (default: 'truefalse')
+ * @returns The string representation of the boolean
+ *
+ * @example
+ * ```typescript
+ * console.log(booleanToString(true, 'yesno')); // 'Yes'
+ * console.log(booleanToString(false, 'onoff')); // 'Off'
+ * ```
  */
 export function booleanToString(
   value: boolean,
@@ -29,7 +49,18 @@ export function booleanToString(
 }
 
 /**
- * Convert array to object
+ * Converts an array to an object using a specified field as the key
+ *
+ * @param arr - The array of objects to convert
+ * @param keyField - The field name to use as object keys
+ * @returns An object with keys from the specified field
+ *
+ * @example
+ * ```typescript
+ * const users = [{ id: '1', name: 'Alice' }, { id: '2', name: 'Bob' }];
+ * const result = arrayToObject(users, 'id');
+ * console.log(result); // { '1': { id: '1', name: 'Alice' }, '2': { id: '2', name: 'Bob' } }
+ * ```
  */
 export function arrayToObject<T>(
   arr: T[],
@@ -46,14 +77,33 @@ export function arrayToObject<T>(
 }
 
 /**
- * Convert object to array
+ * Converts an object to an array of its values
+ *
+ * @param obj - The object to convert
+ * @returns An array of all values in the object
+ *
+ * @example
+ * ```typescript
+ * const obj = { a: 1, b: 2, c: 3 };
+ * const result = objectToArray(obj);
+ * console.log(result); // [1, 2, 3]
+ * ```
  */
 export function objectToArray<T>(obj: Record<string, T>): T[] {
   return Object.values(obj);
 }
 
 /**
- * Convert query string to object
+ * Converts a URL query string to an object
+ *
+ * @param queryString - The query string to parse (with or without leading '?')
+ * @returns An object with query parameter keys and values
+ *
+ * @example
+ * ```typescript
+ * const result = queryStringToObject('?name=John&age=30');
+ * console.log(result); // { name: 'John', age: '30' }
+ * ```
  */
 export function queryStringToObject(
   queryString: string,
@@ -69,7 +119,16 @@ export function queryStringToObject(
 }
 
 /**
- * Convert object to query string
+ * Converts an object to a URL query string
+ *
+ * @param obj - The object to convert
+ * @returns A URL-encoded query string (without leading '?')
+ *
+ * @example
+ * ```typescript
+ * const result = objectToQueryString({ name: 'John', age: 30 });
+ * console.log(result); // 'name=John&age=30'
+ * ```
  */
 export function objectToQueryString(obj: Record<string, any>): string {
   const params = new URLSearchParams();
@@ -84,7 +143,18 @@ export function objectToQueryString(obj: Record<string, any>): string {
 }
 
 /**
- * Convert CSV string to array of objects
+ * Converts a CSV string to an array of objects
+ *
+ * @param csv - The CSV string with headers in the first row
+ * @param delimiter - The field delimiter (default: ',')
+ * @returns An array of objects with keys from CSV headers
+ *
+ * @example
+ * ```typescript
+ * const csv = 'name,age\nAlice,25\nBob,30';
+ * const result = csvToArray(csv);
+ * console.log(result); // [{ name: 'Alice', age: '25' }, { name: 'Bob', age: '30' }]
+ * ```
  */
 export function csvToArray(
   csv: string,
@@ -106,7 +176,18 @@ export function csvToArray(
 }
 
 /**
- * Convert array of objects to CSV string
+ * Converts an array of objects to a CSV string
+ *
+ * @param data - The array of objects to convert
+ * @param delimiter - The field delimiter (default: ',')
+ * @returns A CSV string with headers in the first row
+ *
+ * @example
+ * ```typescript
+ * const data = [{ name: 'Alice', age: 25 }, { name: 'Bob', age: 30 }];
+ * const result = arrayToCsv(data);
+ * console.log(result); // 'name,age\nAlice,25\nBob,30'
+ * ```
  */
 export function arrayToCsv(
   data: Record<string, any>[],
@@ -132,7 +213,17 @@ export function arrayToCsv(
 }
 
 /**
- * Convert Firestore timestamp to Date
+ * Converts a Firestore timestamp to a JavaScript Date object
+ *
+ * @param timestamp - The Firestore timestamp (with toDate method or seconds property)
+ * @returns A JavaScript Date object
+ *
+ * @example
+ * ```typescript
+ * const firestoreTimestamp = { seconds: 1609459200, nanoseconds: 0 };
+ * const result = firestoreTimestampToDate(firestoreTimestamp);
+ * console.log(result); // Date object for 2021-01-01
+ * ```
  */
 export function firestoreTimestampToDate(timestamp: any): Date {
   if (timestamp?.toDate) {
@@ -145,7 +236,16 @@ export function firestoreTimestampToDate(timestamp: any): Date {
 }
 
 /**
- * Convert Date to ISO string
+ * Converts a Date object or date string to ISO 8601 format
+ *
+ * @param date - The date to convert (Date object or string)
+ * @returns An ISO 8601 formatted date string
+ *
+ * @example
+ * ```typescript
+ * const result = dateToISOString(new Date('2024-01-15'));
+ * console.log(result); // '2024-01-15T00:00:00.000Z'
+ * ```
  */
 export function dateToISOString(date: Date | string): string {
   return typeof date === "string"
@@ -154,14 +254,36 @@ export function dateToISOString(date: Date | string): string {
 }
 
 /**
- * Deep clone object
+ * Creates a deep clone of an object using JSON serialization
+ *
+ * @param obj - The object to clone
+ * @returns A deep copy of the object
+ *
+ * @example
+ * ```typescript
+ * const original = { a: 1, b: { c: 2 } };
+ * const copy = deepClone(original);
+ * copy.b.c = 3;
+ * console.log(original.b.c); // 2 (unchanged)
+ * ```
  */
 export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
 /**
- * Flatten nested object
+ * Flattens a nested object into a single-level object with dot notation keys
+ *
+ * @param obj - The nested object to flatten
+ * @param prefix - Internal prefix for recursion (default: '')
+ * @returns A flattened object with dot-notation keys
+ *
+ * @example
+ * ```typescript
+ * const nested = { user: { name: 'John', address: { city: 'NYC' } } };
+ * const result = flattenObject(nested);
+ * console.log(result); // { 'user.name': 'John', 'user.address.city': 'NYC' }
+ * ```
  */
 export function flattenObject(
   obj: Record<string, any>,
@@ -183,7 +305,17 @@ export function flattenObject(
 }
 
 /**
- * Unflatten object
+ * Converts a flattened object back to a nested structure
+ *
+ * @param obj - The flattened object with dot-notation keys
+ * @returns A nested object structure
+ *
+ * @example
+ * ```typescript
+ * const flat = { 'user.name': 'John', 'user.address.city': 'NYC' };
+ * const result = unflattenObject(flat);
+ * console.log(result); // { user: { name: 'John', address: { city: 'NYC' } } }
+ * ```
  */
 export function unflattenObject(obj: Record<string, any>): Record<string, any> {
   const result: Record<string, any> = {};

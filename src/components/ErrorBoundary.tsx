@@ -8,7 +8,7 @@
 
 import React, { Component, ReactNode } from "react";
 import { Button } from "@/components";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { Logger } from "@/classes";
 
 interface Props {
@@ -89,10 +89,12 @@ export class ErrorBoundary extends Component<Props, State> {
                   />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1
+                className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+              >
                 Oops! Something went wrong
               </h1>
-              <p className="text-gray-600 mb-6">
+              <p className={`${THEME_CONSTANTS.themed.textSecondary} mb-6`}>
                 {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
               </p>
 

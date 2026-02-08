@@ -24,7 +24,18 @@ export interface PaginationResult {
 }
 
 /**
- * Calculate pagination metadata
+ * Calculates pagination metadata from page parameters
+ *
+ * @param options - Pagination parameters (page, perPage, total)
+ * @returns Complete pagination metadata including navigation info
+ *
+ * @example
+ * ```typescript
+ * const result = calculatePagination({ page: 2, perPage: 10, total: 95 });
+ * console.log(result.totalPages); // 10
+ * console.log(result.hasNextPage); // true
+ * console.log(result.startIndex); // 10
+ * ```
  */
 export function calculatePagination(
   options: PaginationOptions,
@@ -51,7 +62,18 @@ export function calculatePagination(
 }
 
 /**
- * Generate page numbers for pagination UI
+ * Generates an array of page numbers for pagination UI with ellipsis
+ *
+ * @param currentPage - The current active page
+ * @param totalPages - The total number of pages
+ * @param maxVisible - Maximum number of page buttons to show (default: 7)
+ * @returns Array of page numbers and ellipsis ('...')
+ *
+ * @example
+ * ```typescript
+ * const pages = generatePageNumbers(5, 10, 7);
+ * console.log(pages); // [1, '...', 4, 5, 6, '...', 10]
+ * ```
  */
 export function generatePageNumbers(
   currentPage: number,
@@ -103,7 +125,18 @@ export function generatePageNumbers(
 }
 
 /**
- * Get slice indices for paginated array
+ * Calculates array slice indices for a given page
+ *
+ * @param page - The page number (1-based)
+ * @param perPage - Number of items per page
+ * @returns A tuple of [startIndex, endIndex] for array slicing
+ *
+ * @example
+ * ```typescript
+ * const [start, end] = getSliceIndices(2, 10);
+ * const pageItems = allItems.slice(start, end);
+ * console.log(start, end); // 10, 20
+ * ```
  */
 export function getSliceIndices(
   page: number,

@@ -83,6 +83,7 @@ export const THEME_CONSTANTS = {
   button: {
     base: "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
     active: "active:scale-95",
+    minWidth: "min-w-[200px] w-full",
   },
 
   /**
@@ -119,6 +120,10 @@ export const THEME_CONSTANTS = {
     bottomNavBg:
       "bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800",
     footerBg: "bg-gradient-to-r from-gray-800 to-gray-900",
+    // Utility layouts
+    fullScreen: "min-h-screen",
+    flexCenter: "flex items-center justify-center",
+    centerText: "text-center",
   },
 
   /**
@@ -160,6 +165,13 @@ export const THEME_CONSTANTS = {
     inline: "gap-3 lg:gap-4",
     inlineSmall: "gap-2 lg:gap-3",
     inlineLarge: "gap-4 lg:gap-6",
+    // Gap utilities
+    gap: {
+      sm: "gap-2",
+      md: "gap-4",
+      lg: "gap-6",
+      xl: "gap-8",
+    },
     // Padding presets
     padding: {
       xs: "p-2 lg:p-3",
@@ -175,6 +187,12 @@ export const THEME_CONSTANTS = {
       md: "m-4 lg:m-6",
       lg: "m-6 lg:m-8 2xl:m-10",
       xl: "m-8 lg:m-10 2xl:m-12",
+      bottom: {
+        sm: "mb-2",
+        md: "mb-4",
+        lg: "mb-6",
+        xl: "mb-8",
+      },
     },
   },
 
@@ -194,6 +212,7 @@ export const THEME_CONSTANTS = {
     body: "text-base lg:text-lg",
     small: "text-sm lg:text-base",
     xs: "text-xs lg:text-sm",
+    display: "text-8xl md:text-9xl font-bold",
   },
 
   /**
@@ -408,6 +427,25 @@ export const THEME_CONSTANTS = {
   base: {
     body: 'bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased font-[system-ui,-apple-system,"Segoe_UI",Roboto,"Helvetica_Neue",Arial,sans-serif]',
     html: "scroll-smooth",
+  },
+
+  /**
+   * Utility classes
+   * Common utilities for sizing, opacity, borders, and text styling
+   */
+  iconSize: {
+    sm: "w-4 h-4",
+    md: "w-6 h-6",
+    lg: "w-8 h-8",
+    xl: "w-16 h-16",
+  },
+  opacity: {
+    low: "opacity-10",
+    medium: "opacity-50",
+    high: "opacity-75",
+  },
+  text: {
+    emphasis: "font-bold text-yellow-600 dark:text-yellow-400",
   },
 } as const;
 

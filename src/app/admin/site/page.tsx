@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { RichTextEditor, ImageUpload } from "@/components/admin";
 import { Card, Button } from "@/components";
 
@@ -83,7 +83,7 @@ export default function AdminSitePage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
             Loading settings...
           </p>
         </div>
@@ -109,10 +109,12 @@ export default function AdminSitePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Site Settings
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
             Configure your platform settings and information
           </p>
         </div>
@@ -127,10 +129,12 @@ export default function AdminSitePage() {
 
       {/* Company Information */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
           Company Information
         </h2>
-        <div className="space-y-4">
+        <div className={THEME_CONSTANTS.spacing.stack}>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Company Name
@@ -209,7 +213,9 @@ export default function AdminSitePage() {
 
       {/* Branding */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
           Branding
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -233,7 +239,9 @@ export default function AdminSitePage() {
 
       {/* Social Links */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
           Social Media Links
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -313,10 +321,12 @@ export default function AdminSitePage() {
 
       {/* SEO */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
           SEO Settings
         </h2>
-        <div className="space-y-4">
+        <div className={THEME_CONSTANTS.spacing.stack}>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Meta Title
@@ -383,10 +393,12 @@ export default function AdminSitePage() {
 
       {/* Maintenance Mode */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
           Maintenance Mode
         </h2>
-        <div className="space-y-4">
+        <div className={THEME_CONSTANTS.spacing.stack}>
           <div className="flex items-center gap-3">
             <input
               type="checkbox"

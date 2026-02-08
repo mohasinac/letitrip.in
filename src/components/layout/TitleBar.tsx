@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { SITE_CONFIG } from "@/constants/site";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";

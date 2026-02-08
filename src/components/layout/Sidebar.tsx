@@ -3,15 +3,18 @@
 import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import {
+  THEME_CONSTANTS,
+  ROUTES,
+  API_ENDPOINTS,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { SIDEBAR_NAV_GROUPS } from "@/constants/navigation";
 import { SITE_CONFIG } from "@/constants/site";
-import { ROUTES } from "@/constants/routes";
 import { useSwipe, useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils/events";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
 
 /**
  * Sidebar Component
@@ -74,7 +77,7 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
       // This avoids full page reload and preserves Next.js app state
       router.push(ROUTES.AUTH.LOGIN);
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
       // Even on error, redirect to login (session might be cleared)
       onClose();
       router.push(ROUTES.AUTH.LOGIN);

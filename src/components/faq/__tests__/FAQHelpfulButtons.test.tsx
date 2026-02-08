@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { FAQHelpfulButtons } from "../FAQHelpfulButtons";
 import { apiClient } from "@/lib/api-client";
-import { UI_LABELS } from "@/constants/ui";
+import { UI_LABELS } from "@/constants";
 
 // Mock API client
 jest.mock("@/lib/api-client", () => ({

@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { Button } from "@/components";
 
 interface Category {

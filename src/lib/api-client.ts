@@ -27,7 +27,7 @@
  * ```
  */
 
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS } from "@/constants";
 
 export { API_ENDPOINTS };
 

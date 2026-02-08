@@ -21,7 +21,7 @@ import {
 } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/hooks";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { UI_LABELS } from "@/constants";
 
 export default function RegisterPage() {
@@ -184,10 +184,14 @@ export default function RegisterPage() {
               <span className="text-white text-2xl font-bold">L</span>
             </div>
           </div>
-          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h1
+            className={`mt-6 text-center text-3xl font-extrabold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Create your account
           </h1>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p
+            className={`mt-2 text-center text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+          >
             Or{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
@@ -207,7 +211,7 @@ export default function RegisterPage() {
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             {/* Display Name */}
             <FormField
               label="Display Name (Optional)"
@@ -290,7 +294,7 @@ export default function RegisterPage() {
               />
               <label
                 htmlFor="acceptTerms"
-                className="ml-2 text-sm text-gray-600 dark:text-gray-400"
+                className={`ml-2 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
               >
                 I agree to the{" "}
                 <Link

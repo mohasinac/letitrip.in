@@ -1,5 +1,5 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface PaginationProps {
   currentPage: number;
@@ -9,7 +9,7 @@ export interface PaginationProps {
   showFirstLast?: boolean;
   showPrevNext?: boolean;
   disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
@@ -21,8 +21,8 @@ export default function Pagination({
   showFirstLast = true,
   showPrevNext = true,
   disabled = false,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
 }: PaginationProps) {
   const getPageNumbers = (): (number | string)[] => {
     if (totalPages <= maxVisible) {
@@ -31,14 +31,14 @@ export default function Pagination({
 
     const pages: (number | string)[] = [];
     const halfVisible = Math.floor(maxVisible / 2);
-    
+
     let startPage = Math.max(1, currentPage - halfVisible);
     let endPage = Math.min(totalPages, currentPage + halfVisible);
-    
+
     if (currentPage <= halfVisible) {
       endPage = maxVisible;
     }
-    
+
     if (currentPage >= totalPages - halfVisible) {
       startPage = totalPages - maxVisible + 1;
     }
@@ -46,7 +46,7 @@ export default function Pagination({
     if (startPage > 1) {
       pages.push(1);
       if (startPage > 2) {
-        pages.push('...');
+        pages.push("...");
       }
     }
 
@@ -56,7 +56,7 @@ export default function Pagination({
 
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
-        pages.push('...');
+        pages.push("...");
       }
       pages.push(totalPages);
     }
@@ -72,24 +72,24 @@ export default function Pagination({
   };
 
   const sizeClasses = {
-    sm: 'text-sm px-2 py-1 min-w-[28px]',
-    md: 'text-base px-3 py-2 min-w-[36px]',
-    lg: 'text-lg px-4 py-2 min-w-[44px]',
+    sm: "text-sm px-2 py-1 min-w-[28px]",
+    md: "text-base px-3 py-2 min-w-[36px]",
+    lg: "text-lg px-4 py-2 min-w-[44px]",
   };
 
   const { themed } = THEME_CONSTANTS;
 
   const buttonClass = (isActive: boolean, isDisabled: boolean) => {
     const base = `${sizeClasses[size]} rounded border transition-colors font-medium`;
-    
+
     if (isDisabled) {
       return `${base} ${themed.bgTertiary} opacity-50 ${themed.textMuted} ${themed.border} cursor-not-allowed`;
     }
-    
+
     if (isActive) {
       return `${base} bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 cursor-default`;
     }
-    
+
     return `${base} ${themed.bgSecondary} ${themed.textPrimary} ${themed.border} ${themed.hover} ${themed.hoverBorder} cursor-pointer`;
   };
 
@@ -124,7 +124,7 @@ export default function Pagination({
       )}
 
       {pages.map((page, index) => {
-        if (page === '...') {
+        if (page === "...") {
           return (
             <span
               key={`ellipsis-${index}`}
@@ -141,9 +141,12 @@ export default function Pagination({
             key={pageNum}
             onClick={() => handlePageChange(pageNum)}
             disabled={disabled}
-            className={buttonClass(pageNum === currentPage, disabled && pageNum !== currentPage)}
+            className={buttonClass(
+              pageNum === currentPage,
+              disabled && pageNum !== currentPage,
+            )}
             aria-label={`Go to page ${pageNum}`}
-            aria-current={pageNum === currentPage ? 'page' : undefined}
+            aria-current={pageNum === currentPage ? "page" : undefined}
           >
             {pageNum}
           </button>

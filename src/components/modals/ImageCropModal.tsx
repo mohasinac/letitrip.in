@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Modal, Button } from "@/components";
 import { Text } from "@/components/typography";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 export interface ImageCropData {
   url: string;
@@ -162,8 +161,7 @@ export function ImageCropModal({
 
           <div
             ref={containerRef}
-            className="relative w-full max-w-sm mx-auto aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-move"
-            style={{ maxHeight: "280px", touchAction: "none" }}
+            className="relative w-full max-w-sm mx-auto aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-move max-h-[280px] touch-none"
             data-disable-swipe="true"
             tabIndex={0}
             role="application"
@@ -183,14 +181,13 @@ export function ImageCropModal({
               src={imageUrl}
               alt={UI_LABELS.AVATAR.ALT_PREVIEW}
               draggable={false}
-              className="absolute select-none pointer-events-none"
+              className="absolute select-none pointer-events-none object-cover"
               style={{
                 width: `${zoom * 100}%`,
                 height: `${zoom * 100}%`,
                 left: `${position.x}%`,
                 top: `${position.y}%`,
                 transform: "translate(-50%, -50%)",
-                objectFit: "cover",
               }}
             />
 
@@ -218,7 +215,7 @@ export function ImageCropModal({
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <Text className="text-xs font-medium">{UI_LABELS.AVATAR.ZOOM}</Text>
-            <Text className="text-xs text-gray-600 dark:text-gray-400">
+            <Text className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}>
               {(zoom * 100).toFixed(0)}%
             </Text>
           </div>

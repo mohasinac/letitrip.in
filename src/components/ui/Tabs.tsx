@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, createContext, useContext } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React, { useState, createContext, useContext } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Tabs Component
- * 
+ *
  * A tabbed interface for switching between different content panels.
  * Supports controlled and uncontrolled modes with keyboard navigation.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -33,7 +33,7 @@ const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 const useTabsContext = () => {
   const context = useContext(TabsContext);
   if (!context) {
-    throw new Error('Tabs compound components must be used within Tabs');
+    throw new Error("Tabs compound components must be used within Tabs");
   }
   return context;
 };
@@ -52,18 +52,16 @@ export default function Tabs({
   value: controlledValue,
   onChange,
   children,
-  className = '',
+  className = "",
 }: TabsProps) {
-  const [internalValue, setInternalValue] = useState(defaultValue || '');
-  
+  const [internalValue, setInternalValue] = useState(defaultValue || "");
+
   const value = controlledValue !== undefined ? controlledValue : internalValue;
   const handleChange = onChange || setInternalValue;
 
   return (
     <TabsContext.Provider value={{ value, onChange: handleChange }}>
-      <div className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </TabsContext.Provider>
   );
 }
@@ -74,7 +72,7 @@ interface TabsListProps {
   className?: string;
 }
 
-export function TabsList({ children, className = '' }: TabsListProps) {
+export function TabsList({ children, className = "" }: TabsListProps) {
   const { themed } = THEME_CONSTANTS;
 
   return (
@@ -103,7 +101,7 @@ export function TabsTrigger({
   value,
   children,
   disabled = false,
-  className = '',
+  className = "",
 }: TabsTriggerProps) {
   const { value: selectedValue, onChange } = useTabsContext();
   const { themed } = THEME_CONSTANTS;
@@ -141,9 +139,13 @@ interface TabsContentProps {
   className?: string;
 }
 
-export function TabsContent({ value, children, className = '' }: TabsContentProps) {
+export function TabsContent({
+  value,
+  children,
+  className = "",
+}: TabsContentProps) {
   const { value: selectedValue } = useTabsContext();
-  
+
   if (value !== selectedValue) {
     return null;
   }

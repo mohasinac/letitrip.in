@@ -5,7 +5,16 @@
  */
 
 /**
- * Validate email format using regex
+ * Validates an email address format using regex
+ *
+ * @param email - The email address to validate
+ * @returns True if the email format is valid
+ *
+ * @example
+ * ```typescript
+ * console.log(isValidEmail('user@example.com')); // true
+ * console.log(isValidEmail('invalid.email')); // false
+ * ```
  */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,7 +22,17 @@ export function isValidEmail(email: string): boolean {
 }
 
 /**
- * Validate email domain
+ * Validates an email address against allowed domains
+ *
+ * @param email - The email address to validate
+ * @param allowedDomains - Optional array of allowed domain names
+ * @returns True if email format is valid and domain is allowed
+ *
+ * @example
+ * ```typescript
+ * console.log(isValidEmailDomain('user@company.com', ['company.com'])); // true
+ * console.log(isValidEmailDomain('user@other.com', ['company.com'])); // false
+ * ```
  */
 export function isValidEmailDomain(
   email: string,
@@ -28,14 +47,32 @@ export function isValidEmailDomain(
 }
 
 /**
- * Normalize email (lowercase, trim)
+ * Normalizes an email address by trimming whitespace and converting to lowercase
+ *
+ * @param email - The email address to normalize
+ * @returns The normalized email address
+ *
+ * @example
+ * ```typescript
+ * const result = normalizeEmail('  User@Example.COM  ');
+ * console.log(result); // 'user@example.com'
+ * ```
  */
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
 /**
- * Check if email is disposable
+ * Checks if an email address uses a disposable/temporary email service
+ *
+ * @param email - The email address to check
+ * @returns True if the email domain is a known disposable email provider
+ *
+ * @example
+ * ```typescript
+ * console.log(isDisposableEmail('test@tempmail.com')); // true
+ * console.log(isDisposableEmail('user@gmail.com')); // false
+ * ```
  */
 export function isDisposableEmail(email: string): boolean {
   const disposableDomains = [

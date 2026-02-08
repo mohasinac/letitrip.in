@@ -12,13 +12,11 @@ import {
   useRevokeSession,
   useRevokeUserSessions,
 } from "@/hooks/useSessions";
-import Card from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
-import Alert from "@/components/feedback/Alert";
-import Badge from "@/components/ui/Badge";
-import { UI_LABELS } from "@/constants";
+import { Card, Button, Alert, Badge } from "@/components";
+import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import { formatRelativeTime, formatDate } from "@/utils";
 
-// Helper to format relative time (since we don't have date-fns)
+// Helper to format relative time
 function formatTimeAgo(date: Date | string): string {
   const now = new Date();
   const past = new Date(date);
@@ -32,7 +30,7 @@ function formatTimeAgo(date: Date | string): string {
   if (diffMin < 60) return `${diffMin} min ago`;
   if (diffHour < 24) return `${diffHour}h ago`;
   if (diffDay < 7) return `${diffDay}d ago`;
-  return past.toLocaleDateString();
+  return formatDate(past);
 }
 
 export function AdminSessionsManager() {
@@ -53,7 +51,7 @@ export function AdminSessionsManager() {
       await revokeSession.mutate({ sessionId });
       refetch();
     } catch (error) {
-      console.error("Failed to revoke session:", error);
+      console.error(ERROR_MESSAGES.ADMIN.REVOKE_SESSION_FAILED, error);
     }
   };
 
@@ -73,7 +71,7 @@ export function AdminSessionsManager() {
       await revokeUserSessions.mutate({ userId });
       refetch();
     } catch (error) {
-      console.error("Failed to revoke user sessions:", error);
+      console.error(ERROR_MESSAGES.ADMIN.REVOKE_USER_SESSIONS_FAILED, error);
     }
   };
 
@@ -82,7 +80,7 @@ export function AdminSessionsManager() {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
             {UI_LABELS.LOADING.DEFAULT}
           </p>
         </div>
@@ -106,7 +104,7 @@ export function AdminSessionsManager() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             Active Sessions
           </div>
           <div className="text-3xl font-bold mt-2">
@@ -114,7 +112,7 @@ export function AdminSessionsManager() {
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             Unique Users
           </div>
           <div className="text-3xl font-bold mt-2">
@@ -122,7 +120,7 @@ export function AdminSessionsManager() {
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             Recent Activity (24h)
           </div>
           <div className="text-3xl font-bold mt-2">
@@ -130,7 +128,7 @@ export function AdminSessionsManager() {
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             Expired Sessions
           </div>
           <div className="text-3xl font-bold mt-2">
@@ -141,16 +139,20 @@ export function AdminSessionsManager() {
 
       {/* Sessions Table */}
       <Card>
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold">Active Sessions</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <div className={`p-4 border-b ${THEME_CONSTANTS.themed.borderColor}`}>
+          <h3
+            className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
+            Active Sessions
+          </h3>
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
             Monitor and manage user sessions across all devices
           </p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-800">
+            <thead className={THEME_CONSTANTS.themed.bgTertiary}>
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   User
@@ -172,7 +174,9 @@ export function AdminSessionsManager() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody
+              className={`${THEME_CONSTANTS.themed.bgSecondary} divide-y divide-gray-200 dark:divide-gray-700`}
+            >
               {sessions.map((session) => (
                 <tr
                   key={session.id}

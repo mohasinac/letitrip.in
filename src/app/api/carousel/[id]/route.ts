@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -45,7 +46,10 @@ export async function GET(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`GET /api/carousel/${id} error:`, error);
+    console.error(
+      `GET /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_GET_ERROR}`,
+      error,
+    );
 
     if (error instanceof NotFoundError) {
       return NextResponse.json(
@@ -129,7 +133,10 @@ export async function PATCH(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`PATCH /api/carousel/${id} error:`, error);
+    console.error(
+      `PATCH /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_PATCH_ERROR}`,
+      error,
+    );
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -192,7 +199,10 @@ export async function DELETE(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`DELETE /api/carousel/${id} error:`, error);
+    console.error(
+      `DELETE /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_DELETE_ERROR}`,
+      error,
+    );
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

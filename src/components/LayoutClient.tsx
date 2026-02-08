@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
 import Breadcrumbs from "./utility/Breadcrumbs";
+import { classNames } from "@/helpers";
 
 /**
  * LayoutClient Component
@@ -118,7 +119,11 @@ export default function LayoutClient({
         {/* Main Content - adjust margin when sidebar is open on desktop */}
         <main
           id="main-content"
-          className={`flex-1 mb-16 md:mb-0 transition-all duration-300 ${sidebarOpen ? "md:mr-80" : "md:mr-0"} ${THEME_CONSTANTS.themed.bgPrimary}`}
+          className={classNames(
+            "flex-1 mb-16 md:mb-0 transition-all duration-300",
+            sidebarOpen ? "md:mr-80" : "md:mr-0",
+            THEME_CONSTANTS.themed.bgPrimary,
+          )}
         >
           <div className="container mx-auto px-4 py-6 md:px-6">{children}</div>
         </main>

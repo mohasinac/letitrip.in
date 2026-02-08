@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("POST /api/media/trim error:", error);
+    console.error(ERROR_MESSAGES.API.MEDIA_TRIM_ERROR, error);
     return NextResponse.json(
       {
         success: false,

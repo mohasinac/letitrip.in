@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React, { createContext, useContext, useState, useCallback } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Toast Component
- * 
+ *
  * A notification system for displaying temporary messages.
  * Supports multiple variants and auto-dismiss functionality.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -16,7 +16,7 @@ import { THEME_CONSTANTS } from '@/constants/theme';
  * <ToastProvider>
  *   <App />
  * </ToastProvider>
- * 
+ *
  * // In your components:
  * const { showToast } = useToast();
  * showToast('Success!', 'success');
@@ -26,12 +26,16 @@ import { THEME_CONSTANTS } from '@/constants/theme';
 interface Toast {
   id: string;
   message: string;
-  variant: 'success' | 'error' | 'warning' | 'info';
+  variant: "success" | "error" | "warning" | "info";
   duration?: number;
 }
 
 interface ToastContextValue {
-  showToast: (message: string, variant?: Toast['variant'], duration?: number) => void;
+  showToast: (
+    message: string,
+    variant?: Toast["variant"],
+    duration?: number,
+  ) => void;
   hideToast: (id: string) => void;
 }
 
@@ -40,7 +44,7 @@ const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
+    throw new Error("useToast must be used within ToastProvider");
   }
   return context;
 };
@@ -48,20 +52,26 @@ export const useToast = () => {
 // Toast Provider
 interface ToastProviderProps {
   children: React.ReactNode;
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+  position?:
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left"
+    | "top-center"
+    | "bottom-center";
 }
 
 export function ToastProvider({
   children,
-  position = 'top-right',
+  position = "top-right",
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback(
-    (message: string, variant: Toast['variant'] = 'info', duration = 5000) => {
+    (message: string, variant: Toast["variant"] = "info", duration = 5000) => {
       const id = Date.now().toString();
       const toast: Toast = { id, message, variant, duration };
-      
+
       setToasts((prev) => [...prev, toast]);
 
       if (duration > 0) {
@@ -70,7 +80,7 @@ export function ToastProvider({
         }, duration);
       }
     },
-    []
+    [],
   );
 
   const hideToast = useCallback((id: string) => {
@@ -78,12 +88,12 @@ export function ToastProvider({
   }, []);
 
   const positionClasses = {
-    'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4',
-    'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'top-center': 'top-4 left-1/2 -translate-x-1/2',
-    'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
+    "top-right": "top-4 right-4",
+    "top-left": "top-4 left-4",
+    "bottom-right": "bottom-4 right-4",
+    "bottom-left": "bottom-4 left-4",
+    "top-center": "top-4 left-1/2 -translate-x-1/2",
+    "bottom-center": "bottom-4 left-1/2 -translate-x-1/2",
   };
 
   return (
@@ -112,10 +122,13 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
   const { colors, themed } = THEME_CONSTANTS;
 
   const variantStyles = {
-    success: 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
-    error: 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
-    warning: 'bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
-    info: 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',
+    success:
+      "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200",
+    error:
+      "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200",
+    warning:
+      "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200",
+    info: "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200",
   };
 
   const icons = {
@@ -173,8 +186,18 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
         className="flex-shrink-0 p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
         aria-label="Close notification"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </div>

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Button, Heading, Text, Card } from "@/components";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
@@ -56,7 +56,9 @@ export default function ConfirmDeleteModal({
       onClick={onClose}
     >
       <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-        <Card className="w-full max-w-md p-6 space-y-4">
+        <Card
+          className={`w-full max-w-md p-6 ${THEME_CONSTANTS.spacing.stack}`}
+        >
           {/* Icon */}
           <div className="flex justify-center">
             <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import { useState, useEffect } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * BackToTop Component
- * 
+ *
  * A floating button that appears when scrolling down (after 100px)
  * and smoothly scrolls the page back to the top when clicked.
  * Automatically adjusts position when sidebar is open.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -37,17 +37,17 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
     // Check on mount
     toggleVisibility();
 
-    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility);
 
     return () => {
-      window.removeEventListener('scroll', toggleVisibility);
+      window.removeEventListener("scroll", toggleVisibility);
     };
   }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -56,7 +56,7 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
       onClick={scrollToTop}
       className={`
         fixed
-        ${sidebarOpen ? 'right-[22rem] md:right-[22rem]' : 'right-6 md:right-8'}
+        ${sidebarOpen ? "right-[22rem] md:right-[22rem]" : "right-6 md:right-8"}
         bottom-24 md:bottom-8
         p-3 md:p-4
         rounded-full
@@ -68,7 +68,7 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
         transition-all duration-300
         z-[60]
         group
-        ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
+        ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"}
       `}
       aria-label="Back to top"
     >

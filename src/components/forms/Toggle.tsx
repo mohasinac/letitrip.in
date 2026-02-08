@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Toggle/Switch Component
- * 
+ *
  * A switch control for boolean input with smooth animation.
  * Supports controlled and uncontrolled modes.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -23,7 +23,7 @@ interface ToggleProps {
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
   label?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
   id?: string;
 }
@@ -34,42 +34,43 @@ export default function Toggle({
   onChange,
   disabled = false,
   label,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
   id,
 }: ToggleProps) {
   const { themed } = THEME_CONSTANTS;
   const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
-  
-  const checked = controlledChecked !== undefined ? controlledChecked : internalChecked;
-  
+
+  const checked =
+    controlledChecked !== undefined ? controlledChecked : internalChecked;
+
   const handleChange = () => {
     if (disabled) return;
-    
+
     const newChecked = !checked;
-    
+
     if (controlledChecked === undefined) {
       setInternalChecked(newChecked);
     }
-    
+
     onChange?.(newChecked);
   };
 
   const sizeClasses = {
     sm: {
-      container: 'w-8 h-5',
-      toggle: 'w-3 h-3',
-      translate: checked ? 'translate-x-3' : 'translate-x-1',
+      container: "w-8 h-5",
+      toggle: "w-3 h-3",
+      translate: checked ? "translate-x-3" : "translate-x-1",
     },
     md: {
-      container: 'w-11 h-6',
-      toggle: 'w-4 h-4',
-      translate: checked ? 'translate-x-5' : 'translate-x-1',
+      container: "w-11 h-6",
+      toggle: "w-4 h-4",
+      translate: checked ? "translate-x-5" : "translate-x-1",
     },
     lg: {
-      container: 'w-14 h-7',
-      toggle: 'w-5 h-5',
-      translate: checked ? 'translate-x-7' : 'translate-x-1',
+      container: "w-14 h-7",
+      toggle: "w-5 h-5",
+      translate: checked ? "translate-x-7" : "translate-x-1",
     },
   };
 
@@ -89,12 +90,8 @@ export default function Toggle({
           relative inline-flex items-center rounded-full
           transition-colors duration-200 ease-in-out
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-          ${
-            checked
-              ? 'bg-blue-600 dark:bg-blue-500'
-              : themed.bgTertiary
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${checked ? "bg-blue-600 dark:bg-blue-500" : themed.bgTertiary}
+          ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >
         <span
@@ -107,14 +104,14 @@ export default function Toggle({
           `}
         />
       </button>
-      
+
       {label && (
         <label
           id={`${toggleId}-label`}
           htmlFor={toggleId}
           className={`
             text-sm font-medium cursor-pointer select-none
-            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           `}
           onClick={!disabled ? handleChange : undefined}
         >

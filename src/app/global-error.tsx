@@ -10,6 +10,8 @@
  */
 
 import { useEffect } from "react";
+import { logger } from "@/classes";
+import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -18,49 +20,32 @@ interface GlobalErrorProps {
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    // Log error to error tracking service
-    console.error("Global Error:", error);
+    // Log critical error using centralized Logger
+    logger.error("Global Critical Error", {
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+      timestamp: new Date().toISOString(),
+      type: "global-error",
+    });
   }, [error]);
+
+  const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
 
   return (
     <html>
       <body>
         <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#f9fafb",
-            padding: "2rem",
-          }}
+          className={`min-h-screen flex items-center justify-center ${themed.bgPrimary} ${spacing.padding.xl}`}
         >
-          <div
-            style={{
-              maxWidth: "600px",
-              width: "100%",
-              textAlign: "center",
-            }}
-          >
+          <div className={`max-w-2xl w-full text-center ${spacing.stack}`}>
             {/* Error Icon */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "2rem",
-              }}
-            >
+            <div className="flex justify-center mb-8">
               <div
-                style={{
-                  backgroundColor: "#fff",
-                  border: "2px solid #e5e7eb",
-                  borderRadius: "50%",
-                  padding: "2rem",
-                  display: "inline-block",
-                }}
+                className={`${themed.bgSecondary} ${themed.border} rounded-full p-8 inline-block`}
               >
                 <svg
-                  style={{ width: "64px", height: "64px", color: "#ef4444" }}
+                  className={`w-16 h-16 ${themed.textError}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -76,58 +61,28 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </div>
 
             {/* Error Title */}
-            <h1
-              style={{
-                fontSize: "2.25rem",
-                fontWeight: "bold",
-                color: "#111827",
-                marginBottom: "1rem",
-              }}
-            >
-              Something Went Wrong
+            <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
+              {UI_LABELS.ERROR_PAGES.CRITICAL_ERROR.TITLE}
             </h1>
 
             {/* Error Description */}
-            <p
-              style={{
-                fontSize: "1.125rem",
-                color: "#6b7280",
-                marginBottom: "2rem",
-              }}
-            >
-              A critical error occurred. Please try refreshing the page.
+            <p className={`${typography.body} ${themed.textSecondary} mb-8`}>
+              {UI_LABELS.ERROR_PAGES.CRITICAL_ERROR.DESCRIPTION}
             </p>
 
             {/* Error Details (Development Only) */}
             {process.env.NODE_ENV === "development" && error.message && (
               <div
-                style={{
-                  backgroundColor: "#fee2e2",
-                  border: "1px solid #fecaca",
-                  borderRadius: "0.5rem",
-                  padding: "1rem",
-                  marginBottom: "2rem",
-                  textAlign: "left",
-                }}
+                className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-8 text-left`}
               >
                 <p
-                  style={{
-                    fontSize: "0.875rem",
-                    color: "#991b1b",
-                    fontFamily: "monospace",
-                    wordBreak: "break-all",
-                  }}
+                  className={`${typography.small} ${themed.textError} font-mono break-all`}
                 >
                   <strong>Error:</strong> {error.message}
                 </p>
                 {error.digest && (
                   <p
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#6b7280",
-                      fontFamily: "monospace",
-                      marginTop: "0.5rem",
-                    }}
+                    className={`${typography.small} ${themed.textSecondary} font-mono mt-2`}
                   >
                     <strong>Digest:</strong> {error.digest}
                   </p>
@@ -136,46 +91,18 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             )}
 
             {/* Action Buttons */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                alignItems: "center",
-              }}
-            >
+            <div className="flex flex-col gap-4 items-center">
               <button
                 onClick={reset}
-                style={{
-                  backgroundColor: "#3b82f6",
-                  color: "white",
-                  padding: "0.75rem 1.5rem",
-                  borderRadius: "0.5rem",
-                  border: "none",
-                  fontSize: "1.125rem",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  minWidth: "200px",
-                }}
+                className={`bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 ${borderRadius.lg} border-none text-lg font-medium cursor-pointer min-w-[200px] transition-colors`}
               >
-                Try Again
+                {UI_LABELS.ACTIONS.RETRY}
               </button>
               <a
-                href="/"
-                style={{
-                  backgroundColor: "white",
-                  color: "#3b82f6",
-                  padding: "0.75rem 1.5rem",
-                  borderRadius: "0.5rem",
-                  border: "2px solid #3b82f6",
-                  fontSize: "1.125rem",
-                  fontWeight: "500",
-                  textDecoration: "none",
-                  display: "inline-block",
-                  minWidth: "200px",
-                }}
+                href={ROUTES.HOME}
+                className={`${themed.bgPrimary} hover:bg-blue-50 text-blue-500 px-6 py-3 ${borderRadius.lg} ${themed.border} border-2 border-blue-500 text-lg font-medium no-underline inline-block min-w-[200px] transition-colors`}
               >
-                Go to Home
+                {UI_LABELS.ACTIONS.BACK} to Home
               </a>
             </div>
           </div>

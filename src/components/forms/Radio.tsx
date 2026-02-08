@@ -1,12 +1,13 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
+import { classNames } from "@/helpers";
 
 /**
  * Radio Component
- * 
+ *
  * A radio button group component for selecting a single option from multiple choices.
  * Supports horizontal and vertical orientations, error states, and disabled options.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -37,7 +38,7 @@ interface RadioGroupProps {
   onChange?: (value: string) => void;
   label?: string;
   error?: string;
-  orientation?: 'vertical' | 'horizontal';
+  orientation?: "vertical" | "horizontal";
 }
 
 export default function RadioGroup({
@@ -47,25 +48,32 @@ export default function RadioGroup({
   onChange,
   label,
   error,
-  orientation = 'vertical',
+  orientation = "vertical",
 }: RadioGroupProps) {
   const { themed, typography, input, colors } = THEME_CONSTANTS;
-  
+
   return (
     <div className="w-full">
       {label && (
-        <label className={`block ${typography.small} font-medium ${themed.textSecondary} mb-2`}>
+        <label
+          className={`block ${typography.small} font-medium ${themed.textSecondary} mb-2`}
+        >
           {label}
         </label>
       )}
 
-      <div className={`flex gap-4 ${orientation === 'vertical' ? 'flex-col' : 'flex-row flex-wrap'}`}>
+      <div
+        className={classNames(
+          "flex gap-4",
+          orientation === "vertical" ? "flex-col" : "flex-row flex-wrap",
+        )}
+      >
         {options.map((option) => (
           <label
             key={option.value}
             className={`
               flex items-center gap-3 cursor-pointer group
-              ${option.disabled ? 'opacity-50 cursor-not-allowed' : ''}
+              ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
           >
             <div className="relative flex items-center justify-center">
@@ -79,18 +87,17 @@ export default function RadioGroup({
                 className={`
                   w-5 h-5 rounded-full border-2 cursor-pointer
                   transition-all appearance-none
-                  ${error 
-                    ? themed.borderError
-                    : themed.border
-                  }
+                  ${error ? themed.borderError : themed.border}
                   ${colors.form.radioChecked}
                   ${colors.form.focusRing}
                   ${input.disabled}
                 `}
               />
             </div>
-            
-            <span className={`${typography.small} ${themed.textSecondary} select-none`}>
+
+            <span
+              className={`${typography.small} ${themed.textSecondary} select-none`}
+            >
               {option.label}
             </span>
           </label>
@@ -98,7 +105,9 @@ export default function RadioGroup({
       </div>
 
       {error && (
-        <p className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1`}>
+        <p
+          className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1`}
+        >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"

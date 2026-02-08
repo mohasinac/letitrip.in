@@ -6,7 +6,6 @@
 
 import {
   classNames,
-  cn,
   mergeTailwindClasses,
   responsive,
   variant,
@@ -49,16 +48,6 @@ describe("classNames", () => {
 
   test("should handle boolean conditions", () => {
     expect(classNames(true && "show", false && "hide")).toBe("show");
-  });
-});
-
-describe("cn", () => {
-  test("should be an alias for classNames", () => {
-    expect(cn).toBe(classNames);
-  });
-
-  test("should work exactly like classNames", () => {
-    expect(cn("class1", false, "class2")).toBe("class1 class2");
   });
 });
 

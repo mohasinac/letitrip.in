@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { UI_LABELS } from "@/constants/ui";
+import {
+  THEME_CONSTANTS,
+  UI_LABELS,
+  API_ENDPOINTS,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 interface FAQHelpfulButtonsProps {
   faqId: string;
@@ -43,7 +46,7 @@ export function FAQHelpfulButtons({
         setUserVote("not-helpful");
       }
     } catch (error) {
-      console.error("Failed to submit vote:", error);
+      console.error(ERROR_MESSAGES.FAQ.VOTE_FAILED, error);
     } finally {
       setIsSubmitting(false);
     }

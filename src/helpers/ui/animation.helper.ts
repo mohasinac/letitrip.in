@@ -23,7 +23,22 @@ export const easings = {
 };
 
 /**
- * Animate value over time
+ * Animates a value from start to end over a specified duration
+ *
+ * @param from - The starting value
+ * @param to - The ending value
+ * @param duration - Animation duration in milliseconds
+ * @param onUpdate - Callback function called with the current value on each frame
+ * @param easing - Easing function to apply (default: easeInOutQuad)
+ * @returns A function to cancel the animation
+ *
+ * @example
+ * ```typescript
+ * const cancel = animate(0, 100, 1000, (value) => {
+ *   element.style.opacity = value / 100;
+ * });
+ * // To cancel: cancel();
+ * ```
  */
 export function animate(
   from: number,
@@ -55,7 +70,19 @@ export function animate(
 }
 
 /**
- * Stagger animations for multiple elements
+ * Staggers animation execution across multiple elements with delay
+ *
+ * @param elements - Array of HTML elements to animate
+ * @param animationFn - Function to call for each element
+ * @param delay - Delay in milliseconds between each animation (default: 100)
+ *
+ * @example
+ * ```typescript
+ * const items = document.querySelectorAll('.list-item');
+ * stagger(Array.from(items), (element, index) => {
+ *   element.classList.add('fade-in');
+ * }, 100);
+ * ```
  */
 export function stagger(
   elements: HTMLElement[],
@@ -70,7 +97,18 @@ export function stagger(
 }
 
 /**
- * Fade in element
+ * Fades an element in with a smooth transition
+ *
+ * @param element - The HTML element to fade in
+ * @param duration - Animation duration in milliseconds (default: 300)
+ * @returns A promise that resolves when the animation completes
+ *
+ * @example
+ * ```typescript
+ * const modal = document.querySelector('.modal');
+ * await fadeIn(modal, 500);
+ * console.log('Modal is now visible');
+ * ```
  */
 export function fadeIn(
   element: HTMLElement,
@@ -88,7 +126,18 @@ export function fadeIn(
 }
 
 /**
- * Fade out element
+ * Fades an element out with a smooth transition
+ *
+ * @param element - The HTML element to fade out
+ * @param duration - Animation duration in milliseconds (default: 300)
+ * @returns A promise that resolves when the animation completes
+ *
+ * @example
+ * ```typescript
+ * const alert = document.querySelector('.alert');
+ * await fadeOut(alert, 500);
+ * alert.remove();
+ * ```
  */
 export function fadeOut(
   element: HTMLElement,
@@ -102,7 +151,18 @@ export function fadeOut(
 }
 
 /**
- * Slide element
+ * Slides an element in a specified direction
+ *
+ * @param element - The HTML element to slide
+ * @param direction - Slide direction: 'up', 'down', 'left', or 'right'
+ * @param duration - Animation duration in milliseconds (default: 300)
+ * @returns A promise that resolves when the animation completes
+ *
+ * @example
+ * ```typescript
+ * const drawer = document.querySelector('.drawer');
+ * await slide(drawer, 'left', 400);
+ * ```
  */
 export function slide(
   element: HTMLElement,

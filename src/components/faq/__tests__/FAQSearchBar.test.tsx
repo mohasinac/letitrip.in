@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { FAQSearchBar } from "../FAQSearchBar";
-import { UI_PLACEHOLDERS } from "@/constants/ui";
+import { UI_PLACEHOLDERS } from "@/constants";
 
 describe("FAQSearchBar", () => {
   const mockOnSearch = jest.fn();

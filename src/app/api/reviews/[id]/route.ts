@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   requireAuthFromRequest,
   requireRoleFromRequest,
@@ -48,7 +49,10 @@ export async function GET(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`GET /api/reviews/${id} error:`, error);
+    console.error(
+      `GET /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_GET_ERROR}`,
+      error,
+    );
 
     if (error instanceof NotFoundError) {
       return NextResponse.json(
@@ -122,7 +126,10 @@ export async function PATCH(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`PATCH /api/reviews/${id} error:`, error);
+    console.error(
+      `PATCH /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_PATCH_ERROR}`,
+      error,
+    );
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -195,7 +202,10 @@ export async function DELETE(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`DELETE /api/reviews/${id} error:`, error);
+    console.error(
+      `DELETE /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_DELETE_ERROR}`,
+      error,
+    );
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   requireRoleFromRequest,
   getUserFromRequest,
@@ -71,7 +72,10 @@ export async function GET(
     }
 
     const { id } = await params;
-    console.error(`GET /api/products/${id} error:`, error);
+    console.error(
+      `GET /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_GET_ERROR}`,
+      error,
+    );
     return NextResponse.json(
       { success: false, error: "Failed to fetch product" },
       { status: 500 },
@@ -176,7 +180,10 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    console.error(`PATCH /api/products/${id} error:`, error);
+    console.error(
+      `PATCH /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_PATCH_ERROR}`,
+      error,
+    );
     return NextResponse.json(
       { success: false, error: "Failed to update product" },
       { status: 500 },
@@ -264,7 +271,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.error(`DELETE /api/products/${id} error:`, error);
+    console.error(
+      `DELETE /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_DELETE_ERROR}`,
+      error,
+    );
     return NextResponse.json(
       { success: false, error: "Failed to delete product" },
       { status: 500 },

@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useRef, useState, useCallback } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
-import { useClickOutside, useKeyPress } from '@/hooks';
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+import { THEME_CONSTANTS } from "@/constants";
+import { useClickOutside, useKeyPress } from "@/hooks";
 
 interface MenuContextType {
   isOpen: boolean;
@@ -23,7 +29,7 @@ export interface MenuTriggerProps {
 
 export interface MenuContentProps {
   children: React.ReactNode;
-  position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+  position?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
   className?: string;
 }
 
@@ -38,7 +44,7 @@ export interface MenuSeparatorProps {
   className?: string;
 }
 
-export default function Menu({ children, className = '' }: MenuProps) {
+export default function Menu({ children, className = "" }: MenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +52,7 @@ export default function Menu({ children, className = '' }: MenuProps) {
   useClickOutside(menuRef, () => setIsOpen(false), { enabled: isOpen });
 
   // Close on Escape key
-  useKeyPress('Escape', () => setIsOpen(false), { enabled: isOpen });
+  useKeyPress("Escape", () => setIsOpen(false), { enabled: isOpen });
 
   return (
     <MenuContext.Provider value={{ isOpen, setIsOpen }}>
@@ -57,11 +63,11 @@ export default function Menu({ children, className = '' }: MenuProps) {
   );
 }
 
-export function MenuTrigger({ children, className = '' }: MenuTriggerProps) {
+export function MenuTrigger({ children, className = "" }: MenuTriggerProps) {
   const context = useContext(MenuContext);
-  
+
   if (!context) {
-    throw new Error('MenuTrigger must be used within Menu');
+    throw new Error("MenuTrigger must be used within Menu");
   }
 
   const { isOpen, setIsOpen } = context;
@@ -83,12 +89,16 @@ export function MenuTrigger({ children, className = '' }: MenuTriggerProps) {
   );
 }
 
-export function MenuContent({ children, position = 'bottom-left', className = '' }: MenuContentProps) {
+export function MenuContent({
+  children,
+  position = "bottom-left",
+  className = "",
+}: MenuContentProps) {
   const context = useContext(MenuContext);
   const { themed } = THEME_CONSTANTS;
-  
+
   if (!context) {
-    throw new Error('MenuContent must be used within Menu');
+    throw new Error("MenuContent must be used within Menu");
   }
 
   const { isOpen } = context;
@@ -96,10 +106,10 @@ export function MenuContent({ children, position = 'bottom-left', className = ''
   if (!isOpen) return null;
 
   const positionClasses = {
-    'bottom-left': 'top-full left-0 mt-2',
-    'bottom-right': 'top-full right-0 mt-2',
-    'top-left': 'bottom-full left-0 mb-2',
-    'top-right': 'bottom-full right-0 mb-2',
+    "bottom-left": "top-full left-0 mt-2",
+    "bottom-right": "top-full right-0 mt-2",
+    "top-left": "bottom-full left-0 mb-2",
+    "top-right": "bottom-full right-0 mb-2",
   };
 
   return (
@@ -117,12 +127,17 @@ export function MenuContent({ children, position = 'bottom-left', className = ''
   );
 }
 
-export function MenuItem({ children, onClick, disabled = false, className = '' }: MenuItemProps) {
+export function MenuItem({
+  children,
+  onClick,
+  disabled = false,
+  className = "",
+}: MenuItemProps) {
   const context = useContext(MenuContext);
   const { themed } = THEME_CONSTANTS;
-  
+
   if (!context) {
-    throw new Error('MenuItem must be used within Menu');
+    throw new Error("MenuItem must be used within Menu");
   }
 
   const { setIsOpen } = context;
@@ -134,12 +149,15 @@ export function MenuItem({ children, onClick, disabled = false, className = '' }
     }
   }, [disabled, onClick, setIsOpen]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
-    }
-  }, [handleClick]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleClick();
+      }
+    },
+    [handleClick],
+  );
 
   return (
     <button
@@ -149,9 +167,10 @@ export function MenuItem({ children, onClick, disabled = false, className = '' }
       disabled={disabled}
       className={`
         w-full text-left px-4 py-2 text-sm
-        ${disabled 
-          ? `${themed.textMuted} cursor-not-allowed` 
-          : `${themed.textPrimary} ${themed.hover} cursor-pointer`
+        ${
+          disabled
+            ? `${themed.textMuted} cursor-not-allowed`
+            : `${themed.textPrimary} ${themed.hover} cursor-pointer`
         }
         transition-colors
         ${className}
@@ -163,13 +182,13 @@ export function MenuItem({ children, onClick, disabled = false, className = '' }
   );
 }
 
-export function MenuSeparator({ className = '' }: MenuSeparatorProps) {
+export function MenuSeparator({ className = "" }: MenuSeparatorProps) {
   const { themed } = THEME_CONSTANTS;
-  
+
   return (
-    <div 
-      role="separator" 
-      className={`my-1 border-t ${themed.border} ${className}`} 
+    <div
+      role="separator"
+      className={`my-1 border-t ${themed.border} ${className}`}
     />
   );
 }

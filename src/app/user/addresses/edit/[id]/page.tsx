@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
+import { useAuth, useAddressForm } from "@/hooks";
 import {
   useAddress,
   useUpdateAddress,
@@ -11,52 +11,7 @@ import { Card, Heading, Button, Input, Select, Checkbox } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
-
-const ADDRESS_TYPES = [
-  { value: "home", label: "Home" },
-  { value: "work", label: "Work" },
-  { value: "other", label: "Other" },
-];
-
-const INDIAN_STATES = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
-];
+import { THEME_CONSTANTS, ADDRESS_TYPES, INDIAN_STATES } from "@/constants";
 
 export default function EditAddressPage() {
   const { user, loading: authLoading } = useAuth();
@@ -69,19 +24,8 @@ export default function EditAddressPage() {
   const { deleteAddress, loading: deleting } = useDeleteAddress();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    pincode: "",
-    addressLine1: "",
-    addressLine2: "",
-    landmark: "",
-    city: "",
-    state: "",
-    addressType: "home",
-    isDefault: false,
-  });
+  const { formData, errors, handleChange, validate, setFormData } =
+    useAddressForm();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -104,35 +48,12 @@ export default function EditAddressPage() {
         isDefault: address.isDefault,
       });
     }
-  }, [address]);
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = "Phone number is required";
-    } else if (!/^[6-9]\d{9}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = "Enter a valid 10-digit mobile number";
-    }
-    if (!formData.pincode.trim()) {
-      newErrors.pincode = "Pincode is required";
-    } else if (!/^\d{6}$/.test(formData.pincode.trim())) {
-      newErrors.pincode = "Enter a valid 6-digit pincode";
-    }
-    if (!formData.addressLine1.trim())
-      newErrors.addressLine1 = "Address is required";
-    if (!formData.city.trim()) newErrors.city = "City is required";
-    if (!formData.state) newErrors.state = "State is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  }, [address, setFormData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm() || !user) return;
+    if (!validate() || !user) return;
 
     try {
       await updateAddress(addressId, user.uid, {
@@ -154,13 +75,6 @@ export default function EditAddressPage() {
     } catch (error) {
       console.error("Error deleting address:", error);
       alert("Failed to delete address. Please try again.");
-    }
-  };
-
-  const handleChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 

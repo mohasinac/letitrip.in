@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { FAQDocument } from "@/db/schema/faqs";
 
@@ -51,7 +51,7 @@ export function FAQAccordion({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={THEME_CONSTANTS.spacing.stack}>
       {faqs.map((faq) => {
         const isExpanded = expandedIds.has(faq.id);
 

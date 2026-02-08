@@ -1,12 +1,12 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Divider Component
- * 
+ *
  * A visual separator line with optional label text.
  * Supports horizontal and vertical orientations.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -18,18 +18,18 @@ import { THEME_CONSTANTS } from '@/constants/theme';
 
 interface DividerProps {
   label?: string;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   className?: string;
 }
 
 export default function Divider({
   label,
-  orientation = 'horizontal',
-  className = '',
+  orientation = "horizontal",
+  className = "",
 }: DividerProps) {
   const { themed } = THEME_CONSTANTS;
 
-  if (orientation === 'vertical') {
+  if (orientation === "vertical") {
     return (
       <div
         className={`w-px h-full ${themed.borderLight} ${className}`}
@@ -43,7 +43,9 @@ export default function Divider({
     return (
       <div className={`flex items-center gap-4 ${className}`} role="separator">
         <div className={`flex-1 h-px ${themed.borderLight}`} />
-        <span className={`text-sm font-medium ${themed.textMuted}`}>{label}</span>
+        <span className={`text-sm font-medium ${themed.textMuted}`}>
+          {label}
+        </span>
         <div className={`flex-1 h-px ${themed.borderLight}`} />
       </div>
     );

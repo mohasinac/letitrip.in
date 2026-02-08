@@ -1,76 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
+import { useAuth, useAddressForm } from "@/hooks";
 import { Card, Heading, Button, Input, Select, Checkbox } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
-import { UI_LABELS, UI_PLACEHOLDERS } from "@/constants";
-import { THEME_CONSTANTS } from "@/constants/theme";
-
-const ADDRESS_TYPES = [
-  { value: "home", label: "Home" },
-  { value: "work", label: "Work" },
-  { value: "other", label: "Other" },
-];
-
-const INDIAN_STATES = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
-];
+import {
+  UI_LABELS,
+  UI_PLACEHOLDERS,
+  THEME_CONSTANTS,
+  ADDRESS_TYPES,
+  INDIAN_STATES,
+} from "@/constants";
 
 export default function AddAddressPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    pincode: "",
-    addressLine1: "",
-    addressLine2: "",
-    landmark: "",
-    city: "",
-    state: "",
-    addressType: "home",
-    isDefault: false,
-  });
+  const { formData, errors, handleChange, validate } = useAddressForm();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -78,45 +25,10 @@ export default function AddAddressPage() {
     }
   }, [user, loading, router]);
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    }
-
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = "Phone number is required";
-    } else if (!/^[6-9]\d{9}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = "Enter a valid 10-digit mobile number";
-    }
-
-    if (!formData.pincode.trim()) {
-      newErrors.pincode = "Pincode is required";
-    } else if (!/^\d{6}$/.test(formData.pincode.trim())) {
-      newErrors.pincode = "Enter a valid 6-digit pincode";
-    }
-
-    if (!formData.addressLine1.trim()) {
-      newErrors.addressLine1 = "Address is required";
-    }
-
-    if (!formData.city.trim()) {
-      newErrors.city = "City is required";
-    }
-
-    if (!formData.state) {
-      newErrors.state = "State is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!validate()) {
       return;
     }
 
@@ -135,13 +47,6 @@ export default function AddAddressPage() {
       alert("Failed to save address. Please try again.");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 

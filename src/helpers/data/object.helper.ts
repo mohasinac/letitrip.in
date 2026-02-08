@@ -5,7 +5,19 @@
  */
 
 /**
- * Deep merge two objects
+ * Performs a deep merge of two objects, recursively merging nested objects
+ *
+ * @param target - The target object to merge into
+ * @param source - The source object to merge from
+ * @returns A new object with merged properties
+ *
+ * @example
+ * ```typescript
+ * const defaults = { a: 1, b: { c: 2 } };
+ * const custom = { b: { d: 3 } };
+ * const result = deepMerge(defaults, custom);
+ * console.log(result); // { a: 1, b: { c: 2, d: 3 } }
+ * ```
  */
 export function deepMerge<T extends Record<string, any>>(
   target: T,
@@ -35,7 +47,18 @@ export function deepMerge<T extends Record<string, any>>(
 }
 
 /**
- * Pick specific keys from object
+ * Creates a new object with only the specified keys from the source object
+ *
+ * @param obj - The source object
+ * @param keys - Array of keys to include
+ * @returns A new object with only the picked keys
+ *
+ * @example
+ * ```typescript
+ * const user = { id: 1, name: 'Alice', email: 'alice@example.com', password: 'secret' };
+ * const safe = pick(user, ['id', 'name', 'email']);
+ * console.log(safe); // { id: 1, name: 'Alice', email: 'alice@example.com' }
+ * ```
  */
 export function pick<T extends Record<string, any>, K extends keyof T>(
   obj: T,
@@ -51,7 +74,18 @@ export function pick<T extends Record<string, any>, K extends keyof T>(
 }
 
 /**
- * Omit specific keys from object
+ * Creates a new object excluding the specified keys from the source object
+ *
+ * @param obj - The source object
+ * @param keys - Array of keys to exclude
+ * @returns A new object without the omitted keys
+ *
+ * @example
+ * ```typescript
+ * const user = { id: 1, name: 'Alice', password: 'secret' };
+ * const safe = omit(user, ['password']);
+ * console.log(safe); // { id: 1, name: 'Alice' }
+ * ```
  */
 export function omit<T extends Record<string, any>, K extends keyof T>(
   obj: T,
@@ -65,21 +99,52 @@ export function omit<T extends Record<string, any>, K extends keyof T>(
 }
 
 /**
- * Check if object is empty
+ * Checks if an object has no properties
+ *
+ * @param obj - The object to check
+ * @returns True if the object is empty
+ *
+ * @example
+ * ```typescript
+ * console.log(isEmptyObject({})); // true
+ * console.log(isEmptyObject({ a: 1 })); // false
+ * ```
  */
 export function isEmptyObject(obj: Record<string, any>): boolean {
   return Object.keys(obj).length === 0;
 }
 
 /**
- * Get nested property value
+ * Gets a nested property value using dot notation
+ *
+ * @param obj - The object to query
+ * @param path - The property path (e.g., 'user.address.city')
+ * @returns The value at the path, or undefined if not found
+ *
+ * @example
+ * ```typescript
+ * const data = { user: { address: { city: 'NYC' } } };
+ * const city = getNestedValue<string>(data, 'user.address.city');
+ * console.log(city); // 'NYC'
+ * ```
  */
 export function getNestedValue<T>(obj: any, path: string): T | undefined {
   return path.split(".").reduce((current, key) => current?.[key], obj);
 }
 
 /**
- * Set nested property value
+ * Sets a nested property value using dot notation, creating intermediate objects as needed
+ *
+ * @param obj - The object to modify
+ * @param path - The property path (e.g., 'user.address.city')
+ * @param value - The value to set
+ *
+ * @example
+ * ```typescript
+ * const data = {};
+ * setNestedValue(data, 'user.address.city', 'NYC');
+ * console.log(data); // { user: { address: { city: 'NYC' } } }
+ * ```
  */
 export function setNestedValue(obj: any, path: string, value: any): void {
   const keys = path.split(".");
@@ -96,7 +161,18 @@ export function setNestedValue(obj: any, path: string, value: any): void {
 }
 
 /**
- * Deep clone object
+ * Creates a deep clone of an object, handling nested objects and arrays
+ *
+ * @param obj - The object to clone
+ * @returns A deep copy of the object
+ *
+ * @example
+ * ```typescript
+ * const original = { a: 1, b: { c: 2 } };
+ * const clone = deepCloneObject(original);
+ * clone.b.c = 3;
+ * console.log(original.b.c); // 2 (unchanged)
+ * ```
  */
 export function deepCloneObject<T>(obj: T): T {
   if (obj === null || typeof obj !== "object") {
@@ -116,7 +192,17 @@ export function deepCloneObject<T>(obj: T): T {
 }
 
 /**
- * Compare two objects for equality
+ * Performs a deep equality comparison of two values
+ *
+ * @param obj1 - The first value to compare
+ * @param obj2 - The second value to compare
+ * @returns True if values are deeply equal
+ *
+ * @example
+ * ```typescript
+ * console.log(isEqual({ a: 1 }, { a: 1 })); // true
+ * console.log(isEqual({ a: 1 }, { a: 2 })); // false
+ * ```
  */
 export function isEqual(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) return true;
@@ -139,7 +225,18 @@ export function isEqual(obj1: any, obj2: any): boolean {
 }
 
 /**
- * Clean object (remove null, undefined, empty strings)
+ * Removes null, undefined, and/or empty string values from an object
+ *
+ * @param obj - The object to clean
+ * @param options - Configuration for what to remove
+ * @returns A new object without the specified empty values
+ *
+ * @example
+ * ```typescript
+ * const data = { a: 1, b: null, c: '', d: undefined };
+ * const result = cleanObject(data);
+ * console.log(result); // { a: 1 }
+ * ```
  */
 export function cleanObject<T extends Record<string, any>>(
   obj: T,
@@ -170,7 +267,17 @@ export function cleanObject<T extends Record<string, any>>(
 }
 
 /**
- * Invert object (swap keys and values)
+ * Swaps the keys and values of an object
+ *
+ * @param obj - The object to invert
+ * @returns A new object with keys and values swapped
+ *
+ * @example
+ * ```typescript
+ * const codes = { US: 'United States', UK: 'United Kingdom' };
+ * const inverted = invertObject(codes);
+ * console.log(inverted); // { 'United States': 'US', 'United Kingdom': 'UK' }
+ * ```
  */
 export function invertObject(
   obj: Record<string, string>,

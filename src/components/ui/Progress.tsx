@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Progress Bar Component
- * 
+ *
  * Visual indicator of task completion or loading progress.
  * Supports multiple variants and optional label.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -21,8 +21,8 @@ import { THEME_CONSTANTS } from '@/constants/theme';
 interface ProgressProps {
   value: number;
   max?: number;
-  variant?: 'primary' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "success" | "warning" | "error";
+  size?: "sm" | "md" | "lg";
   label?: string;
   showValue?: boolean;
   className?: string;
@@ -31,27 +31,27 @@ interface ProgressProps {
 export default function Progress({
   value,
   max = 100,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   label,
   showValue = false,
-  className = '',
+  className = "",
 }: ProgressProps) {
   const { themed } = THEME_CONSTANTS;
-  
+
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   const sizeClasses = {
-    sm: 'h-1',
-    md: 'h-2',
-    lg: 'h-3',
+    sm: "h-1",
+    md: "h-2",
+    lg: "h-3",
   };
 
   const variantClasses = {
-    primary: 'bg-blue-600 dark:bg-blue-500',
-    success: 'bg-green-600 dark:bg-green-500',
-    warning: 'bg-yellow-600 dark:bg-yellow-500',
-    error: 'bg-red-600 dark:bg-red-500',
+    primary: "bg-blue-600 dark:bg-blue-500",
+    success: "bg-green-600 dark:bg-green-500",
+    warning: "bg-yellow-600 dark:bg-yellow-500",
+    error: "bg-red-600 dark:bg-red-500",
   };
 
   return (
@@ -70,7 +70,7 @@ export default function Progress({
           )}
         </div>
       )}
-      
+
       <div
         className={`
           w-full ${sizeClasses[size]} rounded-full overflow-hidden
@@ -97,41 +97,43 @@ export default function Progress({
 
 // IndeterminateProgress - for unknown duration tasks
 interface IndeterminateProgressProps {
-  variant?: 'primary' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "success" | "warning" | "error";
+  size?: "sm" | "md" | "lg";
   label?: string;
   className?: string;
 }
 
 export function IndeterminateProgress({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   label,
-  className = '',
+  className = "",
 }: IndeterminateProgressProps) {
   const { themed } = THEME_CONSTANTS;
 
   const sizeClasses = {
-    sm: 'h-1',
-    md: 'h-2',
-    lg: 'h-3',
+    sm: "h-1",
+    md: "h-2",
+    lg: "h-3",
   };
 
   const variantClasses = {
-    primary: 'bg-blue-600 dark:bg-blue-500',
-    success: 'bg-green-600 dark:bg-green-500',
-    warning: 'bg-yellow-600 dark:bg-yellow-500',
-    error: 'bg-red-600 dark:bg-red-500',
+    primary: "bg-blue-600 dark:bg-blue-500",
+    success: "bg-green-600 dark:bg-green-500",
+    warning: "bg-yellow-600 dark:bg-yellow-500",
+    error: "bg-red-600 dark:bg-red-500",
   };
 
   return (
     <div className={className}>
       {label && (
-        <span className={`block text-sm font-medium mb-2 ${themed.textPrimary}`}>
+        <span
+          className={`block text-sm font-medium mb-2 ${themed.textPrimary}`}
+        >
           {label}
         </span>
       )}
-      
+
       <div
         className={`
           w-full ${sizeClasses[size]} rounded-full overflow-hidden
@@ -139,7 +141,7 @@ export function IndeterminateProgress({
           relative
         `}
         role="progressbar"
-        aria-label={label || 'Loading...'}
+        aria-label={label || "Loading..."}
       >
         <div
           className={`
@@ -148,12 +150,12 @@ export function IndeterminateProgress({
             rounded-full
           `}
           style={{
-            width: '40%',
-            animation: 'progress-indeterminate 1.5s ease-in-out infinite',
+            width: "40%",
+            animation: "progress-indeterminate 1.5s ease-in-out infinite",
           }}
         />
       </div>
-      
+
       <style jsx>{`
         @keyframes progress-indeterminate {
           0% {

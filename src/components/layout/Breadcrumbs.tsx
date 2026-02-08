@@ -1,12 +1,12 @@
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Breadcrumbs Component
- * 
+ *
  * Navigation hierarchy showing the user's location in the application.
  * Automatically adds separators between items.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -26,8 +26,8 @@ interface BreadcrumbsProps {
 
 export default function Breadcrumbs({
   children,
-  separator = '/',
-  className = '',
+  separator = "/",
+  className = "",
 }: BreadcrumbsProps) {
   const items = React.Children.toArray(children);
   const { themed } = THEME_CONSTANTS;
@@ -66,7 +66,7 @@ export function BreadcrumbItem({
   href,
   current = false,
   children,
-  className = '',
+  className = "",
   onClick,
 }: BreadcrumbItemProps) {
   const { themed } = THEME_CONSTANTS;

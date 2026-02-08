@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { SITE_CONFIG } from "@/constants/site";
 import Link from "next/link";
 

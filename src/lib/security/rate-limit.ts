@@ -87,6 +87,16 @@ export async function rateLimit(
   request: NextRequest | Request,
   config: RateLimitConfig = { limit: 10, window: 60 },
 ): Promise<RateLimitResult> {
+  // Skip rate limiting in development
+  if (process.env.NODE_ENV === "development") {
+    return {
+      success: true,
+      limit: config.limit,
+      remaining: config.limit,
+      reset: Math.ceil((Date.now() + config.window * 1000) / 1000),
+    };
+  }
+
   const identifier = config.identifier || getClientIP(request);
   const now = Date.now();
   const windowMs = config.window * 1000;

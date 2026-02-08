@@ -18,6 +18,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -108,7 +109,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     // TODO: Use handleApiError from error handler
-    console.error("GET /api/products error:", error);
+    console.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
       { status: 500 },
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("POST /api/products error:", error);
+    console.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, error);
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
       { status: 500 },

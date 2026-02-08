@@ -27,7 +27,7 @@ import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES, ROUTES } from "@/constants";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/hooks";
 
@@ -138,10 +138,14 @@ function LoginForm() {
               <span className="text-white text-2xl font-bold">L</span>
             </div>
           </div>
-          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h1
+            className={`mt-6 text-center text-3xl font-extrabold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Sign in to your account
           </h1>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p
+            className={`mt-2 text-center text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+          >
             Or{" "}
             <Link
               href={ROUTES.AUTH.REGISTER}
@@ -161,7 +165,7 @@ function LoginForm() {
 
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <Input
               id="email"
               name="email"

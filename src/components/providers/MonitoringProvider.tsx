@@ -1,7 +1,7 @@
 /**
  * Monitoring Initialization Component
  *
- * Sets up all monitoring systems on app load
+ * Sets up all monitoring and logging systems on app load
  */
 
 "use client";
@@ -11,6 +11,7 @@ import {
   setupGlobalErrorHandler,
   setupCacheMonitoring,
 } from "@/lib/monitoring";
+import { initializeClientLogger } from "@/helpers";
 
 export function MonitoringProvider({
   children,
@@ -18,15 +19,17 @@ export function MonitoringProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    // Setup global error handlers
-    setupGlobalErrorHandler();
+    // Initialize centralized error logging
+    // Sets up global handlers for unhandled promise rejections and errors
+    initializeClientLogger();
 
-    // Setup cache monitoring
+    // Setup monitoring systems (analytics, performance tracking)
+    setupGlobalErrorHandler();
     setupCacheMonitoring();
 
     // Log initialization
     if (process.env.NODE_ENV === "development") {
-      console.log("✅ Monitoring systems initialized");
+      console.log("✅ Monitoring and logging systems initialized");
     }
   }, []);
 

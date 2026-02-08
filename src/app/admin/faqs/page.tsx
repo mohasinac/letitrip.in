@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { DataTable, RichTextEditor } from "@/components/admin";
 import { Card, Button } from "@/components";
 
@@ -179,7 +179,9 @@ export default function AdminFAQsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             {isCreating ? "Create FAQ" : "Edit FAQ"}
           </h1>
           <div className="flex gap-2">
@@ -199,7 +201,7 @@ export default function AdminFAQsPage() {
         </div>
 
         <Card>
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Question
@@ -230,7 +232,9 @@ export default function AdminFAQsPage() {
 
               {showVariableHelper && (
                 <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p
+                    className={`text-xs ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
+                  >
                     Click to insert variable into answer:
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -372,10 +376,12 @@ export default function AdminFAQsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             FAQs
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
             Manage frequently asked questions
           </p>
         </div>

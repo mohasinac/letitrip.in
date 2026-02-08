@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 
 interface WhatsAppConfig {
@@ -80,7 +79,7 @@ export function WhatsAppCommunitySection() {
             <div className="text-7xl mb-6">💬</div>
 
             {/* Heading */}
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            <h2 className={`${THEME_CONSTANTS.typography.h2} mb-3`}>
               Join Our WhatsApp Community
             </h2>
             <p className="text-lg md:text-xl mb-2 opacity-90">

@@ -1,51 +1,51 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface SkeletonProps {
-  variant?: 'text' | 'circular' | 'rectangular';
+  variant?: "text" | "circular" | "rectangular";
   width?: string | number;
   height?: string | number;
   className?: string;
-  animation?: 'pulse' | 'wave' | 'none';
+  animation?: "pulse" | "wave" | "none";
 }
 
 export default function Skeleton({
-  variant = 'text',
+  variant = "text",
   width,
   height,
-  className = '',
-  animation = 'pulse',
+  className = "",
+  animation = "pulse",
 }: SkeletonProps) {
   const getVariantClasses = () => {
     switch (variant) {
-      case 'circular':
-        return 'rounded-full';
-      case 'rectangular':
-        return 'rounded';
-      case 'text':
+      case "circular":
+        return "rounded-full";
+      case "rectangular":
+        return "rounded";
+      case "text":
       default:
-        return 'rounded';
+        return "rounded";
     }
   };
 
   const getDefaultSize = () => {
     switch (variant) {
-      case 'circular':
-        return { width: '40px', height: '40px' };
-      case 'rectangular':
-        return { width: '100%', height: '140px' };
-      case 'text':
+      case "circular":
+        return { width: "40px", height: "40px" };
+      case "rectangular":
+        return { width: "100%", height: "140px" };
+      case "text":
       default:
-        return { width: '100%', height: '1em' };
+        return { width: "100%", height: "1em" };
     }
   };
 
   const animationClasses = {
-    pulse: 'animate-pulse',
-    wave: 'skeleton-wave',
-    none: '',
+    pulse: "animate-pulse",
+    wave: "skeleton-wave",
+    none: "",
   };
 
   const defaultSize = getDefaultSize();
@@ -72,13 +72,14 @@ export default function Skeleton({
         <span className="sr-only">Loading...</span>
       </div>
 
-      {animation === 'wave' && (
+      {animation === "wave" && (
         <style jsx>{`
           @keyframes wave {
             0% {
               transform: translateX(-100%);
             }
-            50%, 100% {
+            50%,
+            100% {
               transform: translateX(100%);
             }
           }
@@ -89,7 +90,7 @@ export default function Skeleton({
           }
 
           .skeleton-wave::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
@@ -110,23 +111,29 @@ export default function Skeleton({
 }
 
 // Convenience components for common patterns
-export function SkeletonText({ lines = 3, className = '' }: { lines?: number; className?: string }) {
+export function SkeletonText({
+  lines = 3,
+  className = "",
+}: {
+  lines?: number;
+  className?: string;
+}) {
   return (
     <div className={`space-y-2 ${className}`}>
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
           key={i}
           variant="text"
-          width={i === lines - 1 ? '80%' : '100%'}
+          width={i === lines - 1 ? "80%" : "100%"}
         />
       ))}
     </div>
   );
 }
 
-export function SkeletonCard({ className = '' }: { className?: string }) {
+export function SkeletonCard({ className = "" }: { className?: string }) {
   const { themed } = THEME_CONSTANTS;
-  
+
   return (
     <div className={`border ${themed.border} rounded-lg p-4 ${className}`}>
       <Skeleton variant="rectangular" height="200px" className="mb-4" />
@@ -136,7 +143,13 @@ export function SkeletonCard({ className = '' }: { className?: string }) {
   );
 }
 
-export function SkeletonAvatar({ size = 40, className = '' }: { size?: number; className?: string }) {
+export function SkeletonAvatar({
+  size = 40,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
     <Skeleton
       variant="circular"

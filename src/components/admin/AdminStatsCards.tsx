@@ -5,7 +5,7 @@
 import { Card } from "@/components";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface StatsCardsProps {
   stats: {

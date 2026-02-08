@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("GET /api/carousel error:", error);
+    console.error(ERROR_MESSAGES.API.CAROUSEL_GET_ERROR, error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch carousel slides" },
       { status: 500 },
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("POST /api/carousel error:", error);
+    console.error(ERROR_MESSAGES.API.CAROUSEL_POST_ERROR, error);
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

@@ -5,14 +5,32 @@
  */
 
 /**
- * Capitalize first letter
+ * Capitalizes the first letter of a string and lowercases the rest
+ *
+ * @param str - The string to capitalize
+ * @returns The capitalized string
+ *
+ * @example
+ * ```typescript
+ * const result = capitalize('hello world');
+ * console.log(result); // 'Hello world'
+ * ```
  */
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 /**
- * Capitalize all words
+ * Capitalizes the first letter of each word in a string
+ *
+ * @param str - The string to capitalize
+ * @returns The string with all words capitalized
+ *
+ * @example
+ * ```typescript
+ * const result = capitalizeWords('hello world');
+ * console.log(result); // 'Hello World'
+ * ```
  */
 export function capitalizeWords(str: string): string {
   return str
@@ -22,7 +40,16 @@ export function capitalizeWords(str: string): string {
 }
 
 /**
- * Convert to camelCase
+ * Converts a string to camelCase format
+ *
+ * @param str - The string to convert
+ * @returns The string in camelCase format
+ *
+ * @example
+ * ```typescript
+ * const result = toCamelCase('Hello World');
+ * console.log(result); // 'helloWorld'
+ * ```
  */
 export function toCamelCase(str: string): string {
   return str
@@ -33,7 +60,16 @@ export function toCamelCase(str: string): string {
 }
 
 /**
- * Convert to PascalCase
+ * Converts a string to PascalCase format
+ *
+ * @param str - The string to convert
+ * @returns The string in PascalCase format
+ *
+ * @example
+ * ```typescript
+ * const result = toPascalCase('hello world');
+ * console.log(result); // 'HelloWorld'
+ * ```
  */
 export function toPascalCase(str: string): string {
   return str
@@ -42,7 +78,16 @@ export function toPascalCase(str: string): string {
 }
 
 /**
- * Convert to snake_case
+ * Converts a string to snake_case format
+ *
+ * @param str - The string to convert
+ * @returns The string in snake_case format
+ *
+ * @example
+ * ```typescript
+ * const result = toSnakeCase('helloWorld');
+ * console.log(result); // 'hello_world'
+ * ```
  */
 export function toSnakeCase(str: string): string {
   return str
@@ -53,7 +98,16 @@ export function toSnakeCase(str: string): string {
 }
 
 /**
- * Convert to kebab-case
+ * Converts a string to kebab-case format
+ *
+ * @param str - The string to convert
+ * @returns The string in kebab-case format
+ *
+ * @example
+ * ```typescript
+ * const result = toKebabCase('helloWorld');
+ * console.log(result); // 'hello-world'
+ * ```
  */
 export function toKebabCase(str: string): string {
   return str
@@ -64,7 +118,18 @@ export function toKebabCase(str: string): string {
 }
 
 /**
- * Truncate string with ellipsis
+ * Truncates a string to a maximum length and adds a suffix if truncated
+ *
+ * @param str - The string to truncate
+ * @param maxLength - The maximum length of the resulting string
+ * @param suffix - The suffix to add when truncated (default: '...')
+ * @returns The truncated string with suffix if applicable
+ *
+ * @example
+ * ```typescript
+ * const result = truncate('Hello World', 8);
+ * console.log(result); // 'Hello...'
+ * ```
  */
 export function truncate(
   str: string,
@@ -76,7 +141,18 @@ export function truncate(
 }
 
 /**
- * Truncate words (preserve word boundaries)
+ * Truncates a string to a maximum number of words, preserving word boundaries
+ *
+ * @param str - The string to truncate
+ * @param wordCount - The maximum number of words
+ * @param suffix - The suffix to add when truncated (default: '...')
+ * @returns The truncated string with suffix if applicable
+ *
+ * @example
+ * ```typescript
+ * const result = truncateWords('Hello world from TypeScript', 2);
+ * console.log(result); // 'Hello world...'
+ * ```
  */
 export function truncateWords(
   str: string,
@@ -89,14 +165,32 @@ export function truncateWords(
 }
 
 /**
- * Remove HTML tags
+ * Removes all HTML tags from a string
+ *
+ * @param html - The HTML string to process
+ * @returns The plain text without HTML tags
+ *
+ * @example
+ * ```typescript
+ * const result = stripHtml('<p>Hello <strong>World</strong></p>');
+ * console.log(result); // 'Hello World'
+ * ```
  */
 export function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "");
 }
 
 /**
- * Escape HTML entities
+ * Escapes HTML special characters to prevent XSS attacks
+ *
+ * @param str - The string to escape
+ * @returns The escaped string safe for HTML insertion
+ *
+ * @example
+ * ```typescript
+ * const result = escapeHtml('<script>alert("XSS")</script>');
+ * console.log(result); // '&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;'
+ * ```
  */
 export function escapeHtml(str: string): string {
   const map: Record<string, string> = {
@@ -112,7 +206,16 @@ export function escapeHtml(str: string): string {
 }
 
 /**
- * Generate slug from string
+ * Converts a string to a URL-friendly slug
+ *
+ * @param str - The string to slugify
+ * @returns A URL-safe slug with lowercase letters, numbers, and hyphens
+ *
+ * @example
+ * ```typescript
+ * const result = slugify('Hello World! This is a Test');
+ * console.log(result); // 'hello-world-this-is-a-test'
+ * ```
  */
 export function slugify(str: string): string {
   return str
@@ -124,7 +227,19 @@ export function slugify(str: string): string {
 }
 
 /**
- * Mask string (e.g., credit card, email)
+ * Masks a string while keeping specified characters visible at start and end
+ *
+ * @param str - The string to mask
+ * @param visibleStart - Number of visible characters at the start (default: 4)
+ * @param visibleEnd - Number of visible characters at the end (default: 4)
+ * @param maskChar - The character to use for masking (default: '*')
+ * @returns The masked string
+ *
+ * @example
+ * ```typescript
+ * const result = maskString('1234567890', 4, 4);
+ * console.log(result); // '1234**7890'
+ * ```
  */
 export function maskString(
   str: string,
@@ -142,7 +257,16 @@ export function maskString(
 }
 
 /**
- * Generate random string
+ * Generates a random alphanumeric string
+ *
+ * @param length - The length of the random string (default: 10)
+ * @returns A random string containing letters and numbers
+ *
+ * @example
+ * ```typescript
+ * const result = randomString(8);
+ * console.log(result); // 'aB3xY9zK' (example output)
+ * ```
  */
 export function randomString(length: number = 10): string {
   const chars =
@@ -157,21 +281,48 @@ export function randomString(length: number = 10): string {
 }
 
 /**
- * Check if string is empty or whitespace
+ * Checks if a string is empty, null, undefined, or contains only whitespace
+ *
+ * @param str - The string to check
+ * @returns True if the string is empty or whitespace-only
+ *
+ * @example
+ * ```typescript
+ * console.log(isEmptyString('   ')); // true
+ * console.log(isEmptyString('hello')); // false
+ * ```
  */
 export function isEmptyString(str: string | null | undefined): boolean {
   return !str || str.trim().length === 0;
 }
 
 /**
- * Count words in string
+ * Counts the number of words in a string
+ *
+ * @param str - The string to count words in
+ * @returns The number of words in the string
+ *
+ * @example
+ * ```typescript
+ * const count = wordCount('Hello world from TypeScript');
+ * console.log(count); // 4
+ * ```
  */
 export function wordCount(str: string): number {
   return str.trim().split(/\s+/).length;
 }
 
 /**
- * Reverse string
+ * Reverses the characters in a string
+ *
+ * @param str - The string to reverse
+ * @returns The reversed string
+ *
+ * @example
+ * ```typescript
+ * const result = reverse('hello');
+ * console.log(result); // 'olleh'
+ * ```
  */
 export function reverse(str: string): string {
   return str.split("").reverse().join("");

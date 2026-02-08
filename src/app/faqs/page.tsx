@@ -173,7 +173,7 @@ function FAQPageContent() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="space-y-4">
+            <div className={THEME_CONSTANTS.spacing.stack}>
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
@@ -205,7 +205,7 @@ export default function FAQPage() {
         <div
           className={`${THEME_CONSTANTS.container["2xl"]} mx-auto ${THEME_CONSTANTS.spacing.padding.xl} py-12`}
         >
-          <div className="animate-pulse space-y-4">
+          <div className={`animate-pulse ${THEME_CONSTANTS.spacing.stack}`}>
             <div
               className={`h-32 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
             />

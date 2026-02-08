@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { DataTable } from "@/components/admin";
 import { Card, Button } from "@/components";
+import { formatDate } from "@/utils";
 
 interface Review {
   id: string;
@@ -171,7 +172,7 @@ export default function AdminReviewsPage() {
       render: (review: Review) => (
         <div className="flex items-center gap-2">
           {renderStars(review.rating)}
-          <span className="text-sm text-gray-600 dark:text-gray-400">
+          <span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             ({review.rating})
           </span>
         </div>
@@ -228,7 +229,9 @@ export default function AdminReviewsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Review Details
           </h1>
           <Button onClick={() => setSelectedReview(null)} variant="secondary">
@@ -237,13 +240,13 @@ export default function AdminReviewsPage() {
         </div>
 
         <Card>
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Product
                 </label>
-                <p className="text-gray-900 dark:text-white">
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedReview.productName}
                 </p>
               </div>
@@ -251,7 +254,7 @@ export default function AdminReviewsPage() {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   User
                 </label>
-                <p className="text-gray-900 dark:text-white">
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedReview.userName}
                   {selectedReview.verifiedPurchase && (
                     <span className="ml-2 text-xs text-green-600 dark:text-green-400">
@@ -268,7 +271,7 @@ export default function AdminReviewsPage() {
               </label>
               <div className="flex items-center gap-2 mt-1">
                 {renderStars(selectedReview.rating)}
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className={THEME_CONSTANTS.themed.textSecondary}>
                   ({selectedReview.rating}/5)
                 </span>
               </div>
@@ -278,7 +281,9 @@ export default function AdminReviewsPage() {
               <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Comment
               </label>
-              <p className="mt-1 text-gray-900 dark:text-white whitespace-pre-wrap">
+              <p
+                className={`mt-1 ${THEME_CONSTANTS.themed.textPrimary} whitespace-pre-wrap`}
+              >
                 {selectedReview.comment}
               </p>
             </div>
@@ -307,7 +312,7 @@ export default function AdminReviewsPage() {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Helpful Votes
                 </label>
-                <p className="text-gray-900 dark:text-white">
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedReview.helpfulCount} helpful,{" "}
                   {selectedReview.notHelpfulCount} not helpful
                 </p>
@@ -316,13 +321,15 @@ export default function AdminReviewsPage() {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Created
                 </label>
-                <p className="text-gray-900 dark:text-white">
-                  {new Date(selectedReview.createdAt).toLocaleDateString()}
+                <p className={THEME_CONSTANTS.themed.textPrimary}>
+                  {formatDate(selectedReview.createdAt)}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div
+              className={`flex gap-2 pt-4 border-t ${THEME_CONSTANTS.themed.borderColor}`}
+            >
               {selectedReview.status !== "approved" && (
                 <Button
                   onClick={() => handleApprove(selectedReview)}
@@ -357,10 +364,12 @@ export default function AdminReviewsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1
+            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
             Reviews
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
             Moderate product reviews ({total} total)
           </p>
         </div>

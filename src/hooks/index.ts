@@ -68,6 +68,8 @@ export type {
   UpdateAddressInput,
 } from "./useAddresses";
 
+export { useAddressForm } from "./useAddressForm";
+
 export { useStorageUpload } from "./useStorageUpload";
 export type { UploadOptions, UploadState } from "./useStorageUpload";
 

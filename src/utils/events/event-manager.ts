@@ -127,7 +127,18 @@ class GlobalEventManager {
 export const globalEventManager = new GlobalEventManager();
 
 /**
- * Throttle function - limits execution rate
+ * Limits function execution rate to once per delay period
+ *
+ * @param func - The function to throttle
+ * @param delay - Minimum time in milliseconds between function executions
+ * @returns A throttled version of the function
+ *
+ * @example
+ * ```typescript
+ * const handleScroll = throttle(() => console.log('Scrolling'), 100);
+ * window.addEventListener('scroll', handleScroll);
+ * // Function will execute at most once every 100ms
+ * ```
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
@@ -156,7 +167,18 @@ export function throttle<T extends (...args: any[]) => any>(
 }
 
 /**
- * Debounce function - delays execution until after delay has elapsed
+ * Delays function execution until after the delay period has elapsed since the last call
+ *
+ * @param func - The function to debounce
+ * @param delay - Time in milliseconds to wait before executing after last call
+ * @returns A debounced version of the function
+ *
+ * @example
+ * ```typescript
+ * const handleInput = debounce((value) => console.log(value), 300);
+ * input.addEventListener('input', (e) => handleInput(e.target.value));
+ * // Function will only execute 300ms after user stops typing
+ * ```
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
@@ -174,7 +196,18 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 /**
- * Global scroll handler with throttling
+ * Adds a global scroll event handler with optional throttling
+ *
+ * @param callback - The function to call on scroll events
+ * @param options - Optional configuration with throttle delay and target element
+ * @returns Handler ID for later removal
+ *
+ * @example
+ * ```typescript
+ * const handlerId = addGlobalScrollHandler(() => {
+ *   console.log('Scrolled');
+ * }, { throttle: 100 });
+ * ```
  */
 export function addGlobalScrollHandler(
   callback: (event: Event) => void,
@@ -190,7 +223,18 @@ export function addGlobalScrollHandler(
 }
 
 /**
- * Global resize handler with throttling
+ * Adds a global resize event handler with optional throttling
+ *
+ * @param callback - The function to call on resize events
+ * @param options - Optional configuration with throttle delay
+ * @returns Handler ID for later removal
+ *
+ * @example
+ * ```typescript
+ * const handlerId = addGlobalResizeHandler(() => {
+ *   console.log('Window resized');
+ * }, { throttle: 200 });
+ * ```
  */
 export function addGlobalResizeHandler(
   callback: (event: Event) => void,
@@ -206,7 +250,19 @@ export function addGlobalResizeHandler(
 }
 
 /**
- * Global click handler with delegation
+ * Adds a global click handler using event delegation
+ *
+ * @param selector - CSS selector to match target elements
+ * @param callback - Function to call when a matching element is clicked
+ * @param options - Optional configuration including preventDefault
+ * @returns Handler ID for later removal
+ *
+ * @example
+ * ```typescript
+ * const handlerId = addGlobalClickHandler('.btn', (event, element) => {
+ *   console.log('Button clicked:', element);
+ * }, { preventDefault: true });
+ * ```
  */
 export function addGlobalClickHandler(
   selector: string,
@@ -229,7 +285,19 @@ export function addGlobalClickHandler(
 }
 
 /**
- * Global keyboard handler
+ * Adds a global keyboard event handler with key and modifier matching
+ *
+ * @param key - The key or array of keys to listen for
+ * @param callback - Function to call when matched key is pressed
+ * @param options - Optional modifiers (ctrl, shift, alt, meta) and preventDefault
+ * @returns Handler ID for later removal
+ *
+ * @example
+ * ```typescript
+ * const handlerId = addGlobalKeyHandler('s', () => {
+ *   console.log('Ctrl+S pressed');
+ * }, { ctrl: true, preventDefault: true });
+ * ```
  */
 export function addGlobalKeyHandler(
   key: string | string[],
@@ -278,14 +346,31 @@ export function addGlobalKeyHandler(
 }
 
 /**
- * Remove a global handler by ID
+ * Removes a global event handler by its ID
+ *
+ * @param id - The handler ID returned by add functions
+ *
+ * @example
+ * ```typescript
+ * const handlerId = addGlobalScrollHandler(() => {...});
+ * removeGlobalHandler(handlerId);
+ * ```
  */
 export function removeGlobalHandler(id: string): void {
   globalEventManager.remove(id);
 }
 
 /**
- * Helper: Detect mobile device
+ * Detects if the current device is a mobile device
+ *
+ * @returns True if the user agent indicates a mobile device
+ *
+ * @example
+ * ```typescript
+ * if (isMobileDevice()) {
+ *   console.log('Viewing on mobile');
+ * }
+ * ```
  */
 export function isMobileDevice(): boolean {
   if (typeof window === "undefined") return false;
@@ -296,7 +381,16 @@ export function isMobileDevice(): boolean {
 }
 
 /**
- * Helper: Detect touch support
+ * Detects if the device supports touch events
+ *
+ * @returns True if touch events are supported
+ *
+ * @example
+ * ```typescript
+ * if (hasTouchSupport()) {
+ *   console.log('Touch enabled');
+ * }
+ * ```
  */
 export function hasTouchSupport(): boolean {
   if (typeof window === "undefined") return false;
@@ -309,7 +403,15 @@ export function hasTouchSupport(): boolean {
 }
 
 /**
- * Helper: Get viewport dimensions
+ * Gets the current viewport dimensions
+ *
+ * @returns An object with width and height of the viewport
+ *
+ * @example
+ * ```typescript
+ * const { width, height } = getViewportDimensions();
+ * console.log(`Viewport: ${width}x${height}`);
+ * ```
  */
 export function getViewportDimensions() {
   if (typeof window === "undefined") {
@@ -323,7 +425,19 @@ export function getViewportDimensions() {
 }
 
 /**
- * Helper: Check if element is in viewport
+ * Checks if an element is currently visible in the viewport
+ *
+ * @param element - The HTML element to check
+ * @param offset - Optional offset in pixels to expand the viewport bounds (default: 0)
+ * @returns True if the element is within viewport bounds
+ *
+ * @example
+ * ```typescript
+ * const element = document.querySelector('.my-element');
+ * if (isInViewport(element, 50)) {
+ *   console.log('Element is visible (with 50px buffer)');
+ * }
+ * ```
  */
 export function isInViewport(element: HTMLElement, offset = 0): boolean {
   if (typeof window === "undefined") return false;
@@ -340,7 +454,18 @@ export function isInViewport(element: HTMLElement, offset = 0): boolean {
 }
 
 /**
- * Helper: Smooth scroll to element
+ * Smoothly scrolls to an element or selector
+ *
+ * @param element - The element or CSS selector to scroll to
+ * @param options - Optional offset and duration configuration
+ *
+ * @example
+ * ```typescript
+ * smoothScrollTo('#contact-section', { offset: 80 });
+ * // or
+ * const element = document.querySelector('#contact');
+ * smoothScrollTo(element);
+ * ```
  */
 export function smoothScrollTo(
   element: HTMLElement | string,
@@ -362,7 +487,17 @@ export function smoothScrollTo(
 }
 
 /**
- * Helper: Prevent body scroll (for modals, drawers, etc.)
+ * Prevents or restores body scrolling (useful for modals and drawers)
+ *
+ * @param prevent - True to prevent scrolling, false to restore it
+ *
+ * @example
+ * ```typescript
+ * // Open modal
+ * preventBodyScroll(true);
+ * // Close modal
+ * preventBodyScroll(false);
+ * ```
  */
 export function preventBodyScroll(prevent: boolean): void {
   if (typeof document === "undefined") return;

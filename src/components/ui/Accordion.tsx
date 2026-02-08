@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { THEME_CONSTANTS } from '@/constants/theme';
+import React, { useState } from "react";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * Accordion Component
- * 
+ *
  * Collapsible content sections with smooth animations.
  * Supports single or multiple open items.
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -28,29 +28,33 @@ interface AccordionContextValue {
   toggleItem: (value: string) => void;
 }
 
-const AccordionContext = React.createContext<AccordionContextValue | undefined>(undefined);
+const AccordionContext = React.createContext<AccordionContextValue | undefined>(
+  undefined,
+);
 
 const useAccordionContext = () => {
   const context = React.useContext(AccordionContext);
   if (!context) {
-    throw new Error('Accordion compound components must be used within Accordion');
+    throw new Error(
+      "Accordion compound components must be used within Accordion",
+    );
   }
   return context;
 };
 
 // Main Accordion Container
 interface AccordionProps {
-  type?: 'single' | 'multiple';
+  type?: "single" | "multiple";
   defaultValue?: string | string[];
   children: React.ReactNode;
   className?: string;
 }
 
 export default function Accordion({
-  type = 'single',
+  type = "single",
   defaultValue,
   children,
-  className = '',
+  className = "",
 }: AccordionProps) {
   const [openItems, setOpenItems] = useState<string[]>(() => {
     if (defaultValue === undefined) return [];
@@ -60,22 +64,18 @@ export default function Accordion({
   const toggleItem = (value: string) => {
     setOpenItems((prev) => {
       const isOpen = prev.includes(value);
-      
-      if (type === 'single') {
+
+      if (type === "single") {
         return isOpen ? [] : [value];
       }
-      
-      return isOpen
-        ? prev.filter((item) => item !== value)
-        : [...prev, value];
+
+      return isOpen ? prev.filter((item) => item !== value) : [...prev, value];
     });
   };
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem }}>
-      <div className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </AccordionContext.Provider>
   );
 }
@@ -94,7 +94,7 @@ export function AccordionItem({
   title,
   children,
   disabled = false,
-  className = '',
+  className = "",
 }: AccordionItemProps) {
   const { openItems, toggleItem } = useAccordionContext();
   const { themed } = THEME_CONSTANTS;
@@ -120,14 +120,14 @@ export function AccordionItem({
           hover:${themed.bgSecondary}
           transition-colors duration-150
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >
         <span>{title}</span>
         <svg
           className={`
             w-5 h-5 transition-transform duration-200
-            ${isOpen ? 'transform rotate-180' : ''}
+            ${isOpen ? "transform rotate-180" : ""}
           `}
           fill="none"
           stroke="currentColor"
@@ -141,7 +141,7 @@ export function AccordionItem({
           />
         </svg>
       </button>
-      
+
       {isOpen && (
         <div
           id={`accordion-content-${value}`}

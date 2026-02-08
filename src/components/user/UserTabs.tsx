@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * UserTabs Component
@@ -36,7 +36,9 @@ export default function UserTabs() {
   };
 
   return (
-    <div className="sticky top-20 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm mb-6">
+    <div
+      className={`sticky top-20 z-10 ${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor} shadow-sm mb-6`}
+    >
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <nav className="flex overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {USER_TABS.map((tab) => {
@@ -52,7 +54,7 @@ export default function UserTabs() {
                   ${
                     isActive
                       ? "text-primary-600 dark:text-primary-400 border-primary-500"
-                      : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
+                      : `${THEME_CONSTANTS.themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`
                   }
                 `}
               >
