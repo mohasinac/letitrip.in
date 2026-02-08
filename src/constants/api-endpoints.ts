@@ -36,6 +36,80 @@ export const API_ENDPOINTS = {
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
   },
+
+  // TODO - Phase 2: Add authentication and implement full CRUD operations
+
+  // Product endpoints
+  PRODUCTS: {
+    LIST: "/api/products", // GET - List products with filters
+    CREATE: "/api/products", // POST - Create new product
+    GET_BY_ID: (id: string) => `/api/products/${id}`, // GET - Get single product
+    UPDATE: (id: string) => `/api/products/${id}`, // PATCH - Update product
+    DELETE: (id: string) => `/api/products/${id}`, // DELETE - Delete product
+  },
+
+  // Category endpoints
+  CATEGORIES: {
+    LIST: "/api/categories", // GET - Get category tree
+    CREATE: "/api/categories", // POST - Create new category
+    GET_BY_ID: (id: string) => `/api/categories/${id}`, // GET - Get single category
+    UPDATE: (id: string) => `/api/categories/${id}`, // PATCH - Update category
+    DELETE: (id: string) => `/api/categories/${id}`, // DELETE - Delete category
+  },
+
+  // Review endpoints
+  REVIEWS: {
+    LIST: "/api/reviews", // GET - List reviews (requires productId param)
+    CREATE: "/api/reviews", // POST - Create new review
+    GET_BY_ID: (id: string) => `/api/reviews/${id}`, // GET - Get single review
+    UPDATE: (id: string) => `/api/reviews/${id}`, // PATCH - Update review
+    DELETE: (id: string) => `/api/reviews/${id}`, // DELETE - Delete review
+    VOTE: (id: string) => `/api/reviews/${id}/vote`, // POST - Vote helpful/not helpful
+  },
+
+  // Site settings endpoints
+  SITE_SETTINGS: {
+    GET: "/api/site-settings", // GET - Get global settings
+    UPDATE: "/api/site-settings", // PATCH - Update settings (admin only)
+  },
+
+  // Carousel endpoints
+  CAROUSEL: {
+    LIST: "/api/carousel", // GET - Get active carousel slides
+    CREATE: "/api/carousel", // POST - Create new slide (admin only)
+    GET_BY_ID: (id: string) => `/api/carousel/${id}`, // GET - Get single slide
+    UPDATE: (id: string) => `/api/carousel/${id}`, // PATCH - Update slide (admin only)
+    DELETE: (id: string) => `/api/carousel/${id}`, // DELETE - Delete slide (admin only)
+    REORDER: "/api/carousel/reorder", // POST - Reorder slides (admin only)
+  },
+
+  // Homepage sections endpoints
+  HOMEPAGE_SECTIONS: {
+    LIST: "/api/homepage-sections", // GET - Get active sections
+    CREATE: "/api/homepage-sections", // POST - Create section (admin only)
+    GET_BY_ID: (id: string) => `/api/homepage-sections/${id}`, // GET - Get single section
+    UPDATE: (id: string) => `/api/homepage-sections/${id}`, // PATCH - Update section (admin only)
+    DELETE: (id: string) => `/api/homepage-sections/${id}`, // DELETE - Delete section (admin only)
+    REORDER: "/api/homepage-sections/reorder", // POST - Reorder sections (admin only)
+  },
+
+  // FAQ endpoints
+  FAQS: {
+    BASE: "/api/faqs", // Base FAQ endpoint
+    LIST: "/api/faqs", // GET - List FAQs with filters
+    CREATE: "/api/faqs", // POST - Create new FAQ (admin only)
+    GET_BY_ID: (id: string) => `/api/faqs/${id}`, // GET - Get single FAQ
+    UPDATE: (id: string) => `/api/faqs/${id}`, // PATCH - Update FAQ (admin only)
+    DELETE: (id: string) => `/api/faqs/${id}`, // DELETE - Delete FAQ (admin only)
+    VOTE: (id: string) => `/api/faqs/${id}/vote`, // POST - Vote helpful/not helpful
+  },
+
+  // Media endpoints
+  MEDIA: {
+    UPLOAD: "/api/media/upload", // POST - Upload file to Cloud Storage
+    CROP: "/api/media/crop", // POST - Crop image
+    TRIM: "/api/media/trim", // POST - Trim video
+  },
 } as const;
 
 // Type for API endpoints

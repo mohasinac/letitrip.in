@@ -98,6 +98,7 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
     <aside
       ref={sidebarRef}
       id="secondary-sidebar"
+      aria-label="Site navigation"
       className={`
         fixed inset-y-0 right-0
         ${THEME_CONSTANTS.layout.sidebarWidth}

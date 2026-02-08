@@ -29,6 +29,14 @@ export const ROUTES = {
   // Admin Routes
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
+    USERS: "/admin/users",
+    SITE: "/admin/site",
+    CAROUSEL: "/admin/carousel",
+    SECTIONS: "/admin/sections",
+    CATEGORIES: "/admin/categories",
+    FAQS: "/admin/faqs",
+    REVIEWS: "/admin/reviews",
+    CONTENT: "/admin/content",
   },
 
   // API Routes

@@ -5,6 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import type {
   ReviewDocument,
   ReviewCreateInput,
@@ -12,10 +13,43 @@ import type {
   ReviewModerationInput,
   REVIEW_COLLECTION,
 } from "@/db/schema/reviews";
+import { createReviewId } from "@/db/schema/reviews";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
     super("reviews" as typeof REVIEW_COLLECTION);
+  }
+
+  /**
+   * Create new review with SEO-friendly ID
+   */
+  async create(input: ReviewCreateInput): Promise<ReviewDocument> {
+    // Extract first name from userName for ID generation
+    const firstName = input.userName.split(" ")[0] || input.userName;
+
+    // Generate review ID
+    const id = createReviewId(
+      input.productTitle,
+      firstName,
+      new Date(), // Use current date
+    );
+
+    const reviewData: Omit<ReviewDocument, "id"> = {
+      ...input,
+      helpfulCount: 0,
+      reportCount: 0,
+      status: "pending",
+      verified: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.db
+      .collection(this.collection)
+      .doc(id)
+      .set(prepareForFirestore(reviewData));
+
+    return { id, ...reviewData };
   }
 
   /**

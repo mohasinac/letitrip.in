@@ -5,6 +5,12 @@
  */
 
 import type { UserRole } from "@/types/auth";
+import {
+  generateProductId,
+  generateAuctionId,
+  type GenerateProductIdInput,
+  type GenerateAuctionIdInput,
+} from "@/utils/id-generators";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
@@ -20,7 +26,18 @@ export interface ProductDocument {
   currency: string;
   stockQuantity: number;
   availableQuantity: number;
-  images: string[];
+
+  // Media fields (max 1 video, max 10 images)
+  mainImage: string; // 1:1 aspect ratio for grid display
+  images: string[]; // Additional images with crop metadata
+  video?: {
+    url: string;
+    thumbnailUrl: string; // User-selected thumbnail
+    duration: number; // in seconds
+    trimStart?: number; // trim start time in seconds
+    trimEnd?: number; // trim end time in seconds
+  };
+
   status: ProductStatus;
   sellerId: string; // User who created the product
   sellerName: string;
@@ -225,3 +242,49 @@ export const productQueryHelpers = {
   promoted: () => ["isPromoted", "==", true] as const,
   activeAuction: (date: Date) => ["auctionEndDate", ">=", date] as const,
 } as const;
+
+// ============================================
+// 7. ID GENERATION HELPERS
+// ============================================
+
+/**
+ * Generate SEO-friendly product ID
+ * Pattern: product-{name}-{category}-{condition}-{seller-name}-{count}
+ *
+ * @param input - Product details
+ * @returns SEO-friendly product ID
+ *
+ * Example: createProductId({
+ *   name: "iPhone 15 Pro",
+ *   category: "Smartphones",
+ *   condition: "new",
+ *   sellerName: "TechStore",
+ *   count: 1
+ * }) → "product-iphone-15-pro-smartphones-new-techstore-1"
+ */
+export function createProductId(
+  input: Omit<GenerateProductIdInput, "count"> & { count?: number },
+): string {
+  return generateProductId(input as GenerateProductIdInput);
+}
+
+/**
+ * Generate SEO-friendly auction ID
+ * Pattern: auction-{name}-{category}-{condition}-{seller-name}-{count}
+ *
+ * @param input - Auction details
+ * @returns SEO-friendly auction ID
+ *
+ * Example: createAuctionId({
+ *   name: "Vintage Watch",
+ *   category: "Watches",
+ *   condition: "used",
+ *   sellerName: "Collectibles",
+ *   count: 1
+ * }) → "auction-vintage-watch-watches-used-collectibles-1"
+ */
+export function createAuctionId(
+  input: Omit<GenerateAuctionIdInput, "count"> & { count?: number },
+): string {
+  return generateAuctionId(input as GenerateAuctionIdInput);
+}

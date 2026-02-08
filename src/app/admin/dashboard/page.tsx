@@ -20,7 +20,7 @@ import { THEME_CONSTANTS } from "@/constants/theme";
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { stats, loading, error, refresh } = useAdminStats();
+  const { stats, isLoading, error, refresh } = useAdminStats();
   const { themed } = THEME_CONSTANTS;
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  if (authLoading || loading) {
+  if (authLoading || isLoading) {
     return (
       <div
         className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}

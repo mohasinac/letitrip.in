@@ -40,6 +40,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "./config";
 import { UserRole } from "@/types/auth";
 import { USER_COLLECTION } from "@/db/schema/users";
+import { AuthenticationError, ApiError } from "@/lib/errors";
 
 /**
  * Helper: Create session via API call
@@ -118,7 +119,10 @@ export async function signInWithEmail(
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Email sign in error:", error);
-    throw new Error(error.message || "Failed to sign in with email");
+    throw new AuthenticationError(
+      error.message || "Failed to sign in with email",
+      { provider: "email", email },
+    );
   }
 }
 
@@ -156,7 +160,10 @@ export async function registerWithEmail(
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
     console.error("Email registration error:", error);
-    throw new Error(error.message || "Failed to register with email");
+    throw new AuthenticationError(
+      error.message || "Failed to register with email",
+      { provider: "email", email },
+    );
   }
 }
 
@@ -191,11 +198,15 @@ export async function signInWithGoogle(): Promise<
     console.error("Google sign in error:", error);
 
     if (error.code === "auth/popup-closed-by-user") {
-      throw new Error("Sign-in cancelled");
+      throw new AuthenticationError("Sign-in cancelled", {
+        provider: "google",
+        cancelled: true,
+      });
     }
     if (error.code === "auth/popup-blocked") {
-      throw new Error(
-        "Pop-up blocked by browser. Please allow pop-ups and try again.",
+      throw new AuthenticationError(
+        "Popup blocked. Please allow popups for this site.",
+        { provider: "google", popupBlocked: true },
       );
     }
 
@@ -271,7 +282,10 @@ export async function signInWithPhone(
     return confirmationResult;
   } catch (error: any) {
     console.error("Phone sign in error:", error);
-    throw new Error(error.message || "Failed to sign in with phone");
+    throw new AuthenticationError(
+      error.message || "Failed to sign in with phone",
+      { provider: "phone", phoneNumber },
+    );
   }
 }
 
@@ -283,7 +297,11 @@ export async function resetPassword(email: string): Promise<void> {
     await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
     console.error("Password reset error:", error);
-    throw new Error(error.message || "Failed to send password reset email");
+    throw new ApiError(
+      500,
+      error.message || "Failed to send password reset email",
+      { email },
+    );
   }
 }
 
@@ -295,7 +313,10 @@ export async function verifyEmail(user: User): Promise<void> {
     await sendEmailVerification(user);
   } catch (error: any) {
     console.error("Email verification error:", error);
-    throw new Error(error.message || "Failed to send verification email");
+    throw new ApiError(
+      500,
+      error.message || "Failed to send verification email",
+    );
   }
 }
 
@@ -312,7 +333,7 @@ export async function signOut(): Promise<void> {
     await firebaseSignOut(auth);
   } catch (error: any) {
     console.error("Sign out error:", error);
-    throw new Error(error.message || "Failed to sign out");
+    throw new ApiError(500, error.message || "Failed to sign out");
   }
 }
 

@@ -12,13 +12,48 @@
  */
 
 import { BaseRepository } from "./base.repository";
-import { UserDocument, USER_COLLECTION } from "@/db/schema/users";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { UserDocument, USER_COLLECTION, createUserId } from "@/db/schema/users";
 import { UserRole } from "@/types/auth";
 import { DatabaseError } from "@/lib/errors";
 
 export class UserRepository extends BaseRepository<UserDocument> {
   constructor() {
     super(USER_COLLECTION);
+  }
+
+  /**
+   * Create new user with SEO-friendly ID
+   * Generates ID from first name, last name, and email
+   */
+  async create(
+    input: Omit<UserDocument, "id" | "createdAt" | "updatedAt">,
+  ): Promise<UserDocument> {
+    // Extract names for ID generation
+    const firstName = input.displayName?.split(" ")[0] || "user";
+    const lastName =
+      input.displayName?.split(" ").slice(1).join(" ") || "account";
+    const email = input.email || "noemail@example.com";
+
+    // Generate user ID
+    const id = createUserId({
+      firstName,
+      lastName,
+      email,
+    });
+
+    const userData: Omit<UserDocument, "id"> = {
+      ...input,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.db
+      .collection(this.collection)
+      .doc(id)
+      .set(prepareForFirestore(userData));
+
+    return { id, ...userData };
   }
 
   /**

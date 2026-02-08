@@ -19,6 +19,7 @@ import {
   StorageReference,
 } from "firebase/storage";
 import { storage } from "./config";
+import { DatabaseError } from "@/lib/errors";
 
 /**
  * Storage folder structure
@@ -52,7 +53,11 @@ export async function uploadFile(
     return { url, ref: uploadResult.ref, uploadResult };
   } catch (error: any) {
     console.error("Upload error:", error);
-    throw new Error(error.message || "Failed to upload file");
+    throw new DatabaseError(error.message || "Failed to upload file", {
+      path,
+      fileType: file.type,
+      fileName: file.name,
+    });
   }
 }
 
@@ -122,7 +127,9 @@ export async function getFileUrl(path: string): Promise<string> {
     return await getDownloadURL(storageRef);
   } catch (error: any) {
     console.error("Get URL error:", error);
-    throw new Error(error.message || "Failed to get file URL");
+    throw new DatabaseError(error.message || "Failed to get file URL", {
+      path,
+    });
   }
 }
 
@@ -135,7 +142,7 @@ export async function deleteFile(path: string): Promise<void> {
     await deleteObject(storageRef);
   } catch (error: any) {
     console.error("Delete error:", error);
-    throw new Error(error.message || "Failed to delete file");
+    throw new DatabaseError(error.message || "Failed to delete file", { path });
   }
 }
 
@@ -159,7 +166,9 @@ export async function listFiles(
     return result.items;
   } catch (error: any) {
     console.error("List files error:", error);
-    throw new Error(error.message || "Failed to list files");
+    throw new DatabaseError(error.message || "Failed to list files", {
+      folderPath,
+    });
   }
 }
 
@@ -172,7 +181,9 @@ export async function getFileMetadata(path: string) {
     return await getMetadata(storageRef);
   } catch (error: any) {
     console.error("Get metadata error:", error);
-    throw new Error(error.message || "Failed to get file metadata");
+    throw new DatabaseError(error.message || "Failed to get file metadata", {
+      path,
+    });
   }
 }
 
@@ -188,7 +199,10 @@ export async function updateFileMetadata(
     return await updateMetadata(storageRef, metadata);
   } catch (error: any) {
     console.error("Update metadata error:", error);
-    throw new Error(error.message || "Failed to update file metadata");
+    throw new DatabaseError(error.message || "Failed to update file metadata", {
+      path,
+      metadata,
+    });
   }
 }
 
@@ -201,7 +215,9 @@ export async function deleteFolder(folderPath: string): Promise<void> {
     await Promise.all(files.map((file) => deleteObject(file)));
   } catch (error: any) {
     console.error("Delete folder error:", error);
-    throw new Error(error.message || "Failed to delete folder");
+    throw new DatabaseError(error.message || "Failed to delete folder", {
+      folderPath,
+    });
   }
 }
 

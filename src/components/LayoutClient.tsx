@@ -105,6 +105,7 @@ export default function LayoutClient({
           <div
             className={`fixed inset-0 bg-black/50 ${THEME_CONSTANTS.zIndex.overlay}`}
             onClick={handleToggleSidebar}
+            aria-hidden="true"
           />
         )}
 
@@ -116,6 +117,7 @@ export default function LayoutClient({
 
         {/* Main Content - adjust margin when sidebar is open on desktop */}
         <main
+          id="main-content"
           className={`flex-1 mb-16 md:mb-0 transition-all duration-300 ${sidebarOpen ? "md:mr-80" : "md:mr-0"} ${THEME_CONSTANTS.themed.bgPrimary}`}
         >
           <div className="container mx-auto px-4 py-6 md:px-6">{children}</div>

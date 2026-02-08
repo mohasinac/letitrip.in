@@ -14,7 +14,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { SUCCESS_MESSAGES } from "@/constants";
 
 export async function POST(request: NextRequest) {

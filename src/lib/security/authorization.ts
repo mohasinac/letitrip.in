@@ -2,9 +2,13 @@
  * Authorization Utilities
  */
 
+import { NextRequest } from "next/server";
+import { getAuth } from "firebase-admin/auth";
 import { UserRole } from "@/types/auth";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { userRepository } from "@/repositories";
+import type { UserDocument } from "@/db/schema/users";
 
 /**
  * Role hierarchy (higher number = more permissions)
@@ -101,4 +105,72 @@ export function canChangeRole(
  */
 export function getRoleLevel(role: UserRole): number {
   return ROLE_HIERARCHY[role] || 0;
+}
+
+/**
+ * Extract user from request session cookie
+ * Returns UserDocument or null if not authenticated
+ */
+export async function getUserFromRequest(
+  request: NextRequest,
+): Promise<UserDocument | null> {
+  try {
+    // Get session cookie
+    const sessionCookie = request.cookies.get("__session")?.value;
+
+    if (!sessionCookie) {
+      return null;
+    }
+
+    // Verify session cookie with Firebase Admin
+    const decodedToken = await getAuth().verifySessionCookie(
+      sessionCookie,
+      true,
+    );
+
+    // Get user from Firestore
+    const user = await userRepository.findById(decodedToken.uid);
+
+    return user;
+  } catch (error) {
+    // Invalid or expired token
+    return null;
+  }
+}
+
+/**
+ * Require authenticated user from request
+ * Throws AuthenticationError if not authenticated
+ */
+export async function requireAuthFromRequest(
+  request: NextRequest,
+): Promise<UserDocument> {
+  const user = await getUserFromRequest(request);
+
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+
+  if (user.disabled) {
+    throw new AuthenticationError(ERROR_MESSAGES.AUTH.ACCOUNT_DISABLED);
+  }
+
+  return user;
+}
+
+/**
+ * Require specific role(s) from request
+ */
+export async function requireRoleFromRequest(
+  request: NextRequest,
+  roles: UserRole | UserRole[],
+): Promise<UserDocument> {
+  const user = await requireAuthFromRequest(request);
+  const requiredRoles = Array.isArray(roles) ? roles : [roles];
+
+  if (!requiredRoles.includes(user.role as UserRole)) {
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.FORBIDDEN);
+  }
+
+  return user;
 }

@@ -30,7 +30,7 @@ export function removeUndefined<T extends Record<string, any>>(
         value !== null &&
         typeof value === "object" &&
         !Array.isArray(value) &&
-        !(value instanceof Date)
+        !(value && value.constructor && value.constructor.name === "Date")
       ) {
         const cleaned = removeUndefined(value);
         // Only add if the cleaned object has properties

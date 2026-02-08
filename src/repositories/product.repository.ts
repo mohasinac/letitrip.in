@@ -5,6 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import type {
   ProductDocument,
   ProductCreateInput,
@@ -12,10 +13,63 @@ import type {
   ProductStatus,
   PRODUCT_COLLECTION,
 } from "@/db/schema/products";
+import { createProductId, createAuctionId } from "@/db/schema/products";
+import { generateUniqueId } from "@/utils/id-generators";
 
 class ProductRepository extends BaseRepository<ProductDocument> {
   constructor() {
     super("products" as typeof PRODUCT_COLLECTION);
+  }
+
+  /**
+   * Create new product with SEO-friendly ID
+   * Auto-increments count if duplicate name exists
+   */
+  async create(input: ProductCreateInput): Promise<ProductDocument> {
+    // Generate unique ID with auto-increment
+    const id = await generateUniqueId(
+      (count) => {
+        if (input.isAuction) {
+          return createAuctionId({
+            name: input.title,
+            category: input.category,
+            condition: "new", // Default, should come from input
+            sellerName: input.sellerName,
+            count,
+          });
+        } else {
+          return createProductId({
+            name: input.title,
+            category: input.category,
+            condition: "new", // Default, should come from input
+            sellerName: input.sellerName,
+            count,
+          });
+        }
+      },
+      async (id) => {
+        try {
+          const doc = await this.findById(id);
+          return !!doc;
+        } catch {
+          return false;
+        }
+      },
+    );
+
+    const productData: Omit<ProductDocument, "id"> = {
+      ...input,
+      availableQuantity: input.stockQuantity, // Use stockQuantity for initial availableQuantity
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.db
+      .collection(this.collection)
+      .doc(id)
+      .set(prepareForFirestore(productData));
+
+    return { id, ...productData };
   }
 
   /**

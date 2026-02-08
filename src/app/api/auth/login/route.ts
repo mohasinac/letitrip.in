@@ -20,7 +20,7 @@ import { USER_COLLECTION } from "@/db/schema/users";
 import { parseUserAgent } from "@/db/schema/sessions";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError, AuthenticationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";

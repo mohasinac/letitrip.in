@@ -181,6 +181,7 @@ export default function OrderViewPage() {
                   src={item.image}
                   alt={item.name}
                   className="w-20 h-20 object-cover rounded"
+                  loading="lazy"
                 />
                 <div className="flex-1">
                   <Heading level={6}>{item.name}</Heading>

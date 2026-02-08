@@ -4,6 +4,11 @@
  * Firebase Firestore collection for product orders (renamed from bookings)
  */
 
+import {
+  generateOrderId,
+  type GenerateOrderIdInput,
+} from "@/utils/id-generators";
+
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
 // ============================================
@@ -174,3 +179,21 @@ export const orderQueryHelpers = {
   paid: () => ["paymentStatus", "==", "paid"] as const,
   recentOrders: (date: Date) => ["orderDate", ">=", date] as const,
 } as const;
+
+// ============================================
+// 7. ID GENERATION HELPER
+// ============================================
+
+/**
+ * Generate SEO-friendly order ID
+ * Pattern: order-{product-count}-{date}-{random-number}
+ *
+ * @param productCount - Number of items in order
+ * @param date - Order date (optional, defaults to now)
+ * @returns SEO-friendly order ID
+ *
+ * Example: createOrderId(3) → "order-3-20260207-a7b2c9"
+ */
+export function createOrderId(productCount: number, date?: Date): string {
+  return generateOrderId({ productCount, date });
+}

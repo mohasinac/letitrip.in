@@ -2,7 +2,14 @@
 
 /**
  * useApiQuery Hook
- * React hook for fetching data with automatic loading, error states, and refetching
+ * React hook for fetching data with automatic loading, error states, refetching,
+ * and client-side caching with stale-while-revalidate pattern.
+ *
+ * Features:
+ * - In-memory client-side cache using CacheManager singleton
+ * - Stale-while-revalidate: returns cached data immediately, refetches in background
+ * - Request deduplication: concurrent calls with same key share one fetch
+ * - Configurable cache TTL per query
  *
  * Usage:
  * ```tsx
@@ -10,6 +17,7 @@
  *   queryKey: ['profile'],
  *   queryFn: () => apiClient.get(API_ENDPOINTS.USER.PROFILE),
  *   enabled: true,
+ *   cacheTTL: 60000, // Cache for 60 seconds (default: 5 minutes)
  * });
  *
  * if (isLoading) return <Spinner />;
@@ -18,14 +26,26 @@
  * ```
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ApiClientError } from "@/lib/api-client";
+import { CacheManager } from "@/classes";
+
+// Default cache TTL: 5 minutes
+const DEFAULT_CACHE_TTL = 5 * 60 * 1000;
+
+// In-flight request deduplication map
+const inflightRequests = new Map<string, Promise<unknown>>();
+
+// Client-side cache instance (shared across all hook instances)
+const queryCache = CacheManager.getInstance(200);
 
 interface UseApiQueryOptions<TData> {
   queryKey: string[];
   queryFn: () => Promise<TData>;
   enabled?: boolean;
   refetchInterval?: number;
+  /** Cache time-to-live in milliseconds. Set to 0 to disable caching. Default: 5 minutes */
+  cacheTTL?: number;
   onSuccess?: (data: TData) => void;
   onError?: (error: ApiClientError) => void;
 }
@@ -46,25 +66,60 @@ export function useApiQuery<TData = any>(
     queryFn,
     enabled = true,
     refetchInterval,
+    cacheTTL = DEFAULT_CACHE_TTL,
     onSuccess,
     onError,
   } = options;
 
-  const [data, setData] = useState<TData | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+  const cacheKey = queryKey.join(",");
+
+  // Initialize state from cache if available (stale-while-revalidate)
+  const cachedData = cacheTTL > 0 ? queryCache.get<TData>(cacheKey) : null;
+  const [data, setData] = useState<TData | undefined>(cachedData ?? undefined);
+  const [isLoading, setIsLoading] = useState(cachedData === null);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<ApiClientError | null>(null);
+
+  // Track mounted state to avoid setState on unmounted component
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const fetchData = useCallback(async () => {
     if (!enabled) return;
 
     setIsFetching(true);
-    if (!data) {
+    if (!data && !cachedData) {
       setIsLoading(true);
     }
 
     try {
-      const result = await queryFn();
+      let result: TData;
+
+      // Request deduplication: reuse in-flight request for same cache key
+      if (inflightRequests.has(cacheKey)) {
+        result = (await inflightRequests.get(cacheKey)) as TData;
+      } else {
+        const promise = queryFn();
+        inflightRequests.set(cacheKey, promise);
+        try {
+          result = await promise;
+        } finally {
+          inflightRequests.delete(cacheKey);
+        }
+      }
+
+      // Store in cache
+      if (cacheTTL > 0) {
+        queryCache.set(cacheKey, result, { ttl: cacheTTL });
+      }
+
+      if (!mountedRef.current) return;
+
       setData(result);
       setError(null);
 
@@ -72,6 +127,8 @@ export function useApiQuery<TData = any>(
         onSuccess(result);
       }
     } catch (err) {
+      if (!mountedRef.current) return;
+
       const apiError =
         err instanceof ApiClientError
           ? err
@@ -86,15 +143,26 @@ export function useApiQuery<TData = any>(
         onError(apiError);
       }
     } finally {
-      setIsLoading(false);
-      setIsFetching(false);
+      if (mountedRef.current) {
+        setIsLoading(false);
+        setIsFetching(false);
+      }
     }
-  }, [enabled, queryFn, onSuccess, onError, data]);
+  }, [
+    enabled,
+    queryFn,
+    onSuccess,
+    onError,
+    data,
+    cacheKey,
+    cacheTTL,
+    cachedData,
+  ]);
 
-  // Initial fetch
+  // Initial fetch (or background revalidation if we have cached data)
   useEffect(() => {
     fetchData();
-  }, [queryKey.join(","), enabled]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [cacheKey, enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refetch interval
   useEffect(() => {

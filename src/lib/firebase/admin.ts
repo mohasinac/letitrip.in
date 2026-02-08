@@ -12,12 +12,17 @@
 import { initializeApp, getApps, cert, App } from "firebase-admin/app";
 import { getAuth, Auth } from "firebase-admin/auth";
 import { getFirestore, Firestore } from "firebase-admin/firestore";
+import {
+  getStorage as getFirebaseStorage,
+  Storage,
+} from "firebase-admin/storage";
 import * as path from "path";
 import * as fs from "fs";
 
 let _adminApp: App | null = null;
 let _adminAuth: Auth | null = null;
 let _adminDb: Firestore | null = null;
+let _adminStorage: Storage | null = null;
 
 /**
  * Get Firebase Admin App instance (lazy initialization)
@@ -115,4 +120,14 @@ export function getAdminDb(): Firestore {
     _adminDb = getFirestore(getAdminApp());
   }
   return _adminDb;
+}
+
+/**
+ * Get Firebase Admin Storage instance (lazy initialization)
+ */
+export function getStorage(): Storage {
+  if (!_adminStorage) {
+    _adminStorage = getFirebaseStorage(getAdminApp());
+  }
+  return _adminStorage;
 }

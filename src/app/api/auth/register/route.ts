@@ -21,7 +21,7 @@ import { parseUserAgent } from "@/db/schema/sessions";
 import { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";

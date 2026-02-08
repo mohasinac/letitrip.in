@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -13,10 +13,16 @@
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "pre-commit": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "seed:faqs": "tsx scripts/seed-faqs.ts"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.11.1",
+    "@tiptap/extension-image": "^3.19.0",
+    "@tiptap/extension-link": "^3.19.0",
+    "@tiptap/extension-placeholder": "^3.19.0",
+    "@tiptap/react": "^3.19.0",
+    "@tiptap/starter-kit": "^3.19.0",
     "bcryptjs": "^3.0.3",
     "firebase": "^12.8.0",
     "firebase-admin": "^13.6.1",

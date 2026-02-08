@@ -5,6 +5,10 @@
  */
 
 import { UserRole } from "@/types/auth";
+import {
+  generateUserId,
+  type GenerateUserIdInput,
+} from "@/utils/id-generators";
 
 export interface AvatarMetadata {
   url: string;
@@ -218,3 +222,24 @@ export const userQueryHelpers = {
   active: () => ["disabled", "==", false] as const,
   disabled: () => ["disabled", "==", true] as const,
 } as const;
+
+// ============================================
+// ID GENERATION HELPER
+// ============================================
+
+/**
+ * Generate SEO-friendly user ID
+ * Pattern: user-{first-name}-{last-name}-{email-starting}
+ *
+ * @param input - User details
+ * @returns SEO-friendly user ID
+ *
+ * Example: createUserId({
+ *   firstName: "John",
+ *   lastName: "Doe",
+ *   email: "johndoe@example.com"
+ * }) → "user-john-doe-johndoe"
+ */
+export function createUserId(input: GenerateUserIdInput): string {
+  return generateUserId(input);
+}

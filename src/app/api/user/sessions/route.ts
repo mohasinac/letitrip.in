@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 

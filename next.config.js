@@ -1,5 +1,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Image optimization for Firebase Storage and other remote sources
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com", // Google OAuth profile photos
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+  },
+
   // Allow Turbopack to handle server-side Node.js modules
   serverExternalPackages: [
     "crypto",
@@ -12,36 +33,10 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    // Increase WebSocket payload size limit for HMR in development
-    // Fixes "Max payload size exceeded" error
-    webpackBuildWorker: true,
   },
 
-  // Development server configuration
-  ...(process.env.NODE_ENV === "development" && {
-    webpack: (config, { dev, isServer }) => {
-      if (dev && !isServer) {
-        // Increase WebSocket payload size limit
-        config.devServer = config.devServer || {};
-        config.devServer.client = config.devServer.client || {};
-        config.devServer.client.webSocketURL =
-          config.devServer.client.webSocketURL || {};
-        config.devServer.client.webSocketURL.maxPayloadSize = 50 * 1024 * 1024; // 50MB
-      }
-      return config;
-    },
-  }),
-
-  // Exclude directories from file watching to improve performance
-  watchOptions: {
-    ignored: [
-      "**/node_modules/**",
-      "**/.next/**",
-      "**/.git/**",
-      "**/logs/**", // Ignore log files to prevent WebSocket issues
-      "**/*.log",
-    ],
-  },
+  // Turbopack configuration (empty config to silence webpack warning)
+  turbopack: {},
 
   // Security headers
   async headers() {

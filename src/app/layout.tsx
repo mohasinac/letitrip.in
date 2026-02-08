@@ -5,6 +5,7 @@ import {
   ToastProvider,
   SessionProvider,
 } from "@/index";
+import { MonitoringProvider } from "@/components/providers/MonitoringProvider";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 
@@ -36,11 +37,19 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider>
           <SessionProvider>
-            <ToastProvider position="top-right">
-              <LayoutClient>{children}</LayoutClient>
-            </ToastProvider>
+            <MonitoringProvider>
+              <ToastProvider position="top-right">
+                <LayoutClient>{children}</LayoutClient>
+              </ToastProvider>
+            </MonitoringProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>

@@ -3,7 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { USER_COLLECTION } from "@/db/schema/users";
 import type { UserDocument } from "@/db/schema/users";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import {
   ValidationError,
   NotFoundError,

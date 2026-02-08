@@ -97,6 +97,37 @@ export function ImageCropModal({
     setIsDragging(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const step = e.shiftKey ? 5 : 1;
+    switch (e.key) {
+      case "ArrowLeft":
+        e.preventDefault();
+        setPosition((prev) => ({ ...prev, x: Math.max(0, prev.x - step) }));
+        break;
+      case "ArrowRight":
+        e.preventDefault();
+        setPosition((prev) => ({ ...prev, x: Math.min(100, prev.x + step) }));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setPosition((prev) => ({ ...prev, y: Math.max(0, prev.y - step) }));
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setPosition((prev) => ({ ...prev, y: Math.min(100, prev.y + step) }));
+        break;
+      case "+":
+      case "=":
+        e.preventDefault();
+        setZoom((prev) => Math.min(3, prev + 0.1));
+        break;
+      case "-":
+        e.preventDefault();
+        setZoom((prev) => Math.max(0.1, prev - 0.1));
+        break;
+    }
+  };
+
   const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZoom(parseFloat(e.target.value));
   };
@@ -134,6 +165,10 @@ export function ImageCropModal({
             className="relative w-full max-w-sm mx-auto aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-move"
             style={{ maxHeight: "280px", touchAction: "none" }}
             data-disable-swipe="true"
+            tabIndex={0}
+            role="application"
+            aria-label="Image position. Use arrow keys to move, +/- to zoom"
+            onKeyDown={handleKeyDown}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -217,6 +252,7 @@ export function ImageCropModal({
               step="0.01"
               value={zoom}
               onChange={handleZoomChange}
+              aria-label="Zoom level"
               className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-600"
             />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { useSwipe } from "@/hooks";
@@ -46,7 +46,9 @@ export default function Modal({
 }: ModalProps) {
   const { themed, card, typography } = THEME_CONSTANTS;
   const modalRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const [translateY, setTranslateY] = useState(0);
+  const titleId = useId();
 
   // Check if swipe should be disabled (e.g., during image crop)
   const [isSwipeDisabled, setIsSwipeDisabled] = useState(false);
@@ -114,6 +116,65 @@ export default function Modal({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
+  // Focus trap: save previously focused element, move focus into modal, trap Tab
+  const handleFocusTrap = useCallback((e: KeyboardEvent) => {
+    if (e.key !== "Tab" || !modalRef.current) return;
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableElements =
+      modalRef.current.querySelectorAll<HTMLElement>(focusableSelectors);
+    if (focusableElements.length === 0) return;
+
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Save the element that had focus before the modal opened
+    previouslyFocusedRef.current = document.activeElement as HTMLElement;
+
+    // Move focus into the modal
+    const timer = setTimeout(() => {
+      if (modalRef.current) {
+        const firstFocusable = modalRef.current.querySelector<HTMLElement>(
+          'button:not([disabled]), [tabindex]:not([tabindex="-1"]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]',
+        );
+        if (firstFocusable) {
+          firstFocusable.focus();
+        } else {
+          modalRef.current.focus();
+        }
+      }
+    }, 50);
+
+    document.addEventListener("keydown", handleFocusTrap);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("keydown", handleFocusTrap);
+
+      // Restore focus when modal closes
+      if (previouslyFocusedRef.current && previouslyFocusedRef.current.focus) {
+        previouslyFocusedRef.current.focus();
+      }
+    };
+  }, [isOpen, handleFocusTrap]);
+
   if (!isOpen) return null;
 
   const sizeClasses = {
@@ -162,6 +223,8 @@ export default function Modal({
         }}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -171,6 +234,7 @@ export default function Modal({
           >
             {title && (
               <h2
+                id={titleId}
                 className={`${THEME_CONSTANTS.typography.h4} ${themed.textPrimary}`}
               >
                 {title}

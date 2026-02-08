@@ -27,7 +27,7 @@ interface AdminStats {
 
 export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function useAdminStats() {
 
   const fetchStats = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await apiClient.get<{
         success: boolean;
         data: AdminStats;
@@ -47,9 +47,9 @@ export function useAdminStats() {
     } catch (err: any) {
       setError(err.message || "Failed to load statistics");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  return { stats, loading, error, refresh: fetchStats };
+  return { stats, isLoading, error, refresh: fetchStats };
 }

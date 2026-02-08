@@ -13,11 +13,8 @@ import { z } from "zod";
 import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
 import { applyRateLimit } from "@/lib/security/rate-limit";
 import { requireRole } from "@/lib/security/authorization";
-import {
-  handleApiError,
-  AuthenticationError,
-  ValidationError,
-} from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
 import { userRepository } from "@/repositories";
 import type { UserRole } from "@/types/auth";

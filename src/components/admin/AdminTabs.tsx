@@ -16,7 +16,17 @@ import Link from "next/link";
  * ```
  */
 
-const ADMIN_TABS = [{ label: "Dashboard", href: "/admin/dashboard" }] as const;
+const ADMIN_TABS = [
+  { label: "Dashboard", href: "/admin/dashboard" },
+  { label: "Users", href: "/admin/users" },
+  { label: "Site Settings", href: "/admin/site" },
+  { label: "Carousel", href: "/admin/carousel" },
+  { label: "Sections", href: "/admin/sections" },
+  { label: "Categories", href: "/admin/categories" },
+  { label: "FAQs", href: "/admin/faqs" },
+  { label: "Reviews", href: "/admin/reviews" },
+  { label: "Content", href: "/admin/content" },
+] as const;
 
 export default function AdminTabs() {
   const pathname = usePathname();

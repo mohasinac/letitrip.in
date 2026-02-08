@@ -49,6 +49,8 @@ export const UI_LABELS = {
     DOWNLOAD: "Download",
     EXPORT: "Export",
     IMPORT: "Import",
+    YES: "Yes",
+    NO: "No",
   },
 
   // Form labels
@@ -207,6 +209,16 @@ export const UI_LABELS = {
         ICON: "🚧",
       },
     },
+  },
+
+  // FAQ section
+  FAQ: {
+    WAS_THIS_HELPFUL: "Was this helpful?",
+    HELPFUL: "Helpful",
+    NOT_HELPFUL: "Not Helpful",
+    RELATED_QUESTIONS: "Related Questions",
+    VIEW_ALL: "View All FAQs",
+    SEARCH_PLACEHOLDER: "Search FAQs...",
   },
 } as const;
 

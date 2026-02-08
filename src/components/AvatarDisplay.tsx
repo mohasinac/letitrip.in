@@ -88,6 +88,8 @@ export function AvatarDisplay({
     return (
       <div
         className={`${sizeClasses[size]} ${className} rounded-full bg-gradient-to-br ${getGradient()} flex items-center justify-center overflow-hidden`}
+        role="img"
+        aria-label={alt}
       >
         <span
           className={`${textSizes[size]} font-semibold text-white select-none`}

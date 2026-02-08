@@ -179,6 +179,31 @@ export class StorageManager {
       return false;
     }
   }
+
+  /**
+   * Get all items with prefix as object
+   */
+  public getAll<T = any>(options?: StorageOptions): Record<string, T> {
+    const storage = this.getStorage(options?.type || "local");
+    if (!storage) return {};
+
+    const items: Record<string, T> = {};
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key && key.startsWith(this.prefix)) {
+        try {
+          const value = storage.getItem(key);
+          if (value !== null) {
+            const cleanKey = key.replace(this.prefix, "");
+            items[cleanKey] = JSON.parse(value) as T;
+          }
+        } catch (error) {
+          console.error(`Error parsing storage item ${key}:`, error);
+        }
+      }
+    }
+    return items;
+  }
 }
 
 // Export singleton instance

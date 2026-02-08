@@ -5,6 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import type {
   OrderDocument,
   OrderCreateInput,
@@ -12,10 +13,34 @@ import type {
   PaymentStatus,
   ORDER_COLLECTION,
 } from "@/db/schema/orders";
+import { createOrderId } from "@/db/schema/orders";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
   constructor() {
     super("orders" as typeof ORDER_COLLECTION);
+  }
+
+  /**
+   * Create new order with SEO-friendly ID
+   */
+  async create(input: OrderCreateInput): Promise<OrderDocument> {
+    // Generate order ID based on product count and current date
+    const orderDate = new Date();
+    const id = createOrderId(input.quantity, orderDate);
+
+    const orderData: Omit<OrderDocument, "id"> = {
+      ...input,
+      orderDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.db
+      .collection(this.collection)
+      .doc(id)
+      .set(prepareForFirestore(orderData));
+
+    return { id, ...orderData };
   }
 
   /**

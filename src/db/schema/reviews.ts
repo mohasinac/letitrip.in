@@ -4,6 +4,11 @@
  * Firebase Firestore collection for product reviews
  */
 
+import {
+  generateReviewId,
+  type GenerateReviewIdInput,
+} from "@/utils/id-generators";
+
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
 // ============================================
@@ -17,6 +22,17 @@ export interface ReviewDocument {
   rating: number; // 1-5
   title: string;
   comment: string;
+
+  // Media fields (max 1 video, max 10 images)
+  images?: string[]; // Review images with crop metadata
+  video?: {
+    url: string;
+    thumbnailUrl: string; // User-selected thumbnail
+    duration: number; // in seconds
+    trimStart?: number; // trim start time in seconds
+    trimEnd?: number; // trim end time in seconds
+  };
+
   status: ReviewStatus;
   moderatorId?: string;
   moderatorNote?: string;
@@ -24,7 +40,6 @@ export interface ReviewDocument {
   helpfulCount: number;
   reportCount: number;
   verified: boolean; // Whether user actually purchased the product
-  images?: string[];
   createdAt: Date;
   updatedAt: Date;
   approvedAt?: Date;
@@ -171,3 +186,26 @@ export const reviewQueryHelpers = {
   byRating: (rating: number) => ["rating", "==", rating] as const,
   highRated: () => ["rating", ">=", 4] as const,
 } as const;
+
+// ============================================
+// 7. ID GENERATION HELPER
+// ============================================
+
+/**
+ * Generate SEO-friendly review ID
+ * Pattern: review-{product-name}-{user-first-name}-{date}
+ *
+ * @param productName - Product name being reviewed
+ * @param userFirstName - Reviewer's first name
+ * @param date - Review date (optional, defaults to now)
+ * @returns SEO-friendly review ID
+ *
+ * Example: createReviewId("iPhone 15 Pro", "John") → "review-iphone-15-pro-john-20260207"
+ */
+export function createReviewId(
+  productName: string,
+  userFirstName: string,
+  date?: Date,
+): string {
+  return generateReviewId({ productName, userFirstName, date });
+}

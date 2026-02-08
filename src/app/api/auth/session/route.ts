@@ -10,7 +10,7 @@ import {
   verifyIdToken,
   verifySessionCookie,
 } from "@/lib/firebase/auth-server";
-import { handleApiError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { UI_LABELS } from "@/constants";
 import { sessionRepository } from "@/repositories";

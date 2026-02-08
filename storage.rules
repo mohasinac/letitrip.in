@@ -3,152 +3,19 @@ service firebase.storage {
   match /b/{bucket}/o {
     
     // ============================================
-    // Helper Functions
+    // API-Only Architecture
     // ============================================
+    // All uploads must go through API routes
+    // Firebase Admin SDK (used in API routes) bypasses these rules
     
-    /**
-     * Check if user is authenticated
-     */
-    function isSignedIn() {
-      return request.auth != null;
+    // Allow public read for all files
+    // Block all client-side writes
+    match /{allPaths=**} {
+      allow read: if true;  // Public read access
+      allow write: if false; // All uploads via API routes only
     }
     
-    /**
-     * Check if user owns the resource
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    /**
-     * Validate image file
-     */
-    function isValidImage() {
-      return request.resource.contentType.matches('image/.*') &&
-             request.resource.size < 10 * 1024 * 1024; // 10MB limit
-    }
-    
-    /**
-     * Validate document file
-     */
-    function isValidDocument() {
-      return (request.resource.contentType.matches('application/pdf') ||
-              request.resource.contentType.matches('application/msword') ||
-              request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document') ||
-              request.resource.contentType.matches('text/plain')) &&
-             request.resource.size < 50 * 1024 * 1024; // 50MB limit
-    }
-    
-    // ============================================
-    // Users Storage
-    // ============================================
-    
-    // User profile photos (any filename in profile folder)
-    match /users/{userId}/profile/{filename} {
-      // Anyone can read profile photos
-      allow read: if true;
-      
-      // Only the user can upload/update their profile photo
-      allow write: if isOwner(userId) && isValidImage();
-      
-      // Only the user can delete their profile photo
-      allow delete: if isOwner(userId);
-    }
-    
-    // User profile photo (legacy path support)
-    match /users/{userId}/profile.jpg {
-      // Anyone can read profile photos
-      allow read: if true;
-      
-      // Only the user can upload/update their profile photo
-      allow write: if isOwner(userId) && isValidImage();
-      
-      // Only the user can delete their profile photo
-      allow delete: if isOwner(userId);
-    }
-    
-    // User documents folder
-    match /users/{userId}/documents/{document} {
-      // Only the user can read their documents
-      allow read: if isOwner(userId);
-      
-      // Only the user can upload/update their documents
-      allow write: if isOwner(userId) && isValidDocument();
-      
-      // Only the user can delete their documents
-      allow delete: if isOwner(userId);
-    }
-    
-    // User's uploaded images
-    match /users/{userId}/images/{image} {
-      // Only the user can read their images
-      allow read: if isOwner(userId);
-      
-      // Only the user can upload/update their images
-      allow write: if isOwner(userId) && isValidImage();
-      
-      // Only the user can delete their images
-      allow delete: if isOwner(userId);
-    }
-    
-    // ============================================
-    // Products Storage
-    // ============================================
-    
-    // Product cover images
-    match /products/{productId}/cover.jpg {
-      // Anyone can read product cover images
-      allow read: if true;
-      
-      // Only authenticated sellers can upload product covers
-      allow write: if isSignedIn() && isValidImage();
-      
-      // Only authenticated users can delete (will check ownership via Firestore)
-      allow delete: if isSignedIn();
-    }
-    
-    // Product gallery images
-    match /products/{productId}/gallery/{image} {
-      // Anyone can read product gallery images
-      allow read: if true;
-      
-      // Only authenticated sellers can upload product images
-      allow write: if isSignedIn() && isValidImage();
-      
-      // Only authenticated users can delete
-      allow delete: if isSignedIn();
-    }
-    
-    // ============================================
-    // Orders Storage
-    // ============================================
-    
-    // Order documents (receipts, invoices, etc.)
-    match /orders/{orderId}/{document} {
-      // Only authenticated users can read (will verify ownership in app)
-      allow read: if isSignedIn();
-      
-      // Only authenticated users can upload order documents
-      allow write: if isSignedIn() && (isValidDocument() || isValidImage());
-      
-      // Only authenticated users can delete
-      allow delete: if isSignedIn();
-    }
-    
-    // ============================================
-    // Public Storage
-    // ============================================
-    
-    // Public assets (logos, banners, etc.)
-    match /public/{allPaths=**} {
-      // Anyone can read public assets
-      allow read: if true;
-      
-      // Only admins can write (manage via Firebase Console)
-      allow write: if false;
-      
-      // Only admins can delete (manage via Firebase Console)
-      allow delete: if false;
-    }
+    // Note: Firebase Admin SDK automatically bypasses these rules
+    // All file uploads happen server-side in /api routes with validation
   }
 }

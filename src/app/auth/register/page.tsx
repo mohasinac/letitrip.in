@@ -184,9 +184,9 @@ export default function RegisterPage() {
               <span className="text-white text-2xl font-bold">L</span>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Create your account
-          </h2>
+          </h1>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{" "}
             <Link
