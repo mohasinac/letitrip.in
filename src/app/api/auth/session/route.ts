@@ -18,6 +18,7 @@ import { parseUserAgent } from "@/db/schema/sessions";
 
 /**
  * Create session cookie with session tracking
+ * Also ensures user profile exists in Firestore (for OAuth users)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +32,44 @@ export async function POST(request: NextRequest) {
     const decodedToken = await verifyIdToken(idToken);
     if (!decodedToken) {
       throw new ValidationError("Invalid ID token");
+    }
+
+    // Ensure user profile exists in Firestore (important for OAuth users)
+    // This will create a profile if one doesn't exist
+    const { userRepository } = await import("@/repositories");
+    const { getAuth } = await import("firebase-admin/auth");
+    const { getFirestore, FieldValue } =
+      await import("firebase-admin/firestore");
+    const { getAdminApp } = await import("@/lib/firebase/admin");
+    const { USER_COLLECTION, DEFAULT_USER_DATA } =
+      await import("@/db/schema/users");
+
+    const db = getFirestore(getAdminApp());
+    const auth = getAuth(getAdminApp());
+
+    // Check if user profile exists
+    let userProfile = await userRepository.findById(decodedToken.uid);
+
+    if (!userProfile) {
+      // Create profile for OAuth user (or any user without a profile)
+      const authUser = await auth.getUser(decodedToken.uid);
+      const role = authUser.email === "admin@letitrip.in" ? "admin" : "user";
+
+      await db
+        .collection(USER_COLLECTION)
+        .doc(decodedToken.uid)
+        .set({
+          ...DEFAULT_USER_DATA,
+          uid: decodedToken.uid,
+          email: authUser.email,
+          displayName:
+            authUser.displayName || authUser.email?.split("@")[0] || "User",
+          photoURL: authUser.photoURL || null,
+          emailVerified: authUser.emailVerified,
+          role,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
     }
 
     // Create session cookie (5 days expiry)

@@ -36,10 +36,8 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "./config";
+import { auth } from "./config";
 import { UserRole } from "@/types/auth";
-import { USER_COLLECTION } from "@/db/schema/users";
 import { AuthenticationError, ApiError } from "@/lib/errors";
 
 /**
@@ -147,9 +145,6 @@ export async function registerWithEmail(
     // Update profile
     await updateProfile(user, { displayName });
 
-    // Create Firestore user document with appropriate role
-    await createUserProfile(user, { role: getDefaultRole(email) });
-
     // Send verification email
     await sendEmailVerification(user);
 
@@ -184,12 +179,7 @@ export async function signInWithGoogle(): Promise<
 
     const userCredential = await signInWithPopup(auth, provider);
 
-    // Create/update user profile in Firestore with appropriate role
-    await createUserProfile(userCredential.user, {
-      role: getDefaultRole(userCredential.user.email),
-    });
-
-    // Create session cookie via API and track in Firestore
+    // Create session cookie via API (profile will be created automatically if needed)
     const idToken = await userCredential.user.getIdToken();
     const sessionId = await createSession(idToken);
 
@@ -231,12 +221,7 @@ export async function signInWithApple(): Promise<
 
     const userCredential = await signInWithPopup(auth, provider);
 
-    // Create/update user profile in Firestore with appropriate role
-    await createUserProfile(userCredential.user, {
-      role: getDefaultRole(userCredential.user.email),
-    });
-
-    // Create session cookie via API and track in Firestore
+    // Create session cookie via API (profile will be created automatically if needed)
     const idToken = await userCredential.user.getIdToken();
     const sessionId = await createSession(idToken);
 
@@ -334,53 +319,6 @@ export async function signOut(): Promise<void> {
   } catch (error: any) {
     console.error("Sign out error:", error);
     throw new ApiError(500, error.message || "Failed to sign out");
-  }
-}
-
-/**
- * Create or update user profile in Firestore
- */
-async function createUserProfile(
-  user: User,
-  additionalData: { role: UserRole },
-): Promise<void> {
-  const userRef = doc(db, USER_COLLECTION, user.uid);
-  const userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) {
-    // Create new user profile
-    try {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        phoneNumber: null,
-        phoneVerified: false,
-        emailVerified: user.emailVerified,
-        role: additionalData.role,
-        disabled: false,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-    } catch (error) {
-      console.error("Error creating user profile:", error);
-      throw error;
-    }
-  } else {
-    // Update last sign in
-    try {
-      await setDoc(
-        userRef,
-        {
-          updatedAt: serverTimestamp(),
-          emailVerified: user.emailVerified,
-        },
-        { merge: true },
-      );
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-    }
   }
 }
 

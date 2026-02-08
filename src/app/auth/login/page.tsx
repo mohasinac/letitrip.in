@@ -53,25 +53,7 @@ function LoginForm() {
     }
   }, [user, authLoading, router, callbackUrl]);
 
-  // Show loading while checking auth
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {UI_LABELS.LOADING.DEFAULT}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render login form if user is authenticated
-  if (user) {
-    return null;
-  }
-
+  // All hooks MUST be called before any conditional returns
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -127,6 +109,25 @@ function LoginForm() {
       setLoading(false);
     }
   }, []);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
+            {UI_LABELS.LOADING.DEFAULT}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render login form if user is authenticated
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">

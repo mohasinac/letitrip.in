@@ -25,10 +25,8 @@ import {
   User,
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase/config";
-import { USER_COLLECTION, UserDocument } from "@/db/schema/users";
-import { ERROR_MESSAGES } from "@/constants";
+import { auth } from "@/lib/firebase/config";
+import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
 
 // ============================================================================
 // Types
@@ -152,68 +150,45 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return false;
   }, []);
 
-  // Fetch user profile from Firestore
+  // Fetch user profile from API (not direct Firestore access)
   const fetchUserProfile = useCallback(
     async (authUser: User): Promise<SessionUser> => {
       try {
-        const userDocRef = doc(db, USER_COLLECTION, authUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        const currentSessionId = getSessionIdFromCookie();
+        // Use API endpoint instead of direct Firestore access
+        // This maintains API-only architecture and respects security rules
+        const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
+          method: "GET",
+          credentials: "include", // Include session cookie
+        });
 
-        if (userDoc.exists()) {
-          const firestoreData = userDoc.data() as UserDocument;
-
-          // Handle Firestore timestamps
-          const createdAt =
-            firestoreData.createdAt instanceof Date
-              ? firestoreData.createdAt
-              : (firestoreData.createdAt as any)?.toDate?.() || undefined;
-          const updatedAt =
-            firestoreData.updatedAt instanceof Date
-              ? firestoreData.updatedAt
-              : (firestoreData.updatedAt as any)?.toDate?.() || undefined;
-
-          // Only include avatarMetadata if it has a url
-          const avatarMetadata = firestoreData.avatarMetadata?.url
-            ? {
-                url: firestoreData.avatarMetadata.url,
-                position: firestoreData.avatarMetadata.position || {
-                  x: 50,
-                  y: 50,
-                },
-                zoom: firestoreData.avatarMetadata.zoom || 1,
-              }
-            : null;
-
-          return {
-            uid: authUser.uid,
-            email: authUser.email,
-            emailVerified: authUser.emailVerified,
-            displayName: firestoreData.displayName || authUser.displayName,
-            photoURL: firestoreData.photoURL || authUser.photoURL,
-            phoneNumber: firestoreData.phoneNumber || authUser.phoneNumber,
-            role: firestoreData.role || "user",
-            disabled: firestoreData.disabled,
-            createdAt,
-            updatedAt,
-            sessionId: currentSessionId || undefined,
-            phoneVerified: firestoreData.phoneVerified,
-            publicProfile: firestoreData.publicProfile,
-            stats: firestoreData.stats,
-            avatarMetadata,
-          };
+        if (!response.ok) {
+          throw new Error("Failed to fetch user profile");
         }
 
-        // Return basic auth user if no Firestore profile
+        const { data } = await response.json();
+        const currentSessionId = getSessionIdFromCookie();
+
+        // Return session user with data from API
         return {
           uid: authUser.uid,
           email: authUser.email,
           emailVerified: authUser.emailVerified,
-          displayName: authUser.displayName,
-          photoURL: authUser.photoURL,
-          phoneNumber: authUser.phoneNumber,
-          role: "user",
+          displayName: data.displayName || authUser.displayName,
+          photoURL: data.photoURL || authUser.photoURL,
+          phoneNumber: data.phoneNumber || authUser.phoneNumber,
+          role: data.role || "user",
+          disabled: data.disabled,
+          createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+          updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
           sessionId: currentSessionId || undefined,
+          phoneVerified: data.phoneVerified,
+          avatarMetadata: data.avatarMetadata?.url
+            ? {
+                url: data.avatarMetadata.url,
+                position: data.avatarMetadata.position || { x: 50, y: 50 },
+                zoom: data.avatarMetadata.zoom || 1,
+              }
+            : null,
         };
       } catch (error) {
         console.error(ERROR_MESSAGES.SESSION.FETCH_USER_PROFILE_ERROR, error);
@@ -232,63 +207,20 @@ export function SessionProvider({ children }: SessionProviderProps) {
     [getSessionIdFromCookie],
   );
 
-  // Subscribe to Firestore user document for real-time updates
-  const subscribeToUserProfile = useCallback(
-    (uid: string) => {
-      // Clean up previous subscription
-      if (firestoreUnsubscribeRef.current) {
-        firestoreUnsubscribeRef.current();
-      }
+  // Subscribe to user profile updates
+  // NOTE: Real-time Firestore subscriptions are disabled due to API-only architecture
+  // Profile updates requiremanual refetching or can be implemented via polling
+  const subscribeToUserProfile = useCallback((uid: string) => {
+    // Clean up previous subscription if any
+    if (firestoreUnsubscribeRef.current) {
+      firestoreUnsubscribeRef.current();
+      firestoreUnsubscribeRef.current = null;
+    }
 
-      const userDocRef = doc(db, USER_COLLECTION, uid);
-
-      firestoreUnsubscribeRef.current = onSnapshot(
-        userDocRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            const firestoreData = snapshot.data() as UserDocument;
-            const currentSessionId = getSessionIdFromCookie();
-
-            // Only include avatarMetadata if it has a url
-            const avatarMetadata = firestoreData.avatarMetadata?.url
-              ? {
-                  url: firestoreData.avatarMetadata.url,
-                  position: firestoreData.avatarMetadata.position || {
-                    x: 50,
-                    y: 50,
-                  },
-                  zoom: firestoreData.avatarMetadata.zoom || 1,
-                }
-              : null;
-
-            setUser((prevUser) => {
-              if (!prevUser) return null;
-              return {
-                ...prevUser,
-                displayName: firestoreData.displayName || prevUser.displayName,
-                photoURL: firestoreData.photoURL || prevUser.photoURL,
-                phoneNumber: firestoreData.phoneNumber || prevUser.phoneNumber,
-                role: firestoreData.role || prevUser.role,
-                disabled: firestoreData.disabled,
-                phoneVerified: firestoreData.phoneVerified,
-                publicProfile: firestoreData.publicProfile,
-                stats: firestoreData.stats,
-                avatarMetadata,
-                sessionId: currentSessionId || undefined,
-              };
-            });
-          }
-        },
-        (error) => {
-          console.error(
-            ERROR_MESSAGES.SESSION.FIRESTORE_SUBSCRIPTION_ERROR,
-            error,
-          );
-        },
-      );
-    },
-    [getSessionIdFromCookie],
-  );
+    // Real-time subscriptions disabled to maintain API-only architecture
+    // Alternative: Implement polling if real-time updates are critical
+    // For now, profile changes require page refresh or manual refetch
+  }, []);
 
   // Update session activity
   const updateSessionActivity = useCallback(async () => {

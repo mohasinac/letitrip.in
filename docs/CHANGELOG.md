@@ -9,9 +9,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+#### 🐛 React Hooks & Firebase Permissions Errors (Feb 9, 2026)
+
+**Fixed critical React hooks violations and Firebase permission errors causing app crashes**
+
+- **Fixed React Hooks Violations**:
+  - [src/app/auth/login/page.tsx](src/app/auth/login/page.tsx): Moved all `useCallback` hooks before conditional returns
+  - [src/app/auth/register/page.tsx](src/app/auth/register/page.tsx): Moved all `useCallback` hooks before conditional returns
+  - Error: "Rendered fewer hooks than expected" - RESOLVED ✅
+  - Root cause: Early returns after some hooks but before others violated React's Rules of Hooks
+
+- **Fixed Firebase Permission Errors**:
+  - Error: "Missing or insufficient permissions" - RESOLVED ✅
+  - Root cause: Client-side components tried to access Firestore directly, violating API-only architecture
+  - [src/contexts/SessionContext.tsx](src/contexts/SessionContext.tsx):
+    - Removed direct Firestore queries (`doc`, `getDoc`, `onSnapshot`)
+    - Now uses `/api/user/profile` API endpoint instead
+    - Disabled real-time Firestore subscriptions (API-only architecture)
+  - [src/lib/firebase/auth-helpers.ts](src/lib/firebase/auth-helpers.ts):
+    - Removed `createUserProfile` function (client-side Firestore writes)
+    - Removed calls to `createUserProfile` from OAuth flows
+    - User profiles now created server-side only
+
+- **New API Endpoint**:
+  - [src/app/api/user/profile/route.ts](src/app/api/user/profile/route.ts): GET endpoint for fetching current user profile
+    - Uses Firebase Admin SDK (server-side)
+    - Verifies session cookie
+    - Returns user profile with role, metadata, etc.
+
+- **Enhanced Session Creation**:
+  - [src/app/api/auth/session/route.ts](src/app/api/auth/session/route.ts): POST endpoint now creates user profiles
+    - Automatically creates Firestore profile for OAuth users
+    - Ensures all authenticated users have profiles
+    - Handles both email/password and OAuth sign-ins
+
+**Technical Details**:
+
+- **API-Only Architecture**: All Firestore operations now go through API routes using Firebase Admin SDK
+- **Security**: Firestore rules block all client-side access (`allow read, write: if false`)
+- **Hooks Order**: All React hooks now called unconditionally before any conditional logic
+- **OAuth Flow**: Sign-in → Create session → Server creates profile if needed → Client fetches profile via API
+
+**Impact**:
+
+- ✅ Login and registration pages now work without errors
+- ✅ OAuth (Google, Apple) sign-ins create user profiles correctly
+- ✅ No more Firebase permission errors in console
+- ✅ React hooks violations eliminated
+- ⚠️ Real-time profile updates disabled (can be re-enabled with polling or SSE if needed)
+
 ### Added
 
-#### � Firebase Rules & Indices Update (Feb 9, 2026)
+#### 🚀 Firebase Rules & Indices Update (Feb 9, 2026)
 
 **Updated Firestore composite indices to match schema requirements for improved query performance**
 

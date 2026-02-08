@@ -49,6 +49,46 @@ export default function RegisterPage() {
     }
   }, [user, authLoading, router]);
 
+  // All hooks MUST be called before any conditional returns
+  const handleBlur = useCallback(
+    (field: string) => () => {
+      setTouched((prev) => ({ ...prev, [field]: true }));
+    },
+    [],
+  );
+
+  const handleGoogleRegister = useCallback(async () => {
+    setIsLoading(true);
+    setMessage(null);
+    try {
+      await signInWithGoogle();
+      // OAuth creates session automatically, redirect after callback
+      router.push(ROUTES.USER.PROFILE);
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Google registration failed",
+      });
+      setIsLoading(false);
+    }
+  }, [router]);
+
+  const handleAppleRegister = useCallback(async () => {
+    setIsLoading(true);
+    setMessage(null);
+    try {
+      await signInWithApple();
+      // OAuth creates session automatically, redirect after callback
+      router.push(ROUTES.USER.PROFILE);
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Apple registration failed",
+      });
+      setIsLoading(false);
+    }
+  }, [router]);
+
   // Show loading while checking auth
   if (authLoading) {
     return (
@@ -67,13 +107,6 @@ export default function RegisterPage() {
   if (user) {
     return null;
   }
-
-  const handleBlur = useCallback(
-    (field: string) => () => {
-      setTouched((prev) => ({ ...prev, [field]: true }));
-    },
-    [],
-  );
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -137,38 +170,6 @@ export default function RegisterPage() {
       setMessage({
         type: "error",
         text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-      });
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleRegister = async () => {
-    setIsLoading(true);
-    setMessage(null);
-    try {
-      await signInWithGoogle();
-      // OAuth creates session automatically, redirect after callback
-      router.push(ROUTES.USER.PROFILE);
-    } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || "Google registration failed",
-      });
-      setIsLoading(false);
-    }
-  };
-
-  const handleAppleRegister = async () => {
-    setIsLoading(true);
-    setMessage(null);
-    try {
-      await signInWithApple();
-      // OAuth creates session automatically, redirect after callback
-      router.push(ROUTES.USER.PROFILE);
-    } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || "Apple registration failed",
       });
       setIsLoading(false);
     }
