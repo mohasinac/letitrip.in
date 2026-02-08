@@ -24,6 +24,31 @@ export const UI_LABELS = {
     NO_ITEMS: "No items to display",
   },
 
+  // Error pages
+  ERROR_PAGES: {
+    NOT_FOUND: {
+      TITLE: "404 - Page Not Found",
+      DESCRIPTION:
+        "The page you're looking for doesn't exist or has been moved.",
+    },
+    UNAUTHORIZED: {
+      TITLE: "401 - Unauthorized",
+      DESCRIPTION: "You don't have permission to access this page.",
+    },
+    FORBIDDEN: {
+      TITLE: "403 - Forbidden",
+      DESCRIPTION: "Access to this resource is forbidden.",
+    },
+    SERVER_ERROR: {
+      TITLE: "500 - Server Error",
+      DESCRIPTION: "Something went wrong on our end. Please try again later.",
+    },
+    GENERIC_ERROR: {
+      TITLE: "Oops! Something Went Wrong",
+      DESCRIPTION: "An unexpected error occurred. Please try again.",
+    },
+  },
+
   // Actions
   ACTIONS: {
     SAVE: "Save",

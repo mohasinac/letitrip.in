@@ -9,6 +9,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🎨 Comprehensive Error Pages with User-Friendly Navigation (Feb 8, 2026)
+
+**Implemented full error handling UI with redirection and recovery options**
+
+- **Error Pages Created**:
+  - `error.tsx` - Generic runtime error page with retry functionality
+  - `global-error.tsx` - Root-level error boundary for critical failures
+  - `not-found.tsx` - 404 page for non-existent routes
+  - `unauthorized/page.tsx` - 401/403 page for authentication/authorization failures
+- **Features**:
+  - User-friendly error messages with appropriate icons
+  - "Back to Home" button on all error pages
+  - "Try Again" button for recoverable errors
+  - "Login" option on unauthorized page
+  - Theme-aware styling (light/dark mode support)
+  - Development mode: Shows detailed error information
+  - Production mode: Shows generic user-friendly messages
+- **Client-Side Error Handlers**:
+  - `redirectOnError()` - Redirect to appropriate error page based on status code
+  - `useErrorRedirect()` - React hook for error redirection
+  - `checkResponseOrRedirect()` - Validate response and auto-redirect on errors
+- **Constants Updated**:
+  - Added `ERROR_PAGES` labels in `UI_LABELS`
+  - Added `ROUTES.ERRORS.UNAUTHORIZED` and `ROUTES.ERRORS.NOT_FOUND`
+  - Updated `PUBLIC_ROUTES` to include error pages
+- **Files Created**:
+  - `src/app/error.tsx` - Runtime error boundary
+  - `src/app/global-error.tsx` - Global error boundary
+  - `src/app/not-found.tsx` - 404 page
+  - `src/app/unauthorized/page.tsx` - 401/403 page
+  - `src/lib/errors/client-redirect.ts` - Client-side error redirect utilities
+- **Benefits**:
+  - ✅ Better user experience with clear error messages
+  - ✅ Proper navigation flow from error pages
+  - ✅ Reduces user confusion and frustration
+  - ✅ Compliance with Standard #6 (Error Handling)
+  - ✅ Production-ready error boundaries
+  - ✅ Centralized error page management
+
+### Fixed
+
+#### 🐛 Reviews API - Featured Reviews Query Support (Feb 8, 2026)
+
+**Fixed "Missing or insufficient permissions" error on homepage**
+
+- **Issue**: Homepage was calling `/api/reviews?featured=true&status=approved&limit=18` but API required `productId` parameter
+- **Root Cause**: API didn't support fetching featured reviews across all products
+- **Fix**:
+  - Added `findFeatured(limit)` method to ReviewRepository
+  - Updated reviews API to handle featured reviews query without requiring productId
+  - Featured reviews query now returns approved, featured reviews sorted by date
+  - Verified Firestore index exists: `featured + status + createdAt`
+  - Deployed indices to Firebase successfully
+- **Files Modified**:
+  - `src/repositories/review.repository.ts` - Added findFeatured method
+  - `src/app/api/reviews/route.ts` - Added featured reviews handling before productId requirement check
+- **Benefits**:
+  - ✅ Homepage customer reviews section now loads correctly
+  - ✅ No 400 errors on reviews endpoint
+  - ✅ Proper caching with 5-10 minute TTL
+  - ✅ Query optimized with Firestore composite index
+
 ### Changed
 
 #### ⚡ High-Priority Refactoring: Error Handling (Feb 8, 2026)

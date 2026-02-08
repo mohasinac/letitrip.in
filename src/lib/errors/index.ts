@@ -36,6 +36,13 @@ export { DatabaseError } from "./database-error";
 // Error Codes & Messages (Client & Server Safe)
 export { ERROR_CODES, ERROR_MESSAGES } from "./error-codes";
 
+// Client-side error redirect utilities (Client-Only)
+export {
+  redirectOnError,
+  useErrorRedirect,
+  checkResponseOrRedirect,
+} from "./client-redirect";
+
 // Error Handler (Server-Only - import directly from './error-handler' in API routes)
 // Do not export here to avoid importing server-logger in client components
 // export { handleApiError, logError, isAppError } from './error-handler';

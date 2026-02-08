@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get("productId");
+    const featured = searchParams.get("featured") === "true";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = Math.min(parseInt(searchParams.get("limit") || "10"), 50);
     const status = searchParams.get("status");
@@ -58,7 +59,31 @@ export async function GET(request: NextRequest) {
     const verified = searchParams.get("verified") === "true";
     const sortBy = searchParams.get("sortBy") || "date";
 
-    // Require productId parameter
+    // Handle featured reviews query (no productId required)
+    if (featured && status === "approved") {
+      const featuredReviews = await reviewRepository.findFeatured(limit);
+      return NextResponse.json(
+        {
+          success: true,
+          data: featuredReviews,
+          meta: {
+            page: 1,
+            limit,
+            total: featuredReviews.length,
+            totalPages: 1,
+            hasMore: false,
+          },
+        },
+        {
+          headers: {
+            "Cache-Control":
+              "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
+          },
+        },
+      );
+    }
+
+    // Require productId parameter for product-specific reviews
     if (!productId) {
       return NextResponse.json(
         { success: false, error: "productId is required" },

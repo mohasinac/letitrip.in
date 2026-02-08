@@ -8,6 +8,12 @@ export const ROUTES = {
   // Public Routes
   HOME: "/",
 
+  // Error Pages
+  ERRORS: {
+    UNAUTHORIZED: "/unauthorized",
+    NOT_FOUND: "/404",
+  },
+
   // Auth Routes
   AUTH: {
     LOGIN: "/auth/login",
@@ -60,6 +66,8 @@ export const ROUTES = {
  */
 export const PUBLIC_ROUTES = [
   ROUTES.HOME,
+  ROUTES.ERRORS.UNAUTHORIZED,
+  ROUTES.ERRORS.NOT_FOUND,
   ROUTES.AUTH.LOGIN,
   ROUTES.AUTH.REGISTER,
   ROUTES.AUTH.FORGOT_PASSWORD,

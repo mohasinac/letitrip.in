@@ -98,6 +98,24 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
   }
 
   /**
+   * Find featured approved reviews
+   */
+  async findFeatured(limit: number = 18): Promise<ReviewDocument[]> {
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where("featured", "==", true)
+      .where("status", "==", "approved")
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ReviewDocument[];
+  }
+
+  /**
    * Approve review
    */
   async approve(
