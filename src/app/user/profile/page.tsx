@@ -1,7 +1,14 @@
 "use client";
 
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, AvatarDisplay } from "@/components";
+import {
+  Card,
+  Heading,
+  Text,
+  Button,
+  AvatarDisplay,
+  Spinner,
+} from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { useRouter } from "next/navigation";
@@ -20,7 +27,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text>{UI_LABELS.LOADING.DEFAULT}</Text>
+        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
       </div>
     );
   }

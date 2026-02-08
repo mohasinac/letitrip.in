@@ -7,11 +7,24 @@ import {
   useUpdateAddress,
   useDeleteAddress,
 } from "@/hooks/useAddresses";
-import { Card, Heading, Button, Input, Select, Checkbox } from "@/components";
+import {
+  Card,
+  Heading,
+  Button,
+  Input,
+  Select,
+  Checkbox,
+  Spinner,
+} from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS, ADDRESS_TYPES, INDIAN_STATES } from "@/constants";
+import {
+  THEME_CONSTANTS,
+  ADDRESS_TYPES,
+  INDIAN_STATES,
+  UI_LABELS,
+} from "@/constants";
 
 export default function EditAddressPage() {
   const { user, loading: authLoading } = useAuth();
@@ -81,7 +94,7 @@ export default function EditAddressPage() {
   if (authLoading || addressLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
       </div>
     );
   }

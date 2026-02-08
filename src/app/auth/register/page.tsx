@@ -9,7 +9,7 @@
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Alert, Checkbox } from "@/components";
+import { Button, Alert, Checkbox, Spinner } from "@/components";
 import { FormField } from "@/components/FormField";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
@@ -93,12 +93,7 @@ export default function RegisterPage() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {UI_LABELS.LOADING.DEFAULT}
-          </p>
-        </div>
+        <Spinner size="xl" variant="primary" />
       </div>
     );
   }

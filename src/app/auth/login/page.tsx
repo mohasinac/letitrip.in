@@ -22,7 +22,7 @@
 import { useState, FormEvent, Suspense, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Input, Button, Alert } from "@/components";
+import { Input, Button, Alert, Spinner } from "@/components";
 import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES, ROUTES } from "@/constants";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -114,12 +114,7 @@ function LoginForm() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {UI_LABELS.LOADING.DEFAULT}
-          </p>
-        </div>
+        <Spinner size="xl" variant="primary" />
       </div>
     );
   }
@@ -301,7 +296,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>{UI_LABELS.LOADING.DEFAULT}</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Spinner size="xl" variant="primary" />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

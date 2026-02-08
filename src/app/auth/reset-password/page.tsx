@@ -9,7 +9,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Card, Button, Alert } from "@/components";
+import { Card, Button, Alert, Spinner } from "@/components";
 import { FormField } from "@/components/FormField";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { Heading, Text } from "@/components/typography";
@@ -204,7 +204,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-screen">
-          {UI_LABELS.LOADING.DEFAULT}
+          <Spinner size="xl" variant="primary" />
         </div>
       }
     >

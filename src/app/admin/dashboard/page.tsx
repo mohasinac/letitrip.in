@@ -10,7 +10,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, Button } from "@/components";
+import { Card, Button, Spinner } from "@/components";
 import { Heading } from "@/components/typography/Typography";
 import Text from "@/components/Text";
 import { useAuth, useAdminStats } from "@/hooks";
@@ -37,9 +37,7 @@ export default function AdminDashboardPage() {
       <div
         className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}
       >
-        <Heading level={2} variant="primary">
-          Loading dashboard...
-        </Heading>
+        <Spinner size="xl" variant="primary" />
       </div>
     );
   }

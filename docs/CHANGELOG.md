@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### 💅 UI/UX: Replace Loading Text with Spinner Component (Feb 9, 2026)
+
+**Improved loading states across the application by replacing text with visual spinner component**
+
+- **Updated Loading States**:
+  - [src/app/auth/login/page.tsx](src/app/auth/login/page.tsx): Replaced loading text with Spinner in auth check and Suspense fallback
+  - [src/app/auth/register/page.tsx](src/app/auth/register/page.tsx): Replaced loading text with Spinner in auth check
+  - [src/app/auth/verify-email/page.tsx](src/app/auth/verify-email/page.tsx): Replaced loading text with Spinner in Suspense fallback
+  - [src/app/auth/reset-password/page.tsx](src/app/auth/reset-password/page.tsx): Replaced loading text with Spinner in Suspense fallback
+  - [src/app/admin/dashboard/page.tsx](src/app/admin/dashboard/page.tsx): Replaced loading text with Spinner in dashboard load state
+  - [src/app/user/settings/page.tsx](src/app/user/settings/page.tsx): Replaced loading text with Spinner
+
+- **Spinner Component Usage**:
+  - Size: `xl` (16x16) for full-page loading states
+  - Variant: `primary` (blue with transparent top border)
+  - Centered in viewport with flexbox
+  - Accessible with proper ARIA labels (sr-only)
+
+**Benefits**:
+
+- ✅ Consistent loading experience across all pages
+- ✅ Better visual feedback (animated spinner vs static text)
+- ✅ Cleaner, more professional UI
+- ✅ Improved accessibility with proper ARIA labels
+- ✅ Reduced clutter (removed "Loading..." text visible to sighted users)
+
 ### Fixed
 
 #### 🐛 React Hooks & Firebase Permissions Errors (Feb 9, 2026)

@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button } from "@/components";
+import { Card, Heading, Text, Button, Spinner } from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, UI_LABELS } from "@/constants";
 import { SITE_CONFIG } from "@/constants/site";
 
 export default function UserWishlistPage() {
@@ -21,7 +21,7 @@ export default function UserWishlistPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text>Loading...</Text>
+        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
       </div>
     );
   }

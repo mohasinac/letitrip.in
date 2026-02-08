@@ -7,7 +7,14 @@ import {
   useResendVerification,
   useUnsavedChanges,
 } from "@/hooks";
-import { Card, Heading, Button, Alert, AvatarUpload } from "@/components";
+import {
+  Card,
+  Heading,
+  Button,
+  Alert,
+  AvatarUpload,
+  Spinner,
+} from "@/components";
 import type { ImageCropData } from "@/components";
 import { FormField } from "@/components/FormField";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
@@ -243,7 +250,7 @@ export default function UserSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Text>{UI_LABELS.LOADING.DEFAULT}</Text>
+        <Spinner size="xl" variant="primary" />
       </div>
     );
   }

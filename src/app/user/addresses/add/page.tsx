@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useAddressForm } from "@/hooks";
-import { Card, Heading, Button, Input, Select, Checkbox } from "@/components";
+import {
+  Card,
+  Heading,
+  Button,
+  Input,
+  Select,
+  Checkbox,
+  Spinner,
+} from "@/components";
 import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
 import {
@@ -53,7 +61,7 @@ export default function AddAddressPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
       </div>
     );
   }
