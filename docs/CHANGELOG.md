@@ -66,6 +66,72 @@ firebase firestore:indexes
 
 ---
 
+#### Vercel Environment Variables Sync Scripts (Feb 9, 2026)
+
+**Created PowerShell scripts to sync environment variables between .env.local and Vercel**
+
+- **Created `scripts/sync-env-to-vercel.ps1`**:
+  - Reads `.env.local` and syncs all variables to Vercel
+  - Supports multiple environments (production, preview, development)
+  - Handles updates by removing and re-adding variables
+  - Interactive confirmation before syncing
+  - Dry-run mode to preview changes without applying
+  - Comprehensive error handling and reporting
+  - Success/failure summary with detailed logs
+
+- **Created `scripts/pull-env-from-vercel.ps1`**:
+  - Downloads environment variables from Vercel to local file
+  - Supports specific environment selection
+  - Saves to `.env.vercel` by default
+  - Warns before overwriting existing files
+
+- **Created `scripts/list-vercel-env.ps1`**:
+  - Lists all environment variables configured in Vercel
+  - Shows which environments each variable is applied to
+  - Provides helpful CLI command examples
+
+- **Updated `.gitignore`**:
+  - Added `.env.vercel` to ignored files
+
+- **Updated `README.md`**:
+  - Added Vercel deployment section with script usage examples
+  - Documented CLI commands for manual variable management
+
+**Usage Examples**:
+
+```powershell
+# Sync all variables to all environments
+.\scripts\sync-env-to-vercel.ps1
+
+# Dry run to preview changes
+.\scripts\sync-env-to-vercel.ps1 -DryRun
+
+# Sync only to production
+.\scripts\sync-env-to-vercel.ps1 -Environment "production"
+
+# Pull variables from Vercel
+.\scripts\pull-env-from-vercel.ps1
+
+# List all Vercel environment variables
+.\scripts\list-vercel-env.ps1
+```
+
+**Benefits**:
+
+- ✅ Automated environment variable synchronization
+- ✅ Consistent configuration across local and Vercel environments
+- ✅ No manual copy-paste of environment variables
+- ✅ Dry-run mode for safe testing
+- ✅ Comprehensive error handling and rollback support
+- ✅ Works with Vercel's multi-environment system
+
+**Prerequisites**:
+
+- Vercel CLI installed: `npm install -g vercel`
+- Authenticated with Vercel: `vercel login`
+
+---
+
 #### �🔄 Code Reusability Refactoring - Address Management (Feb 8, 2026)
 
 **Extracted and created reusable components for address management to eliminate code duplication**

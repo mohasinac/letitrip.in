@@ -45,6 +45,7 @@ yarn-error.log*
 .env
 .env.development
 .env.test
+.env.vercel
 !.env.example
 
 # API Keys and Secrets
@@ -86,7 +87,9 @@ logs/
 .scannerwork/
 
 # Scripts
-/scripts/
+# (Deployment scripts are tracked, but ignore generated/build scripts if any)
+/scripts/build/
+/scripts/generated/
 
 # GitHub Copilot
 .github/copilot-instructions.md

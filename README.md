@@ -112,6 +112,45 @@ firebase deploy --only database:rules
 
 **Note:** Index creation can take several minutes. Monitor progress in Firebase Console.
 
+### Vercel Deployment
+
+Sync environment variables from `.env.local` to Vercel using the provided PowerShell scripts:
+
+```powershell
+# Sync all variables from .env.local to Vercel (production, preview, development)
+.\scripts\sync-env-to-vercel.ps1
+
+# Dry run to see what would be synced without making changes
+.\scripts\sync-env-to-vercel.ps1 -DryRun
+
+# Sync to specific environment(s)
+.\scripts\sync-env-to-vercel.ps1 -Environment "production"
+
+# Pull environment variables from Vercel to local file
+.\scripts\pull-env-from-vercel.ps1
+
+# List all environment variables in Vercel
+.\scripts\list-vercel-env.ps1
+```
+
+Or use Vercel CLI directly:
+
+```bash
+# Add a single environment variable
+vercel env add VARIABLE_NAME production,preview,development
+
+# Remove an environment variable
+vercel env rm VARIABLE_NAME production
+
+# List all environment variables
+vercel env ls
+
+# Pull environment variables to file
+vercel env pull .env.vercel
+```
+
+**Note:** The sync script automatically handles updates by removing and re-adding variables. Always review variables before syncing to production.
+
 ### Theme System
 
 - **Dark Mode** - Automatic system detection with manual toggle
