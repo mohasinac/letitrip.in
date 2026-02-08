@@ -260,7 +260,7 @@ export default function UserSettingsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+    <div className="w-full">
       <UserTabs />
 
       <div className={THEME_CONSTANTS.spacing.stack}>

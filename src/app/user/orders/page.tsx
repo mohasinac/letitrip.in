@@ -31,14 +31,14 @@ export default function UserOrdersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+    <div className="w-full">
       <UserTabs />
 
-      <div className="space-y-6">
+      <div className="space-y-6 mt-6">
         <Heading level={3}>My Orders</Heading>
 
-        {/* Empty State */}
-        <Card className="p-12 text-center">
+        {/* Empty State - Modern Card */}
+        <Card className="p-12 text-center shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="max-w-md mx-auto">
             <svg
               className="w-24 h-24 mx-auto mb-4 text-gray-400"

@@ -29,7 +29,7 @@ export function AdvertisementBanner() {
       <section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
-        <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+        <div className="w-full">
           <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
         </div>
       </section>
@@ -46,7 +46,7 @@ export function AdvertisementBanner() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         <div
           className={`relative overflow-hidden ${THEME_CONSTANTS.borderRadius["2xl"]} min-h-[280px] flex items-center justify-center text-center`}
           style={{

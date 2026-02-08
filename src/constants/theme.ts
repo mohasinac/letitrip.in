@@ -109,8 +109,12 @@ export const THEME_CONSTANTS = {
     navbarHeight: "h-12 md:h-14",
     sidebarWidth: "w-80",
     bottomNavHeight: "h-16",
-    maxContentWidth: "max-w-7xl 2xl:max-w-[1600px]",
-    contentPadding: "px-4 md:px-6 lg:px-8 2xl:px-12",
+    // Content width - consistent across all sections
+    maxContentWidth: "max-w-7xl",
+    // Container for header/nav elements - matches content width
+    containerWidth: "max-w-7xl",
+    contentPadding: "px-4 md:px-6 lg:px-8",
+    navPadding: "px-4 sm:px-6 lg:px-8",
     titleBarBg:
       "bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800",
     navbarBg:
@@ -135,7 +139,7 @@ export const THEME_CONSTANTS = {
     titleBar: "z-50",
     navbar: "z-40",
     sidebar: "z-50",
-    overlay: "z-40",
+    overlay: "z-[45]",
     bottomNav: "z-40",
     search: "z-40",
     searchBackdrop: "z-[35]",

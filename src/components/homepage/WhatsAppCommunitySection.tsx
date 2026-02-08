@@ -27,7 +27,7 @@ export function WhatsAppCommunitySection() {
       <section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
-        <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
+        <div className="w-full">
           <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
         </div>
       </section>
@@ -51,7 +51,7 @@ export function WhatsAppCommunitySection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
-      <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
+      <div className="w-full">
         <div
           className={`bg-gradient-to-br from-green-500 to-green-600 ${THEME_CONSTANTS.borderRadius["2xl"]} ${THEME_CONSTANTS.spacing.padding.xl} text-white overflow-hidden relative`}
         >

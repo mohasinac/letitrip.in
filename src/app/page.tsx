@@ -13,12 +13,11 @@ import {
   FAQSection,
   BlogArticlesSection,
   NewsletterSection,
-  EnhancedFooter,
 } from "@/components/homepage";
 
 export default function Page() {
   return (
-    <>
+    <div className="w-full space-y-0">
       {/* Homepage Sections - Rendered in Order */}
       <HeroCarousel />
       <WelcomeSection />
@@ -34,7 +33,6 @@ export default function Page() {
       <FAQSection />
       <BlogArticlesSection />
       <NewsletterSection />
-      <EnhancedFooter />
-    </>
+    </div>
   );
 }

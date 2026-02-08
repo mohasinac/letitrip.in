@@ -79,10 +79,10 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   return (
     <nav
       id="bottom-navbar"
-      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} shadow-lg`}
+      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-opacity-95 dark:bg-opacity-95 shadow-2xl`}
     >
       <ul
-        className={`flex justify-around items-center ${layout.bottomNavHeight}`}
+        className={`flex justify-around items-center ${layout.bottomNavHeight} px-2`}
       >
         {bottomNavLinks.map((link) => (
           <li key={link.href} className="flex-1">

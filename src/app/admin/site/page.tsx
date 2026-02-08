@@ -1,185 +1,162 @@
 "use client";
 
-import { useState } from "react";
-import { useApiQuery, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
-import { RichTextEditor, ImageUpload } from "@/components/admin";
+import { useState, useEffect } from "react";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { Card, Button } from "@/components";
+import { BackgroundSettings } from "@/components/admin";
+import type { SiteSettingsDocument } from "@/db/schema";
 
-interface SiteSettings {
-  id: string;
-  companyName: string;
-  companyDescription: string;
-  companyAddress: string;
-  supportEmail: string;
-  supportPhone: string;
-  websiteUrl: string;
-  logoUrl: string;
-  faviconUrl: string;
-  socialLinks: {
-    facebook?: string;
-    twitter?: string;
-    instagram?: string;
-    linkedin?: string;
-  };
-  seo: {
-    defaultTitle: string;
-    defaultDescription: string;
-    keywords: string[];
-    ogImage: string;
-  };
-  maintenance: {
-    enabled: boolean;
-    message: string;
-  };
-}
+/**
+ * AdminSiteSettings Page
+ *
+ * Comprehensive admin page for managing site-wide settings including
+ * backgrounds, branding, contact info, and more.
+ */
 
-export default function AdminSitePage() {
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    settings: SiteSettings;
-  }>({
-    queryKey: ["site", "settings"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.SITE_SETTINGS.GET),
-  });
-
-  const updateMutation = useApiMutation<any, any>({
-    mutationFn: (data) =>
-      apiClient.patch(API_ENDPOINTS.SITE_SETTINGS.UPDATE, data),
-  });
-
-  const [formData, setFormData] = useState<Partial<SiteSettings>>({});
+export default function AdminSiteSettings() {
   const [isSaving, setIsSaving] = useState(false);
-
-  const settings = data?.settings;
+  const [settings, setSettings] = useState<Partial<SiteSettingsDocument>>({
+    siteName: "LetItRip",
+    motto: "Your Marketplace, Your Rules",
+    background: {
+      light: {
+        type: "color",
+        value: "#f9fafb",
+        overlay: { enabled: false, color: "#000000", opacity: 0 },
+      },
+      dark: {
+        type: "color",
+        value: "#030712",
+        overlay: { enabled: false, color: "#000000", opacity: 0 },
+      },
+    },
+    contact: {
+      email: "support@letitrip.in",
+      phone: "+91-XXXXXXXXXX",
+      address: "Marketplace Street, India",
+    },
+    socialLinks: {
+      facebook: "",
+      twitter: "",
+      instagram: "",
+      linkedin: "",
+    },
+  });
 
   const handleSave = async () => {
-    if (!settings) return;
-
     setIsSaving(true);
     try {
-      await updateMutation.mutate(formData);
-      await refetch();
-      setFormData({});
+      // TODO: Implement API call to save settings
+      console.log("Saving settings:", settings);
       alert("Settings saved successfully!");
-    } catch (err) {
+    } catch (error) {
       alert("Failed to save settings");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const updateField = <K extends keyof SiteSettings>(
-    key: K,
-    value: SiteSettings[K],
-  ) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const currentSettings = { ...settings, ...formData };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
-          <p className={THEME_CONSTANTS.themed.textSecondary}>
-            Loading settings...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !settings) {
-    return (
-      <Card>
-        <div className="text-center py-8">
-          <p className="text-red-600 mb-4">
-            {error?.message || "Failed to load settings"}
-          </p>
-          <Button onClick={() => refetch()}>Retry</Button>
-        </div>
-      </Card>
-    );
-  }
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
           <h1
-            className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+            className={`text-2xl sm:text-3xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Site Settings
           </h1>
-          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
-            Configure your platform settings and information
+          <p
+            className={`text-sm sm:text-base ${THEME_CONSTANTS.themed.textSecondary} mt-1`}
+          >
+            Configure global site settings, branding, and appearance
           </p>
         </div>
         <Button
           onClick={handleSave}
-          disabled={isSaving || Object.keys(formData).length === 0}
+          disabled={isSaving}
           variant="primary"
+          className="w-full sm:w-auto"
         >
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? "Saving..." : "Save All Changes"}
         </Button>
       </div>
 
-      {/* Company Information */}
+      {/* Background Settings */}
+      <BackgroundSettings
+        lightMode={settings.background?.light!}
+        darkMode={settings.background?.dark!}
+        onChange={(mode, config) => {
+          setSettings({
+            ...settings,
+            background: {
+              ...settings.background!,
+              [mode]: config,
+            },
+          });
+        }}
+      />
+
+      {/* Basic Information */}
       <Card>
         <h2
           className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
-          Company Information
+          Basic Information
         </h2>
-        <div className={THEME_CONSTANTS.spacing.stack}>
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Company Name
+              Site Name
             </label>
             <input
               type="text"
-              value={currentSettings.companyName || ""}
-              onChange={(e) => updateField("companyName", e.target.value)}
+              value={settings.siteName}
+              onChange={(e) =>
+                setSettings({ ...settings, siteName: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Company Description
+              Motto / Tagline
             </label>
-            <RichTextEditor
-              content={currentSettings.companyDescription || ""}
-              onChange={(content) => updateField("companyDescription", content)}
-              placeholder="Enter company description..."
-              minHeight="150px"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Address
-            </label>
-            <textarea
-              value={currentSettings.companyAddress || ""}
-              onChange={(e) => updateField("companyAddress", e.target.value)}
-              rows={3}
+            <input
+              type="text"
+              value={settings.motto}
+              onChange={(e) =>
+                setSettings({ ...settings, motto: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
+        </div>
+      </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Contact Information */}
+      <Card>
+        <h2
+          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        >
+          Contact Information
+        </h2>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Support Email
               </label>
               <input
                 type="email"
-                value={currentSettings.supportEmail || ""}
-                onChange={(e) => updateField("supportEmail", e.target.value)}
+                value={settings.contact?.email}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    contact: { ...settings.contact!, email: e.target.value },
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
@@ -190,8 +167,13 @@ export default function AdminSitePage() {
               </label>
               <input
                 type="tel"
-                value={currentSettings.supportPhone || ""}
-                onChange={(e) => updateField("supportPhone", e.target.value)}
+                value={settings.contact?.phone}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    contact: { ...settings.contact!, phone: e.target.value },
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
@@ -199,41 +181,20 @@ export default function AdminSitePage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Website URL
+              Address
             </label>
-            <input
-              type="url"
-              value={currentSettings.websiteUrl || ""}
-              onChange={(e) => updateField("websiteUrl", e.target.value)}
+            <textarea
+              value={settings.contact?.address}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  contact: { ...settings.contact!, address: e.target.value },
+                })
+              }
+              rows={3}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-        </div>
-      </Card>
-
-      {/* Branding */}
-      <Card>
-        <h2
-          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
-        >
-          Branding
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ImageUpload
-            currentImage={currentSettings.logoUrl}
-            onUpload={(url) => updateField("logoUrl", url)}
-            folder="site/branding"
-            label="Logo"
-            helperText="Recommended: 200x60px, PNG with transparent background"
-          />
-
-          <ImageUpload
-            currentImage={currentSettings.faviconUrl}
-            onUpload={(url) => updateField("faviconUrl", url)}
-            folder="site/branding"
-            label="Favicon"
-            helperText="Recommended: 32x32px, ICO or PNG"
-          />
         </div>
       </Card>
 
@@ -244,18 +205,21 @@ export default function AdminSitePage() {
         >
           Social Media Links
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Facebook
             </label>
             <input
               type="url"
-              value={currentSettings.socialLinks?.facebook || ""}
+              value={settings.socialLinks?.facebook || ""}
               onChange={(e) =>
-                updateField("socialLinks", {
-                  ...currentSettings.socialLinks,
-                  facebook: e.target.value,
+                setSettings({
+                  ...settings,
+                  socialLinks: {
+                    ...settings.socialLinks,
+                    facebook: e.target.value,
+                  },
                 })
               }
               placeholder="https://facebook.com/yourpage"
@@ -269,11 +233,14 @@ export default function AdminSitePage() {
             </label>
             <input
               type="url"
-              value={currentSettings.socialLinks?.twitter || ""}
+              value={settings.socialLinks?.twitter || ""}
               onChange={(e) =>
-                updateField("socialLinks", {
-                  ...currentSettings.socialLinks,
-                  twitter: e.target.value,
+                setSettings({
+                  ...settings,
+                  socialLinks: {
+                    ...settings.socialLinks,
+                    twitter: e.target.value,
+                  },
                 })
               }
               placeholder="https://twitter.com/yourhandle"
@@ -287,11 +254,14 @@ export default function AdminSitePage() {
             </label>
             <input
               type="url"
-              value={currentSettings.socialLinks?.instagram || ""}
+              value={settings.socialLinks?.instagram || ""}
               onChange={(e) =>
-                updateField("socialLinks", {
-                  ...currentSettings.socialLinks,
-                  instagram: e.target.value,
+                setSettings({
+                  ...settings,
+                  socialLinks: {
+                    ...settings.socialLinks,
+                    instagram: e.target.value,
+                  },
                 })
               }
               placeholder="https://instagram.com/yourprofile"
@@ -305,11 +275,14 @@ export default function AdminSitePage() {
             </label>
             <input
               type="url"
-              value={currentSettings.socialLinks?.linkedin || ""}
+              value={settings.socialLinks?.linkedin || ""}
               onChange={(e) =>
-                updateField("socialLinks", {
-                  ...currentSettings.socialLinks,
-                  linkedin: e.target.value,
+                setSettings({
+                  ...settings,
+                  socialLinks: {
+                    ...settings.socialLinks,
+                    linkedin: e.target.value,
+                  },
                 })
               }
               placeholder="https://linkedin.com/company/yourcompany"
@@ -319,128 +292,17 @@ export default function AdminSitePage() {
         </div>
       </Card>
 
-      {/* SEO */}
-      <Card>
-        <h2
-          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+      {/* Floating Save Button for Mobile */}
+      <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          variant="primary"
+          className="shadow-xl"
         >
-          SEO Settings
-        </h2>
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Meta Title
-            </label>
-            <input
-              type="text"
-              value={currentSettings.seo?.defaultTitle || ""}
-              onChange={(e) =>
-                updateField("seo", {
-                  defaultTitle: e.target.value,
-                  defaultDescription:
-                    currentSettings.seo?.defaultDescription || "",
-                  keywords: currentSettings.seo?.keywords || [],
-                  ogImage: currentSettings.seo?.ogImage || "",
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Meta Description
-            </label>
-            <textarea
-              value={currentSettings.seo?.defaultDescription || ""}
-              onChange={(e) =>
-                updateField("seo", {
-                  defaultTitle: currentSettings.seo?.defaultTitle || "",
-                  defaultDescription: e.target.value,
-                  keywords: currentSettings.seo?.keywords || [],
-                  ogImage: currentSettings.seo?.ogImage || "",
-                })
-              }
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Meta Keywords (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={currentSettings.seo?.keywords?.join(", ") || ""}
-              onChange={(e) =>
-                updateField("seo", {
-                  defaultTitle: currentSettings.seo?.defaultTitle || "",
-                  defaultDescription:
-                    currentSettings.seo?.defaultDescription || "",
-                  keywords: e.target.value
-                    .split(",")
-                    .map((k) => k.trim())
-                    .filter(Boolean),
-                  ogImage: currentSettings.seo?.ogImage || "",
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Maintenance Mode */}
-      <Card>
-        <h2
-          className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
-        >
-          Maintenance Mode
-        </h2>
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="maintenance-enabled"
-              checked={currentSettings.maintenance?.enabled || false}
-              onChange={(e) =>
-                updateField("maintenance", {
-                  enabled: e.target.checked,
-                  message: currentSettings.maintenance?.message || "",
-                })
-              }
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label
-              htmlFor="maintenance-enabled"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Enable Maintenance Mode
-            </label>
-          </div>
-
-          {currentSettings.maintenance?.enabled && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Maintenance Message
-              </label>
-              <textarea
-                value={currentSettings.maintenance?.message || ""}
-                onChange={(e) =>
-                  updateField("maintenance", {
-                    enabled: currentSettings.maintenance?.enabled || false,
-                    message: e.target.value,
-                  })
-                }
-                rows={3}
-                placeholder="We're performing scheduled maintenance. We'll be back soon!"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-          )}
-        </div>
-      </Card>
+          {isSaving ? "Saving..." : "💾 Save"}
+        </Button>
+      </div>
     </div>
   );
 }

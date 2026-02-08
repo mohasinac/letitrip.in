@@ -72,7 +72,9 @@ export default function Breadcrumbs() {
       aria-label="Breadcrumb"
       className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.border}`}
     >
-      <div className="container mx-auto px-4 py-3 md:px-6">
+      <div
+        className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} py-2 sm:py-3`}
+      >
         <ol className="flex items-center gap-2 flex-wrap">
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;

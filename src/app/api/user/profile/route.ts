@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
         avatarMetadata: user.avatarMetadata,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin,
       },
     });
   } catch (error: unknown) {

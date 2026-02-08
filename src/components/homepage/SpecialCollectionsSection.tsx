@@ -52,7 +52,7 @@ export function SpecialCollectionsSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-10">
           <h2

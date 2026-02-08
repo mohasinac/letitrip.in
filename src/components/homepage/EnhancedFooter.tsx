@@ -71,9 +71,7 @@ export function EnhancedFooter() {
       className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} border-t`}
     >
       {/* Main Footer Content */}
-      <div
-        className={`${THEME_CONSTANTS.container["2xl"]} mx-auto ${THEME_CONSTANTS.spacing.padding.xl} py-12`}
-      >
+      <div className="w-full py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">

@@ -85,7 +85,7 @@ export function BlogArticlesSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-10">
           <div>

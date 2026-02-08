@@ -5,3 +5,4 @@ export { GridEditor } from "./GridEditor";
 export { ImageUpload } from "./ImageUpload";
 export { DataTable } from "./DataTable";
 export { CategoryTreeView } from "./CategoryTreeView";
+export { default as BackgroundSettings } from "./BackgroundSettings";

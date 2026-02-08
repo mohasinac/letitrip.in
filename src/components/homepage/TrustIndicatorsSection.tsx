@@ -36,7 +36,7 @@ export function TrustIndicatorsSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {indicators.map((indicator, index) => (
             <div
@@ -47,7 +47,7 @@ export function TrustIndicatorsSection() {
                 {indicator.icon}
               </div>
               <h3
-                className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} mb-1 md:mb-2`}
+                className={`${THEME_CONSTANTS.typography.h6} ${THEME_CONSTANTS.themed.textPrimary} mb-1 md:mb-2`}
               >
                 {indicator.title}
               </h3>

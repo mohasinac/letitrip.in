@@ -104,22 +104,22 @@ export default function EditAddressPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+    <div className="max-w-5xl">
       <UserTabs />
 
-      <div className={THEME_CONSTANTS.spacing.stack}>
+      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
         <div className="flex items-center justify-between">
           <Heading level={3}>Edit Address</Heading>
           <Button
             variant="secondary"
             onClick={() => setShowDeleteModal(true)}
-            className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white"
+            className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white shadow-md hover:shadow-lg transition-shadow"
           >
             Delete Address
           </Button>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
           <form
             onSubmit={handleSubmit}
             className={THEME_CONSTANTS.spacing.stack}

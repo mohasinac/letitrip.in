@@ -28,7 +28,7 @@ export function FAQSection() {
       <section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
-        <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
+        <div className="w-full">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs mx-auto animate-pulse" />
           <div className={THEME_CONSTANTS.spacing.stack}>
             {[...Array(6)].map((_, i) => (
@@ -57,7 +57,7 @@ export function FAQSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
-      <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2

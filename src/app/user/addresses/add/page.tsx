@@ -71,13 +71,13 @@ export default function AddAddressPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+    <div className="max-w-5xl">
       <UserTabs />
 
-      <div className={THEME_CONSTANTS.spacing.stack}>
+      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
         <Heading level={3}>Add New Address</Heading>
 
-        <Card className="p-6">
+        <Card className="p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
           <form
             onSubmit={handleSubmit}
             className={THEME_CONSTANTS.spacing.stack}

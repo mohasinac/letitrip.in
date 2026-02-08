@@ -51,7 +51,7 @@ export function NewsletterSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className={`${THEME_CONSTANTS.container.xl} mx-auto`}>
+      <div className="w-full">
         <div
           className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius["2xl"]} ${THEME_CONSTANTS.spacing.padding.xl} text-center`}
         >

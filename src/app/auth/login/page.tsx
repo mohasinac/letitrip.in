@@ -113,7 +113,7 @@ function LoginForm() {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center py-16">
         <Spinner size="xl" variant="primary" />
       </div>
     );
@@ -125,7 +125,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
+    <div className="flex items-center justify-center py-8 sm:py-12 w-full">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div>

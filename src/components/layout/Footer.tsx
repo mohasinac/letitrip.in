@@ -86,8 +86,13 @@ export default function Footer() {
   const { colors, layout } = THEME_CONSTANTS;
 
   return (
-    <footer id="footer" className={`mt-auto mb-16 md:mb-0 ${layout.footerBg}`}>
-      <div className="container mx-auto px-6 py-12">
+    <footer
+      id="footer"
+      className={`mt-auto mb-16 md:mb-0 ${layout.footerBg} border-t ${THEME_CONSTANTS.themed.border}`}
+    >
+      <div
+        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-12 md:py-16`}
+      >
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {footerSections.map((section) => (
             <div key={section.title}>

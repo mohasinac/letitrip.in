@@ -9,7 +9,297 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🎨 Dynamic Background System & Comprehensive Responsive Design (Feb 9, 2026)
+
+**Implemented site-wide background customization and fixed all responsive layout issues**
+
+- **Site Settings Schema Enhancement** ([src/db/schema/site-settings.ts](src/db/schema/site-settings.ts)):
+  - Added `background` field with support for both light and dark modes
+  - Background types: `color`, `gradient`, `image`, `video`
+  - Optional overlay with customizable color and opacity
+  - Default values: gray-50 (light) and gray-950 (dark)
+  - Added to `PUBLIC_FIELDS` and `UPDATABLE_FIELDS`
+
+- **BackgroundRenderer Component** ([src/components/utility/BackgroundRenderer.tsx](src/components/utility/BackgroundRenderer.tsx)):
+  - Fixed background layer with smooth transitions
+  - Supports all background types (color, gradient, image, video)
+  - Optional overlay for better content readability
+  - Theme-aware: switches between light/dark configs automatically
+  - Video backgrounds: auto-play, loop, muted for UX
+  - Fixed positioning prevents scrolling issues
+
+- **BackgroundSettings Admin Component** ([src/components/admin/BackgroundSettings.tsx](src/components/admin/BackgroundSettings.tsx)):
+  - Tabbed interface for light/dark mode configuration
+  - Visual preset selector for gradients (Ocean Blue, Sunset, Green Peace, Purple Dream)
+  - Color picker with hex input for solid colors
+  - Gradient CSS editor with live preview
+  - Image URL input with preview
+  - Video URL input (MP4 format)
+  - Overlay controls: enable/disable, color picker, opacity slider
+  - Real-time preview of all settings
+
+- **New Admin Site Settings Page** ([src/app/admin/site/page-new.tsx](src/app/admin/site/page-new.tsx)):
+  - Integrated BackgroundSettings component
+  - Basic information: site name, motto
+  - Contact information: email, phone, address
+  - Social media links: Facebook, Twitter, Instagram, LinkedIn
+  - Fully responsive layout (mobile/tablet/desktop)
+  - Floating save button on mobile
+  - Clean, organized card-based layout
+
 ### Changed
+
+#### 📱 Comprehensive Responsive & White Space Fixes (Feb 9, 2026)
+
+- **Layout Improvements** ([src/components/LayoutClient.tsx](src/components/LayoutClient.tsx)):
+  - Integrated BackgroundRenderer for dynamic backgrounds
+  - Added `overflow-x-hidden` to prevent horizontal scroll
+  - Added `w-full` to all container elements
+  - Removed hardcoded background colors (now uses BackgroundRenderer)
+  - Content padding: `py-4 sm:py-6` for responsive spacing
+  - Used theme constants for consistent spacing
+
+- **Root Layout Fixes** ([src/app/layout.tsx](src/app/layout.tsx)):
+  - Added `h-full` to html element
+  - Added `overflow-x-hidden` to body to prevent horizontal scroll
+  - Ensures full-height layout on all devices
+
+- **Global CSS Improvements** ([src/app/globals.css](src/app/globals.css)):
+  - Added `h-full` to html and body
+  - Added `overflow-x-hidden` to body
+  - Reset default margins/padding: `* { @apply m-0 p-0; }`
+  - Proper box-sizing reset for all elements
+  - Full-height Next.js root wrapper
+  - Removed white space gaps across all breakpoints
+
+- **Button Component Responsive** ([src/components/ui/Button.tsx](src/components/ui/Button.tsx)):
+  - Small: `px-2.5 py-1.5 text-xs sm:px-3 sm:text-sm`
+  - Medium: `px-3 py-2 text-sm sm:px-4 sm:py-2.5 sm:text-base`
+  - Large: `px-4 py-2.5 text-base sm:px-6 sm:py-3 sm:text-lg`
+  - Better mobile-first sizing
+
+- **Card Component Responsive** ([src/components/ui/Card.tsx](src/components/ui/Card.tsx)):
+  - CardHeader, CardBody, CardFooter: `p-4 sm:p-6`
+  - More compact on mobile, spacious on desktop
+
+**Responsive Breakpoints Coverage**:
+
+- ✅ **Mobile** (< 640px): Compact spacing, single column layouts
+- ✅ **Tablet** (640px - 1024px): Medium spacing, adaptive grids
+- ✅ **Laptop** (1024px - 1280px): Comfortable spacing, multi-column
+- ✅ **Desktop/Widescreen** (> 1280px): Optimal spacing, max-width constraints
+
+**White Space Elimination**:
+
+- ✅ No horizontal scrollbars on any screen size
+- ✅ No gaps between layout components
+- ✅ Full-height layouts from top to bottom
+- ✅ Proper overflow handling
+- ✅ Consistent margins and padding
+
+#### 🔧 Remaining Responsive & Layout Fixes (Feb 9, 2026)
+
+- **Homepage Duplicate Footer Fixed** ([src/app/page.tsx](src/app/page.tsx)):
+  - Removed `EnhancedFooter` from homepage sections
+  - LayoutClient already renders `Footer` for all pages, so EnhancedFooter caused double footers
+  - Wrapped homepage sections in `<div className="w-full space-y-0">` for proper flow
+
+- **Z-Index Overlay Conflict Fixed** ([src/constants/theme.ts](src/constants/theme.ts)):
+  - Changed `zIndex.overlay` from `z-40` to `z-[45]`
+  - Sidebar overlay now properly covers BottomNavbar (`z-40`) when open
+  - Prevents users from tapping bottom nav through the overlay
+
+- **WhatsApp/FAQ/Newsletter Section Width Fixed**:
+  - [WhatsAppCommunitySection.tsx](src/components/homepage/WhatsAppCommunitySection.tsx): Replaced `container.xl` (max-w-xl = 576px) with `w-full`
+  - [FAQSection.tsx](src/components/homepage/FAQSection.tsx): Replaced `container.xl` with `w-full`
+  - [NewsletterSection.tsx](src/components/homepage/NewsletterSection.tsx): Replaced `container.xl` with `w-full`
+  - Sections now fill available width inside LayoutClient's max-w-7xl container
+  - Inner content constraints (max-w-3xl for FAQ, max-w-md for form) preserved for readability
+
+### Changed
+
+#### 🎯 Navigation & Layout Consistency Improvements (Feb 9, 2026)
+
+**Unified content width and improved navigation UX for better consistency across the site**
+
+- **THEME_CONSTANTS Updates** ([src/constants/theme.ts](src/constants/theme.ts)):
+  - Added `containerWidth: "max-w-7xl"` - consistent container for navigation/header
+  - Added `navPadding: "px-4 sm:px-6 lg:px-8"` - responsive padding for navigation
+  - Updated `maxContentWidth` to simple `"max-w-7xl"` (removed ultra-wide variations)
+  - Updated `contentPadding` to `"px-4 md:px-6 lg:px-8"` (removed 2xl padding)
+  - All layout elements now use consistent 7xl max-width (1280px)
+
+- **MainNavbar Improvements** ([src/components/layout/MainNavbar.tsx](src/components/layout/MainNavbar.tsx)):
+  - Changed from `max-w-screen-2xl` to `layout.containerWidth` (`max-w-7xl`)
+  - Updated padding from custom values to `layout.navPadding`
+  - Navigation now centered with `justify-center`
+  - Reduced gap between nav items: `gap-1 lg:gap-2` (previously `gap-2 md:gap-4`)
+  - Links now align perfectly with page content width
+
+- **TitleBar Consistency** ([src/components/layout/TitleBar.tsx](src/components/layout/TitleBar.tsx)):
+  - Updated to use `layout.navPadding` and `layout.containerWidth`
+  - Matches MainNavbar width for visual alignment
+  - Logo and controls now align with content edges
+
+- **NavItem Component** ([src/components/layout/NavItem.tsx](src/components/layout/NavItem.tsx)):
+  - Improved responsive padding: `px-3 py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3`
+  - Added `font-medium` for better text weight
+  - Added `transition-all duration-200` for smoother hover effects
+  - Icon now has `flex-shrink-0` to prevent icon distortion
+  - Text wrapped in `<span>` with `whitespace-nowrap` for proper text handling
+  - More compact spacing: `gap-2` (previously varied between devices)
+
+- **Footer Consistency** ([src/components/layout/Footer.tsx](src/components/layout/Footer.tsx)):
+  - Updated to use `layout.navPadding` and `layout.containerWidth`
+  - Footer content now aligns with header and main content
+
+**Benefits**:
+
+- ✅ All navigation elements align with content width (1280px max)
+- ✅ Consistent padding across all layout components
+- ✅ Better visual harmony - no misaligned edges
+- ✅ Improved readability - navigation doesn't stretch too wide
+- ✅ More polished, professional appearance
+- ✅ Easier to maintain - all dimensions use constants
+- ✅ Better mobile-to-desktop responsive scaling
+
+**Before vs After**:
+| Component | Before | After |
+|-----------|--------|-------|
+| TitleBar | `max-w-screen-2xl` (1536px) | `max-w-7xl` (1280px) |
+| MainNavbar | `max-w-screen-2xl` (1536px) | `max-w-7xl` (1280px) |
+| Footer | `max-w-screen-2xl` (1536px) | `max-w-7xl` (1280px) |
+| Content | `max-w-7xl` (1280px) | `max-w-7xl` (1280px) ✅ |
+
+#### 🔒 Role-Based Navigation & Content Width Improvements (Feb 9, 2026)
+
+**Improved navigation visibility based on user roles and optimized content width for better readability**
+
+- **Sidebar Role-Based Filtering** ([src/components/layout/Sidebar.tsx](src/components/layout/Sidebar.tsx)):
+  - "Dashboard" section now completely hidden for regular users
+  - Only shows when user has `admin`, `moderator`, or `seller` role
+  - Admin Dashboard link: Visible to `admin` and `moderator` roles only
+  - Seller Dashboard link: Visible to `seller` and `admin` roles only
+  - Active state indicators (checkmarks) added to dashboard links
+  - Cleaner sidebar for users without elevated permissions
+
+- **Content Width Optimization** ([src/components/LayoutClient.tsx](src/components/LayoutClient.tsx)):
+  - Reduced max-width from `max-w-screen-2xl` to `max-w-7xl` (1280px)
+  - Improved responsive padding: `px-4 md:px-6 lg:px-8`
+  - Better reading experience with optimal line length
+  - Content no longer stretches excessively on large screens
+  - More comfortable viewing on desktop and laptop displays
+
+- **User Experience Enhancements**:
+  - ✅ Navigation sections hidden (not just empty) when role unavailable
+  - ✅ Reduced visual clutter for regular users
+  - ✅ Better content focus with narrower width
+  - ✅ Improved readability on wide screens
+  - ✅ Professional role-based UI customization
+  - ✅ Clear visual hierarchy with conditional sections
+
+**Role Access Matrix**:
+| Section | User | Seller | Moderator | Admin |
+|---------|------|--------|-----------|-------|
+| Profile | ✅ | ✅ | ✅ | ✅ |
+| Dashboard Section | ❌ | ✅ | ✅ | ✅ |
+| Admin Dashboard | ❌ | ❌ | ✅ | ✅ |
+| Seller Dashboard | ❌ | ✅ | ❌ | ✅ |
+| Support | ✅ | ✅ | ✅ | ✅ |
+
+#### 🎨 Modern Layout Design Overhaul (Feb 9, 2026)
+
+**Comprehensive modernization of the entire application layout with enhanced visual hierarchy and professional styling**
+
+- **LayoutClient Component** ([src/components/LayoutClient.tsx](src/components/LayoutClient.tsx)):
+  - Enhanced overlay with backdrop blur (`backdrop-blur-sm`)
+  - Improved transition durations (300ms) for smoother animations
+  - Better overlay opacity (`bg-black/60` instead of `bg-black/50`)
+  - Expanded max-width containers (`max-w-screen-2xl` with responsive padding)
+  - Enhanced spacing: `px-4 md:px-8 lg:px-12` for consistent margins
+
+- **TitleBar Component** ([src/components/layout/TitleBar.tsx](src/components/layout/TitleBar.tsx)):
+  - Added `backdrop-blur-lg` with `bg-opacity-90` for glass-morphism effect
+  - Border bottom with themed color for depth
+  - Logo with hover effects: `scale-105` and color transitions
+  - Gradient logo shadow (`shadow-lg` → `shadow-xl` on hover)
+  - Interactive group hover effects on brand name
+  - Rounded corners upgraded to `rounded-xl`
+
+- **MainNavbar Component** ([src/components/layout/MainNavbar.tsx](src/components/layout/MainNavbar.tsx)):
+  - Added `backdrop-blur-sm` for modern translucent effect
+  - Border bottom with themed color
+  - Increased spacing: `gap-2 md:gap-4` for better touch targets
+  - Responsive max-width container
+
+- **Sidebar Component** ([src/components/layout/Sidebar.tsx](src/components/layout/Sidebar.tsx)):
+  - Enhanced shadow from `shadow-xl` to `shadow-2xl`
+  - Added border-left for subtle depth
+  - Header background with secondary theme color
+  - Modern role badges with circular positioning on avatar
+    - Moved from below avatar to overlay position
+    - Enhanced shadow and color contrast
+    - Gradient-based role indicators
+  - Close button with rotation animation (`hover:rotate-90`)
+  - Rounded corners upgraded to `rounded-xl` and `rounded-full`
+  - Auth buttons with gradient backgrounds:
+    - Login: Blue gradient (`from-blue-600 to-blue-700`)
+    - Register: Border with hover effects
+    - Scale animation on hover (`hover:scale-[1.02]`)
+    - Enhanced shadows (`shadow-lg` → `shadow-xl`)
+
+- **BottomNavbar Component** ([src/components/layout/BottomNavbar.tsx](src/components/layout/BottomNavbar.tsx)):
+  - Added `backdrop-blur-lg` with enhanced opacity (95%)
+  - Border top with themed color
+  - Enhanced shadow to `shadow-2xl`
+  - Improved spacing with `px-2` padding
+
+- **Footer Component** ([src/components/layout/Footer.tsx](src/components/layout/Footer.tsx)):
+  - Added border top for visual separation
+  - Responsive padding: `px-6 md:px-8 lg:px-12`
+  - Enhanced vertical padding: `py-12 md:py-16`
+  - Max-width container for better readability
+
+- **User Pages Modernization**:
+  - [src/app/user/profile/page.tsx](src/app/user/profile/page.tsx)
+  - [src/app/user/addresses/page.tsx](src/app/user/addresses/page.tsx)
+  - [src/app/user/wishlist/page.tsx](src/app/user/wishlist/page.tsx)
+  - [src/app/user/orders/page.tsx](src/app/user/orders/page.tsx)
+  - [src/app/user/addresses/add/page.tsx](src/app/user/addresses/add/page.tsx)
+  - [src/app/user/addresses/edit/[id]/page.tsx](src/app/user/addresses/edit/[id]/page.tsx)
+
+  **All pages updated with**:
+  - Removed redundant container wrappers (handled by LayoutClient)
+  - Cards with enhanced shadows (`shadow-lg` with `hover:shadow-xl`)
+  - Smooth transition effects (`transition-all duration-300`)
+  - Consistent spacing with `mt-6` top margins
+  - Buttons with shadow enhancements
+  - Responsive padding: `p-6 md:p-8`
+  - Better max-width constraints (`max-w-5xl` for forms, `max-w-7xl` for listings)
+
+**Design Improvements**:
+
+- ✅ Glass-morphism effects with backdrop blur
+- ✅ Enhanced depth with multi-layered shadows
+- ✅ Smooth animations and transitions (300ms standard)
+- ✅ Hover effects with scale transforms
+- ✅ Gradient backgrounds for primary actions
+- ✅ Better color contrast and themed borders
+- ✅ Modern rounded corners (xl, 2xl, full)
+- ✅ Responsive spacing system with breakpoints
+- ✅ Professional visual hierarchy
+- ✅ Improved touch targets for mobile
+
+**Kept As Requested**:
+
+- ✅ Drawer (Sidebar) functionality intact
+- ✅ Bottom navigation for mobile
+- ✅ All existing sections and components
+- ✅ Responsive behavior unchanged
+- ✅ Swipe gestures working
+- ✅ Theme switching working
 
 #### 💅 UI/UX: Replace Loading Text with Spinner Component (Feb 9, 2026)
 
@@ -22,12 +312,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [src/app/auth/reset-password/page.tsx](src/app/auth/reset-password/page.tsx): Replaced loading text with Spinner in Suspense fallback
   - [src/app/admin/dashboard/page.tsx](src/app/admin/dashboard/page.tsx): Replaced loading text with Spinner in dashboard load state
   - [src/app/user/settings/page.tsx](src/app/user/settings/page.tsx): Replaced loading text with Spinner
+  - [src/app/user/profile/page.tsx](src/app/user/profile/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/app/user/addresses/page.tsx](src/app/user/addresses/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/app/user/wishlist/page.tsx](src/app/user/wishlist/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/app/user/orders/page.tsx](src/app/user/orders/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/app/user/addresses/add/page.tsx](src/app/user/addresses/add/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/app/user/addresses/edit/[id]/page.tsx](src/app/user/addresses/edit/[id]/page.tsx): Replaced loading text with `<Spinner size="lg" />`
+  - [src/components/admin/DataTable.tsx](src/components/admin/DataTable.tsx): Replaced inline SVG spinner with `<Spinner size="lg" />`
 
 - **Spinner Component Usage**:
-  - Size: `xl` (16x16) for full-page loading states
+  - Size: `xl` (16x16) or `lg` (12x12) for full-page loading states
   - Variant: `primary` (blue with transparent top border)
   - Centered in viewport with flexbox
   - Accessible with proper ARIA labels (sr-only)
+  - Uses `UI_LABELS.LOADING.DEFAULT` constant for accessibility text
 
 **Benefits**:
 

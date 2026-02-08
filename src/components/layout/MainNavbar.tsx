@@ -26,11 +26,13 @@ export default function MainNavbar() {
   return (
     <nav
       id="main-navbar"
-      className={`hidden md:block ${layout.navbarBg} shadow-md`}
+      className={`hidden md:block ${layout.navbarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-sm`}
     >
-      <div className="container mx-auto px-4">
+      <div
+        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth}`}
+      >
         <ul
-          className={`flex items-center gap-1 md:gap-2 ${layout.navbarHeight}`}
+          className={`flex items-center justify-center gap-1 lg:gap-2 ${layout.navbarHeight}`}
         >
           {MAIN_NAV_ITEMS.map((item) => (
             <li key={item.href}>

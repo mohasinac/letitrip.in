@@ -63,23 +63,23 @@ export default function NavItem({
     );
   }
 
-  // Horizontal navbar style (icon and label side by side)
+  // Horizontal navbar style (icon and label side by side, more compact and user-friendly)
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 md:gap-2.5 px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
-        isActive ? colors.navbar.active : colors.navbar.inactive
+      className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3 rounded-lg text-sm md:text-base font-medium transition-all duration-200 ${
+        isActive ? `${colors.navbar.active}` : `${colors.navbar.inactive}`
       }`}
     >
       <svg
-        className={colors.navbar.icon}
+        className={`${colors.navbar.icon} flex-shrink-0`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
       >
         {icon}
       </svg>
-      {label}
+      <span className="whitespace-nowrap">{label}</span>
     </Link>
   );
 }

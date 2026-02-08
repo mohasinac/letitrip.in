@@ -31,7 +31,7 @@ export function FeaturedProductsSection() {
       <section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
-        <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+        <div className="w-full">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs animate-pulse" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {[...Array(18)].map((_, i) => (
@@ -65,7 +65,7 @@ export function FeaturedProductsSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

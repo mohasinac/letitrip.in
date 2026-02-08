@@ -51,18 +51,23 @@ export default function TitleBar({
   return (
     <header
       id="title-bar"
-      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} shadow-md`}
+      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-opacity-90 dark:bg-opacity-90`}
     >
-      <div className="container mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
-        {/* Logo - Left position on all screen sizes */}
-        <Link href={SITE_CONFIG.nav.home} className="flex items-center gap-3">
+      <div
+        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-3 md:py-4 flex items-center justify-between`}
+      >
+        {/* Logo - Modern design with gradient */}
+        <Link
+          href={SITE_CONFIG.nav.home}
+          className="flex items-center gap-3 group"
+        >
           <div
-            className={`w-10 h-10 md:w-12 md:h-12 ${colors.brand.logo} rounded-lg flex items-center justify-center ${colors.brand.logoText} font-bold text-xl md:text-2xl shadow-md`}
+            className={`w-10 h-10 md:w-12 md:h-12 ${colors.brand.logo} rounded-xl flex items-center justify-center ${colors.brand.logoText} font-bold text-xl md:text-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
           >
             {SITE_CONFIG.brand.shortName}
           </div>
           <span
-            className={`text-xl md:text-2xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary}`}
+            className={`text-xl md:text-2xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300`}
           >
             {SITE_CONFIG.brand.name}
           </span>

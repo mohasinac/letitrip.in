@@ -37,23 +37,24 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:px-6 max-w-7xl">
+    <div className="w-full">
       <UserTabs />
 
-      <div className="space-y-6">
+      <div className="space-y-6 mt-6">
         <div className="flex items-center justify-between">
           <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => router.push(ROUTES.USER.SETTINGS)}
+            className="shadow-md hover:shadow-lg transition-shadow"
           >
             {UI_LABELS.ACTIONS.EDIT_PROFILE}
           </Button>
         </div>
 
-        {/* Profile Information Card */}
-        <Card className="p-6">
+        {/* Profile Information Card - Modern Design */}
+        <Card className="p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="flex items-start gap-6">
             {/* Avatar */}
             <div className="flex-shrink-0">

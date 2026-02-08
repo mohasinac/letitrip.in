@@ -62,7 +62,7 @@ interface CardHeaderProps {
 export function CardHeader({ children, className = "" }: CardHeaderProps) {
   const { themed } = THEME_CONSTANTS;
   return (
-    <div className={`p-6 border-b ${themed.borderLight} ${className}`}>
+    <div className={`p-4 sm:p-6 border-b ${themed.borderLight} ${className}`}>
       {children}
     </div>
   );
@@ -74,7 +74,7 @@ interface CardBodyProps {
 }
 
 export function CardBody({ children, className = "" }: CardBodyProps) {
-  return <div className={`p-6 ${className}`}>{children}</div>;
+  return <div className={`p-4 sm:p-6 ${className}`}>{children}</div>;
 }
 
 interface CardFooterProps {
@@ -85,7 +85,7 @@ interface CardFooterProps {
 export function CardFooter({ children, className = "" }: CardFooterProps) {
   const { themed } = THEME_CONSTANTS;
   return (
-    <div className={`p-6 border-t ${themed.borderLight} ${className}`}>
+    <div className={`p-4 sm:p-6 border-t ${themed.borderLight} ${className}`}>
       {children}
     </div>
   );

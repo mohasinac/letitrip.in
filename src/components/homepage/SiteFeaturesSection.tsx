@@ -53,7 +53,7 @@ export function SiteFeaturesSection() {
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2

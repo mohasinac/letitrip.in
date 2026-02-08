@@ -50,7 +50,7 @@ export function CustomerReviewsSection() {
       <section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
-        <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+        <div className="w-full">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs animate-pulse" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
@@ -77,7 +77,7 @@ export function CustomerReviewsSection() {
       onMouseEnter={() => setIsAutoScrolling(false)}
       onMouseLeave={() => setIsAutoScrolling(true)}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-10">
           <h2

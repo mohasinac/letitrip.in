@@ -16,6 +16,26 @@ export interface SiteSettingsDocument {
     alt: string;
     format: "svg" | "png";
   };
+  background: {
+    light: {
+      type: "color" | "gradient" | "image" | "video";
+      value: string; // Color hex, gradient CSS, image URL, or video URL
+      overlay?: {
+        enabled: boolean;
+        color: string;
+        opacity: number; // 0-1
+      };
+    };
+    dark: {
+      type: "color" | "gradient" | "image" | "video";
+      value: string;
+      overlay?: {
+        enabled: boolean;
+        color: string;
+        opacity: number;
+      };
+    };
+  };
   contact: {
     email: string;
     phone: string;
@@ -110,6 +130,26 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
   id: "global",
   siteName: "LetItRip",
   motto: "Your Marketplace, Your Rules",
+  background: {
+    light: {
+      type: "color",
+      value: "#f9fafb", // gray-50
+      overlay: {
+        enabled: false,
+        color: "#000000",
+        opacity: 0,
+      },
+    },
+    dark: {
+      type: "color",
+      value: "#030712", // gray-950
+      overlay: {
+        enabled: false,
+        color: "#000000",
+        opacity: 0,
+      },
+    },
+  },
   contact: {
     email: "support@letitrip.in",
     phone: "+91-XXXXXXXXXX",
@@ -189,6 +229,7 @@ export const SITE_SETTINGS_PUBLIC_FIELDS = [
   "siteName",
   "motto",
   "logo",
+  "background",
   "contact.email",
   "contact.phone",
   "socialLinks",
@@ -204,6 +245,7 @@ export const SITE_SETTINGS_UPDATABLE_FIELDS = [
   "siteName",
   "motto",
   "logo",
+  "background",
   "contact",
   "socialLinks",
   "emailSettings",

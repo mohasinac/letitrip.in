@@ -4,12 +4,27 @@
 
 @layer base {
   html {
-    @apply scroll-smooth;
+    @apply scroll-smooth h-full;
   }
   
   body {
-    @apply bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased;
+    @apply bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased h-full overflow-x-hidden;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Remove default margins and ensure full height */
+  * {
+    @apply m-0 p-0;
+  }
+
+  /* Reset box-sizing */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  /* Remove extra spacing from root */
+  #__next, [id^="__next"] {
+    @apply min-h-full;
   }
 }
 
