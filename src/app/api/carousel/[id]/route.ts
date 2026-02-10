@@ -18,6 +18,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/carousel/[id]
@@ -46,9 +47,9 @@ export async function GET(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `GET /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_GET_ERROR}`,
-      error,
+      { error },
     );
 
     if (error instanceof NotFoundError) {
@@ -133,9 +134,9 @@ export async function PATCH(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `PATCH /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_PATCH_ERROR}`,
-      error,
+      { error },
     );
 
     if (error instanceof AuthenticationError) {
@@ -199,9 +200,9 @@ export async function DELETE(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `DELETE /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_DELETE_ERROR}`,
-      error,
+      { error },
     );
 
     if (error instanceof AuthenticationError) {

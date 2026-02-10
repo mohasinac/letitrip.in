@@ -4,7 +4,7 @@
  * Firestore schema definition for coupon/discount management
  */
 
-import { generateCouponId } from "@/utils/id-generators";
+import { generateCouponId } from "@/utils";
 
 // ============================================
 // COUPON TYPE INTERFACES

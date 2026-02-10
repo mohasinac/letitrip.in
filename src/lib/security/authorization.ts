@@ -6,19 +6,9 @@ import { NextRequest } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { UserRole } from "@/types/auth";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, ROLE_HIERARCHY } from "@/constants";
 import { userRepository } from "@/repositories";
 import type { UserDocument } from "@/db/schema/users";
-
-/**
- * Role hierarchy (higher number = more permissions)
- */
-const ROLE_HIERARCHY: Record<UserRole, number> = {
-  user: 0,
-  seller: 1,
-  moderator: 2,
-  admin: 3,
-};
 
 export function requireAuth(user: unknown): void {
   if (!user) {

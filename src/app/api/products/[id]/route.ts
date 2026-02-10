@@ -31,6 +31,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/products/[id]
@@ -72,9 +73,9 @@ export async function GET(
     }
 
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `GET /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_GET_ERROR}`,
-      error,
+      { error },
     );
     return NextResponse.json(
       { success: false, error: "Failed to fetch product" },
@@ -180,9 +181,9 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `PATCH /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_PATCH_ERROR}`,
-      error,
+      { error },
     );
     return NextResponse.json(
       { success: false, error: "Failed to update product" },
@@ -271,9 +272,9 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `DELETE /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_DELETE_ERROR}`,
-      error,
+      { error },
     );
     return NextResponse.json(
       { success: false, error: "Failed to delete product" },

@@ -155,6 +155,8 @@ export function objectToQueryString(obj: Record<string, any>): string {
  * const result = csvToArray(csv);
  * console.log(result); // [{ name: 'Alice', age: '25' }, { name: 'Bob', age: '30' }]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function csvToArray(
   csv: string,
@@ -188,6 +190,8 @@ export function csvToArray(
  * const result = arrayToCsv(data);
  * console.log(result); // 'name,age\nAlice,25\nBob,30'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function arrayToCsv(
   data: Record<string, any>[],
@@ -256,11 +260,16 @@ export function dateToISOString(date: Date | string): string {
 /**
  * Creates a deep clone of an object using JSON serialization
  *
+ * @deprecated Use deepClone from @/helpers instead. This JSON-based approach loses
+ * functions, Date objects, undefined values, and has other limitations.
+ * The recursive implementation in helpers/data/object.helper.ts is preferred.
+ *
  * @param obj - The object to clone
  * @returns A deep copy of the object
  *
  * @example
  * ```typescript
+ * import { deepClone } from '@/helpers';
  * const original = { a: 1, b: { c: 2 } };
  * const copy = deepClone(original);
  * copy.b.c = 3;
@@ -284,6 +293,8 @@ export function deepClone<T>(obj: T): T {
  * const result = flattenObject(nested);
  * console.log(result); // { 'user.name': 'John', 'user.address.city': 'NYC' }
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function flattenObject(
   obj: Record<string, any>,
@@ -316,6 +327,8 @@ export function flattenObject(
  * const result = unflattenObject(flat);
  * console.log(result); // { user: { name: 'John', address: { city: 'NYC' } } }
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function unflattenObject(obj: Record<string, any>): Record<string, any> {
   const result: Record<string, any> = {};

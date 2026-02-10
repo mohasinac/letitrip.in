@@ -5,8 +5,8 @@ import { THEME_CONSTANTS } from "@/constants";
 /**
  * Input Component
  *
- * A styled text input with optional label, error message, helper text, and icon.
- * Supports all native HTML input attributes and includes error state styling.
+ * A styled text input with enhanced focus states, error handling, and success validation.
+ * Supports all native HTML input attributes with improved accessibility.
  *
  * @component
  * @example
@@ -27,6 +27,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   helperText?: string;
   icon?: React.ReactNode;
+  success?: boolean;
 }
 
 export default function Input({
@@ -34,11 +35,22 @@ export default function Input({
   error,
   helperText,
   icon,
+  success,
   className = "",
   required,
+  disabled,
   ...props
 }: InputProps) {
   const { input, themed } = THEME_CONSTANTS;
+
+  // Determine input state classes
+  const getStateClasses = () => {
+    if (error) return input.error || `${themed.borderError} focus:ring-red-500`;
+    if (success)
+      return input.success || "border-emerald-500 focus:ring-emerald-500";
+    if (disabled) return input.disabled;
+    return "";
+  };
 
   return (
     <div className="w-full">
@@ -55,19 +67,13 @@ export default function Input({
 
         <input
           className={`
+            w-full
             ${input.base}
             ${icon ? input.withIcon : ""}
-            ${
-              error
-                ? `${themed.borderError} focus:ring-red-500`
-                : `${themed.border} ${themed.focusRing}`
-            }
-            ${themed.bgInput}
-            ${themed.textPrimary}
-            ${themed.placeholder}
-            ${input.disabled}
+            ${getStateClasses()}
             ${className}
           `}
+          disabled={disabled}
           {...props}
         />
       </div>

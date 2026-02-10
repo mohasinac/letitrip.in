@@ -11,13 +11,12 @@ import type {
   ReviewCreateInput,
   ReviewStatus,
   ReviewModerationInput,
-  REVIEW_COLLECTION,
 } from "@/db/schema/reviews";
-import { createReviewId } from "@/db/schema/reviews";
+import { createReviewId, REVIEW_COLLECTION } from "@/db/schema/reviews";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
-    super("reviews" as typeof REVIEW_COLLECTION);
+    super(REVIEW_COLLECTION);
   }
 
   /**

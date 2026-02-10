@@ -43,6 +43,8 @@ import {
 import { auth } from "./config";
 import { UserRole } from "@/types/auth";
 import { AuthenticationError, ApiError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
+import { logger } from "@/classes";
 
 /**
  * Helper: Create session via API call
@@ -60,14 +62,16 @@ async function createSession(idToken: string): Promise<string | null> {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error("Session creation failed:", error);
-      throw new Error(error.message || "Failed to create session");
+      logger.error("Session creation failed", { error });
+      throw new AuthenticationError(
+        error.message || ERROR_MESSAGES.AUTH.SESSION_CREATION_FAILED,
+      );
     }
 
     const data = await response.json();
     return data.sessionId || null;
   } catch (error) {
-    console.error("Session creation error:", error);
+    logger.error("Session creation error", { error });
     // Don't throw - allow auth to succeed even if session creation fails
     return null;
   }
@@ -84,7 +88,7 @@ async function destroySession(): Promise<void> {
       credentials: "include",
     });
   } catch (error) {
-    console.error("Session destruction error:", error);
+    logger.error("Session destruction error", { error });
   }
 }
 
@@ -120,7 +124,7 @@ export async function signInWithEmail(
 
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
-    console.error("Email sign in error:", error);
+    logger.error("Email sign in error", { error });
     throw new AuthenticationError(
       error.message || "Failed to sign in with email",
       { provider: "email", email },
@@ -158,7 +162,7 @@ export async function registerWithEmail(
 
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
-    console.error("Email registration error:", error);
+    logger.error("Email registration error", { error });
     throw new AuthenticationError(
       error.message || "Failed to register with email",
       { provider: "email", email },
@@ -189,7 +193,7 @@ export async function signInWithGoogle(): Promise<
 
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
-    console.error("Google sign in error:", error);
+    logger.error("Google sign in error", { error });
 
     if (error.code === "auth/popup-closed-by-user") {
       throw new AuthenticationError("Sign-in cancelled", {
@@ -204,7 +208,9 @@ export async function signInWithGoogle(): Promise<
       );
     }
 
-    throw new Error(error.message || "Failed to sign in with Google");
+    throw new AuthenticationError(
+      error.message || ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
+    );
   }
 }
 
@@ -231,18 +237,24 @@ export async function signInWithApple(): Promise<
 
     return { ...userCredential, sessionId: sessionId || undefined };
   } catch (error: any) {
-    console.error("Apple sign in error:", error);
+    logger.error("Apple sign in error", { error });
 
     if (error.code === "auth/popup-closed-by-user") {
-      throw new Error("Sign-in cancelled");
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.SIGN_IN_CANCELLED, {
+        provider: "apple",
+        cancelled: true,
+      });
     }
     if (error.code === "auth/popup-blocked") {
-      throw new Error(
-        "Pop-up blocked by browser. Please allow pop-ups and try again.",
-      );
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.POPUP_BLOCKED, {
+        provider: "apple",
+        popupBlocked: true,
+      });
     }
 
-    throw new Error(error.message || "Failed to sign in with Apple");
+    throw new AuthenticationError(
+      error.message || ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
+    );
   }
 }
 
@@ -270,7 +282,7 @@ export async function signInWithPhone(
     );
     return confirmationResult;
   } catch (error: any) {
-    console.error("Phone sign in error:", error);
+    logger.error("Phone sign in error", { error });
     throw new AuthenticationError(
       error.message || "Failed to sign in with phone",
       { provider: "phone", phoneNumber },
@@ -285,7 +297,7 @@ export async function resetPassword(email: string): Promise<void> {
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
-    console.error("Password reset error:", error);
+    logger.error("Password reset error", { error, email });
     throw new ApiError(
       500,
       error.message || "Failed to send password reset email",
@@ -301,7 +313,7 @@ export async function verifyEmail(user: User): Promise<void> {
   try {
     await sendEmailVerification(user);
   } catch (error: any) {
-    console.error("Email verification error:", error);
+    logger.error("Email verification error", { error });
     throw new ApiError(
       500,
       error.message || "Failed to send verification email",
@@ -321,7 +333,7 @@ export async function signOut(): Promise<void> {
     // Then sign out from Firebase
     await firebaseSignOut(auth);
   } catch (error: any) {
-    console.error("Sign out error:", error);
+    logger.error("Sign out error", { error });
     throw new ApiError(500, error.message || "Failed to sign out");
   }
 }
@@ -343,7 +355,7 @@ export async function reauthenticateWithPassword(
     const credential = EmailAuthProvider.credential(email, currentPassword);
     await reauthenticateWithCredential(user, credential);
   } catch (error: any) {
-    console.error("Re-authentication error:", error);
+    logger.error("Re-authentication error", { error });
     if (error.code === "auth/wrong-password") {
       throw new ApiError(401, "Current password is incorrect");
     }
@@ -364,7 +376,7 @@ export async function confirmPasswordResetWithToken(
   try {
     await confirmPasswordReset(auth, token, newPassword);
   } catch (error: any) {
-    console.error("Password reset error:", error);
+    logger.error("Password reset confirmation error", { error });
     if (error.code === "auth/expired-action-code") {
       throw new ApiError(400, "Reset link has expired");
     }
@@ -382,7 +394,7 @@ export async function applyEmailVerificationCode(code: string): Promise<void> {
   try {
     await applyActionCode(auth, code);
   } catch (error: any) {
-    console.error("Email verification error:", error);
+    logger.error("Email verification code error", { error });
     if (error.code === "auth/expired-action-code") {
       throw new ApiError(400, "Verification link has expired");
     }

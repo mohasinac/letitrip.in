@@ -11,13 +11,13 @@ import type {
   OrderCreateInput,
   OrderStatus,
   PaymentStatus,
-  ORDER_COLLECTION,
 } from "@/db/schema/orders";
-import { createOrderId } from "@/db/schema/orders";
+import { createOrderId, ORDER_COLLECTION } from "@/db/schema/orders";
+import { DatabaseError } from "@/lib/errors";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
   constructor() {
-    super("orders" as typeof ORDER_COLLECTION);
+    super(ORDER_COLLECTION);
   }
 
   /**
@@ -145,6 +145,30 @@ class OrderRepository extends BaseRepository<OrderDocument> {
       id: doc.id,
       ...doc.data(),
     })) as OrderDocument[];
+  }
+
+  /**
+   * Delete all orders by user using batch writes
+   */
+  async deleteByUser(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.getCollection()
+        .where("userId", "==", userId)
+        .get();
+
+      if (snapshot.empty) return 0;
+
+      const batch = this.db.batch();
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+
+      return snapshot.size;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to delete orders for user: ${userId}`,
+        error,
+      );
+    }
   }
 }
 

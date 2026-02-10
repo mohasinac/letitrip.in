@@ -9,6 +9,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { ERROR_MESSAGES } from "@/constants";
+import { logger } from "@/classes";
 
 export interface UploadOptions {
   maxSize?: number; // in bytes
@@ -91,9 +92,9 @@ export function useStorageUpload(options: UploadOptions = {}) {
     try {
       const fileRef = ref(storage, filePath);
       await deleteObject(fileRef);
-      console.log("Cleaned up uploaded file:", filePath);
+      logger.info("Cleaned up uploaded file", { filePath });
     } catch (err) {
-      console.error(ERROR_MESSAGES.UPLOAD.CLEANUP_FAILED, err);
+      logger.error(ERROR_MESSAGES.UPLOAD.CLEANUP_FAILED, { err });
     }
   };
 
@@ -139,7 +140,9 @@ export function useStorageUpload(options: UploadOptions = {}) {
           } catch (err: any) {
             // Silence 'object not found' errors - this is expected for first uploads
             if (err?.code !== "storage/object-not-found") {
-              console.error(ERROR_MESSAGES.UPLOAD.DELETE_OLD_FILE_FAILED, err);
+              logger.error(ERROR_MESSAGES.UPLOAD.DELETE_OLD_FILE_FAILED, {
+                err,
+              });
             }
           }
         }
@@ -185,7 +188,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
             onSaveSuccess?.();
           } catch (saveError) {
             // Save failed - cleanup uploaded file
-            console.error(ERROR_MESSAGES.UPLOAD.SAVE_ROLLBACK, saveError);
+            logger.error(ERROR_MESSAGES.UPLOAD.SAVE_ROLLBACK, { saveError });
 
             await cleanupUploadedFile(storagePath);
             uploadedFileRef.current = null;
@@ -211,7 +214,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
           setState((prev) => ({ ...prev, uploading: false }));
         }
       } catch (uploadError) {
-        console.error(ERROR_MESSAGES.UPLOAD.UPLOAD_ERROR, uploadError);
+        logger.error(ERROR_MESSAGES.UPLOAD.UPLOAD_ERROR, { uploadError });
 
         const errorMessage =
           uploadError instanceof Error
@@ -255,7 +258,7 @@ export function useStorageUpload(options: UploadOptions = {}) {
   // Cleanup on unmount if save incomplete
   const cleanup = useCallback(async () => {
     if (uploadedFileRef.current && !saveCompletedRef.current) {
-      console.log("Component unmounting with incomplete save, cleaning up...");
+      logger.warn("Component unmounting with incomplete save, cleaning up...");
       await cleanupUploadedFile(uploadedFileRef.current);
     }
   }, []);

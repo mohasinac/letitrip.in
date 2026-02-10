@@ -7,14 +7,12 @@
  */
 
 import { NextRequest } from "next/server";
-import {
-  createApiHandler,
-  successResponse,
-  errorResponse,
-} from "@/lib/api/api-handler";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { userRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
+import { serverLogger } from "@/lib/server-logger";
 
 const updateProfileSchema = z.object({
   displayName: z.string().optional(),
@@ -68,7 +66,7 @@ export const PATCH = createApiHandler({
         SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
       );
     } catch (error) {
-      console.error(ERROR_MESSAGES.API.PROFILE_UPDATE_ERROR, error);
+      serverLogger.error(ERROR_MESSAGES.API.PROFILE_UPDATE_ERROR, { error });
       return errorResponse(
         error instanceof Error
           ? error.message

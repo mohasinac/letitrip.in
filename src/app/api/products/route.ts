@@ -26,6 +26,7 @@ import {
   productCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/products
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     // TODO: Use handleApiError from error handler
-    console.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
       { status: 500 },
@@ -195,7 +196,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { error });
     return NextResponse.json(
       { success: false, error: "Failed to create product" },
       { status: 500 },

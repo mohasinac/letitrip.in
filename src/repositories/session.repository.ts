@@ -15,6 +15,8 @@ import {
   SESSION_EXPIRATION_MS,
   generateSessionId,
 } from "@/db/schema/sessions";
+import { DatabaseError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 export class SessionRepository extends BaseRepository<SessionDocument> {
   constructor() {
@@ -107,8 +109,9 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
         ...doc.data(),
       })) as unknown as SessionDocument[];
     } catch (error) {
-      console.error("Error finding active sessions by user:", error);
-      return [];
+      throw new DatabaseError(
+        `Failed to find active sessions for user: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -131,8 +134,9 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
         ...doc.data(),
       })) as unknown as SessionDocument[];
     } catch (error) {
-      console.error("Error finding all sessions by user:", error);
-      return [];
+      throw new DatabaseError(
+        `Failed to find all sessions for user: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -168,8 +172,9 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
         ...doc.data(),
       })) as unknown as SessionDocument[];
     } catch (error) {
-      console.error("Error getting all active sessions:", error);
-      return [];
+      throw new DatabaseError(
+        `Failed to get all active sessions: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -192,8 +197,9 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
 
       return count;
     } catch (error) {
-      console.error("Error cleaning up expired sessions:", error);
-      return 0;
+      throw new DatabaseError(
+        `Failed to cleanup expired sessions: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -241,13 +247,88 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
         recentActivity,
       };
     } catch (error) {
-      console.error("Error getting session stats:", error);
+      serverLogger.error("Error getting session stats", { error });
       return {
         totalActive: 0,
         totalExpired: 0,
         uniqueUsers: 0,
         recentActivity: 0,
       };
+    }
+  }
+
+  /**
+   * Find all sessions for admin dashboard with computed stats
+   * Returns raw session data ordered by lastActivity desc
+   */
+  async findAllForAdmin(options?: {
+    userId?: string;
+    limit?: number;
+  }): Promise<{
+    sessions: SessionDocument[];
+    stats: {
+      totalActive: number;
+      totalExpired: number;
+      uniqueUsers: number;
+      recentActivity: number;
+    };
+  }> {
+    try {
+      let query = this.getCollection().orderBy("lastActivity", "desc");
+
+      if (options?.userId) {
+        query = query.where("userId", "==", options.userId) as any;
+      }
+
+      if (options?.limit && options.limit > 0) {
+        query = query.limit(options.limit) as any;
+      }
+
+      const snapshot = await query.get();
+      const sessions: SessionDocument[] = [];
+      const userIds = new Set<string>();
+      let totalActive = 0;
+      let totalExpired = 0;
+      const now = Date.now();
+      const fifteenMinutesAgo = now - 15 * 60 * 1000;
+
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        const expiresAt = data.expiresAt?.toMillis?.() || 0;
+
+        if (expiresAt < now) {
+          totalExpired++;
+        } else {
+          totalActive++;
+        }
+
+        userIds.add(data.userId);
+        sessions.push({ id: doc.id, ...data } as unknown as SessionDocument);
+      }
+
+      const recentActivity = sessions.filter((s) => {
+        const lastActivity =
+          s.lastActivity instanceof Date
+            ? s.lastActivity.getTime()
+            : typeof (s.lastActivity as any)?.toMillis === "function"
+              ? (s.lastActivity as any).toMillis()
+              : new Date(s.lastActivity as any).getTime();
+        return lastActivity > fifteenMinutesAgo;
+      }).length;
+
+      return {
+        sessions,
+        stats: {
+          totalActive,
+          totalExpired,
+          uniqueUsers: userIds.size,
+          recentActivity,
+        },
+      };
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to fetch admin sessions: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 }

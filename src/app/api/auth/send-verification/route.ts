@@ -10,6 +10,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { isValidEmail } from "@/utils";
+import { serverLogger } from "@/lib/server-logger";
 
 interface SendVerificationRequest {
   email: string;
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
     // 2. Or custom email service (Resend, SendGrid, etc.)
 
     // For now, return the link (in production, send via email service)
-    console.log("Verification link:", verificationLink);
+    serverLogger.info("Verification link generated", { verificationLink });
 
     // TODO: Send email via Resend or other email service
     // await sendVerificationEmail(email, verificationLink);
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
       message: SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT,
     });
   } catch (error) {
-    console.error("Send verification error:", error);
+    serverLogger.error("Send verification error", { error });
     return NextResponse.json(
       {
         success: false,

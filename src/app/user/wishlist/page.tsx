@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Spinner, UserTabs } from "@/components";
+import { Heading, Spinner, EmptyState } from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 export default function UserWishlistPage() {
   const { user, loading } = useAuth();
@@ -28,39 +28,33 @@ export default function UserWishlistPage() {
     return null;
   }
 
+  const heartIcon = (
+    <svg
+      className="w-full h-full"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+      />
+    </svg>
+  );
+
   return (
-    <div className="w-full">
-      <UserTabs />
+    <div className={THEME_CONSTANTS.spacing.stack}>
+      <Heading level={3}>{UI_LABELS.USER.WISHLIST.TITLE}</Heading>
 
-      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
-        <Heading level={3}>My Wishlist</Heading>
-
-        {/* Empty State - Modern Card */}
-        <Card className="p-12 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="max-w-md mx-auto">
-            <svg
-              className="w-24 h-24 mx-auto mb-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-            <Heading level={4} className="mb-2">
-              Your wishlist is empty
-            </Heading>
-            <Text className="mb-6">Save items you love to your wishlist</Text>
-            <Button onClick={() => router.push(SITE_CONFIG.nav.products)}>
-              Browse Products
-            </Button>
-          </div>
-        </Card>
-      </div>
+      <EmptyState
+        icon={heartIcon}
+        title={UI_LABELS.USER.WISHLIST.EMPTY}
+        description={UI_LABELS.USER.WISHLIST.EMPTY_SUBTITLE}
+        actionLabel={UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS}
+        onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+      />
     </div>
   );
 }

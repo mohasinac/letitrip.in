@@ -136,6 +136,8 @@ export function chunk<T>(array: T[], size: number): T[][] {
  * const result = flatten([1, [2, 3], [[4], 5]]);
  * console.log(result); // [1, 2, 3, 4, 5]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function flatten<T>(array: (T | T[])[]): T[] {
   return array.reduce<T[]>((acc, item) => {
@@ -160,6 +162,8 @@ export function flatten<T>(array: (T | T[])[]): T[] {
  * const random = randomItem(colors);
  * console.log(random); // 'blue' (random)
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function randomItem<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
@@ -177,6 +181,8 @@ export function randomItem<T>(array: T[]): T {
  * const shuffled = shuffle(cards);
  * console.log(shuffled); // [3, 1, 5, 2, 4] (random order)
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function shuffle<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -241,6 +247,8 @@ export function paginate<T>(
  * const result = difference([1, 2, 3], [2, 3, 4]);
  * console.log(result); // [1]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function difference<T>(array1: T[], array2: T[]): T[] {
   return array1.filter((item) => !array2.includes(item));
@@ -258,6 +266,8 @@ export function difference<T>(array1: T[], array2: T[]): T[] {
  * const result = intersection([1, 2, 3], [2, 3, 4]);
  * console.log(result); // [2, 3]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function intersection<T>(array1: T[], array2: T[]): T[] {
   return array1.filter((item) => array2.includes(item));
@@ -276,6 +286,8 @@ export function intersection<T>(array1: T[], array2: T[]): T[] {
  * const result = moveItem(['a', 'b', 'c', 'd'], 0, 2);
  * console.log(result); // ['b', 'c', 'a', 'd']
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function moveItem<T>(
   array: T[],

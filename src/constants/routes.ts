@@ -8,10 +8,25 @@ export const ROUTES = {
   // Public Routes
   HOME: "/",
 
+  PUBLIC: {
+    FAQS: "/faqs",
+    PROFILE: (userId: string) => `/profile/${userId}`,
+    PRODUCTS: "/products",
+    AUCTIONS: "/auctions",
+    SELLERS: "/sellers",
+    CATEGORIES: "/categories",
+    PROMOTIONS: "/promotions",
+    ABOUT: "/about",
+    CONTACT: "/contact",
+    BLOG: "/blog",
+    HELP: "/help",
+    TERMS: "/terms",
+    PRIVACY: "/privacy",
+  },
+
   // Error Pages
   ERRORS: {
     UNAUTHORIZED: "/unauthorized",
-    NOT_FOUND: "/404",
   },
 
   // Auth Routes
@@ -30,6 +45,15 @@ export const ROUTES = {
     ORDERS: "/user/orders",
     WISHLIST: "/user/wishlist",
     ADDRESSES: "/user/addresses",
+    ADDRESSES_ADD: "/user/addresses/add",
+    ADDRESSES_EDIT: (id: string) => `/user/addresses/edit/${id}`,
+    ORDER_DETAIL: (id: string) => `/user/orders/view/${id}`,
+    CART: "/cart",
+  },
+
+  // Seller Routes
+  SELLER: {
+    DASHBOARD: "/seller",
   },
 
   // Admin Routes
@@ -42,22 +66,12 @@ export const ROUTES = {
     CATEGORIES: "/admin/categories",
     FAQS: "/admin/faqs",
     REVIEWS: "/admin/reviews",
-    CONTENT: "/admin/content",
+    COUPONS: "/admin/coupons",
   },
 
-  // API Routes
-  API: {
-    AUTH: {
-      LOGIN: "/api/auth/login",
-      REGISTER: "/api/auth/register",
-      LOGOUT: "/api/auth/logout",
-      VERIFY_EMAIL: "/api/auth/verify-email",
-      RESET_PASSWORD: "/api/auth/reset-password",
-    },
-    USER: {
-      PROFILE: "/api/user/profile",
-      CHANGE_PASSWORD: "/api/user/change-password",
-    },
+  // Demo Routes (dev-only)
+  DEMO: {
+    SEED: "/demo/seed",
   },
 } as const;
 
@@ -66,8 +80,19 @@ export const ROUTES = {
  */
 export const PUBLIC_ROUTES = [
   ROUTES.HOME,
+  ROUTES.PUBLIC.FAQS,
+  ROUTES.PUBLIC.PRODUCTS,
+  ROUTES.PUBLIC.AUCTIONS,
+  ROUTES.PUBLIC.SELLERS,
+  ROUTES.PUBLIC.CATEGORIES,
+  ROUTES.PUBLIC.PROMOTIONS,
+  ROUTES.PUBLIC.ABOUT,
+  ROUTES.PUBLIC.CONTACT,
+  ROUTES.PUBLIC.BLOG,
+  ROUTES.PUBLIC.HELP,
+  ROUTES.PUBLIC.TERMS,
+  ROUTES.PUBLIC.PRIVACY,
   ROUTES.ERRORS.UNAUTHORIZED,
-  ROUTES.ERRORS.NOT_FOUND,
   ROUTES.AUTH.LOGIN,
   ROUTES.AUTH.REGISTER,
   ROUTES.AUTH.FORGOT_PASSWORD,
@@ -81,6 +106,11 @@ export const PUBLIC_ROUTES = [
 export const PROTECTED_ROUTES = [
   ROUTES.USER.PROFILE,
   ROUTES.USER.SETTINGS,
+  ROUTES.USER.ORDERS,
+  ROUTES.USER.WISHLIST,
+  ROUTES.USER.ADDRESSES,
+  ROUTES.USER.ADDRESSES_ADD,
+  ROUTES.USER.CART,
 ] as const;
 
 /**

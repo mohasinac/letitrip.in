@@ -2,13 +2,11 @@
 
 import { useAuth } from "@/hooks";
 import {
-  Card,
   Heading,
-  Text,
   Button,
-  AvatarDisplay,
   Spinner,
-  UserTabs,
+  ProfileHeader,
+  ProfileStatsGrid,
 } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { useRouter } from "next/navigation";
@@ -36,163 +34,40 @@ export default function UserProfilePage() {
     return null;
   }
 
-  const { spacing, themed } = THEME_CONSTANTS;
+  const { spacing } = THEME_CONSTANTS;
+
+  // TODO: Wire up actual counts from API once endpoints exist
+  const stats = {
+    orders: 0,
+    wishlist: 0,
+    addresses: 0,
+  };
 
   return (
-    <div className="w-full">
-      <UserTabs />
-
-      <div className={`${spacing.stack} mt-6`}>
-        <div className="flex items-center justify-between">
-          <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => router.push(ROUTES.USER.SETTINGS)}
-            className="shadow-md hover:shadow-lg transition-shadow"
-          >
-            {UI_LABELS.ACTIONS.EDIT_PROFILE}
-          </Button>
-        </div>
-
-        {/* Profile Information Card - Modern Design */}
-        <Card
-          className={`${spacing.padding.lg} ${THEME_CONSTANTS.card.shadowElevated} hover:shadow-xl transition-all ${THEME_CONSTANTS.animation.normal}`}
+    <div className={spacing.stack}>
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => router.push(ROUTES.USER.SETTINGS)}
+          className="shadow-md hover:shadow-lg transition-shadow"
         >
-          <div className={`flex items-start ${spacing.gap.lg}`}>
-            {/* Avatar */}
-            <div className="flex-shrink-0">
-              <div
-                className={`
-                ring-2
-                ${
-                  user.role === "admin"
-                    ? "ring-red-500"
-                    : user.role === "moderator" || user.role === "seller"
-                      ? "ring-yellow-500"
-                      : "ring-green-500"
-                }
-                rounded-full
-              `}
-              >
-                <AvatarDisplay
-                  cropData={
-                    user.avatarMetadata ||
-                    (user.photoURL
-                      ? {
-                          url: user.photoURL,
-                          position: { x: 50, y: 50 },
-                          zoom: 1,
-                        }
-                      : null)
-                  }
-                  size="xl"
-                  alt={user.displayName || "User"}
-                  displayName={user.displayName}
-                  email={user.email}
-                />
-              </div>
-            </div>
-
-            {/* User Details */}
-            <div className={`flex-1 ${spacing.stack}`}>
-              <div>
-                <Text
-                  className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
-                >
-                  {UI_LABELS.FORM.DISPLAY_NAME}
-                </Text>
-                <Text className="text-lg font-medium">
-                  {user.displayName || UI_LABELS.EMPTY.NOT_SET}
-                </Text>
-              </div>
-
-              <div>
-                <Text
-                  className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
-                >
-                  {UI_LABELS.FORM.EMAIL}
-                </Text>
-                <div className={`flex items-center ${spacing.inlineSmall}`}>
-                  <Text className="text-lg">{user.email}</Text>
-                  {user.emailVerified && (
-                    <span className="text-green-500 text-sm">
-                      {UI_LABELS.STATUS.VERIFIED}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {user.phoneNumber && (
-                <div>
-                  <Text
-                    className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
-                  >
-                    {UI_LABELS.FORM.PHONE}
-                  </Text>
-                  <div className={`flex items-center ${spacing.inlineSmall}`}>
-                    <Text className="text-lg">{user.phoneNumber}</Text>
-                    {user.phoneVerified && (
-                      <span className="text-green-500 text-sm">
-                        {UI_LABELS.STATUS.VERIFIED}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <Text
-                  className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
-                >
-                  {UI_LABELS.PROFILE.ACCOUNT_ROLE}
-                </Text>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                    user.role === "admin"
-                      ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                      : user.role === "moderator"
-                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
-                        : user.role === "seller"
-                          ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
-                          : "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                  }`}
-                >
-                  {user.role || "user"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Quick Stats */}
-        <div className={`grid grid-cols-1 md:grid-cols-3 ${spacing.gap.md}`}>
-          <Card className={`${spacing.padding.md} text-center`}>
-            <Text className={`${THEME_CONSTANTS.typography.h3} font-bold mb-2`}>
-              0
-            </Text>
-            <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              {UI_LABELS.PROFILE.TOTAL_ORDERS}
-            </Text>
-          </Card>
-          <Card className="p-6 text-center">
-            <Text className={`${THEME_CONSTANTS.typography.h3} font-bold mb-2`}>
-              0
-            </Text>
-            <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              {UI_LABELS.WISHLIST.ITEMS_COUNT}
-            </Text>
-          </Card>
-          <Card className="p-6 text-center">
-            <Text className={`${THEME_CONSTANTS.typography.h3} font-bold mb-2`}>
-              0
-            </Text>
-            <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              {UI_LABELS.PROFILE.SAVED_ADDRESSES}
-            </Text>
-          </Card>
-        </div>
+          {UI_LABELS.ACTIONS.EDIT_PROFILE}
+        </Button>
       </div>
+
+      {/* Profile Hero Section */}
+      <ProfileHeader
+        photoURL={user.photoURL || undefined}
+        displayName={user.displayName || user.email || "User"}
+        email={user.email || ""}
+        role={user.role || "user"}
+      />
+
+      {/* Stats Grid */}
+      <ProfileStatsGrid stats={stats} />
     </div>
   );
 }

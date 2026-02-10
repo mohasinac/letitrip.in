@@ -13,6 +13,7 @@ import {
   cropDataSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
 
 /**
@@ -172,7 +173,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error(ERROR_MESSAGES.API.MEDIA_CROP_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.MEDIA_CROP_ERROR, { error });
     return NextResponse.json(
       {
         success: false,

@@ -13,6 +13,7 @@ import {
   homepageSectionsReorderSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * POST /api/homepage-sections/reorder
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       message: "Homepage sections reordered successfully",
     });
   } catch (error) {
-    console.error("POST /api/homepage-sections/reorder error:", error);
+    serverLogger.error("POST /api/homepage-sections/reorder error", { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

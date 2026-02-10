@@ -43,3 +43,10 @@ export {
 export { default as ImageGallery } from "./ImageGallery";
 export type { GalleryImage } from "./ImageGallery";
 export { default as SideDrawer } from "./SideDrawer";
+
+// Phase 3: Shared UI Infrastructure
+export { SectionTabs } from "./SectionTabs";
+export type { SectionTab } from "./SectionTabs";
+export { StatusBadge } from "./StatusBadge";
+export { RoleBadge } from "./RoleBadge";
+export { EmptyState } from "./EmptyState";

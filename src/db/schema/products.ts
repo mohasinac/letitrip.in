@@ -10,7 +10,7 @@ import {
   generateAuctionId,
   type GenerateProductIdInput,
   type GenerateAuctionIdInput,
-} from "@/utils/id-generators";
+} from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

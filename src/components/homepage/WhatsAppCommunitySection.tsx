@@ -3,6 +3,7 @@
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface WhatsAppConfig {
   groupLink: string;
@@ -13,12 +14,12 @@ interface WhatsAppConfig {
 
 export function WhatsAppCommunitySection() {
   const { data, isLoading } = useApiQuery<{
-    settings: { whatsappCommunity: WhatsAppConfig };
+    whatsappCommunity: WhatsAppConfig;
   }>({
     queryKey: ["site-settings", "whatsapp"],
     queryFn: () =>
-      fetch(`${API_ENDPOINTS.SITE_SETTINGS.GET}?fields=whatsappCommunity`).then(
-        (r) => r.json(),
+      apiClient.get(
+        `${API_ENDPOINTS.SITE_SETTINGS.GET}?fields=whatsappCommunity`,
       ),
   });
 
@@ -34,7 +35,7 @@ export function WhatsAppCommunitySection() {
     );
   }
 
-  const config = data?.settings?.whatsappCommunity;
+  const config = data?.whatsappCommunity;
 
   if (!config || !config.enabled) {
     return null;
@@ -88,7 +89,9 @@ export function WhatsAppCommunitySection() {
             </p>
 
             {/* Benefits */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto my-8">
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${THEME_CONSTANTS.container["2xl"]} mx-auto my-8`}
+            >
               {benefits.slice(0, 4).map((benefit, index) => (
                 <div
                   key={index}

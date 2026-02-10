@@ -17,16 +17,14 @@ import {
   FormField,
   PasswordStrengthIndicator,
 } from "@/components";
-import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   ROUTES,
-  API_ENDPOINTS,
+  THEME_CONSTANTS,
+  UI_LABELS,
 } from "@/constants";
-import { apiClient } from "@/lib/api-client";
-import { useAuth } from "@/hooks";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useAuth, useRegister, useGoogleLogin, useAppleLogin } from "@/hooks";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -44,7 +42,41 @@ export default function RegisterPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: register, isLoading: registerLoading } = useRegister({
+    onSuccess: () => {
+      setMessage({
+        type: "success",
+        text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS,
+      });
+      setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
+    },
+    onError: (err) =>
+      setMessage({
+        type: "error",
+        text: err.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+      }),
+  });
+
+  const { mutate: googleRegister, isLoading: googleLoading } = useGoogleLogin({
+    onSuccess: () => router.push(ROUTES.USER.PROFILE),
+    onError: (err) =>
+      setMessage({
+        type: "error",
+        text: err.message || UI_LABELS.AUTH.REGISTER.GOOGLE_REGISTER_FAILED,
+      }),
+  });
+
+  const { mutate: appleRegister, isLoading: appleLoading } = useAppleLogin({
+    onSuccess: () => router.push(ROUTES.USER.PROFILE),
+    onError: (err) =>
+      setMessage({
+        type: "error",
+        text: err.message || UI_LABELS.AUTH.REGISTER.APPLE_REGISTER_FAILED,
+      }),
+  });
+
+  const isLoading = registerLoading || googleLoading || appleLoading;
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -62,36 +94,14 @@ export default function RegisterPage() {
   );
 
   const handleGoogleRegister = useCallback(async () => {
-    setIsLoading(true);
     setMessage(null);
-    try {
-      await signInWithGoogle();
-      // OAuth creates session automatically, redirect after callback
-      router.push(ROUTES.USER.PROFILE);
-    } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || "Google registration failed",
-      });
-      setIsLoading(false);
-    }
-  }, [router]);
+    await googleRegister();
+  }, [googleRegister]);
 
   const handleAppleRegister = useCallback(async () => {
-    setIsLoading(true);
     setMessage(null);
-    try {
-      await signInWithApple();
-      // OAuth creates session automatically, redirect after callback
-      router.push(ROUTES.USER.PROFILE);
-    } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || "Apple registration failed",
-      });
-      setIsLoading(false);
-    }
-  }, [router]);
+    await appleRegister();
+  }, [appleRegister]);
 
   // Show loading while checking auth
   if (authLoading) {
@@ -113,7 +123,10 @@ export default function RegisterPage() {
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setMessage({ type: "error", text: "Passwords do not match" });
+      setMessage({
+        type: "error",
+        text: UI_LABELS.AUTH.REGISTER.PASSWORDS_NO_MATCH,
+      });
       return;
     }
 
@@ -128,7 +141,7 @@ export default function RegisterPage() {
     if (!formData.acceptTerms) {
       setMessage({
         type: "error",
-        text: "You must accept the terms and conditions",
+        text: UI_LABELS.AUTH.REGISTER.MUST_ACCEPT_TERMS,
       });
       return;
     }
@@ -141,37 +154,11 @@ export default function RegisterPage() {
       return;
     }
 
-    // Register user with backend API
-    setIsLoading(true);
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
-        email: formData.email.trim(),
-        password: formData.password,
-        displayName: formData.displayName.trim() || undefined,
-      });
-
-      if (response.success) {
-        // Session cookie set automatically by API
-        setMessage({
-          type: "success",
-          text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS,
-        });
-        setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
-      } else {
-        setMessage({
-          type: "error",
-          text:
-            response.error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-        });
-        setIsLoading(false);
-      }
-    } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-      });
-      setIsLoading(false);
-    }
+    await register({
+      email: formData.email.trim(),
+      password: formData.password,
+      displayName: formData.displayName.trim() || undefined,
+    });
   };
 
   return (
@@ -187,17 +174,17 @@ export default function RegisterPage() {
           <h1
             className={`mt-6 text-center text-3xl font-extrabold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
-            Create your account
+            {UI_LABELS.AUTH.REGISTER.TITLE}
           </h1>
           <p
             className={`mt-2 text-center text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            Or{" "}
+            {UI_LABELS.AUTH.REGISTER.OR}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              sign in to your account
+              {UI_LABELS.AUTH.REGISTER.SIGN_IN_LINK}
             </Link>
           </p>
         </div>
@@ -217,7 +204,7 @@ export default function RegisterPage() {
           <div className={THEME_CONSTANTS.spacing.stack}>
             {/* Display Name */}
             <FormField
-              label="Display Name (Optional)"
+              label={UI_LABELS.AUTH.REGISTER.DISPLAY_NAME_LABEL}
               name="displayName"
               type="text"
               value={formData.displayName}
@@ -227,12 +214,12 @@ export default function RegisterPage() {
               onBlur={handleBlur("displayName")}
               touched={touched.displayName}
               disabled={isLoading}
-              placeholder="John Doe"
+              placeholder={UI_LABELS.AUTH.REGISTER.DISPLAY_NAME_PLACEHOLDER}
             />
 
             {/* Email Address */}
             <FormField
-              label="Email Address"
+              label={UI_LABELS.AUTH.SHARED.EMAIL_ADDRESS}
               name="email"
               type="email"
               value={formData.email}
@@ -240,13 +227,13 @@ export default function RegisterPage() {
               onBlur={handleBlur("email")}
               touched={touched.email}
               disabled={isLoading}
-              placeholder="your@email.com"
+              placeholder={UI_LABELS.AUTH.SHARED.EMAIL_PLACEHOLDER}
               required
             />
 
             {/* Password */}
             <FormField
-              label="Password"
+              label={UI_LABELS.AUTH.SHARED.PASSWORD}
               name="password"
               type="password"
               value={formData.password}
@@ -256,7 +243,7 @@ export default function RegisterPage() {
               onBlur={handleBlur("password")}
               touched={touched.password}
               disabled={isLoading}
-              placeholder="••••••••"
+              placeholder={UI_LABELS.AUTH.SHARED.PASSWORD_PLACEHOLDER}
               required
             />
 
@@ -266,7 +253,7 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <FormField
-              label="Confirm Password"
+              label={UI_LABELS.AUTH.REGISTER.CONFIRM_PASSWORD}
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -278,11 +265,11 @@ export default function RegisterPage() {
               error={
                 formData.confirmPassword &&
                 formData.password !== formData.confirmPassword
-                  ? "Passwords do not match"
+                  ? UI_LABELS.AUTH.REGISTER.PASSWORDS_NO_MATCH
                   : undefined
               }
               disabled={isLoading}
-              placeholder="••••••••"
+              placeholder={UI_LABELS.AUTH.SHARED.PASSWORD_PLACEHOLDER}
               required
             />
 
@@ -299,19 +286,19 @@ export default function RegisterPage() {
                 htmlFor="acceptTerms"
                 className={`ml-2 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
               >
-                I agree to the{" "}
+                {UI_LABELS.AUTH.REGISTER.ACCEPT_TERMS}{" "}
                 <Link
-                  href="/terms"
+                  href={ROUTES.PUBLIC.TERMS}
                   className="text-blue-600 hover:text-blue-500"
                 >
-                  Terms of Service
+                  {UI_LABELS.AUTH.REGISTER.TERMS_OF_SERVICE}
                 </Link>{" "}
-                and{" "}
+                {UI_LABELS.AUTH.REGISTER.AND}{" "}
                 <Link
-                  href="/privacy"
+                  href={ROUTES.PUBLIC.PRIVACY}
                   className="text-blue-600 hover:text-blue-500"
                 >
-                  Privacy Policy
+                  {UI_LABELS.AUTH.REGISTER.PRIVACY_POLICY}
                 </Link>
               </label>
             </div>
@@ -324,7 +311,9 @@ export default function RegisterPage() {
             className="w-full"
             disabled={isLoading || !formData.acceptTerms}
           >
-            {isLoading ? "Creating account..." : "Create account"}
+            {isLoading
+              ? UI_LABELS.AUTH.REGISTER.CREATING_ACCOUNT
+              : UI_LABELS.AUTH.REGISTER.CREATE_ACCOUNT}
           </Button>
         </form>
 
@@ -339,7 +328,7 @@ export default function RegisterPage() {
             <span
               className={`px-2 ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textMuted}`}
             >
-              Or continue with
+              {UI_LABELS.AUTH.LOGIN.OR_CONTINUE_WITH}
             </span>
           </div>
         </div>
@@ -370,7 +359,7 @@ export default function RegisterPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Google
+            {UI_LABELS.AUTH.LOGIN.GOOGLE}
           </Button>
 
           <Button
@@ -386,7 +375,7 @@ export default function RegisterPage() {
             >
               <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
             </svg>
-            Apple
+            {UI_LABELS.AUTH.LOGIN.APPLE}
           </Button>
         </div>
       </div>

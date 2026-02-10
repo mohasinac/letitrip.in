@@ -38,7 +38,9 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
         <div
           className={`min-h-screen flex items-center justify-center ${themed.bgPrimary} ${spacing.padding.xl}`}
         >
-          <div className={`max-w-2xl w-full text-center ${spacing.stack}`}>
+          <div
+            className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
+          >
             {/* Error Icon */}
             <div className="flex justify-center mb-8">
               <div

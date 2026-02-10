@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Spinner, UserTabs } from "@/components";
+import { Heading, Spinner, EmptyState } from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 export default function UserOrdersPage() {
   const { user, loading } = useAuth();
@@ -28,39 +28,35 @@ export default function UserOrdersPage() {
     return null;
   }
 
+  // TODO: Replace with useApiQuery when API route is implemented
+  // const { data: orders, isLoading } = useApiQuery(API_ENDPOINTS.ORDERS.LIST);
+
   return (
-    <div className="w-full">
-      <UserTabs />
+    <div className={THEME_CONSTANTS.spacing.stack}>
+      <Heading level={3}>{UI_LABELS.USER.ORDERS.TITLE}</Heading>
 
-      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
-        <Heading level={3}>My Orders</Heading>
-
-        {/* Empty State - Modern Card */}
-        <Card className="p-12 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="max-w-md mx-auto">
-            <svg
-              className="w-24 h-24 mx-auto mb-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-            <Heading level={4} className="mb-2">
-              No orders yet
-            </Heading>
-            <Text className="mb-6">Start shopping to see your orders here</Text>
-            <Button onClick={() => router.push(SITE_CONFIG.nav.products)}>
-              Browse Products
-            </Button>
-          </div>
-        </Card>
-      </div>
+      {/* Empty State */}
+      <EmptyState
+        icon={
+          <svg
+            className="w-24 h-24 mx-auto text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+            />
+          </svg>
+        }
+        title={UI_LABELS.USER.ORDERS.EMPTY}
+        message={UI_LABELS.USER.ORDERS.EMPTY_SUBTITLE}
+        actionLabel={UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS}
+        onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+      />
     </div>
   );
 }

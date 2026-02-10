@@ -8,11 +8,10 @@ import {
   ROUTES,
   API_ENDPOINTS,
   ERROR_MESSAGES,
-  SIDEBAR_NAV_GROUPS,
-  SITE_CONFIG,
   UI_LABELS,
 } from "@/constants";
 import { useSwipe, useAuth } from "@/hooks";
+import { logger } from "@/classes";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { apiClient } from "@/lib/api-client";
@@ -55,24 +54,6 @@ export default function Sidebar({
   const isAuthenticated = !!user && !loading;
   const sidebarRef = useRef<HTMLElement>(null);
 
-  // Debug: Log user data
-  useEffect(() => {
-    if (user) {
-      console.log("Sidebar - User data:", {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        role: user.role,
-        roleType: typeof user.role,
-        isAdmin: user.role === "admin",
-        isModerator: user.role === "moderator",
-        isSeller: user.role === "seller",
-        hasRole: !!user.role,
-        fullUser: user,
-      });
-    }
-  }, [user]);
-
   const handleSignOut = async () => {
     try {
       // Backend logout - clears session cookie and revokes tokens
@@ -85,7 +66,7 @@ export default function Sidebar({
       // This avoids full page reload and preserves Next.js app state
       router.push(ROUTES.AUTH.LOGIN);
     } catch (error) {
-      console.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
+      logger.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
       // Even on error, redirect to login (session might be cleared)
       onClose();
       router.push(ROUTES.AUTH.LOGIN);
@@ -152,14 +133,13 @@ export default function Sidebar({
                   {/* Role badge with modern design */}
                   <span
                     className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider shadow-md ${
-                      user.role === "admin"
-                        ? "bg-red-500 text-white"
-                        : user.role === "moderator" || user.role === "seller"
-                          ? "bg-yellow-500 text-gray-900"
-                          : "bg-green-500 text-white"
-                    }`}
+                      THEME_CONSTANTS.badge.roleText[
+                        (user.role as keyof typeof THEME_CONSTANTS.badge.roleText) ||
+                          "user"
+                      ]
+                    } bg-white/90 dark:bg-gray-900/90`}
                   >
-                    {user.role || "user"}
+                    {user.role || UI_LABELS.AUTH.DEFAULT_ROLE}
                   </span>
                 </div>
               </div>
@@ -226,7 +206,7 @@ export default function Sidebar({
             {/* Auth Buttons - Modern with gradients */}
             <div className="space-y-2.5">
               <Link
-                href={SITE_CONFIG.account.login}
+                href={ROUTES.AUTH.LOGIN}
                 className={`
                   w-full block px-4 py-3 rounded-xl
                   bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
@@ -237,10 +217,10 @@ export default function Sidebar({
                 `}
                 onClick={onClose}
               >
-                Login
+                {UI_LABELS.NAV.LOGIN}
               </Link>
               <Link
-                href={SITE_CONFIG.account.register}
+                href={ROUTES.AUTH.REGISTER}
                 className={`
                   w-full block px-4 py-3 rounded-xl
                   ${THEME_CONSTANTS.themed.bgPrimary}
@@ -255,7 +235,7 @@ export default function Sidebar({
                 `}
                 onClick={onClose}
               >
-                Register
+                {UI_LABELS.NAV.REGISTER}
               </Link>
             </div>
           </div>
@@ -277,7 +257,7 @@ export default function Sidebar({
                 <h3
                   className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                 >
-                  Profile
+                  {UI_LABELS.NAV.PROFILE}
                 </h3>
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -287,8 +267,8 @@ export default function Sidebar({
               <ul className="space-y-1">
                 {[
                   {
-                    href: SITE_CONFIG.account.profile,
-                    label: "My Profile",
+                    href: ROUTES.USER.PROFILE,
+                    label: UI_LABELS.NAV.MY_PROFILE,
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -299,8 +279,8 @@ export default function Sidebar({
                     ),
                   },
                   {
-                    href: SITE_CONFIG.account.orders,
-                    label: "My Orders",
+                    href: ROUTES.USER.ORDERS,
+                    label: UI_LABELS.NAV.MY_ORDERS,
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -311,8 +291,8 @@ export default function Sidebar({
                     ),
                   },
                   {
-                    href: SITE_CONFIG.account.wishlist,
-                    label: "Wishlist",
+                    href: ROUTES.USER.WISHLIST,
+                    label: UI_LABELS.NAV.WISHLIST,
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -323,8 +303,8 @@ export default function Sidebar({
                     ),
                   },
                   {
-                    href: SITE_CONFIG.account.settings,
-                    label: "Settings",
+                    href: ROUTES.USER.SETTINGS,
+                    label: UI_LABELS.NAV.SETTINGS,
                     icon: (
                       <>
                         <path
@@ -430,7 +410,7 @@ export default function Sidebar({
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                Logout
+                {UI_LABELS.NAV.LOGOUT}
               </button>
             </div>
           )}
@@ -451,7 +431,7 @@ export default function Sidebar({
                   <h3
                     className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                   >
-                    Dashboard
+                    {UI_LABELS.NAV.DASHBOARD}
                   </h3>
                   <div
                     className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -463,12 +443,12 @@ export default function Sidebar({
                   {(user.role === "admin" || user.role === "moderator") && (
                     <li>
                       <Link
-                        href="/admin/dashboard"
+                        href={ROUTES.ADMIN.DASHBOARD}
                         className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
-                          pathname === "/admin/dashboard" ||
+                          pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")
                             ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
                             : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
@@ -480,7 +460,7 @@ export default function Sidebar({
                           className={`
                         flex-shrink-0 p-1.5 rounded-md transition-colors
                         ${
-                          pathname === "/admin/dashboard" ||
+                          pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")
                             ? "bg-primary-100 dark:bg-primary-900/50"
                             : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
@@ -489,7 +469,7 @@ export default function Sidebar({
                         >
                           <svg
                             className={`w-4 h-4 ${
-                              pathname === "/admin/dashboard" ||
+                              pathname === ROUTES.ADMIN.DASHBOARD ||
                               pathname?.startsWith("/admin/")
                                 ? "text-primary-600 dark:text-primary-400"
                                 : THEME_CONSTANTS.themed.textMuted
@@ -509,9 +489,9 @@ export default function Sidebar({
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                         >
-                          Admin Dashboard
+                          {UI_LABELS.NAV.ADMIN_DASHBOARD}
                         </span>
-                        {(pathname === "/admin/dashboard" ||
+                        {(pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")) && (
                           <svg
                             className="w-4 h-4 text-primary-600 dark:text-primary-400"
@@ -533,12 +513,12 @@ export default function Sidebar({
                   {(user.role === "seller" || user.role === "admin") && (
                     <li>
                       <Link
-                        href="/seller"
+                        href={ROUTES.SELLER.DASHBOARD}
                         className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
-                          pathname === "/seller" ||
+                          pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")
                             ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
                             : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
@@ -550,7 +530,7 @@ export default function Sidebar({
                           className={`
                         flex-shrink-0 p-1.5 rounded-md transition-colors
                         ${
-                          pathname === "/seller" ||
+                          pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")
                             ? "bg-primary-100 dark:bg-primary-900/50"
                             : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
@@ -559,7 +539,7 @@ export default function Sidebar({
                         >
                           <svg
                             className={`w-4 h-4 ${
-                              pathname === "/seller" ||
+                              pathname === ROUTES.SELLER.DASHBOARD ||
                               pathname?.startsWith("/seller/")
                                 ? "text-primary-600 dark:text-primary-400"
                                 : THEME_CONSTANTS.themed.textMuted
@@ -579,9 +559,9 @@ export default function Sidebar({
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                         >
-                          Seller Dashboard
+                          {UI_LABELS.NAV.SELLER_DASHBOARD}
                         </span>
-                        {(pathname === "/seller" ||
+                        {(pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")) && (
                           <svg
                             className="w-4 h-4 text-primary-600 dark:text-primary-400"
@@ -613,7 +593,7 @@ export default function Sidebar({
               <h3
                 className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
               >
-                Support
+                {UI_LABELS.NAV.SUPPORT}
               </h3>
               <div
                 className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -623,8 +603,8 @@ export default function Sidebar({
             <ul className="space-y-1">
               {[
                 {
-                  href: SITE_CONFIG.nav.contact,
-                  label: "Contact Us",
+                  href: ROUTES.PUBLIC.CONTACT,
+                  label: UI_LABELS.NAV.CONTACT_US,
                   icon: (
                     <path
                       strokeLinecap="round"
@@ -635,8 +615,8 @@ export default function Sidebar({
                   ),
                 },
                 {
-                  href: "/help",
-                  label: "Help Center",
+                  href: ROUTES.PUBLIC.HELP,
+                  label: UI_LABELS.NAV.HELP_CENTER,
                   icon: (
                     <path
                       strokeLinecap="round"

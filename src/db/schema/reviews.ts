@@ -4,10 +4,7 @@
  * Firebase Firestore collection for product reviews
  */
 
-import {
-  generateReviewId,
-  type GenerateReviewIdInput,
-} from "@/utils/id-generators";
+import { generateReviewId, type GenerateReviewIdInput } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
@@ -40,6 +37,7 @@ export interface ReviewDocument {
   helpfulCount: number;
   reportCount: number;
   verified: boolean; // Whether user actually purchased the product
+  featured?: boolean; // Whether review is featured/highlighted
   createdAt: Date;
   updatedAt: Date;
   approvedAt?: Date;
@@ -65,6 +63,7 @@ export const REVIEW_INDEXED_FIELDS = [
   "status", // For filtering by moderation status
   "rating", // For rating-based queries
   "verified", // For verified reviews
+  "featured", // For featured/highlighted reviews
   "createdAt", // For sorting by date
 ] as const;
 

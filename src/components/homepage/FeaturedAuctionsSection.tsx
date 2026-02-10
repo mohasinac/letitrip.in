@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { formatCurrency } from "@/utils";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface Auction {
   id: string;
@@ -20,12 +23,13 @@ interface Auction {
 }
 
 export function FeaturedAuctionsSection() {
-  const { data, isLoading } = useApiQuery<{ products: Auction[] }>({
+  const router = useRouter();
+  const { data, isLoading } = useApiQuery<Auction[]>({
     queryKey: ["auctions", "featured"],
     queryFn: () =>
-      fetch(
+      apiClient.get(
         `${API_ENDPOINTS.PRODUCTS.LIST}?isAuction=true&status=published&isPromoted=true&limit=18`,
-      ).then((r) => r.json()),
+      ),
   });
 
   if (isLoading) {
@@ -57,19 +61,11 @@ export function FeaturedAuctionsSection() {
     );
   }
 
-  const auctions = data?.products || [];
+  const auctions = data || [];
 
   if (auctions.length === 0) {
     return null;
   }
-
-  const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
 
   return (
     <section
@@ -82,31 +78,27 @@ export function FeaturedAuctionsSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              Live Auctions
+              {UI_LABELS.HOMEPAGE.AUCTIONS.TITLE}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              Bid now on exclusive items
+              {UI_LABELS.HOMEPAGE.AUCTIONS.SUBTITLE}
             </p>
           </div>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => (window.location.href = "/auctions")}
+            onClick={() => router.push(ROUTES.PUBLIC.AUCTIONS)}
           >
-            View All Auctions
+            {UI_LABELS.ACTIONS.VIEW_ALL}
           </Button>
         </div>
 
         {/* Auctions Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4">
           {auctions.slice(0, 18).map((auction) => (
-            <AuctionCard
-              key={auction.id}
-              auction={auction}
-              formatPrice={formatPrice}
-            />
+            <AuctionCard key={auction.id} auction={auction} />
           ))}
         </div>
       </div>
@@ -114,13 +106,8 @@ export function FeaturedAuctionsSection() {
   );
 }
 
-function AuctionCard({
-  auction,
-  formatPrice,
-}: {
-  auction: Auction;
-  formatPrice: (price: number, currency: string) => string;
-}) {
+function AuctionCard({ auction }: { auction: Auction }) {
+  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -158,7 +145,7 @@ function AuctionCard({
   return (
     <button
       className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-      onClick={() => (window.location.href = `/auctions/${auction.slug}`)}
+      onClick={() => router.push(`/auctions/${auction.slug}`)}
     >
       {/* Auction Image */}
       <div className="relative aspect-square overflow-hidden">
@@ -195,7 +182,7 @@ function AuctionCard({
             <span
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
             >
-              {formatPrice(auction.currentBid, auction.currency)}
+              {formatCurrency(auction.currentBid, auction.currency)}
             </span>
           </div>
           <p

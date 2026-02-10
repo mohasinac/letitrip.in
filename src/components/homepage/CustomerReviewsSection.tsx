@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 interface Review {
   id: string;
@@ -21,15 +22,15 @@ export function CustomerReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  const { data, isLoading } = useApiQuery<{ reviews: Review[] }>({
+  const { data, isLoading } = useApiQuery<Review[]>({
     queryKey: ["reviews", "featured"],
     queryFn: () =>
-      fetch(
+      apiClient.get(
         `${API_ENDPOINTS.REVIEWS.LIST}?featured=true&status=approved&limit=18`,
-      ).then((r) => r.json()),
+      ),
   });
 
-  const reviews = data?.reviews || [];
+  const reviews = data || [];
 
   // Auto-scroll every 4 seconds
   useEffect(() => {

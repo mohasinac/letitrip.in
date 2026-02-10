@@ -1,98 +1,153 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  useAuth,
-  useAddressForm,
-  useAddress,
-  useUpdateAddress,
-  useDeleteAddress,
-} from "@/hooks";
+import { useAuth } from "@/hooks";
 import {
   Card,
   Heading,
   Button,
-  Input,
-  Select,
-  Checkbox,
   Spinner,
-  UserTabs,
+  AddressForm,
   ConfirmDeleteModal,
+  useToast,
 } from "@/components";
+import type { AddressFormData } from "@/components";
 import { useRouter, useParams } from "next/navigation";
+import { logger } from "@/classes";
 import {
   THEME_CONSTANTS,
-  ADDRESS_TYPES,
-  INDIAN_STATES,
   UI_LABELS,
+  ROUTES,
+  API_ENDPOINTS,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
 } from "@/constants";
 
 export default function EditAddressPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const params = useParams();
   const addressId = params?.id as string;
+  const { showToast } = useToast();
 
-  const { address, loading: addressLoading } = useAddress(addressId);
-  const { updateAddress, loading: updating } = useUpdateAddress();
-  const { deleteAddress, loading: deleting } = useDeleteAddress();
-
+  const [address, setAddress] = useState<AddressFormData | null>(null);
+  const [loadingAddress, setLoadingAddress] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { formData, errors, handleChange, validate, setFormData } =
-    useAddressForm();
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/auth/login");
+    if (!loading && !user) {
+      router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, authLoading, router]);
+  }, [user, loading, router]);
 
+  // Fetch address data
   useEffect(() => {
-    if (address) {
-      setFormData({
-        fullName: address.fullName,
-        phoneNumber: address.phoneNumber,
-        pincode: address.pincode,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2,
-        landmark: address.landmark,
-        city: address.city,
-        state: address.state,
-        addressType: address.addressType,
-        isDefault: address.isDefault,
-      });
+    if (user && addressId) {
+      const fetchAddress = async () => {
+        try {
+          // TODO: Replace with actual API call once endpoint exists
+          const response = await fetch(
+            API_ENDPOINTS.ADDRESSES.GET_BY_ID(addressId),
+          );
+
+          if (!response.ok) {
+            throw new Error(ERROR_MESSAGES.DATABASE.NOT_FOUND);
+          }
+
+          const data = await response.json();
+          setAddress(data);
+        } catch (error) {
+          logger.error("Error fetching address:", error);
+          showToast(
+            error instanceof Error
+              ? error.message
+              : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+            "error",
+          );
+          router.push(ROUTES.USER.ADDRESSES);
+        } finally {
+          setLoadingAddress(false);
+        }
+      };
+
+      fetchAddress();
     }
-  }, [address, setFormData]);
+  }, [user, addressId, router, showToast]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validate() || !user) return;
+  const handleSubmit = async (data: AddressFormData) => {
+    setSaving(true);
 
     try {
-      await updateAddress(addressId, user.uid, {
-        ...formData,
-        addressType: formData.addressType as "home" | "work" | "other",
+      // TODO: Replace with actual API call once endpoint exists
+      const response = await fetch(API_ENDPOINTS.ADDRESSES.UPDATE(addressId), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-      router.push("/user/addresses");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        );
+      }
+
+      showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
+      router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
-      console.error("Error updating address:", error);
-      alert("Failed to update address. Please try again.");
+      logger.error("Error updating address:", error);
+      showToast(
+        error instanceof Error
+          ? error.message
+          : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        "error",
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async () => {
+    setDeleting(true);
+
     try {
-      await deleteAddress(addressId);
-      setShowDeleteModal(false);
-      router.push("/user/addresses");
+      // TODO: Replace with actual API call once endpoint exists
+      const response = await fetch(API_ENDPOINTS.ADDRESSES.DELETE(addressId), {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        );
+      }
+
+      showToast(SUCCESS_MESSAGES.ADDRESS.DELETED, "success");
+      router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
-      console.error("Error deleting address:", error);
-      alert("Failed to delete address. Please try again.");
+      logger.error("Error deleting address:", error);
+      showToast(
+        error instanceof Error
+          ? error.message
+          : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        "error",
+      );
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
-  if (authLoading || addressLoading) {
+  const handleCancel = () => {
+    router.push(ROUTES.USER.ADDRESSES);
+  };
+
+  if (loading || loadingAddress) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
@@ -105,173 +160,27 @@ export default function EditAddressPage() {
   }
 
   return (
-    <div className="max-w-5xl">
-      <UserTabs />
-
-      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
+    <div className="max-w-3xl">
+      <div className={THEME_CONSTANTS.spacing.stack}>
         <div className="flex items-center justify-between">
-          <Heading level={3}>Edit Address</Heading>
+          <Heading level={3}>{UI_LABELS.USER.ADDRESSES.EDIT}</Heading>
           <Button
-            variant="secondary"
+            variant="danger"
             onClick={() => setShowDeleteModal(true)}
-            className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white shadow-md hover:shadow-lg transition-shadow"
+            disabled={saving || deleting}
           >
-            Delete Address
+            {UI_LABELS.ACTIONS.DELETE}
           </Button>
         </div>
 
-        <Card className="p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-          <form
+        <Card className={THEME_CONSTANTS.spacing.cardPadding}>
+          <AddressForm
+            initialData={address}
             onSubmit={handleSubmit}
-            className={THEME_CONSTANTS.spacing.stack}
-          >
-            {/* Contact Information */}
-            <div>
-              <Heading level={5} className="mb-4">
-                Contact Information
-              </Heading>
-              <div
-                className={`grid grid-cols-1 md:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.md}`}
-              >
-                <Input
-                  label="Full Name"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => handleChange("fullName", e.target.value)}
-                  error={errors.fullName}
-                  required
-                />
-                <Input
-                  label="Phone Number"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) => handleChange("phoneNumber", e.target.value)}
-                  error={errors.phoneNumber}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Address Information */}
-            <div>
-              <Heading level={5} className="mb-4">
-                Address Information
-              </Heading>
-              <div className={THEME_CONSTANTS.spacing.stack}>
-                <Input
-                  label="Pincode"
-                  type="text"
-                  value={formData.pincode}
-                  onChange={(e) => handleChange("pincode", e.target.value)}
-                  error={errors.pincode}
-                  maxLength={6}
-                  required
-                />
-
-                <Input
-                  label="Address Line 1"
-                  type="text"
-                  value={formData.addressLine1}
-                  onChange={(e) => handleChange("addressLine1", e.target.value)}
-                  error={errors.addressLine1}
-                  required
-                />
-
-                <Input
-                  label="Address Line 2"
-                  type="text"
-                  value={formData.addressLine2}
-                  onChange={(e) => handleChange("addressLine2", e.target.value)}
-                />
-
-                <Input
-                  label="Landmark (Optional)"
-                  type="text"
-                  value={formData.landmark}
-                  onChange={(e) => handleChange("landmark", e.target.value)}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label="City"
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => handleChange("city", e.target.value)}
-                    error={errors.city}
-                    required
-                  />
-
-                  <Select
-                    label="State"
-                    value={formData.state}
-                    onChange={(e) => handleChange("state", e.target.value)}
-                    error={errors.state}
-                    required
-                    options={[
-                      { value: "", label: "Select State" },
-                      ...INDIAN_STATES.map((state) => ({
-                        value: state,
-                        label: state,
-                      })),
-                    ]}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Address Type */}
-            <div>
-              <Heading level={5} className="mb-4">
-                Address Type
-              </Heading>
-              <div className={`flex ${THEME_CONSTANTS.spacing.gap.md}`}>
-                {ADDRESS_TYPES.map((type) => (
-                  <label
-                    key={type.value}
-                    className={`flex items-center ${THEME_CONSTANTS.spacing.inlineSmall} cursor-pointer`}
-                  >
-                    <input
-                      type="radio"
-                      name="addressType"
-                      value={type.value}
-                      checked={formData.addressType === type.value}
-                      onChange={(e) =>
-                        handleChange("addressType", e.target.value)
-                      }
-                      className="w-4 h-4"
-                    />
-                    <span className="text-sm">{type.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Default Address */}
-            <Checkbox
-              label="Set as default address"
-              checked={formData.isDefault}
-              onChange={(e) => handleChange("isDefault", e.target.checked)}
-            />
-
-            {/* Actions */}
-            <div className={`flex ${THEME_CONSTANTS.spacing.gap.md} pt-4`}>
-              <Button
-                type="submit"
-                disabled={updating}
-                className="flex-1 md:flex-initial"
-              >
-                {updating ? "Updating..." : "Update Address"}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => router.push("/user/addresses")}
-                disabled={updating}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+            onCancel={handleCancel}
+            isLoading={saving}
+            submitLabel={UI_LABELS.ACTIONS.UPDATE}
+          />
         </Card>
       </div>
 
@@ -279,8 +188,8 @@ export default function EditAddressPage() {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
-        title="Delete Address?"
-        message="Are you sure you want to delete this address? This action cannot be undone."
+        title={UI_LABELS.MODALS.CONFIRM_DELETE}
+        message={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM}
         isDeleting={deleting}
       />
     </div>

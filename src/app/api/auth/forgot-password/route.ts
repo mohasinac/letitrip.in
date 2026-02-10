@@ -18,6 +18,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
+import { serverLogger } from "@/lib/server-logger";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
 
       // TODO: Send email via your email service (Resend, SendGrid, etc.)
       // For now, log the link
-      console.log("Password reset link:", resetLink);
+      serverLogger.info("Password reset link generated", { resetLink });
 
       // In production, use your email service:
       // await sendEmail({
@@ -57,7 +58,9 @@ export async function POST(request: NextRequest) {
       // Don't reveal if user exists or not
       if (error.code === "auth/user-not-found") {
         // Still return success
-        console.log("Password reset requested for non-existent user:", email);
+        serverLogger.info("Password reset requested for non-existent user", {
+          email,
+        });
       } else {
         throw error;
       }

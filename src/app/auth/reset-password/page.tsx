@@ -43,7 +43,7 @@ function ResetPasswordContent() {
 
   useEffect(() => {
     if (!token) {
-      setTokenError("Invalid or missing reset token");
+      setTokenError(UI_LABELS.AUTH.RESET_PASSWORD.INVALID_OR_MISSING_TOKEN);
     }
   }, [token]);
 
@@ -65,7 +65,7 @@ function ResetPasswordContent() {
     e.preventDefault();
 
     if (!token) {
-      setTokenError("Invalid or missing reset token");
+      setTokenError(UI_LABELS.AUTH.RESET_PASSWORD.INVALID_OR_MISSING_TOKEN);
       return;
     }
 
@@ -99,18 +99,17 @@ function ResetPasswordContent() {
             </svg>
           </div>
           <Heading level={4} className="mb-2">
-            Password Reset Successful!
+            {UI_LABELS.AUTH.RESET_PASSWORD.SUCCESS}
           </Heading>
           <Text className="text-gray-600 mb-6">
-            Your password has been successfully reset. You can now log in with
-            your new password.
+            {UI_LABELS.AUTH.RESET_PASSWORD.SUCCESS_MESSAGE}
           </Text>
           <Button
             variant="primary"
             onClick={() => router.push(ROUTES.AUTH.LOGIN)}
             className="w-full"
           >
-            Go to Login
+            {UI_LABELS.AUTH.RESET_PASSWORD.GO_TO_LOGIN}
           </Button>
         </Card>
       </div>
@@ -122,9 +121,11 @@ function ResetPasswordContent() {
       <Card className="max-w-md w-full p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
-            Reset Your Password
+            {UI_LABELS.AUTH.RESET_PASSWORD.PAGE_TITLE}
           </Heading>
-          <Text className="text-gray-600">Enter your new password below</Text>
+          <Text className="text-gray-600">
+            {UI_LABELS.AUTH.RESET_PASSWORD.SUBTITLE_SHORT}
+          </Text>
         </div>
 
         {(error || tokenError) && (
@@ -135,7 +136,7 @@ function ResetPasswordContent() {
 
         <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
-            label="New Password"
+            label={UI_LABELS.AUTH.RESET_PASSWORD.NEW_PASSWORD}
             name="newPassword"
             type="password"
             value={passwords.newPassword}
@@ -154,7 +155,7 @@ function ResetPasswordContent() {
           )}
 
           <FormField
-            label="Confirm New Password"
+            label={UI_LABELS.AUTH.RESET_PASSWORD.CONFIRM_NEW_PASSWORD}
             name="confirmPassword"
             type="password"
             value={passwords.confirmPassword}
@@ -166,10 +167,12 @@ function ResetPasswordContent() {
             error={
               passwords.confirmPassword &&
               passwords.newPassword !== passwords.confirmPassword
-                ? "Passwords do not match"
+                ? UI_LABELS.AUTH.RESET_PASSWORD.PASSWORDS_NO_MATCH
                 : undefined
             }
-            placeholder="Confirm new password"
+            placeholder={
+              UI_LABELS.AUTH.RESET_PASSWORD.CONFIRM_NEW_PASSWORD_PLACEHOLDER
+            }
             disabled={isLoading}
             required
           />
@@ -185,18 +188,20 @@ function ResetPasswordContent() {
             }
             className="w-full"
           >
-            {isLoading ? "Resetting..." : "Reset Password"}
+            {isLoading
+              ? UI_LABELS.AUTH.RESET_PASSWORD.RESETTING
+              : UI_LABELS.AUTH.RESET_PASSWORD.RESET_PASSWORD}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
-            Remember your password?{" "}
+            {UI_LABELS.AUTH.FORGOT_PASSWORD.REMEMBER_PASSWORD}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
-              Sign in
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.SIGN_IN_LINK}
             </Link>
           </Text>
         </div>

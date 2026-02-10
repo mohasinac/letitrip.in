@@ -67,6 +67,8 @@ export function rgbToHex(r: number, g: number, b: number): string {
  * const lighter = lightenColor('#FF5733', 20);
  * console.log(lighter); // '#ff7d5c' (lighter version)
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function lightenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
@@ -91,6 +93,8 @@ export function lightenColor(hex: string, percent: number): string {
  * const darker = darkenColor('#FF5733', 20);
  * console.log(darker); // '#cc4629' (darker version)
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function darkenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
@@ -113,6 +117,8 @@ export function darkenColor(hex: string, percent: number): string {
  * const color = randomColor();
  * console.log(color); // '#a3f2c1' (random)
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function randomColor(): string {
   return (
@@ -158,6 +164,8 @@ export function getContrastColor(hex: string): "#000000" | "#ffffff" {
  * const gradient = generateGradient('#FF0000', '#0000FF', 5);
  * console.log(gradient); // ['#ff0000', '#bf003f', '#7f007f', '#3f00bf', '#0000ff']
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function generateGradient(
   startHex: string,

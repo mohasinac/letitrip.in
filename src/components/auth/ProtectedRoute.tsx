@@ -254,33 +254,3 @@ export function RouteProtection({
     </ProtectedRoute>
   );
 }
-
-/**
- * Hook to check if user has required role
- */
-export function useRequireRole(requiredRole: UserRole | UserRole[]) {
-  const { user } = useSession();
-
-  if (!user) return false;
-
-  const userRole = user.role as UserRole;
-  const allowedRoles = Array.isArray(requiredRole)
-    ? requiredRole
-    : [requiredRole];
-
-  return allowedRoles.includes(userRole);
-}
-
-/**
- * Hook to get current user
- */
-export function useCurrentUser() {
-  const { user, loading } = useSession();
-
-  return {
-    user,
-    isLoading: loading,
-    isAuthenticated: !!user,
-    role: user?.role as UserRole | undefined,
-  };
-}

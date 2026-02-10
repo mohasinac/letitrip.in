@@ -7,7 +7,7 @@
 import {
   generateHomepageSectionId,
   type GenerateHomepageSectionIdInput,
-} from "@/utils/id-generators";
+} from "@/utils";
 
 // ============================================
 // SECTION CONFIG TYPES

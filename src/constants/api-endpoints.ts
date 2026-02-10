@@ -12,7 +12,6 @@ export const API_ENDPOINTS = {
     VERIFY_EMAIL: "/api/auth/verify-email",
     FORGOT_PASSWORD: "/api/auth/forgot-password",
     RESET_PASSWORD: "/api/auth/reset-password",
-    REFRESH_TOKEN: "/api/auth/refresh-token",
     RESEND_VERIFICATION: "/api/auth/send-verification",
     CREATE_SESSION: "/api/auth/session",
     DESTROY_SESSION: "/api/auth/session",
@@ -25,18 +24,36 @@ export const API_ENDPOINTS = {
     PROFILE: "/api/user/profile",
     CHANGE_PASSWORD: "/api/user/change-password",
     UPDATE_PROFILE: "/api/user/profile",
-    DELETE_ACCOUNT: "/api/user/account",
     SESSIONS: "/api/user/sessions",
     REVOKE_SESSION: (id: string) => `/api/user/sessions/${id}`,
   },
 
   // Profile endpoints
   PROFILE: {
+    GET_BY_ID: (userId: string) => `/api/profile/${userId}`,
     UPDATE: "/api/profile/update",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",
     UPDATE_PASSWORD: "/api/profile/update-password",
     DELETE_ACCOUNT: "/api/profile/delete-account",
+  },
+
+  // Address endpoints
+  ADDRESSES: {
+    LIST: "/api/user/addresses", // GET - List user addresses
+    CREATE: "/api/user/addresses", // POST - Create new address
+    GET_BY_ID: (id: string) => `/api/user/addresses/${id}`, // GET - Get single address
+    UPDATE: (id: string) => `/api/user/addresses/${id}`, // PATCH - Update address
+    DELETE: (id: string) => `/api/user/addresses/${id}`, // DELETE - Delete address
+    SET_DEFAULT: (id: string) => `/api/user/addresses/${id}/set-default`, // POST - Set default address
+  },
+
+  // Order endpoints
+  ORDERS: {
+    LIST: "/api/user/orders", // GET - List user orders
+    GET_BY_ID: (id: string) => `/api/user/orders/${id}`, // GET - Get single order details
+    TRACK: (id: string) => `/api/user/orders/${id}/track`, // GET - Track order
+    CANCEL: (id: string) => `/api/user/orders/${id}/cancel`, // POST - Cancel order
   },
 
   // Admin endpoints
@@ -121,14 +138,20 @@ export const API_ENDPOINTS = {
     TRIM: "/api/media/trim", // POST - Trim video
   },
 
+  // Logging endpoints
+  LOGS: {
+    WRITE: "/api/logs/write", // POST - Write log entry
+  },
+
   // Newsletter endpoints
+  // TODO: Implement newsletter subscription route
   NEWSLETTER: {
     SUBSCRIBE: "/api/newsletter/subscribe", // POST - Subscribe to newsletter
   },
 
-  // Logging endpoints
-  LOGS: {
-    WRITE: "/api/logs/write", // POST - Write log entry
+  // Demo/Development endpoints (dev-only)
+  DEMO: {
+    SEED: "/api/demo/seed", // POST - Seed database with test data
   },
 } as const;
 

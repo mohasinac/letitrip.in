@@ -6,6 +6,7 @@
 
 import { getPerformance, trace, PerformanceTrace } from "firebase/performance";
 import { app } from "@/lib/firebase/config";
+import { logger } from "@/classes";
 
 // Initialize Firebase Performance
 let performance: ReturnType<typeof getPerformance> | null = null;
@@ -30,7 +31,7 @@ export const startTrace = (traceName: string): PerformanceTrace | null => {
     t.start();
     return t;
   } catch (error) {
-    console.error(`Failed to start trace ${traceName}:`, error);
+    logger.error(`Failed to start trace ${traceName}`, { error });
     return null;
   }
 };
@@ -44,7 +45,7 @@ export const stopTrace = (t: PerformanceTrace | null): void => {
   try {
     t.stop();
   } catch (error) {
-    console.error("Failed to stop trace:", error);
+    logger.error("Failed to stop trace", { error });
   }
 };
 
@@ -65,7 +66,7 @@ export const addTraceAttribute = (
   try {
     t.putAttribute(attribute, value);
   } catch (error) {
-    console.error(`Failed to add attribute ${attribute}:`, error);
+    logger.error(`Failed to add attribute ${attribute}`, { error });
   }
 };
 
@@ -86,7 +87,7 @@ export const addTraceMetric = (
   try {
     t.putMetric(metricName, value);
   } catch (error) {
-    console.error(`Failed to add metric ${metricName}:`, error);
+    logger.error(`Failed to add metric ${metricName}`, { error });
   }
 };
 
@@ -105,7 +106,7 @@ export const incrementTraceMetric = (
   try {
     t.incrementMetric(metricName);
   } catch (error) {
-    console.error(`Failed to increment metric ${metricName}:`, error);
+    logger.error(`Failed to increment metric ${metricName}`, { error });
   }
 };
 

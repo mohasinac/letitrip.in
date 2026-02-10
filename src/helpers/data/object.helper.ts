@@ -127,6 +127,8 @@ export function isEmptyObject(obj: Record<string, any>): boolean {
  * const city = getNestedValue<string>(data, 'user.address.city');
  * console.log(city); // 'NYC'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function getNestedValue<T>(obj: any, path: string): T | undefined {
   return path.split(".").reduce((current, key) => current?.[key], obj);
@@ -145,6 +147,8 @@ export function getNestedValue<T>(obj: any, path: string): T | undefined {
  * setNestedValue(data, 'user.address.city', 'NYC');
  * console.log(data); // { user: { address: { city: 'NYC' } } }
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function setNestedValue(obj: any, path: string, value: any): void {
   const keys = path.split(".");
@@ -162,6 +166,7 @@ export function setNestedValue(obj: any, path: string, value: any): void {
 
 /**
  * Creates a deep clone of an object, handling nested objects and arrays
+ * Properly handles null values, arrays, and deeply nested structures
  *
  * @param obj - The object to clone
  * @returns A deep copy of the object
@@ -169,26 +174,33 @@ export function setNestedValue(obj: any, path: string, value: any): void {
  * @example
  * ```typescript
  * const original = { a: 1, b: { c: 2 } };
- * const clone = deepCloneObject(original);
+ * const clone = deepClone(original);
  * clone.b.c = 3;
  * console.log(original.b.c); // 2 (unchanged)
  * ```
  */
-export function deepCloneObject<T>(obj: T): T {
+export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== "object") {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepCloneObject(item)) as unknown as T;
+    return obj.map((item) => deepClone(item)) as unknown as T;
   }
 
   const cloned = {} as T;
   Object.keys(obj).forEach((key) => {
-    cloned[key as keyof T] = deepCloneObject((obj as any)[key]);
+    cloned[key as keyof T] = deepClone((obj as any)[key]);
   });
 
   return cloned;
+}
+
+/**
+ * @deprecated Use deepClone instead. This is an alias for backward compatibility.
+ */
+export function deepCloneObject<T>(obj: T): T {
+  return deepClone(obj);
 }
 
 /**
@@ -278,6 +290,8 @@ export function cleanObject<T extends Record<string, any>>(
  * const inverted = invertObject(codes);
  * console.log(inverted); // { 'United States': 'US', 'United Kingdom': 'UK' }
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function invertObject(
   obj: Record<string, string>,

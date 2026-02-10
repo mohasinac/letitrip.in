@@ -9,6 +9,7 @@ import BackToTop from "./utility/BackToTop";
 import Breadcrumbs from "./utility/Breadcrumbs";
 import { BackgroundRenderer } from "./utility";
 import { classNames } from "@/helpers";
+import { logger } from "@/classes";
 
 /**
  * LayoutClient Component
@@ -116,8 +117,8 @@ export default function LayoutClient({
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
         onSearch={(query) => {
-          console.log("Searching for:", query);
-          // Add your search logic here
+          // TODO: Implement search navigation/logic
+          logger.debug("Searching for:", query);
         }}
       />
 
@@ -142,7 +143,7 @@ export default function LayoutClient({
           )}
         >
           <div
-            className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} py-4 sm:py-6 w-full`}
+            className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
           >
             {children}
           </div>

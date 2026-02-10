@@ -1,6 +1,7 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants";
+import { useRouter } from "next/navigation";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { Button } from "@/components";
 
 interface Collection {
@@ -48,9 +49,10 @@ const collections: Collection[] = [
 ];
 
 export function SpecialCollectionsSection() {
+  const router = useRouter();
   return (
     <section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.subtle}`}
     >
       <div className="w-full">
         {/* Section Header */}
@@ -58,12 +60,12 @@ export function SpecialCollectionsSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            Special Collections
+            {UI_LABELS.HOMEPAGE.COLLECTIONS.TITLE}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            Curated selections for every need
+            {UI_LABELS.HOMEPAGE.COLLECTIONS.SUBTITLE}
           </p>
         </div>
 
@@ -73,7 +75,7 @@ export function SpecialCollectionsSection() {
             <button
               key={collection.id}
               className={`group relative overflow-hidden ${THEME_CONSTANTS.borderRadius.xl} p-8 text-left transition-all hover:shadow-2xl hover:-translate-y-2`}
-              onClick={() => (window.location.href = collection.link)}
+              onClick={() => router.push(collection.link)}
             >
               {/* Gradient Background */}
               <div

@@ -5,6 +5,8 @@
  */
 
 import { UserRole } from "@/types/auth";
+import { ROLE_HIERARCHY } from "@/constants/rbac";
+import { isTokenExpired, getTokenTimeRemaining } from "./token.helper";
 
 /**
  * Checks if a user has the required role based on role hierarchy
@@ -20,14 +22,7 @@ import { UserRole } from "@/types/auth";
  * ```
  */
 export function hasRole(userRole: UserRole, requiredRole: UserRole): boolean {
-  const roleHierarchy: Record<UserRole, number> = {
-    user: 0,
-    seller: 1,
-    moderator: 2,
-    admin: 3,
-  };
-
-  return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
+  return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[requiredRole];
 }
 
 /**
@@ -67,45 +62,6 @@ export function getDefaultRole(email: string): UserRole {
 }
 
 /**
- * Checks if a user has permission to change another user's role
- *
- * @param currentUserRole - The role of the user attempting the change
- * @param targetCurrentRole - The current role of the user being changed
- * @param targetNewRole - The new role to assign
- * @returns True if the role change is permitted
- *
- * @example
- * ```typescript
- * console.log(canChangeRole('admin', 'user', 'moderator')); // true
- * console.log(canChangeRole('moderator', 'user', 'seller')); // true
- * console.log(canChangeRole('user', 'user', 'admin')); // false
- * ```
- */
-export function canChangeRole(
-  currentUserRole: UserRole,
-  targetCurrentRole: UserRole,
-  targetNewRole: UserRole,
-): boolean {
-  const roleHierarchy: Record<UserRole, number> = {
-    user: 0,
-    seller: 1,
-    moderator: 2,
-    admin: 3,
-  };
-
-  // Admins can change any role
-  if (currentUserRole === "admin") return true;
-
-  // Moderators can only promote users to sellers
-  if (currentUserRole === "moderator") {
-    return targetCurrentRole === "user" && targetNewRole === "seller";
-  }
-
-  // Other roles cannot change roles
-  return false;
-}
-
-/**
  * Formats an authentication provider ID into a user-friendly display name
  *
  * @param provider - The provider ID (e.g., 'password', 'google.com')
@@ -130,6 +86,7 @@ export function formatAuthProvider(provider: string): string {
 
 /**
  * Checks if a session has expired
+ * Delegates to generic isTokenExpired from token.helper
  *
  * @param expiresAt - The session expiration date (Date object or ISO string)
  * @returns True if the session has expired
@@ -142,13 +99,13 @@ export function formatAuthProvider(provider: string): string {
  * ```
  */
 export function isSessionExpired(expiresAt: Date | string): boolean {
-  const expiry =
-    typeof expiresAt === "string" ? new Date(expiresAt) : expiresAt;
-  return expiry.getTime() < Date.now();
+  // Delegate to generic token expiration check
+  return isTokenExpired(expiresAt);
 }
 
 /**
  * Calculates the remaining time before a session expires
+ * Delegates to generic getTokenTimeRemaining from token.helper
  *
  * @param expiresAt - The session expiration date (Date object or ISO string)
  * @returns The number of minutes remaining (0 if expired)
@@ -160,10 +117,8 @@ export function isSessionExpired(expiresAt: Date | string): boolean {
  * ```
  */
 export function getSessionTimeRemaining(expiresAt: Date | string): number {
-  const expiry =
-    typeof expiresAt === "string" ? new Date(expiresAt) : expiresAt;
-  const remaining = expiry.getTime() - Date.now();
-  return Math.max(0, Math.floor(remaining / 60000));
+  // Delegate to generic token time remaining calculation
+  return getTokenTimeRemaining(expiresAt);
 }
 
 /**

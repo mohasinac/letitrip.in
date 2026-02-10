@@ -39,6 +39,8 @@ export const easings = {
  * });
  * // To cancel: cancel();
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function animate(
   from: number,
@@ -83,6 +85,8 @@ export function animate(
  *   element.classList.add('fade-in');
  * }, 100);
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function stagger(
   elements: HTMLElement[],
@@ -109,6 +113,8 @@ export function stagger(
  * await fadeIn(modal, 500);
  * console.log('Modal is now visible');
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function fadeIn(
   element: HTMLElement,
@@ -138,6 +144,8 @@ export function fadeIn(
  * await fadeOut(alert, 500);
  * alert.remove();
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function fadeOut(
   element: HTMLElement,
@@ -163,6 +171,8 @@ export function fadeOut(
  * const drawer = document.querySelector('.drawer');
  * await slide(drawer, 'left', 400);
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function slide(
   element: HTMLElement,

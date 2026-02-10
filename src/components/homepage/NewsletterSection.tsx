@@ -1,10 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
-import { Button } from "@/components";
+import { useRouter } from "next/navigation";
+import {
+  THEME_CONSTANTS,
+  API_ENDPOINTS,
+  UI_LABELS,
+  UI_PLACEHOLDERS,
+  ROUTES,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+} from "@/constants";
+import { Button, Input } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 export function NewsletterSection() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -16,34 +27,20 @@ export function NewsletterSection() {
 
     if (!email || !email.includes("@")) {
       setStatus("error");
-      setMessage("Please enter a valid email address");
+      setMessage(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL);
       return;
     }
 
     setStatus("loading");
 
     try {
-      const response = await fetch(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus("success");
-        setMessage(
-          "Thank you for subscribing! Check your email for confirmation.",
-        );
-        setEmail("");
-      } else {
-        setStatus("error");
-        setMessage(data.message || "Something went wrong. Please try again.");
-      }
-    } catch (error) {
+      await apiClient.post(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, { email });
+      setStatus("success");
+      setMessage(SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED);
+      setEmail("");
+    } catch (error: any) {
       setStatus("error");
-      setMessage("Network error. Please try again later.");
+      setMessage(error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
     }
   };
 
@@ -62,24 +59,23 @@ export function NewsletterSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            Stay Updated
+            {UI_LABELS.HOMEPAGE.NEWSLETTER.TITLE}
           </h2>
           <p
-            className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} max-w-xl mx-auto mb-8`}
+            className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container.xl} mx-auto mb-8`}
           >
-            Subscribe to our newsletter for exclusive deals, new arrivals, and
-            insider tips
+            {UI_LABELS.HOMEPAGE.NEWSLETTER.SUBTITLE}
           </p>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
             <div className="flex flex-col sm:flex-row gap-3">
-              <input
+              <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                className={`flex-1 ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} border ${THEME_CONSTANTS.themed.border} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder={UI_PLACEHOLDERS.EMAIL}
+                className="flex-1"
                 disabled={status === "loading" || status === "success"}
               />
               <Button
@@ -88,10 +84,10 @@ export function NewsletterSection() {
                 disabled={status === "loading" || status === "success"}
               >
                 {status === "loading"
-                  ? "Subscribing..."
+                  ? UI_LABELS.LOADING.DEFAULT
                   : status === "success"
-                    ? "Subscribed!"
-                    : "Subscribe"}
+                    ? UI_LABELS.STATUS.SUBSCRIBED
+                    : UI_LABELS.ACTIONS.SUBSCRIBE}
               </Button>
             </div>
 
@@ -116,12 +112,12 @@ export function NewsletterSection() {
           <p
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mt-6`}
           >
-            We respect your privacy. Unsubscribe at any time.{" "}
+            {UI_LABELS.HOMEPAGE.NEWSLETTER.PRIVACY_NOTE}{" "}
             <button
               className="text-blue-600 dark:text-blue-400 hover:underline"
-              onClick={() => (window.location.href = "/privacy-policy")}
+              onClick={() => router.push(ROUTES.PUBLIC.PRIVACY)}
             >
-              Privacy Policy
+              {UI_LABELS.FOOTER.PRIVACY_POLICY}
             </button>
           </p>
         </div>

@@ -10,6 +10,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { isRequired, minLength } from "@/utils";
+import { serverLogger } from "@/lib/server-logger";
 
 interface ChangePasswordRequest {
   currentPassword: string;
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
       message: SUCCESS_MESSAGES.USER.PASSWORD_CHANGED,
     });
   } catch (error) {
-    console.error("Change password error:", error);
+    serverLogger.error("Change password error", { error });
     return NextResponse.json(
       {
         success: false,

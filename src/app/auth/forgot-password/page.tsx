@@ -10,45 +10,26 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, Button, Alert, FormField, Heading, Text } from "@/components";
-import {
-  SUCCESS_MESSAGES,
-  ROUTES,
-  API_ENDPOINTS,
-  THEME_CONSTANTS,
-} from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { ROUTES, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useForgotPassword } from "@/hooks";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { mutate: forgotPassword, isLoading } = useForgotPassword({
+    onSuccess: () => setSuccess(true),
+    onError: (err) =>
+      setError(err.message || UI_LABELS.AUTH.FORGOT_PASSWORD.FAILED_SEND_EMAIL),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
-
-    try {
-      const response = await apiClient.post(
-        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
-        {
-          email: email.trim(),
-        },
-      );
-
-      if (response.success) {
-        setSuccess(true);
-      } else {
-        setError(response.error?.message || "Failed to send reset email");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to send reset email");
-    } finally {
-      setIsLoading(false);
-    }
+    await forgotPassword({ email: email.trim() });
   };
 
   if (success) {
@@ -72,14 +53,16 @@ export default function ForgotPasswordPage() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              Check Your Email
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.CHECK_EMAIL}
             </Heading>
             <Text className="text-gray-600 mb-6">
-              If an account exists with <strong>{email}</strong>, you will
-              receive a password reset link shortly.
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.RESET_LINK_SENT_TO.replace(
+                "{email}",
+                email,
+              )}
             </Text>
             <Text className="text-gray-500 mb-6 block text-sm">
-              The link will expire in 1 hour for security reasons.
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.LINK_EXPIRES}
             </Text>
           </div>
 
@@ -89,7 +72,7 @@ export default function ForgotPasswordPage() {
               onClick={() => router.push(ROUTES.AUTH.LOGIN)}
               className="w-full"
             >
-              Return to Login
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.RETURN_TO_LOGIN}
             </Button>
             <Button
               variant="ghost"
@@ -100,7 +83,7 @@ export default function ForgotPasswordPage() {
               }}
               className="w-full"
             >
-              Send Another Email
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.SEND_ANOTHER_EMAIL}
             </Button>
           </div>
         </Card>
@@ -113,11 +96,10 @@ export default function ForgotPasswordPage() {
       <Card className="max-w-md w-full p-6 sm:p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
-            Forgot Your Password?
+            {UI_LABELS.AUTH.FORGOT_PASSWORD.PAGE_TITLE}
           </Heading>
           <Text className="text-gray-600">
-            Enter your email address and we'll send you a link to reset your
-            password.
+            {UI_LABELS.AUTH.FORGOT_PASSWORD.SUBTITLE}
           </Text>
         </div>
 
@@ -129,14 +111,14 @@ export default function ForgotPasswordPage() {
 
         <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
-            label="Email Address"
+            label={UI_LABELS.AUTH.SHARED.EMAIL_ADDRESS}
             name="email"
             type="email"
             value={email}
             onChange={setEmail}
             onBlur={() => setTouched(true)}
             touched={touched}
-            placeholder="your@email.com"
+            placeholder={UI_LABELS.AUTH.SHARED.EMAIL_PLACEHOLDER}
             disabled={isLoading}
             required
           />
@@ -147,18 +129,20 @@ export default function ForgotPasswordPage() {
             disabled={isLoading || !email}
             className="w-full"
           >
-            {isLoading ? "Sending..." : "Send Reset Link"}
+            {isLoading
+              ? UI_LABELS.AUTH.FORGOT_PASSWORD.SENDING
+              : UI_LABELS.AUTH.FORGOT_PASSWORD.SEND_RESET_EMAIL}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
-            Remember your password?{" "}
+            {UI_LABELS.AUTH.FORGOT_PASSWORD.REMEMBER_PASSWORD}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
-              Sign in
+              {UI_LABELS.AUTH.FORGOT_PASSWORD.SIGN_IN_LINK}
             </Link>
           </Text>
         </div>

@@ -17,6 +17,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/faqs/[id]
@@ -81,7 +82,9 @@ export async function GET(
           lastViewed: new Date(),
         },
       })
-      .catch(console.error);
+      .catch((err) =>
+        serverLogger.error("FAQ view count update failed", { error: err }),
+      );
 
     return NextResponse.json({
       success: true,
@@ -95,7 +98,7 @@ export async function GET(
       );
     }
 
-    console.error("GET /api/faqs/[id] error:", error);
+    serverLogger.error("GET /api/faqs/[id] error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch FAQ" },
       { status: 500 },
@@ -169,7 +172,7 @@ export async function PATCH(
       );
     }
 
-    console.error("PATCH /api/faqs/[id] error:", error);
+    serverLogger.error("PATCH /api/faqs/[id] error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to update FAQ" },
       { status: 500 },
@@ -227,7 +230,7 @@ export async function DELETE(
       );
     }
 
-    console.error("DELETE /api/faqs/[id] error:", error);
+    serverLogger.error("DELETE /api/faqs/[id] error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to delete FAQ" },
       { status: 500 },

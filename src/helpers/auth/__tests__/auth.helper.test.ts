@@ -6,13 +6,13 @@ import {
   hasRole,
   hasAnyRole,
   getDefaultRole,
-  canChangeRole,
   formatAuthProvider,
   isSessionExpired,
   getSessionTimeRemaining,
   generateInitials,
   calculatePasswordScore,
 } from "../auth.helper";
+import { canChangeRole } from "@/lib/security/authorization";
 
 describe("Auth Helper", () => {
   describe("hasRole", () => {

@@ -6,10 +6,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
-import { USER_COLLECTION } from "@/db/schema";
+import { userRepository } from "@/repositories";
+import { serverLogger } from "@/lib/server-logger";
 
 interface VerifyPhoneRequest {
   verificationId: string;
@@ -55,13 +56,11 @@ export async function POST(req: NextRequest) {
       throw new ValidationError("No phone number associated with this account");
     }
 
-    // Update phoneVerified flag in Firestore
-    const db = getAdminDb();
-    await db.collection(USER_COLLECTION).doc(userId).update({
+    // Update phoneVerified flag via repository
+    await userRepository.update(userId, {
       phoneVerified: true,
       phoneNumber: userRecord.phoneNumber,
-      updatedAt: new Date(),
-    });
+    } as any);
 
     return NextResponse.json({
       success: true,
@@ -69,7 +68,7 @@ export async function POST(req: NextRequest) {
       phoneNumber: userRecord.phoneNumber,
     });
   } catch (error) {
-    console.error("Verify phone error:", error);
+    serverLogger.error("Verify phone error", { error });
     return NextResponse.json(
       {
         success: false,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, UI_LABELS } from "@/constants";
 import { useApiQuery } from "@/hooks";
 import {
   FAQCategorySidebar,
@@ -89,11 +89,11 @@ function FAQPageContent() {
     if (sortOption === "helpful") {
       sorted.sort((a, b) => {
         const aRatio =
-          a.stats?.helpful ||
-          0 / ((a.stats?.helpful || 0) + (a.stats?.notHelpful || 0) + 1);
+          (a.stats?.helpful || 0) /
+          ((a.stats?.helpful || 0) + (a.stats?.notHelpful || 0) + 1);
         const bRatio =
-          b.stats?.helpful ||
-          0 / ((b.stats?.helpful || 0) + (b.stats?.notHelpful || 0) + 1);
+          (b.stats?.helpful || 0) /
+          ((b.stats?.helpful || 0) + (b.stats?.notHelpful || 0) + 1);
         return bRatio - aRatio;
       });
     } else if (sortOption === "newest") {
@@ -126,19 +126,21 @@ function FAQPageContent() {
         <h1
           className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
-          Frequently Asked Questions
+          {UI_LABELS.FAQ.TITLE}
         </h1>
         <p
-          className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} max-w-2xl mx-auto`}
+          className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
         >
-          Find answers to common questions about our platform, products,
-          shipping, and more.
+          {UI_LABELS.FAQ.SUBTITLE}
         </p>
       </div>
 
       {/* Search Bar */}
       <div className="mb-8">
-        <FAQSearchBar onSearch={setSearchQuery} placeholder="Search FAQs..." />
+        <FAQSearchBar
+          onSearch={setSearchQuery}
+          placeholder={UI_LABELS.FAQ.SEARCH_PLACEHOLDER}
+        />
       </div>
 
       {/* Main Content Grid */}
@@ -162,9 +164,11 @@ function FAQPageContent() {
               className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {filteredAndSortedFAQs.length}{" "}
-              {filteredAndSortedFAQs.length === 1 ? "question" : "questions"}
+              {filteredAndSortedFAQs.length === 1
+                ? UI_LABELS.FAQ.QUESTION_SINGULAR
+                : UI_LABELS.FAQ.QUESTION_PLURAL}
               {selectedCategory !== "all" &&
-                ` in ${FAQ_CATEGORIES[selectedCategory].label}`}
+                ` ${UI_LABELS.FAQ.IN_CATEGORY} ${FAQ_CATEGORIES[selectedCategory].label}`}
             </p>
             <FAQSortDropdown
               selectedSort={sortOption}

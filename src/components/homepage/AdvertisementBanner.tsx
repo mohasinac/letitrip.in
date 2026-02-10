@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface BannerData {
   id: string;
@@ -16,18 +18,19 @@ interface BannerData {
 }
 
 export function AdvertisementBanner() {
-  const { data, isLoading } = useApiQuery<{ section: BannerData }>({
+  const router = useRouter();
+  const { data, isLoading } = useApiQuery<BannerData[]>({
     queryKey: ["homepage-sections", "ad-banner"],
     queryFn: () =>
-      fetch(
+      apiClient.get(
         `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?type=advertisement&enabled=true&limit=1`,
-      ).then((r) => r.json()),
+      ),
   });
 
   if (isLoading) {
     return (
       <section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.warm}`}
       >
         <div className="w-full">
           <div
@@ -38,7 +41,7 @@ export function AdvertisementBanner() {
     );
   }
 
-  const banner = data?.section;
+  const banner = data?.[0];
 
   if (!banner) {
     return null;
@@ -46,7 +49,7 @@ export function AdvertisementBanner() {
 
   return (
     <section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.warm}`}
     >
       <div className="w-full">
         <div
@@ -85,7 +88,7 @@ export function AdvertisementBanner() {
               <Button
                 variant="primary"
                 size="lg"
-                onClick={() => (window.location.href = banner.ctaLink!)}
+                onClick={() => router.push(banner.ctaLink!)}
                 className="shadow-2xl hover:shadow-3xl transition-shadow"
               >
                 {banner.ctaText}

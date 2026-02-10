@@ -9,51 +9,29 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
-import {
-  onAuthStateChanged,
-  getCurrentUser,
-} from "@/lib/firebase/auth-helpers";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useVerifyEmail } from "@/hooks";
 
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const [tokenError, setTokenError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { mutate: verifyEmail, isLoading } = useVerifyEmail({
+    onSuccess: () => setIsSuccess(true),
+    onError: (err) =>
+      setError(err.message || UI_LABELS.AUTH.VERIFY_EMAIL.CHECK_FAILED),
+  });
 
   useEffect(() => {
-    // Firebase Auth handles email verification automatically
-    // Just check if user is authenticated and email is verified
-    const checkVerification = async () => {
-      try {
-        const user = getCurrentUser();
-        if (user) {
-          await user.reload(); // Refresh user data
-          if (user.emailVerified) {
-            setIsSuccess(true);
-          } else {
-            setError("Email not yet verified. Please check your email.");
-          }
-        } else {
-          setError("Please sign in to verify your email.");
-        }
-      } catch (err: any) {
-        setError(err.message || "Verification check failed");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (token) {
-      // Token is in URL (from email link)
-      checkVerification();
+      verifyEmail({ token });
     } else {
-      setTokenError("No verification token provided");
-      setIsLoading(false);
+      setError(UI_LABELS.AUTH.VERIFY_EMAIL.NO_TOKEN);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   return (
@@ -83,10 +61,10 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              Verifying Your Email
+              {UI_LABELS.AUTH.VERIFY_EMAIL.VERIFYING_TITLE}
             </Heading>
             <Text className="text-gray-600">
-              Please wait while we verify your email address...
+              {UI_LABELS.AUTH.VERIFY_EMAIL.VERIFYING_MESSAGE}
             </Text>
           </>
         )}
@@ -109,23 +87,22 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              Email Verified!
+              {UI_LABELS.AUTH.VERIFY_EMAIL.SUCCESS}
             </Heading>
             <Text className="text-gray-600 mb-6">
-              Your email has been successfully verified. You can now access all
-              features of your account.
+              {UI_LABELS.AUTH.VERIFY_EMAIL.SUCCESS_MESSAGE}
             </Text>
             <Button
               variant="primary"
               onClick={() => router.push(ROUTES.USER.PROFILE)}
               className="w-full"
             >
-              Go to Profile
+              {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_PROFILE}
             </Button>
           </>
         )}
 
-        {(error || tokenError) && (
+        {error && !isLoading && !isSuccess && (
           <>
             <div className="mb-4 text-red-500">
               <svg
@@ -143,14 +120,13 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              Verification Failed
+              {UI_LABELS.AUTH.VERIFY_EMAIL.FAILED}
             </Heading>
             <Alert variant="error" className="mb-6">
-              {error || tokenError}
+              {error}
             </Alert>
             <Text className="text-gray-600 mb-6">
-              The verification link may have expired or is invalid. Please
-              request a new verification email.
+              {UI_LABELS.AUTH.VERIFY_EMAIL.INVALID_TOKEN_MESSAGE}
             </Text>
             <div className={THEME_CONSTANTS.spacing.stackSmall}>
               <Button
@@ -158,14 +134,14 @@ function VerifyEmailContent() {
                 onClick={() => router.push(ROUTES.USER.PROFILE)}
                 className="w-full"
               >
-                Go to Profile
+                {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_PROFILE}
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => router.push(ROUTES.HOME)}
                 className="w-full"
               >
-                Go to Home
+                {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_HOME}
               </Button>
             </div>
           </>

@@ -1,17 +1,18 @@
 /**
  * Email Service using Resend
- * 
+ *
  * Handles all email sending functionality for the application
  */
 
-import { Resend } from 'resend';
+import { Resend } from "resend";
+import { serverLogger } from "@/lib/server-logger";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@letitrip.in';
-const FROM_NAME = process.env.EMAIL_FROM_NAME || 'Letitrip';
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Letitrip';
-const SITE_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@letitrip.in";
+const FROM_NAME = process.env.EMAIL_FROM_NAME || "Letitrip";
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Letitrip";
+const SITE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 /**
  * Send email verification email
@@ -112,13 +113,13 @@ If you didn't create a ${SITE_NAME} account, you can safely ignore this email.
     });
 
     if (error) {
-      console.error('Failed to send verification email:', error);
+      serverLogger.error("Failed to send verification email", { error });
       throw error;
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Error sending verification email:', error);
+    serverLogger.error("Error sending verification email", { error });
     throw error;
   }
 }
@@ -233,13 +234,13 @@ For security reasons, we recommend choosing a strong password that you haven't u
     });
 
     if (error) {
-      console.error('Failed to send password reset email:', error);
+      serverLogger.error("Failed to send password reset email", { error });
       throw error;
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Error sending password reset email:', error);
+    serverLogger.error("Error sending password reset email", { error });
     throw error;
   }
 }
@@ -284,7 +285,7 @@ export async function sendPasswordChangedEmail(email: string) {
                       
                       <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 30px 0; border-radius: 4px;">
                         <p style="color: #155724; font-size: 14px; line-height: 1.6; margin: 0;">
-                          <strong>✓ Confirmed:</strong> Your password was changed on ${new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}.
+                          <strong>✓ Confirmed:</strong> Your password was changed on ${new Date().toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}.
                         </p>
                       </div>
                       
@@ -344,13 +345,13 @@ ${SITE_URL}/auth/forgot-password
     });
 
     if (error) {
-      console.error('Failed to send password changed email:', error);
+      serverLogger.error("Failed to send password changed email", { error });
       throw error;
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Error sending password changed email:', error);
+    serverLogger.error("Error sending password changed email", { error });
     throw error;
   }
 }

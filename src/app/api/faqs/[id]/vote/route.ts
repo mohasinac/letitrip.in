@@ -13,6 +13,7 @@ import {
   faqVoteSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, NotFoundError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * POST /api/faqs/[id]/vote
@@ -100,7 +101,7 @@ export async function POST(
       );
     }
 
-    console.error("POST /api/faqs/[id]/vote error:", error);
+    serverLogger.error("POST /api/faqs/[id]/vote error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to record vote" },
       { status: 500 },

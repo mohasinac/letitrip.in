@@ -4,10 +4,7 @@
  * Firestore schema definition for homepage carousel slides
  */
 
-import {
-  generateCarouselId,
-  type GenerateCarouselIdInput,
-} from "@/utils/id-generators";
+import { generateCarouselId, type GenerateCarouselIdInput } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

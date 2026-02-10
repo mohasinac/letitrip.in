@@ -8,7 +8,18 @@
 import { UserRole } from "@/types/auth";
 import { ROUTES } from "./routes";
 import { UI_LABELS } from "./ui";
-import { hasRole as checkRoleHierarchy } from "@/helpers/auth";
+import { hasRole as checkRoleHierarchy } from "@/helpers";
+
+/**
+ * Role hierarchy (higher number = more permissions)
+ * Used for role comparison and permission checking
+ */
+export const ROLE_HIERARCHY: Record<UserRole, number> = {
+  user: 0,
+  seller: 1,
+  moderator: 2,
+  admin: 3,
+} as const;
 
 /**
  * Route access configuration
@@ -125,13 +136,6 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   },
   [ROUTES.ADMIN.REVIEWS]: {
     path: ROUTES.ADMIN.REVIEWS,
-    allowedRoles: ["admin", "moderator"],
-    requireEmailVerified: true,
-    requireActiveAccount: true,
-    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
-  },
-  [ROUTES.ADMIN.CONTENT]: {
-    path: ROUTES.ADMIN.CONTENT,
     allowedRoles: ["admin", "moderator"],
     requireEmailVerified: true,
     requireActiveAccount: true,

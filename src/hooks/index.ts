@@ -6,7 +6,7 @@
  *
  * @example
  * ```tsx
- * import { useSwipe, useGesture, useLongPress } from '@/hooks';
+ * import { useSwipe, useGesture } from '@/hooks';
  * ```
  */
 
@@ -16,14 +16,10 @@ export type { UseSwipeOptions, SwipeDirection } from "./useSwipe";
 export { useGesture } from "./useGesture";
 export type { UseGestureOptions, GestureType } from "./useGesture";
 
-export { useLongPress } from "./useLongPress";
-export type { UseLongPressOptions } from "./useLongPress";
-
 export { useApiQuery } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
 export { useProfile } from "./useProfile";
 export { useForm } from "./useForm";
-export { useFormState } from "./useFormState";
 export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
 export {
@@ -43,6 +39,8 @@ export type { UseKeyPressOptions, KeyModifiers } from "./useKeyPress";
 
 export {
   useLogin,
+  useGoogleLogin,
+  useAppleLogin,
   useRegister,
   useVerifyEmail,
   useResendVerification,
@@ -54,6 +52,9 @@ export {
 // Session hooks from SessionContext
 export { useSession, useAuth } from "@/contexts/SessionContext";
 
+export { useAddressForm } from "./useAddressForm";
+
+// Address CRUD hooks (Phase 5)
 export {
   useAddresses,
   useAddress,
@@ -62,13 +63,7 @@ export {
   useDeleteAddress,
   useSetDefaultAddress,
 } from "./useAddresses";
-export type {
-  Address,
-  CreateAddressInput,
-  UpdateAddressInput,
-} from "./useAddresses";
-
-export { useAddressForm } from "./useAddressForm";
+export type { Address, AddressFormData } from "./useAddresses";
 
 export { useStorageUpload } from "./useStorageUpload";
 export type { UploadOptions, UploadState } from "./useStorageUpload";
@@ -78,3 +73,19 @@ export type {
   UseUnsavedChangesOptions,
   UseUnsavedChangesReturn,
 } from "./useUnsavedChanges";
+
+export {
+  useHasRole,
+  useIsAdmin,
+  useIsModerator,
+  useIsSeller,
+  useCanAccess,
+  useRoleChecks,
+  useIsOwner,
+  useRequireAuth,
+  useRequireRole,
+} from "./useRBAC";
+
+// Responsive hooks (Phase 3)
+export { useMediaQuery } from "./useMediaQuery";
+export { useBreakpoint } from "./useBreakpoint";

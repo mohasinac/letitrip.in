@@ -81,10 +81,14 @@ export default function SideDrawer({
 
   const { themed, spacing, borderRadius } = THEME_CONSTANTS;
 
-  const modeHeaderClass =
-    mode === "delete"
-      ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800"
-      : `${themed.border} border-b`;
+  const modeHeaderStyles: Record<DrawerMode, string> = {
+    delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",
+    create: `bg-gradient-to-r from-indigo-50/60 via-transparent to-teal-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-teal-950/10 ${themed.border}`,
+    edit: `bg-gradient-to-r from-amber-50/40 via-transparent to-indigo-50/20 dark:from-amber-950/15 dark:via-transparent dark:to-indigo-950/10 ${themed.border}`,
+    view: `${themed.bgSecondary} ${themed.border}`,
+  };
+
+  const modeHeaderClass = modeHeaderStyles[mode];
 
   return (
     <>
@@ -95,10 +99,10 @@ export default function SideDrawer({
         aria-hidden="true"
       />
 
-      {/* Drawer — full width on mobile, half width on desktop */}
+      {/* Drawer — full width on mobile, wider on desktop */}
       <div
         ref={drawerRef}
-        className={`fixed right-0 top-0 bottom-0 z-50 w-full md:w-1/2 ${themed.bgPrimary} shadow-2xl flex flex-col transition-transform duration-300 ease-in-out`}
+        className={`fixed right-0 top-0 bottom-0 z-50 w-full md:w-3/5 lg:${THEME_CONSTANTS.container["2xl"]} ${themed.bgPrimary} shadow-2xl flex flex-col transition-transform duration-300 ease-in-out`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
@@ -110,7 +114,7 @@ export default function SideDrawer({
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={attemptClose}
-              className={`flex-shrink-0 p-2 ${themed.textSecondary} hover:${themed.textPrimary} ${borderRadius.md} hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
+              className={`flex-shrink-0 p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
               aria-label={UI_LABELS.ACTIONS.CLOSE}
             >
               <svg

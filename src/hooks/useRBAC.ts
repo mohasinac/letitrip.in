@@ -8,8 +8,15 @@
 
 import { useSession } from "@/contexts";
 import { UserRole } from "@/types/auth";
-import { hasRouteAccess, isAdmin, isModerator, isSeller } from "@/constants";
-import { hasRole as checkRoleHierarchy } from "@/helpers/auth";
+import {
+  hasRouteAccess,
+  isAdmin,
+  isModerator,
+  isSeller,
+  ERROR_MESSAGES,
+} from "@/constants";
+import { hasRole as checkRoleHierarchy } from "@/helpers";
+import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { useCallback, useMemo } from "react";
 
 /**
@@ -138,7 +145,7 @@ export function useRequireAuth(): {
   const { user, loading } = useSession();
 
   if (!loading && !user) {
-    throw new Error("Authentication required");
+    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
   }
 
   return {
@@ -161,7 +168,9 @@ export function useRequireRole(role: UserRole | UserRole[]): {
     const userRole = (user.role as UserRole) || "user";
 
     if (!roles.includes(userRole)) {
-      throw new Error("Insufficient permissions");
+      throw new AuthorizationError(
+        ERROR_MESSAGES.AUTH.INSUFFICIENT_PERMISSIONS,
+      );
     }
   }
 

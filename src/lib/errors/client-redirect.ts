@@ -23,6 +23,7 @@
 
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants";
+import { logger } from "@/classes";
 
 /**
  * Redirect to appropriate error page based on status code
@@ -39,12 +40,14 @@ export function redirectOnError(
         window.location.href = ROUTES.ERRORS.UNAUTHORIZED;
         break;
       case 404:
-        window.location.href = ROUTES.ERRORS.NOT_FOUND;
+        // Next.js App Router handles 404s via not-found.tsx automatically
+        // Reload to trigger not-found handling
+        window.location.reload();
         break;
       default:
         // For 500 and other errors, let the error.tsx handle it
         // by reloading the page or showing error UI
-        console.error(`Error ${statusCode} occurred`);
+        logger.error(`Error ${statusCode} occurred`);
     }
     return;
   }
@@ -56,11 +59,13 @@ export function redirectOnError(
       router.push(ROUTES.ERRORS.UNAUTHORIZED);
       break;
     case 404:
-      router.push(ROUTES.ERRORS.NOT_FOUND);
+      // Next.js App Router handles 404s via not-found.tsx automatically
+      // Navigate to home as fallback
+      router.push("/");
       break;
     default:
       // For 500 and other errors, let error.tsx boundary catch it
-      console.error(`Error ${statusCode} occurred`);
+      logger.error(`Error ${statusCode} occurred`);
   }
 }
 

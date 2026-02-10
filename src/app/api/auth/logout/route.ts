@@ -16,6 +16,7 @@ import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { SUCCESS_MESSAGES } from "@/constants";
+import { serverLogger } from "@/lib/server-logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       try {
         await sessionRepository.revokeSession(sessionId, "user");
       } catch (error) {
-        console.error("Session revocation error:", error);
+        serverLogger.error("Session revocation error", { error });
       }
     }
 
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         // Ignore errors during token revocation
-        console.error("Token revocation error:", error);
+        serverLogger.error("Token revocation error", { error });
       }
     }
 

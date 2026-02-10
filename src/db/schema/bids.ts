@@ -4,7 +4,7 @@
  * Firebase Firestore collection for auction bids
  */
 
-import { generateBidId, type GenerateBidIdInput } from "@/utils/id-generators";
+import { generateBidId, type GenerateBidIdInput } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

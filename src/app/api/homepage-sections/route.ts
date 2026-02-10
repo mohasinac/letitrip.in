@@ -26,6 +26,7 @@ import {
   homepageSectionCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/homepage-sections
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("GET /api/homepage-sections error:", error);
+    serverLogger.error("GET /api/homepage-sections error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch homepage sections" },
       { status: 500 },
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("POST /api/homepage-sections error:", error);
+    serverLogger.error("POST /api/homepage-sections error", { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

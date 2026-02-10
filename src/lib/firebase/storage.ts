@@ -20,6 +20,7 @@ import {
 } from "firebase/storage";
 import { storage } from "./config";
 import { DatabaseError } from "@/lib/errors";
+import { logger } from "@/classes";
 
 /**
  * Storage folder structure
@@ -52,7 +53,7 @@ export async function uploadFile(
 
     return { url, ref: uploadResult.ref, uploadResult };
   } catch (error: any) {
-    console.error("Upload error:", error);
+    logger.error("Upload error", { error });
     throw new DatabaseError(error.message || "Failed to upload file", {
       path,
       fileType: file.type,
@@ -126,7 +127,7 @@ export async function getFileUrl(path: string): Promise<string> {
     const storageRef = ref(storage, path);
     return await getDownloadURL(storageRef);
   } catch (error: any) {
-    console.error("Get URL error:", error);
+    logger.error("Get URL error", { error, path });
     throw new DatabaseError(error.message || "Failed to get file URL", {
       path,
     });
@@ -141,7 +142,7 @@ export async function deleteFile(path: string): Promise<void> {
     const storageRef = ref(storage, path);
     await deleteObject(storageRef);
   } catch (error: any) {
-    console.error("Delete error:", error);
+    logger.error("Delete error", { error, path });
     throw new DatabaseError(error.message || "Failed to delete file", { path });
   }
 }
@@ -165,7 +166,7 @@ export async function listFiles(
     const result = await listAll(folderRef);
     return result.items;
   } catch (error: any) {
-    console.error("List files error:", error);
+    logger.error("List files error", { error, folderPath });
     throw new DatabaseError(error.message || "Failed to list files", {
       folderPath,
     });
@@ -180,7 +181,7 @@ export async function getFileMetadata(path: string) {
     const storageRef = ref(storage, path);
     return await getMetadata(storageRef);
   } catch (error: any) {
-    console.error("Get metadata error:", error);
+    logger.error("Get metadata error", { error, path });
     throw new DatabaseError(error.message || "Failed to get file metadata", {
       path,
     });

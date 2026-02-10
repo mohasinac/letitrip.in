@@ -11,14 +11,18 @@ import type {
   ProductCreateInput,
   ProductUpdateInput,
   ProductStatus,
+} from "@/db/schema/products";
+import {
+  createProductId,
+  createAuctionId,
   PRODUCT_COLLECTION,
 } from "@/db/schema/products";
-import { createProductId, createAuctionId } from "@/db/schema/products";
-import { generateUniqueId } from "@/utils/id-generators";
+import { generateUniqueId } from "@/utils";
+import { DatabaseError } from "@/lib/errors";
 
 class ProductRepository extends BaseRepository<ProductDocument> {
   constructor() {
-    super("products" as typeof PRODUCT_COLLECTION);
+    super(PRODUCT_COLLECTION);
   }
 
   /**
@@ -193,6 +197,30 @@ class ProductRepository extends BaseRepository<ProductDocument> {
       id: doc.id,
       ...doc.data(),
     })) as ProductDocument[];
+  }
+
+  /**
+   * Delete all products by seller using batch writes
+   */
+  async deleteBySeller(sellerId: string): Promise<number> {
+    try {
+      const snapshot = await this.getCollection()
+        .where("sellerId", "==", sellerId)
+        .get();
+
+      if (snapshot.empty) return 0;
+
+      const batch = this.db.batch();
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+
+      return snapshot.size;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to delete products for seller: ${sellerId}`,
+        error,
+      );
+    }
   }
 }
 

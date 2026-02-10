@@ -28,6 +28,7 @@ import {
   CachePresets,
   invalidateCache,
 } from "@/lib/api/cache-middleware";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/faqs
@@ -161,7 +162,7 @@ export const GET = withCache(async (request: NextRequest) => {
       },
     );
   } catch (error) {
-    console.error("GET /api/faqs error:", error);
+    serverLogger.error("GET /api/faqs error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch FAQs" },
       { status: 500 },
@@ -233,7 +234,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("POST /api/faqs error:", error);
+    serverLogger.error("POST /api/faqs error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to create FAQ" },
       { status: 500 },

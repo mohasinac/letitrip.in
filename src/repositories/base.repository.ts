@@ -18,6 +18,7 @@ import { DocumentData, Firestore } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { serverLogger } from "@/lib/server-logger";
 
 export abstract class BaseRepository<T extends DocumentData> {
   protected collection: string;
@@ -160,22 +161,21 @@ export abstract class BaseRepository<T extends DocumentData> {
         updatedAt: now,
       });
 
-      console.log(
-        `📝 Creating document with ID: ${id} in collection: ${this.collection}`,
+      serverLogger.debug(
+        `Creating document with ID: ${id} in collection: ${this.collection}`,
       );
 
       await this.getCollection().doc(id).set(cleanData);
 
-      console.log(`✅ Document created successfully: ${id}`);
+      serverLogger.info(`Document created successfully: ${id}`);
 
       const doc = await this.getCollection().doc(id).get();
       return { id: doc.id, ...doc.data() } as unknown as T;
     } catch (error: any) {
-      console.error(`❌ Failed to create document with ID: ${id}`, {
+      serverLogger.error(`Failed to create document with ID: ${id}`, {
         collection: this.collection,
         error: error.message,
         code: error.code,
-        stack: error.stack,
       });
       throw new DatabaseError(
         `Failed to create document with ID: ${id}`,

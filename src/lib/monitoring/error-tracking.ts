@@ -4,7 +4,7 @@
  * Centralizes error logging to Firebase Crashlytics and custom error reporting
  */
 
-import { Logger } from "@/classes/Logger";
+import { Logger } from "@/classes";
 
 const logger = Logger.getInstance({ enableFileLogging: true });
 
@@ -97,13 +97,10 @@ export const trackError = (
 
   // Log to console in development
   if (process.env.NODE_ENV === "development") {
-    console.error(`[${severity.toUpperCase()}] ${category}:`, errorMessage);
-    if (errorStack) {
-      console.error(errorStack);
-    }
-    if (Object.keys(context).length > 0) {
-      console.error("Context:", context);
-    }
+    logger.error(`[${severity.toUpperCase()}] ${category}: ${errorMessage}`, {
+      stack: errorStack,
+      context: Object.keys(context).length > 0 ? context : undefined,
+    });
   }
 
   // Log to file system via Logger

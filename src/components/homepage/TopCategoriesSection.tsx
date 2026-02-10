@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface Category {
   id: string;
@@ -17,19 +19,20 @@ interface Category {
 }
 
 export function TopCategoriesSection() {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading } = useApiQuery<{ categories: Category[] }>({
+  const { data, isLoading } = useApiQuery<Category[]>({
     queryKey: ["categories", "featured"],
     queryFn: () =>
-      fetch(`${API_ENDPOINTS.CATEGORIES.LIST}?featured=true&maxDepth=1`).then(
-        (r) => r.json(),
+      apiClient.get(
+        `${API_ENDPOINTS.CATEGORIES.LIST}?featured=true&maxDepth=1`,
       ),
   });
 
-  const categories = data?.categories?.slice(0, 9) || []; // Max 9 categories to cycle through
+  const categories = data?.slice(0, 9) || []; // Max 9 categories to cycle through
 
   // Auto-scroll every 3 seconds
   useEffect(() => {
@@ -52,11 +55,11 @@ export function TopCategoriesSection() {
   if (isLoading) {
     return (
       <section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.cool}`}
       >
         <div className="w-full">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs animate-pulse" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
@@ -77,7 +80,7 @@ export function TopCategoriesSection() {
 
   return (
     <section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.cool}`}
     >
       <div className="w-full">
         {/* Section Header */}
@@ -85,21 +88,21 @@ export function TopCategoriesSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary}`}
           >
-            Top Categories
+            {UI_LABELS.HOMEPAGE.CATEGORIES.TITLE}
           </h2>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => (window.location.href = "/categories")}
+            onClick={() => router.push(ROUTES.PUBLIC.CATEGORIES)}
           >
-            View All
+            {UI_LABELS.ACTIONS.VIEW_ALL}
           </Button>
         </div>
 
         {/* Categories Grid */}
         <div
           ref={scrollContainerRef}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -107,9 +110,7 @@ export function TopCategoriesSection() {
             <button
               key={category.id}
               className={`relative aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:shadow-xl transition-all`}
-              onClick={() =>
-                (window.location.href = `/categories/${category.slug}`)
-              }
+              onClick={() => router.push(`/categories/${category.slug}`)}
             >
               {/* Background Image */}
               {category.coverImage ? (

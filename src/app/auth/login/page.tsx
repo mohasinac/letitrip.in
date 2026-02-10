@@ -25,16 +25,11 @@ import Link from "next/link";
 import { Input, Button, Alert, Spinner } from "@/components";
 import {
   UI_LABELS,
-  API_ENDPOINTS,
   ERROR_MESSAGES,
   ROUTES,
   THEME_CONSTANTS,
 } from "@/constants";
-import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
-import { apiClient } from "@/lib/api-client";
-import { useAuth } from "@/hooks";
+import { useAuth, useLogin, useGoogleLogin, useAppleLogin } from "@/hooks";
 
 function LoginForm() {
   const router = useRouter();
@@ -48,8 +43,24 @@ function LoginForm() {
     rememberMe: false,
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { mutate: login, isLoading: loginLoading } = useLogin({
+    onSuccess: () => router.push(callbackUrl),
+    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
+  });
+
+  const { mutate: googleLogin, isLoading: googleLoading } = useGoogleLogin({
+    onSuccess: () => router.push(callbackUrl),
+    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
+  });
+
+  const { mutate: appleLogin, isLoading: appleLoading } = useAppleLogin({
+    onSuccess: () => {},
+    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
+  });
+
+  const loading = loginLoading || googleLoading || appleLoading;
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -58,62 +69,27 @@ function LoginForm() {
     }
   }, [user, authLoading, router, callbackUrl]);
 
-  // All hooks MUST be called before any conditional returns
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
       setError(null);
-      setLoading(true);
-
-      try {
-        // 1. Backend API login - sets session cookie
-        await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
-          email: formData.email.trim(),
-          password: formData.password,
-        });
-
-        // 2. Sign in client-side so Firebase SDK knows user is logged in
-        // This triggers onAuthStateChanged in SessionContext
-        await signInWithEmailAndPassword(
-          auth,
-          formData.email.trim(),
-          formData.password,
-        );
-
-        // 3. Redirect to callback URL
-        router.push(callbackUrl);
-      } catch (err: any) {
-        setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED);
-        setLoading(false);
-      }
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
     },
-    [formData.email, formData.password, router, callbackUrl],
+    [formData.email, formData.password, login],
   );
 
   const handleGoogleLogin = useCallback(async () => {
-    setLoading(true);
     setError(null);
-    try {
-      await signInWithGoogle();
-      // OAuth will redirect back and create session automatically
-      router.push(callbackUrl);
-    } catch (err: any) {
-      setError(err.message || "Google login failed");
-      setLoading(false);
-    }
-  }, [router, callbackUrl]);
+    await googleLogin();
+  }, [googleLogin]);
 
   const handleAppleLogin = useCallback(async () => {
-    setLoading(true);
     setError(null);
-    try {
-      await signInWithApple();
-      // Auth state listener will handle redirect
-    } catch (err: any) {
-      setError(err.message || "Apple login failed");
-      setLoading(false);
-    }
-  }, []);
+    await appleLogin();
+  }, [appleLogin]);
 
   // Show loading while checking auth
   if (authLoading) {
@@ -142,7 +118,7 @@ function LoginForm() {
           <h1
             className={`mt-6 text-center text-3xl font-extrabold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
-            Sign in to your account
+            {UI_LABELS.AUTH.LOGIN.TITLE}
           </h1>
           <p
             className={`mt-2 text-center text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -152,7 +128,7 @@ function LoginForm() {
               href={ROUTES.AUTH.REGISTER}
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
             >
-              create a new account
+              {UI_LABELS.AUTH.LOGIN.CREATE_ACCOUNT_LINK}
             </Link>
           </p>
         </div>
@@ -174,28 +150,28 @@ function LoginForm() {
               id="email"
               name="email"
               type="email"
-              label="Email Address"
+              label={UI_LABELS.AUTH.SHARED.EMAIL_ADDRESS}
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
               required
               autoComplete="username"
-              placeholder="your@email.com"
+              placeholder={UI_LABELS.AUTH.SHARED.EMAIL_PLACEHOLDER}
             />
 
             <Input
               id="password"
               name="password"
               type="password"
-              label="Password"
+              label={UI_LABELS.AUTH.SHARED.PASSWORD}
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
               required
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder={UI_LABELS.AUTH.SHARED.PASSWORD_PLACEHOLDER}
             />
           </div>
 
@@ -215,7 +191,7 @@ function LoginForm() {
                 htmlFor="remember-me"
                 className={`ml-2 block text-sm ${THEME_CONSTANTS.themed.textPrimary}`}
               >
-                Remember me
+                {UI_LABELS.AUTH.LOGIN.REMEMBER_ME}
               </label>
             </div>
 
@@ -224,7 +200,7 @@ function LoginForm() {
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
               >
-                Forgot password?
+                {UI_LABELS.AUTH.LOGIN.FORGOT_PASSWORD_LINK}
               </Link>
             </div>
           </div>
@@ -236,7 +212,9 @@ function LoginForm() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading
+              ? UI_LABELS.AUTH.LOGIN.SIGNING_IN
+              : UI_LABELS.AUTH.LOGIN.SIGN_IN}
           </Button>
         </form>
 
@@ -251,7 +229,7 @@ function LoginForm() {
             <span
               className={`px-2 ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textMuted}`}
             >
-              Or continue with
+              {UI_LABELS.AUTH.LOGIN.OR_CONTINUE_WITH}
             </span>
           </div>
         </div>
@@ -282,7 +260,7 @@ function LoginForm() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Google
+            {UI_LABELS.AUTH.LOGIN.GOOGLE}
           </Button>
 
           <Button
@@ -298,7 +276,7 @@ function LoginForm() {
             >
               <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
             </svg>
-            Apple
+            {UI_LABELS.AUTH.LOGIN.APPLE}
           </Button>
         </div>
       </div>

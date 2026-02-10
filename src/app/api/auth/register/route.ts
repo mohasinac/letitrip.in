@@ -25,6 +25,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
+import { serverLogger } from "@/lib/server-logger";
 
 const registerSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -138,10 +139,12 @@ export async function POST(request: NextRequest) {
       .generateEmailVerificationLink(email)
       .then((link) => {
         // TODO: Send email via your email service (Resend, SendGrid, etc.)
-        console.log("Verification link:", link);
+        serverLogger.info("Verification link generated", { link });
       })
       .catch((err) =>
-        console.error("Failed to generate verification link:", err),
+        serverLogger.error("Failed to generate verification link", {
+          error: err,
+        }),
       );
 
     // Return success with session

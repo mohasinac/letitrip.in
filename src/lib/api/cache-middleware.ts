@@ -18,7 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CacheManager } from "@/classes/CacheManager";
+import { CacheManager } from "@/classes";
 
 export interface CacheConfig {
   /**

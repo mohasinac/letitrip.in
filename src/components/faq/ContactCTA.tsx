@@ -38,7 +38,7 @@ export function ContactCTA() {
 
       {/* Description */}
       <p
-        className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 max-w-2xl mx-auto`}
+        className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
       >
         Can't find the answer you're looking for? Our support team is here to
         help you. Get in touch and we'll get back to you as soon as possible.

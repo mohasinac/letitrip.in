@@ -144,7 +144,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: "/user/orders",
+        href: ROUTES.USER.ORDERS,
         label: UI_LABELS.NAV.ORDERS,
         icon: (
           <path
@@ -156,7 +156,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: "/user/wishlist",
+        href: ROUTES.USER.WISHLIST,
         label: UI_LABELS.NAV.WISHLIST,
         icon: (
           <path
@@ -168,7 +168,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: "/user/addresses",
+        href: ROUTES.USER.ADDRESSES,
         label: UI_LABELS.NAV.ADDRESSES,
         icon: (
           <path
@@ -217,7 +217,7 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        href: "/help",
+        href: ROUTES.PUBLIC.HELP,
         label: UI_LABELS.NAV.HELP_CENTER,
         icon: (
           <path
@@ -231,3 +231,34 @@ export const SIDEBAR_NAV_GROUPS: NavGroup[] = [
     ],
   },
 ];
+
+/**
+ * Admin Section Tabs
+ *
+ * Navigation tabs for admin section pages.
+ * Used by: AdminTabs component via SectionTabs
+ */
+export const ADMIN_TAB_ITEMS = [
+  { label: UI_LABELS.NAV.DASHBOARD, href: ROUTES.ADMIN.DASHBOARD },
+  { label: UI_LABELS.NAV.USERS, href: ROUTES.ADMIN.USERS },
+  { label: UI_LABELS.NAV.SITE_SETTINGS, href: ROUTES.ADMIN.SITE },
+  { label: UI_LABELS.NAV.CAROUSEL, href: ROUTES.ADMIN.CAROUSEL },
+  { label: UI_LABELS.NAV.SECTIONS, href: ROUTES.ADMIN.SECTIONS },
+  { label: UI_LABELS.NAV.CATEGORIES, href: ROUTES.ADMIN.CATEGORIES },
+  { label: UI_LABELS.NAV.FAQS, href: ROUTES.ADMIN.FAQS },
+  { label: UI_LABELS.NAV.REVIEWS, href: ROUTES.ADMIN.REVIEWS },
+] as const;
+
+/**
+ * User Section Tabs
+ *
+ * Navigation tabs for user section pages.
+ * Used by: UserTabs component via SectionTabs
+ */
+export const USER_TAB_ITEMS = [
+  { label: UI_LABELS.USER.PROFILE.TITLE, href: ROUTES.USER.PROFILE },
+  { label: UI_LABELS.USER.ORDERS.TITLE, href: ROUTES.USER.ORDERS },
+  { label: UI_LABELS.USER.WISHLIST.TITLE, href: ROUTES.USER.WISHLIST },
+  { label: UI_LABELS.USER.ADDRESSES.TITLE, href: ROUTES.USER.ADDRESSES },
+  { label: UI_LABELS.USER.SETTINGS.TITLE, href: ROUTES.USER.SETTINGS },
+] as const;

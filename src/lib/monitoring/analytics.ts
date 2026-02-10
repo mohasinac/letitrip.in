@@ -12,6 +12,7 @@ import {
   Analytics,
 } from "firebase/analytics";
 import { app } from "@/lib/firebase/config";
+import { logger } from "@/classes";
 
 // Initialize Google Analytics
 let analytics: Analytics | null = null;
@@ -39,7 +40,7 @@ export const trackEvent = (
   try {
     logEvent(analytics, eventName, eventParams);
   } catch (error) {
-    console.error(`Failed to log event ${eventName}:`, error);
+    logger.error(`Failed to log event ${eventName}`, { error });
   }
 };
 
@@ -55,7 +56,7 @@ export const setAnalyticsUserId = (userId: string | null): void => {
   try {
     setUserId(analytics, userId);
   } catch (error) {
-    console.error("Failed to set user ID:", error);
+    logger.error("Failed to set user ID", { error });
   }
 };
 
@@ -77,7 +78,7 @@ export const setAnalyticsUserProperties = (
   try {
     setUserProperties(analytics, properties);
   } catch (error) {
-    console.error("Failed to set user properties:", error);
+    logger.error("Failed to set user properties", { error });
   }
 };
 

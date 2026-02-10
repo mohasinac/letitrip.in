@@ -14,6 +14,7 @@ import {
   reviewVoteSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, NotFoundError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * POST /api/reviews/[id]/vote
@@ -79,9 +80,9 @@ export async function POST(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(
+    serverLogger.error(
       `POST /api/reviews/${id}/vote ${ERROR_MESSAGES.API.REVIEWS_VOTE_POST_ERROR}`,
-      error,
+      { error },
     );
 
     if (error instanceof AuthenticationError) {

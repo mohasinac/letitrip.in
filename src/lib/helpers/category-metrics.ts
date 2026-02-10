@@ -8,6 +8,8 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import { CATEGORIES_COLLECTION } from "@/db/schema/categories";
 import type { CategoryDocument } from "@/db/schema/categories";
 import { FieldValue } from "firebase-admin/firestore";
+import { NotFoundError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 const db = getAdminDb();
 
@@ -32,7 +34,7 @@ export async function batchUpdateAncestorMetrics(
       .doc(categoryId)
       .get();
     if (!categoryDoc.exists) {
-      throw new Error(`Category ${categoryId} not found`);
+      throw new NotFoundError(`Category ${categoryId} not found`);
     }
 
     const category = categoryDoc.data() as CategoryDocument;
@@ -60,7 +62,7 @@ export async function batchUpdateAncestorMetrics(
 
     await batch.commit();
   } catch (error) {
-    console.error("Failed to batch update ancestor metrics:", error);
+    serverLogger.error("Failed to batch update ancestor metrics", { error });
     throw error;
   }
 }
@@ -85,7 +87,7 @@ export async function recalculateCategoryMetrics(categoryId: string): Promise<{
       .doc(categoryId)
       .get();
     if (!categoryDoc.exists) {
-      throw new Error(`Category ${categoryId} not found`);
+      throw new NotFoundError(`Category ${categoryId} not found`);
     }
 
     const category = categoryDoc.data() as CategoryDocument;
@@ -131,7 +133,7 @@ export async function recalculateCategoryMetrics(categoryId: string): Promise<{
       totalAuctionCount,
     };
   } catch (error) {
-    console.error("Failed to recalculate category metrics:", error);
+    serverLogger.error("Failed to recalculate category metrics", { error });
     throw error;
   }
 }
@@ -166,7 +168,7 @@ export async function recalculateTreeMetrics(rootId: string): Promise<number> {
 
     return updatedCount;
   } catch (error) {
-    console.error("Failed to recalculate tree metrics:", error);
+    serverLogger.error("Failed to recalculate tree metrics", { error });
     throw error;
   }
 }
@@ -189,7 +191,7 @@ export async function validateFeaturedStatus(
       .doc(categoryId)
       .get();
     if (!categoryDoc.exists) {
-      throw new Error(`Category ${categoryId} not found`);
+      throw new NotFoundError(`Category ${categoryId} not found`);
     }
 
     const category = categoryDoc.data() as CategoryDocument;
@@ -208,7 +210,7 @@ export async function validateFeaturedStatus(
 
     return false; // No change
   } catch (error) {
-    console.error("Failed to validate featured status:", error);
+    serverLogger.error("Failed to validate featured status", { error });
     throw error;
   }
 }
@@ -252,7 +254,7 @@ export async function bulkValidateFeaturedStatus(
 
     return unfeaturedIds;
   } catch (error) {
-    console.error("Failed to bulk validate featured status:", error);
+    serverLogger.error("Failed to bulk validate featured status", { error });
     throw error;
   }
 }
@@ -300,7 +302,7 @@ export async function addProductToCategory(
       isAuction ? 1 : 0,
     );
   } catch (error) {
-    console.error("Failed to add product to category:", error);
+    serverLogger.error("Failed to add product to category", { error });
     throw error;
   }
 }
@@ -351,7 +353,7 @@ export async function removeProductFromCategory(
     // Validate featured status after removal
     await validateFeaturedStatus(categoryId);
   } catch (error) {
-    console.error("Failed to remove product from category:", error);
+    serverLogger.error("Failed to remove product from category", { error });
     throw error;
   }
 }

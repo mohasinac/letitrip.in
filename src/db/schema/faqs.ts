@@ -4,7 +4,7 @@
  * Firestore schema definition for FAQ management with dynamic variable interpolation
  */
 
-import { generateFAQId, type GenerateFAQIdInput } from "@/utils/id-generators";
+import { generateFAQId, type GenerateFAQIdInput } from "@/utils";
 
 // ============================================
 // FAQ TYPE ENUMS & INTERFACES

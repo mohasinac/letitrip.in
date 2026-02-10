@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, SITE_CONFIG, UI_LABELS } from "@/constants";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
@@ -34,7 +34,7 @@ interface BottomNavLink {
 const bottomNavLinks: BottomNavLink[] = [
   {
     href: SITE_CONFIG.nav.home,
-    label: "Home",
+    label: UI_LABELS.NAV.HOME,
     icon: (
       <path
         strokeLinecap="round"
@@ -46,7 +46,7 @@ const bottomNavLinks: BottomNavLink[] = [
   },
   {
     href: SITE_CONFIG.nav.products,
-    label: "Products",
+    label: UI_LABELS.NAV.PRODUCTS,
     icon: (
       <path
         strokeLinecap="round"
@@ -58,7 +58,7 @@ const bottomNavLinks: BottomNavLink[] = [
   },
   {
     href: SITE_CONFIG.nav.auctions,
-    label: "Auctions",
+    label: UI_LABELS.NAV.AUCTIONS,
     icon: (
       <path
         strokeLinecap="round"
@@ -78,7 +78,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   return (
     <nav
       id="bottom-navbar"
-      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-opacity-95 dark:bg-opacity-95 shadow-2xl`}
+      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl`}
     >
       <ul
         className={`flex justify-around items-center ${layout.bottomNavHeight} px-2`}
@@ -116,7 +116,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <span className={typography.xs}>Search</span>
+            <span className={typography.xs}>{UI_LABELS.NAV.SEARCH}</span>
           </button>
         </li>
 
@@ -150,11 +150,8 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                 />
                 <span
                   className={`text-[7px] font-semibold uppercase leading-none ${
-                    user.role === "admin"
-                      ? "text-red-500"
-                      : user.role === "moderator" || user.role === "seller"
-                        ? "text-yellow-500"
-                        : "text-green-500"
+                    THEME_CONSTANTS.badge.roleText[user.role] ||
+                    THEME_CONSTANTS.badge.roleText.user
                   }`}
                 >
                   {user.role || "user"}
@@ -164,7 +161,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           ) : (
             <NavItem
               href={SITE_CONFIG.account.profile}
-              label="Profile"
+              label={UI_LABELS.NAV.PROFILE}
               icon={
                 <path
                   strokeLinecap="round"

@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { THEME_CONSTANTS, SITE_CONFIG, UI_LABELS, ROUTES } from "@/constants";
 import { ReactNode } from "react";
 
 /**
@@ -37,28 +37,28 @@ const footerSections: FooterSection[] = [
     },
   },
   {
-    title: "Quick Links",
+    title: UI_LABELS.FOOTER.QUICK_LINKS,
     content: {
       type: "links" as const,
       links: [
-        { href: SITE_CONFIG.nav.about, label: "About Us" },
-        { href: SITE_CONFIG.nav.contact, label: "Contact" },
-        { href: SITE_CONFIG.nav.blog, label: "Blog" },
+        { href: SITE_CONFIG.nav.about, label: UI_LABELS.FOOTER.ABOUT_US },
+        { href: SITE_CONFIG.nav.contact, label: UI_LABELS.FOOTER.CONTACT },
+        { href: SITE_CONFIG.nav.blog, label: UI_LABELS.FOOTER.BLOG },
       ],
     },
   },
   {
-    title: "Support",
+    title: UI_LABELS.FOOTER.SUPPORT,
     content: {
       type: "links" as const,
       links: [
-        { href: "/terms", label: "Terms of Service" },
-        { href: "/privacy", label: "Privacy Policy" },
+        { href: ROUTES.PUBLIC.TERMS, label: UI_LABELS.FOOTER.TERMS_OF_SERVICE },
+        { href: ROUTES.PUBLIC.PRIVACY, label: UI_LABELS.FOOTER.PRIVACY_POLICY },
       ],
     },
   },
   {
-    title: "Connect",
+    title: UI_LABELS.FOOTER.CONNECT,
     content: {
       type: "social" as const,
       socials: [
@@ -147,8 +147,10 @@ export default function Footer() {
         <div
           className={`border-t ${colors.footer.border} mt-8 pt-6 text-center text-sm ${colors.footer.copyright}`}
         >
-          © {new Date().getFullYear()} {SITE_CONFIG.brand.name}. All rights
-          reserved.
+          {UI_LABELS.FOOTER.COPYRIGHT.replace(
+            "{year}",
+            new Date().getFullYear().toString(),
+          ).replace("{brand}", SITE_CONFIG.brand.name)}
         </div>
       </div>
     </footer>

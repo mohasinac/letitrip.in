@@ -341,6 +341,8 @@ export function generateBidId(input: GenerateBidIdInput): string {
  *
  * This is a placeholder - actual barcode generation should use
  * a proper library like jsbarcode or barcode-generator
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function generateBarcodeFromId(id: string): string {
   // Convert string to numeric representation
@@ -373,6 +375,8 @@ export function generateBarcodeFromId(id: string): string {
  *
  * This is a placeholder - actual QR generation should use
  * a proper library like qrcode or react-qr-code
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function generateQRCodeData(
   id: string,

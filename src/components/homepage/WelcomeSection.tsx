@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface WelcomeSectionData {
   h1: string;
@@ -14,12 +16,13 @@ interface WelcomeSectionData {
 }
 
 export function WelcomeSection() {
-  const { data, isLoading } = useApiQuery<{ section: WelcomeSectionData }>({
+  const router = useRouter();
+  const { data, isLoading } = useApiQuery<WelcomeSectionData[]>({
     queryKey: ["homepage-section", "welcome"],
     queryFn: () =>
-      fetch(
+      apiClient.get(
         `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?type=welcome&enabled=true`,
-      ).then((r) => r.json()),
+      ),
   });
 
   if (isLoading) {
@@ -30,7 +33,9 @@ export function WelcomeSection() {
         <div className="w-full text-center">
           <div className="animate-pulse">
             <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 max-w-3xl mx-auto" />
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-2xl mx-auto" />
+            <div
+              className={`h-6 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
+            />
             <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg max-w-4xl mx-auto" />
           </div>
         </div>
@@ -38,11 +43,11 @@ export function WelcomeSection() {
     );
   }
 
-  if (!data?.section) {
+  if (!data?.[0]) {
     return null;
   }
 
-  const section = data.section;
+  const section = data[0];
 
   return (
     <section
@@ -79,7 +84,7 @@ export function WelcomeSection() {
             <Button
               variant="primary"
               size="lg"
-              onClick={() => (window.location.href = section.ctaLink!)}
+              onClick={() => router.push(section.ctaLink!)}
             >
               {section.ctaText}
             </Button>

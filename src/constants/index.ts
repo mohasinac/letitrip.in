@@ -42,7 +42,20 @@ export { SITE_CONFIG } from "./site";
 export { SEO_CONFIG, generateMetadata, generateProfileMetadata } from "./seo";
 
 // Navigation constants
-export { MAIN_NAV_ITEMS, SIDEBAR_NAV_GROUPS } from "./navigation";
+export {
+  MAIN_NAV_ITEMS,
+  SIDEBAR_NAV_GROUPS,
+  ADMIN_TAB_ITEMS,
+  USER_TAB_ITEMS,
+} from "./navigation";
 export type { NavGroup } from "./navigation";
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
+
+// Homepage data constants (trust indicators, features, blog articles)
+export {
+  TRUST_INDICATORS,
+  SITE_FEATURES,
+  MOCK_BLOG_ARTICLES,
+} from "./homepage-data";
+export type { TrustIndicator, SiteFeature, BlogArticle } from "./homepage-data";

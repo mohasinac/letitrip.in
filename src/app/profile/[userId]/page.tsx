@@ -3,8 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, Badge, Alert, Text, AvatarDisplay } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import {
+  THEME_CONSTANTS,
+  UI_LABELS,
+  ERROR_MESSAGES,
+  API_ENDPOINTS,
+} from "@/constants";
 import { formatDate } from "@/utils";
+import { logger } from "@/classes";
 import type { UserDocument } from "@/db/schema/users";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
@@ -22,15 +28,15 @@ export default function PublicProfilePage() {
     const fetchPublicProfile = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/profile/${userId}`);
+        const response = await fetch(API_ENDPOINTS.PROFILE.GET_BY_ID(userId));
 
         if (!response.ok) {
           if (response.status === 404) {
-            setError("User not found");
+            setError(ERROR_MESSAGES.USER.NOT_FOUND);
           } else if (response.status === 403) {
-            setError("This profile is private");
+            setError(ERROR_MESSAGES.GENERIC.PROFILE_PRIVATE);
           } else {
-            setError("Failed to load profile");
+            setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
           }
           return;
         }
@@ -38,8 +44,8 @@ export default function PublicProfilePage() {
         const data = await response.json();
         setUser(data.user);
       } catch (err) {
-        setError("Failed to load profile");
-        console.error("Error fetching profile:", err);
+        setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
+        logger.error("Error fetching profile:", err);
       } finally {
         setLoading(false);
       }
@@ -125,7 +131,10 @@ export default function PublicProfilePage() {
 
             {/* Bio */}
             {user.publicProfile?.bio && (
-              <Text variant="secondary" className="mt-4 max-w-2xl mx-auto">
+              <Text
+                variant="secondary"
+                className={`mt-4 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
+              >
                 {user.publicProfile.bio}
               </Text>
             )}

@@ -10,6 +10,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES } from "@/constants";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { isValidPhone } from "@/utils";
+import { serverLogger } from "@/lib/server-logger";
 
 interface AddPhoneRequest {
   phoneNumber: string;
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
       verificationId: null, // Client-side Firebase Auth will generate this
     });
   } catch (error) {
-    console.error("Add phone error:", error);
+    serverLogger.error("Add phone error", { error });
     return NextResponse.json(
       {
         success: false,

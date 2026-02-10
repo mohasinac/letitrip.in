@@ -103,6 +103,8 @@ export function isNumeric(value: string): boolean {
  * console.log(isAlphabetic('Hello')); // true
  * console.log(isAlphabetic('Hello123')); // false
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function isAlphabetic(value: string): boolean {
   return /^[a-zA-Z]+$/.test(value);
@@ -119,6 +121,8 @@ export function isAlphabetic(value: string): boolean {
  * console.log(isAlphanumeric('Hello123')); // true
  * console.log(isAlphanumeric('Hello-123')); // false
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function isAlphanumeric(value: string): boolean {
   return /^[a-zA-Z0-9]+$/.test(value);
@@ -187,6 +191,8 @@ export function isInList<T>(value: T, list: T[]): boolean {
  * console.log(isValidCreditCard('4532015112830366')); // true (valid Visa)
  * console.log(isValidCreditCard('1234567890123456')); // false
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function isValidCreditCard(cardNumber: string): boolean {
   const cleaned = cardNumber.replace(/\D/g, "");
@@ -228,6 +234,8 @@ export function isValidCreditCard(cardNumber: string): boolean {
  * console.log(isValidPostalCode('M5H 2N2', 'CA')); // true
  * console.log(isValidPostalCode('110001', 'IN')); // true
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function isValidPostalCode(
   code: string,

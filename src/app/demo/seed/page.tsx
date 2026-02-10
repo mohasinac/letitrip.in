@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Card, Alert } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 type CollectionName =
   | "users"
@@ -109,16 +109,22 @@ export default function DemoSeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+    <div
+      className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} py-8 px-4`}
+    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1
+                className={`text-3xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+              >
                 🌱 Seed Data Manager
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p
+                className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}
+              >
                 Development Only - Manage seed data with ID-based operations
               </p>
             </div>
@@ -136,7 +142,9 @@ export default function DemoSeedPage() {
 
         {/* Collection Selection */}
         <Card className="p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2
+            className={`text-xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+          >
             Select Collections
           </h2>
 
@@ -195,7 +203,9 @@ export default function DemoSeedPage() {
 
         {/* Action Buttons */}
         <Card className="p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2
+            className={`text-xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+          >
             Actions
           </h2>
 
@@ -277,7 +287,9 @@ export default function DemoSeedPage() {
         {/* Response Display */}
         {response && (
           <Card className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2
+              className={`text-xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+            >
               Result
             </h2>
 
@@ -290,8 +302,12 @@ export default function DemoSeedPage() {
             </Alert>
 
             {response.details && (
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <div
+                className={`${THEME_CONSTANTS.themed.bgSecondary} rounded-lg p-4 space-y-2`}
+              >
+                <h3
+                  className={`font-semibold ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+                >
                   Details:
                 </h3>
                 {response.details.created !== undefined && (

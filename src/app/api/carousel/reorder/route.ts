@@ -13,6 +13,7 @@ import {
   carouselReorderSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * POST /api/carousel/reorder
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       message: "Carousel slides reordered successfully",
     });
   } catch (error) {
-    console.error("POST /api/carousel/reorder error:", error);
+    serverLogger.error("POST /api/carousel/reorder error", { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

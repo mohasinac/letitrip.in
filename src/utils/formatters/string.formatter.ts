@@ -50,6 +50,8 @@ export function capitalizeWords(str: string): string {
  * const result = toCamelCase('Hello World');
  * console.log(result); // 'helloWorld'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toCamelCase(str: string): string {
   return str
@@ -70,6 +72,8 @@ export function toCamelCase(str: string): string {
  * const result = toPascalCase('hello world');
  * console.log(result); // 'HelloWorld'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toPascalCase(str: string): string {
   return str
@@ -88,6 +92,8 @@ export function toPascalCase(str: string): string {
  * const result = toSnakeCase('helloWorld');
  * console.log(result); // 'hello_world'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toSnakeCase(str: string): string {
   return str
@@ -108,6 +114,8 @@ export function toSnakeCase(str: string): string {
  * const result = toKebabCase('helloWorld');
  * console.log(result); // 'hello-world'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toKebabCase(str: string): string {
   return str
@@ -307,6 +315,8 @@ export function isEmptyString(str: string | null | undefined): boolean {
  * const count = wordCount('Hello world from TypeScript');
  * console.log(count); // 4
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function wordCount(str: string): number {
   return str.trim().split(/\s+/).length;
@@ -323,6 +333,8 @@ export function wordCount(str: string): number {
  * const result = reverse('hello');
  * console.log(result); // 'olleh'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function reverse(str: string): string {
   return str.split("").reverse().join("");

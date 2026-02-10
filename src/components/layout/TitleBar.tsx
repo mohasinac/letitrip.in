@@ -44,7 +44,7 @@ export default function TitleBar({
   return (
     <header
       id="title-bar"
-      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-opacity-90 dark:bg-opacity-90`}
+      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-white/90 dark:bg-gray-900/90`}
     >
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-3 md:py-4 flex items-center justify-between`}
@@ -141,11 +141,8 @@ export default function TitleBar({
                 />
                 <span
                   className={`text-[8px] font-semibold uppercase ${
-                    user.role === "admin"
-                      ? "text-red-500"
-                      : user.role === "moderator" || user.role === "seller"
-                        ? "text-yellow-500"
-                        : "text-green-500"
+                    THEME_CONSTANTS.badge.roleText[user.role] ||
+                    THEME_CONSTANTS.badge.roleText.user
                   }`}
                 >
                   {user.role || "user"}

@@ -54,6 +54,8 @@ export function mergeTailwindClasses(
  * const classes = responsive('text-base', { md: 'text-lg', lg: 'text-xl' });
  * console.log(classes); // 'text-base md:text-lg lg:text-xl'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function responsive(
   baseClass: string,
@@ -87,6 +89,8 @@ export function responsive(
  * });
  * console.log(buttonClasses); // 'btn bg-blue-500'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function variant<T extends string>(
   baseClass: string,
@@ -110,6 +114,8 @@ export function variant<T extends string>(
  * const statusClass = toggleClass(isActive, 'text-green-500', 'text-gray-500');
  * console.log(statusClass); // 'text-green-500' if isActive is true
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toggleClass(
   condition: boolean,
@@ -137,6 +143,8 @@ export function toggleClass(
  * });
  * console.log(paddingClass); // 'p-6'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function sizeClass(
   size: "xs" | "sm" | "md" | "lg" | "xl",

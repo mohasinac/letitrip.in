@@ -17,6 +17,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/homepage-sections/[id]
@@ -45,7 +46,7 @@ export async function GET(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`GET /api/homepage-sections/${id} error:`, error);
+    serverLogger.error(`GET /api/homepage-sections/${id} error`, { error });
 
     if (error instanceof NotFoundError) {
       return NextResponse.json(
@@ -112,7 +113,7 @@ export async function PATCH(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`PATCH /api/homepage-sections/${id} error:`, error);
+    serverLogger.error(`PATCH /api/homepage-sections/${id} error`, { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -175,7 +176,7 @@ export async function DELETE(
     });
   } catch (error) {
     const { id } = await params;
-    console.error(`DELETE /api/homepage-sections/${id} error:`, error);
+    serverLogger.error(`DELETE /api/homepage-sections/${id} error`, { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

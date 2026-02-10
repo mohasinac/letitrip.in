@@ -28,6 +28,8 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
+import { getCookie, hasCookie, deleteCookie } from "@/utils";
+import { logger } from "@/classes";
 
 // ============================================================================
 // Types
@@ -123,7 +125,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [loading, setLoading] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const activityUpdateRef = useRef<NodeJS.Timeout | null>(null);
-  const firestoreUnsubscribeRef = useRef<(() => void) | null>(null);
   const updateSessionActivityRef = useRef<(() => Promise<void>) | undefined>(
     undefined,
   );
@@ -131,30 +132,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   // Get session ID from cookie
   const getSessionIdFromCookie = useCallback((): string | null => {
-    if (typeof document === "undefined") return null;
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split("=");
-      if (name === "__session_id") {
-        return decodeURIComponent(value);
-      }
-    }
-    return null;
+    return getCookie("__session_id");
   }, []);
 
   // Check if session cookie exists
   // NOTE: __session is httpOnly and can't be read by JS.
   // We check __session_id instead (httpOnly: false) as a proxy.
   const hasSessionCookie = useCallback((): boolean => {
-    if (typeof document === "undefined") return false;
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      const [name] = cookie.trim().split("=");
-      if (name.trim() === "__session_id") {
-        return true;
-      }
-    }
-    return false;
+    return hasCookie("__session_id");
   }, []);
 
   // Fetch user profile from API (not direct Firestore access)
@@ -198,7 +183,9 @@ export function SessionProvider({ children }: SessionProviderProps) {
             : null,
         };
       } catch (error) {
-        console.error(ERROR_MESSAGES.SESSION.FETCH_USER_PROFILE_ERROR, error);
+        logger.error(ERROR_MESSAGES.SESSION.FETCH_USER_PROFILE_ERROR, {
+          error,
+        });
         return {
           uid: authUser.uid,
           email: authUser.email,
@@ -214,21 +201,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
     [getSessionIdFromCookie],
   );
 
-  // Subscribe to user profile updates
-  // NOTE: Real-time Firestore subscriptions are disabled due to API-only architecture
-  // Profile updates requiremanual refetching or can be implemented via polling
-  const subscribeToUserProfile = useCallback((uid: string) => {
-    // Clean up previous subscription if any
-    if (firestoreUnsubscribeRef.current) {
-      firestoreUnsubscribeRef.current();
-      firestoreUnsubscribeRef.current = null;
-    }
-
-    // Real-time subscriptions disabled to maintain API-only architecture
-    // Alternative: Implement polling if real-time updates are critical
-    // For now, profile changes require page refresh or manual refetch
-  }, []);
-
   // Update session activity
   const updateSessionActivity = useCallback(async () => {
     const currentSessionId = getSessionIdFromCookie();
@@ -242,7 +214,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
       });
     } catch (error) {
       // Silent fail - activity update is not critical
-      console.debug("Session activity update failed:", error);
+      logger.debug("Session activity update failed", { error });
     }
   }, [user, getSessionIdFromCookie]);
 
@@ -279,7 +251,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSessionId(data.sessionId);
       }
     } catch (error) {
-      console.error(ERROR_MESSAGES.SESSION.VALIDATION_FAILED, error);
+      logger.error(ERROR_MESSAGES.SESSION.VALIDATION_FAILED, { error });
     }
   }, []);
 
@@ -296,18 +268,12 @@ export function SessionProvider({ children }: SessionProviderProps) {
           credentials: "include",
         });
       } catch (error) {
-        console.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, error);
+        logger.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, { error });
       }
 
       // Clear state immediately
       setUser(null);
       setSessionId(null);
-
-      // Clean up Firestore subscription
-      if (firestoreUnsubscribeRef.current) {
-        firestoreUnsubscribeRef.current();
-        firestoreUnsubscribeRef.current = null;
-      }
 
       // Clear activity timer
       if (activityUpdateRef.current) {
@@ -316,14 +282,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
       }
 
       // Force clear cookies client-side as backup
-      if (typeof document !== "undefined") {
-        document.cookie =
-          "__session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie =
-          "__session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      }
+      deleteCookie("__session");
+      deleteCookie("__session_id");
     } catch (error) {
-      console.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
+      logger.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, { error });
       // Still clear state even if API call fails
       setUser(null);
       setSessionId(null);
@@ -366,7 +328,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
               setSessionId(data.sessionId);
             }
           } catch (error) {
-            console.error(ERROR_MESSAGES.SESSION.CREATION_ERROR, error);
+            logger.error(ERROR_MESSAGES.SESSION.CREATION_ERROR, { error });
           }
         }
 
@@ -383,9 +345,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
           setSessionId(currentSessionId);
         }
 
-        // Subscribe to real-time updates
-        subscribeToUserProfile(authUser.uid);
-
         // Set up activity tracking (every 5 minutes)
         if (activityUpdateRef.current) {
           clearInterval(activityUpdateRef.current);
@@ -399,25 +358,16 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setUser(null);
         setSessionId(null);
 
-        // Clean up subscriptions
-        if (firestoreUnsubscribeRef.current) {
-          firestoreUnsubscribeRef.current();
-          firestoreUnsubscribeRef.current = null;
-        }
+        // Clean up timers
         if (activityUpdateRef.current) {
           clearInterval(activityUpdateRef.current);
           activityUpdateRef.current = null;
         }
 
         // Clear cookies if they still exist
-        if (typeof document !== "undefined") {
-          const hasSession = hasSessionCookie();
-          if (hasSession) {
-            document.cookie =
-              "__session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie =
-              "__session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          }
+        if (hasSessionCookie()) {
+          deleteCookie("__session");
+          deleteCookie("__session_id");
         }
       }
 
@@ -427,19 +377,11 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return () => {
       authVersion++; // Invalidate any in-flight async work
       unsubscribe();
-      if (firestoreUnsubscribeRef.current) {
-        firestoreUnsubscribeRef.current();
-      }
       if (activityUpdateRef.current) {
         clearInterval(activityUpdateRef.current);
       }
     };
-  }, [
-    fetchUserProfile,
-    getSessionIdFromCookie,
-    hasSessionCookie,
-    subscribeToUserProfile,
-  ]);
+  }, [fetchUserProfile, getSessionIdFromCookie, hasSessionCookie]);
 
   const value = useMemo<SessionContextValue>(
     () => ({

@@ -5,10 +5,7 @@
  */
 
 import { UserRole } from "@/types/auth";
-import {
-  generateUserId,
-  type GenerateUserIdInput,
-} from "@/utils/id-generators";
+import { generateUserId, type GenerateUserIdInput } from "@/utils";
 
 export interface AvatarMetadata {
   url: string;

@@ -5,7 +5,8 @@
  * Fetch and manage admin dashboard statistics
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useApiQuery } from "./useApiQuery";
+import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 
 interface AdminStats {
@@ -26,32 +27,15 @@ interface AdminStats {
 }
 
 export function useAdminStats() {
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error, refetch } = useApiQuery<AdminStats>({
+    queryKey: ["admin-stats"],
+    queryFn: () => apiClient.get<AdminStats>(API_ENDPOINTS.ADMIN.DASHBOARD),
+  });
 
-  const fetchStats = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await apiClient.get<{
-        success: boolean;
-        data: AdminStats;
-      }>("/api/admin/dashboard");
-      if (response.success) {
-        setStats(response.data);
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load statistics",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
-  return { stats, isLoading, error, refresh: fetchStats };
+  return {
+    stats: data || null,
+    isLoading,
+    error: error?.message || null,
+    refresh: refetch,
+  };
 }

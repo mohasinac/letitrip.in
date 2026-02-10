@@ -1,81 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import { THEME_CONSTANTS } from "@/constants";
+import { useRouter } from "next/navigation";
+import {
+  THEME_CONSTANTS,
+  ROUTES,
+  UI_LABELS,
+  MOCK_BLOG_ARTICLES,
+} from "@/constants";
 import { formatDate } from "@/utils";
 
-interface BlogArticle {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  thumbnail: string;
-  author: string;
-  publishedAt: string;
-  readTime: number;
-  category: string;
-}
-
-// Mock data - replace with actual API call when blog feature is implemented
-const mockArticles: BlogArticle[] = [
-  {
-    id: "1",
-    title: "10 Tips for Finding Rare Collectibles",
-    slug: "tips-finding-rare-collectibles",
-    excerpt:
-      "Discover expert strategies to spot and acquire hard-to-find items at great prices.",
-    thumbnail: "/images/blog/collectibles.jpg",
-    author: "Sarah Johnson",
-    publishedAt: "2026-02-05",
-    readTime: 5,
-    category: "Collecting",
-  },
-  {
-    id: "2",
-    title: "How to Authenticate Original Products",
-    slug: "authenticate-original-products",
-    excerpt:
-      "Learn the key signs to verify authenticity before making a purchase.",
-    thumbnail: "/images/blog/authentication.jpg",
-    author: "Mike Chen",
-    publishedAt: "2026-02-03",
-    readTime: 7,
-    category: "Guides",
-  },
-  {
-    id: "3",
-    title: "Auction Strategies That Actually Work",
-    slug: "auction-strategies-that-work",
-    excerpt:
-      "Master the art of winning auctions without overspending on your budget.",
-    thumbnail: "/images/blog/auctions.jpg",
-    author: "Emily Rodriguez",
-    publishedAt: "2026-02-01",
-    readTime: 6,
-    category: "Auctions",
-  },
-  {
-    id: "4",
-    title: "Seller Spotlight: Success Stories",
-    slug: "seller-success-stories",
-    excerpt:
-      "Meet sellers who turned their passion into thriving businesses on our platform.",
-    thumbnail: "/images/blog/sellers.jpg",
-    author: "David Park",
-    publishedAt: "2026-01-28",
-    readTime: 4,
-    category: "Community",
-  },
-];
-
 export function BlogArticlesSection() {
+  const router = useRouter();
   // TODO: Replace with actual API call when blog feature is implemented
   // const { data, isLoading } = useApiQuery<{ articles: BlogArticle[] }>({
   //   queryKey: ['blog', 'latest'],
   //   queryFn: () => fetch(`/api/blog?limit=4`).then(r => r.json()),
   // });
 
-  const articles = mockArticles;
+  const articles = MOCK_BLOG_ARTICLES;
 
   if (articles.length === 0) {
     return null;
@@ -83,7 +26,7 @@ export function BlogArticlesSection() {
 
   return (
     <section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.subtle}`}
     >
       <div className="w-full">
         {/* Section Header */}
@@ -92,19 +35,19 @@ export function BlogArticlesSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              From Our Blog
+              {UI_LABELS.HOMEPAGE.BLOG.TITLE}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              Tips, guides, and stories from our community
+              {UI_LABELS.HOMEPAGE.BLOG.SUBTITLE}
             </p>
           </div>
           <button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline hidden md:block`}
-            onClick={() => (window.location.href = "/blog")}
+            onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
-            View All Articles →
+            {UI_LABELS.ACTIONS.VIEW_ALL} →
           </button>
         </div>
 
@@ -114,7 +57,7 @@ export function BlogArticlesSection() {
             <button
               key={article.id}
               className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden hover:shadow-xl transition-all text-left`}
-              onClick={() => (window.location.href = `/blog/${article.slug}`)}
+              onClick={() => router.push(`/blog/${article.slug}`)}
             >
               {/* Thumbnail */}
               <div className="relative aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700">
@@ -192,9 +135,9 @@ export function BlogArticlesSection() {
         <div className="text-center mt-8 md:hidden">
           <button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
-            onClick={() => (window.location.href = "/blog")}
+            onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
-            View All Articles →
+            {UI_LABELS.ACTIONS.VIEW_ALL} →
           </button>
         </div>
       </div>

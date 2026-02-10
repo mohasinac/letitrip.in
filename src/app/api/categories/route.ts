@@ -22,6 +22,7 @@ import {
   categoryCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 import { CategoryCreateInput } from "@/db/schema/categories";
 
 /**
@@ -116,7 +117,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("GET /api/categories error:", error);
+    serverLogger.error("GET /api/categories error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch categories" },
       { status: 500 },
@@ -223,7 +224,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("POST /api/categories error:", error);
+    serverLogger.error("POST /api/categories error", { error });
     return NextResponse.json(
       { success: false, error: "Failed to create category" },
       { status: 500 },

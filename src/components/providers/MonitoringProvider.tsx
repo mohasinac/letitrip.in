@@ -13,6 +13,8 @@ import {
 } from "@/lib/monitoring";
 import { initializeClientLogger } from "@/helpers";
 
+import { logger } from "@/classes";
+
 export function MonitoringProvider({
   children,
 }: {
@@ -29,7 +31,7 @@ export function MonitoringProvider({
 
     // Log initialization
     if (process.env.NODE_ENV === "development") {
-      console.log("✅ Monitoring and logging systems initialized");
+      logger.info("Monitoring and logging systems initialized");
     }
   }, []);
 

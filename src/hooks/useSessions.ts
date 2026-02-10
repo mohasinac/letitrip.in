@@ -55,6 +55,7 @@ export function useAdminSessions(limit = 100) {
 
 /**
  * Fetch sessions for specific user (admin only)
+ * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
  */
 export function useUserSessions(userId: string | null) {
   return useApiQuery<SessionsResponse>({
@@ -76,20 +77,9 @@ export function useRevokeSession() {
     { sessionId: string }
   >({
     mutationFn: async ({ sessionId }) => {
-      const response = await fetch(
+      return apiClient.delete<{ success: boolean; message: string }>(
         API_ENDPOINTS.ADMIN.REVOKE_SESSION(sessionId),
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
       );
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to revoke session");
-      }
-
-      return response.json();
     },
   });
 }
@@ -103,25 +93,18 @@ export function useRevokeUserSessions() {
     { userId: string }
   >({
     mutationFn: async ({ userId }) => {
-      const response = await fetch(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ userId }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to revoke user sessions");
-      }
-
-      return response.json();
+      return apiClient.post<{
+        success: boolean;
+        message: string;
+        revokedCount: number;
+      }>(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, { userId });
     },
   });
 }
 
 /**
  * Get my sessions (user)
+ * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
  */
 export function useMySessions() {
   return useApiQuery<UserSessionsResponse>({
@@ -133,6 +116,7 @@ export function useMySessions() {
 
 /**
  * Revoke my session (user)
+ * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
  */
 export function useRevokeMySession() {
   return useApiMutation<
@@ -140,20 +124,9 @@ export function useRevokeMySession() {
     { sessionId: string }
   >({
     mutationFn: async ({ sessionId }) => {
-      const response = await fetch(
+      return apiClient.delete<{ success: boolean; message: string }>(
         API_ENDPOINTS.USER.REVOKE_SESSION(sessionId),
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
       );
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to revoke session");
-      }
-
-      return response.json();
     },
   });
 }

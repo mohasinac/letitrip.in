@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 interface FAQ {
   id: string;
@@ -13,14 +15,13 @@ interface FAQ {
 }
 
 export function FAQSection() {
+  const router = useRouter();
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const { data, isLoading } = useApiQuery<{ faqs: FAQ[] }>({
+  const { data, isLoading } = useApiQuery<FAQ[]>({
     queryKey: ["faqs", "homepage"],
     queryFn: () =>
-      fetch(`${API_ENDPOINTS.FAQS.LIST}?featured=true&limit=6`).then((r) =>
-        r.json(),
-      ),
+      apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?featured=true&limit=6`),
   });
 
   if (isLoading) {
@@ -43,7 +44,7 @@ export function FAQSection() {
     );
   }
 
-  const faqs = data?.faqs || [];
+  const faqs = data || [];
 
   if (faqs.length === 0) {
     return null;
@@ -63,12 +64,12 @@ export function FAQSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            Frequently Asked Questions
+            {UI_LABELS.FAQS.TITLE}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            Quick answers to common questions
+            {UI_LABELS.FAQS.SUBTITLE}
           </p>
         </div>
 
@@ -123,9 +124,9 @@ export function FAQSection() {
         <div className="text-center mt-8">
           <button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
-            onClick={() => (window.location.href = "/faqs")}
+            onClick={() => router.push(ROUTES.PUBLIC.FAQS)}
           >
-            View All FAQs →
+            {UI_LABELS.ACTIONS.VIEW_ALL} →
           </button>
         </div>
       </div>

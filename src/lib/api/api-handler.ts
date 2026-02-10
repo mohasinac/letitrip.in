@@ -123,38 +123,5 @@ export function createApiHandler<TInput = any>(
   };
 }
 
-/**
- * Standard success response
- */
-export function successResponse<T = any>(
-  data: T,
-  message?: string,
-  status: number = 200,
-): NextResponse {
-  return NextResponse.json(
-    {
-      success: true,
-      message,
-      data,
-    },
-    { status },
-  );
-}
-
-/**
- * Standard error response
- */
-export function errorResponse(
-  error: string,
-  status: number = 400,
-  code?: string,
-): NextResponse {
-  return NextResponse.json(
-    {
-      success: false,
-      error,
-      code,
-    },
-    { status },
-  );
-}
+// successResponse and errorResponse have been removed.
+// Import from @/lib/api-response instead for standardized API responses.

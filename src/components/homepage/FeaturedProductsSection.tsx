@@ -1,9 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { formatCurrency } from "@/utils";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface Product {
   id: string;
@@ -18,12 +21,13 @@ interface Product {
 }
 
 export function FeaturedProductsSection() {
-  const { data, isLoading } = useApiQuery<{ products: Product[] }>({
+  const router = useRouter();
+  const { data, isLoading } = useApiQuery<Product[]>({
     queryKey: ["products", "featured"],
     queryFn: () =>
-      fetch(
+      apiClient.get(
         `${API_ENDPOINTS.PRODUCTS.LIST}?isPromoted=true&status=published&limit=18`,
-      ).then((r) => r.json()),
+      ),
   });
 
   if (isLoading) {
@@ -55,19 +59,11 @@ export function FeaturedProductsSection() {
     );
   }
 
-  const products = data?.products || [];
+  const products = data || [];
 
   if (products.length === 0) {
     return null;
   }
-
-  const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
 
   return (
     <section
@@ -80,32 +76,30 @@ export function FeaturedProductsSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              Featured Products
+              {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.TITLE}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              Handpicked items just for you
+              {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.SUBTITLE}
             </p>
           </div>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => (window.location.href = "/products")}
+            onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
           >
-            View All
+            {UI_LABELS.ACTIONS.VIEW_ALL}
           </Button>
         </div>
 
         {/* Products Grid - 2 rows of 9 products each on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4">
           {products.slice(0, 18).map((product) => (
             <button
               key={product.id}
               className={`group ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-              onClick={() =>
-                (window.location.href = `/products/${product.slug}`)
-              }
+              onClick={() => router.push(`/products/${product.slug}`)}
             >
               {/* Product Image */}
               <div className="relative aspect-square overflow-hidden">
@@ -142,7 +136,7 @@ export function FeaturedProductsSection() {
                 <p
                   className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
                 >
-                  {formatPrice(product.price, product.currency)}
+                  {formatCurrency(product.price, product.currency)}
                 </p>
               </div>
             </button>

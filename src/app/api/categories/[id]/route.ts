@@ -27,6 +27,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/categories/[id]
@@ -72,7 +73,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    console.error(`GET /api/categories/${id} error:`, error);
+    serverLogger.error(`GET /api/categories/${id} error`, { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch category" },
       { status: 500 },
@@ -164,7 +165,7 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    console.error(`PATCH /api/categories/${id} error:`, error);
+    serverLogger.error(`PATCH /api/categories/${id} error`, { error });
     return NextResponse.json(
       { success: false, error: "Failed to update category" },
       { status: 500 },
@@ -273,7 +274,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.error(`DELETE /api/categories/${id} error:`, error);
+    serverLogger.error(`DELETE /api/categories/${id} error`, { error });
     return NextResponse.json(
       { success: false, error: "Failed to delete category" },
       { status: 500 },

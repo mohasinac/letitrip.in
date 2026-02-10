@@ -146,14 +146,14 @@ export default function BackgroundSettings({
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
                 placeholder="#000000"
-                className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 ${THEME_CONSTANTS.themed.textPrimary}`}
               />
             </div>
           </div>
         )}
 
         {config.type === "gradient" && (
-          <div className="space-y-4">
+          <div className={THEME_CONSTANTS.spacing.stack}>
             <div>
               <label
                 className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
@@ -287,7 +287,7 @@ export default function BackgroundSettings({
                     type="text"
                     value={config.overlay.color}
                     onChange={(e) => updateOverlay({ color: e.target.value })}
-                    className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm`}
+                    className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 ${THEME_CONSTANTS.themed.textPrimary} text-sm`}
                   />
                 </div>
               </div>

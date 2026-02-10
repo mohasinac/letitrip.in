@@ -6,6 +6,9 @@
 
 export type StorageType = "local" | "session";
 
+import { Logger } from "./Logger";
+const sLogger = Logger.getInstance();
+
 export interface StorageOptions {
   type?: StorageType;
   prefix?: string;
@@ -58,7 +61,7 @@ export class StorageManager {
       storage.setItem(storageKey, serialized);
       return true;
     } catch (error) {
-      console.error("Storage set error:", error);
+      sLogger.error("Storage set error", { error });
       return false;
     }
   }
@@ -78,7 +81,7 @@ export class StorageManager {
 
       return JSON.parse(item) as T;
     } catch (error) {
-      console.error("Storage get error:", error);
+      sLogger.error("Storage get error", { error });
       return null;
     }
   }
@@ -95,7 +98,7 @@ export class StorageManager {
       storage.removeItem(storageKey);
       return true;
     } catch (error) {
-      console.error("Storage remove error:", error);
+      sLogger.error("Storage remove error", { error });
       return false;
     }
   }
@@ -116,7 +119,7 @@ export class StorageManager {
       });
       return true;
     } catch (error) {
-      console.error("Storage clear error:", error);
+      sLogger.error("Storage clear error", { error });
       return false;
     }
   }
@@ -198,7 +201,7 @@ export class StorageManager {
             items[cleanKey] = JSON.parse(value) as T;
           }
         } catch (error) {
-          console.error(`Error parsing storage item ${key}:`, error);
+          sLogger.error(`Error parsing storage item ${key}`, { error });
         }
       }
     }

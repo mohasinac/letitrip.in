@@ -12,9 +12,11 @@ import {
   useRevokeSession,
   useRevokeUserSessions,
 } from "@/hooks";
-import { Card, Button, Alert, Badge } from "@/components";
+import { Card, Button, Alert, Badge, ConfirmDeleteModal } from "@/components";
+import { useToast } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatRelativeTime, formatDate } from "@/utils";
+import { useState } from "react";
 
 // Helper to format relative time
 function formatTimeAgo(date: Date | string): string {
@@ -37,42 +39,55 @@ export function AdminSessionsManager() {
   const { data, isLoading, error, refetch } = useAdminSessions(200);
   const revokeSession = useRevokeSession();
   const revokeUserSessions = useRevokeUserSessions();
+  const { showToast } = useToast();
+
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
   const handleRevokeSession = async (sessionId: string) => {
-    if (
-      !confirm(
+    setConfirmModal({
+      open: true,
+      title: UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE || "Revoke Session",
+      message:
+        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE ||
         "Are you sure you want to revoke this session? The user will be logged out.",
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await revokeSession.mutate({ sessionId });
-      refetch();
-    } catch (error) {
-      console.error(ERROR_MESSAGES.ADMIN.REVOKE_SESSION_FAILED, error);
-    }
+      onConfirm: async () => {
+        try {
+          await revokeSession.mutate({ sessionId });
+          refetch();
+        } catch (error) {
+          showToast(ERROR_MESSAGES.ADMIN.REVOKE_SESSION_FAILED, "error");
+        }
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+      },
+    });
   };
 
   const handleRevokeAllUserSessions = async (
     userId: string,
     userEmail: string,
   ) => {
-    if (
-      !confirm(
+    setConfirmModal({
+      open: true,
+      title:
+        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE_ALL || "Revoke All Sessions",
+      message:
+        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE_ALL ||
         `Are you sure you want to revoke ALL sessions for ${userEmail}? They will be logged out from all devices.`,
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await revokeUserSessions.mutate({ userId });
-      refetch();
-    } catch (error) {
-      console.error(ERROR_MESSAGES.ADMIN.REVOKE_USER_SESSIONS_FAILED, error);
-    }
+      onConfirm: async () => {
+        try {
+          await revokeUserSessions.mutate({ userId });
+          refetch();
+        } catch (error) {
+          showToast(ERROR_MESSAGES.ADMIN.REVOKE_USER_SESSIONS_FAILED, "error");
+        }
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+      },
+    });
   };
 
   if (isLoading) {
@@ -312,6 +327,14 @@ export function AdminSessionsManager() {
           )}
         </div>
       </Card>
+
+      <ConfirmDeleteModal
+        isOpen={confirmModal.open}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+      />
     </div>
   );
 }

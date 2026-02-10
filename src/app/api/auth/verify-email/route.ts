@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
       message: SUCCESS_MESSAGES.EMAIL.VERIFIED,
     });
   } catch (error) {
-    console.error("Verify email error:", error);
+    serverLogger.error("Verify email error", { error });
     return NextResponse.json(
       {
         success: false,

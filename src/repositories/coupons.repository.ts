@@ -19,6 +19,7 @@ import {
   calculateDiscount,
   createCouponId,
 } from "@/db/schema/coupons";
+import { USER_COLLECTION } from "@/db/schema/users";
 import { DatabaseError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";
@@ -34,9 +35,9 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
   /**
    * Create new coupon with SEO-friendly ID based on code
    */
-  async create(input: Partial<CouponDocument>): Promise<CouponDocument> {
+  async create(input: CouponCreateInput): Promise<CouponDocument> {
     // Generate coupon ID from code
-    const code = (input as any).code || "COUPON";
+    const code = input.code || "COUPON";
     const id = createCouponId(code);
 
     const couponData = {
@@ -49,14 +50,14 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       code: code.toUpperCase(), // Normalize to uppercase
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as any;
+    };
 
     await this.db
       .collection(this.collection)
       .doc(id)
       .set(prepareForFirestore(couponData));
 
-    return { id, ...couponData };
+    return { id, ...couponData } as CouponDocument;
   }
 
   /**
@@ -308,7 +309,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       } as any;
 
       const usageRef = this.db
-        .collection("users")
+        .collection(USER_COLLECTION)
         .doc(userId)
         .collection(COUPON_USAGE_SUBCOLLECTION)
         .doc(couponId);
@@ -336,7 +337,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
   ): Promise<number> {
     try {
       const doc = await this.db
-        .collection("users")
+        .collection(USER_COLLECTION)
         .doc(userId)
         .collection(COUPON_USAGE_SUBCOLLECTION)
         .doc(couponId)
@@ -357,7 +358,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
   async getUserCouponHistory(userId: string): Promise<CouponUsageDocument[]> {
     try {
       const snapshot = await this.db
-        .collection("users")
+        .collection(USER_COLLECTION)
         .doc(userId)
         .collection(COUPON_USAGE_SUBCOLLECTION)
         .orderBy("usedAt", "desc")

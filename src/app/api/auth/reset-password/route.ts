@@ -10,6 +10,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { isRequired, minLength } from "@/utils";
+import { serverLogger } from "@/lib/server-logger";
 
 interface ResetPasswordRequest {
   token: string;
@@ -47,7 +48,7 @@ export async function PUT(req: NextRequest) {
       message: SUCCESS_MESSAGES.USER.PASSWORD_CHANGED,
     });
   } catch (error) {
-    console.error("Reset password error:", error);
+    serverLogger.error("Reset password error", { error });
     return NextResponse.json(
       {
         success: false,

@@ -4,10 +4,7 @@
  * Firebase Firestore collection for product orders (renamed from bookings)
  */
 
-import {
-  generateOrderId,
-  type GenerateOrderIdInput,
-} from "@/utils/id-generators";
+import { generateOrderId, type GenerateOrderIdInput } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

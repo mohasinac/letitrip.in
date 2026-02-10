@@ -24,6 +24,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError, AuthenticationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
+import { serverLogger } from "@/lib/server-logger";
 
 const loginSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     const apiKey =
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
-      console.error("FIREBASE_API_KEY not configured");
+      serverLogger.error("FIREBASE_API_KEY not configured");
       throw new Error("Server configuration error");
     }
     const verifyPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     if (!verifyResponse.ok) {
       const errorData = await verifyResponse.json();
-      console.error("Password verification failed:", errorData);
+      serverLogger.error("Password verification failed", { error: errorData });
       throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
@@ -118,9 +119,11 @@ export async function POST(request: NextRequest) {
           request.headers.get("user-agent") || "Unknown",
         ),
       });
-      console.log("✅ Session created successfully:", session.id);
+      serverLogger.info("Session created successfully", {
+        sessionId: session.id,
+      });
     } catch (sessionError: any) {
-      console.error("❌ Session creation failed:", {
+      serverLogger.error("Session creation failed", {
         error: sessionError.message,
         code: sessionError.code,
         details: sessionError.details || sessionError,

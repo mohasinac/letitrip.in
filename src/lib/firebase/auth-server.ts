@@ -8,6 +8,8 @@
 import { getAdminAuth } from "./admin";
 import { cookies } from "next/headers";
 import type { DecodedIdToken } from "firebase-admin/auth";
+import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
 
 /**
  * Verify Firebase ID token from request
@@ -71,7 +73,7 @@ export async function requireAuth(): Promise<DecodedIdToken> {
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
   }
 
   return user;
@@ -89,7 +91,7 @@ export async function requireRole(
   const userRole = user.role || "user";
 
   if (!roles.includes(userRole)) {
-    throw new Error("Forbidden: Insufficient permissions");
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.INSUFFICIENT_PERMISSIONS);
   }
 
   return user;

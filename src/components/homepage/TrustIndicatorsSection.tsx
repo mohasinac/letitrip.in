@@ -1,35 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants";
-
-interface TrustIndicator {
-  icon: string;
-  title: string;
-  description: string;
-}
-
-const indicators: TrustIndicator[] = [
-  {
-    icon: "📦",
-    title: "Wide Range",
-    description: "10,000+ Products Across Categories",
-  },
-  {
-    icon: "🚚",
-    title: "Fast Shipping",
-    description: "Delivery in 2-5 Business Days",
-  },
-  {
-    icon: "✓",
-    title: "Original Products",
-    description: "100% Authentic & Verified",
-  },
-  {
-    icon: "👥",
-    title: "50,000+ Customers",
-    description: "Trusted by Thousands Nationwide",
-  },
-];
+import { THEME_CONSTANTS, TRUST_INDICATORS } from "@/constants";
 
 export function TrustIndicatorsSection() {
   return (
@@ -37,8 +8,8 @@ export function TrustIndicatorsSection() {
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-          {indicators.map((indicator, index) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
+          {TRUST_INDICATORS.map((indicator, index) => (
             <div
               key={index}
               className={`text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} shadow-sm hover:shadow-md transition-shadow`}

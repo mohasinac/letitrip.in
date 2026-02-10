@@ -7,6 +7,7 @@ import {
   API_ENDPOINTS,
   ERROR_MESSAGES,
 } from "@/constants";
+import { logger } from "@/classes";
 import { apiClient } from "@/lib/api-client";
 
 interface FAQHelpfulButtonsProps {
@@ -46,7 +47,7 @@ export function FAQHelpfulButtons({
         setUserVote("not-helpful");
       }
     } catch (error) {
-      console.error(ERROR_MESSAGES.FAQ.VOTE_FAILED, error);
+      logger.error(ERROR_MESSAGES.FAQ.VOTE_FAILED, error);
     } finally {
       setIsSubmitting(false);
     }

@@ -5,11 +5,8 @@
  * Uses Firebase Admin SDK to update password server-side
  */
 
-import {
-  createApiHandler,
-  successResponse,
-  errorResponse,
-} from "@/lib/api/api-handler";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { updatePasswordSchema } from "@/lib/api/validation-schemas";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@/lib/firebase/admin";

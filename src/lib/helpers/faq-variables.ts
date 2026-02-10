@@ -4,7 +4,8 @@
  * Utilities for interpolating variables in FAQ answers from siteSettings
  */
 
-import { siteSettingsRepository } from "@/repositories/site-settings.repository";
+import { siteSettingsRepository } from "@/repositories";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * Extract variable placeholders from text
@@ -94,7 +95,7 @@ export async function getAvailableVariables(): Promise<
   try {
     return await siteSettingsRepository.getFAQVariables();
   } catch (error) {
-    console.error("Failed to get FAQ variables:", error);
+    serverLogger.error("Failed to get FAQ variables", { error });
     return {};
   }
 }
@@ -128,7 +129,7 @@ export async function interpolateFAQAnswer(
     // Interpolate
     return interpolateVariables(text, allVariables);
   } catch (error) {
-    console.error("Failed to interpolate FAQ answer:", error);
+    serverLogger.error("Failed to interpolate FAQ answer", { error });
     return text; // Return original text on error
   }
 }
@@ -157,7 +158,7 @@ export async function batchInterpolateFAQAnswers(
     // Interpolate all answers
     return answers.map((text) => interpolateVariables(text, allVariables));
   } catch (error) {
-    console.error("Failed to batch interpolate FAQ answers:", error);
+    serverLogger.error("Failed to batch interpolate FAQ answers", { error });
     return answers; // Return original texts on error
   }
 }

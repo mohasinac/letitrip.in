@@ -4,8 +4,9 @@
  * Tracks cache hit/miss rates and provides analytics dashboard
  */
 
-import { CacheManager } from "@/classes/CacheManager";
+import { CacheManager } from "@/classes";
 import { trackEvent } from "./analytics";
+import { logger } from "@/classes";
 
 /**
  * Cache metrics storage
@@ -201,14 +202,14 @@ export const monitorCachePerformance = (): void => {
   const hitRate = getCacheHitRate();
 
   if (hitRate < 50 && hitRate > 0) {
-    console.warn(`⚠️ Cache hit rate is critically low: ${hitRate.toFixed(2)}%`);
+    logger.warn(`Cache hit rate is critically low: ${hitRate.toFixed(2)}%`);
 
     trackEvent("cache_performance_alert", {
       hit_rate: hitRate,
       severity: "high",
     });
   } else if (hitRate < 70 && hitRate > 0) {
-    console.warn(`⚠️ Cache hit rate is below optimal: ${hitRate.toFixed(2)}%`);
+    logger.warn(`Cache hit rate is below optimal: ${hitRate.toFixed(2)}%`);
 
     trackEvent("cache_performance_alert", {
       hit_rate: hitRate,

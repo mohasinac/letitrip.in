@@ -224,8 +224,7 @@ export async function POST(request: NextRequest) {
 
                 // Special handling for FAQs - generate ID if missing
                 if (!id && collectionName === "faqs") {
-                  const { generateFAQId } =
-                    await import("@/utils/id-generators");
+                  const { generateFAQId } = await import("@/utils");
                   id = generateFAQId({
                     category: (docData as any).category,
                     question: (docData as any).question,
@@ -363,8 +362,7 @@ export async function POST(request: NextRequest) {
 
                 // Special handling for FAQs - generate ID if missing
                 if (!id && collectionName === "faqs") {
-                  const { generateFAQId } =
-                    await import("@/utils/id-generators");
+                  const { generateFAQId } = await import("@/utils");
                   id = generateFAQId({
                     category: (docData as any).category,
                     question: (docData as any).question,

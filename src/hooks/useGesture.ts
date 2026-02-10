@@ -5,12 +5,7 @@ import { useRef, useEffect, RefObject } from "react";
 /**
  * Gesture types supported
  */
-export type GestureType =
-  | "tap"
-  | "doubletap"
-  | "longpress"
-  | "pinch"
-  | "rotate";
+export type GestureType = "tap" | "doubletap" | "pinch" | "rotate";
 
 /**
  * Configuration options for useGesture hook
@@ -20,8 +15,6 @@ export interface UseGestureOptions {
   onTap?: (x: number, y: number) => void;
   /** Callback for double tap gesture */
   onDoubleTap?: (x: number, y: number) => void;
-  /** Callback for long press gesture */
-  onLongPress?: (x: number, y: number) => void;
   /** Callback for pinch gesture (zoom in/out) */
   onPinch?: (scale: number, distance: number) => void;
   /** Callback during pinching */
@@ -32,8 +25,6 @@ export interface UseGestureOptions {
   onRotating?: (angle: number) => void;
   /** Maximum time between taps for double tap (ms, default: 300) */
   doubleTapDelay?: number;
-  /** Minimum time for long press (ms, default: 500) */
-  longPressDelay?: number;
   /** Maximum movement allowed for tap (px, default: 10) */
   tapMovementThreshold?: number;
   /** Prevent default behavior */
@@ -43,7 +34,7 @@ export interface UseGestureOptions {
 /**
  * useGesture Hook
  *
- * Detects various touch gestures including tap, double tap, long press, pinch, and rotate.
+ * Detects various touch gestures including tap, double tap, pinch, and rotate.
  * Primarily designed for touch devices but also works with mouse for basic gestures.
  *
  * @param ref - Reference to the element to attach gesture handlers
@@ -69,13 +60,11 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
   const {
     onTap,
     onDoubleTap,
-    onLongPress,
     onPinch,
     onPinching,
     onRotate,
     onRotating,
     doubleTapDelay = 300,
-    longPressDelay = 500,
     tapMovementThreshold = 10,
     preventDefault = false,
   } = options;
@@ -84,14 +73,12 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
     null,
   );
   const lastTapRef = useRef<number>(0);
-  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const initialPinchDistanceRef = useRef<number>(0);
   const initialRotationRef = useRef<number>(0);
 
   // Store callbacks in refs to avoid event listener churn
   const onTapRef = useRef(onTap);
   const onDoubleTapRef = useRef(onDoubleTap);
-  const onLongPressRef = useRef(onLongPress);
   const onPinchRef = useRef(onPinch);
   const onPinchingRef = useRef(onPinching);
   const onRotateRef = useRef(onRotate);
@@ -103,9 +90,6 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
   useEffect(() => {
     onDoubleTapRef.current = onDoubleTap;
   }, [onDoubleTap]);
-  useEffect(() => {
-    onLongPressRef.current = onLongPress;
-  }, [onLongPress]);
   useEffect(() => {
     onPinchRef.current = onPinch;
   }, [onPinch]);
@@ -148,26 +132,8 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
         time: Date.now(),
       };
 
-      // Start long press timer
-      if (onLongPressRef.current) {
-        longPressTimerRef.current = setTimeout(() => {
-          if (touchStartRef.current) {
-            onLongPressRef.current?.(
-              touchStartRef.current.x,
-              touchStartRef.current.y,
-            );
-            touchStartRef.current = null; // Prevent tap after long press
-          }
-        }, longPressDelay);
-      }
-
       // Handle multi-touch gestures
       if (e.touches.length === 2) {
-        if (longPressTimerRef.current) {
-          clearTimeout(longPressTimerRef.current);
-          longPressTimerRef.current = null;
-        }
-
         initialPinchDistanceRef.current = getDistance(
           e.touches[0],
           e.touches[1],
@@ -179,18 +145,6 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
     // Touch Move
     const handleTouchMove = (e: TouchEvent) => {
       if (!touchStartRef.current) return;
-
-      // Cancel long press if moved too much
-      if (longPressTimerRef.current) {
-        const touch = e.touches[0];
-        const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
-        const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-
-        if (deltaX > tapMovementThreshold || deltaY > tapMovementThreshold) {
-          clearTimeout(longPressTimerRef.current);
-          longPressTimerRef.current = null;
-        }
-      }
 
       // Handle pinch and rotate
       if (
@@ -219,11 +173,6 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
 
     // Touch End
     const handleTouchEnd = (e: TouchEvent) => {
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-
       if (!touchStartRef.current) return;
       if (preventDefault) e.preventDefault();
 
@@ -286,26 +235,9 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
         y: e.clientY,
         time: Date.now(),
       };
-
-      if (onLongPressRef.current) {
-        longPressTimerRef.current = setTimeout(() => {
-          if (touchStartRef.current) {
-            onLongPressRef.current?.(
-              touchStartRef.current.x,
-              touchStartRef.current.y,
-            );
-            touchStartRef.current = null;
-          }
-        }, longPressDelay);
-      }
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-
       if (!touchStartRef.current) return;
       if (preventDefault) e.preventDefault();
 
@@ -346,21 +278,11 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
 
     // Cleanup
     return () => {
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-      }
-
       element.removeEventListener("touchstart", handleTouchStart);
       element.removeEventListener("touchmove", handleTouchMove);
       element.removeEventListener("touchend", handleTouchEnd);
       element.removeEventListener("mousedown", handleMouseDown);
       element.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    ref,
-    doubleTapDelay,
-    longPressDelay,
-    tapMovementThreshold,
-    preventDefault,
-  ]);
+  }, [ref, doubleTapDelay, tapMovementThreshold, preventDefault]);
 }

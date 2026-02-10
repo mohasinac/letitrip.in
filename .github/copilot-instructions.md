@@ -28,7 +28,11 @@ import { groupBy } from '@/helpers';
 | Need | Import from |
 |------|------------|
 | UI components (Button, Card, Input, Alert, Modal...) | `@/components` |
+| Admin components (AdminPageHeader, AdminFilterBar, DrawerFormFooter...) | `@/components` |
+| User components (AddressForm, AddressCard, ProfileHeader...) | `@/components` |
 | Constants (UI_LABELS, THEME_CONSTANTS, ROUTES...) | `@/constants` |
+| Navigation tab configs (ADMIN_TAB_ITEMS, USER_TAB_ITEMS) | `@/constants` |
+| Role hierarchy (ROLE_HIERARCHY) | `@/constants` |
 | Hooks (useAuth, useApiQuery, useProfile...) | `@/hooks` |
 | Validators, formatters, converters, events | `@/utils` |
 | Auth/data/UI helpers | `@/helpers` |
@@ -129,6 +133,13 @@ import { UI_LABELS, UI_PLACEHOLDERS } from '@/constants';
 | `"text-gray-900 dark:text-white"` | `THEME_CONSTANTS.themed.textPrimary` |
 | `"text-gray-600 dark:text-gray-400"` | `THEME_CONSTANTS.themed.textSecondary` |
 | `"border-gray-200 dark:border-gray-700"` | `THEME_CONSTANTS.themed.border` |
+| `"bg-gradient-to-br from-indigo-50..."` | `THEME_CONSTANTS.card.gradient.indigo` |
+| `"border-l-4 border-l-indigo-500..."` (stat card) | `THEME_CONSTANTS.card.stat.indigo` |
+| `"bg-emerald-50 text-emerald-700..."` (badge) | `THEME_CONSTANTS.badge.active` |
+| `"bg-purple-50 text-purple-700..."` (admin badge) | `THEME_CONSTANTS.badge.admin` |
+| `"pb-8 mb-8 bg-gradient-to-r..."` (page header) | `THEME_CONSTANTS.pageHeader.adminGradient` |
+| `"bg-gray-50/50 dark:bg-gray-800/20"` | `THEME_CONSTANTS.sectionBg.subtle` |
+| Loose `rounded-lg border...focus:ring-2...` (input) | `THEME_CONSTANTS.input.base` |
 
 ### Inline Styles
 
@@ -232,15 +243,17 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 | Login | `useLogin()` |
 | Register | `useRegister()` |
 | Profile CRUD | `useProfile()` |
-| Addresses | `useAddresses()`, `useCreateAddress()`, `useUpdateAddress()`, `useDeleteAddress()` |
 | File upload | `useStorageUpload()` |
-| Form state | `useForm(config)` or `useFormState(initial)` |
+| Form state | `useForm(config)` |
 | Click outside | `useClickOutside(ref, handler)` |
 | Keyboard shortcuts | `useKeyPress(key, handler)` |
 | Swipe gestures | `useSwipe(options)` |
 | Unsaved changes | `useUnsavedChanges(isDirty)` |
 | Toast/messages | `useMessage()` |
 | Admin stats | `useAdminStats()` |
+| Viewport breakpoint | `useBreakpoint()` |
+| Media query | `useMediaQuery(query)` |
+| RBAC checking | `useRBAC()` — exports `useHasRole`, `useIsAdmin`, `useIsModerator`, `useIsSeller`, `useCanAccess`, `useRequireAuth`, `useRequireRole` |
 | Session management | `useMySessions()`, `useAdminSessions()` |
 
 ---
@@ -249,7 +262,13 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 
 **Check `@/components` before creating new UI elements.**
 
-Key available components: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `Text`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`.
+Key available components:
+
+**UI**: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `Text`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`, `SectionTabs`, `StatusBadge`, `RoleBadge`, `EmptyState`, `ResponsiveView`.
+
+**Admin**: `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`.
+
+**User**: `AddressForm`, `AddressCard`, `ProfileHeader`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `ProfileInfoForm`, `PasswordChangeForm`, `AccountInfoCard`.
 
 ```tsx
 // WRONG - creating raw HTML inputs
@@ -288,7 +307,9 @@ import { userRepository } from '@/repositories';
 const user = await userRepository.findByEmail('user@example.com');
 ```
 
-Available repositories: `userRepository`, `tokenRepository`, `productRepository`, `orderRepository`, `reviewRepository`, `sessionRepository`, `siteSettingsRepository`, `carouselRepository`, `homepageSectionsRepository`, `categoriesRepository`, `couponsRepository`, `faqRepository`.
+Available repositories: `userRepository`, `tokenRepository`, `productRepository`, `orderRepository`, `reviewRepository`, `sessionRepository`, `siteSettingsRepository`, `carouselRepository`, `homepageSectionsRepository`, `categoriesRepository`, `couponsRepository`, `faqRepository`, `bidRepository`.
+
+**Important**: API routes in `src/app/api/**` MUST also use repositories for all Firestore operations. Direct `db.collection().doc().get()` calls in API routes violate this rule.
 
 **Use schema types** for type safety:
 ```tsx
@@ -298,7 +319,67 @@ import { USER_COLLECTION, userQueryHelpers } from '@/db/schema';
 
 ---
 
-## RULE 9: Use Error Classes
+## RULE 9: API Route Pattern
+
+**ALWAYS follow this API route structure:**
+
+```tsx
+// Pattern for API routes in src/app/api/**/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionCookie } from '@/lib/firebase/auth-server';
+import { handleApiError } from '@/lib/errors/error-handler';
+import { AuthenticationError } from '@/lib/errors';
+import { successResponse, ApiErrors } from '@/lib/api-response';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants';
+import { yourRepository } from '@/repositories';
+import { z } from 'zod';
+
+// Define validation schema
+const requestSchema = z.object({
+  email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
+  // ... other fields
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    // 1. Verify authentication (if required)
+    const sessionCookie = request.cookies.get('__session')?.value;
+    if (!sessionCookie) {
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+    }
+    const decodedToken = await verifySessionCookie(sessionCookie);
+    if (!decodedToken) {
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED);
+    }
+
+    // 2. Validate request body
+    const body = await request.json();
+    const validation = requestSchema.safeParse(body);
+    if (!validation.success) {
+      return ApiErrors.validationError(validation.error.issues);
+    }
+
+    // 3. Business logic using repositories
+    const result = await yourRepository.doSomething(validation.data);
+
+    // 4. Return success response
+    return successResponse(result, SUCCESS_MESSAGES.YOUR_MODULE.SUCCESS);
+  } catch (error) {
+    return handleApiError(error); // Automatically logs and formats errors
+  }
+}
+```
+
+**Key patterns:**
+- Use `verifySessionCookie()` for auth checking (not middleware yet - that's planned)
+- Use `z.object()` schemas for validation
+- Use `handleApiError(error)` in catch blocks
+- Use `successResponse()` / `ApiErrors.*` for responses
+- Always use repositories, never direct Firestore queries
+
+---
+
+## RULE 10: Use Error Classes
 
 **NEVER throw raw errors or use literal error strings.**
 
@@ -318,21 +399,67 @@ Available classes: `AppError`, `ApiError`, `ValidationError`, `AuthenticationErr
 
 ---
 
-## RULE 10: Use Existing Classes (Singletons)
+## RULE 11: Use Existing Classes (Singletons)
 
 | Need | Class | Import |
 |------|-------|--------|
 | In-memory cache | `cacheManager` | `import { cacheManager } from '@/classes'` |
 | localStorage/sessionStorage | `storageManager` | `import { storageManager } from '@/classes'` |
 | Client logging | `logger` | `import { logger } from '@/classes'` |
+| **Server logging** | `serverLogger` | `import { serverLogger } from '@/lib/server-logger'` |
 | Inter-component events | `eventBus` | `import { eventBus } from '@/classes'` |
 | Task queueing | `new Queue()` | `import { Queue } from '@/classes'` |
 
 **NEVER** write custom localStorage wrappers, custom event emitters, or custom caching logic.
 
+**Logging:**
+- Use `logger` (client-side) for browser console + localStorage logs
+- Use `serverLogger` (server-side) for API routes - writes to `./logs/` files
+
 ---
 
-## RULE 11: Collection Names from Constants
+## RULE 12: RBAC (Role-Based Access Control)
+
+**Route protection is centralized in `src/constants/rbac.ts`.**
+
+```tsx
+// RBAC_CONFIG defines access rules for all routes
+export const RBAC_CONFIG = {
+  [ROUTES.USER.DASHBOARD]: {
+    requireAuth: true,
+    allowedRoles: ['user'], // All authenticated users
+    requireEmailVerified: false,
+  },
+  [ROUTES.ADMIN.DASHBOARD]: {
+    requireAuth: true,
+    allowedRoles: ['admin'], // Admin only
+    requireEmailVerified: true,
+  },
+};
+```
+
+**Role hierarchy**: `admin` > `moderator` > `seller` > `user` (higher roles inherit lower role permissions)
+
+**Component protection**:
+```tsx
+import { ProtectedRoute } from '@/components';
+
+<ProtectedRoute requiredRole="admin">
+  <AdminContent />
+</ProtectedRoute>
+```
+
+**Programmatic checks**:
+```tsx
+import { hasRole, hasAnyRole } from '@/helpers';
+
+if (hasRole(user, 'admin')) { /* ... */ }
+if (hasAnyRole(user, ['admin', 'moderator'])) { /* ... */ }
+```
+
+---
+
+## RULE 13: Collection Names from Constants
 
 **NEVER hardcode Firestore collection names.**
 
@@ -349,7 +476,7 @@ Available constants: `USER_COLLECTION`, `PRODUCT_COLLECTION`, `ORDER_COLLECTION`
 
 ---
 
-## RULE 12: Routes from Constants
+## RULE 14: Routes from Constants
 
 **NEVER hardcode route paths.**
 
@@ -366,7 +493,7 @@ router.push(ROUTES.AUTH.LOGIN);
 
 ---
 
-## RULE 13: API Endpoints from Constants
+## RULE 15: API Endpoints from Constants
 
 **NEVER hardcode API paths.**
 
@@ -378,6 +505,58 @@ const res = await fetch('/api/auth/login');
 import { API_ENDPOINTS } from '@/constants';
 const res = await fetch(API_ENDPOINTS.AUTH.LOGIN);
 ```
+
+---
+
+## RULE 16: Pages Are Thin Orchestration Layers
+
+**Every `page.tsx` should be as simple as possible — composed entirely of imported components.**
+
+A page should NOT contain:
+- Inline form JSX (extract to a Form component)
+- Inline table column definitions (extract to a Columns config)
+- Inline drawer/modal bodies (extract to a Drawer/Modal component)
+- Complex state logic (extract to a custom hook)
+- More than ~100 lines of JSX
+
+If a page exceeds ~150 lines, it needs decomposition.
+
+```tsx
+// RIGHT — page is just glue
+export default function CarouselPage() {
+  const { data, loading } = useApiQuery(API_ENDPOINTS.CAROUSEL.LIST);
+  return (
+    <>
+      <AdminPageHeader title={UI_LABELS.ADMIN.CAROUSEL.TITLE} />
+      <DataTable columns={CarouselTableColumns} data={data} loading={loading} />
+    </>
+  );
+}
+```
+
+---
+
+## RULE 17: No `alert()` / `confirm()` / `prompt()`
+
+**NEVER use browser native dialogs.**
+
+| Instead of... | Use |
+|--------------|-----|
+| `alert(msg)` | `useMessage()` hook (toast notification) |
+| `confirm(msg)` | `ConfirmDeleteModal` from `@/components` |
+| Error feedback | `Alert` component or `useMessage()` error toast |
+
+---
+
+## RULE 18: Use Structured Logging
+
+**NEVER use `console.log()` in production code.**
+
+| Context | Use | Import |
+|---------|-----|--------|
+| Client-side | `logger` | `import { logger } from '@/classes'` |
+| Server-side (API routes) | `serverLogger` | `import { serverLogger } from '@/lib/server-logger'` |
+| Component debugging | Remove before commit | — |
 
 ---
 
@@ -415,18 +594,83 @@ When adding indices, update BOTH the schema file AND `firestore.indexes.json`, t
 
 ---
 
-## TypeScript Workflow
+## Development Commands
+
+### Build & Test
 
 ```bash
-# 1. Check only changed files
+# Development server (with Turbopack)
+npm run dev
+
+# Type checking only (no build)
 npx tsc --noEmit src/path/to/changed-file.tsx
 
-# 2. If clean, full build
+# Full production build
 npm run build
 
-# 3. Run tests
+# Run tests
 npm test
+npm run test:watch
+npm run test:coverage
+
+# Linting
+npm run lint
+npm run lint:fix
 ```
+
+### Firebase Deployment (PowerShell Scripts)
+
+```powershell
+# Deploy Firestore composite indices
+.\scripts\deploy-firestore-indices.ps1
+
+# Deploy security rules (Firestore, Storage, Database)
+.\scripts\deploy-firestore-rules.ps1
+
+# Check deployment status and view active indices
+.\scripts\check-firestore-status.ps1
+```
+
+**Or use Firebase CLI directly:**
+
+```bash
+firebase deploy --only firestore              # All Firestore resources
+firebase deploy --only firestore:rules        # Rules only
+firebase deploy --only firestore:indexes      # Indices only
+firebase deploy --only storage:rules          # Storage rules
+firebase deploy --only database:rules         # Realtime DB rules
+```
+
+**Note:** Index creation can take several minutes. Monitor in Firebase Console.
+
+### Vercel Deployment (PowerShell Scripts)
+
+```powershell
+# Sync environment variables from .env.local to Vercel
+.\scripts\sync-env-to-vercel.ps1
+
+# Dry run (preview without changes)
+.\scripts\sync-env-to-vercel.ps1 -DryRun
+
+# Sync to specific environment
+.\scripts\sync-env-to-vercel.ps1 -Environment "production"
+
+# Pull environment variables from Vercel
+.\scripts\pull-env-from-vercel.ps1
+
+# List all Vercel environment variables
+.\scripts\list-vercel-env.ps1
+```
+
+---
+
+## TypeScript Workflow
+
+**Always type-check before committing:**
+
+1. Check changed files: `npx tsc --noEmit src/path/to/file.tsx`
+2. If clean, run full build: `npm run build`
+3. Run tests: `npm test`
 
 ---
 
@@ -446,6 +690,9 @@ Before writing ANY code, verify:
 - [ ] Am I using error classes (not raw `throw new Error(...)`)?
 - [ ] No inline styles for static values?
 - [ ] Firebase Admin SDK only in `src/app/api/**`?
+- [ ] Is my `page.tsx` thin? (< 150 lines, no inline forms/tables)
+- [ ] No `alert()` / `confirm()` / `prompt()` calls?
+- [ ] No `console.log()` in production code? (use `logger` or `serverLogger`)
 
 ---
 

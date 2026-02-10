@@ -24,6 +24,7 @@ import {
   reviewCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/reviews
@@ -165,7 +166,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
       { status: 500 },
@@ -255,7 +256,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    console.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, { error });
 
     // Handle authentication errors
     if (error instanceof AuthenticationError) {

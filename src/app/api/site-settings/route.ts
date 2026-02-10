@@ -26,6 +26,7 @@ import {
   siteSettingsUpdateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * GET /api/site-settings
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
     return NextResponse.json(
       { success: false, error: "Failed to fetch site settings" },
       { status: 500 },
@@ -144,7 +145,7 @@ export async function PATCH(request: NextRequest) {
       message: "Site settings updated successfully",
     });
   } catch (error) {
-    console.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, error);
+    serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, { error });
 
     if (error instanceof AuthenticationError) {
       return NextResponse.json(

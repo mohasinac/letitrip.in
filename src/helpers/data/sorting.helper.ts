@@ -56,6 +56,8 @@ export function sort<T>(
  *   { key: 'name', order: 'asc' }
  * ]);
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function multiSort<T>(array: T[], configs: SortConfig<T>[]): T[] {
   return [...array].sort((a, b) => {
@@ -84,6 +86,8 @@ export function multiSort<T>(array: T[], configs: SortConfig<T>[]): T[] {
  * const events = [{ date: '2024-03-15' }, { date: '2024-01-10' }];
  * const sorted = sortByDate(events, 'date', 'asc');
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function sortByDate<T>(
   array: T[],
@@ -115,6 +119,8 @@ export function sortByDate<T>(
  * const sorted = sortByString(users, 'name', 'asc');
  * console.log(sorted); // [{ name: 'Alice' }, { name: 'bob' }]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function sortByString<T>(
   array: T[],
@@ -145,6 +151,8 @@ export function sortByString<T>(
  * const sorted = sortByNumber(items, 'quantity', 'desc');
  * console.log(sorted); // [{ quantity: 8 }, { quantity: 5 }, { quantity: 2 }]
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function sortByNumber<T>(
   array: T[],
@@ -173,6 +181,8 @@ export function sortByNumber<T>(
  * const newOrder = toggleSortOrder('asc');
  * console.log(newOrder); // 'desc'
  * ```
+ *
+ * @deprecated Not currently used in the codebase. Retained for potential future use.
  */
 export function toggleSortOrder(currentOrder: SortOrder): SortOrder {
   return currentOrder === "asc" ? "desc" : "asc";

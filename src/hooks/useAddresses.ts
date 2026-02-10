@@ -1,282 +1,171 @@
-"use client";
+/**
+ * User Addresses Hooks
+ *
+ * Custom hooks for user address operations using the centralized API client.
+ * Replaces the stub implementations removed in task 1.29.
+ *
+ * @example
+ * ```tsx
+ * const { data: addresses, isLoading } = useAddresses();
+ * const { mutate: createAddress } = useCreateAddress({
+ *   onSuccess: () => toast.success('Address added!')
+ * });
+ * const { mutate: deleteAddress } = useDeleteAddress({
+ *   onSuccess: () => toast.success('Address deleted!')
+ * });
+ * ```
+ */
 
-import { useState, useEffect } from "react";
+import { useApiQuery } from "./useApiQuery";
+import { useApiMutation } from "./useApiMutation";
+import { API_ENDPOINTS } from "@/constants";
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export interface Address {
   id: string;
-  userId: string;
+  label: string;
   fullName: string;
-  phoneNumber: string;
+  phone: string;
   addressLine1: string;
-  addressLine2: string;
-  landmark: string;
+  addressLine2?: string;
   city: string;
   state: string;
-  pincode: string;
-  addressType: "home" | "work" | "other";
-  isDefault: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
 }
 
-export type CreateAddressInput = Omit<
-  Address,
-  "id" | "userId" | "createdAt" | "updatedAt"
->;
-export type UpdateAddressInput = Partial<CreateAddressInput>;
+export interface AddressFormData {
+  label: string;
+  fullName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
+}
+
+interface SetDefaultAddressData {
+  addressId: string;
+}
+
+// ============================================================================
+// Address Hooks
+// ============================================================================
 
 /**
- * Fetch all addresses for the current user
+ * Hook to fetch all user addresses
  */
-export function useAddresses(userId?: string) {
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchAddresses = async () => {
-      try {
-        setLoading(true);
-        // TODO: Fetch from Firebase
-        // const snapshot = await getDocs(
-        //   query(
-        //     collection(db, 'addresses'),
-        //     where('userId', '==', userId),
-        //     orderBy('createdAt', 'desc')
-        //   )
-        // );
-        // const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        setAddresses([]);
-        setError(null);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAddresses();
-  }, [userId]);
-
-  return { addresses, loading, error };
+export function useAddresses(options?: {
+  enabled?: boolean;
+  onSuccess?: (data: Address[]) => void;
+  onError?: (error: any) => void;
+}) {
+  return useApiQuery<Address[]>({
+    endpoint: API_ENDPOINTS.USER.ADDRESSES.LIST,
+    options: {
+      enabled: options?.enabled,
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }
 
 /**
- * Fetch a single address by ID
+ * Hook to fetch a single address by ID
  */
-export function useAddress(addressId: string) {
-  const [address, setAddress] = useState<Address | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (!addressId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchAddress = async () => {
-      try {
-        setLoading(true);
-        // TODO: Fetch from Firebase
-        // const docRef = doc(db, 'addresses', addressId);
-        // const docSnap = await getDoc(docRef);
-        // if (docSnap.exists()) {
-        //   setAddress({ id: docSnap.id, ...docSnap.data() } as Address);
-        // }
-
-        setAddress(null);
-        setError(null);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAddress();
-  }, [addressId]);
-
-  return { address, loading, error };
+export function useAddress(
+  id: string,
+  options?: {
+    enabled?: boolean;
+    onSuccess?: (data: Address) => void;
+    onError?: (error: any) => void;
+  },
+) {
+  return useApiQuery<Address>({
+    endpoint: API_ENDPOINTS.USER.ADDRESSES.GET_BY_ID(id),
+    options: {
+      enabled: options?.enabled !== false && !!id,
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }
 
 /**
- * Create a new address
+ * Hook to create a new address
  */
-export function useCreateAddress() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const createAddress = async (userId: string, data: CreateAddressInput) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // TODO: Save to Firebase
-      // const docRef = await addDoc(collection(db, 'addresses'), {
-      //   ...data,
-      //   userId,
-      //   createdAt: serverTimestamp(),
-      //   updatedAt: serverTimestamp(),
-      // });
-
-      // If this is set as default, unset other defaults
-      // if (data.isDefault) {
-      //   const snapshot = await getDocs(
-      //     query(
-      //       collection(db, 'addresses'),
-      //       where('userId', '==', userId),
-      //       where('isDefault', '==', true)
-      //     )
-      //   );
-      //
-      //   const batch = writeBatch(db);
-      //   snapshot.docs.forEach(doc => {
-      //     if (doc.id !== docRef.id) {
-      //       batch.update(doc.ref, { isDefault: false });
-      //     }
-      //   });
-      //   await batch.commit();
-      // }
-
-      return true;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { createAddress, loading, error };
+export function useCreateAddress(options?: {
+  onSuccess?: (data: Address) => void;
+  onError?: (error: any) => void;
+}) {
+  return useApiMutation<Address, AddressFormData>({
+    endpoint: API_ENDPOINTS.USER.ADDRESSES.CREATE,
+    method: "POST",
+    options: {
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }
 
 /**
- * Update an existing address
+ * Hook to update an existing address
  */
-export function useUpdateAddress() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const updateAddress = async (
-    addressId: string,
-    userId: string,
-    data: UpdateAddressInput,
-  ) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // TODO: Update in Firebase
-      // const docRef = doc(db, 'addresses', addressId);
-      // await updateDoc(docRef, {
-      //   ...data,
-      //   updatedAt: serverTimestamp(),
-      // });
-
-      // If setting as default, unset other defaults
-      // if (data.isDefault) {
-      //   const snapshot = await getDocs(
-      //     query(
-      //       collection(db, 'addresses'),
-      //       where('userId', '==', userId),
-      //       where('isDefault', '==', true)
-      //     )
-      //   );
-      //
-      //   const batch = writeBatch(db);
-      //   snapshot.docs.forEach(doc => {
-      //     if (doc.id !== addressId) {
-      //       batch.update(doc.ref, { isDefault: false });
-      //     }
-      //   });
-      //   await batch.commit();
-      // }
-
-      return true;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { updateAddress, loading, error };
+export function useUpdateAddress(
+  id: string,
+  options?: {
+    onSuccess?: (data: Address) => void;
+    onError?: (error: any) => void;
+  },
+) {
+  return useApiMutation<Address, AddressFormData>({
+    endpoint: API_ENDPOINTS.USER.ADDRESSES.UPDATE(id),
+    method: "PATCH",
+    options: {
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }
 
 /**
- * Delete an address
+ * Hook to delete an address
  */
-export function useDeleteAddress() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const deleteAddress = async (addressId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // TODO: Delete from Firebase
-      // await deleteDoc(doc(db, 'addresses', addressId));
-
-      return true;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { deleteAddress, loading, error };
+export function useDeleteAddress(options?: {
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
+}) {
+  return useApiMutation<any, { id: string }>({
+    endpoint: (data) => API_ENDPOINTS.USER.ADDRESSES.DELETE(data.id),
+    method: "DELETE",
+    options: {
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }
 
 /**
- * Set an address as default
+ * Hook to set an address as default
  */
-export function useSetDefaultAddress() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const setDefaultAddress = async (addressId: string, userId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // TODO: Update in Firebase
-      // First, unset all other defaults
-      // const snapshot = await getDocs(
-      //   query(
-      //     collection(db, 'addresses'),
-      //     where('userId', '==', userId),
-      //     where('isDefault', '==', true)
-      //   )
-      // );
-      //
-      // const batch = writeBatch(db);
-      // snapshot.docs.forEach(doc => {
-      //   batch.update(doc.ref, { isDefault: false });
-      // });
-      //
-      // // Set the new default
-      // batch.update(doc(db, 'addresses', addressId), { isDefault: true, updatedAt: serverTimestamp() });
-      // await batch.commit();
-
-      return true;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { setDefaultAddress, loading, error };
+export function useSetDefaultAddress(options?: {
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
+}) {
+  return useApiMutation<any, SetDefaultAddressData>({
+    endpoint: (data) =>
+      API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT(data.addressId),
+    method: "POST",
+    options: {
+      onSuccess: options?.onSuccess,
+      onError: options?.onError,
+    },
+  });
 }

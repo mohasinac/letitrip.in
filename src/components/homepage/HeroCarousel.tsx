@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
+import { apiClient } from "@/lib/api-client";
 
 interface CarouselCard {
   id: string;
@@ -55,18 +57,17 @@ interface CarouselSlide {
 }
 
 export function HeroCarousel() {
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { data, isLoading } = useApiQuery<{ slides: CarouselSlide[] }>({
+  const { data, isLoading } = useApiQuery<CarouselSlide[]>({
     queryKey: ["carousel", "active"],
-    queryFn: () =>
-      fetch(API_ENDPOINTS.CAROUSEL.LIST + "?active=true").then((r) => r.json()),
+    queryFn: () => apiClient.get(API_ENDPOINTS.CAROUSEL.LIST + "?active=true"),
   });
 
   const slides =
-    data?.slides?.filter((s) => s.active)?.sort((a, b) => a.order - b.order) ||
-    [];
+    data?.filter((s) => s.active)?.sort((a, b) => a.order - b.order) || [];
 
   // Detect mobile on client-side
   useEffect(() => {
@@ -208,7 +209,7 @@ export function HeroCarousel() {
                         </h3>
                       )}
                       {card.content.description && (
-                        <p className="hidden md:block text-sm md:text-base text-white/80 mb-3 md:mb-4 line-clamp-2">
+                        <p className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
                           {card.content.description}
                         </p>
                       )}
@@ -231,7 +232,7 @@ export function HeroCarousel() {
                                 "noopener,noreferrer",
                               );
                             } else {
-                              window.location.href = btn.link;
+                              router.push(btn.link);
                             }
                           }}
                         >
@@ -252,7 +253,7 @@ export function HeroCarousel() {
                     if (btn.openInNewTab) {
                       window.open(btn.link, "_blank", "noopener,noreferrer");
                     } else {
-                      window.location.href = btn.link;
+                      router.push(btn.link);
                     }
                   }}
                 >

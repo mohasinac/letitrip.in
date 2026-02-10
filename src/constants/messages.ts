@@ -9,12 +9,19 @@ export const ERROR_MESSAGES = {
   AUTH: {
     UNAUTHORIZED: "You must be logged in to access this resource",
     FORBIDDEN: "You do not have permission to access this resource",
+    INSUFFICIENT_PERMISSIONS:
+      "You do not have sufficient permissions for this action",
     SESSION_EXPIRED: "Your session has expired. Please login again",
+    SESSION_CREATION_FAILED: "Failed to create session. Please try again",
     INVALID_CREDENTIALS: "Invalid email or password",
     ACCOUNT_DISABLED: "Your account has been disabled",
     EMAIL_NOT_VERIFIED: "Please verify your email address to continue",
     REGISTRATION_FAILED: "Registration failed. Please try again",
     LOGIN_FAILED: "Login failed. Please try again",
+    SIGN_IN_FAILED: "Sign-in failed. Please try again",
+    SIGN_IN_CANCELLED: "Sign-in was cancelled",
+    POPUP_BLOCKED:
+      "Pop-up blocked by browser. Please allow pop-ups and try again",
   },
 
   // Validation Errors
@@ -119,15 +126,87 @@ export const ERROR_MESSAGES = {
     CREATION_ERROR: "Session creation error",
   },
 
-  // FAQ Errors
-  FAQ: {
-    VOTE_FAILED: "Failed to submit vote",
-  },
-
   // Admin Errors
   ADMIN: {
     REVOKE_SESSION_FAILED: "Failed to revoke session",
     REVOKE_USER_SESSIONS_FAILED: "Failed to revoke user sessions",
+    UPDATE_USER_ROLE_FAILED: "Failed to update user role",
+    BAN_USER_FAILED: "Failed to ban user",
+    UNBAN_USER_FAILED: "Failed to unban user",
+    DELETE_USER_FAILED: "Failed to delete user",
+    LOAD_SETTINGS_FAILED: "Failed to load settings",
+    SAVE_SETTINGS_FAILED: "Failed to save settings",
+  },
+
+  // Review Errors
+  REVIEW: {
+    APPROVE_FAILED: "Failed to approve review",
+    REJECT_FAILED: "Failed to reject review",
+    DELETE_FAILED: "Failed to delete review",
+    APPROVE_BULK_FAILED: "Failed to approve some reviews",
+    FETCH_FAILED: "Failed to load reviews",
+    SUBMIT_FAILED: "Failed to submit review",
+  },
+
+  // FAQ Errors
+  FAQ: {
+    VOTE_FAILED: "Failed to submit vote",
+    SAVE_FAILED: "Failed to save FAQ",
+    DELETE_FAILED: "Failed to delete FAQ",
+    FETCH_FAILED: "Failed to load FAQs",
+    UPDATE_FAILED: "Failed to update FAQ",
+  },
+
+  // Category Errors
+  CATEGORY: {
+    SAVE_FAILED: "Failed to save category",
+    DELETE_FAILED: "Failed to delete category",
+    FETCH_FAILED: "Failed to load categories",
+    UPDATE_FAILED: "Failed to update category",
+    CREATE_FAILED: "Failed to create category",
+  },
+
+  // Carousel Errors
+  CAROUSEL: {
+    SAVE_FAILED: "Failed to save slide",
+    DELETE_FAILED: "Failed to delete slide",
+    FETCH_FAILED: "Failed to load carousel slides",
+    UPDATE_FAILED: "Failed to update slide",
+    CREATE_FAILED: "Failed to create slide",
+  },
+
+  // Homepage Section Errors
+  SECTION: {
+    SAVE_FAILED: "Failed to save section",
+    DELETE_FAILED: "Failed to delete section",
+    FETCH_FAILED: "Failed to load sections",
+    UPDATE_FAILED: "Failed to update section",
+    CREATE_FAILED: "Failed to create section",
+  },
+
+  // Order Errors
+  ORDER: {
+    FETCH_FAILED: "Failed to load orders",
+    UPDATE_FAILED: "Failed to update order",
+    CREATE_FAILED: "Failed to create order",
+    CANCEL_FAILED: "Failed to cancel order",
+  },
+
+  // Product Errors
+  PRODUCT: {
+    FETCH_FAILED: "Failed to load products",
+    UPDATE_FAILED: "Failed to update product",
+    CREATE_FAILED: "Failed to create product",
+    DELETE_FAILED: "Failed to delete product",
+  },
+
+  // Address Errors
+  ADDRESS: {
+    FETCH_FAILED: "Failed to load addresses",
+    CREATE_FAILED: "Failed to add address",
+    UPDATE_FAILED: "Failed to update address",
+    DELETE_FAILED: "Failed to delete address",
+    SET_DEFAULT_FAILED: "Failed to set default address",
   },
 
   // API Route Errors (server-side logging)
@@ -206,6 +285,86 @@ export const SUCCESS_MESSAGES = {
   // Account Success
   ACCOUNT: {
     DELETED: "Account deleted successfully",
+  },
+
+  // Admin Success
+  ADMIN: {
+    SETTINGS_SAVED: "Settings saved successfully",
+    USER_ROLE_UPDATED: "User role updated successfully",
+    USER_BANNED: "User banned successfully",
+    USER_UNBANNED: "User unbanned successfully",
+    USER_DELETED: "User deleted successfully",
+    SESSION_REVOKED: "Session revoked successfully",
+    SESSIONS_REVOKED: "User sessions revoked successfully",
+  },
+
+  // Review Success
+  REVIEW: {
+    APPROVED: "Review approved successfully",
+    REJECTED: "Review rejected successfully",
+    DELETED: "Review deleted successfully",
+    BULK_APPROVED: "All pending reviews approved successfully",
+    SUBMITTED: "Review submitted successfully",
+  },
+
+  // FAQ Success
+  FAQ: {
+    SAVED: "FAQ saved successfully",
+    DELETED: "FAQ deleted successfully",
+    UPDATED: "FAQ updated successfully",
+    CREATED: "FAQ created successfully",
+    VOTE_SUBMITTED: "Vote submitted successfully",
+  },
+
+  // Category Success
+  CATEGORY: {
+    SAVED: "Category saved successfully",
+    DELETED: "Category deleted successfully",
+    UPDATED: "Category updated successfully",
+    CREATED: "Category created successfully",
+  },
+
+  // Carousel Success
+  CAROUSEL: {
+    SAVED: "Slide saved successfully",
+    DELETED: "Slide deleted successfully",
+    UPDATED: "Slide updated successfully",
+    CREATED: "Slide created successfully",
+  },
+
+  // Homepage Section Success
+  SECTION: {
+    SAVED: "Section saved successfully",
+    DELETED: "Section deleted successfully",
+    UPDATED: "Section updated successfully",
+    CREATED: "Section created successfully",
+  },
+
+  // Order Success
+  ORDER: {
+    CREATED: "Order placed successfully",
+    UPDATED: "Order updated successfully",
+    CANCELLED: "Order cancelled successfully",
+  },
+
+  // Product Success
+  PRODUCT: {
+    CREATED: "Product created successfully",
+    UPDATED: "Product updated successfully",
+    DELETED: "Product deleted successfully",
+  },
+
+  // Address Success
+  ADDRESS: {
+    CREATED: "Address added successfully",
+    UPDATED: "Address updated successfully",
+    DELETED: "Address deleted successfully",
+    DEFAULT_SET: "Default address set successfully",
+  },
+
+  // Newsletter Success
+  NEWSLETTER: {
+    SUBSCRIBED: "Thank you for subscribing! Check your email for confirmation.",
   },
 } as const;
 

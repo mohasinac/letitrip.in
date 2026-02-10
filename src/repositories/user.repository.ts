@@ -214,6 +214,54 @@ export class UserRepository extends BaseRepository<UserDocument> {
       throw new DatabaseError(`Failed to count users by role: ${role}`, error);
     }
   }
+
+  /**
+   * Count active (non-disabled) users
+   */
+  async countActive(): Promise<number> {
+    try {
+      const snapshot = await this.getCollection()
+        .where("disabled", "==", false)
+        .count()
+        .get();
+
+      return snapshot.data().count;
+    } catch (error) {
+      throw new DatabaseError("Failed to count active users", error);
+    }
+  }
+
+  /**
+   * Count disabled users
+   */
+  async countDisabled(): Promise<number> {
+    try {
+      const snapshot = await this.getCollection()
+        .where("disabled", "==", true)
+        .count()
+        .get();
+
+      return snapshot.data().count;
+    } catch (error) {
+      throw new DatabaseError("Failed to count disabled users", error);
+    }
+  }
+
+  /**
+   * Count users created since a given date
+   */
+  async countNewSince(since: Date): Promise<number> {
+    try {
+      const snapshot = await this.getCollection()
+        .where("createdAt", ">=", since)
+        .count()
+        .get();
+
+      return snapshot.data().count;
+    } catch (error) {
+      throw new DatabaseError("Failed to count new users", error);
+    }
+  }
 }
 
 // Export singleton instance

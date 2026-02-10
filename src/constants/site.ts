@@ -23,6 +23,8 @@
  * ```
  */
 
+import { ROUTES } from "./routes";
+
 export const SITE_CONFIG = {
   // Brand
   brand: {
@@ -35,15 +37,15 @@ export const SITE_CONFIG = {
 
   // Navigation links
   nav: {
-    home: "/",
-    products: "/products",
-    auctions: "/auctions",
-    sellers: "/sellers",
-    categories: "/categories",
-    promotions: "/promotions",
-    about: "/about",
-    contact: "/contact",
-    blog: "/blog",
+    home: ROUTES.HOME,
+    products: ROUTES.PUBLIC.PRODUCTS,
+    auctions: ROUTES.PUBLIC.AUCTIONS,
+    sellers: ROUTES.PUBLIC.SELLERS,
+    categories: ROUTES.PUBLIC.CATEGORIES,
+    promotions: ROUTES.PUBLIC.PROMOTIONS,
+    about: ROUTES.PUBLIC.ABOUT,
+    contact: ROUTES.PUBLIC.CONTACT,
+    blog: ROUTES.PUBLIC.BLOG,
   },
 
   // Social media links
@@ -56,17 +58,16 @@ export const SITE_CONFIG = {
 
   // User account links
   account: {
-    profile: "/user/profile",
-    settings: "/user/settings",
-    orders: "/user/orders",
-    wishlist: "/user/wishlist",
-    addresses: "/user/addresses",
-    cart: "/cart",
-    login: "/auth/login",
-    register: "/auth/register",
-    logout: "/auth/logout",
-    forgotPassword: "/auth/forgot-password",
-    verifyEmail: "/auth/verify-email",
+    profile: ROUTES.USER.PROFILE,
+    settings: ROUTES.USER.SETTINGS,
+    orders: ROUTES.USER.ORDERS,
+    wishlist: ROUTES.USER.WISHLIST,
+    addresses: ROUTES.USER.ADDRESSES,
+    cart: ROUTES.USER.CART,
+    login: ROUTES.AUTH.LOGIN,
+    register: ROUTES.AUTH.REGISTER,
+    forgotPassword: ROUTES.AUTH.FORGOT_PASSWORD,
+    verifyEmail: ROUTES.AUTH.VERIFY_EMAIL,
   },
 
   // Contact info

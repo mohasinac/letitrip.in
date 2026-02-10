@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 8, 2026  
+**Last Updated**: February 10, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -391,7 +391,10 @@
 **File**: `rbac.ts`  
 **Purpose**: Role-Based Access Control configuration
 
-**Structure**: Record of route paths mapped to access configurations
+**Constants**:
+
+- `ROLE_HIERARCHY` — `Record<UserRole, number>` (`{ user: 0, seller: 1, moderator: 2, admin: 3 }`) — numeric hierarchy for permission comparison
+- `RBAC_CONFIG` — `Record<string, RouteAccessConfig>` — keyed by `ROUTES.*`, defines per-route access rules
 
 **RouteAccessConfig Interface**:
 
@@ -419,6 +422,28 @@
 - Admin routes (DASHBOARD, USERS, CAROUSEL, etc.) - Require admin role
 - Moderator routes (REVIEWS, FAQS moderation) - Require moderator or admin
 - Seller routes - Require seller, moderator, or admin
+
+---
+
+### Navigation Tab Constants
+
+**File**: `navigation.tsx`  
+**Purpose**: Tab configuration arrays for SectionTabs component
+
+**Constants**:
+
+- `ADMIN_TAB_ITEMS` — Array of `{ label, href }` — Dashboard, Users, Site Settings, Carousel, Sections, Categories, FAQs, Reviews (8 tabs)
+- `USER_TAB_ITEMS` — Array of `{ label, href }` — Profile, Orders, Wishlist, Addresses, Settings (5 tabs)
+
+**Usage**:
+
+```tsx
+import { ADMIN_TAB_ITEMS, USER_TAB_ITEMS } from '@/constants';
+import { SectionTabs } from '@/components';
+
+<SectionTabs tabs={ADMIN_TAB_ITEMS} variant="admin" />
+<SectionTabs tabs={USER_TAB_ITEMS} variant="user" />
+```
 
 ---
 
@@ -727,6 +752,23 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 
 ---
 
+### Responsive/Viewport Hooks
+
+#### useBreakpoint
+
+**File**: `useBreakpoint.ts`  
+**Purpose**: Detect Tailwind breakpoints (mobile <768, tablet 768–1023, desktop ≥1024)  
+**Returns**: `{ isMobile: boolean, isTablet: boolean, isDesktop: boolean, breakpoint: "mobile" | "tablet" | "desktop" }`
+
+#### useMediaQuery
+
+**File**: `useMediaQuery.ts`  
+**Purpose**: Match a CSS media query string and listen for changes  
+**Parameters**: `(query: string)`  
+**Returns**: `boolean`
+
+---
+
 ### Admin Hooks
 
 #### useAdminStats
@@ -742,7 +784,7 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 **Parameters**: `(userId)`  
 **Returns**: `{ sessions, loading, error }`
 
-#### useMySessions
+#### useMySessions (deprecated)
 
 **File**: `useSessions.ts`  
 **Purpose**: View current user's sessions  
@@ -754,7 +796,7 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 **Purpose**: Revoke a session (admin)  
 **Returns**: `{ revoke, loading, error }`
 
-#### useRevokeMySession
+#### useRevokeMySession (deprecated)
 
 **File**: `useSessions.ts`  
 **Purpose**: Revoke own session  
@@ -786,12 +828,6 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 **Purpose**: Form state management with validation  
 **Parameters**: `(initialValues, validationSchema)`  
 **Returns**: `{ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, resetForm }`
-
-#### useFormState
-
-**File**: `useFormState.ts`  
-**Purpose**: Track form dirty state  
-**Returns**: `{ isDirty, setIsDirty, resetDirty }`
 
 #### useAddressForm
 
@@ -835,15 +871,6 @@ const handleSubmit = async (e: React.FormEvent) => {
 **Returns**: `{ activeGesture }`
 
 **Gesture Types**: `tap`, `doubleTap`, `longPress`, `swipe`, `pinch`
-
-#### useLongPress
-
-**File**: `useLongPress.ts`  
-**Purpose**: Detect long press gesture  
-**Parameters**: `(callback, options)`  
-**Returns**: `{ handlers }`
-
-**Options**: `threshold` (ms), `captureEvent`
 
 ---
 
@@ -2079,6 +2106,25 @@ if (Object.keys(errors).length === 0) {
 - Delete mode shows red header accent with DELETE badge
 - Customizable footer slot for action buttons
 
+#### SectionTabs
+
+**File**: `SectionTabs.tsx`  
+**Purpose**: Unified navigation tabs for admin/user sections — horizontal tab bar on desktop, dropdown on mobile  
+**Props**: `tabs` (`SectionTab[]`), `variant` (`"admin" | "user" | "default"`), `className`  
+**Interfaces**: `SectionTab` (`label`, `href`, `icon?`)
+
+#### StatusBadge
+
+**File**: `StatusBadge.tsx`  
+**Purpose**: Color-coded badge for status values  
+**Props**: `status` (`"active" | "inactive" | "pending" | "approved" | "rejected" | "success" | "warning" | "danger" | "info"`), `label`, `className`
+
+#### RoleBadge
+
+**File**: `RoleBadge.tsx`  
+**Purpose**: Color-coded badge for user roles (admin=purple, moderator=blue, seller=teal, user=gray)  
+**Props**: `role` (`UserRole`), `label`, `className`
+
 ---
 
 ### Form Components (`src/components/forms/`)
@@ -2209,6 +2255,12 @@ if (Object.keys(errors).length === 0) {
 **Purpose**: Error message display  
 **Props**: `error`, `retry`, `fullScreen`
 
+#### ResponsiveView
+
+**File**: `ResponsiveView.tsx`  
+**Purpose**: Conditionally renders mobile, tablet, or desktop content based on viewport via `useBreakpoint`  
+**Props**: `mobile` (`ReactNode`), `desktop` (`ReactNode`), `tablet?` (`ReactNode`)
+
 ---
 
 ### Layout Components (`src/components/layout/`)
@@ -2327,7 +2379,95 @@ if (Object.keys(errors).length === 0) {
 
 ---
 
+### User Components (`src/components/user/`)
+
+#### Addresses
+
+##### AddressForm
+
+**File**: `user/addresses/AddressForm.tsx`  
+**Purpose**: Shared form for adding/editing user addresses with all address fields  
+**Props**: `initialData` (`Partial<AddressFormData>`), `onSubmit`, `onCancel`, `isLoading`, `submitLabel`
+
+##### AddressCard
+
+**File**: `user/addresses/AddressCard.tsx`  
+**Purpose**: Display card for an address with edit/delete/set-default actions  
+**Props**: `address`, `onEdit`, `onDelete`, `onSetDefault`, `className`
+
+#### Profile
+
+##### ProfileHeader
+
+**File**: `user/profile/ProfileHeader.tsx`  
+**Purpose**: Hero section for user profile page with avatar, name, role badge, and email  
+**Props**: `photoURL`, `displayName`, `email`, `role`, `className`
+
+##### ProfileStatsGrid
+
+**File**: `user/profile/ProfileStatsGrid.tsx`  
+**Purpose**: Grid of stat cards showing order count, wishlist count, and address count  
+**Props**: `stats` (`{ orders, wishlist, addresses }`), `className`
+
+#### Settings
+
+##### EmailVerificationCard
+
+**File**: `user/settings/EmailVerificationCard.tsx`  
+**Purpose**: Card showing email verification status with resend CTA  
+**Props**: `email`, `isVerified`, `onResendVerification`, `isLoading`, `className`
+
+##### PhoneVerificationCard
+
+**File**: `user/settings/PhoneVerificationCard.tsx`  
+**Purpose**: Card showing phone verification status with verify CTA  
+**Props**: `phone`, `isVerified`, `onVerify`, `isLoading`, `className`
+
+##### ProfileInfoForm
+
+**File**: `user/settings/ProfileInfoForm.tsx`  
+**Purpose**: Form for editing avatar, display name, and phone number  
+**Props**: `userId`, `initialData` (`{ displayName, phone, photoURL }`), `onSubmit`, `onAvatarUploadSuccess`, `onRefresh`, `isLoading`
+
+##### PasswordChangeForm
+
+**File**: `user/settings/PasswordChangeForm.tsx`  
+**Purpose**: Password change form with current/new/confirm fields and strength indicator  
+**Props**: `onSubmit`, `isLoading`
+
+##### AccountInfoCard
+
+**File**: `user/settings/AccountInfoCard.tsx`  
+**Purpose**: Read-only display of account metadata (UID, email, creation date, last login)  
+**Props**: `uid`, `email`, `createdAt`, `lastLoginAt`, `className`
+
+---
+
 ### Admin Components (`src/components/admin/`)
+
+#### AdminPageHeader
+
+**File**: `AdminPageHeader.tsx`  
+**Purpose**: Standardized gradient page header for admin pages with optional action button  
+**Props**: `title`, `subtitle`, `actionLabel`, `onAction`, `actionIcon`, `actionDisabled`, `className`
+
+#### AdminFilterBar
+
+**File**: `AdminFilterBar.tsx`  
+**Purpose**: Card-wrapped responsive grid of filter inputs for admin list pages  
+**Props**: `children`, `columns` (`1 | 2 | 3 | 4`), `className`
+
+#### DrawerFormFooter
+
+**File**: `DrawerFormFooter.tsx`  
+**Purpose**: Cancel + Save/Delete button pair for SideDrawer forms  
+**Props**: `onCancel`, `onSubmit`, `onDelete`, `submitLabel`, `deleteLabel`, `cancelLabel`, `isLoading`, `isSubmitDisabled`, `className`
+
+#### DataTable
+
+**File**: `DataTable.tsx`  
+**Purpose**: Data table with pagination, striped rows, sticky header, mobile card view  
+**Props**: `columns`, `data`, `loading`, `pageSize`, `striped`, `stickyHeader`
 
 #### AdminLayout
 

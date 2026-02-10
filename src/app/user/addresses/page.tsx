@@ -1,22 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Spinner, UserTabs } from "@/components";
+import { useEffect } from "react";
+import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import {
+  Heading,
+  Button,
+  Spinner,
+  EmptyState,
+  AddressCard,
+  ConfirmDeleteModal,
+} from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import {
+  ROUTES,
+  UI_LABELS,
+  THEME_CONSTANTS,
+  API_ENDPOINTS,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+} from "@/constants";
+import type { Address } from "@/components";
+import { useState } from "react";
 
 export default function UserAddressesPage() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { showSuccess, showError } = useMessage();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Fetch addresses
+  const {
+    data: addresses,
+    loading: fetchLoading,
+    error,
+    refetch,
+  } = useApiQuery<Address[]>(API_ENDPOINTS.USER.ADDRESSES.LIST);
+
+  // Delete mutation
+  const { mutate: deleteAddress, loading: deleting } = useApiMutation(
+    API_ENDPOINTS.USER.ADDRESSES.DELETE,
+    {
+      method: "DELETE",
+      onSuccess: () => {
+        showSuccess(SUCCESS_MESSAGES.ADDRESS.DELETED);
+        setDeleteId(null);
+        refetch();
+      },
+      onError: (error) => {
+        showError(error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
+      },
+    },
+  );
+
+  // Set default mutation
+  const { mutate: setDefault, loading: settingDefault } = useApiMutation(
+    API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT,
+    {
+      method: "POST",
+      onSuccess: () => {
+        showSuccess(SUCCESS_MESSAGES.ADDRESS.DEFAULT_SET);
+        refetch();
+      },
+      onError: (error) => {
+        showError(error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
+      },
+    },
+  );
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading) {
+  const handleEdit = (id: string) => {
+    router.push(ROUTES.USER.ADDRESSES_EDIT(id));
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteId) {
+      deleteAddress(deleteId);
+    }
+  };
+
+  const handleSetDefault = (id: string) => {
+    setDefault(id);
+  };
+
+  if (authLoading || fetchLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
@@ -28,53 +103,86 @@ export default function UserAddressesPage() {
     return null;
   }
 
-  return (
-    <div className="w-full">
-      <UserTabs />
+  const { spacing } = THEME_CONSTANTS;
 
-      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
+  return (
+    <>
+      <div className={spacing.stack}>
         <div className="flex items-center justify-between">
-          <Heading level={3}>My Addresses</Heading>
+          <Heading level={3}>{UI_LABELS.USER.ADDRESSES.TITLE}</Heading>
           <Button
-            onClick={() => router.push("/user/addresses/add")}
-            className="shadow-md hover:shadow-lg transition-shadow"
+            variant="primary"
+            onClick={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           >
-            + Add New Address
+            {UI_LABELS.USER.ADDRESSES.ADD}
           </Button>
         </div>
 
-        {/* Empty State - Modern Card */}
-        <Card className="p-12 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="max-w-md mx-auto">
-            <svg
-              className="w-24 h-24 mx-auto mb-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-            <Heading level={4} className="mb-2">
-              No saved addresses
-            </Heading>
-            <Text className="mb-6">Add an address for faster checkout</Text>
-            <Button onClick={() => router.push("/user/addresses/add")}>
-              Add Your First Address
-            </Button>
+        {/* Error State */}
+        {error && (
+          <div className="text-red-600 dark:text-red-400">
+            {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
           </div>
-        </Card>
+        )}
+
+        {/* Empty State */}
+        {!fetchLoading && (!addresses || addresses.length === 0) && (
+          <EmptyState
+            icon={
+              <svg
+                className="w-full h-full"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            }
+            title={UI_LABELS.USER.ADDRESSES.EMPTY}
+            description={UI_LABELS.USER.ADDRESSES.EMPTY_SUBTITLE}
+            actionLabel={UI_LABELS.USER.ADDRESSES.ADD_FIRST}
+            onAction={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
+          />
+        )}
+
+        {/* Address List */}
+        {addresses && addresses.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {addresses.map((address) => (
+              <AddressCard
+                key={address.id}
+                address={address}
+                onEdit={() => handleEdit(address.id)}
+                onDelete={() => handleDelete(address.id)}
+                onSetDefault={() => handleSetDefault(address.id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <ConfirmDeleteModal
+          isOpen={true}
+          onClose={() => setDeleteId(null)}
+          onConfirm={confirmDelete}
+          title={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM_TITLE}
+          message={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM_MESSAGE}
+          isDeleting={deleting}
+        />
+      )}
+    </>
   );
 }

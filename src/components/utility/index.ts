@@ -12,3 +12,6 @@
 export { default as Search } from "./Search";
 export { default as BackToTop } from "./BackToTop";
 export { default as BackgroundRenderer } from "./BackgroundRenderer";
+
+// Phase 3: Responsive utilities
+export { ResponsiveView } from "./ResponsiveView";
