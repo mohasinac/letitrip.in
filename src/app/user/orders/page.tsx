@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Spinner } from "@/components";
-import UserTabs from "@/components/user/UserTabs";
+import { Card, Heading, Text, Button, Spinner, UserTabs } from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS } from "@/constants";
-import { SITE_CONFIG } from "@/constants/site";
+import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 
 export default function UserOrdersPage() {
   const { user, loading } = useAuth();
@@ -34,7 +32,7 @@ export default function UserOrdersPage() {
     <div className="w-full">
       <UserTabs />
 
-      <div className="space-y-6 mt-6">
+      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
         <Heading level={3}>My Orders</Heading>
 
         {/* Empty State - Modern Card */}

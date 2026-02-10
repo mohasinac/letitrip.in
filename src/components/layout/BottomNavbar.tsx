@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { SITE_CONFIG } from "@/constants/site";
+import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";

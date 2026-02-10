@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useApiQuery } from "@/hooks";
 import {
   FAQCategorySidebar,
   FAQSearchBar,
@@ -143,7 +142,9 @@ function FAQPageContent() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div
+        className={`grid grid-cols-1 lg:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.lg}`}
+      >
         {/* Sidebar (30% on desktop) */}
         <div className="lg:col-span-4 xl:col-span-3">
           <FAQCategorySidebar

@@ -5,7 +5,7 @@
  * Manage temporary success/error messages
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 type MessageType = "success" | "error";
 
@@ -15,17 +15,29 @@ export function useMessage() {
     text: string;
   } | null>(null);
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   const showSuccess = useCallback((text: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setMessage({ type: "success", text });
-    setTimeout(() => setMessage(null), 5000);
+    timerRef.current = setTimeout(() => setMessage(null), 5000);
   }, []);
 
   const showError = useCallback((text: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setMessage({ type: "error", text });
-    setTimeout(() => setMessage(null), 5000);
+    timerRef.current = setTimeout(() => setMessage(null), 5000);
   }, []);
 
   const clearMessage = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setMessage(null);
   }, []);
 

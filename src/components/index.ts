@@ -58,6 +58,9 @@ export * from "./utility";
 export { AvatarUpload } from "./AvatarUpload";
 export { AvatarDisplay } from "./AvatarDisplay";
 
+// ==================== PASSWORD STRENGTH ====================
+export { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
+
 // ==================== LAYOUT ====================
 // Main Layout Client (stays in components root)
 export { default as LayoutClient } from "./LayoutClient";
@@ -72,3 +75,7 @@ export * from "./admin";
 // ==================== USER COMPONENTS ====================
 // Re-export from user subdirectory
 export * from "./user";
+
+// ==================== PROVIDERS ====================
+// Re-export from providers subdirectory
+export * from "./providers";

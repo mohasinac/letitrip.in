@@ -30,7 +30,11 @@ import {
   RecaptchaVerifier,
   sendEmailVerification,
   sendPasswordResetEmail,
+  confirmPasswordReset,
+  applyActionCode,
   updateProfile,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   User,
   UserCredential,
   signOut as firebaseSignOut,
@@ -319,6 +323,73 @@ export async function signOut(): Promise<void> {
   } catch (error: any) {
     console.error("Sign out error:", error);
     throw new ApiError(500, error.message || "Failed to sign out");
+  }
+}
+
+/**
+ * Re-authenticate user with current password
+ * Required before sensitive operations like password change
+ */
+export async function reauthenticateWithPassword(
+  email: string,
+  currentPassword: string,
+): Promise<void> {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new ApiError(401, "Not authenticated");
+    }
+
+    const credential = EmailAuthProvider.credential(email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+  } catch (error: any) {
+    console.error("Re-authentication error:", error);
+    if (error.code === "auth/wrong-password") {
+      throw new ApiError(401, "Current password is incorrect");
+    }
+    throw new ApiError(
+      500,
+      error.message || "Failed to verify current password",
+    );
+  }
+}
+
+/**
+ * Confirm password reset with token from email
+ */
+export async function confirmPasswordResetWithToken(
+  token: string,
+  newPassword: string,
+): Promise<void> {
+  try {
+    await confirmPasswordReset(auth, token, newPassword);
+  } catch (error: any) {
+    console.error("Password reset error:", error);
+    if (error.code === "auth/expired-action-code") {
+      throw new ApiError(400, "Reset link has expired");
+    }
+    if (error.code === "auth/invalid-action-code") {
+      throw new ApiError(400, "Invalid or already used reset link");
+    }
+    throw new ApiError(500, error.message || "Failed to reset password");
+  }
+}
+
+/**
+ * Apply email verification code
+ */
+export async function applyEmailVerificationCode(code: string): Promise<void> {
+  try {
+    await applyActionCode(auth, code);
+  } catch (error: any) {
+    console.error("Email verification error:", error);
+    if (error.code === "auth/expired-action-code") {
+      throw new ApiError(400, "Verification link has expired");
+    }
+    if (error.code === "auth/invalid-action-code") {
+      throw new ApiError(400, "Invalid or already used verification link");
+    }
+    throw new ApiError(500, error.message || "Failed to verify email");
   }
 }
 

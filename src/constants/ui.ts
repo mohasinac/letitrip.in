@@ -96,7 +96,9 @@ export const UI_LABELS = {
     EDIT_PROFILE: "Edit Profile",
     VIEW_DETAILS: "View Details",
     MANAGE: "Manage",
+    VIEW: "View",
     UPDATE_PASSWORD: "Update Password",
+    DISCARD: "Discard",
   },
 
   // Form labels
@@ -172,6 +174,7 @@ export const UI_LABELS = {
     HELP_CENTER: "Help Center",
     ACCOUNT: "Account",
     SUPPORT: "Support",
+    DARK_MODE: "Dark Mode",
   },
 
   // Profile section

@@ -30,7 +30,9 @@ export function AdvertisementBanner() {
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className="w-full">
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+          <div
+            className={`h-64 ${THEME_CONSTANTS.themed.bgTertiary} rounded-2xl animate-pulse`}
+          />
         </div>
       </section>
     );
@@ -48,14 +50,12 @@ export function AdvertisementBanner() {
     >
       <div className="w-full">
         <div
-          className={`relative overflow-hidden ${THEME_CONSTANTS.borderRadius["2xl"]} min-h-[280px] flex items-center justify-center text-center`}
+          className={`relative overflow-hidden ${THEME_CONSTANTS.borderRadius["2xl"]} min-h-[280px] flex items-center justify-center text-center bg-cover bg-center`}
           style={{
             backgroundColor: banner.backgroundColor || "#1a1a1a",
             backgroundImage: banner.backgroundImage
               ? `url(${banner.backgroundImage})`
               : undefined,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
           }}
         >
           {/* Overlay for better text readability */}

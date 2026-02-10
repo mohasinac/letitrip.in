@@ -141,7 +141,8 @@ export class Logger {
     if (typeof window === "undefined") return;
 
     try {
-      await fetch("/api/logs/write", {
+      const { API_ENDPOINTS } = await import("@/constants");
+      await fetch(API_ENDPOINTS.LOGS.WRITE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

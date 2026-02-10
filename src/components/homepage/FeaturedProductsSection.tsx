@@ -32,13 +32,21 @@ export function FeaturedProductsSection() {
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
         <div className="w-full">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs animate-pulse" />
+          <div
+            className={`h-8 ${THEME_CONSTANTS.themed.bgTertiary} rounded-lg mb-8 max-w-xs animate-pulse`}
+          />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {[...Array(18)].map((_, i) => (
               <div key={i} className="space-y-3">
-                <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-20" />
+                <div
+                  className={`aspect-square ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl animate-pulse`}
+                />
+                <div
+                  className={`h-4 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse`}
+                />
+                <div
+                  className={`h-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse w-20`}
+                />
               </div>
             ))}
           </div>

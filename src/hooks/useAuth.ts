@@ -150,7 +150,8 @@ export function useResendVerification(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ResendVerificationData>({
-    mutationFn: (data) => apiClient.post("/api/auth/send-verification", data),
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -175,14 +176,20 @@ export function useForgotPassword(options?: {
 
 /**
  * Hook for resetting password with token
+ * Uses Firebase client SDK to reset password directly
  */
 export function useResetPassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ResetPasswordData>({
-    mutationFn: (data) =>
-      apiClient.put(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
+    mutationFn: async (data) => {
+      // Use Firebase client SDK to reset password
+      const { confirmPasswordResetWithToken } =
+        await import("@/lib/firebase/auth-helpers");
+      await confirmPasswordResetWithToken(data.token, data.newPassword);
+      return { success: true };
+    },
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -190,14 +197,29 @@ export function useResetPassword(options?: {
 
 /**
  * Hook for changing password (authenticated user)
+ * Verifies current password client-side before calling API
  */
 export function useChangePassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ChangePasswordData>({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data),
+    mutationFn: async (data) => {
+      // Import dynamically to avoid circular dependencies
+      const { reauthenticateWithPassword, getCurrentUser } =
+        await import("@/lib/firebase/auth-helpers");
+
+      const user = getCurrentUser();
+      if (!user?.email) {
+        throw new Error("User email not found");
+      }
+
+      // Verify current password client-side first
+      await reauthenticateWithPassword(user.email, data.currentPassword);
+
+      // Then call API to update password
+      return apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data);
+    },
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

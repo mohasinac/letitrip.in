@@ -1,7 +1,7 @@
 "use client";
 
-import { ImageCropData } from "./modals/ImageCropModal";
-import { UI_LABELS } from "@/constants";
+import type { ImageCropData } from "@/components";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 interface AvatarDisplayProps {
   cropData: ImageCropData | null;
@@ -102,18 +102,17 @@ export function AvatarDisplay({
 
   return (
     <div
-      className={`${sizeClasses[size]} ${className} rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 relative`}
+      className={`${sizeClasses[size]} ${className} rounded-full overflow-hidden ${THEME_CONSTANTS.themed.bgTertiary} relative`}
     >
       <img
         src={cropData.url}
         alt={alt}
-        className="absolute w-full h-full object-cover select-none"
+        className="absolute w-full h-full object-cover select-none -translate-x-1/2 -translate-y-1/2"
         style={{
           width: `${(cropData.zoom || 1) * 100}%`,
           height: `${(cropData.zoom || 1) * 100}%`,
           left: `${cropData.position?.x || 50}%`,
           top: `${cropData.position?.y || 50}%`,
-          transform: "translate(-50%, -50%)",
         }}
       />
     </div>

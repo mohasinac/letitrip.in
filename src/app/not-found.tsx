@@ -8,7 +8,7 @@
  */
 
 import Link from "next/link";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function NotFound() {

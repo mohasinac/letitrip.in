@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSwipe } from "@/hooks";
-import { preventBodyScroll } from "@/utils/events";
+import { preventBodyScroll } from "@/utils";
 
 /**
  * Modal Component
@@ -186,14 +186,10 @@ export default function Modal({
   };
 
   const modalContent = (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ position: "fixed" }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 transition-opacity"
-        style={{ position: "fixed" }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -206,15 +202,12 @@ export default function Modal({
           ${themed.bgSecondary}
           ${card.base}
           shadow-2xl
-          transform transition-all
+          fixed top-1/2 left-1/2
           max-h-[85vh] flex flex-col
           animate-fade-in
           touch-pan-y
         `}
         style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
           transform:
             translateY > 0
               ? `translate(-50%, calc(-50% + ${translateY}px))`

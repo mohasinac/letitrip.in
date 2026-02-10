@@ -124,7 +124,9 @@ export function ImageUpload({
     <div className="space-y-3">
       {/* Label */}
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label
+          className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+        >
           {label}
         </label>
       )}
@@ -136,7 +138,7 @@ export function ImageUpload({
             <img
               src={preview}
               alt="Preview"
-              className="w-full h-64 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+              className={`w-full h-64 object-cover rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}
             />
 
             {/* Overlay with actions */}
@@ -174,7 +176,7 @@ export function ImageUpload({
             type="button"
             onClick={handleClick}
             disabled={uploading}
-            className={`w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 ${THEME_CONSTANTS.themed.bgTertiary}`}
+            className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 flex flex-col items-center justify-center ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
           >
             <svg
               className="w-12 h-12 mb-3"
@@ -214,7 +216,9 @@ export function ImageUpload({
 
       {/* Helper Text */}
       {helperText && !error && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">{helperText}</p>
+        <p className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}>
+          {helperText}
+        </p>
       )}
 
       {/* Error Message */}

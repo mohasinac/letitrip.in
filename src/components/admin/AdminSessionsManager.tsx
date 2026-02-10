@@ -11,7 +11,7 @@ import {
   useAdminSessions,
   useRevokeSession,
   useRevokeUserSessions,
-} from "@/hooks/useSessions";
+} from "@/hooks";
 import { Card, Button, Alert, Badge } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatRelativeTime, formatDate } from "@/utils";
@@ -154,22 +154,34 @@ export function AdminSessionsManager() {
           <table className="w-full">
             <thead className={THEME_CONSTANTS.themed.bgTertiary}>
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   Device
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   Location
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   Last Activity
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   Status
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th
+                  className={`px-4 py-3 text-right text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider`}
+                >
                   Actions
                 </th>
               </tr>
@@ -184,10 +196,14 @@ export function AdminSessionsManager() {
                 >
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <div
+                        className={`text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
+                      >
                         {session.user?.displayName || "Unknown User"}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div
+                        className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
+                      >
                         {session.user?.email}
                       </div>
                       <div className="mt-1">
@@ -209,21 +225,29 @@ export function AdminSessionsManager() {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
-                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                      <div
+                        className={`text-sm ${THEME_CONSTANTS.themed.textPrimary}`}
+                      >
                         {session.deviceInfo?.browser} on{" "}
                         {session.deviceInfo?.os}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div
+                        className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
+                      >
                         {session.deviceInfo?.device}
                       </div>
                       {session.deviceInfo?.ip && (
-                        <div className="text-xs text-gray-400 dark:text-gray-500">
+                        <div
+                          className={`text-xs ${THEME_CONSTANTS.themed.textMuted}`}
+                        >
                           IP: {session.deviceInfo.ip}
                         </div>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td
+                    className={`px-4 py-4 whitespace-nowrap text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+                  >
                     {session.location?.city ? (
                       <div>
                         {session.location.city}, {session.location.country}
@@ -232,7 +256,9 @@ export function AdminSessionsManager() {
                       <span className="text-gray-400">Unknown</span>
                     )}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td
+                    className={`px-4 py-4 whitespace-nowrap text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+                  >
                     {formatTimeAgo(session.lastActivity)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
@@ -278,7 +304,9 @@ export function AdminSessionsManager() {
           </table>
 
           {sessions.length === 0 && (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <div
+              className={`text-center py-12 ${THEME_CONSTANTS.themed.textSecondary}`}
+            >
               No active sessions found
             </div>
           )}

@@ -1,8 +1,8 @@
 /**
  * User Profile Hooks
- * 
+ *
  * Custom hooks for user profile operations using the centralized API client.
- * 
+ *
  * @example
  * ```tsx
  * const { data: profile, isLoading } = useProfile();
@@ -12,9 +12,9 @@
  * ```
  */
 
-import { useApiQuery } from './useApiQuery';
-import { useApiMutation } from './useApiMutation';
-import { apiClient, API_ENDPOINTS } from '@/lib/api-client';
+import { useApiQuery } from "./useApiQuery";
+import { useApiMutation } from "./useApiMutation";
+import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
 
 // ============================================================================
 // Types
@@ -51,7 +51,7 @@ export function useProfile(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiQuery<UserProfile>({
-    queryKey: ['profile'],
+    queryKey: ["profile"],
     queryFn: () => apiClient.get(API_ENDPOINTS.USER.PROFILE),
     enabled: options?.enabled,
     onSuccess: options?.onSuccess,
@@ -67,7 +67,7 @@ export function useUpdateProfile(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, UpdateProfileData>({
-    mutationFn: (data) => apiClient.put(API_ENDPOINTS.USER.UPDATE_PROFILE, data),
+    mutationFn: (data) => apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

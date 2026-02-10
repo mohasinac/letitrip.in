@@ -8,6 +8,7 @@
 
 import React from "react";
 import { Input, Textarea, Select } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface SelectOption {
   value: string;
@@ -75,7 +76,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
         >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
@@ -124,7 +125,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       )}
 
       {helpText && !showError && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className={`mt-1 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
           {helpText}
         </p>
       )}

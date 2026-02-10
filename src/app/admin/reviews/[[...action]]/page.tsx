@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect, use, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
-import { DataTable } from "@/components/admin";
-import { Card, Button } from "@/components";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES } from "@/constants";
+import { Card, Button, DataTable } from "@/components";
 import { formatDate } from "@/utils";
 
 interface Review {
@@ -26,7 +26,13 @@ interface Review {
 
 type ReviewStatus = "all" | "pending" | "approved" | "rejected";
 
-export default function AdminReviewsPage() {
+interface PageProps {
+  params: Promise<{ action?: string[] }>;
+}
+
+export default function AdminReviewsPage({ params }: PageProps) {
+  const { action } = use(params);
+  const router = useRouter();
   const [statusFilter, setStatusFilter] = useState<ReviewStatus>("pending");
   const [ratingFilter, setRatingFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,6 +64,52 @@ export default function AdminReviewsPage() {
   const reviews = data?.reviews || [];
   const total = data?.total || 0;
 
+  const findReviewById = useCallback(
+    (id: string): Review | undefined => reviews.find((r) => r.id === id),
+    [reviews],
+  );
+
+  const handleViewReview = useCallback(
+    (review: Review) => {
+      setSelectedReview(review);
+      if (review.id && action?.[0] !== "view") {
+        router.push(`${ROUTES.ADMIN.REVIEWS}/view/${review.id}`);
+      }
+    },
+    [action, router],
+  );
+
+  const handleBackToList = useCallback(() => {
+    setSelectedReview(null);
+    if (action?.[0]) {
+      router.replace(ROUTES.ADMIN.REVIEWS);
+    }
+  }, [action, router]);
+
+  // Auto-open review detail based on URL action: /view/:id
+  useEffect(() => {
+    if (!action?.[0] || selectedReview) return;
+
+    const mode = action[0];
+    const id = action[1];
+
+    if (mode === "view" && id && reviews.length > 0) {
+      const review = findReviewById(id);
+      if (review) {
+        handleViewReview(review);
+      } else {
+        router.replace(ROUTES.ADMIN.REVIEWS);
+      }
+    }
+  }, [
+    action,
+    reviews,
+    findReviewById,
+    selectedReview,
+    handleViewReview,
+    router,
+  ]);
+
   const handleApprove = async (review: Review) => {
     try {
       await updateStatusMutation.mutate({
@@ -65,7 +117,7 @@ export default function AdminReviewsPage() {
         data: { status: "approved" },
       });
       await refetch();
-      setSelectedReview(null);
+      handleBackToList();
     } catch (err) {
       alert("Failed to approve review");
     }
@@ -79,7 +131,7 @@ export default function AdminReviewsPage() {
         data: { status: "rejected", rejectionReason: reason },
       });
       await refetch();
-      setSelectedReview(null);
+      handleBackToList();
     } catch (err) {
       alert("Failed to reject review");
     }
@@ -90,7 +142,7 @@ export default function AdminReviewsPage() {
     try {
       await deleteMutation.mutate(review.id);
       await refetch();
-      setSelectedReview(null);
+      handleBackToList();
     } catch (err) {
       alert("Failed to delete review");
     }
@@ -129,7 +181,7 @@ export default function AdminReviewsPage() {
             className={`w-4 h-4 ${
               star <= rating
                 ? "text-yellow-400"
-                : "text-gray-300 dark:text-gray-600"
+                : THEME_CONSTANTS.themed.textMuted
             }`}
             fill="currentColor"
             viewBox="0 0 20 20"
@@ -158,7 +210,7 @@ export default function AdminReviewsPage() {
           <div>{review.userName}</div>
           {review.verifiedPurchase && (
             <span className="text-xs text-green-600 dark:text-green-400">
-              ✓ Verified
+              âœ“ Verified
             </span>
           )}
         </div>
@@ -183,7 +235,9 @@ export default function AdminReviewsPage() {
       header: "Comment",
       width: "25%",
       render: (review: Review) => (
-        <div className="text-sm text-gray-700 dark:text-gray-300 truncate">
+        <div
+          className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} truncate`}
+        >
           {review.comment.substring(0, 80)}
           {review.comment.length > 80 && "..."}
         </div>
@@ -227,23 +281,25 @@ export default function AdminReviewsPage() {
 
   if (selectedReview) {
     return (
-      <div className="space-y-6">
+      <div className={THEME_CONSTANTS.spacing.stack}>
         <div className="flex items-center justify-between">
           <h1
             className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Review Details
           </h1>
-          <Button onClick={() => setSelectedReview(null)} variant="secondary">
+          <Button onClick={handleBackToList} variant="secondary">
             Back to List
           </Button>
         </div>
 
         <Card>
           <div className={THEME_CONSTANTS.spacing.stack}>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <label
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
                   Product
                 </label>
                 <p className={THEME_CONSTANTS.themed.textPrimary}>
@@ -251,14 +307,16 @@ export default function AdminReviewsPage() {
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <label
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
                   User
                 </label>
                 <p className={THEME_CONSTANTS.themed.textPrimary}>
                   {selectedReview.userName}
                   {selectedReview.verifiedPurchase && (
                     <span className="ml-2 text-xs text-green-600 dark:text-green-400">
-                      ✓ Verified Purchase
+                      âœ“ Verified Purchase
                     </span>
                   )}
                 </p>
@@ -266,7 +324,9 @@ export default function AdminReviewsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label
+                className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+              >
                 Rating
               </label>
               <div className="flex items-center gap-2 mt-1">
@@ -278,7 +338,9 @@ export default function AdminReviewsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label
+                className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+              >
                 Comment
               </label>
               <p
@@ -288,9 +350,11 @@ export default function AdminReviewsPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <label
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
                   Status
                 </label>
                 <p className="mt-1">
@@ -309,7 +373,9 @@ export default function AdminReviewsPage() {
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <label
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
                   Helpful Votes
                 </label>
                 <p className={THEME_CONSTANTS.themed.textPrimary}>
@@ -318,7 +384,9 @@ export default function AdminReviewsPage() {
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <label
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
                   Created
                 </label>
                 <p className={THEME_CONSTANTS.themed.textPrimary}>
@@ -383,15 +451,17 @@ export default function AdminReviewsPage() {
       </div>
 
       <Card>
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Status
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ReviewStatus)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+              className={THEME_CONSTANTS.patterns.adminInput}
             >
               <option value="all">All</option>
               <option value="pending">Pending</option>
@@ -401,13 +471,15 @@ export default function AdminReviewsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Rating
             </label>
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+              className={THEME_CONSTANTS.patterns.adminInput}
             >
               <option value="all">All Ratings</option>
               <option value="5">5 Stars</option>
@@ -419,7 +491,9 @@ export default function AdminReviewsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Search
             </label>
             <input
@@ -427,7 +501,7 @@ export default function AdminReviewsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search products, users..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
         </div>
@@ -449,7 +523,7 @@ export default function AdminReviewsPage() {
           data={reviews}
           columns={tableColumns}
           keyExtractor={(review) => review.id}
-          onRowClick={(review) => setSelectedReview(review)}
+          onRowClick={(review) => handleViewReview(review)}
           actions={(review) => (
             <div className="flex gap-2">
               {review.status !== "approved" && (

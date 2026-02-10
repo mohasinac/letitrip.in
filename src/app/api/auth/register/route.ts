@@ -35,6 +35,9 @@ const registerSchema = z.object({
     .regex(/[a-z]/, ERROR_MESSAGES.PASSWORD.NO_LOWERCASE)
     .regex(/[0-9]/, ERROR_MESSAGES.PASSWORD.NO_NUMBER),
   displayName: z.string().min(2).optional(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: ERROR_MESSAGES.USER.TERMS_NOT_ACCEPTED,
+  }),
 });
 
 export async function POST(request: NextRequest) {
@@ -102,15 +105,26 @@ export async function POST(request: NextRequest) {
     // Create custom token for the user
     const customToken = await auth.createCustomToken(userRecord.uid);
 
-    // Exchange custom token for ID token (client would do this, but we do it server-side)
-    // For now, create session directly
-    const idToken = await auth.createCustomToken(userRecord.uid, {
-      role,
-      emailVerified: false,
+    // Exchange custom token for a real ID token via Firebase REST API
+    // createSessionCookie requires an ID token, NOT a custom token
+    const apiKey =
+      process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey) {
+      throw new ValidationError("Firebase API key not configured");
+    }
+    const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`;
+    const signInResponse = await fetch(signInUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: customToken, returnSecureToken: true }),
     });
+    const signInData = await signInResponse.json();
+    if (!signInData.idToken) {
+      throw new ValidationError("Failed to exchange custom token for ID token");
+    }
 
     // Create session cookie
-    const sessionCookie = await createSessionCookie(idToken);
+    const sessionCookie = await createSessionCookie(signInData.idToken);
 
     // Create session in Firestore for tracking
     const session = await sessionRepository.createSession(userRecord.uid, {

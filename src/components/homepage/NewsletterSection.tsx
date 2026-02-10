@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { Button } from "@/components";
 
 export function NewsletterSection() {
@@ -23,7 +23,7 @@ export function NewsletterSection() {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/newsletter/subscribe", {
+      const response = await fetch(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

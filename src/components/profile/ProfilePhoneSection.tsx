@@ -9,8 +9,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card } from "@/components";
-import { FormField } from "@/components/FormField";
+import { Button, Card, FormField } from "@/components";
 import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";

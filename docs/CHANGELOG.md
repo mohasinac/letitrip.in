@@ -11,6 +11,288 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🛠️ Admin Management Pages with SideDrawer Pattern (Feb 10, 2026)
+
+**Implemented full CRUD admin pages for FAQs, Reviews, Homepage Sections, and Users with URL-driven SideDrawer**
+
+- **Admin FAQs Page** ([src/app/admin/faqs/[[...action]]/page.tsx](src/app/admin/faqs/[[...action]]/page.tsx)):
+  - Full CRUD with DataTable listing (question, category, priority, views, helpful ratio, featured)
+  - SideDrawer for create/edit/delete with URL routing (`/add`, `/edit/:id`, `/delete/:id`)
+  - RichTextEditor for FAQ answers
+  - Variable placeholder helper ({{companyName}}, {{supportEmail}}, etc.)
+  - Unsaved changes detection with dirty form tracking
+  - 10 FAQ categories: General, Account, Payment, Shipping, Returns, Products, Auctions, Orders, Technical, Other
+
+- **Admin Reviews Page** ([src/app/admin/reviews/[[...action]]/page.tsx](src/app/admin/reviews/[[...action]]/page.tsx)):
+  - Review moderation with DataTable (product, user, rating, comment, helpful ratio, status)
+  - Status filters (all, pending, approved, rejected) and rating/search filters
+  - Detail view via URL routing (`/view/:id`)
+  - Approve, reject (with reason), and delete actions
+  - Bulk approve all pending reviews
+  - Star rating display, verified purchase badges
+
+- **Admin Sections Page** ([src/app/admin/sections/[[...action]]/page.tsx](src/app/admin/sections/[[...action]]/page.tsx)):
+  - Homepage section management with DataTable (order, title, type, status)
+  - SideDrawer for create/edit/delete with URL routing
+  - 11 section types: hero, featured-products, featured-auctions, categories, testimonials, stats, cta, blog, faq, newsletter, custom-html
+  - RichTextEditor for descriptions, JSON configuration editor
+  - Order and enabled/disabled toggle
+
+- **Admin Users Page** ([src/app/admin/users/[[...action]]/page.tsx](src/app/admin/users/[[...action]]/page.tsx)):
+  - User management with DataTable (avatar, name, email, role, status, joined, last login)
+  - Tab navigation: All Users, Active, Banned, Admins
+  - SideDrawer detail view via URL routing (`/view/:uid`)
+  - Role management (user, seller, moderator, admin) with inline role switcher
+  - Ban/unban toggle, permanent delete with double confirmation
+  - Search by name/email, role filter
+
+- **SideDrawer Component** ([src/components/ui/SideDrawer.tsx](src/components/ui/SideDrawer.tsx)):
+  - Full-width on mobile, half-width on desktop
+  - Modes: `create`, `edit`, `delete`, `view` with mode-specific header styling
+  - Unsaved changes warning dialog with discard confirmation
+  - Swipe-right-to-close gesture support (via `useSwipe` hook)
+  - Escape key handling, body scroll lock, backdrop click close
+  - Customizable footer for action buttons
+  - Delete mode: red header accent with DELETE badge
+
+#### 🌱 Demo Seed Data System (Feb 10, 2026)
+
+**Implemented comprehensive seed data management with web UI, API, and full test coverage**
+
+- **Seed Data Files** (`scripts/seed-data/`):
+  - [users-seed-data.ts](scripts/seed-data/users-seed-data.ts): 8 users (1 admin, 3 customers, 3 sellers, 1 disabled)
+  - [products-seed-data.ts](scripts/seed-data/products-seed-data.ts): 11 products (smartphones, laptops, fashion, home, sports, auction)
+  - [orders-seed-data.ts](scripts/seed-data/orders-seed-data.ts): 12 orders across all statuses
+  - [reviews-seed-data.ts](scripts/seed-data/reviews-seed-data.ts): 15 reviews (approved, pending, rejected)
+  - [homepage-sections-seed-data.ts](scripts/seed-data/homepage-sections-seed-data.ts): 14 homepage sections
+  - [site-settings-seed-data.ts](scripts/seed-data/site-settings-seed-data.ts): Global singleton config
+  - [index.ts](scripts/seed-data/index.ts): Central barrel export for all seed data
+  - Total: **209 documents** across **11 collections**
+
+- **Demo Seed API** ([src/app/api/demo/seed/route.ts](src/app/api/demo/seed/route.ts)):
+  - `POST /api/demo/seed` with `action: "load" | "delete"`
+  - Development-only (returns 403 in production)
+  - Smart upsert: checks existence, creates new or merges existing
+  - ID-based deletion: only removes documents matching seed data IDs
+  - Special handling: users (Auth + Firestore), siteSettings (singleton), FAQs (auto-generated IDs)
+  - Detailed response metrics (created/updated/deleted/skipped/errors per collection)
+
+- **Demo Seed UI** ([src/app/demo/seed/page.tsx](src/app/demo/seed/page.tsx)):
+  - Client-side collection selector with 11 checkboxes
+  - Load All / Load Selected / Delete All / Delete Selected actions
+  - Real-time result display with detailed metrics
+  - Select All / Deselect All convenience buttons
+  - Confirmation dialogs for delete operations
+  - [README.md](src/app/demo/seed/README.md): 282-line comprehensive documentation
+
+- **Demo Layout** ([src/app/demo/layout.tsx](src/app/demo/layout.tsx)):
+  - `noindex, nofollow` metadata for search engine exclusion
+
+- **Tests**:
+  - [route.test.ts](src/app/api/demo/seed/__tests__/route.test.ts): 509-line API integration tests (environment protection, upsert, delete, error handling, response format)
+  - [page.test.tsx](src/app/demo/seed/__tests__/page.test.tsx): 563-line component tests (rendering, collection selection, load/delete actions, response display, error handling)
+
+#### 🔗 New API Routes (Feb 10, 2026)
+
+**Added 8 new API endpoints for auth, profile, user, and admin operations**
+
+- **Auth Routes**:
+  - `PUT /api/auth/reset-password` ([route.ts](src/app/api/auth/reset-password/route.ts)): Password reset via Firebase token
+  - `POST /api/auth/send-verification` ([route.ts](src/app/api/auth/send-verification/route.ts)): Resend email verification with Firebase Admin link generation
+  - `GET /api/auth/verify-email` ([route.ts](src/app/api/auth/verify-email/route.ts)): Email verification endpoint
+
+- **Profile Routes**:
+  - `POST /api/profile/add-phone` ([route.ts](src/app/api/profile/add-phone/route.ts)): Phone number validation and availability check
+  - `POST /api/profile/verify-phone` ([route.ts](src/app/api/profile/verify-phone/route.ts)): Phone verification with Firestore `phoneVerified` flag update
+
+- **User Routes**:
+  - `POST /api/user/change-password` ([route.ts](src/app/api/user/change-password/route.ts)): Authenticated password change with validation
+
+- **Admin Routes**:
+  - `GET /api/admin/sessions` ([route.ts](src/app/api/admin/sessions/route.ts)): Session listing with user details, active/expired stats, recent activity metrics
+
+#### 📦 Bids Collection Schema (Feb 10, 2026)
+
+**Added complete Firestore schema for auction bids**
+
+- **Schema** ([src/db/schema/bids.ts](src/db/schema/bids.ts)):
+  - `BidDocument` interface with 14 fields (id, productId, userId, bidAmount, status, isWinning, autoMaxBid, etc.)
+  - `BidStatus` type: active, outbid, won, lost, cancelled
+  - `BID_COLLECTION` constant, `BID_INDEXED_FIELDS` (6 fields)
+  - Relationship documentation (users → bids, products → bids)
+  - Cascade behavior specs (user deletion → anonymize, product deletion → cancel bids, auction end → mark winner)
+  - `BidCreateInput`, `BidUpdateInput`, `BidAdminUpdateInput` type utilities
+  - `bidQueryHelpers` with typed query builders (byProduct, byUser, byStatus, winning, active)
+  - `createBidId()` helper for SEO-friendly ID generation
+  - Exported via `src/db/schema/index.ts`
+
+#### 🎨 Comprehensive Global Styling System Overhaul (Feb 10, 2026)
+
+**Implemented uniform styling system with CSS custom properties, enhanced utilities, and zero inline styles**
+
+- **Enhanced globals.css** ([src/app/globals.css](src/app/globals.css)):
+  - Added CSS custom properties (CSS variables) for theme colors
+  - Automatic light/dark mode color switching via `:root` and `.dark`
+  - Variables for backgrounds, text, borders, brand colors, shadows
+  - New `@layer components` with pre-built utility classes:
+    - Button styles: `.btn`, `.btn-primary`, `.btn-secondary`, `.btn-outline`
+    - Input styles: `.input-base` with full dark mode support
+    - Card styles: `.card`, `.card-hover`, `.card-bordered`
+    - Typography: `.heading-1`, `.heading-2`, `.heading-3`, `.body-text`
+    - Container utilities: `.container-max`, `.section-spacing`, `.stack-spacing`
+    - Interactive states: `.interactive-hover`, `.interactive-scale`
+    - Gradients: `.gradient-primary`, `.gradient-secondary`, `.gradient-text`
+  - Expanded utility layer with 30+ new utilities:
+    - Scrollbar utilities: `.scrollbar-hide`, `.scrollbar-thin` (styled)
+    - Safe area utilities: `.safe-top`, `.safe-bottom`, `.safe-left`, `.safe-right`
+    - Text truncation: `.truncate-2`, `.truncate-3`, `.truncate-4`
+    - Aspect ratios: `.aspect-square`, `.aspect-video`, `.aspect-portrait`
+    - Glassmorphism: `.glass`, `.glass-strong`
+    - Grid utilities: `.grid-auto-fill`, `.grid-auto-fit`
+    - Flexbox shortcuts: `.flex-center`, `.flex-between`, `.flex-start`, `.flex-end`
+    - Text shadows: `.text-shadow-sm`, `.text-shadow-md`, `.text-shadow-lg`
+    - User select: `.no-select`
+  - 10 new animation keyframes:
+    - `slideInLeft`, `slideInRight`, `fadeOut`, `scaleIn`, `scaleOut`
+    - `spin`, `pulse`, `bounce`, `shimmer`
+  - Print styles for better document printing
+  - Reduced motion support for accessibility
+  - Focus-visible styles for keyboard navigation
+
+- **Enhanced THEME_CONSTANTS** ([src/constants/theme.ts](src/constants/theme.ts)):
+  - Added `patterns` object with 20+ common component patterns:
+    - `patterns.adminInput` - Admin form input styling
+    - `patterns.adminSelect` - Admin select styling
+    - `patterns.pageContainer` - Full page container
+    - `patterns.sectionContainer` - Section with max-width and padding
+    - `patterns.formContainer` - Form card container
+    - `patterns.listItem` - List item with hover
+    - `patterns.badgeDefault` - Default badge styling
+    - `patterns.linkDefault` - Default link styling
+    - `patterns.iconButton` - Icon button with hover
+    - `patterns.modalOverlay` - Modal backdrop
+    - `patterns.modalContent` - Modal content box
+    - `patterns.divider` - Horizontal divider
+    - `patterns.emptyState` - Empty state message
+    - `patterns.loadingState` - Loading spinner container
+    - `patterns.errorState` - Error message box
+    - `patterns.successState` - Success message box
+  - Added `states` object for component states:
+    - `states.disabled`, `states.loading`, `states.readonly`
+    - `states.error`, `states.success`, `states.focus`
+  - Added `transitions` object with 6 transition presets:
+    - `transitions.default`, `transitions.fast`, `transitions.slow`
+    - `transitions.colors`, `transitions.transform`, `transitions.opacity`
+  - Added `shadows` object with all shadow variants:
+    - `shadows.none`, `shadows.sm` through `shadows.2xl`
+    - `shadows.inner`, `shadows.soft`, `shadows.glow`
+
+- **Enhanced Tailwind Config** ([tailwind.config.js](tailwind.config.js)):
+  - Added 8 new animation utilities:
+    - `animate-fade-out`, `animate-slide-in-left`, `animate-slide-in-right`
+    - `animate-scale-in`, `animate-scale-out`, `animate-shimmer`
+  - Complete keyframes for all animations
+  - Extended animation support for loading states and transitions
+
+- **New Styling Guide** ([docs/STYLING_GUIDE.md](docs/STYLING_GUIDE.md)):
+  - Complete 500+ line styling reference guide
+  - Sections: Overview, Core Principles, Global System, THEME_CONSTANTS Reference
+  - CSS utility classes catalog with examples
+  - Component patterns and best practices
+  - Dark mode implementation guide
+  - Common patterns for admin pages, forms, modals, lists
+  - Migration guide for converting old code
+  - Accessibility guidelines
+  - Animation reference
+  - DO/DON'T examples throughout
+
+**Benefits:**
+
+- ✅ Zero inline styles (except dynamic calculated values)
+- ✅ Uniform styling across all pages and components
+- ✅ Full dark mode support with automatic switching
+- ✅ 50+ pre-built utility classes reduce code duplication
+- ✅ CSS custom properties enable dynamic theming
+- ✅ Better accessibility with focus-visible and reduced motion support
+- ✅ Easier maintenance with centralized styling constants
+- ✅ Faster development with reusable patterns
+- ✅ Print-friendly styles
+- ✅ Mobile-optimized with safe area utilities
+
+**Usage Examples:**
+
+```tsx
+// Before: Raw Tailwind everywhere
+<div className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 p-6 rounded-xl space-y-4">
+  <input className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700" />
+</div>
+
+// After: Using THEME_CONSTANTS and utility classes
+import { THEME_CONSTANTS } from '@/constants';
+const { themed, spacing, borderRadius, patterns } = THEME_CONSTANTS;
+<div className={`${themed.bgSecondary} ${themed.border} border ${spacing.padding.lg} ${borderRadius.xl} ${spacing.stack}`}>
+  <input className={patterns.adminInput} />
+</div>
+
+// Or: Using utility classes from globals.css
+<div className="card">
+  <input className="input-base" />
+</div>
+```
+
+#### 🔧 Codebase-Wide Styling & Import Integration (Feb 10, 2026)
+
+**Applied uniform styling system across all pages and components, fixed all non-barrel imports**
+
+- **Barrel Import Fixes** (37 files):
+  - Fixed all `@/components/*` sub-path imports → `@/components`
+  - Fixed all `@/constants/*` sub-path imports → `@/constants`
+  - Fixed all `@/hooks/*` sub-path imports → `@/hooks`
+  - Fixed all `@/utils/*` sub-path imports → `@/utils`
+  - Created `src/components/providers/index.ts` barrel for MonitoringProvider
+  - Added MonitoringProvider re-export to components barrel
+
+- **Admin Pages Styling** (7 pages):
+  - Replaced all raw input classNames with `THEME_CONSTANTS.patterns.adminInput`
+  - Replaced all raw label classNames with `THEME_CONSTANTS.themed.textPrimary`
+  - Fixed non-responsive grids (`grid-cols-2` → `grid-cols-1 sm:grid-cols-2`)
+  - Replaced hardcoded border/bg/text colors with themed constants
+  - Files: users, site, reviews, faqs, categories, sections, carousel
+
+- **Admin Components Styling** (6 components):
+  - GridEditor: Replaced ~14 hardcoded color classes with THEME_CONSTANTS
+  - BackgroundSettings: Replaced ~14 hardcoded color classes
+  - AdminSessionsManager: Replaced ~14 text color classes
+  - ImageUpload: Replaced borders and text colors
+  - DataTable: Replaced text colors (textPrimary, textSecondary)
+  - CategoryTreeView: Replaced text colors
+
+- **Shared Components** (6 components):
+  - FormField: Added THEME_CONSTANTS for label and help text colors
+  - PasswordStrengthIndicator: Replaced hardcoded text colors
+  - ImageCropModal: Replaced help text colors
+  - AvatarUpload: Replaced border colors
+  - Modal: Removed redundant inline `style={{ position: "fixed" }}`
+  - AvatarDisplay: Replaced hardcoded bg colors, moved static transform to className
+
+- **Homepage Components** (4 components):
+  - HeroCarousel: Replaced skeleton colors with THEME_CONSTANTS
+  - AdvertisementBanner: Replaced skeleton + static background styles
+  - FeaturedProductsSection: Replaced skeleton colors
+  - FeaturedAuctionsSection: Replaced skeleton colors
+
+- **Auth Pages** (login, register):
+  - Merged duplicate imports, replaced hardcoded colors
+  - Mobile-first grid: `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`
+
+- **Profile Page**: Fixed barrel imports, bg/hover/border colors
+
+- **Constants**: Added `UI_LABELS.ACTIONS.VIEW` for admin users page
+
+- **Bug Fixes**:
+  - Fixed duplicate `isDrawerOpen` state declaration in admin users page
+  - Fixed corrupted imports that broke carousel, categories, and Sidebar files
+
 #### 🎨 Dynamic Background System & Comprehensive Responsive Design (Feb 9, 2026)
 
 **Implemented site-wide background customization and fixed all responsive layout issues**

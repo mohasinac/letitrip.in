@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
-import { DataTable } from "@/components/admin";
-import { Card, Button } from "@/components";
+import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { Card, Button, SideDrawer, DataTable } from "@/components";
 import { formatDate, formatDateTime } from "@/utils";
 
 interface User {
@@ -26,11 +26,18 @@ interface User {
 
 type UserTab = "all" | "active" | "banned" | "admins";
 
-export default function AdminUsersPage() {
+interface PageProps {
+  params: Promise<{ action?: string[] }>;
+}
+
+export default function AdminUsersPage({ params }: PageProps) {
+  const { action } = use(params);
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<UserTab>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const queryParams = new URLSearchParams();
   if (activeTab === "active") queryParams.append("disabled", "false");
@@ -58,6 +65,51 @@ export default function AdminUsersPage() {
 
   const users = data?.users || [];
   const total = data?.total || 0;
+  const { patterns, themed } = THEME_CONSTANTS;
+
+  const findUserByUid = useCallback(
+    (uid: string): User | undefined => users.find((u) => u.uid === uid),
+    [users],
+  );
+
+  const handleViewUser = useCallback(
+    (user: User) => {
+      setSelectedUser(user);
+      setIsDrawerOpen(true);
+      if (user.uid && action?.[0] !== "view") {
+        router.push(`${ROUTES.ADMIN.USERS}/view/${user.uid}`);
+      }
+    },
+    [action, router],
+  );
+
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setTimeout(() => {
+      setSelectedUser(null);
+    }, 300);
+    // Clear action from URL
+    if (action?.[0]) {
+      router.replace(ROUTES.ADMIN.USERS);
+    }
+  }, [action, router]);
+
+  // Auto-open drawer based on URL action: /view/:uid
+  useEffect(() => {
+    if (!action?.[0] || isDrawerOpen) return;
+
+    const mode = action[0];
+    const uid = action[1];
+
+    if (mode === "view" && uid && users.length > 0) {
+      const user = findUserByUid(uid);
+      if (user) {
+        handleViewUser(user);
+      } else {
+        router.replace(ROUTES.ADMIN.USERS);
+      }
+    }
+  }, [action, users, findUserByUid, isDrawerOpen, handleViewUser, router]);
 
   const handleRoleChange = async (user: User, newRole: string) => {
     if (
@@ -95,6 +147,7 @@ export default function AdminUsersPage() {
       if (selectedUser?.uid === user.uid) {
         setSelectedUser({ ...user, disabled: !user.disabled });
       }
+      handleCloseDrawer();
     } catch (err) {
       alert(`Failed to ${action} user`);
     }
@@ -113,7 +166,7 @@ export default function AdminUsersPage() {
     try {
       await deleteUserMutation.mutate(user.uid);
       await refetch();
-      setSelectedUser(null);
+      handleCloseDrawer();
     } catch (err) {
       alert("Failed to delete user");
     }
@@ -220,23 +273,138 @@ export default function AdminUsersPage() {
     },
   ];
 
-  if (selectedUser) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+  return (
+    <>
+      <div className={THEME_CONSTANTS.spacing.stack}>
+        <div>
           <h1
             className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
-            User Details
+            Users
           </h1>
-          <Button onClick={() => setSelectedUser(null)} variant="secondary">
-            Back to List
-          </Button>
+          <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
+            Manage user accounts ({total} total)
+          </p>
+        </div>
+
+        <div className={`border-b ${THEME_CONSTANTS.themed.borderColor}`}>
+          <div className="flex gap-4">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab.key
+                    ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400"
+                    : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:text-gray-900 dark:hover:text-gray-200`
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Card>
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                className={`block text-sm font-medium ${themed.textPrimary} mb-2`}
+              >
+                Search
+              </label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by name or email..."
+                className={patterns.adminInput}
+              />
+            </div>
+
+            <div>
+              <label
+                className={`block text-sm font-medium ${themed.textPrimary} mb-2`}
+              >
+                Role Filter
+              </label>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className={patterns.adminSelect}
+                disabled={activeTab === "admins"}
+              >
+                <option value="all">All Roles</option>
+                <option value="user">User</option>
+                <option value="seller">Seller</option>
+                <option value="moderator">Moderator</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+        </Card>
+
+        {isLoading ? (
+          <Card>
+            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+          </Card>
+        ) : error ? (
+          <Card>
+            <div className="text-center py-8">
+              <p className="text-red-600 mb-4">{error.message}</p>
+              <Button onClick={() => refetch()}>
+                {UI_LABELS.ACTIONS.RETRY}
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <DataTable
+            data={users}
+            columns={tableColumns}
+            keyExtractor={(user) => user.uid}
+            onRowClick={handleViewUser}
+            actions={(user) => (
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewUser(user);
+                  }}
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 text-sm"
+                >
+                  {UI_LABELS.ACTIONS.VIEW}
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleBan(user);
+                  }}
+                  className={`${
+                    user.disabled
+                      ? "text-green-600 hover:text-green-800 dark:text-green-400"
+                      : "text-orange-600 hover:text-orange-800 dark:text-orange-400"
+                  } text-sm`}
+                >
+                  {user.disabled ? "Unban" : "Ban"}
+                </button>
+              </div>
+            )}
+          />
+        )}
+      </div>
+
+      {/* Side Drawer for User Details */}
+      {selectedUser && (
+        <SideDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleCloseDrawer}
+          title="User Details"
+          mode="view"
+        >
+          <div className={THEME_CONSTANTS.spacing.stack}>
+            <div
+              className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md}`}
+            >
               {selectedUser.photoURL ? (
                 <img
                   src={selectedUser.photoURL}
@@ -260,7 +428,7 @@ export default function AdminUsersPage() {
                 <p className={THEME_CONSTANTS.themed.textSecondary}>
                   {selectedUser.email}
                 </p>
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-2 flex-wrap">
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded ${
                       selectedUser.role === "admin"
@@ -300,7 +468,7 @@ export default function AdminUsersPage() {
                   User ID
                 </label>
                 <p
-                  className={`${THEME_CONSTANTS.themed.textPrimary} font-mono text-sm`}
+                  className={`${THEME_CONSTANTS.themed.textPrimary} font-mono text-sm break-all`}
                 >
                   {selectedUser.uid}
                 </p>
@@ -339,7 +507,7 @@ export default function AdminUsersPage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Change Role
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {(["user", "seller", "moderator", "admin"] as const).map(
                   (role) => (
                     <button
@@ -376,126 +544,12 @@ export default function AdminUsersPage() {
                 variant="secondary"
                 className="text-red-600 hover:text-red-700"
               >
-                Delete User
+                {UI_LABELS.ACTIONS.DELETE}
               </Button>
             </div>
           </div>
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1
-          className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
-        >
-          Users
-        </h1>
-        <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}>
-          Manage user accounts ({total} total)
-        </p>
-      </div>
-
-      <div className={`border-b ${THEME_CONSTANTS.themed.borderColor}`}>
-        <div className="flex gap-4">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.key
-                  ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400"
-                  : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:text-gray-900 dark:hover:text-gray-200`
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <Card>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Search
-            </label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or email..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Role Filter
-            </label>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-              disabled={activeTab === "admins"}
-            >
-              <option value="all">All Roles</option>
-              <option value="user">User</option>
-              <option value="seller">Seller</option>
-              <option value="moderator">Moderator</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-        </div>
-      </Card>
-
-      {isLoading ? (
-        <Card>
-          <div className="text-center py-8">Loading users...</div>
-        </Card>
-      ) : error ? (
-        <Card>
-          <div className="text-center py-8">
-            <p className="text-red-600 mb-4">{error.message}</p>
-            <Button onClick={() => refetch()}>Retry</Button>
-          </div>
-        </Card>
-      ) : (
-        <DataTable
-          data={users}
-          columns={tableColumns}
-          keyExtractor={(user) => user.uid}
-          onRowClick={(user) => setSelectedUser(user)}
-          actions={(user) => (
-            <div className="flex gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedUser(user);
-                }}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 text-sm"
-              >
-                View
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleToggleBan(user);
-                }}
-                className={`${
-                  user.disabled
-                    ? "text-green-600 hover:text-green-800 dark:text-green-400"
-                    : "text-orange-600 hover:text-orange-800 dark:text-orange-400"
-                } text-sm`}
-              >
-                {user.disabled ? "Unban" : "Ban"}
-              </button>
-            </div>
-          )}
-        />
+        </SideDrawer>
       )}
-    </div>
+    </>
   );
 }

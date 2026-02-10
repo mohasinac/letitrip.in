@@ -15,6 +15,7 @@
  */
 
 type SeedFAQ = {
+  id?: string; // Optional for seedCollection compatibility
   question: string;
   answer: string; // Will be converted to { text: string, format: 'plain' }
   category: string;
@@ -2515,3 +2516,6 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
     createdBy: "system",
   },
 ];
+
+// Export with camelCase name for consistency with other seed data files
+export const faqSeedData = FAQ_SEED_DATA;

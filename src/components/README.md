@@ -257,16 +257,17 @@ User profile management components:
 
 Admin dashboard components:
 
-| Component              | Purpose                           |
-| ---------------------- | --------------------------------- |
-| `AdminTabs`            | Admin navigation tabs             |
-| `AdminStatsCards`      | Statistics cards                  |
-| `AdminSessionsManager` | Session management                |
-| `DataTable`            | Data table with sorting/filtering |
-| `RichTextEditor`       | WYSIWYG editor                    |
-| `ImageUpload`          | Image upload component            |
-| `GridEditor`           | Grid layout editor                |
-| `CategoryTreeView`     | Hierarchical category tree        |
+| Component              | Purpose                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `AdminTabs`            | Admin navigation tabs                                                      |
+| `AdminStatsCards`      | Statistics cards                                                           |
+| `AdminSessionsManager` | Session management                                                         |
+| `DataTable`            | Data table with sorting/filtering                                          |
+| `RichTextEditor`       | WYSIWYG editor                                                             |
+| `SideDrawer`           | Slide-in panel for CRUD operations (full-width mobile, half-width desktop) |
+| `ImageUpload`          | Image upload component                                                     |
+| `GridEditor`           | Grid layout editor                                                         |
+| `CategoryTreeView`     | Hierarchical category tree                                                 |
 
 **Example:**
 

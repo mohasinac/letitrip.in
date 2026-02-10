@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef, useMemo } from "react";
 
 /**
  * Key combination modifiers
@@ -19,7 +19,7 @@ export interface UseKeyPressOptions extends KeyModifiers {
   /** Whether the hook is enabled */
   enabled?: boolean;
   /** Event type to listen for (default: 'keydown') */
-  eventType?: 'keydown' | 'keyup' | 'keypress';
+  eventType?: "keydown" | "keyup" | "keypress";
   /** Prevent default behavior */
   preventDefault?: boolean;
   /** Target element (default: document) */
@@ -28,25 +28,25 @@ export interface UseKeyPressOptions extends KeyModifiers {
 
 /**
  * useKeyPress Hook
- * 
+ *
  * Detects keyboard events with support for key combinations.
  * Useful for keyboard shortcuts and accessibility.
- * 
+ *
  * @param key - Key or array of keys to listen for (e.g., 'Enter', 'Escape', ['a', 'A'])
  * @param callback - Function to call when key is pressed
  * @param options - Configuration options including modifiers
- * 
+ *
  * @example
  * ```tsx
  * // Simple key press
  * useKeyPress('Escape', () => closeModal());
- * 
+ *
  * // Key combination (Ctrl+S)
  * useKeyPress('s', handleSave, {
  *   ctrl: true,
  *   preventDefault: true,
  * });
- * 
+ *
  * // Multiple keys
  * useKeyPress(['Enter', 'NumpadEnter'], handleSubmit);
  * ```
@@ -54,20 +54,27 @@ export interface UseKeyPressOptions extends KeyModifiers {
 export function useKeyPress(
   key: string | string[],
   callback: (event: KeyboardEvent) => void,
-  options: UseKeyPressOptions = {}
+  options: UseKeyPressOptions = {},
 ) {
   const {
     enabled = true,
-    eventType = 'keydown',
+    eventType = "keydown",
     preventDefault = false,
     ctrl = false,
     shift = false,
     alt = false,
     meta = false,
-    target = typeof document !== 'undefined' ? document : null,
+    target = typeof document !== "undefined" ? document : null,
   } = options;
 
-  const keys = Array.isArray(key) ? key : [key];
+  // Memoize keys array to avoid re-creation when `key` is a string
+  const keys = useMemo(() => (Array.isArray(key) ? key : [key]), [key]);
+
+  // Store callback in a ref to keep event listener stable
+  const callbackRef = useRef(callback);
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -89,9 +96,9 @@ export function useKeyPress(
         event.preventDefault();
       }
 
-      callback(event);
+      callbackRef.current(event);
     },
-    [keys, callback, ctrl, shift, alt, meta, preventDefault]
+    [keys, ctrl, shift, alt, meta, preventDefault],
   );
 
   useEffect(() => {

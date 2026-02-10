@@ -10,6 +10,7 @@ import { useSession } from "@/contexts";
 import { UserRole } from "@/types/auth";
 import { hasRouteAccess, isAdmin, isModerator, isSeller } from "@/constants";
 import { hasRole as checkRoleHierarchy } from "@/helpers/auth";
+import { useCallback, useMemo } from "react";
 
 /**
  * Hook to check if user has specific role(s)
@@ -82,14 +83,8 @@ export function useCanAccess(path: string): {
 export function useRoleChecks() {
   const { user } = useSession();
 
-  return {
-    isAuthenticated: !!user,
-    isAdmin: isAdmin(user),
-    isModerator: isModerator(user),
-    isSeller: isSeller(user),
-    isUser: !!user && user.role === "user",
-    role: user?.role || null,
-    hasRole: (role: UserRole | UserRole[]) => {
+  const hasRole = useCallback(
+    (role: UserRole | UserRole[]) => {
       if (!user) return false;
       const userRole = user.role as UserRole;
       const roles = Array.isArray(role) ? role : [role];
@@ -97,7 +92,21 @@ export function useRoleChecks() {
         checkRoleHierarchy(userRole, requiredRole),
       );
     },
-  };
+    [user],
+  );
+
+  return useMemo(
+    () => ({
+      isAuthenticated: !!user,
+      isAdmin: isAdmin(user),
+      isModerator: isModerator(user),
+      isSeller: isSeller(user),
+      isUser: !!user && user.role === "user",
+      role: user?.role || null,
+      hasRole,
+    }),
+    [user, hasRole],
+  );
 }
 
 /**

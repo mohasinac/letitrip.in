@@ -282,6 +282,7 @@ export const THEME_CONSTANTS = {
         "bg-gradient-to-r from-secondary-500 to-secondary-600 text-white hover:from-secondary-600 hover:to-secondary-700",
       outline:
         "border-2 border-primary-600 dark:border-blue-500 text-primary-600 dark:text-blue-400 hover:bg-primary-50 dark:hover:bg-blue-950",
+      danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
       alertClose: "hover:bg-black/5 dark:hover:bg-white/5",
     },
     // Form colors
@@ -450,6 +451,115 @@ export const THEME_CONSTANTS = {
   },
   text: {
     emphasis: "font-bold text-yellow-600 dark:text-yellow-400",
+  },
+
+  /**
+   * Common Component Patterns
+   * Reusable class combinations for common UI patterns
+   */
+  patterns: {
+    // Admin input pattern
+    adminInput:
+      "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white",
+
+    // Admin select pattern
+    adminSelect:
+      "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white",
+
+    // Page container
+    pageContainer: "min-h-screen bg-gray-50 dark:bg-gray-900",
+
+    // Section container
+    sectionContainer: "max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12",
+
+    // Form container
+    formContainer:
+      "bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 lg:p-8 space-y-6",
+
+    // List item
+    listItem:
+      "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-700 transition-colors",
+
+    // Badge default
+    badgeDefault:
+      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+
+    // Link default
+    linkDefault:
+      "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors underline-offset-2 hover:underline",
+
+    // Icon button
+    iconButton:
+      "p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
+
+    // Modal overlay
+    modalOverlay:
+      "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50",
+
+    // Modal content
+    modalContent:
+      "bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-lg w-full mx-4 overflow-hidden",
+
+    // Divider
+    divider: "border-t border-gray-200 dark:border-gray-800",
+
+    // Empty state
+    emptyState:
+      "flex flex-col items-center justify-center py-12 text-center text-gray-500 dark:text-gray-400",
+
+    // Loading state
+    loadingState: "flex items-center justify-center py-8",
+
+    // Error state
+    errorState:
+      "bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-800 dark:text-red-200",
+
+    // Success state
+    successState:
+      "bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-800 dark:text-green-200",
+  },
+
+  /**
+   * CSS Classes for Component States
+   * Utilities for common component states
+   */
+  states: {
+    disabled: "opacity-50 cursor-not-allowed pointer-events-none",
+    loading: "opacity-75 cursor-wait",
+    readonly: "bg-gray-100 dark:bg-gray-800 cursor-default",
+    error: "border-red-500 dark:border-red-500",
+    success: "border-green-500 dark:border-green-500",
+    focus:
+      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+  },
+
+  /**
+   * Transitions
+   * Predefined transition classes for smooth animations
+   */
+  transitions: {
+    default: "transition-all duration-200 ease-in-out",
+    fast: "transition-all duration-150 ease-in-out",
+    slow: "transition-all duration-500 ease-in-out",
+    colors: "transition-colors duration-200 ease-in-out",
+    transform: "transition-transform duration-200 ease-in-out",
+    opacity: "transition-opacity duration-200 ease-in-out",
+  },
+
+  /**
+   * Shadows
+   * Predefined shadow utilities
+   */
+  shadows: {
+    none: "shadow-none",
+    sm: "shadow-sm",
+    md: "shadow-md",
+    lg: "shadow-lg",
+    xl: "shadow-xl",
+    "2xl": "shadow-2xl",
+    inner: "shadow-inner",
+    soft: "shadow-soft",
+    glow: "shadow-glow",
   },
 } as const;
 

@@ -1894,6 +1894,65 @@ if (Object.keys(errors).length === 0) {
 
 ---
 
+### Bids Schema
+
+**File**: `bids.ts`  
+**Collection**: `bids`  
+**Interface**: `BidDocument`
+
+**Fields**:
+
+- `id` (string) - Bid ID
+- `productId` (string) - Auction product reference
+- `productTitle` (string) - Product title
+- `userId` (string) - Bidder user reference
+- `userName` (string) - Bidder display name
+- `userEmail` (string) - Bidder email
+- `bidAmount` (number) - Bid amount
+- `currency` (string) - Currency code (default: INR)
+- `status` (BidStatus) - active | outbid | won | lost | cancelled
+- `isWinning` (boolean) - Currently highest bid
+- `previousBidAmount` (number | undefined) - Previous bid by same user
+- `bidDate` (Date) - When bid was placed
+- `autoMaxBid` (number | undefined) - Maximum auto-bid amount
+- `createdAt` (Date)
+- `updatedAt` (Date)
+
+**Indexed Fields**:
+
+- `productId`, `userId`, `status`, `isWinning`, `bidDate`, `createdAt`
+
+**Relationships**:
+
+- `users (1) → (N) bids`
+- `products (1) → (N) bids` (auction items only)
+
+**Cascade Behavior**:
+
+- User deleted → Keep bids, anonymize userName to "Anonymous Bidder"
+- Product deleted → Keep bids, mark all as "cancelled"
+- Auction ends → Mark highest bid as "won", others as "lost"
+
+**Type Utilities**:
+
+- `BidCreateInput` - For creating bids
+- `BidUpdateInput` - For updating bids (autoMaxBid only)
+- `BidAdminUpdateInput` - For admin updates
+
+**Query Helpers**:
+
+- `bidQueryHelpers.byProduct(productId)` - Query by product
+- `bidQueryHelpers.byUser(userId)` - Query by user
+- `bidQueryHelpers.byStatus(status)` - Query by status
+- `bidQueryHelpers.winning(productId)` - Get winning bid for product
+- `bidQueryHelpers.active()` - Get all active bids
+
+**ID Generation**:
+
+- `createBidId({ productName, userFirstName, date })` - SEO-friendly bid ID
+
+---
+
 ### Site Settings Schema
 
 **File**: `site-settings.ts`  
@@ -2005,6 +2064,20 @@ if (Object.keys(errors).length === 0) {
 **File**: `Dropdown.tsx`  
 **Purpose**: Dropdown menu  
 **Props**: `items`, `trigger`, `position`, `disabled`
+
+#### SideDrawer
+
+**File**: `SideDrawer.tsx`  
+**Purpose**: Full-screen (mobile) / half-screen (desktop) slide-in drawer for CRUD operations  
+**Modes**: `create`, `edit`, `delete`, `view`  
+**Props**: `isOpen`, `onClose`, `title`, `children`, `footer`, `mode`, `isDirty`  
+**Features**:
+
+- Unsaved changes warning dialog when `isDirty` is true and mode is create/edit
+- Swipe-right-to-close gesture support (via `useSwipe` hook)
+- Escape key handling, body scroll lock, backdrop click close
+- Delete mode shows red header accent with DELETE badge
+- Customizable footer slot for action buttons
 
 ---
 
@@ -2443,8 +2516,10 @@ if (Object.keys(errors).length === 0) {
 #### User Management
 
 **Route**: `/admin/users`  
-**File**: `app/admin/users/page.tsx`  
-**Purpose**: Manage users
+**File**: `app/admin/users/[[...action]]/page.tsx`  
+**Purpose**: Manage users with SideDrawer detail view  
+**Features**: DataTable, tab navigation (all/active/banned/admins), search, role filter, role change, ban/unban, delete  
+**URL Actions**: `/view/:uid`
 
 #### Product Management
 
@@ -2473,8 +2548,10 @@ if (Object.keys(errors).length === 0) {
 #### FAQ Management
 
 **Route**: `/admin/faqs`  
-**File**: `app/admin/faqs/page.tsx`  
-**Purpose**: Manage FAQs
+**File**: `app/admin/faqs/[[...action]]/page.tsx`  
+**Purpose**: Manage FAQs with SideDrawer CRUD  
+**Features**: DataTable, RichTextEditor, variable placeholders, create/edit/delete drawer  
+**URL Actions**: `/add`, `/edit/:id`, `/delete/:id`
 
 #### Carousel Management
 
@@ -2484,9 +2561,11 @@ if (Object.keys(errors).length === 0) {
 
 #### Homepage Sections
 
-**Route**: `/admin/homepage-sections`  
-**File**: `app/admin/homepage-sections/page.tsx`  
-**Purpose**: Manage homepage sections
+**Route**: `/admin/sections`  
+**File**: `app/admin/sections/[[...action]]/page.tsx`  
+**Purpose**: Manage homepage sections with SideDrawer CRUD  
+**Features**: DataTable, 11 section types, RichTextEditor, JSON config editor, order/enable toggle  
+**URL Actions**: `/add`, `/edit/:id`, `/delete/:id`
 
 #### Site Settings
 
@@ -2494,11 +2573,39 @@ if (Object.keys(errors).length === 0) {
 **File**: `app/admin/settings/page.tsx`  
 **Purpose**: Site-wide settings
 
+#### Review Management
+
+**Route**: `/admin/reviews`  
+**File**: `app/admin/reviews/[[...action]]/page.tsx`  
+**Purpose**: Moderate product reviews with detail view  
+**Features**: DataTable, status/rating/search filters, approve/reject/delete, bulk approve, star ratings  
+**URL Actions**: `/view/:id`
+
 #### Session Management
 
 **Route**: `/admin/sessions`  
 **File**: `app/admin/sessions/page.tsx`  
 **Purpose**: View and revoke user sessions
+
+---
+
+### Demo Pages
+
+#### Demo Seed Manager
+
+**Route**: `/demo/seed`  
+**File**: `app/demo/seed/page.tsx`  
+**Layout**: `app/demo/layout.tsx` (noindex metadata)  
+**Purpose**: Development-only web interface for managing Firestore seed data  
+**Features**:
+
+- Collection selector (11 collections, 209 total documents)
+- Load All / Load Selected / Delete All / Delete Selected actions
+- Smart upsert (creates new or merges existing documents)
+- ID-based deletion (only removes seed data, safe for other data)
+- Real-time result display with detailed metrics (created/updated/deleted/skipped/errors)
+- Returns 403 in production (`NODE_ENV !== 'development'`)
+- Comprehensive [README](../src/app/demo/seed/README.md) with usage guide
 
 ---
 
@@ -2576,9 +2683,11 @@ if (Object.keys(errors).length === 0) {
 - `POST /api/auth/register` - Register
 - `POST /api/auth/logout` - Logout
 - `POST /api/auth/verify-email` - Verify email
-- `POST /api/auth/resend-verification` - Resend verification
+- `GET /api/auth/verify-email` - Verify email via token
+- `POST /api/auth/send-verification` - Resend verification email
+- `POST /api/auth/resend-verification` - Resend verification (legacy)
 - `POST /api/auth/forgot-password` - Request password reset
-- `POST /api/auth/reset-password` - Reset password
+- `PUT /api/auth/reset-password` - Reset password with token
 - `GET /api/auth/me` - Get current user
 
 ### User API
@@ -2588,6 +2697,7 @@ if (Object.keys(errors).length === 0) {
 - `PUT /api/users/:id` - Update user
 - `DELETE /api/users/:id` - Delete user (admin)
 - `GET /api/users/:id/profile` - Get public profile
+- `POST /api/user/change-password` - Change password (authenticated)
 
 ### Profile API
 
@@ -2595,6 +2705,8 @@ if (Object.keys(errors).length === 0) {
 - `PUT /api/profile` - Update profile
 - `PUT /api/profile/avatar` - Update avatar
 - `PUT /api/profile/password` - Change password
+- `POST /api/profile/add-phone` - Validate and check phone number availability
+- `POST /api/profile/verify-phone` - Verify phone and update Firestore flag
 
 ### Product API
 
@@ -2670,6 +2782,10 @@ if (Object.keys(errors).length === 0) {
 - `GET /api/settings` - Get site settings
 - `PUT /api/settings` - Update site settings (admin)
 
+### Admin API
+
+- `GET /api/admin/sessions` - List all sessions with user details and stats (admin/moderator)
+
 ### Session API
 
 - `GET /api/sessions` - List all sessions (admin)
@@ -2681,6 +2797,10 @@ if (Object.keys(errors).length === 0) {
 ### Upload API
 
 - `POST /api/upload` - Upload file to Firebase Storage
+
+### Demo API
+
+- `POST /api/demo/seed` - Load or delete seed data (development only)
 
 ---
 
@@ -2961,11 +3081,11 @@ This guide provides a complete reference for:
 - ✅ **40+ Helper Functions** - Auth, Data, UI (business logic)
 - ✅ **20+ Snippets** - React hooks, API requests, Form validation, Performance
 - ✅ **14 Repositories** - Complete data access layer with type-safe queries
-- ✅ **13 Database Schemas** - Firestore collections with relationships and indices
-- ✅ **60+ Components** - UI, Forms, Layout, Admin, Auth, Profile, etc.
-- ✅ **30+ Pages** - Public, Auth, User, Admin routes
+- ✅ **14 Database Schemas** - Firestore collections with relationships and indices (incl. bids)
+- ✅ **60+ Components** - UI, Forms, Layout, Admin, Auth, Profile, etc. (incl. SideDrawer)
+- ✅ **35+ Pages** - Public, Auth, User, Admin, Demo routes
 - ✅ **Multiple Type Definitions** - Auth, API, Database types
-- ✅ **40+ API Endpoints** - RESTful API with authentication
+- ✅ **50+ API Endpoints** - RESTful API with authentication (incl. demo seed, phone, sessions)
 - ✅ **20+ Lib Modules** - API client, Email, Firebase, Security, Validation, Errors, Monitoring
 
 ---

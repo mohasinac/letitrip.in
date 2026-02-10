@@ -73,7 +73,9 @@ export default function BackgroundSettings({
     <Card>
       <div className="space-y-6">
         {/* Header with Tabs */}
-        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+        <div
+          className={`flex items-center justify-between border-b ${THEME_CONSTANTS.themed.borderColor}`}
+        >
           <h2
             className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} pb-4`}
           >
@@ -112,7 +114,7 @@ export default function BackgroundSettings({
                 className={`px-4 py-3 rounded-lg border-2 transition-all capitalize ${
                   config.type === type
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    : `${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.hoverBorder}`
                 }`}
               >
                 {type === "color" && "🎨"}
@@ -137,14 +139,14 @@ export default function BackgroundSettings({
                 type="color"
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
-                className="w-20 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                className={`w-20 h-12 rounded-lg border ${THEME_CONSTANTS.themed.border} cursor-pointer`}
               />
               <input
                 type="text"
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
                 placeholder="#000000"
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
               />
             </div>
           </div>
@@ -163,7 +165,7 @@ export default function BackgroundSettings({
                 onChange={(e) => updateConfig({ value: e.target.value })}
                 placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+                className={`${THEME_CONSTANTS.patterns.adminInput} font-mono text-sm`}
               />
             </div>
             <div>
@@ -177,7 +179,7 @@ export default function BackgroundSettings({
                   <button
                     key={preset.name}
                     onClick={() => updateConfig({ value: preset.value })}
-                    className="relative h-20 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 overflow-hidden transition-all group"
+                    className={`relative h-20 rounded-lg border-2 ${THEME_CONSTANTS.themed.border} hover:border-blue-500 overflow-hidden transition-all group`}
                     style={{ background: preset.value }}
                   >
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -204,10 +206,12 @@ export default function BackgroundSettings({
               value={config.value}
               onChange={(e) => updateConfig({ value: e.target.value })}
               placeholder="https://example.com/background.jpg"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
             {config.value && (
-              <div className="mt-3 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+              <div
+                className={`mt-3 rounded-lg overflow-hidden border ${THEME_CONSTANTS.themed.border}`}
+              >
                 <img
                   src={config.value}
                   alt="Background preview"
@@ -230,16 +234,18 @@ export default function BackgroundSettings({
               value={config.value}
               onChange={(e) => updateConfig({ value: e.target.value })}
               placeholder="https://example.com/background.mp4"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p
+              className={`mt-2 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
+            >
               Note: Video will auto-play, loop, and be muted for better UX
             </p>
           </div>
         )}
 
         {/* Overlay Settings */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div className={`border-t ${THEME_CONSTANTS.themed.borderColor} pt-6`}>
           <div className="flex items-center gap-3 mb-4">
             <input
               type="checkbox"
@@ -275,13 +281,13 @@ export default function BackgroundSettings({
                     type="color"
                     value={config.overlay.color}
                     onChange={(e) => updateOverlay({ color: e.target.value })}
-                    className="w-12 h-10 rounded border border-gray-300 dark:border-gray-600"
+                    className={`w-12 h-10 rounded border ${THEME_CONSTANTS.themed.border}`}
                   />
                   <input
                     type="text"
                     value={config.overlay.color}
                     onChange={(e) => updateOverlay({ color: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm`}
                   />
                 </div>
               </div>
@@ -308,14 +314,14 @@ export default function BackgroundSettings({
         </div>
 
         {/* Preview */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div className={`border-t ${THEME_CONSTANTS.themed.borderColor} pt-6`}>
           <label
             className={`block text-sm font-medium mb-3 ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Preview
           </label>
           <div
-            className="relative h-40 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600"
+            className={`relative h-40 rounded-lg overflow-hidden border-2 ${THEME_CONSTANTS.themed.border}`}
             style={{
               background:
                 config.type === "color" || config.type === "gradient"

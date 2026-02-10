@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Card, Button } from "@/components";
-import { BackgroundSettings } from "@/components/admin";
+import { Card, Button, BackgroundSettings } from "@/components";
 import type { SiteSettingsDocument } from "@/db/schema";
 
 /**
@@ -104,9 +103,11 @@ export default function AdminSiteSettings() {
         >
           Basic Information
         </h2>
-        <div className="space-y-4">
+        <div className={THEME_CONSTANTS.spacing.stack}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Site Name
             </label>
             <input
@@ -115,12 +116,14 @@ export default function AdminSiteSettings() {
               onChange={(e) =>
                 setSettings({ ...settings, siteName: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Motto / Tagline
             </label>
             <input
@@ -129,7 +132,7 @@ export default function AdminSiteSettings() {
               onChange={(e) =>
                 setSettings({ ...settings, motto: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
         </div>
@@ -142,10 +145,12 @@ export default function AdminSiteSettings() {
         >
           Contact Information
         </h2>
-        <div className="space-y-4">
+        <div className={THEME_CONSTANTS.spacing.stack}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+              >
                 Support Email
               </label>
               <input
@@ -157,12 +162,14 @@ export default function AdminSiteSettings() {
                     contact: { ...settings.contact!, email: e.target.value },
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className={THEME_CONSTANTS.patterns.adminInput}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+              >
                 Support Phone
               </label>
               <input
@@ -174,13 +181,15 @@ export default function AdminSiteSettings() {
                     contact: { ...settings.contact!, phone: e.target.value },
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className={THEME_CONSTANTS.patterns.adminInput}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Address
             </label>
             <textarea
@@ -192,7 +201,7 @@ export default function AdminSiteSettings() {
                 })
               }
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
         </div>
@@ -207,7 +216,9 @@ export default function AdminSiteSettings() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Facebook
             </label>
             <input
@@ -223,12 +234,14 @@ export default function AdminSiteSettings() {
                 })
               }
               placeholder="https://facebook.com/yourpage"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Twitter
             </label>
             <input
@@ -244,12 +257,14 @@ export default function AdminSiteSettings() {
                 })
               }
               placeholder="https://twitter.com/yourhandle"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               Instagram
             </label>
             <input
@@ -265,12 +280,14 @@ export default function AdminSiteSettings() {
                 })
               }
               placeholder="https://instagram.com/yourprofile"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+            >
               LinkedIn
             </label>
             <input
@@ -286,7 +303,7 @@ export default function AdminSiteSettings() {
                 })
               }
               placeholder="https://linkedin.com/company/yourcompany"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
         </div>

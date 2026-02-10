@@ -23,7 +23,7 @@
  * ```
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { ApiClientError } from "@/lib/api-client";
 
 interface UseApiMutationOptions<TData, TVariables> {
@@ -55,56 +55,59 @@ export function useApiMutation<TData = any, TVariables = any>(
   const [error, setError] = useState<ApiClientError | null>(null);
   const [data, setData] = useState<TData | undefined>(undefined);
 
+  // Store options in a ref so mutate callback stays stable
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   const reset = useCallback(() => {
     setIsLoading(false);
     setError(null);
     setData(undefined);
   }, []);
 
-  const mutate = useCallback(
-    async (variables: TVariables): Promise<TData> => {
-      setIsLoading(true);
-      setError(null);
+  const mutate = useCallback(async (variables: TVariables): Promise<TData> => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const result = await options.mutationFn(variables);
-        setData(result);
+    try {
+      const result = await optionsRef.current.mutationFn(variables);
+      setData(result);
 
-        if (options.onSuccess) {
-          await options.onSuccess(result, variables);
-        }
-
-        if (options.onSettled) {
-          await options.onSettled(result, null, variables);
-        }
-
-        return result;
-      } catch (err) {
-        const apiError =
-          err instanceof ApiClientError
-            ? err
-            : new ApiClientError(
-                err instanceof Error ? err.message : "An error occurred",
-                500,
-              );
-
-        setError(apiError);
-
-        if (options.onError) {
-          await options.onError(apiError, variables);
-        }
-
-        if (options.onSettled) {
-          await options.onSettled(undefined, apiError, variables);
-        }
-
-        throw apiError;
-      } finally {
-        setIsLoading(false);
+      if (optionsRef.current.onSuccess) {
+        await optionsRef.current.onSuccess(result, variables);
       }
-    },
-    [options],
-  );
+
+      if (optionsRef.current.onSettled) {
+        await optionsRef.current.onSettled(result, null, variables);
+      }
+
+      return result;
+    } catch (err) {
+      const apiError =
+        err instanceof ApiClientError
+          ? err
+          : new ApiClientError(
+              err instanceof Error ? err.message : "An error occurred",
+              500,
+            );
+
+      setError(apiError);
+
+      if (optionsRef.current.onError) {
+        await optionsRef.current.onError(apiError, variables);
+      }
+
+      if (optionsRef.current.onSettled) {
+        await optionsRef.current.onSettled(undefined, apiError, variables);
+      }
+
+      throw apiError;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   return {
     mutate,

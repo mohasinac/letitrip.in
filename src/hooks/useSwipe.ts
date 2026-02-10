@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useRef, useEffect, RefObject } from 'react';
+import { useRef, useEffect, RefObject } from "react";
 
 /**
  * Swipe direction types
  */
-export type SwipeDirection = 'left' | 'right' | 'up' | 'down';
+export type SwipeDirection = "left" | "right" | "up" | "down";
 
 /**
  * Configuration options for useSwipe hook
@@ -18,7 +18,11 @@ export interface UseSwipeOptions {
   /** Threshold for swipe velocity (pixels/ms, default: 0.3) */
   velocityThreshold?: number;
   /** Callback when swipe is detected */
-  onSwipe?: (direction: SwipeDirection, distance: number, velocity: number) => void;
+  onSwipe?: (
+    direction: SwipeDirection,
+    distance: number,
+    velocity: number,
+  ) => void;
   /** Callback for specific directions */
   onSwipeLeft?: (distance: number, velocity: number) => void;
   onSwipeRight?: (distance: number, velocity: number) => void;
@@ -36,29 +40,29 @@ export interface UseSwipeOptions {
 
 /**
  * useSwipe Hook
- * 
+ *
  * Detects swipe gestures on touch and mouse events.
  * Works on both mobile (touch) and desktop (mouse drag).
- * 
+ *
  * @param ref - Reference to the element to attach swipe handlers
  * @param options - Configuration options for swipe detection
- * 
+ *
  * @example
  * ```tsx
  * const ref = useRef<HTMLDivElement>(null);
- * 
+ *
  * useSwipe(ref, {
  *   onSwipeLeft: () => console.log('Swiped left'),
  *   onSwipeRight: () => console.log('Swiped right'),
  *   minSwipeDistance: 100,
  * });
- * 
+ *
  * return <div ref={ref}>Swipe me!</div>;
  * ```
  */
 export function useSwipe<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T | null>,
-  options: UseSwipeOptions = {}
+  options: UseSwipeOptions = {},
 ) {
   const {
     minSwipeDistance = 50,
@@ -75,8 +79,45 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
     preventDefault = false,
   } = options;
 
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
+    null,
+  );
   const isSwiping = useRef(false);
+
+  // Store callbacks in refs to avoid re-subscribing event listeners on every render
+  const onSwipeRef = useRef(onSwipe);
+  const onSwipeLeftRef = useRef(onSwipeLeft);
+  const onSwipeRightRef = useRef(onSwipeRight);
+  const onSwipeUpRef = useRef(onSwipeUp);
+  const onSwipeDownRef = useRef(onSwipeDown);
+  const onSwipingRef = useRef(onSwiping);
+  const onSwipeStartRef = useRef(onSwipeStart);
+  const onSwipeEndRef = useRef(onSwipeEnd);
+
+  useEffect(() => {
+    onSwipeRef.current = onSwipe;
+  }, [onSwipe]);
+  useEffect(() => {
+    onSwipeLeftRef.current = onSwipeLeft;
+  }, [onSwipeLeft]);
+  useEffect(() => {
+    onSwipeRightRef.current = onSwipeRight;
+  }, [onSwipeRight]);
+  useEffect(() => {
+    onSwipeUpRef.current = onSwipeUp;
+  }, [onSwipeUp]);
+  useEffect(() => {
+    onSwipeDownRef.current = onSwipeDown;
+  }, [onSwipeDown]);
+  useEffect(() => {
+    onSwipingRef.current = onSwiping;
+  }, [onSwiping]);
+  useEffect(() => {
+    onSwipeStartRef.current = onSwipeStart;
+  }, [onSwipeStart]);
+  useEffect(() => {
+    onSwipeEndRef.current = onSwipeEnd;
+  }, [onSwipeEnd]);
 
   useEffect(() => {
     const element = ref.current;
@@ -92,7 +133,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
         time: Date.now(),
       };
       isSwiping.current = true;
-      onSwipeStart?.();
+      onSwipeStartRef.current?.();
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -103,7 +144,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       const deltaX = touch.clientX - touchStartRef.current.x;
       const deltaY = touch.clientY - touchStartRef.current.y;
 
-      onSwiping?.(deltaX, deltaY);
+      onSwipingRef.current?.(deltaX, deltaY);
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
@@ -119,7 +160,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
 
       touchStartRef.current = null;
       isSwiping.current = false;
-      onSwipeEnd?.();
+      onSwipeEndRef.current?.();
     };
 
     // Mouse Events (for desktop support)
@@ -131,7 +172,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
         time: Date.now(),
       };
       isSwiping.current = true;
-      onSwipeStart?.();
+      onSwipeStartRef.current?.();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -141,7 +182,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       const deltaX = e.clientX - touchStartRef.current.x;
       const deltaY = e.clientY - touchStartRef.current.y;
 
-      onSwiping?.(deltaX, deltaY);
+      onSwipingRef.current?.(deltaX, deltaY);
     };
 
     const handleMouseUp = (e: MouseEvent) => {
@@ -156,10 +197,14 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
 
       touchStartRef.current = null;
       isSwiping.current = false;
-      onSwipeEnd?.();
+      onSwipeEndRef.current?.();
     };
 
-    const processSwipe = (deltaX: number, deltaY: number, deltaTime: number) => {
+    const processSwipe = (
+      deltaX: number,
+      deltaY: number,
+      deltaTime: number,
+    ) => {
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -178,54 +223,47 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       let direction: SwipeDirection;
       if (absX > absY) {
         // Horizontal swipe
-        direction = deltaX > 0 ? 'right' : 'left';
-        if (direction === 'left') {
-          onSwipeLeft?.(distance, velocity);
+        direction = deltaX > 0 ? "right" : "left";
+        if (direction === "left") {
+          onSwipeLeftRef.current?.(distance, velocity);
         } else {
-          onSwipeRight?.(distance, velocity);
+          onSwipeRightRef.current?.(distance, velocity);
         }
       } else {
         // Vertical swipe
-        direction = deltaY > 0 ? 'down' : 'up';
-        if (direction === 'up') {
-          onSwipeUp?.(distance, velocity);
+        direction = deltaY > 0 ? "down" : "up";
+        if (direction === "up") {
+          onSwipeUpRef.current?.(distance, velocity);
         } else {
-          onSwipeDown?.(distance, velocity);
+          onSwipeDownRef.current?.(distance, velocity);
         }
       }
 
-      onSwipe?.(direction, distance, velocity);
+      onSwipeRef.current?.(direction, distance, velocity);
     };
 
     // Add event listeners
-    element.addEventListener('touchstart', handleTouchStart, { passive: !preventDefault });
-    element.addEventListener('touchmove', handleTouchMove, { passive: !preventDefault });
-    element.addEventListener('touchend', handleTouchEnd, { passive: !preventDefault });
-    element.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    element.addEventListener("touchstart", handleTouchStart, {
+      passive: !preventDefault,
+    });
+    element.addEventListener("touchmove", handleTouchMove, {
+      passive: !preventDefault,
+    });
+    element.addEventListener("touchend", handleTouchEnd, {
+      passive: !preventDefault,
+    });
+    element.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     // Cleanup
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart);
-      element.removeEventListener('touchmove', handleTouchMove);
-      element.removeEventListener('touchend', handleTouchEnd);
-      element.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      element.removeEventListener("touchstart", handleTouchStart);
+      element.removeEventListener("touchmove", handleTouchMove);
+      element.removeEventListener("touchend", handleTouchEnd);
+      element.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    minSwipeDistance,
-    maxSwipeTime,
-    velocityThreshold,
-    onSwipe,
-    onSwipeLeft,
-    onSwipeRight,
-    onSwipeUp,
-    onSwipeDown,
-    onSwiping,
-    onSwipeStart,
-    onSwipeEnd,
-    preventDefault,
-  ]);
+  }, [ref, minSwipeDistance, maxSwipeTime, velocityThreshold, preventDefault]);
 }

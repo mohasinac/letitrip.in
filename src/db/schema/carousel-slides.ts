@@ -14,7 +14,7 @@ import {
 // ============================================
 export interface GridCard {
   id: string;
-  gridPosition: { row: number; col: number }; // 9x9 grid (1-9)
+  gridPosition: { row: number; col: number }; // 3x3 grid (1-3)
   mobilePosition?: { row: number; col: number }; // 2x2 grid (1-2)
   width: number; // Grid cells span
   height: number; // Grid cells span

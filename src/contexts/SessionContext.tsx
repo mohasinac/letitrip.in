@@ -20,6 +20,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import {
   User,
@@ -123,6 +124,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const activityUpdateRef = useRef<NodeJS.Timeout | null>(null);
   const firestoreUnsubscribeRef = useRef<(() => void) | null>(null);
+  const updateSessionActivityRef = useRef<(() => Promise<void>) | undefined>(
+    undefined,
+  );
+  const signOutRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   // Get session ID from cookie
   const getSessionIdFromCookie = useCallback((): string | null => {
@@ -138,12 +143,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, []);
 
   // Check if session cookie exists
+  // NOTE: __session is httpOnly and can't be read by JS.
+  // We check __session_id instead (httpOnly: false) as a proxy.
   const hasSessionCookie = useCallback((): boolean => {
     if (typeof document === "undefined") return false;
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       const [name] = cookie.trim().split("=");
-      if (name === "__session") {
+      if (name.trim() === "__session_id") {
         return true;
       }
     }
@@ -228,7 +235,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     if (!currentSessionId || !user) return;
 
     try {
-      await fetch("/api/auth/session/activity", {
+      await fetch(API_ENDPOINTS.AUTH.SESSION_ACTIVITY, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: currentSessionId }),
@@ -238,6 +245,11 @@ export function SessionProvider({ children }: SessionProviderProps) {
       console.debug("Session activity update failed:", error);
     }
   }, [user, getSessionIdFromCookie]);
+
+  // Keep ref in sync so the effect doesn't depend on the callback identity
+  useEffect(() => {
+    updateSessionActivityRef.current = updateSessionActivity;
+  }, [updateSessionActivity]);
 
   // Refresh user data
   const refreshUser = useCallback(async () => {
@@ -251,14 +263,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
   // Refresh session (validate with server)
   const refreshSession = useCallback(async () => {
     try {
-      const response = await fetch("/api/auth/session/validate", {
+      const response = await fetch(API_ENDPOINTS.AUTH.SESSION_VALIDATE, {
         method: "GET",
         credentials: "include",
       });
 
       if (!response.ok) {
         // Session invalid, sign out
-        await signOut();
+        await signOutRef.current?.();
         return;
       }
 
@@ -279,7 +291,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
       // Clear session on server (with cookies)
       try {
-        await fetch("/api/auth/logout", {
+        await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
           method: "POST",
           credentials: "include",
         });
@@ -319,9 +331,18 @@ export function SessionProvider({ children }: SessionProviderProps) {
     }
   }, []);
 
+  // Keep signOut ref in sync
+  useEffect(() => {
+    signOutRef.current = signOut;
+  }, [signOut]);
+
   // Listen for auth state changes
   useEffect(() => {
+    let authVersion = 0;
+
     const unsubscribe = firebaseOnAuthStateChanged(auth, async (authUser) => {
+      const thisVersion = ++authVersion;
+
       if (authUser) {
         // Verify session cookie exists
         const hasSession = hasSessionCookie();
@@ -331,13 +352,15 @@ export function SessionProvider({ children }: SessionProviderProps) {
           // Create session automatically
           try {
             const idToken = await authUser.getIdToken(true);
-            const response = await fetch("/api/auth/session", {
+            if (thisVersion !== authVersion) return; // stale, discard
+            const response = await fetch(API_ENDPOINTS.AUTH.CREATE_SESSION, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ idToken }),
               credentials: "include",
             });
 
+            if (thisVersion !== authVersion) return;
             if (response.ok) {
               const data = await response.json();
               setSessionId(data.sessionId);
@@ -347,8 +370,11 @@ export function SessionProvider({ children }: SessionProviderProps) {
           }
         }
 
+        if (thisVersion !== authVersion) return;
+
         // Fetch user profile
         const userData = await fetchUserProfile(authUser);
+        if (thisVersion !== authVersion) return;
         setUser(userData);
 
         // Get session ID from cookie
@@ -365,7 +391,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
           clearInterval(activityUpdateRef.current);
         }
         activityUpdateRef.current = setInterval(
-          updateSessionActivity,
+          () => updateSessionActivityRef.current?.(),
           5 * 60 * 1000,
         );
       } else {
@@ -399,6 +425,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     });
 
     return () => {
+      authVersion++; // Invalidate any in-flight async work
       unsubscribe();
       if (firestoreUnsubscribeRef.current) {
         firestoreUnsubscribeRef.current();
@@ -412,19 +439,29 @@ export function SessionProvider({ children }: SessionProviderProps) {
     getSessionIdFromCookie,
     hasSessionCookie,
     subscribeToUserProfile,
-    updateSessionActivity,
   ]);
 
-  const value: SessionContextValue = {
-    user,
-    loading,
-    sessionId,
-    isAuthenticated: !!user && !!sessionId,
-    refreshUser,
-    refreshSession,
-    signOut,
-    updateSessionActivity,
-  };
+  const value = useMemo<SessionContextValue>(
+    () => ({
+      user,
+      loading,
+      sessionId,
+      isAuthenticated: !!user && !!sessionId,
+      refreshUser,
+      refreshSession,
+      signOut,
+      updateSessionActivity,
+    }),
+    [
+      user,
+      loading,
+      sessionId,
+      refreshUser,
+      refreshSession,
+      signOut,
+      updateSessionActivity,
+    ],
+  );
 
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>

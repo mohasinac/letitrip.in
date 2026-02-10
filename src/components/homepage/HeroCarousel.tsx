@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, UI_LABELS } from "@/constants";
+import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 
 interface CarouselCard {
   id: string;
-  gridPosition: { row: number; col: number }; // 9x9 grid (1-9)
+  gridPosition: { row: number; col: number }; // 3x3 grid (1-3)
   mobilePosition?: { row: number; col: number }; // 2x2 grid (1-2)
   width: number; // Grid cells span
   height: number; // Grid cells span
@@ -89,9 +89,13 @@ export function HeroCarousel() {
 
   if (isLoading) {
     return (
-      <div className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-gray-100 dark:bg-gray-800 animate-pulse">
+      <div
+        className={`relative w-full aspect-[16/9] md:aspect-[21/9] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
+      >
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-gray-500">{UI_LABELS.LOADING.DEFAULT}</p>
+          <p className={THEME_CONSTANTS.themed.textSecondary}>
+            {UI_LABELS.LOADING.DEFAULT}
+          </p>
         </div>
       </div>
     );
@@ -123,7 +127,7 @@ export function HeroCarousel() {
   const getGridPosition = (card: CarouselCard) => {
     const pos =
       isMobile && card.mobilePosition ? card.mobilePosition : card.gridPosition;
-    const gridSize = isMobile ? 2 : 9;
+    const gridSize = isMobile ? 2 : 3;
 
     return {
       gridRow: `${pos.row} / span ${card.height}`,
@@ -172,8 +176,8 @@ export function HeroCarousel() {
       <div
         className="absolute inset-0 grid gap-2 md:gap-4 p-4 md:p-8"
         style={{
-          gridTemplateRows: `repeat(${isMobile ? 2 : 9}, 1fr)`,
-          gridTemplateColumns: `repeat(${isMobile ? 2 : 9}, 1fr)`,
+          gridTemplateRows: `repeat(${isMobile ? 2 : 3}, 1fr)`,
+          gridTemplateColumns: `repeat(${isMobile ? 2 : 3}, 1fr)`,
         }}
       >
         {slide.cards.map((card) => {

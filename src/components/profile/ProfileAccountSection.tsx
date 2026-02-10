@@ -2,12 +2,9 @@
  * Profile Account Section Component
  */
 
-import { Card, Button } from "@/components";
-import { FormField } from "@/components/FormField";
-import { Heading } from "@/components/typography/Typography";
-import Text from "@/components/Text";
-import { THEME_CONSTANTS } from "@/constants";
-import { useForm } from "@/hooks/useForm";
+import { Card, Button, FormField, Heading, Text } from "@/components";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useForm } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 
 interface AccountSectionProps {
@@ -26,9 +23,12 @@ export function ProfileAccountSection({
   const deleteForm = useForm({
     initialValues: { password: "", confirmation: "" },
     onSubmit: async (values) => {
-      const response = await apiClient.post("/api/profile/delete-account", {
-        password: values.password,
-      });
+      const response = await apiClient.post(
+        API_ENDPOINTS.PROFILE.DELETE_ACCOUNT,
+        {
+          password: values.password,
+        },
+      );
 
       if (response.success) {
         onSuccess("Account deleted successfully");

@@ -26,7 +26,7 @@
  * ```
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ApiClientError } from "@/lib/api-client";
 import { CacheManager } from "@/classes";
 
@@ -89,11 +89,28 @@ export function useApiQuery<TData = any>(
     };
   }, []);
 
+  // Store unstable callback props in refs so fetchData identity stays stable
+  const queryFnRef = useRef(queryFn);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  useEffect(() => {
+    queryFnRef.current = queryFn;
+  }, [queryFn]);
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
+
+  // Track whether we have data via ref (avoids including `data` in deps)
+  const hasDataRef = useRef(!!cachedData);
+
   const fetchData = useCallback(async () => {
     if (!enabled) return;
 
     setIsFetching(true);
-    if (!data && !cachedData) {
+    if (!hasDataRef.current) {
       setIsLoading(true);
     }
 
@@ -104,7 +121,7 @@ export function useApiQuery<TData = any>(
       if (inflightRequests.has(cacheKey)) {
         result = (await inflightRequests.get(cacheKey)) as TData;
       } else {
-        const promise = queryFn();
+        const promise = queryFnRef.current();
         inflightRequests.set(cacheKey, promise);
         try {
           result = await promise;
@@ -120,11 +137,12 @@ export function useApiQuery<TData = any>(
 
       if (!mountedRef.current) return;
 
+      hasDataRef.current = true;
       setData(result);
       setError(null);
 
-      if (onSuccess) {
-        onSuccess(result);
+      if (onSuccessRef.current) {
+        onSuccessRef.current(result);
       }
     } catch (err) {
       if (!mountedRef.current) return;
@@ -139,8 +157,8 @@ export function useApiQuery<TData = any>(
 
       setError(apiError);
 
-      if (onError) {
-        onError(apiError);
+      if (onErrorRef.current) {
+        onErrorRef.current(apiError);
       }
     } finally {
       if (mountedRef.current) {
@@ -148,29 +166,25 @@ export function useApiQuery<TData = any>(
         setIsFetching(false);
       }
     }
-  }, [
-    enabled,
-    queryFn,
-    onSuccess,
-    onError,
-    data,
-    cacheKey,
-    cacheTTL,
-    cachedData,
-  ]);
+  }, [enabled, cacheKey, cacheTTL]);
 
   // Initial fetch (or background revalidation if we have cached data)
   useEffect(() => {
     fetchData();
   }, [cacheKey, enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Refetch interval
+  // Refetch interval — use ref so interval doesn't reset on fetchData identity change
+  const fetchDataRef = useRef(fetchData);
+  useEffect(() => {
+    fetchDataRef.current = fetchData;
+  }, [fetchData]);
+
   useEffect(() => {
     if (!refetchInterval || !enabled) return;
 
-    const interval = setInterval(fetchData, refetchInterval);
+    const interval = setInterval(() => fetchDataRef.current(), refetchInterval);
     return () => clearInterval(interval);
-  }, [refetchInterval, enabled, fetchData]);
+  }, [refetchInterval, enabled]);
 
   return {
     data,

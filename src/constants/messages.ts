@@ -46,6 +46,7 @@ export const ERROR_MESSAGES = {
     INSUFFICIENT_ROLE_PERMISSION:
       "You do not have permission to assign this role",
     ACCOUNT_DISABLED: "Your account has been disabled",
+    TERMS_NOT_ACCEPTED: "You must accept the terms and conditions to register",
   },
 
   // Password Errors
@@ -171,6 +172,7 @@ export const SUCCESS_MESSAGES = {
     PASSWORD_CHANGED: "Password changed successfully",
     SETTINGS_SAVED: "Settings saved successfully",
     USER_UPDATED: "User updated successfully",
+    PHONE_VERIFIED: "Phone number verified successfully",
   },
 
   // Upload Success

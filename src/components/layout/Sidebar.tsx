@@ -8,12 +8,13 @@ import {
   ROUTES,
   API_ENDPOINTS,
   ERROR_MESSAGES,
+  SIDEBAR_NAV_GROUPS,
+  SITE_CONFIG,
+  UI_LABELS,
 } from "@/constants";
-import { SIDEBAR_NAV_GROUPS } from "@/constants/navigation";
-import { SITE_CONFIG } from "@/constants/site";
 import { useSwipe, useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
-import { preventBodyScroll } from "@/utils/events";
+import { preventBodyScroll } from "@/utils";
 import { apiClient } from "@/lib/api-client";
 
 /**
@@ -30,6 +31,7 @@ import { apiClient } from "@/lib/api-client";
  *   isOpen={sidebarOpen}
  *   isDark={isDark}
  *   onClose={() => setSidebarOpen(false)}
+ *   onToggleTheme={toggleTheme}
  * />
  * ```
  */
@@ -38,9 +40,15 @@ interface SidebarProps {
   isOpen: boolean;
   isDark: boolean;
   onClose: () => void;
+  onToggleTheme: () => void;
 }
 
-export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  isDark,
+  onClose,
+  onToggleTheme,
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -697,6 +705,85 @@ export default function Sidebar({ isOpen, isDark, onClose }: SidebarProps) {
                 );
               })}
             </ul>
+          </div>
+
+          {/* Theme Toggle - Always visible */}
+          <div className="space-y-2">
+            <div
+              className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+            >
+              <div
+                className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+              ></div>
+              <h3
+                className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
+              >
+                {UI_LABELS.NAV.SETTINGS}
+              </h3>
+              <div
+                className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+              ></div>
+            </div>
+
+            <button
+              onClick={onToggleTheme}
+              className={`
+                flex items-center gap-3 px-3 py-2.5 rounded-lg w-full
+                transition-all duration-200 group
+                ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}
+              `}
+              aria-label="Toggle theme"
+            >
+              <div
+                className={`
+                  flex-shrink-0 p-1.5 rounded-md transition-colors
+                  bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}
+                `}
+              >
+                <svg
+                  className={`w-4 h-4 ${THEME_CONSTANTS.themed.textMuted}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {isDark ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    />
+                  )}
+                </svg>
+              </div>
+              <span
+                className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
+              >
+                {UI_LABELS.NAV.DARK_MODE}
+              </span>
+              {/* Toggle indicator */}
+              <div
+                className={`
+                  relative w-10 h-5 rounded-full transition-colors duration-200
+                  ${isDark ? "bg-primary-600" : "bg-gray-300 dark:bg-gray-600"}
+                `}
+              >
+                <div
+                  className={`
+                    absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm
+                    transition-transform duration-200
+                    ${isDark ? "translate-x-5" : "translate-x-0.5"}
+                  `}
+                />
+              </div>
+            </button>
           </div>
         </nav>
       </div>

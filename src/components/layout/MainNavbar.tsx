@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants";
-import { MAIN_NAV_ITEMS } from "@/constants/navigation";
+import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import NavItem from "./NavItem";
 
 /**

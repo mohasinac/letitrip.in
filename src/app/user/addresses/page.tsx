@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Spinner } from "@/components";
-import UserTabs from "@/components/user/UserTabs";
+import { Card, Heading, Text, Button, Spinner, UserTabs } from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS } from "@/constants";
+import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 export default function UserAddressesPage() {
   const { user, loading } = useAuth();
@@ -33,7 +32,7 @@ export default function UserAddressesPage() {
     <div className="w-full">
       <UserTabs />
 
-      <div className="space-y-6 mt-6">
+      <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
         <div className="flex items-center justify-between">
           <Heading level={3}>My Addresses</Heading>
           <Button

@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
-import { Card, Heading, Text, Button, Badge } from "@/components";
-import UserTabs from "@/components/user/UserTabs";
+import { Card, Heading, Text, Button, Badge, UserTabs } from "@/components";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants";
-import { ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 
 interface OrderItem {
@@ -149,12 +147,16 @@ export default function OrderViewPage() {
 
         {/* Order Header */}
         <Card className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div
+            className={`flex flex-col md:flex-row md:items-center md:justify-between ${THEME_CONSTANTS.spacing.gap.md}`}
+          >
             <div>
               <Heading level={4}>Order #{order.orderNumber}</Heading>
               <Text className="text-sm mt-1">Placed on {order.date}</Text>
             </div>
-            <div className="flex items-center gap-3">
+            <div
+              className={`flex items-center ${THEME_CONSTANTS.spacing.inline}`}
+            >
               <Badge className={getStatusColor(order.status)}>
                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>
@@ -176,7 +178,7 @@ export default function OrderViewPage() {
             {order.items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-4 pb-4 border-b last:border-b-0 last:pb-0"
+                className={`flex ${THEME_CONSTANTS.spacing.gap.md} pb-4 border-b last:border-b-0 last:pb-0`}
               >
                 <img
                   src={item.image}
@@ -203,7 +205,9 @@ export default function OrderViewPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="mt-6 pt-6 border-t space-y-2">
+          <div
+            className={`mt-6 pt-6 border-t ${THEME_CONSTANTS.spacing.stackSmall}`}
+          >
             <div className="flex justify-between">
               <Text>Subtotal</Text>
               <Text>{formatCurrency(order.subtotal, "INR")}</Text>
@@ -225,13 +229,15 @@ export default function OrderViewPage() {
           </div>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div
+          className={`grid grid-cols-1 md:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.lg}`}
+        >
           {/* Shipping Address */}
           <Card className="p-6">
             <Heading level={5} className="mb-4">
               Shipping Address
             </Heading>
-            <div className="space-y-1">
+            <div className={THEME_CONSTANTS.spacing.stackSmall}>
               <Text className="font-semibold">
                 {order.shippingAddress.fullName}
               </Text>

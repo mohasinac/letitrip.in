@@ -10,6 +10,7 @@ export * from "./tokens";
 export * from "./products";
 export * from "./orders";
 export * from "./reviews";
+export * from "./bids";
 export * from "./sessions";
 
 // Platform configuration schemas

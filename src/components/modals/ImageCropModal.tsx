@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Modal, Button } from "@/components";
-import { Text } from "@/components/typography";
+import { Modal, Button, Text } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 export interface ImageCropData {
@@ -336,7 +335,9 @@ export function ImageCropModal({
         )}
 
         {/* Position Info */}
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+        <div
+          className={`flex items-center justify-between text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
+        >
           <span>
             {UI_LABELS.AVATAR.POSITION}: {position.x.toFixed(0)}%,{" "}
             {position.y.toFixed(0)}%

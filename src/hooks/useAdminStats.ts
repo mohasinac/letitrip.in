@@ -5,7 +5,7 @@
  * Fetch and manage admin dashboard statistics
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/api-client";
 
 interface AdminStats {
@@ -30,11 +30,7 @@ export function useAdminStats() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await apiClient.get<{
@@ -44,12 +40,18 @@ export function useAdminStats() {
       if (response.success) {
         setStats(response.data);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to load statistics");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to load statistics",
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   return { stats, isLoading, error, refresh: fetchStats };
 }

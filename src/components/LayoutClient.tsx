@@ -104,8 +104,6 @@ export default function LayoutClient({
         darkMode={backgroundConfig.darkMode}
       />
       <TitleBar
-        isDark={isDark}
-        onToggleTheme={toggleTheme}
         onToggleSidebar={handleToggleSidebar}
         sidebarOpen={sidebarOpen}
         onSearchToggle={() => setSearchOpen(!searchOpen)}
@@ -128,19 +126,11 @@ export default function LayoutClient({
 
       {/* Content with Sidebar */}
       <div className="flex flex-1 relative w-full overflow-x-hidden">
-        {/* Overlay - shows when sidebar is open with smooth fade */}
-        {sidebarOpen && (
-          <div
-            className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 ${THEME_CONSTANTS.zIndex.overlay}`}
-            onClick={handleToggleSidebar}
-            aria-hidden="true"
-          />
-        )}
-
         <Sidebar
           isOpen={sidebarOpen}
           isDark={isDark}
           onClose={handleToggleSidebar}
+          onToggleTheme={toggleTheme}
         />
 
         {/* Main Content - modern spacing and transitions */}

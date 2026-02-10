@@ -296,6 +296,77 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ---
 
+## 🌱 Database Seeding
+
+### Seed All Data
+
+```powershell
+npx ts-node scripts/seed-all-data.ts
+```
+
+Seeds all collections with sample data for development and testing.
+
+**What it seeds:**
+
+- Users (Auth + Firestore)
+- Categories (hierarchical structure)
+- Products (regular + auction items)
+- Orders (various statuses)
+- Reviews (approved, pending, rejected)
+- Coupons (percentage, fixed, free shipping, BOGO)
+- Carousel Slides (homepage hero)
+- Homepage Sections (configurable sections)
+- Site Settings (global config)
+- FAQs (common questions)
+
+**Options:**
+
+```powershell
+# Seed specific collections only
+npx ts-node scripts/seed-all-data.ts --collections=users,products,categories
+
+# Dry run (preview without changes)
+npx ts-node scripts/seed-all-data.ts --dry-run
+
+# Verbose output
+npx ts-node scripts/seed-all-data.ts --verbose
+
+# Combine options
+npx ts-node scripts/seed-all-data.ts --collections=users,products --dry-run -v
+```
+
+**⚠️ Warning:** This will overwrite existing data. Use with caution!
+
+---
+
+### Individual Seed Scripts
+
+Seed data files are located in `scripts/seed-data/`:
+
+- `users-seed-data.ts` - Sample users (admin, customers, sellers)
+- `categories-seed-data.ts` - Hierarchical category tree
+- `products-seed-data.ts` - Products across categories
+- `orders-seed-data.ts` - Orders with various statuses
+- `reviews-seed-data.ts` - Product reviews
+- `coupons-seed-data.ts` - Discount coupons
+- `carousel-slides-seed-data.ts` - Homepage carousel
+- `homepage-sections-seed-data.ts` - Homepage sections config
+- `site-settings-seed-data.ts` - Global site settings
+- `faq-seed-data.ts` - FAQs
+
+**Import seed data:**
+
+```typescript
+import {
+  usersSeedData,
+  categoriesSeedData,
+  productsSeedData,
+  // ... other seed data
+} from "./seed-data";
+```
+
+---
+
 ## 📚 Additional Resources
 
 - [Firebase Console](https://console.firebase.google.com/)
@@ -312,3 +383,4 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 - Rotate sensitive keys regularly
 - Review Vercel environment variable access logs
 - Use least-privilege principle for API keys
+- **Seed data is for development only** - Do not use in production

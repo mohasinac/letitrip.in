@@ -8,7 +8,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
 import type { SessionDocument } from "@/db/schema/sessions";
 
 interface SessionWithUser extends SessionDocument {
@@ -46,7 +46,9 @@ export function useAdminSessions(limit = 100) {
   return useApiQuery<SessionsResponse>({
     queryKey: ["admin-sessions", limit.toString()],
     queryFn: () =>
-      apiClient.get<SessionsResponse>(`/api/admin/sessions?limit=${limit}`),
+      apiClient.get<SessionsResponse>(
+        `${API_ENDPOINTS.ADMIN.SESSIONS}?limit=${limit}`,
+      ),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 }
@@ -58,7 +60,9 @@ export function useUserSessions(userId: string | null) {
   return useApiQuery<SessionsResponse>({
     queryKey: ["user-sessions", userId || ""],
     queryFn: () =>
-      apiClient.get<SessionsResponse>(`/api/admin/sessions?userId=${userId}`),
+      apiClient.get<SessionsResponse>(
+        `${API_ENDPOINTS.ADMIN.SESSIONS}?userId=${userId}`,
+      ),
     enabled: !!userId,
   });
 }
@@ -72,10 +76,13 @@ export function useRevokeSession() {
     { sessionId: string }
   >({
     mutationFn: async ({ sessionId }) => {
-      const response = await fetch(`/api/admin/sessions/${sessionId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        API_ENDPOINTS.ADMIN.REVOKE_SESSION(sessionId),
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -96,7 +103,7 @@ export function useRevokeUserSessions() {
     { userId: string }
   >({
     mutationFn: async ({ userId }) => {
-      const response = await fetch("/api/admin/sessions/revoke-user", {
+      const response = await fetch(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -119,7 +126,8 @@ export function useRevokeUserSessions() {
 export function useMySessions() {
   return useApiQuery<UserSessionsResponse>({
     queryKey: ["my-sessions"],
-    queryFn: () => apiClient.get<UserSessionsResponse>("/api/user/sessions"),
+    queryFn: () =>
+      apiClient.get<UserSessionsResponse>(API_ENDPOINTS.USER.SESSIONS),
   });
 }
 
@@ -132,10 +140,13 @@ export function useRevokeMySession() {
     { sessionId: string }
   >({
     mutationFn: async ({ sessionId }) => {
-      const response = await fetch(`/api/user/sessions/${sessionId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        API_ENDPOINTS.USER.REVOKE_SESSION(sessionId),
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
       if (!response.ok) {
         const data = await response.json();

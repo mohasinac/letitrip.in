@@ -13,6 +13,11 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: "/api/auth/forgot-password",
     RESET_PASSWORD: "/api/auth/reset-password",
     REFRESH_TOKEN: "/api/auth/refresh-token",
+    RESEND_VERIFICATION: "/api/auth/send-verification",
+    CREATE_SESSION: "/api/auth/session",
+    DESTROY_SESSION: "/api/auth/session",
+    SESSION_ACTIVITY: "/api/auth/session/activity",
+    SESSION_VALIDATE: "/api/auth/session/validate",
   },
 
   // User endpoints
@@ -21,6 +26,8 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: "/api/user/change-password",
     UPDATE_PROFILE: "/api/user/profile",
     DELETE_ACCOUNT: "/api/user/account",
+    SESSIONS: "/api/user/sessions",
+    REVOKE_SESSION: (id: string) => `/api/user/sessions/${id}`,
   },
 
   // Profile endpoints
@@ -35,6 +42,9 @@ export const API_ENDPOINTS = {
   // Admin endpoints
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
+    SESSIONS: "/api/admin/sessions",
+    REVOKE_SESSION: (id: string) => `/api/admin/sessions/${id}`,
+    REVOKE_USER_SESSIONS: "/api/admin/sessions/revoke-user",
   },
 
   // TODO - Phase 2: Add authentication and implement full CRUD operations
@@ -109,6 +119,16 @@ export const API_ENDPOINTS = {
     UPLOAD: "/api/media/upload", // POST - Upload file to Cloud Storage
     CROP: "/api/media/crop", // POST - Crop image
     TRIM: "/api/media/trim", // POST - Trim video
+  },
+
+  // Newsletter endpoints
+  NEWSLETTER: {
+    SUBSCRIBE: "/api/newsletter/subscribe", // POST - Subscribe to newsletter
+  },
+
+  // Logging endpoints
+  LOGS: {
+    WRITE: "/api/logs/write", // POST - Write log entry
   },
 } as const;
 

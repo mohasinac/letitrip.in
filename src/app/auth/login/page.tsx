@@ -23,11 +23,16 @@ import { useState, FormEvent, Suspense, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert, Spinner } from "@/components";
-import { UI_LABELS, API_ENDPOINTS, ERROR_MESSAGES, ROUTES } from "@/constants";
+import {
+  UI_LABELS,
+  API_ENDPOINTS,
+  ERROR_MESSAGES,
+  ROUTES,
+  THEME_CONSTANTS,
+} from "@/constants";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import { THEME_CONSTANTS } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/hooks";
 
@@ -126,7 +131,7 @@ function LoginForm() {
 
   return (
     <div className="flex items-center justify-center py-8 sm:py-12 w-full">
-      <div className="max-w-md w-full space-y-8">
+      <div className={`max-w-md w-full ${THEME_CONSTANTS.spacing.stack}`}>
         {/* Header */}
         <div>
           <div className="flex justify-center">
@@ -160,7 +165,10 @@ function LoginForm() {
         )}
 
         {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form
+          className={`mt-8 ${THEME_CONSTANTS.spacing.stack}`}
+          onSubmit={handleSubmit}
+        >
           <div className={THEME_CONSTANTS.spacing.stack}>
             <Input
               id="email"
@@ -201,11 +209,11 @@ function LoginForm() {
                 onChange={(e) =>
                   setFormData({ ...formData, rememberMe: e.target.checked })
                 }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className={`h-4 w-4 text-blue-600 focus:ring-blue-500 ${THEME_CONSTANTS.themed.border} rounded`}
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900 dark:text-gray-300"
+                className={`ml-2 block text-sm ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Remember me
               </label>
@@ -235,17 +243,21 @@ function LoginForm() {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+            <div
+              className={`w-full border-t ${THEME_CONSTANTS.themed.border}`}
+            ></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-950 text-gray-500">
+            <span
+              className={`px-2 ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textMuted}`}
+            >
               Or continue with
             </span>
           </div>
         </div>
 
         {/* Social Login Buttons */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button
             type="button"
             variant="outline"

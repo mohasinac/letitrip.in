@@ -13,6 +13,9 @@ import {
   parseResponse,
   mockAdminUser,
   mockSellerUser,
+  getSeedProducts,
+  getSeedUsers,
+  getSeedCategories,
 } from "./helpers";
 
 // ============================================
@@ -77,53 +80,26 @@ jest.mock("@/lib/errors", () => ({
 import { GET, POST } from "../products/route";
 
 // ============================================
-// Mock data
+// Mock data - Using actual seed data for realistic tests
 // ============================================
 
+// ============================================
+// Mock data - Using actual seed data for realistic tests
+// ============================================
+
+const seedProducts = getSeedProducts();
+const seedUsers = getSeedUsers();
+const seedCategories = getSeedCategories();
+
 const mockProducts = [
-  {
-    id: "prod-1",
-    title: "Wireless Headphones",
-    category: "electronics",
-    subcategory: "audio",
-    status: "active",
-    sellerId: "seller-1",
-    price: 4999,
-    featured: true,
-    isAuction: false,
-    isPromoted: true,
-    createdAt: new Date("2026-02-01"),
-  },
-  {
-    id: "prod-2",
-    title: "Leather Wallet",
-    category: "accessories",
-    subcategory: "wallets",
-    status: "active",
-    sellerId: "seller-2",
-    price: 1299,
-    featured: false,
-    isAuction: false,
-    isPromoted: false,
-    createdAt: new Date("2026-02-03"),
-  },
-  {
-    id: "prod-3",
-    title: "Vintage Watch",
-    category: "accessories",
-    subcategory: "watches",
-    status: "draft",
-    sellerId: "seller-1",
-    price: 25000,
-    featured: false,
-    isAuction: true,
-    isPromoted: false,
-    createdAt: new Date("2026-02-05"),
-  },
+  seedProducts.iphone15ProMax,
+  seedProducts.samsungGalaxyS24,
+  seedProducts.macbookPro16,
 ];
 
 // ============================================
 // Tests
+// ============================================
 // ============================================
 
 describe("Products API - GET /api/products", () => {

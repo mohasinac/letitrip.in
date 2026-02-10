@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import type { ThemeMode } from "@/constants";
 
 interface ThemeContextType {
@@ -27,7 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyTheme(initialTheme);
   }, []);
 
-  const applyTheme = (newTheme: ThemeMode) => {
+  const applyTheme = useCallback((newTheme: ThemeMode) => {
     const root = document.documentElement;
 
     if (newTheme === "dark") {
@@ -37,23 +44,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     root.setAttribute("data-theme", newTheme);
-  };
+  }, []);
 
-  const setTheme = (newTheme: ThemeMode) => {
-    setThemeState(newTheme);
-    localStorage.setItem("theme", newTheme);
-    applyTheme(newTheme);
-  };
+  const setTheme = useCallback(
+    (newTheme: ThemeMode) => {
+      setThemeState(newTheme);
+      localStorage.setItem("theme", newTheme);
+      applyTheme(newTheme);
+    },
+    [applyTheme],
+  );
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  };
+  const toggleTheme = useCallback(() => {
+    setThemeState((prev) => {
+      const newTheme = prev === "light" ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      applyTheme(newTheme);
+      return newTheme;
+    });
+  }, [applyTheme]);
+
+  const value = useMemo(
+    () => ({ theme, toggleTheme, setTheme }),
+    [theme, toggleTheme, setTheme],
+  );
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 

@@ -94,7 +94,7 @@ export const PasswordStrengthIndicator: React.FC<
               className={`text-xs flex items-center gap-2 ${
                 req.met
                   ? "text-green-600 dark:text-green-400"
-                  : "text-gray-500 dark:text-gray-400"
+                  : THEME_CONSTANTS.themed.textSecondary
               }`}
             >
               {req.met ? (

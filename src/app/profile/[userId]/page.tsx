@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Card, Badge, Alert } from "@/components";
-import { Text } from "@/components/typography";
-import { AvatarDisplay } from "@/components";
+import { Card, Badge, Alert, Text, AvatarDisplay } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { formatDate } from "@/utils";
 import type { UserDocument } from "@/db/schema/users";
@@ -90,7 +88,7 @@ export default function PublicProfilePage() {
       : null);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 h-48" />
 
@@ -103,7 +101,7 @@ export default function PublicProfilePage() {
               <AvatarDisplay
                 cropData={avatarCropData}
                 size="2xl"
-                className="border-4 border-white dark:border-gray-800 shadow-lg"
+                className={`border-4 ${THEME_CONSTANTS.themed.border} shadow-lg`}
               />
             </div>
 
@@ -178,7 +176,7 @@ export default function PublicProfilePage() {
                     href={`https://twitter.com/${user.publicProfile.socialLinks.twitter}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className={`p-2 rounded-lg ${THEME_CONSTANTS.themed.hover}`}
                   >
                     <svg
                       className="w-5 h-5"
@@ -194,7 +192,7 @@ export default function PublicProfilePage() {
                     href={`https://instagram.com/${user.publicProfile.socialLinks.instagram}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className={`p-2 rounded-lg ${THEME_CONSTANTS.themed.hover}`}
                   >
                     <svg
                       className="w-5 h-5"
@@ -210,7 +208,7 @@ export default function PublicProfilePage() {
                     href={`https://linkedin.com/in/${user.publicProfile.socialLinks.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className={`p-2 rounded-lg ${THEME_CONSTANTS.themed.hover}`}
                   >
                     <svg
                       className="w-5 h-5"
@@ -314,7 +312,7 @@ export default function PublicProfilePage() {
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-5 h-5 ${i < Math.floor(user.stats?.rating || 0) ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+                    className={`w-5 h-5 ${i < Math.floor(user.stats?.rating || 0) ? "text-yellow-400" : THEME_CONSTANTS.themed.textMuted}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >

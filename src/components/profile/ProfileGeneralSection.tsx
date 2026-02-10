@@ -3,11 +3,9 @@
  */
 
 import { useState } from "react";
-import { Card, Button } from "@/components";
-import { FormField } from "@/components/FormField";
-import { Heading } from "@/components/typography/Typography";
-import { THEME_CONSTANTS } from "@/constants";
-import { useForm } from "@/hooks/useForm";
+import { Card, Button, FormField, Heading } from "@/components";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useForm } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { uploadProfilePhoto } from "@/lib/firebase/storage";
 
@@ -28,7 +26,10 @@ export function ProfileGeneralSection({
   const form = useForm({
     initialValues: { displayName: user?.displayName || "" },
     onSubmit: async (values) => {
-      const response = await apiClient.patch("/api/profile", values);
+      const response = await apiClient.patch(
+        API_ENDPOINTS.PROFILE.UPDATE,
+        values,
+      );
       if (response.success) {
         onSuccess("Profile updated successfully");
       } else {
@@ -44,7 +45,7 @@ export function ProfileGeneralSection({
     setUploading(true);
     try {
       const photoURL = await uploadProfilePhoto(user.uid, file);
-      await apiClient.patch("/api/profile", { photoURL });
+      await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE, { photoURL });
       onSuccess("Profile photo updated");
     } catch (error: any) {
       onError(error.message || "Failed to upload photo");

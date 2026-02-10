@@ -14,24 +14,24 @@ import {
   Alert,
   AvatarUpload,
   Spinner,
+  FormField,
+  PasswordStrengthIndicator,
+  Text,
+  useToast,
+  UserTabs,
 } from "@/components";
 import type { ImageCropData } from "@/components";
-import { FormField } from "@/components/FormField";
-import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
-import { Text } from "@/components/typography";
-import { useToast } from "@/components/feedback";
-import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
-import { THEME_CONSTANTS } from "@/constants/theme";
-import { ROUTES } from "@/constants/routes";
 import {
+  THEME_CONSTANTS,
+  ROUTES,
   UI_LABELS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   UI_PLACEHOLDERS,
   UI_HELP_TEXT,
+  API_ENDPOINTS,
 } from "@/constants";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 export default function UserSettingsPage() {
   const { user: profile, loading, refreshUser } = useAuth();
@@ -292,7 +292,7 @@ export default function UserSettingsPage() {
         )}
 
         {/* Email Verification Card */}
-        <Card className="p-6">
+        <Card className={THEME_CONSTANTS.spacing.padding.lg}>
           <Heading level={5} className="mb-4">
             {UI_LABELS.FORM.EMAIL_VERIFICATION}
           </Heading>
@@ -374,7 +374,7 @@ export default function UserSettingsPage() {
 
         {/* Phone Verification Card */}
         {profile?.phoneNumber && (
-          <Card className="p-6">
+          <Card className={THEME_CONSTANTS.spacing.padding.lg}>
             <Heading level={5} className="mb-4">
               {UI_LABELS.FORM.PHONE_VERIFICATION}
             </Heading>
@@ -383,7 +383,7 @@ export default function UserSettingsPage() {
               className={`p-4 rounded-lg border-2 ${
                 profile?.phoneVerified
                   ? "bg-green-50 dark:bg-green-900/20 border-green-500"
-                  : `${THEME_CONSTANTS.themed.bgTertiary} border-gray-300 dark:border-gray-600`
+                  : `${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.themed.border}`
               }`}
             >
               <div className="flex items-start gap-4">
@@ -404,7 +404,7 @@ export default function UserSettingsPage() {
                     </svg>
                   ) : (
                     <svg
-                      className="w-6 h-6 text-gray-400 dark:text-gray-500"
+                      className={`w-6 h-6 ${THEME_CONSTANTS.themed.textMuted}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -439,7 +439,7 @@ export default function UserSettingsPage() {
         )}
 
         {/* Profile Information */}
-        <Card className="p-6">
+        <Card className={THEME_CONSTANTS.spacing.padding.lg}>
           <Heading level={5} className="mb-4">
             {UI_LABELS.PROFILE.PROFILE_INFORMATION}
           </Heading>
@@ -491,7 +491,7 @@ export default function UserSettingsPage() {
         </Card>
 
         {/* Password Change */}
-        <Card className="p-6">
+        <Card className={THEME_CONSTANTS.spacing.padding.lg}>
           <Heading level={5} className="mb-4">
             {UI_LABELS.ACTIONS.CHANGE_PASSWORD}
           </Heading>
@@ -583,12 +583,12 @@ export default function UserSettingsPage() {
         </Card>
 
         {/* Account Information */}
-        <Card className="p-6">
+        <Card className={THEME_CONSTANTS.spacing.padding.lg}>
           <Heading level={5} className="mb-4">
             {UI_LABELS.PROFILE.ACCOUNT_INFORMATION}
           </Heading>
 
-          <div className="space-y-3">
+          <div className={THEME_CONSTANTS.spacing.stackSmall}>
             <div>
               <p className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
                 {UI_LABELS.FORM.EMAIL}

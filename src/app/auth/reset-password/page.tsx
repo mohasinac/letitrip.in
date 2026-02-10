@@ -9,11 +9,17 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Card, Button, Alert, Spinner } from "@/components";
-import { FormField } from "@/components/FormField";
-import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
-import { Heading, Text } from "@/components/typography";
-import { useResetPassword } from "@/hooks/useAuth";
+import {
+  Card,
+  Button,
+  Alert,
+  Spinner,
+  FormField,
+  PasswordStrengthIndicator,
+  Heading,
+  Text,
+} from "@/components";
+import { useResetPassword } from "@/hooks";
 import {
   ERROR_MESSAGES,
   ROUTES,

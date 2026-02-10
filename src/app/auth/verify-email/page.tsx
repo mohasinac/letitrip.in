@@ -8,13 +8,12 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card, Button, Alert, Spinner } from "@/components";
-import { Heading, Text } from "@/components/typography";
+import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
 import {
   onAuthStateChanged,
   getCurrentUser,
 } from "@/lib/firebase/auth-helpers";
-import { ROUTES, UI_LABELS } from "@/constants";
+import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 function VerifyEmailContent() {
   const router = useRouter();
@@ -153,7 +152,7 @@ function VerifyEmailContent() {
               The verification link may have expired or is invalid. Please
               request a new verification email.
             </Text>
-            <div className="space-y-3">
+            <div className={THEME_CONSTANTS.spacing.stackSmall}>
               <Button
                 variant="primary"
                 onClick={() => router.push(ROUTES.USER.PROFILE)}

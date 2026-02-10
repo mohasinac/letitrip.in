@@ -1,11 +1,6 @@
 import "./globals.css";
-import {
-  LayoutClient,
-  ThemeProvider,
-  ToastProvider,
-  SessionProvider,
-} from "@/index";
-import { MonitoringProvider } from "@/components/providers/MonitoringProvider";
+import { LayoutClient, MonitoringProvider, ToastProvider } from "@/components";
+import { ThemeProvider, SessionProvider } from "@/contexts";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 

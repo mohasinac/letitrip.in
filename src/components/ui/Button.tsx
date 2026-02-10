@@ -17,7 +17,7 @@ import { THEME_CONSTANTS } from "@/constants";
  */
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
 }
@@ -36,6 +36,7 @@ export default function Button({
     secondary: `${colors.button.secondary} shadow-md hover:shadow-lg ${button.active}`,
     outline: `${colors.button.outline} ${button.active}`,
     ghost: `${themed.textPrimary} ${themed.hover} ${button.active}`,
+    danger: `${colors.button.danger} shadow-sm hover:shadow-md ${button.active}`,
   };
 
   const sizes = {

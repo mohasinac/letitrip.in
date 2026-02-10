@@ -304,6 +304,33 @@ export function generateHomepageSectionId(
 }
 
 // ============================================
+// BID ID GENERATION
+// ============================================
+
+export interface GenerateBidIdInput {
+  productName: string;
+  userFirstName: string;
+  date?: Date; // Optional, defaults to now
+  random?: string; // Optional random suffix for uniqueness
+}
+
+/**
+ * Generate bid ID: bid-{product-name}-{user-first-name}-{date}-{random}
+ *
+ * Examples:
+ * - bid-vintage-camera-john-20260210-a7b2c9
+ * - bid-rare-watch-jane-20260210-x4y9z1
+ */
+export function generateBidId(input: GenerateBidIdInput): string {
+  const productSlug = slugify(input.productName).substring(0, 30);
+  const userSlug = slugify(input.userFirstName);
+  const dateStr = input.date ? getDateString() : getDateString();
+  const random = input.random || generateRandomString(6);
+
+  return `bid-${productSlug}-${userSlug}-${dateStr}-${random}`;
+}
+
+// ============================================
 // BARCODE GENERATION
 // ============================================
 

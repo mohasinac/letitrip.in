@@ -10,8 +10,8 @@ import {
   Select,
   Checkbox,
   Spinner,
+  UserTabs,
 } from "@/components";
-import UserTabs from "@/components/user/UserTabs";
 import { useRouter } from "next/navigation";
 import {
   UI_LABELS,
@@ -87,7 +87,9 @@ export default function AddAddressPage() {
               <Heading level={5} className="mb-4">
                 Contact Information
               </Heading>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.md}`}
+              >
                 <div>
                   <Input
                     label="Full Name"
@@ -192,11 +194,11 @@ export default function AddAddressPage() {
               <Heading level={5} className="mb-4">
                 Address Type
               </Heading>
-              <div className="flex gap-4">
+              <div className={`flex ${THEME_CONSTANTS.spacing.gap.md}`}>
                 {ADDRESS_TYPES.map((type) => (
                   <label
                     key={type.value}
-                    className="flex items-center gap-2 cursor-pointer"
+                    className={`flex items-center ${THEME_CONSTANTS.spacing.inlineSmall} cursor-pointer`}
                   >
                     <input
                       type="radio"
@@ -222,7 +224,7 @@ export default function AddAddressPage() {
             />
 
             {/* Actions */}
-            <div className="flex gap-4 pt-4">
+            <div className={`flex ${THEME_CONSTANTS.spacing.gap.md} pt-4`}>
               <Button
                 type="submit"
                 disabled={saving}

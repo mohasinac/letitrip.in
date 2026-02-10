@@ -8,10 +8,10 @@ import {
   ImageCropModal,
   AvatarDisplay,
   Progress,
+  useToast,
+  Text,
 } from "@/components";
 import type { ImageCropData } from "@/components";
-import { useToast } from "@/components/feedback";
-import { Text } from "@/components/typography";
 import {
   THEME_CONSTANTS,
   UI_LABELS,
@@ -217,7 +217,7 @@ export function AvatarUpload({
             <AvatarDisplay
               cropData={hasPendingChange ? pendingCropData : cropData}
               size="2xl"
-              className={`border-4 ${hasPendingChange ? "border-blue-400 dark:border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800" : "border-gray-300 dark:border-gray-600"}`}
+              className={`border-4 ${hasPendingChange ? "border-blue-400 dark:border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800" : THEME_CONSTANTS.themed.border}`}
             />
           </div>
 

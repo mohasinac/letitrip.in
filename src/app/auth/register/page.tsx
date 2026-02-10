@@ -9,9 +9,14 @@
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Alert, Checkbox, Spinner } from "@/components";
-import { FormField } from "@/components/FormField";
-import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import {
+  Button,
+  Alert,
+  Checkbox,
+  Spinner,
+  FormField,
+  PasswordStrengthIndicator,
+} from "@/components";
 import { signInWithGoogle, signInWithApple } from "@/lib/firebase/auth-helpers";
 import {
   ERROR_MESSAGES,
@@ -21,8 +26,7 @@ import {
 } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/hooks";
-import { THEME_CONSTANTS } from "@/constants";
-import { UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -172,7 +176,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex items-center justify-center py-8 sm:py-12 w-full">
-      <div className="max-w-md w-full space-y-8">
+      <div className={`max-w-md w-full ${THEME_CONSTANTS.spacing.stack}`}>
         {/* Header */}
         <div>
           <div className="flex justify-center">
@@ -206,7 +210,10 @@ export default function RegisterPage() {
         )}
 
         {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className={`mt-8 ${THEME_CONSTANTS.spacing.stack}`}
+        >
           <div className={THEME_CONSTANTS.spacing.stack}>
             {/* Display Name */}
             <FormField
@@ -324,17 +331,21 @@ export default function RegisterPage() {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+            <div
+              className={`w-full border-t ${THEME_CONSTANTS.themed.border}`}
+            ></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-950 text-gray-500">
+            <span
+              className={`px-2 ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textMuted}`}
+            >
               Or continue with
             </span>
           </div>
         </div>
 
         {/* Social Registration Buttons */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button
             type="button"
             variant="outline"

@@ -8,8 +8,8 @@ import {
   Button,
   AvatarDisplay,
   Spinner,
+  UserTabs,
 } from "@/components";
-import UserTabs from "@/components/user/UserTabs";
 import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -36,11 +36,13 @@ export default function UserProfilePage() {
     return null;
   }
 
+  const { spacing, themed } = THEME_CONSTANTS;
+
   return (
     <div className="w-full">
       <UserTabs />
 
-      <div className="space-y-6 mt-6">
+      <div className={`${spacing.stack} mt-6`}>
         <div className="flex items-center justify-between">
           <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
           <Button
@@ -54,8 +56,10 @@ export default function UserProfilePage() {
         </div>
 
         {/* Profile Information Card - Modern Design */}
-        <Card className="p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="flex items-start gap-6">
+        <Card
+          className={`${spacing.padding.lg} ${THEME_CONSTANTS.card.shadowElevated} hover:shadow-xl transition-all ${THEME_CONSTANTS.animation.normal}`}
+        >
+          <div className={`flex items-start ${spacing.gap.lg}`}>
             {/* Avatar */}
             <div className="flex-shrink-0">
               <div
@@ -91,7 +95,7 @@ export default function UserProfilePage() {
             </div>
 
             {/* User Details */}
-            <div className={`flex-1 ${THEME_CONSTANTS.spacing.stack}`}>
+            <div className={`flex-1 ${spacing.stack}`}>
               <div>
                 <Text
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
@@ -109,7 +113,7 @@ export default function UserProfilePage() {
                 >
                   {UI_LABELS.FORM.EMAIL}
                 </Text>
-                <div className="flex items-center gap-2">
+                <div className={`flex items-center ${spacing.inlineSmall}`}>
                   <Text className="text-lg">{user.email}</Text>
                   {user.emailVerified && (
                     <span className="text-green-500 text-sm">
@@ -126,7 +130,7 @@ export default function UserProfilePage() {
                   >
                     {UI_LABELS.FORM.PHONE}
                   </Text>
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center ${spacing.inlineSmall}`}>
                     <Text className="text-lg">{user.phoneNumber}</Text>
                     {user.phoneVerified && (
                       <span className="text-green-500 text-sm">
@@ -162,8 +166,8 @@ export default function UserProfilePage() {
         </Card>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 text-center">
+        <div className={`grid grid-cols-1 md:grid-cols-3 ${spacing.gap.md}`}>
+          <Card className={`${spacing.padding.md} text-center`}>
             <Text className={`${THEME_CONSTANTS.typography.h3} font-bold mb-2`}>
               0
             </Text>

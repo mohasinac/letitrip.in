@@ -15,6 +15,7 @@ import {
   parseResponse,
   mockAdminUser,
   mockRegularUser,
+  getSeedUsers,
 } from "./helpers";
 
 // ============================================
@@ -191,16 +192,9 @@ function setupAuthenticatedUser(user: any = null) {
 // ============================================
 
 describe("Profile API - PATCH /api/profile/update", () => {
-  const defaultUser = {
-    uid: "user-001",
-    email: "test@example.com",
-    displayName: "Test User",
-    role: "user",
-    phoneNumber: null,
-    emailVerified: true,
-    phoneVerified: false,
-    disabled: false,
-  };
+  // Use seed data for realistic test users
+  const seedUsers = getSeedUsers();
+  const defaultUser = seedUsers.johnDoe;
 
   beforeEach(() => {
     jest.clearAllMocks();

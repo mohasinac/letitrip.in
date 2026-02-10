@@ -109,14 +109,16 @@ function TreeNode({
         <button
           type="button"
           onClick={() => onSelect?.(node)}
-          className="flex-1 text-left text-sm font-medium text-gray-900 dark:text-gray-100 truncate"
+          className={`flex-1 text-left text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}
         >
           {node.name}
         </button>
 
         {/* Metrics */}
         {node.metrics && (
-          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+          <div
+            className={`flex items-center gap-3 text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
+          >
             <span title="Direct Products">{node.metrics.productCount} P</span>
             <span title="Total Products (including subcategories)">
               ({node.metrics.totalProductCount})

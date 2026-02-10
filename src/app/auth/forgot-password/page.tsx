@@ -9,9 +9,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, Button, Alert } from "@/components";
-import { FormField } from "@/components/FormField";
-import { Heading, Text } from "@/components/typography";
+import { Card, Button, Alert, FormField, Heading, Text } from "@/components";
 import {
   SUCCESS_MESSAGES,
   ROUTES,
@@ -85,7 +83,7 @@ export default function ForgotPasswordPage() {
             </Text>
           </div>
 
-          <div className="space-y-3">
+          <div className={THEME_CONSTANTS.spacing.stackSmall}>
             <Button
               variant="primary"
               onClick={() => router.push(ROUTES.AUTH.LOGIN)}

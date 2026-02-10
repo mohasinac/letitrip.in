@@ -2,9 +2,7 @@
  * Admin Stats Cards Component
  */
 
-import { Card } from "@/components";
-import { Heading } from "@/components/typography/Typography";
-import Text from "@/components/Text";
+import { Card, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface StatsCardsProps {

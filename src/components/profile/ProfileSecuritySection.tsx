@@ -2,11 +2,9 @@
  * Profile Security Section Component
  */
 
-import { Card, Button } from "@/components";
-import { FormField } from "@/components/FormField";
-import { Heading } from "@/components/typography/Typography";
-import { THEME_CONSTANTS } from "@/constants";
-import { useForm } from "@/hooks/useForm";
+import { Card, Button, FormField, Heading } from "@/components";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useForm } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 
 interface SecuritySectionProps {
@@ -28,7 +26,7 @@ export function ProfileSecuritySection({
     },
     onSubmit: async (values) => {
       const response = await apiClient.post(
-        "/api/profile/update-password",
+        API_ENDPOINTS.PROFILE.UPDATE_PASSWORD,
         values,
       );
       if (response.success) {
