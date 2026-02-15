@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const token = searchParams.get("token");
 
     if (!token) {
-      throw new ValidationError("Verification token is required");
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.TOKEN_REQUIRED);
     }
 
     const auth = getAdminAuth();
@@ -47,7 +47,9 @@ export async function GET(req: NextRequest) {
       {
         success: false,
         error:
-          error instanceof Error ? error.message : "Failed to verify email",
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.EMAIL.VERIFICATION_FAILED,
       },
       { status: error instanceof ValidationError ? 400 : 500 },
     );

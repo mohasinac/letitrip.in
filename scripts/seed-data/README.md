@@ -8,6 +8,7 @@ This directory contains sample data for populating your database during developm
 seed-data/
 ├── index.ts                          # Exports all seed data
 ├── users-seed-data.ts                # User accounts (admin, customers, sellers)
+├── addresses-seed-data.ts            # User delivery addresses (subcollection)
 ├── categories-seed-data.ts           # Hierarchical category tree
 ├── products-seed-data.ts             # Products across various categories
 ├── orders-seed-data.ts               # Orders with different statuses
@@ -54,6 +55,21 @@ npx ts-node scripts/seed-all-data.ts --verbose
 - **Regular Users**: 3 customers with various activity levels
 - **Sellers**: 3 verified sellers with products
 - **Disabled User**: For testing account suspension
+
+### Addresses (17 addresses)
+
+- Stored as subcollection: `users/{userId}/addresses/{addressId}`
+- **John Doe**: 3 addresses (Home, Office, Parents)
+- **Jane Smith**: 2 addresses (Home, Work)
+- **Mike Johnson**: 2 addresses (Home, Alternative Shipping)
+- **Sarah Lee**: 2 addresses (Home, Office)
+- **David Kumar**: 2 addresses (Home, Business Warehouse)
+- **Emily Chen**: 2 addresses (Home, Shop)
+- **Ryan Patel**: 1 address (Home)
+- **Lisa Sharma**: 2 addresses (Home, Parents)
+- **Admin**: 1 address (HQ)
+- Each user has one default address
+- Covers major Indian cities (Mumbai, Bangalore, Kolkata, Hyderabad, etc.)
 
 ### Categories (13 categories)
 
@@ -126,7 +142,7 @@ npx ts-node scripts/seed-all-data.ts --verbose
 - 1 inactive slide (for testing)
 - Interactive grid cards with CTAs
 
-### Homepage Sections (14 sections)
+### Homepage Sections (13 sections)
 
 - Welcome section
 - Trust indicators
@@ -140,8 +156,8 @@ npx ts-node scripts/seed-all-data.ts --verbose
 - Customer reviews
 - WhatsApp community
 - FAQ section
+- Blog articles (enabled with videos)
 - Newsletter signup
-- 1 disabled section (blog)
 
 ### Site Settings (1 singleton)
 
@@ -167,6 +183,7 @@ npx ts-node scripts/seed-all-data.ts --verbose
 
 The seed data maintains proper relationships:
 
+- **Addresses** are subcollections under users (users/{userId}/addresses/{addressId})
 - Products reference sellers (users)
 - Orders reference products and users
 - Reviews reference products and users

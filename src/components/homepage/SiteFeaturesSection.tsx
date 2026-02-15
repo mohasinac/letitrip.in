@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS, SITE_FEATURES } from "@/constants";
+import { THEME_CONSTANTS, SITE_FEATURES, UI_LABELS } from "@/constants";
 
 export function SiteFeaturesSection() {
   return (
@@ -13,13 +13,12 @@ export function SiteFeaturesSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            Why Shop With Us?
+            {UI_LABELS.HOMEPAGE.FEATURES.TITLE}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
           >
-            Your satisfaction is our priority. We provide a seamless shopping
-            experience with unmatched features
+            {UI_LABELS.HOMEPAGE.FEATURES.SUBTITLE}
           </p>
         </div>
 

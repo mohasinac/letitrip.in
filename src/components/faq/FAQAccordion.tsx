@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
-import type { FAQDocument } from "@/db/schema/faqs";
+import type { FAQDocument } from "@/db/schema";
 
 interface FAQAccordionProps {
   faqs: FAQDocument[];
@@ -112,7 +112,12 @@ export function FAQAccordion({
                 {/* Answer Text */}
                 <div
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 prose dark:prose-invert max-w-none`}
-                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      typeof faq.answer === "string"
+                        ? faq.answer
+                        : faq.answer?.text || "",
+                  }}
                 />
 
                 {/* Actions Row */}

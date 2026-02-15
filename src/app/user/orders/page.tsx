@@ -53,7 +53,7 @@ export default function UserOrdersPage() {
           </svg>
         }
         title={UI_LABELS.USER.ORDERS.EMPTY}
-        message={UI_LABELS.USER.ORDERS.EMPTY_SUBTITLE}
+        description={UI_LABELS.USER.ORDERS.EMPTY_SUBTITLE}
         actionLabel={UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS}
         onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
       />

@@ -8,23 +8,11 @@ import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface Auction {
-  id: string;
-  title: string;
-  slug: string;
-  currentBid: number;
-  startingBid: number;
-  currency: string;
-  mainImage: string;
-  auctionEndDate: string;
-  totalBids: number;
-  category: string;
-}
+import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedAuctionsSection() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<Auction[]>({
+  const { data, isLoading } = useApiQuery<ProductDocument[]>({
     queryKey: ["auctions", "featured"],
     queryFn: () =>
       apiClient.get(
@@ -106,13 +94,22 @@ export function FeaturedAuctionsSection() {
   );
 }
 
-function AuctionCard({ auction }: { auction: Auction }) {
+function AuctionCard({ auction }: { auction: ProductDocument }) {
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
+    if (!auction.auctionEndDate) {
+      setTimeLeft("No end date");
+      return;
+    }
+
     const calculateTimeLeft = () => {
-      const endTime = new Date(auction.auctionEndDate).getTime();
+      const endDate =
+        auction.auctionEndDate instanceof Date
+          ? auction.auctionEndDate
+          : new Date(auction.auctionEndDate as unknown as string);
+      const endTime = endDate.getTime();
       const now = new Date().getTime();
       const distance = endTime - now;
 
@@ -145,7 +142,7 @@ function AuctionCard({ auction }: { auction: Auction }) {
   return (
     <button
       className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-      onClick={() => router.push(`/auctions/${auction.slug}`)}
+      onClick={() => router.push(`/auctions/${auction.id}`)}
     >
       {/* Auction Image */}
       <div className="relative aspect-square overflow-hidden">
@@ -182,13 +179,13 @@ function AuctionCard({ auction }: { auction: Auction }) {
             <span
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
             >
-              {formatCurrency(auction.currentBid, auction.currency)}
+              {formatCurrency(auction.currentBid ?? 0, auction.currency)}
             </span>
           </div>
           <p
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            {auction.totalBids || 0} bid{auction.totalBids !== 1 ? "s" : ""}
+            {auction.bidCount || 0} bid{auction.bidCount !== 1 ? "s" : ""}
           </p>
         </div>
       </div>

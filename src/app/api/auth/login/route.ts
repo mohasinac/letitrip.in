@@ -16,8 +16,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
-import { USER_COLLECTION } from "@/db/schema/users";
-import { parseUserAgent } from "@/db/schema/sessions";
+import { USER_COLLECTION, USER_FIELDS, SCHEMA_DEFAULTS } from "@/db/schema";
+import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
       serverLogger.error("FIREBASE_API_KEY not configured");
-      throw new Error("Server configuration error");
+      throw new Error(ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR);
     }
     const verifyPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
 
@@ -103,9 +103,9 @@ export async function POST(request: NextRequest) {
       .collection(USER_COLLECTION)
       .doc(userRecord.uid)
       .update({
-        "metadata.lastSignInTime": FieldValue.serverTimestamp(),
-        "metadata.loginCount": FieldValue.increment(1),
-        updatedAt: FieldValue.serverTimestamp(),
+        [USER_FIELDS.META.LAST_SIGN_IN_TIME]: FieldValue.serverTimestamp(),
+        [USER_FIELDS.META.LOGIN_COUNT]: FieldValue.increment(1),
+        [USER_FIELDS.UPDATED_AT]: FieldValue.serverTimestamp(),
       });
 
     // Create session cookie
@@ -116,7 +116,8 @@ export async function POST(request: NextRequest) {
     try {
       session = await sessionRepository.createSession(userRecord.uid, {
         deviceInfo: parseUserAgent(
-          request.headers.get("user-agent") || "Unknown",
+          request.headers.get("user-agent") ||
+            SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT,
         ),
       });
       serverLogger.info("Session created successfully", {
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
           email: userRecord.email,
           displayName: userRecord.displayName,
           photoURL: userRecord.photoURL,
-          role: userData?.role || "user",
+          role: userData?.role || SCHEMA_DEFAULTS.USER_ROLE,
           emailVerified: userRecord.emailVerified,
           phoneVerified: userData?.phoneVerified || false,
         },

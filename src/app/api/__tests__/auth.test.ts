@@ -118,6 +118,14 @@ jest.mock("@/lib/errors", () => {
   };
 });
 
+jest.mock("@/lib/errors/error-handler", () => {
+  const errors = jest.requireMock("@/lib/errors");
+  return {
+    handleApiError: errors.handleApiError,
+    logError: jest.fn(),
+  };
+});
+
 jest.mock("@/constants", () => ({
   ERROR_MESSAGES: {
     VALIDATION: { INVALID_EMAIL: "Invalid email" },
@@ -355,6 +363,7 @@ describe("Auth API - POST /api/auth/register", () => {
         email: "new@example.com",
         password: "Password123",
         displayName: "New User",
+        acceptTerms: true,
       },
     });
     const res = await registerPOST(req);
@@ -372,6 +381,7 @@ describe("Auth API - POST /api/auth/register", () => {
         email: "new@example.com",
         password: "Password123",
         displayName: "New User",
+        acceptTerms: true,
       },
     });
     await registerPOST(req);
@@ -387,7 +397,11 @@ describe("Auth API - POST /api/auth/register", () => {
   it("stores user in Firestore", async () => {
     const req = buildRequest("/api/auth/register", {
       method: "POST",
-      body: { email: "new@example.com", password: "Password123" },
+      body: {
+        email: "new@example.com",
+        password: "Password123",
+        acceptTerms: true,
+      },
     });
     await registerPOST(req);
 
@@ -412,7 +426,11 @@ describe("Auth API - POST /api/auth/register", () => {
 
     const req = buildRequest("/api/auth/register", {
       method: "POST",
-      body: { email: "admin@letitrip.in", password: "Password123" },
+      body: {
+        email: "admin@letitrip.in",
+        password: "Password123",
+        acceptTerms: true,
+      },
     });
     await registerPOST(req);
 
@@ -424,7 +442,11 @@ describe("Auth API - POST /api/auth/register", () => {
   it("assigns user role for regular emails", async () => {
     const req = buildRequest("/api/auth/register", {
       method: "POST",
-      body: { email: "regular@example.com", password: "Password123" },
+      body: {
+        email: "regular@example.com",
+        password: "Password123",
+        acceptTerms: true,
+      },
     });
     await registerPOST(req);
 
@@ -486,7 +508,11 @@ describe("Auth API - POST /api/auth/register", () => {
   it("creates a session after registration", async () => {
     const req = buildRequest("/api/auth/register", {
       method: "POST",
-      body: { email: "new@example.com", password: "Password123" },
+      body: {
+        email: "new@example.com",
+        password: "Password123",
+        acceptTerms: true,
+      },
     });
     await registerPOST(req);
 

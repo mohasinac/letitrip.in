@@ -67,6 +67,7 @@ export const ROUTES = {
     FAQS: "/admin/faqs",
     REVIEWS: "/admin/reviews",
     COUPONS: "/admin/coupons",
+    MEDIA: "/admin/media",
   },
 
   // Demo Routes (dev-only)

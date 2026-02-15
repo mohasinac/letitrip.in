@@ -49,6 +49,77 @@ export const urlSchema = z.string().url().max(2048);
  */
 export const dateStringSchema = z.string().datetime();
 
+/**
+ * Strong password validation with advanced rules
+ */
+export const passwordSchema = z
+  .string()
+  .min(12, "Password must be at least 12 characters")
+  .max(128, "Password must be less than 128 characters")
+  .refine((password) => {
+    // At least one uppercase
+    if (!/[A-Z]/.test(password)) return false;
+    // At least one lowercase
+    if (!/[a-z]/.test(password)) return false;
+    // At least one digit
+    if (!/\d/.test(password)) return false;
+    // At least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return false;
+    return true;
+  }, "Password must contain uppercase, lowercase, number, and special character")
+  .refine((password) => {
+    // Prevent common keyboard patterns
+    const patterns = ["qwerty", "asdf", "zxcv", "123456", "password", "admin"];
+    return !patterns.some((p) => password.toLowerCase().includes(p));
+  }, "Password contains common patterns");
+
+/**
+ * Phone number validation (E.164 format)
+ */
+export const phoneSchema = z
+  .string()
+  .refine((phone) => {
+    // E.164 format validation: +[country code][number]
+    const e164Pattern = /^\+?[1-9]\d{1,14}$/;
+    return e164Pattern.test(phone.replace(/\D/g, ""));
+  }, "Invalid phone number format")
+  .refine((phone) => {
+    // Check length after removing non-digits
+    const digits = phone.replace(/\D/g, "");
+    return digits.length >= 10 && digits.length <= 15;
+  }, "Phone number must have 10-15 digits");
+
+/**
+ * Email validation
+ */
+export const emailSchema = z.string().email().max(255);
+
+/**
+ * Address schema with field validation
+ */
+export const addressSchema = z.object({
+  street: z
+    .string()
+    .min(5, "Street address too short")
+    .max(100, "Street address too long")
+    .refine(
+      (street) => !/^[\d\s]+$/.test(street),
+      "Street must contain non-numeric characters",
+    ),
+  city: z
+    .string()
+    .min(2, "City name too short")
+    .regex(/^[a-zA-Z\s\-']+$/, "Invalid city name"),
+  state: z.string().min(2, "State code required").max(50, "Invalid state"),
+  pincode: z
+    .string()
+    .refine((pin) => /^\d{5,6}$/.test(pin), "Invalid pincode format"),
+  country: z
+    .string()
+    .length(2, "Country code must be 2 characters")
+    .toUpperCase(),
+});
+
 // ============================================
 // PRODUCT SCHEMAS
 // ============================================
@@ -100,6 +171,14 @@ export const productListQuerySchema = paginationQuerySchema
     isPromoted: z.coerce.boolean().optional(),
     minPrice: z.coerce.number().nonnegative().optional(),
     maxPrice: z.coerce.number().positive().optional(),
+    brand: z.string().min(1).max(100).optional(),
+    condition: z.enum(["new", "used", "refurbished"]).optional(),
+    inStock: z.coerce.boolean().optional(),
+    rating: z
+      .object({
+        min: z.coerce.number().min(0).max(5).optional(),
+      })
+      .optional(),
     tags: z.array(z.string()).or(z.string()).optional(), // Support comma-separated or array
   })
   .refine(
@@ -118,6 +197,7 @@ const productBaseSchema = z.object({
   subcategory: z.string().min(1).max(100).optional(),
   brand: z.string().min(1).max(100).optional(),
   price: z.number().positive().max(10000000), // Max 10 million
+  originalPrice: z.number().positive().max(10000000).optional(), // For discounts
   currency: z.string().length(3).default("INR"), // ISO 4217
   stockQuantity: z.number().int().nonnegative(),
   mainImage: urlSchema,
@@ -128,6 +208,7 @@ const productBaseSchema = z.object({
   tags: z.array(z.string().min(1).max(50)).max(10).optional(),
   shippingInfo: z.string().max(1000).optional(),
   returnPolicy: z.string().max(1000).optional(),
+  isDraft: z.boolean().default(false), // Draft auto-save support
   // Auction fields
   isAuction: z.boolean().optional(),
   auctionEndDate: dateStringSchema.optional(),
@@ -158,6 +239,16 @@ export const productUpdateSchema = productBaseSchema.partial().extend({
   status: z
     .enum(["draft", "published", "out_of_stock", "discontinued", "sold"])
     .optional(),
+  version: z.number().optional(), // For optimistic locking
+});
+
+/**
+ * Product bulk creation validation
+ */
+export const productBulkCreateSchema = z.object({
+  products: z.array(productBaseSchema).min(1).max(100),
+  importSource: z.enum(["csv", "url", "api"]).optional(),
+  dryRun: z.boolean().default(false), // Validate without creating
 });
 
 // ============================================
@@ -174,6 +265,8 @@ export const categoryListQuerySchema = z.object({
   includeMetrics: z.coerce.boolean().default(false),
   flat: z.coerce.boolean().default(false),
   maxDepth: z.coerce.number().int().positive().max(10).optional(),
+  includeInactive: z.coerce.boolean().default(false),
+  expandChildren: z.coerce.boolean().optional(),
 });
 
 /**
@@ -218,6 +311,23 @@ export const categoryUpdateSchema = categoryBaseSchema.partial().extend({
   isFeatured: z.boolean().optional(),
 });
 
+/**
+ * Category bulk import validation
+ */
+export const categoryBulkImportSchema = z.object({
+  categories: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(100),
+        parentId: objectIdSchema.optional(),
+        image: urlSchema.optional(),
+        description: z.string().max(500).optional(),
+      }),
+    )
+    .min(1)
+    .max(100),
+});
+
 // ============================================
 // REVIEW SCHEMAS
 // ============================================
@@ -229,7 +339,12 @@ export const reviewListQuerySchema = paginationQuerySchema.extend({
   productId: objectIdSchema,
   status: z.enum(["pending", "approved", "rejected"]).optional(),
   rating: z.coerce.number().int().min(1).max(5).optional(),
+  ratingRange: z
+    .tuple([z.coerce.number().min(1).max(5), z.coerce.number().min(1).max(5)])
+    .optional(),
   verified: z.coerce.boolean().optional(),
+  minHelpful: z.coerce.number().nonnegative().optional(),
+  sortBy: z.enum(["recent", "helpful", "rating"]).optional(),
 });
 
 /**
@@ -249,6 +364,8 @@ const reviewBaseSchema = z.object({
  */
 export const reviewCreateSchema = reviewBaseSchema.extend({
   productId: objectIdSchema,
+  template: z.enum(["quick", "detailed"]).optional(),
+  verified: z.boolean().optional(), // Verified purchase flag
 });
 
 /**
@@ -342,24 +459,36 @@ const gridCardSchema = z.object({
  * Carousel creation validation
  * TODO: Add active slides count validation (max 5)
  */
-export const carouselCreateSchema = z.object({
-  title: z.string().min(1).max(200),
-  order: z.number().int().nonnegative(),
-  active: z.boolean().default(false),
-  media: z.object({
-    type: z.enum(["image", "video"]),
-    url: urlSchema,
-    alt: z.string().min(1).max(200),
-    thumbnail: urlSchema.optional(),
-  }),
-  link: z
-    .object({
+export const carouselCreateSchema = z
+  .object({
+    title: z.string().min(1).max(200),
+    order: z.number().int().nonnegative(),
+    active: z.boolean().default(false),
+    media: z.object({
+      type: z.enum(["image", "video"]),
       url: urlSchema,
-      openInNewTab: z.boolean().default(false),
-    })
-    .optional(),
-  gridCards: z.array(gridCardSchema).min(1).max(20),
-});
+      alt: z.string().min(1).max(200),
+      thumbnail: urlSchema.optional(),
+    }),
+    link: z
+      .object({
+        url: urlSchema,
+        openInNewTab: z.boolean().default(false),
+      })
+      .optional(),
+    gridCards: z.array(gridCardSchema).min(1).max(20),
+    startDate: dateStringSchema.optional(), // Scheduling support
+    endDate: dateStringSchema.optional(),
+    template: z.string().max(100).optional(),
+    duplicateFrom: objectIdSchema.optional(), // Duplication support
+  })
+  .refine(
+    (data) =>
+      !data.endDate ||
+      !data.startDate ||
+      new Date(data.endDate) > new Date(data.startDate),
+    { message: "End date must be after start date" },
+  );
 
 /**
  * Carousel update validation
@@ -371,6 +500,16 @@ export const carouselUpdateSchema = carouselCreateSchema.partial();
  */
 export const carouselReorderSchema = z.object({
   slideIds: z.array(objectIdSchema).min(1).max(5),
+});
+
+/**
+ * Generic reorder validation for drag-and-drop operations
+ */
+export const reorderSchema = z.object({
+  itemId: objectIdSchema,
+  newOrder: z.number().int().nonnegative(),
+  targetPosition: z.enum(["before", "after"]).optional(),
+  targetItemId: objectIdSchema.optional(),
 });
 
 // ============================================
@@ -389,11 +528,18 @@ export const homepageSectionsListQuerySchema = z.object({
  * TODO: Add type-specific config validation
  */
 export const homepageSectionCreateSchema = z.object({
-  type: z.string().min(1).max(50),
+  type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
   title: z.string().min(1).max(200),
-  order: z.number().int().nonnegative(),
+  order: z.number().int().nonnegative().optional(),
   enabled: z.boolean().default(true),
-  config: z.record(z.string(), z.unknown()), // Type-specific config
+  config: z
+    .object({
+      maxItems: z.number().int().positive().optional(),
+      layout: z.enum(["grid", "carousel", "list"]).optional(),
+      columns: z.number().int().min(1).max(12).optional(),
+      template: z.string().max(100).optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -427,18 +573,30 @@ export const faqListQuerySchema = paginationQuerySchema.extend({
  * FAQ creation validation
  * TODO: Add variable syntax validation in answer text
  */
-export const faqCreateSchema = z.object({
-  question: z.string().min(10).max(500),
-  answer: z.object({
-    text: z.string().min(20).max(5000),
-    format: z.enum(["plain", "markdown", "html"]).default("plain"),
-  }),
-  category: z.string().min(1).max(100),
-  priority: z.number().int().min(1).max(10).default(5),
-  featured: z.boolean().default(false),
-  tags: z.array(z.string().min(1).max(50)).max(10).optional(),
-  relatedFAQs: z.array(objectIdSchema).max(5).optional(),
-});
+export const faqCreateSchema = z
+  .object({
+    question: z.string().min(10).max(500),
+    answer: z.object({
+      text: z.string().min(20).max(5000),
+      format: z.enum(["plain", "markdown", "html"]).default("plain"),
+    }),
+    category: z.string().min(1).max(100),
+    priority: z.number().int().min(1).max(10).default(5),
+    featured: z.boolean().default(false),
+    tags: z.array(z.string().min(1).max(50)).max(10).optional(),
+    relatedFAQs: z.array(objectIdSchema).max(5).optional(),
+    template: z.string().max(100).optional(),
+  })
+  .refine(
+    (data) => {
+      // Check for valid template variable syntax {{variableName}}
+      const text = data.answer.text;
+      const templateVarPattern = /\{\{[a-zA-Z_][a-zA-Z0-9_]*\}\}/g;
+      const matches = text.match(templateVarPattern) || [];
+      return matches.length <= 10; // Max 10 template variables
+    },
+    { message: "Too many template variables (max 10)" },
+  );
 
 /**
  * FAQ update validation
@@ -451,6 +609,67 @@ export const faqUpdateSchema = faqCreateSchema.partial();
 export const faqVoteSchema = z.object({
   vote: z.enum(["helpful", "not_helpful"]),
 });
+
+// ============================================
+// BUSINESS RULE VALIDATION SCHEMAS
+// ============================================
+
+/**
+ * Order schema with business rule validation
+ */
+export const orderSchema = z
+  .object({
+    items: z
+      .array(
+        z.object({
+          productId: objectIdSchema,
+          quantity: z.number().int().min(1).max(100),
+          price: z.number().positive(),
+        }),
+      )
+      .min(1)
+      .max(50),
+    totalAmount: z.number().positive(),
+    shippingAddress: addressSchema,
+    billingAddress: addressSchema.optional(),
+  })
+  .refine(
+    (order) => {
+      // Minimum order value rule ($100)
+      const minOrderValue = 100;
+      return order.totalAmount >= minOrderValue;
+    },
+    { message: "Order must be at least $100" },
+  )
+  .refine(
+    (order) => {
+      // Maximum items per order
+      const maxItems = 50;
+      const totalItems = order.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+      return totalItems <= maxItems;
+    },
+    { message: "Order cannot exceed 50 items" },
+  );
+
+/**
+ * Bid schema with business rule validation
+ */
+export const bidSchema = z
+  .object({
+    productId: objectIdSchema,
+    amount: z.number().positive(),
+    auctionId: objectIdSchema,
+  })
+  .refine(
+    (bid) => {
+      // Bid amount should be reasonable (max 10x starting bid)
+      return true; // Validate against current bid in API route
+    },
+    { message: "Bid must meet minimum increment rules" },
+  );
 
 // ============================================
 // MEDIA UPLOAD SCHEMAS
@@ -505,6 +724,28 @@ export const thumbnailDataSchema = z.object({
 export const mediaUploadRequestSchema = z.object({
   folder: z.string().optional(),
   public: z.boolean().optional(),
+});
+
+/**
+ * Chunked upload request validation
+ */
+export const chunkedUploadSchema = z.object({
+  uploadId: z.string().min(1),
+  chunkIndex: z.number().int().nonnegative(),
+  totalChunks: z.number().int().positive(),
+  chunkSize: z.number().int().positive(),
+});
+
+/**
+ * Upload progress validation
+ */
+export const uploadProgressSchema = z.object({
+  uploadId: z.string().min(1),
+  chunkIndex: z.number().int().nonnegative(),
+  totalChunks: z.number().int().positive(),
+  percentComplete: z.number().min(0).max(100),
+  bytesUploaded: z.number().int().nonnegative(),
+  totalBytes: z.number().int().positive(),
 });
 
 // ============================================

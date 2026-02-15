@@ -472,11 +472,11 @@ export const THEME_CONSTANTS = {
     },
     // Footer colors
     footer: {
-      title: "text-white",
-      text: "text-gray-300",
-      textHover: "hover:text-white transition-colors",
-      border: "border-gray-700",
-      copyright: "text-gray-400",
+      title: "text-gray-900 dark:text-white",
+      text: "text-gray-600 dark:text-gray-300",
+      textHover: "hover:text-gray-900 dark:hover:text-white transition-colors",
+      border: "border-gray-300 dark:border-gray-700",
+      copyright: "text-gray-500 dark:text-gray-400",
     },
     // Badge/notification
     notification: {

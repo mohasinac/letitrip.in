@@ -5,20 +5,13 @@ import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { apiClient } from "@/lib/api-client";
-
-interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-  priority: number;
-}
+import type { FAQDocument } from "@/db/schema";
 
 export function FAQSection() {
   const router = useRouter();
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const { data, isLoading } = useApiQuery<FAQ[]>({
+  const { data, isLoading } = useApiQuery<FAQDocument[]>({
     queryKey: ["faqs", "homepage"],
     queryFn: () =>
       apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?featured=true&limit=6`),
@@ -64,12 +57,12 @@ export function FAQSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            {UI_LABELS.FAQS.TITLE}
+            {UI_LABELS.FAQ.TITLE}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            {UI_LABELS.FAQS.SUBTITLE}
+            {UI_LABELS.FAQ.SUBTITLE}
           </p>
         </div>
 
@@ -112,7 +105,12 @@ export function FAQSection() {
                 <div className={`${THEME_CONSTANTS.spacing.padding.lg} pt-0`}>
                   <div
                     className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
-                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        typeof faq.answer === "string"
+                          ? faq.answer
+                          : faq.answer?.text || "",
+                    }}
                   />
                 </div>
               )}

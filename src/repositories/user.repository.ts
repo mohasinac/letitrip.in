@@ -13,7 +13,12 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
-import { UserDocument, USER_COLLECTION, createUserId } from "@/db/schema/users";
+import {
+  UserDocument,
+  USER_COLLECTION,
+  createUserId,
+  USER_FIELDS,
+} from "@/db/schema";
 import { UserRole } from "@/types/auth";
 import { DatabaseError } from "@/lib/errors";
 
@@ -60,21 +65,21 @@ export class UserRepository extends BaseRepository<UserDocument> {
    * Find user by email
    */
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.findOneBy("email", email);
+    return this.findOneBy(USER_FIELDS.EMAIL, email);
   }
 
   /**
    * Find user by phone number
    */
   async findByPhone(phoneNumber: string): Promise<UserDocument | null> {
-    return this.findOneBy("phoneNumber", phoneNumber);
+    return this.findOneBy(USER_FIELDS.PHONE_NUMBER, phoneNumber);
   }
 
   /**
    * Find users by role
    */
   async findByRole(role: UserRole): Promise<UserDocument[]> {
-    return this.findBy("role", role);
+    return this.findBy(USER_FIELDS.ROLE, role);
   }
 
   /**
@@ -82,7 +87,11 @@ export class UserRepository extends BaseRepository<UserDocument> {
    */
   async findVerified(limit?: number): Promise<UserDocument[]> {
     try {
-      let query = this.getCollection().where("emailVerified", "==", true);
+      let query = this.getCollection().where(
+        USER_FIELDS.EMAIL_VERIFIED,
+        "==",
+        true,
+      );
 
       if (limit) {
         query = query.limit(limit);
@@ -102,7 +111,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
    */
   async findActive(limit?: number): Promise<UserDocument[]> {
     try {
-      let query = this.getCollection().where("disabled", "==", false);
+      let query = this.getCollection().where(USER_FIELDS.DISABLED, "==", false);
 
       if (limit) {
         query = query.limit(limit);
@@ -205,7 +214,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
   async countByRole(role: UserRole): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("role", "==", role)
+        .where(USER_FIELDS.ROLE, "==", role)
         .count()
         .get();
 
@@ -221,7 +230,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
   async countActive(): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("disabled", "==", false)
+        .where(USER_FIELDS.DISABLED, "==", false)
         .count()
         .get();
 
@@ -237,7 +246,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
   async countDisabled(): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("disabled", "==", true)
+        .where(USER_FIELDS.DISABLED, "==", true)
         .count()
         .get();
 
@@ -253,7 +262,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
   async countNewSince(since: Date): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("createdAt", ">=", since)
+        .where(USER_FIELDS.CREATED_AT, ">=", since)
         .count()
         .get();
 

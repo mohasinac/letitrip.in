@@ -109,6 +109,8 @@ export const UI_LABELS = {
     VIEW_DETAILS: "View Details",
     MANAGE: "Manage",
     VIEW: "View",
+    VIEW_ALL: "View All",
+    SUBSCRIBE: "Subscribe",
     UPDATE_PASSWORD: "Update Password",
     DISCARD: "Discard",
   },
@@ -150,6 +152,7 @@ export const UI_LABELS = {
     PHONE_VERIFIED: "Phone Verified ✓",
     PHONE_NOT_VERIFIED: "Phone Not Verified",
     VERIFIED: "✓ Verified",
+    SUBSCRIBED: "Subscribed!",
   },
 
   // Role labels
@@ -194,6 +197,7 @@ export const UI_LABELS = {
     SECTIONS: "Sections",
     FAQS: "FAQs",
     REVIEWS: "Reviews",
+    MEDIA: "Media",
     LOGIN: "Login",
     REGISTER: "Register",
     LOGOUT: "Logout",
@@ -202,6 +206,7 @@ export const UI_LABELS = {
     SELLER_DASHBOARD: "Seller Dashboard",
     MY_PROFILE: "My Profile",
     MY_ORDERS: "My Orders",
+    USERS: "Users",
   },
 
   // Profile section
@@ -215,6 +220,7 @@ export const UI_LABELS = {
     SAVED_ADDRESSES: "Saved Addresses",
     SECURITY_SETTINGS: "Security Settings",
     USER_ID: "User ID",
+    DISPLAY_NAME: "Display Name",
     ROLE: "Role",
     ACCOUNT_ROLE: "Account Role",
     TOTAL_ORDERS: "Total Orders",
@@ -284,6 +290,7 @@ export const UI_LABELS = {
       PAGE_TITLE: "Forgot Your Password?",
       SUBTITLE:
         "Enter your email address and we'll send you a link to reset your password.",
+      SEND_RESET_LINK: "Send Reset Link",
       SEND_RESET_EMAIL: "Send Reset Link",
       SENDING: "Sending...",
       CHECK_EMAIL: "Check Your Email",
@@ -578,6 +585,16 @@ export const UI_LABELS = {
       ALL_RATINGS: "All Ratings",
       SEARCH_PLACEHOLDER: "Search products, users...",
     },
+    SESSIONS: {
+      TITLE: "Sessions",
+      SUBTITLE: "Manage user sessions",
+      CONFIRM_REVOKE: "Revoke Session",
+      CONFIRM_REVOKE_MESSAGE:
+        "Are you sure you want to revoke this session? The user will be logged out.",
+      CONFIRM_REVOKE_ALL: "Revoke All Sessions",
+      CONFIRM_REVOKE_ALL_MESSAGE:
+        "Are you sure you want to revoke all sessions? All users will be logged out.",
+    },
     CONTENT: {
       TITLE: "Content Management",
       SUBTITLE: "Manage products, orders, and reviews",
@@ -614,6 +631,41 @@ export const UI_LABELS = {
           "Advanced content management features are currently under development",
         ICON: "🚧",
       },
+    },
+    MEDIA: {
+      TITLE: "Media Operations",
+      SUBTITLE: "Manage image cropping and video trimming",
+      CROP_IMAGE: "Crop Image",
+      TRIM_VIDEO: "Trim Video",
+      SOURCE_URL: "Source URL",
+      SOURCE_URL_PLACEHOLDER: "https://example.com/image.jpg",
+      OUTPUT_FORMAT: "Output Format",
+      QUALITY: "Quality",
+      QUALITY_HIGH: "High (90)",
+      QUALITY_MEDIUM: "Medium (75)",
+      QUALITY_LOW: "Low (60)",
+      CROP_PARAMETERS: "Crop Parameters",
+      X_POSITION: "X Position",
+      Y_POSITION: "Y Position",
+      WIDTH: "Width",
+      HEIGHT: "Height",
+      TRIM_PARAMETERS: "Trim Parameters",
+      START_TIME: "Start Time (seconds)",
+      END_TIME: "End Time (seconds)",
+      VIDEO_QUALITY: "Video Quality",
+      QUALITY_LOW_LABEL: "Low (500k/64k)",
+      QUALITY_MEDIUM_LABEL: "Medium (1000k/128k)",
+      QUALITY_HIGH_LABEL: "High (2500k/192k)",
+      RECENT_OPERATIONS: "Recent Operations",
+      NO_OPERATIONS: "No media operations yet",
+      OPERATION_TYPE: "Operation Type",
+      OPERATION_STATUS: "Status",
+      PROCESSING: "Processing",
+      COMPLETED: "Completed",
+      FAILED: "Failed",
+      DOWNLOAD_RESULT: "Download Result",
+      COPY_URL: "Copy URL",
+      URL_COPIED: "URL copied to clipboard",
     },
   },
 
@@ -723,6 +775,8 @@ export const UI_LABELS = {
     },
     FEATURES: {
       TITLE: "Why Shop With Us?",
+      SUBTITLE:
+        "Your satisfaction is our priority. We provide a seamless shopping experience with unmatched features",
       QUALITY: "Premium Quality",
       PRICE: "Best Prices",
       SERVICE: "Excellent Service",
@@ -735,6 +789,8 @@ export const UI_LABELS = {
       BUTTON: "Subscribe",
       SUCCESS: "Successfully subscribed!",
       ERROR: "Subscription failed. Please try again.",
+      PRIVACY_NOTE:
+        "We respect your privacy. Unsubscribe at any time. Read our",
     },
     REVIEWS: {
       TITLE: "What Our Customers Say",
@@ -760,6 +816,10 @@ export const UI_LABELS = {
       TITLE: "Featured Products",
       SUBTITLE: "Handpicked items just for you",
       VIEW_ALL: "View All Products",
+    },
+    BLOG: {
+      TITLE: "From Our Blog",
+      SUBTITLE: "Tips, stories, and insights from the community",
     },
   },
 

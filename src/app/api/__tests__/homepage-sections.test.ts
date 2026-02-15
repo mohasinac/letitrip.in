@@ -39,7 +39,7 @@ jest.mock("@/lib/security/authorization", () => ({
 
 jest.mock("@/lib/validation/schemas", () => ({
   validateRequestBody: (_schema: unknown, body: any) => {
-    if (body && body.type && body.title) {
+    if (body && body.type && body.config) {
       return { success: true, data: body };
     }
     return {
@@ -75,27 +75,58 @@ import { GET, POST } from "../homepage-sections/route";
 // ============================================
 
 const mockSections = [
-  { id: "sec-1", type: "hero", title: "Hero Section", order: 1, enabled: true },
   {
-    id: "sec-2",
-    type: "featuredProducts",
-    title: "Featured Products",
+    id: "section-welcome-1707300000001",
+    type: "welcome",
+    order: 1,
+    enabled: true,
+    config: {
+      h1: "Hero Section",
+      subtitle: "Welcome",
+      description: "{}",
+      showCTA: false,
+    },
+  },
+  {
+    id: "section-products-1707300000004",
+    type: "products",
     order: 2,
     enabled: true,
+    config: {
+      title: "Featured Products",
+      maxProducts: 18,
+      rows: 2,
+      itemsPerRow: 3,
+      mobileItemsPerRow: 1,
+      autoScroll: false,
+      scrollInterval: 0,
+    },
   },
   {
-    id: "sec-3",
+    id: "section-categories-1707300000003",
     type: "categories",
-    title: "Top Categories",
     order: 3,
     enabled: false,
+    config: {
+      title: "Top Categories",
+      maxCategories: 4,
+      autoScroll: false,
+      scrollInterval: 3000,
+    },
   },
   {
-    id: "sec-4",
-    type: "testimonials",
-    title: "Customer Reviews",
+    id: "section-reviews-1707300000009",
+    type: "reviews",
     order: 4,
     enabled: true,
+    config: {
+      title: "Customer Reviews",
+      maxReviews: 18,
+      itemsPerView: 3,
+      mobileItemsPerView: 1,
+      autoScroll: true,
+      scrollInterval: 5000,
+    },
   },
 ];
 
@@ -194,16 +225,31 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
     mockRequireRoleFromRequest.mockResolvedValue(mockAdminUser());
     mockFindAll.mockResolvedValue(mockSections);
     mockCreate.mockResolvedValue({
-      id: "new-sec",
-      type: "blog",
-      title: "Blog",
+      id: "section-blog-articles-1707300000012",
+      type: "blog-articles",
+      config: {
+        title: "Blog Posts",
+        maxArticles: 4,
+        showReadTime: true,
+        showAuthor: true,
+        showThumbnails: true,
+      },
     });
   });
 
   it("creates a section with valid data", async () => {
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog Posts" },
+      body: {
+        type: "blog-articles",
+        config: {
+          title: "Blog Posts",
+          maxArticles: 4,
+          showReadTime: true,
+          showAuthor: true,
+          showThumbnails: true,
+        },
+      },
     });
     const res = await POST(req);
     const { status, body } = await parseResponse(res);
@@ -215,7 +261,16 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
   it("requires admin role", async () => {
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog" },
+      body: {
+        type: "blog-articles",
+        config: {
+          title: "Blog",
+          maxArticles: 4,
+          showReadTime: true,
+          showAuthor: true,
+          showThumbnails: true,
+        },
+      },
     });
     await POST(req);
     expect(mockRequireRoleFromRequest).toHaveBeenCalledWith(expect.anything(), [
@@ -226,7 +281,16 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
   it("auto-assigns order position", async () => {
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog" },
+      body: {
+        type: "blog-articles",
+        config: {
+          title: "Blog",
+          maxArticles: 4,
+          showReadTime: true,
+          showAuthor: true,
+          showThumbnails: true,
+        },
+      },
     });
     await POST(req);
 
@@ -238,7 +302,17 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
   it("respects provided order position", async () => {
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog", order: 2 },
+      body: {
+        type: "blog-articles",
+        config: {
+          title: "Blog",
+          maxArticles: 4,
+          showReadTime: true,
+          showAuthor: true,
+          showThumbnails: true,
+        },
+        order: 2,
+      },
     });
     await POST(req);
 
@@ -250,7 +324,7 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
   it("returns 400 for invalid body", async () => {
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { enabled: true }, // missing type and title
+      body: { enabled: true }, // missing type and config
     });
     const res = await POST(req);
     const { status, body } = await parseResponse(res);
@@ -267,7 +341,7 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
 
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog" },
+      body: { type: "blog-articles", config: { title: "Blog" } },
     });
     const res = await POST(req);
     const { status } = await parseResponse(res);
@@ -283,7 +357,7 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
 
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog" },
+      body: { type: "blog-articles", config: { title: "Blog" } },
     });
     const res = await POST(req);
     const { status } = await parseResponse(res);
@@ -295,7 +369,7 @@ describe("Homepage Sections API - POST /api/homepage-sections", () => {
     mockCreate.mockRejectedValue(new Error("DB error"));
     const req = buildRequest("/api/homepage-sections", {
       method: "POST",
-      body: { type: "blog", title: "Blog" },
+      body: { type: "blog-articles", config: { title: "Blog" } },
     });
     const res = await POST(req);
     const { status, body } = await parseResponse(res);

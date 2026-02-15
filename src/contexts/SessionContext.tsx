@@ -30,6 +30,8 @@ import { auth } from "@/lib/firebase/config";
 import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
+import type { AvatarMetadata } from "@/db/schema";
+import type { UserRole } from "@/types/auth";
 
 // ============================================================================
 // Types
@@ -45,7 +47,7 @@ export interface SessionUser {
   phoneNumber: string | null;
 
   // Firestore profile fields
-  role: string;
+  role: UserRole;
   disabled?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -83,12 +85,15 @@ export interface SessionUser {
     rating?: number;
   };
 
+  // Metadata (login tracking)
+  metadata?: {
+    lastSignInTime?: string;
+    creationTime?: string;
+    loginCount?: number;
+  };
+
   // Avatar metadata (matches ImageCropData type for AvatarDisplay)
-  avatarMetadata?: {
-    url: string;
-    position: { x: number; y: number };
-    zoom: number;
-  } | null;
+  avatarMetadata?: AvatarMetadata | null;
 }
 
 export interface SessionContextValue {

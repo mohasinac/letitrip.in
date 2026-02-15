@@ -6,6 +6,7 @@ export { ImageUpload } from "./ImageUpload";
 export { DataTable } from "./DataTable";
 export { CategoryTreeView } from "./CategoryTreeView";
 export { default as BackgroundSettings } from "./BackgroundSettings";
+export { AdminSessionsManager } from "./AdminSessionsManager";
 
 // Phase 3: Shared Admin Infrastructure
 export { AdminPageHeader } from "./AdminPageHeader";
@@ -54,3 +55,7 @@ export {
   ReviewStars,
 } from "./reviews";
 export type { Review, ReviewStatus } from "./reviews";
+
+// Phase 4: Admin Media
+export { MediaOperationForm, getMediaTableColumns } from "./media";
+export type { MediaOperation } from "./media";

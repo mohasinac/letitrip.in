@@ -76,6 +76,10 @@ export * from "./admin";
 // Re-export from user subdirectory
 export * from "./user";
 
+// ==================== AUTH COMPONENTS ====================
+// Re-export from auth subdirectory
+export * from "./auth";
+
 // ==================== PROVIDERS ====================
 // Re-export from providers subdirectory
 export * from "./providers";

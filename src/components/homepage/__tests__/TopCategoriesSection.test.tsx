@@ -29,14 +29,14 @@ const mockCategories = [
     id: "1",
     name: "Electronics",
     slug: "electronics",
-    coverImage: "/img/electronics.jpg",
+    display: { coverImage: "/img/electronics.jpg" },
     metrics: { totalItemCount: 1200 },
   },
   {
     id: "2",
     name: "Fashion",
     slug: "fashion",
-    coverImage: "/img/fashion.jpg",
+    display: { coverImage: "/img/fashion.jpg" },
     metrics: { totalItemCount: 800 },
   },
   {
@@ -49,7 +49,7 @@ const mockCategories = [
     id: "4",
     name: "Sports",
     slug: "sports",
-    coverImage: "/img/sports.jpg",
+    display: { coverImage: "/img/sports.jpg" },
     metrics: { totalItemCount: 450 },
   },
 ];
@@ -78,7 +78,7 @@ describe("TopCategoriesSection", () => {
   describe("No Data State", () => {
     it("returns null when no categories", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { categories: [] },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<TopCategoriesSection />);
@@ -86,7 +86,7 @@ describe("TopCategoriesSection", () => {
     });
 
     it("returns null when categories array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: {}, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
       const { container } = render(<TopCategoriesSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -98,15 +98,15 @@ describe("TopCategoriesSection", () => {
   describe("Content Rendering", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { categories: mockCategories },
+        data: mockCategories,
         isLoading: false,
       });
     });
 
-    it('renders "Top Categories" heading', () => {
+    it('renders "Shop by Category" heading', () => {
       render(<TopCategoriesSection />);
       expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-        "Top Categories",
+        "Shop by Category",
       );
     });
 
@@ -153,7 +153,7 @@ describe("TopCategoriesSection", () => {
   describe("Accessibility", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { categories: mockCategories },
+        data: mockCategories,
         isLoading: false,
       });
     });
@@ -181,7 +181,7 @@ describe("TopCategoriesSection", () => {
   describe("Pagination", () => {
     it("does not show dots when 4 or fewer categories", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { categories: mockCategories },
+        data: mockCategories,
         isLoading: false,
       });
       render(<TopCategoriesSection />);
@@ -201,7 +201,7 @@ describe("TopCategoriesSection", () => {
         { id: "6", name: "Art", slug: "art", metrics: { totalItemCount: 100 } },
       ];
       mockUseApiQuery.mockReturnValue({
-        data: { categories: manyCategories },
+        data: manyCategories,
         isLoading: false,
       });
       render(<TopCategoriesSection />);

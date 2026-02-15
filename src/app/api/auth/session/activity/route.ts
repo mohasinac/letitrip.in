@@ -8,19 +8,20 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 export async function POST(request: NextRequest) {
   try {
     // Get session cookie to verify user
     const sessionCookie = request.cookies.get("__session")?.value;
     if (!sessionCookie) {
-      throw new ValidationError("No session found");
+      throw new ValidationError(ERROR_MESSAGES.SESSION.NOT_FOUND);
     }
 
     // Verify the session
     const decodedToken = await verifySessionCookie(sessionCookie);
     if (!decodedToken) {
-      throw new ValidationError("Invalid session");
+      throw new ValidationError(ERROR_MESSAGES.SESSION.INVALID);
     }
 
     // Get session ID from request
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { sessionId } = body;
 
     if (!sessionId) {
-      throw new ValidationError("Session ID required");
+      throw new ValidationError(ERROR_MESSAGES.SESSION.ID_REQUIRED);
     }
 
     // Update session activity
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Activity updated",
+      message: SUCCESS_MESSAGES.SESSION.ACTIVITY_UPDATED,
     });
   } catch (error: unknown) {
     return handleApiError(error);

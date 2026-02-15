@@ -4,7 +4,6 @@ import {
   TrustIndicatorsSection,
   TopCategoriesSection,
   FeaturedProductsSection,
-  SpecialCollectionsSection,
   FeaturedAuctionsSection,
   AdvertisementBanner,
   SiteFeaturesSection,
@@ -24,7 +23,6 @@ export default function Page() {
       <TrustIndicatorsSection />
       <TopCategoriesSection />
       <FeaturedProductsSection />
-      <SpecialCollectionsSection />
       <FeaturedAuctionsSection />
       <AdvertisementBanner />
       <SiteFeaturesSection />

@@ -18,6 +18,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
+import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
 
 // ============================================================================
@@ -68,12 +69,11 @@ export function useAddresses(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiQuery<Address[]>({
-    endpoint: API_ENDPOINTS.USER.ADDRESSES.LIST,
-    options: {
-      enabled: options?.enabled,
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    queryKey: ["addresses"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.USER.ADDRESSES.LIST),
+    enabled: options?.enabled,
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
 
@@ -89,12 +89,11 @@ export function useAddress(
   },
 ) {
   return useApiQuery<Address>({
-    endpoint: API_ENDPOINTS.USER.ADDRESSES.GET_BY_ID(id),
-    options: {
-      enabled: options?.enabled !== false && !!id,
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    queryKey: ["address", id],
+    queryFn: () => apiClient.get(API_ENDPOINTS.USER.ADDRESSES.GET_BY_ID(id)),
+    enabled: options?.enabled !== false && !!id,
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
 
@@ -106,12 +105,10 @@ export function useCreateAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<Address, AddressFormData>({
-    endpoint: API_ENDPOINTS.USER.ADDRESSES.CREATE,
-    method: "POST",
-    options: {
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.USER.ADDRESSES.CREATE, data),
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
 
@@ -126,12 +123,10 @@ export function useUpdateAddress(
   },
 ) {
   return useApiMutation<Address, AddressFormData>({
-    endpoint: API_ENDPOINTS.USER.ADDRESSES.UPDATE(id),
-    method: "PATCH",
-    options: {
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    mutationFn: (data) =>
+      apiClient.patch(API_ENDPOINTS.USER.ADDRESSES.UPDATE(id), data),
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
 
@@ -143,12 +138,10 @@ export function useDeleteAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, { id: string }>({
-    endpoint: (data) => API_ENDPOINTS.USER.ADDRESSES.DELETE(data.id),
-    method: "DELETE",
-    options: {
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    mutationFn: (data) =>
+      apiClient.delete(API_ENDPOINTS.USER.ADDRESSES.DELETE(data.id)),
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
 
@@ -160,12 +153,9 @@ export function useSetDefaultAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, SetDefaultAddressData>({
-    endpoint: (data) =>
-      API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT(data.addressId),
-    method: "POST",
-    options: {
-      onSuccess: options?.onSuccess,
-      onError: options?.onError,
-    },
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT(data.addressId)),
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }

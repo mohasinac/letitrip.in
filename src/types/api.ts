@@ -30,7 +30,6 @@ import type { FAQDocument } from "@/db/schema/faqs";
 
 /**
  * Standard API response wrapper
- * TODO: Add response metadata (requestId, timestamp, version)
  */
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -40,9 +39,35 @@ export interface ApiResponse<T = unknown> {
 }
 
 /**
- * Paginated response metadata
- * TODO: Add cursor-based pagination support
- * TODO: Add links for HATEOAS (next, prev, first, last)
+ * Response metadata for tracking and debugging
+ */
+export interface ResponseMetadata {
+  requestId: string; // Unique request identifier for tracing
+  timestamp: Date; // Response generation time
+  version: string; // API version (e.g., "v1")
+  duration?: number; // Response time in milliseconds
+}
+
+/**
+ * Extended API response with metadata
+ */
+export interface ApiResponseWithMetadata<T = unknown> extends ApiResponse<T> {
+  meta?: ResponseMetadata;
+}
+
+/**
+ * HATEOAS Link for hypermedia-driven APIs
+ */
+export interface HATEOASLink {
+  rel: "self" | "first" | "last" | "next" | "prev" | "parent" | "child";
+  href: string;
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  title?: string;
+  type?: string; // MIME type
+}
+
+/**
+ * Offset-based pagination metadata
  */
 export interface PaginationMeta {
   page: number;
@@ -50,30 +75,120 @@ export interface PaginationMeta {
   total: number;
   totalPages?: number;
   hasMore: boolean;
-  nextCursor?: string; // For cursor-based pagination
-  prevCursor?: string;
 }
 
 /**
- * Paginated API response
+ * Cursor-based pagination for efficient large dataset handling
+ */
+export interface CursorPaginationMeta {
+  nextCursor?: string; // Base64-encoded cursor for next page
+  prevCursor?: string; // Base64-encoded cursor for previous page
+  hasMore: boolean; // Whether more results exist
+  total?: number; // Total count (optional, expensive to compute)
+  limit: number; // Items per page
+}
+
+/**
+ * Cursor-based pagination parameters
+ */
+export interface CursorPaginationParams {
+  cursor?: string; // Base64-encoded pagination marker
+  limit: number; // Results per page
+  sort?: {
+    field: string; // Field to sort by
+    direction: "asc" | "desc";
+  };
+}
+
+/**
+ * Paginated API response with offset-based pagination
  */
 export interface PaginatedApiResponse<T = unknown> extends ApiResponse<T[]> {
-  meta: PaginationMeta;
+  meta: PaginationMeta & { links?: HATEOASLink[] };
+}
+
+/**
+ * API response with cursor-based pagination
+ */
+export interface CursorPaginatedApiResponse<T = unknown> extends ApiResponse<
+  T[]
+> {
+  meta: CursorPaginationMeta & { links?: HATEOASLink[] };
+}
+
+/**
+ * Filter operator for complex filtering
+ */
+export type FilterOperator =
+  | "eq"
+  | "neq"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "in"
+  | "nin"
+  | "exists"
+  | "regex"
+  | "between";
+
+/**
+ * Individual filter condition
+ */
+export interface FilterCondition {
+  field: string;
+  operator: FilterOperator;
+  value: any;
+}
+
+/**
+ * Complex filter with logical operators
+ */
+export interface ComplexFilter {
+  $and?: FilterCondition[];
+  $or?: FilterCondition[];
+  $nor?: FilterCondition[];
+  conditions?: FilterCondition[];
+}
+
+/**
+ * Sparse fieldset for bandwidth optimization
+ */
+export interface FieldSelection {
+  fields?: string[]; // Include-based field selection
+  exclude?: string[]; // Exclude-based field selection
+}
+
+/**
+ * Relation/include expansion options
+ */
+export interface IncludeOptions {
+  include?: string[]; // Relations to expand (e.g., "seller", "reviews", "images")
+  depth?: number; // Nesting depth (default: 1, max: 5)
+  maxSize?: number; // Max size of related array
 }
 
 /**
  * Common query parameters for list endpoints
- * TODO: Add support for complex filters (OR, AND conditions)
- * TODO: Add support for field selection (sparse fieldsets)
- * TODO: Add support for includes/relations expansion
  */
-export interface CommonQueryParams {
+export interface CommonQueryParams extends FieldSelection, IncludeOptions {
   page?: number;
   limit?: number;
+  cursor?: string; // For cursor-based pagination
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   search?: string;
-  fields?: string[]; // Field selection for response
+  filter?: ComplexFilter; // Complex filtering support
+}
+
+/**
+ * Expanded resource with related data
+ */
+export interface ExpandedResource<T> {
+  data: T;
+  included?: {
+    [key: string]: any[]; // Related resources grouped by type
+  };
 }
 
 // ============================================
@@ -81,12 +196,7 @@ export interface CommonQueryParams {
 // ============================================
 
 /**
- * Product list query parameters
- * TODO: Add price range filter (minPrice, maxPrice)
- * TODO: Add brand filter
- * TODO: Add condition filter (new, used, refurbished)
- * TODO: Add location-based filtering
- * TODO: Add availability filter (in_stock, out_of_stock)
+ * Product list query parameters with advanced filtering
  */
 export interface ProductListQuery extends CommonQueryParams {
   category?: string;
@@ -98,14 +208,23 @@ export interface ProductListQuery extends CommonQueryParams {
   isPromoted?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  brand?: string;
+  condition?: "new" | "used" | "refurbished";
+  location?: {
+    city?: string;
+    state?: string;
+    country?: string;
+    radius?: number; // km radius for location-based search
+  };
+  inStock?: boolean; // true = in_stock, false = out_of_stock
+  rating?: {
+    min: number; // Min average rating (0-5)
+  };
   tags?: string[];
 }
 
 /**
  * Product creation request body
- * TODO: Add bulk creation support (array of products)
- * TODO: Add draft auto-save support
- * TODO: Add import from URL/CSV
  */
 export interface ProductCreateRequest {
   title: string;
@@ -114,6 +233,7 @@ export interface ProductCreateRequest {
   subcategory?: string;
   brand?: string;
   price: number;
+  originalPrice?: number; // For showing discounts
   currency: string;
   stockQuantity: number;
   mainImage: string; // Pre-uploaded URL or will be uploaded
@@ -130,6 +250,7 @@ export interface ProductCreateRequest {
   tags?: string[];
   shippingInfo?: string;
   returnPolicy?: string;
+  isDraft?: boolean; // Draft auto-save support
   // Auction fields (optional)
   isAuction?: boolean;
   auctionEndDate?: string; // ISO date string
@@ -137,20 +258,37 @@ export interface ProductCreateRequest {
 }
 
 /**
- * Product update request body
- * TODO: Add partial update support with PATCH semantics
- * TODO: Add optimistic locking with version field
+ * Product update request body with PATCH semantics
  */
 export type ProductUpdateRequest = Partial<ProductCreateRequest> & {
   status?: ProductStatus;
+  version?: number; // For optimistic locking
 };
 
 /**
+ * Bulk product creation request
+ */
+export interface ProductBulkCreateRequest {
+  products: ProductCreateRequest[];
+  importSource?: "csv" | "url" | "api";
+  dryRun?: boolean; // Validate without creating
+}
+
+/**
+ * Response from bulk import operation
+ */
+export interface BulkImportResponse {
+  imported: number;
+  failed: number;
+  skipped: number;
+  errors?: Array<{
+    row: number;
+    error: string;
+  }>;
+}
+
+/**
  * Product response with computed fields
- * TODO: Add seller rating/reputation
- * TODO: Add average review rating
- * TODO: Add view count
- * TODO: Add favorite/wishlist count
  */
 export interface ProductResponse extends ProductDocument {
   // Computed fields (not in database)
@@ -159,6 +297,8 @@ export interface ProductResponse extends ProductDocument {
   averageRating?: number;
   reviewCount?: number;
   isInUserWishlist?: boolean; // If user is authenticated
+  sellerRating?: number; // Seller's average rating
+  sellerReviewCount?: number; // Total reviews for seller
 }
 
 // ============================================
@@ -166,9 +306,7 @@ export interface ProductResponse extends ProductDocument {
 // ============================================
 
 /**
- * Category list query parameters
- * TODO: Add depth limit for tree queries
- * TODO: Add include/exclude inactive categories
+ * Category list query parameters with tree support
  */
 export interface CategoryListQuery extends CommonQueryParams {
   rootId?: string;
@@ -176,13 +314,13 @@ export interface CategoryListQuery extends CommonQueryParams {
   featured?: boolean;
   includeMetrics?: boolean;
   flat?: boolean; // Return flat list instead of tree
-  maxDepth?: number;
+  maxDepth?: number; // Depth limit for tree queries (default: 3)
+  includeInactive?: boolean; // Include inactive categories
+  expandChildren?: boolean; // Fetch all descendants
 }
 
 /**
  * Category creation request
- * TODO: Add bulk import support
- * TODO: Add category templates
  */
 export interface CategoryCreateRequest {
   name: string;
@@ -211,11 +349,23 @@ export type CategoryUpdateRequest = Partial<CategoryCreateRequest> & {
 };
 
 /**
+ * Bulk category import request
+ */
+export interface CategoryBulkImport {
+  categories: Array<{
+    name: string;
+    parentId?: string;
+    image?: string;
+    description?: string;
+  }>;
+}
+
+/**
  * Category tree node (nested structure)
- * TODO: Implement lazy loading for large trees
  */
 export interface CategoryTreeNode extends CategoryDocument {
   children?: CategoryTreeNode[];
+  productCount?: number; // Number of products in category
 }
 
 // ============================================
@@ -223,28 +373,27 @@ export interface CategoryTreeNode extends CategoryDocument {
 // ============================================
 
 /**
- * Review list query parameters
- * TODO: Add filter by verification status
- * TODO: Add filter by helpful votes threshold
+ * Review list query parameters with advanced filtering
  */
 export interface ReviewListQuery extends CommonQueryParams {
   productId: string; // Required
   status?: ReviewStatus;
-  rating?: number;
-  verified?: boolean;
+  rating?: number; // Filter by specific rating
+  ratingRange?: [number, number]; // Filter by rating range
+  verified?: boolean; // Filter by verification status
+  minHelpful?: number; // Filter by helpful votes threshold
+  sortBy?: "recent" | "helpful" | "rating"; // Sort order
 }
 
 /**
  * Review creation request
- * TODO: Add media upload handling
- * TODO: Add review templates/quick reviews
  */
 export interface ReviewCreateRequest {
   productId: string;
-  rating: number; // 1-5
+  rating: number; // 1-5 stars
   title: string;
   comment: string;
-  images?: string[];
+  media?: string[]; // Image/video URLs
   video?: {
     url: string;
     thumbnailUrl: string;
@@ -252,15 +401,25 @@ export interface ReviewCreateRequest {
     trimStart?: number;
     trimEnd?: number;
   };
+  template?: "quick" | "detailed"; // Pre-filled template
+  verified?: boolean; // Mark as verified purchase
 }
 
 /**
- * Review update request
- * TODO: Add edit history tracking
+ * Review update request with edit history
  */
 export type ReviewUpdateRequest = Partial<
   Omit<ReviewCreateRequest, "productId">
 >;
+
+/**
+ * Edit history entry for reviews
+ */
+export interface ReviewEditHistory {
+  editedAt: Date;
+  previousContent: string;
+  previousRating?: number;
+}
 
 /**
  * Review response with computed fields
@@ -268,6 +427,7 @@ export type ReviewUpdateRequest = Partial<
 export interface ReviewResponse extends ReviewDocument {
   userHasVoted?: boolean; // If authenticated user has voted
   userVote?: "helpful" | "not_helpful";
+  history?: ReviewEditHistory[]; // Edit history for admins
 }
 
 /**
@@ -303,8 +463,6 @@ export interface CarouselListQuery {
 
 /**
  * Carousel slide creation request (admin only)
- * TODO: Add slide duplication feature
- * TODO: Add slide scheduling (start/end dates)
  */
 export interface CarouselCreateRequest {
   title: string;
@@ -343,6 +501,10 @@ export interface CarouselCreateRequest {
     isButtonOnly?: boolean;
     mobileHideText?: boolean;
   }>;
+  startDate?: Date; // Slide scheduling start
+  endDate?: Date; // Slide scheduling end
+  template?: string; // Template reference
+  duplicateFrom?: string; // Duplicate from another slide
 }
 
 /**
@@ -351,11 +513,31 @@ export interface CarouselCreateRequest {
 export type CarouselUpdateRequest = Partial<CarouselCreateRequest>;
 
 /**
- * Carousel reorder request
- * TODO: Implement drag-and-drop ordering
+ * Carousel reorder request for drag-and-drop
  */
 export interface CarouselReorderRequest {
   slideIds: string[]; // Ordered array of slide IDs
+}
+
+/**
+ * Generic reorder request for drag-and-drop operations
+ */
+export interface ReorderRequest {
+  itemId: string;
+  newOrder: number;
+  targetPosition?: "before" | "after";
+  targetItemId?: string;
+}
+
+/**
+ * Response from reorder operation
+ */
+export interface ReorderResponse {
+  success: boolean;
+  items: Array<{
+    id: string;
+    order: number;
+  }>;
 }
 
 // ============================================
@@ -371,15 +553,18 @@ export interface HomepageSectionsListQuery {
 
 /**
  * Homepage section creation request (admin only)
- * TODO: Add section templates library
- * TODO: Add A/B testing configuration
  */
 export interface HomepageSectionCreateRequest {
-  type: string; // Section type (welcome, products, categories, etc.)
+  type: "welcome" | "featured" | "categories" | "trending" | "custom";
   title: string;
   order: number;
   enabled: boolean;
-  config: Record<string, unknown>; // Section-specific configuration
+  config?: {
+    maxItems?: number;
+    layout?: "grid" | "carousel" | "list";
+    columns?: number; // For responsive layout
+    template?: string; // Template reference
+  };
 }
 
 /**
@@ -401,20 +586,17 @@ export interface HomepageSectionsReorderRequest {
 
 /**
  * FAQ list query parameters
- * TODO: Add popularity-based sorting
- * TODO: Add related FAQs suggestions
  */
 export interface FAQListQuery extends CommonQueryParams {
   category?: string;
   featured?: boolean;
   priority?: number;
   tags?: string[];
+  sortBy?: "popular" | "recent" | "helpful"; // Popularity-based sorting
 }
 
 /**
  * FAQ creation request (admin only)
- * TODO: Add AI-powered FAQ generation
- * TODO: Add FAQ templates
  */
 export interface FAQCreateRequest {
   question: string;
@@ -426,7 +608,8 @@ export interface FAQCreateRequest {
   priority: number; // 1-10
   featured: boolean;
   tags?: string[];
-  relatedFAQs?: string[]; // Array of FAQ IDs
+  relatedFAQs?: string[]; // Array of FAQ IDs for suggestions
+  template?: string; // FAQ template reference
 }
 
 /**
@@ -455,16 +638,17 @@ export interface FAQResponse extends FAQDocument {
 // ============================================
 
 /**
- * Standard error response
- * TODO: Add error codes for i18n
- * TODO: Add field-level validation errors
+ * Standard error response with field-level errors
  */
 export interface ApiErrorResponse {
   success: false;
   error: string;
-  code?: string;
+  code?: string; // For i18n translation
+  message?: string; // Human-readable message
   details?: unknown;
-  fields?: Record<string, string[]>; // Field-level errors
+  fields?: Record<string, string[]>; // Field-level validation errors
+  timestamp?: Date;
+  traceId?: string; // For debugging/logging
 }
 
 // ============================================
@@ -472,16 +656,15 @@ export interface ApiErrorResponse {
 // ============================================
 
 /**
- * Media upload request
- * TODO: Implement chunked upload for large files
- * TODO: Add upload progress tracking
- * TODO: Add resumable upload support
+ * Media upload request with chunking and progress tracking
  */
 export interface MediaUploadRequest {
   file: File | Blob;
   type: "image" | "video";
   entityType: "product" | "review" | "category" | "carousel" | "user";
   entityId?: string;
+  chunkSize?: number; // For chunked upload (default: 5MB)
+  uploadId?: string; // For resumable upload
   // For images
   cropData?: {
     x: number;
@@ -502,6 +685,29 @@ export interface MediaUploadRequest {
 }
 
 /**
+ * Chunked upload request for large files
+ */
+export interface ChunkedUploadRequest {
+  uploadId: string; // Unique upload session ID
+  chunkIndex: number; // 0-based chunk index
+  totalChunks: number; // Total number of chunks
+  chunkSize: number; // Size of this chunk in bytes
+  chunk: File | Blob; // Chunk data
+}
+
+/**
+ * Chunked upload progress
+ */
+export interface UploadProgress {
+  uploadId: string;
+  chunkIndex: number;
+  totalChunks: number;
+  percentComplete: number; // 0-100
+  bytesUploaded: number;
+  totalBytes: number;
+}
+
+/**
  * Media upload response
  */
 export interface MediaUploadResponse {
@@ -512,4 +718,5 @@ export interface MediaUploadResponse {
   duration?: number; // For videos
   size: number; // bytes
   mimeType: string;
+  uploadId?: string; // For resumable uploads
 }

@@ -34,7 +34,7 @@ export function FAQHelpfulButtons({
     setIsSubmitting(true);
 
     try {
-      await apiClient.post(`${API_ENDPOINTS.FAQS.BASE}/${faqId}/vote`, {
+      await apiClient.post(API_ENDPOINTS.FAQS.VOTE(faqId), {
         isHelpful,
       });
 

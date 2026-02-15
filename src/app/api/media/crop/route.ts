@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -15,6 +15,8 @@ import {
 import { AuthenticationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
+import sharp from "sharp";
+import axios from "axios";
 
 /**
  * POST /api/media/crop
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -58,113 +60,91 @@ export async function POST(request: NextRequest) {
       y,
       width,
       height,
-      outputFolder,
+      outputFolder = "cropped",
       outputFormat,
       quality = 90,
     } = validation.data;
 
-    // TODO: Implement image cropping with sharp library
-    // This is a placeholder implementation that needs sharp installed:
-    // npm install sharp
+    // Download source image
+    const response = await axios.get(sourceUrl, {
+      responseType: "arraybuffer",
+    });
+    const sourceBuffer = Buffer.from(response.data);
 
-    // For now, return not implemented error with instructions
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Image cropping not yet implemented",
-        details: {
-          message:
-            "This endpoint requires the sharp library for image processing",
-          installation: "npm install sharp",
-          implementation:
-            "The sharp library needs to be added to process images server-side",
-        },
-        // TODO: Remove this when implemented
-        receivedData: {
-          sourceUrl,
-          crop: { x, y, width, height },
-          output: { format: outputFormat, quality },
-        },
-      },
-      { status: 501 },
-    );
+    // Detect original format if not specified
+    const metadata = await sharp(sourceBuffer).metadata();
+    const originalFormat = metadata.format || "png";
+    const finalFormat =
+      (outputFormat as "jpeg" | "png" | "webp") || originalFormat;
 
-    /* 
-    // FUTURE IMPLEMENTATION (when sharp is installed):
-    
-    const sharp = require('sharp');
-    
-    // Download source image from Storage
-    const storage = getStorage();
-    const bucket = storage.bucket();
-    
-    // Extract path from URL or use as path
-    const sourcePath = sourceUrl.includes('storage.googleapis.com')
-      ? sourceUrl.split(`${bucket.name}/`)[1]
-      : sourceUrl;
-    
-    const sourceFile = bucket.file(sourcePath);
-    const [sourceBuffer] = await sourceFile.download();
-    
     // Crop image
-    let pipeline = sharp(sourceBuffer)
-      .extract({ left: x, top: y, width, height });
-    
+    let pipeline = sharp(sourceBuffer).extract({
+      left: x,
+      top: y,
+      width,
+      height,
+    });
+
     // Convert format if specified
-    if (outputFormat === 'jpeg') {
+    if (finalFormat === "jpeg") {
       pipeline = pipeline.jpeg({ quality });
-    } else if (outputFormat === 'png') {
+    } else if (finalFormat === "png") {
       pipeline = pipeline.png({ quality });
-    } else if (outputFormat === 'webp') {
+    } else if (finalFormat === "webp") {
       pipeline = pipeline.webp({ quality });
+    } else {
+      pipeline = pipeline.png();
     }
-    
+
     const croppedBuffer = await pipeline.toBuffer();
-    
+
     // Generate output filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
-    const extension = outputFormat || sourcePath.split('.').pop();
-    const filename = `cropped-${timestamp}-${randomString}.${extension}`;
-    
-    // Upload cropped image
-    const outputPath = `${outputFolder || 'cropped'}/${user.uid}/${filename}`;
-    const outputFile = bucket.file(outputPath);
-    
-    await outputFile.save(croppedBuffer, {
+    const filename = `cropped-${timestamp}-${randomString}.${finalFormat}`;
+
+    // Upload to storage
+    const storage = getStorage();
+    const bucket = storage.bucket();
+    const uploadPath = `${outputFolder}/${user.uid}/${filename}`;
+    const file = bucket.file(uploadPath);
+
+    await file.save(croppedBuffer, {
       metadata: {
-        contentType: `image/${extension}`,
-        metadata: {
+        contentType: `image/${finalFormat}`,
+        customMetadata: {
           uploadedBy: user.uid,
-          croppedFrom: sourcePath,
+          croppedFrom: sourceUrl,
           cropData: JSON.stringify({ x, y, width, height }),
+          originalFormat: originalFormat,
           croppedAt: new Date().toISOString(),
         },
       },
+    } as any);
+
+    // Generate signed URL (7 days)
+    const [signedUrl] = await file.getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
-    
-    // Generate signed URL
-    const [signedUrl] = await outputFile.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-    
+
     return NextResponse.json(
       {
         success: true,
         data: {
           url: signedUrl,
-          path: outputPath,
+          path: uploadPath,
           filename,
           cropData: { x, y, width, height },
-          format: extension,
+          format: finalFormat,
           quality,
+          size: croppedBuffer.length,
         },
-        message: 'Image cropped successfully',
+        message: SUCCESS_MESSAGES.MEDIA.IMAGE_CROPPED,
       },
-      { status: 200 }
+      { status: 200 },
     );
-    */
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -177,7 +157,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to crop image",
+        error: ERROR_MESSAGES.MEDIA.CROP_FAILED,
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },

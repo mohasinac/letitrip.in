@@ -10,6 +10,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { AuthorizationError } from "@/lib/errors";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 export async function DELETE(
   request: NextRequest,
@@ -26,14 +27,14 @@ export async function DELETE(
 
     if (!session) {
       return NextResponse.json(
-        { success: false, error: "Session not found" },
+        { success: false, error: ERROR_MESSAGES.SESSION.NOT_FOUND },
         { status: 404 },
       );
     }
 
     // Verify user owns this session
     if (session.userId !== user.uid) {
-      throw new AuthorizationError("You can only revoke your own sessions");
+      throw new AuthorizationError(ERROR_MESSAGES.SESSION.CANNOT_REVOKE_OTHERS);
     }
 
     // Revoke the session
@@ -41,7 +42,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Session revoked successfully",
+      message: SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
       sessionId,
     });
   } catch (error: unknown) {

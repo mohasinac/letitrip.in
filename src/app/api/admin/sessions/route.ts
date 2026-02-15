@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -105,12 +105,14 @@ export async function GET(req: NextRequest) {
       count: sessions.length,
     });
   } catch (error) {
-    serverLogger.error("Admin sessions fetch error", { error });
+    serverLogger.error(ERROR_MESSAGES.API.ADMIN_SESSIONS_ERROR, { error });
     return NextResponse.json(
       {
         success: false,
         error:
-          error instanceof Error ? error.message : "Failed to fetch sessions",
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.SESSION.FETCH_FAILED,
       },
       { status: 500 },
     );

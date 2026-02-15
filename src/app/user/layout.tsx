@@ -19,11 +19,13 @@ interface UserLayoutProps {
 export default function UserLayout({ children }: UserLayoutProps) {
   return (
     <div className="w-full">
-      {/* Tab Navigation */}
-      <UserTabs />
+      {/* Tab Navigation - negative margins to break out of container padding */}
+      <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10 mb-6">
+        <UserTabs />
+      </div>
 
       {/* Main Content */}
-      <main>{children}</main>
+      <div>{children}</div>
     </div>
   );
 }

@@ -14,6 +14,7 @@ import {
 } from "@/lib/validation/schemas";
 import { AuthenticationError, NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * POST /api/faqs/[id]/vote
@@ -34,7 +35,7 @@ export async function POST(
     // Check if FAQ exists
     const faq = await faqsRepository.findById(id);
     if (!faq) {
-      throw new NotFoundError("FAQ not found");
+      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
     }
 
     // Parse and validate request body
@@ -45,7 +46,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -83,8 +84,8 @@ export async function POST(
         notHelpful: updatedFAQ.stats?.notHelpful || 0,
       },
       message: helpful
-        ? "Thank you for your feedback!"
-        : "Thank you for your feedback. We'll work to improve this answer.",
+        ? SUCCESS_MESSAGES.FAQ.VOTE_HELPFUL
+        : SUCCESS_MESSAGES.FAQ.VOTE_NOT_HELPFUL,
     });
   } catch (error) {
     if (error instanceof AuthenticationError) {
@@ -103,7 +104,7 @@ export async function POST(
 
     serverLogger.error("POST /api/faqs/[id]/vote error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to record vote" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.VOTE_FAILED },
       { status: 500 },
     );
   }

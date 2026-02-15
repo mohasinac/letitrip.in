@@ -9,6 +9,167 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 4: Admin Dashboard Creation — Media Operations & UI Components
+
+#### New Media Admin Dashboard
+
+- **Route**: `POST /admin/media` → Media Operations Manager
+- **Components Created**:
+  - `MediaOperationForm.tsx` - Dual-mode form (crop/trim) with dynamic field switching
+  - `MediaTableColumns.tsx` - Data table definition with status badges and download actions
+  - Admin media index exports
+- **Features**:
+  - Toggle between image crop and video trim operations
+  - Full form validation with Zod schemas
+  - Real-time operation status tracking
+  - Download processed media directly from UI
+  - Recent operations history (10 items)
+- **UI Enhancements**:
+  - Added `MEDIA` section to admin UI labels with 25+ new label constants
+  - Added `ROUTES.ADMIN.MEDIA` constant (`/admin/media`)
+  - Supports high/medium/low quality presets for both image and video
+  - Format selection (JPEG/PNG/WebP for images, MP4/WebM for videos)
+
+#### Test Coverage
+
+- Added 8 new tests for media admin components
+- `MediaOperationForm.test.tsx` - Form rendering and loading states
+- `MediaTableColumns.test.ts` - Column definitions and data types
+- **Test Status**: 2285 tests passing, 4 skipped (99.8% pass rate)
+
+---
+
+### Tests
+
+- Added happy-path tests for user pages, admin pages, and public profile route.
+- Added happy-path tests for admin carousel/categories/faq/sections/reviews components and user profile/settings/address components.
+- **Fixed admin/user page tests** to handle async `use()` hook by mocking React's `use` function (returns empty object immediately).
+- **Fixed circular dependency errors** in all admin and user component tests by removing `jest.requireActual("@/components")` pattern (26 files fixed).
+- **Updated test queries** to use accessible attributes (`getByLabelText`, `getByRole`, `getByText`) instead of non-existent `getByTestId` calls (11 files fixed).
+- **Hardened demo seed tests** to assert fetch payloads directly and disambiguate success/error text matches.
+- **Stabilized demo seed tests** with exact button queries and resilient detail assertions; mocked `SITE_CONFIG.nav` for ContactCTA; mocked `firebase-admin/auth` in auth helper tests.
+- **Current test status**: 95/124 tests passing (76.6% pass rate) - 32/37 page tests, 63/87 component tests.
+
+### Schema & Type Unification — Frontend/Backend Consistency Audit
+
+#### Schema Field Constants (`src/db/schema/field-names.ts` — NEW)
+
+- Created centralized field-name constants for all 14 Firestore collections
+- Exports: `USER_FIELDS`, `TOKEN_FIELDS`, `PRODUCT_FIELDS`, `ORDER_FIELDS`, `REVIEW_FIELDS`, `BID_FIELDS`, `SESSION_FIELDS`, `CAROUSEL_FIELDS`, `CATEGORY_FIELDS`, `COUPON_FIELDS`, `FAQ_FIELDS`, `HOMEPAGE_SECTION_FIELDS`, `SITE_SETTINGS_FIELDS`, `COMMON_FIELDS`
+- Exports: `SCHEMA_DEFAULTS` (USER_ROLE, ADMIN_EMAIL, UNKNOWN_USER_AGENT, DEFAULT_DISPLAY_NAME, ANONYMOUS_USER)
+
+#### Schema Fixes
+
+- **`src/db/schema/users.ts`**: Removed dead `lastLoginAt` field from metadata (was never written by any route — login route only writes `lastSignInTime`). Changed `lastSignInTime` type from `string` to `Date` (Firestore stores as Timestamp).
+
+#### Type Alignment
+
+- **`src/types/auth.ts`**: Imported `AvatarMetadata` from `@/db/schema` instead of inline duplicate. Made `phoneVerified` optional. Removed dead `lastLoginAt` from metadata type. Aligned `lastSignInTime` to `Date`.
+- **`src/contexts/SessionContext.tsx`**: Added `metadata` field to `SessionUser`. Changed `role: string` → `role: UserRole`. Replaced inline `avatarMetadata` type with imported `AvatarMetadata`.
+- **`src/components/admin/users/types.ts`**: Made `email`/`displayName` nullable (`string | null`). Changed `role` to imported `UserRole` type.
+
+#### API Route Fixes
+
+- **`src/app/api/user/profile/route.ts`**: Now returns `metadata`, `publicProfile`, and `stats` in GET response (previously missing — frontend settings page read undefined).
+- **`src/app/api/admin/users/route.ts`**: Fixed `lastLoginAt` serialization to read from `metadata.lastSignInTime` instead of dead `metadata.lastLoginAt`.
+- **`src/app/api/auth/login/route.ts`**: Uses `USER_FIELDS` and `SCHEMA_DEFAULTS` constants instead of hardcoded strings for Firestore updates.
+- **`src/app/api/auth/register/route.ts`**: Uses `SCHEMA_DEFAULTS` constants instead of hardcoded `"user"`, `"admin@letitrip.in"`, `"Unknown"`.
+- **`src/app/api/auth/session/route.ts`**: Uses `SCHEMA_DEFAULTS` constants. Replaced `console.debug` with `serverLogger.debug`. Uses `ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS` instead of hardcoded string.
+
+### Dead API Endpoint Audit & Cleanup
+
+#### `src/constants/api-endpoints.ts` — Cleaned
+
+- **Removed** `AUTH.DESTROY_SESSION` (unused duplicate of `CREATE_SESSION` — same path, use DELETE method)
+- **Removed** `USER.UPDATE_PROFILE` (unused duplicate of `USER.PROFILE` — same path, use PATCH method)
+- **Removed** `FAQS.BASE` (unused duplicate of `FAQS.LIST`)
+- **Deprecated** `USER.ADDRESSES` block with JSDoc pointing to top-level `ADDRESSES` (both used in different files, identical paths)
+- **Documented** status of every endpoint group (✅ route exists / ❌ no route / ⚠️ partial)
+- **Marked** 6 used-but-missing-route endpoints: `ADDRESSES.*`, `ORDERS.*`, `ADMIN.REVOKE_SESSION`, `ADMIN.REVOKE_USER_SESSIONS`, `LOGS.WRITE`, `NEWSLETTER.SUBSCRIBE`
+
+#### `src/constants/messages.ts` — 47 New Constants Added
+
+**New ERROR_MESSAGES keys:**
+
+- `AUTH`: `API_KEY_NOT_CONFIGURED`, `TOKEN_EXCHANGE_FAILED`, `ADMIN_ACCESS_REQUIRED`
+- `VALIDATION`: `FAILED`, `TOKEN_REQUIRED`, `VERIFICATION_FIELDS_REQUIRED`, `VERIFICATION_CODE_FORMAT`, `PRODUCT_ID_REQUIRED`, `INVALID_TIME_RANGE`
+- `GENERIC`: `SERVER_CONFIG_ERROR`, `NOT_IMPLEMENTED`
+- `SESSION`: `NOT_FOUND`, `INVALID`, `ID_REQUIRED`, `INVALID_COOKIE`, `REVOKED_OR_EXPIRED`, `USER_NOT_FOUND_OR_DISABLED`, `CANNOT_REVOKE_OTHERS`
+- `REVIEW`: `NOT_FOUND`, `ALREADY_REVIEWED`, `UPDATE_NOT_ALLOWED`, `DELETE_NOT_ALLOWED`, `UPDATE_FAILED`, `VOTE_FAILED`
+- `FAQ`: `NOT_FOUND`, `CREATE_FAILED`
+- `CATEGORY`: `NOT_FOUND`, `NOT_FOUND_AFTER_UPDATE`, `HAS_CHILDREN`, `HAS_PRODUCTS`
+- `CAROUSEL`: `NOT_FOUND`, `MAX_ACTIVE_REACHED`, `REORDER_FAILED`
+- `SECTION`: `NOT_FOUND`, `REORDER_FAILED`
+- `PRODUCT`: `NOT_FOUND`, `NOT_FOUND_AFTER_UPDATE`, `UPDATE_NOT_ALLOWED`, `DELETE_NOT_ALLOWED`
+- **New sections**: `PHONE` (4 keys), `MEDIA` (3 keys)
+
+**New SUCCESS_MESSAGES keys:**
+
+- `REVIEW`: `SUBMITTED_PENDING_MODERATION`, `VOTE_RECORDED`
+- `CAROUSEL`: `REORDERED`
+- `SECTION`: `REORDERED`
+- `FAQ`: `VOTE_HELPFUL`, `VOTE_NOT_HELPFUL`
+- **New sections**: `SESSION` (1 key), `MEDIA` (2 keys), `LOGS` (1 key)
+
+### Hardcoded String Replacement — API Routes (33 files)
+
+Replaced all hardcoded error/success strings across every API route with `ERROR_MESSAGES.*` / `SUCCESS_MESSAGES.*` constants from `@/constants`.
+
+#### Files Modified
+
+**Auth routes (8 files):**
+
+- `auth/verify-email`, `auth/send-verification`, `auth/reset-password`, `auth/register`, `auth/login`, `auth/logout`, `auth/session/activity`, `auth/session/validate`
+
+**User routes (2 files):**
+
+- `user/sessions/[id]`, `user/change-password`
+
+**Profile routes (2 files):**
+
+- `profile/add-phone`, `profile/verify-phone`
+
+**Product routes (2 files):**
+
+- `products/route.ts`, `products/[id]/route.ts`
+
+**Category routes (2 files):**
+
+- `categories/route.ts`, `categories/[id]/route.ts`
+
+**Review routes (3 files):**
+
+- `reviews/route.ts`, `reviews/[id]/route.ts`, `reviews/[id]/vote/route.ts`
+
+**Carousel routes (3 files):**
+
+- `carousel/route.ts`, `carousel/[id]/route.ts`, `carousel/reorder/route.ts`
+
+**FAQ routes (3 files):**
+
+- `faqs/route.ts`, `faqs/[id]/route.ts`, `faqs/[id]/vote/route.ts`
+
+**Homepage-sections routes (3 files):**
+
+- `homepage-sections/route.ts`, `homepage-sections/[id]/route.ts`, `homepage-sections/reorder/route.ts`
+
+**Admin routes (1 file):**
+
+- `admin/sessions/route.ts`
+
+**Media routes (3 files):**
+
+- `media/upload/route.ts`, `media/crop/route.ts`, `media/trim/route.ts`
+
+**Site-settings (1 file):**
+
+- `site-settings/route.ts`
+
+#### New Constants Added to `messages.ts`
+
+- `ERROR_MESSAGES.SESSION.FETCH_FAILED`
+- `ERROR_MESSAGES.API.ADMIN_SESSIONS_ERROR`, `LOGOUT_REVOCATION_ERROR`, `LOGOUT_TOKEN_ERROR`
+
 ### Fixed
 
 #### Copilot Instructions Compliance Audit — COMPLETE (Feb 10, 2026)

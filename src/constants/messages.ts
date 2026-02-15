@@ -22,6 +22,9 @@ export const ERROR_MESSAGES = {
     SIGN_IN_CANCELLED: "Sign-in was cancelled",
     POPUP_BLOCKED:
       "Pop-up blocked by browser. Please allow pop-ups and try again",
+    API_KEY_NOT_CONFIGURED: "Firebase API key not configured",
+    TOKEN_EXCHANGE_FAILED: "Failed to exchange custom token for ID token",
+    ADMIN_ACCESS_REQUIRED: "Admin access required",
   },
 
   // Validation Errors
@@ -39,6 +42,12 @@ export const ERROR_MESSAGES = {
     PASSWORD_NO_NUMBER: "Password must contain at least one number",
     PASSWORD_MISMATCH: "Passwords do not match",
     INVALID_INPUT: "Invalid input provided",
+    FAILED: "Validation failed",
+    TOKEN_REQUIRED: "Verification token is required",
+    VERIFICATION_FIELDS_REQUIRED: "Verification ID and code are required",
+    VERIFICATION_CODE_FORMAT: "Verification code must be 6 digits",
+    PRODUCT_ID_REQUIRED: "productId is required",
+    INVALID_TIME_RANGE: "Invalid time range",
   },
 
   // User/Profile Errors
@@ -71,6 +80,8 @@ export const ERROR_MESSAGES = {
     TOKEN_USED: "Reset token has already been used",
     SOCIAL_PROVIDER_NO_PASSWORD:
       "Password change not available. You signed in with a social provider.",
+    TOO_WEAK: "Password is too weak. Please use a stronger password.",
+    SAME_AS_CURRENT: "New password must be different from current password",
   },
 
   // Email Verification Errors
@@ -107,6 +118,8 @@ export const ERROR_MESSAGES = {
     UNKNOWN: "An unknown error occurred",
     USER_ID_REQUIRED: "User ID is required",
     PROFILE_PRIVATE: "This profile is private",
+    SERVER_CONFIG_ERROR: "Server configuration error",
+    NOT_IMPLEMENTED: "This feature is not yet implemented",
   },
 
   // Database Errors
@@ -118,12 +131,20 @@ export const ERROR_MESSAGES = {
 
   // Session Errors
   SESSION: {
+    FETCH_FAILED: "Failed to fetch sessions",
     FETCH_USER_PROFILE_ERROR: "Error fetching user profile",
     FIRESTORE_SUBSCRIPTION_ERROR: "Firestore subscription error",
     VALIDATION_FAILED: "Session validation failed",
     SERVER_LOGOUT_ERROR: "Server logout error",
     SIGN_OUT_ERROR: "Sign out error",
     CREATION_ERROR: "Session creation error",
+    NOT_FOUND: "Session not found",
+    INVALID: "Invalid session",
+    ID_REQUIRED: "Session ID required",
+    INVALID_COOKIE: "Invalid session cookie",
+    REVOKED_OR_EXPIRED: "Session revoked or expired",
+    USER_NOT_FOUND_OR_DISABLED: "User not found or disabled",
+    CANNOT_REVOKE_OTHERS: "You can only revoke your own sessions",
   },
 
   // Admin Errors
@@ -146,6 +167,12 @@ export const ERROR_MESSAGES = {
     APPROVE_BULK_FAILED: "Failed to approve some reviews",
     FETCH_FAILED: "Failed to load reviews",
     SUBMIT_FAILED: "Failed to submit review",
+    NOT_FOUND: "Review not found",
+    ALREADY_REVIEWED: "You have already reviewed this product",
+    UPDATE_NOT_ALLOWED: "You do not have permission to update this review",
+    DELETE_NOT_ALLOWED: "You do not have permission to delete this review",
+    UPDATE_FAILED: "Failed to update review",
+    VOTE_FAILED: "Failed to record vote",
   },
 
   // FAQ Errors
@@ -155,6 +182,8 @@ export const ERROR_MESSAGES = {
     DELETE_FAILED: "Failed to delete FAQ",
     FETCH_FAILED: "Failed to load FAQs",
     UPDATE_FAILED: "Failed to update FAQ",
+    NOT_FOUND: "FAQ not found",
+    CREATE_FAILED: "Failed to create FAQ",
   },
 
   // Category Errors
@@ -164,6 +193,10 @@ export const ERROR_MESSAGES = {
     FETCH_FAILED: "Failed to load categories",
     UPDATE_FAILED: "Failed to update category",
     CREATE_FAILED: "Failed to create category",
+    NOT_FOUND: "Category not found",
+    NOT_FOUND_AFTER_UPDATE: "Category not found after update",
+    HAS_CHILDREN: "Cannot delete category with children",
+    HAS_PRODUCTS: "Cannot delete category with products",
   },
 
   // Carousel Errors
@@ -173,6 +206,9 @@ export const ERROR_MESSAGES = {
     FETCH_FAILED: "Failed to load carousel slides",
     UPDATE_FAILED: "Failed to update slide",
     CREATE_FAILED: "Failed to create slide",
+    NOT_FOUND: "Carousel slide not found",
+    MAX_ACTIVE_REACHED: "Maximum 5 active carousel slides allowed",
+    REORDER_FAILED: "Failed to reorder carousel slides",
   },
 
   // Homepage Section Errors
@@ -182,6 +218,8 @@ export const ERROR_MESSAGES = {
     FETCH_FAILED: "Failed to load sections",
     UPDATE_FAILED: "Failed to update section",
     CREATE_FAILED: "Failed to create section",
+    NOT_FOUND: "Homepage section not found",
+    REORDER_FAILED: "Failed to reorder homepage sections",
   },
 
   // Order Errors
@@ -198,6 +236,25 @@ export const ERROR_MESSAGES = {
     UPDATE_FAILED: "Failed to update product",
     CREATE_FAILED: "Failed to create product",
     DELETE_FAILED: "Failed to delete product",
+    NOT_FOUND: "Product not found",
+    NOT_FOUND_AFTER_UPDATE: "Product not found after update",
+    UPDATE_NOT_ALLOWED: "You do not have permission to update this product",
+    DELETE_NOT_ALLOWED: "You do not have permission to delete this product",
+  },
+
+  // Phone Errors
+  PHONE: {
+    NO_PHONE: "No phone number associated with this account",
+    ALREADY_IN_USE: "Phone number is already in use",
+    VERIFY_FAILED: "Failed to verify phone number",
+    ADD_FAILED: "Failed to add phone number",
+  },
+
+  // Media Errors
+  MEDIA: {
+    TRIM_FAILED: "Failed to trim video",
+    CROP_FAILED: "Failed to crop image",
+    NO_FILE: "No file provided",
   },
 
   // Address Errors
@@ -234,6 +291,9 @@ export const ERROR_MESSAGES = {
     MEDIA_TRIM_ERROR: "POST /api/media/trim error:",
     MEDIA_CROP_ERROR: "POST /api/media/crop error:",
     PROFILE_UPDATE_ERROR: "Profile update error:",
+    ADMIN_SESSIONS_ERROR: "Admin sessions fetch error:",
+    LOGOUT_REVOCATION_ERROR: "Session revocation error:",
+    LOGOUT_TOKEN_ERROR: "Token revocation error:",
   },
 } as const;
 
@@ -252,6 +312,7 @@ export const SUCCESS_MESSAGES = {
     SETTINGS_SAVED: "Settings saved successfully",
     USER_UPDATED: "User updated successfully",
     PHONE_VERIFIED: "Phone number verified successfully",
+    ACCOUNT_DELETED: "User account deleted successfully",
   },
 
   // Upload Success
@@ -271,6 +332,7 @@ export const SUCCESS_MESSAGES = {
 
   // Phone Success
   PHONE: {
+    VALIDATED: "Phone number validated successfully",
     VERIFIED: "Phone verified successfully",
     VERIFIED_SUCCESS: "Your phone number has been successfully verified.",
   },
@@ -305,6 +367,9 @@ export const SUCCESS_MESSAGES = {
     DELETED: "Review deleted successfully",
     BULK_APPROVED: "All pending reviews approved successfully",
     SUBMITTED: "Review submitted successfully",
+    SUBMITTED_PENDING_MODERATION:
+      "Review submitted successfully. It will be visible after moderation.",
+    VOTE_RECORDED: "Vote recorded successfully",
   },
 
   // FAQ Success
@@ -314,6 +379,9 @@ export const SUCCESS_MESSAGES = {
     UPDATED: "FAQ updated successfully",
     CREATED: "FAQ created successfully",
     VOTE_SUBMITTED: "Vote submitted successfully",
+    VOTE_HELPFUL: "Thank you for your feedback!",
+    VOTE_NOT_HELPFUL:
+      "Thank you for your feedback. We'll work to improve this answer.",
   },
 
   // Category Success
@@ -330,6 +398,7 @@ export const SUCCESS_MESSAGES = {
     DELETED: "Slide deleted successfully",
     UPDATED: "Slide updated successfully",
     CREATED: "Slide created successfully",
+    REORDERED: "Carousel slides reordered successfully",
   },
 
   // Homepage Section Success
@@ -338,6 +407,7 @@ export const SUCCESS_MESSAGES = {
     DELETED: "Section deleted successfully",
     UPDATED: "Section updated successfully",
     CREATED: "Section created successfully",
+    REORDERED: "Homepage sections reordered successfully",
   },
 
   // Order Success
@@ -360,6 +430,25 @@ export const SUCCESS_MESSAGES = {
     UPDATED: "Address updated successfully",
     DELETED: "Address deleted successfully",
     DEFAULT_SET: "Default address set successfully",
+  },
+
+  // Session Success
+  SESSION: {
+    ACTIVITY_UPDATED: "Activity updated",
+  },
+
+  // Media Success
+  MEDIA: {
+    VIDEO_TRIMMED: "Video trimmed successfully",
+    IMAGE_CROPPED: "Image cropped successfully",
+  },
+
+  // Phone Success (additional)
+  PHONE_VALIDATED: "Phone number validated successfully",
+
+  // Logs Success
+  LOGS: {
+    WRITTEN: "Log written successfully",
   },
 
   // Newsletter Success

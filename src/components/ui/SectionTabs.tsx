@@ -30,7 +30,7 @@ export interface SectionTab {
 }
 
 interface SectionTabsProps {
-  tabs: SectionTab[];
+  tabs: readonly SectionTab[];
   variant?: "admin" | "user" | "default";
   className?: string;
 }
@@ -76,7 +76,7 @@ export function SectionTabs({
 
   return (
     <div
-      className={`sticky top-20 z-10 ${themed.bgSecondary} border-b ${themed.border} shadow-sm mb-6 ${getVariantGradient()} ${className}`}
+      className={`sticky top-[104px] md:top-[112px] z-10 ${themed.bgSecondary} border-b ${themed.border} shadow-sm ${getVariantGradient()} ${className}`}
     >
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         {/* Desktop: Full horizontal tab bar */}

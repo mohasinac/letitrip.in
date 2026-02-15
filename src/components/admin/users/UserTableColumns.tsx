@@ -27,13 +27,15 @@ export function getUserTableColumns(
             {user.photoURL ? (
               <img
                 src={user.photoURL}
-                alt={user.displayName || user.email}
+                alt={(user.displayName || user.email) ?? "User"}
                 className="w-8 h-8 rounded-full"
                 loading="lazy"
               />
             ) : (
               <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium">
-                {(user.displayName || user.email).charAt(0).toUpperCase()}
+                {(user.displayName || user.email || "U")
+                  .charAt(0)
+                  .toUpperCase()}
               </div>
             )}
             <span>{user.displayName || "N/A"}</span>

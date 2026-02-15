@@ -13,8 +13,8 @@ import type {
   BidUpdateInput,
   BidAdminUpdateInput,
   BidStatus,
-} from "@/db/schema/bids";
-import { BID_COLLECTION } from "@/db/schema/bids";
+} from "@/db/schema";
+import { BID_COLLECTION, BID_FIELDS } from "@/db/schema";
 import { generateBidId, type GenerateBidIdInput } from "@/utils";
 
 class BidRepository extends BaseRepository<BidDocument> {
@@ -54,21 +54,21 @@ class BidRepository extends BaseRepository<BidDocument> {
    * Find bids by product ID
    */
   async findByProduct(productId: string): Promise<BidDocument[]> {
-    return this.findBy("productId", productId);
+    return this.findBy(BID_FIELDS.PRODUCT_ID, productId);
   }
 
   /**
    * Find bids by user ID
    */
   async findByUser(userId: string): Promise<BidDocument[]> {
-    return this.findBy("userId", userId);
+    return this.findBy(BID_FIELDS.USER_ID, userId);
   }
 
   /**
    * Find bids by status
    */
   async findByStatus(status: BidStatus): Promise<BidDocument[]> {
-    return this.findBy("status", status);
+    return this.findBy(BID_FIELDS.STATUS, status);
   }
 
   /**
@@ -78,8 +78,8 @@ class BidRepository extends BaseRepository<BidDocument> {
     try {
       const snapshot = await this.db
         .collection(this.collection)
-        .where("productId", "==", productId)
-        .where("isWinning", "==", true)
+        .where(BID_FIELDS.PRODUCT_ID, "==", productId)
+        .where(BID_FIELDS.IS_WINNING, "==", true)
         .limit(1)
         .get();
 

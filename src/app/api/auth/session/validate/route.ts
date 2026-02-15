@@ -6,8 +6,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository } from "@/repositories";
-import { userRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@/repositories";
+import { ERROR_MESSAGES } from "@/constants";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     if (!sessionCookie || !sessionId) {
       return NextResponse.json({
         valid: false,
-        reason: "No session found",
+        reason: ERROR_MESSAGES.SESSION.NOT_FOUND,
       });
     }
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (!decodedToken) {
       return NextResponse.json({
         valid: false,
-        reason: "Invalid session cookie",
+        reason: ERROR_MESSAGES.SESSION.INVALID_COOKIE,
       });
     }
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     if (!session) {
       return NextResponse.json({
         valid: false,
-        reason: "Session revoked or expired",
+        reason: ERROR_MESSAGES.SESSION.REVOKED_OR_EXPIRED,
       });
     }
 
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     if (!user || user.disabled) {
       return NextResponse.json({
         valid: false,
-        reason: "User not found or disabled",
+        reason: ERROR_MESSAGES.SESSION.USER_NOT_FOUND_OR_DISABLED,
       });
     }
 

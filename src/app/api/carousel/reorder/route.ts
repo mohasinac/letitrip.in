@@ -14,6 +14,7 @@ import {
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * POST /api/carousel/reorder
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedSlides,
-      message: "Carousel slides reordered successfully",
+      message: SUCCESS_MESSAGES.CAROUSEL.REORDERED,
     });
   } catch (error) {
     serverLogger.error("POST /api/carousel/reorder error", { error });
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to reorder carousel slides" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.REORDER_FAILED },
       { status: 500 },
     );
   }

@@ -7,33 +7,30 @@ jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 
-const mockFaqs = {
-  faqs: [
-    {
-      id: "faq-1",
-      question: "How do I place an order?",
-      answer:
-        "<p>Simply browse our products, add items to cart, and checkout.</p>",
-      category: "Orders",
-      priority: 1,
-    },
-    {
-      id: "faq-2",
-      question: "What payment methods do you accept?",
-      answer:
-        "<p>We accept credit cards, debit cards, UPI, and net banking.</p>",
-      category: "Payments",
-      priority: 2,
-    },
-    {
-      id: "faq-3",
-      question: "How long does shipping take?",
-      answer: "<p>Standard shipping takes 5-7 business days.</p>",
-      category: "Shipping",
-      priority: 3,
-    },
-  ],
-};
+const mockFaqs = [
+  {
+    id: "faq-1",
+    question: "How do I place an order?",
+    answer:
+      "<p>Simply browse our products, add items to cart, and checkout.</p>",
+    category: "Orders",
+    priority: 1,
+  },
+  {
+    id: "faq-2",
+    question: "What payment methods do you accept?",
+    answer: "<p>We accept credit cards, debit cards, UPI, and net banking.</p>",
+    category: "Payments",
+    priority: 2,
+  },
+  {
+    id: "faq-3",
+    question: "How long does shipping take?",
+    answer: "<p>Standard shipping takes 5-7 business days.</p>",
+    category: "Shipping",
+    priority: 3,
+  },
+];
 
 describe("FAQSection", () => {
   beforeEach(() => {
@@ -72,7 +69,7 @@ describe("FAQSection", () => {
     });
 
     it("returns null when faqs array is empty", () => {
-      mockUseApiQuery.mockReturnValue({ data: { faqs: [] }, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: [], isLoading: false });
       const { container } = render(<FAQSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -96,7 +93,9 @@ describe("FAQSection", () => {
     it("renders subtitle text", () => {
       render(<FAQSection />);
       expect(
-        screen.getByText("Quick answers to common questions"),
+        screen.getByText(
+          "Find answers to common questions about our platform, products, shipping, and more.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -118,9 +117,9 @@ describe("FAQSection", () => {
       expect(buttons.length).toBe(4);
     });
 
-    it('renders "View All FAQs →" link', () => {
+    it('renders "View All" link', () => {
       render(<FAQSection />);
-      expect(screen.getByText("View All FAQs →")).toBeInTheDocument();
+      expect(screen.getByText(/view all/i)).toBeInTheDocument();
     });
   });
 

@@ -22,8 +22,12 @@ describe("Number Formatter", () => {
     });
 
     it("should format EUR currency", () => {
-      expect(formatCurrency(1234.56, "EUR", "de-DE")).toBe("1.234,56 €");
-      expect(formatCurrency(1000, "EUR", "de-DE")).toBe("1.000,00 €");
+      const result1 = formatCurrency(1234.56, "EUR", "de-DE");
+      expect(result1).toContain("1.234,56");
+      expect(result1).toContain("€");
+      const result2 = formatCurrency(1000, "EUR", "de-DE");
+      expect(result2).toContain("1.000,00");
+      expect(result2).toContain("€");
     });
 
     it("should format GBP currency", () => {

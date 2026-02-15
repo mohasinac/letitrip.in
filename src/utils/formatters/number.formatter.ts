@@ -156,5 +156,75 @@ export function formatOrdinal(num: number): string {
  * ```
  */
 export function parseFormattedNumber(str: string): number {
-  return parseFloat(str.replace(/[^0-9.-]+/g, ""));
+  // Check if the number is negative
+  const isNegative = /^-/.test(str) || str.includes("-");
+
+  // Remove currency symbols, %, spaces and other non-numeric characters except . and ,
+  let cleaned = str.replace(/[^\d,.]/g, "");
+
+  if (cleaned === "" || cleaned === "0") {
+    return 0;
+  }
+
+  // Determine if , or . is the decimal separator
+  // The last occurrence of , or . is likely the decimal separator
+  const lastCommaIndex = cleaned.lastIndexOf(",");
+  const lastDotIndex = cleaned.lastIndexOf(".");
+  const commaCount = (cleaned.match(/,/g) || []).length;
+  const dotCount = (cleaned.match(/\./g) || []).length;
+
+  let decimalSeparator = ".";
+  let thousandsSeparator = ",";
+
+  // If there are both . and , in the string
+  if (lastCommaIndex > -1 && lastDotIndex > -1) {
+    // The one that appears later is the decimal separator
+    if (lastCommaIndex > lastDotIndex) {
+      decimalSeparator = ",";
+      thousandsSeparator = ".";
+    }
+  } else if (lastDotIndex > -1 && lastCommaIndex === -1) {
+    // Only dots, could be thousands separator or decimal
+    const afterDot = cleaned.substring(lastDotIndex + 1);
+    if (dotCount > 1) {
+      // Multiple dots means thousands separators
+      cleaned = cleaned.replace(/\./g, "");
+      decimalSeparator = ".";
+    } else if (afterDot.length > 3) {
+      // It's a thousands separator
+      cleaned = cleaned.replace(/\./g, "");
+      decimalSeparator = ".";
+    } else {
+      // It's a decimal separator
+      decimalSeparator = ".";
+      thousandsSeparator = "";
+    }
+  } else if (lastCommaIndex > -1 && lastDotIndex === -1) {
+    // Only commas, could be thousands separator or decimal
+    // If there are 3 or fewer digits after the comma, it's likely decimal
+    const afterComma = cleaned.substring(lastCommaIndex + 1);
+    if (commaCount > 1) {
+      // Multiple commas means thousands separators
+      cleaned = cleaned.replace(/,/g, "");
+      decimalSeparator = ".";
+    } else if (afterComma.length > 3) {
+      // It's a thousands separator
+      cleaned = cleaned.replace(/,/g, "");
+      decimalSeparator = ".";
+    } else {
+      // It's a decimal separator
+      decimalSeparator = ",";
+      thousandsSeparator = "";
+    }
+  }
+
+  // Remove thousands separators and replace decimal separator with .
+  let result = cleaned;
+  if (thousandsSeparator) {
+    result = result.replace(new RegExp("\\" + thousandsSeparator, "g"), "");
+  }
+  result = result.replace(decimalSeparator, ".");
+
+  const num = parseFloat(result);
+  return isNegative ? -Math.abs(num) : num;
 }

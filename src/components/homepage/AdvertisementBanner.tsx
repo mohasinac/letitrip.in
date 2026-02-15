@@ -5,21 +5,11 @@ import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface BannerData {
-  id: string;
-  title: string;
-  subtitle?: string;
-  ctaText?: string;
-  ctaLink?: string;
-  backgroundImage?: string;
-  backgroundColor?: string;
-  textColor?: string;
-}
+import type { HomepageSectionDocument, BannerSectionConfig } from "@/db/schema";
 
 export function AdvertisementBanner() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<BannerData[]>({
+  const { data, isLoading } = useApiQuery<HomepageSectionDocument[]>({
     queryKey: ["homepage-sections", "ad-banner"],
     queryFn: () =>
       apiClient.get(
@@ -41,9 +31,10 @@ export function AdvertisementBanner() {
     );
   }
 
-  const banner = data?.[0];
+  const bannerSection = data?.[0];
+  const banner = bannerSection?.config as BannerSectionConfig | undefined;
 
-  if (!banner) {
+  if (!bannerSection || !banner) {
     return null;
   }
 
@@ -68,30 +59,24 @@ export function AdvertisementBanner() {
 
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
-            <h2
-              className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4`}
-              style={{ color: banner.textColor || "#ffffff" }}
-            >
-              {banner.title}
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
+              {banner.content.title}
             </h2>
 
-            {banner.subtitle && (
-              <p
-                className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90"
-                style={{ color: banner.textColor || "#ffffff" }}
-              >
-                {banner.subtitle}
+            {banner.content.subtitle && (
+              <p className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 text-white">
+                {banner.content.subtitle}
               </p>
             )}
 
-            {banner.ctaText && banner.ctaLink && (
+            {banner.buttons?.[0] && (
               <Button
                 variant="primary"
                 size="lg"
-                onClick={() => router.push(banner.ctaLink!)}
+                onClick={() => router.push(banner.buttons[0].link)}
                 className="shadow-2xl hover:shadow-3xl transition-shadow"
               >
-                {banner.ctaText}
+                {banner.buttons[0].text}
               </Button>
             )}
           </div>

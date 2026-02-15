@@ -20,6 +20,7 @@ import {
   MIN_ITEMS_FOR_FEATURED,
   createCategoryId,
 } from "@/db/schema/categories";
+import { CATEGORY_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";

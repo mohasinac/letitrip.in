@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "No file provided",
+          error: ERROR_MESSAGES.MEDIA.NO_FILE,
         },
         { status: 400 },
       );
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid file type",
+          error: ERROR_MESSAGES.UPLOAD.INVALID_TYPE,
           details: {
             allowed: "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime",
             received: file.type,
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "File size exceeds limit",
+          error: ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE,
           details: {
             maxSize: isVideo ? "50MB" : "10MB",
             fileSize: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
           uploadedBy: user.uid,
           uploadedAt: new Date().toISOString(),
         },
-        message: "File uploaded successfully",
+        message: SUCCESS_MESSAGES.UPLOAD.FILE_UPLOADED,
       },
       { status: 201 },
     );
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to upload file",
+        error: ERROR_MESSAGES.UPLOAD.UPLOAD_FAILED,
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },

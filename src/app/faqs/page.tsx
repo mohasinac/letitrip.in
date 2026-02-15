@@ -13,7 +13,7 @@ import {
   FAQ_CATEGORIES,
 } from "@/components/faq";
 import type { FAQCategoryKey, FAQSortOption } from "@/components/faq";
-import type { FAQDocument } from "@/db/schema/faqs";
+import type { FAQDocument } from "@/db/schema";
 
 function FAQPageContent() {
   const searchParams = useSearchParams();

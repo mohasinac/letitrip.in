@@ -60,6 +60,10 @@ jest.mock("@/components", () => ({
       )}
     </div>
   ),
+  Text: ({ children }: any) => <span>{children}</span>,
+  useToast: () => ({
+    showToast: jest.fn(),
+  }),
 }));
 
 jest.mock("@/components/typography", () => ({

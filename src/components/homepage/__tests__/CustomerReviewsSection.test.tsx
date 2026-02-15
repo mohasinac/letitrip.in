@@ -66,7 +66,7 @@ describe("CustomerReviewsSection", () => {
   describe("No Data State", () => {
     it("returns null when no reviews", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: [] },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<CustomerReviewsSection />);
@@ -74,7 +74,7 @@ describe("CustomerReviewsSection", () => {
     });
 
     it("returns null when reviews array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: {}, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
       const { container } = render(<CustomerReviewsSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -86,7 +86,7 @@ describe("CustomerReviewsSection", () => {
   describe("Content Rendering", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
     });
@@ -101,7 +101,7 @@ describe("CustomerReviewsSection", () => {
     it("renders subtitle", () => {
       render(<CustomerReviewsSection />);
       expect(
-        screen.getByText("Real reviews from verified buyers"),
+        screen.getByText("Read reviews from satisfied customers"),
       ).toBeInTheDocument();
     });
 
@@ -137,7 +137,7 @@ describe("CustomerReviewsSection", () => {
   describe("Star Ratings", () => {
     it("renders 5 star SVGs per review", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
       const { container } = render(<CustomerReviewsSection />);
@@ -148,7 +148,7 @@ describe("CustomerReviewsSection", () => {
 
     it("applies yellow color to filled stars and gray to empty", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
       const { container } = render(<CustomerReviewsSection />);
@@ -164,7 +164,7 @@ describe("CustomerReviewsSection", () => {
   describe("User Avatars", () => {
     it("renders avatar images when provided", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
       render(<CustomerReviewsSection />);
@@ -177,7 +177,7 @@ describe("CustomerReviewsSection", () => {
 
     it("renders initial letter when no avatar", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
       render(<CustomerReviewsSection />);
@@ -192,7 +192,7 @@ describe("CustomerReviewsSection", () => {
   describe("Accessibility", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { reviews: mockReviews },
+        data: mockReviews,
         isLoading: false,
       });
     });

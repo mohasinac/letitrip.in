@@ -90,14 +90,14 @@ Full codebase audit against all 18 Copilot Instruction rules. Violations found a
 
 ### Known pre-existing TS errors (not introduced by audit)
 
-- `useAddresses.ts` — wrong API hook pattern, missing `ADDRESSES` on `USER` endpoint group
-- `BlogArticlesSection.tsx` — missing `BLOG`, `VIEW_ALL`, `COLLECTIONS` constants
-- `AdminSessionsManager.tsx` — `UI_LABELS.ADMIN.SESSIONS` not defined (uses `?.` fallback)
+- ~~`useAddresses.ts` — wrong API hook pattern, missing `ADDRESSES` on `USER` endpoint group~~ ✅ RESOLVED
+- ~~`BlogArticlesSection.tsx` — missing `BLOG`, `VIEW_ALL`, `COLLECTIONS` constants~~ ✅ RESOLVED
+- ~~`AdminSessionsManager.tsx` — `UI_LABELS.ADMIN.SESSIONS` not defined (uses `?.` fallback)~~ ✅ RESOLVED
 - `settings/page.tsx` — `SessionUser` missing `metadata` property
 - `AdminTabs.tsx`, `UserTabs.tsx` — readonly array not assignable to mutable `SectionTab[]`
-- `FAQSection.tsx` — `UI_LABELS.FAQS` should be `UI_LABELS.FAQ`
-- `NewsletterSection.tsx` — missing `SUBSCRIBED`, `SUBSCRIBE`, `PRIVACY_NOTE` constants
-- `useAuth.ts` — `ERROR_MESSAGES.AUTH.USER_NOT_FOUND` doesn't exist
+- ~~`FAQSection.tsx` — `UI_LABELS.FAQS` should be `UI_LABELS.FAQ`~~ ✅ RESOLVED
+- ~~`NewsletterSection.tsx` — missing `SUBSCRIBED`, `SUBSCRIBE`, `PRIVACY_NOTE` constants~~ ✅ RESOLVED
+- ~~`useAuth.ts` — `ERROR_MESSAGES.AUTH.USER_NOT_FOUND` doesn't exist~~ ✅ RESOLVED
 
 ---
 

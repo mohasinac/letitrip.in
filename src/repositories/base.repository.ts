@@ -131,8 +131,9 @@ export abstract class BaseRepository<T extends DocumentData> {
 
   /**
    * Create new document
+   * Note: Child classes can override with stricter input types
    */
-  async create(data: Partial<T>): Promise<T> {
+  async create(data: Partial<T> | any): Promise<T> {
     try {
       const cleanData = prepareForFirestore({
         ...data,

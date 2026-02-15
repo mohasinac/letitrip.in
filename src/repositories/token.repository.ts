@@ -17,7 +17,8 @@ import {
   PasswordResetTokenDocument,
   EMAIL_VERIFICATION_COLLECTION,
   PASSWORD_RESET_COLLECTION,
-} from "@/db/schema/tokens";
+  TOKEN_FIELDS,
+} from "@/db/schema";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
 import { Timestamp } from "firebase-admin/firestore";
 
@@ -32,7 +33,7 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
   async findByToken(
     token: string,
   ): Promise<EmailVerificationTokenDocument | null> {
-    return this.findOneBy("token", token);
+    return this.findOneBy(TOKEN_FIELDS.TOKEN, token);
   }
 
   /**
@@ -41,14 +42,14 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
   async findByUserId(
     userId: string,
   ): Promise<EmailVerificationTokenDocument[]> {
-    return this.findBy("userId", userId);
+    return this.findBy(TOKEN_FIELDS.USER_ID, userId);
   }
 
   /**
    * Find tokens by email
    */
   async findByEmail(email: string): Promise<EmailVerificationTokenDocument[]> {
-    return this.findBy("email", email);
+    return this.findBy(TOKEN_FIELDS.EMAIL, email);
   }
 
   /**
@@ -69,7 +70,7 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
   async deleteExpired(): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("expiresAt", "<", new Date())
+        .where(TOKEN_FIELDS.EXPIRES_AT, "<", new Date())
         .get();
 
       const batch = this.db.batch();
@@ -115,21 +116,21 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
    * Find token by token string
    */
   async findByToken(token: string): Promise<PasswordResetTokenDocument | null> {
-    return this.findOneBy("token", token);
+    return this.findOneBy(TOKEN_FIELDS.TOKEN, token);
   }
 
   /**
    * Find tokens by user ID
    */
   async findByUserId(userId: string): Promise<PasswordResetTokenDocument[]> {
-    return this.findBy("userId", userId);
+    return this.findBy(TOKEN_FIELDS.USER_ID, userId);
   }
 
   /**
    * Find tokens by email
    */
   async findByEmail(email: string): Promise<PasswordResetTokenDocument[]> {
-    return this.findBy("email", email);
+    return this.findBy(TOKEN_FIELDS.EMAIL, email);
   }
 
   /**
@@ -149,11 +150,13 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
    */
   async markAsUsed(tokenId: string): Promise<PasswordResetTokenDocument> {
     try {
-      await this.getCollection().doc(tokenId).update({
-        used: true,
-        usedAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await this.getCollection()
+        .doc(tokenId)
+        .update({
+          [TOKEN_FIELDS.USED]: true,
+          [TOKEN_FIELDS.USED_AT]: new Date(),
+          updatedAt: new Date(),
+        });
 
       return this.findByIdOrFail(tokenId);
     } catch (error) {
@@ -172,8 +175,8 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
   ): Promise<PasswordResetTokenDocument[]> {
     try {
       const snapshot = await this.getCollection()
-        .where("userId", "==", userId)
-        .where("used", "==", false)
+        .where(TOKEN_FIELDS.USER_ID, "==", userId)
+        .where(TOKEN_FIELDS.USED, "==", false)
         .get();
 
       return snapshot.docs.map(
@@ -197,7 +200,7 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
   async deleteExpired(): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("expiresAt", "<", new Date())
+        .where(TOKEN_FIELDS.EXPIRES_AT, "<", new Date())
         .get();
 
       const batch = this.db.batch();

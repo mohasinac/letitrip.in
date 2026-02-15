@@ -18,6 +18,7 @@ import {
   NotFoundError,
 } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * GET /api/faqs/[id]
@@ -36,7 +37,7 @@ export async function GET(
     const faq = await faqsRepository.findById(id);
 
     if (!faq) {
-      throw new NotFoundError("FAQ not found");
+      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
     }
 
     // Get site settings for variable interpolation
@@ -100,7 +101,7 @@ export async function GET(
 
     serverLogger.error("GET /api/faqs/[id] error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch FAQ" },
+      { success: false, error: ERROR_MESSAGES.FAQ.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -124,7 +125,7 @@ export async function PATCH(
     // Check if FAQ exists
     const faq = await faqsRepository.findById(id);
     if (!faq) {
-      throw new NotFoundError("FAQ not found");
+      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
     }
 
     // Parse and validate request body
@@ -135,7 +136,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -148,7 +149,7 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       data: updatedFAQ,
-      message: "FAQ updated successfully",
+      message: SUCCESS_MESSAGES.FAQ.UPDATED,
     });
   } catch (error) {
     if (error instanceof AuthenticationError) {
@@ -174,7 +175,7 @@ export async function PATCH(
 
     serverLogger.error("PATCH /api/faqs/[id] error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to update FAQ" },
+      { success: false, error: ERROR_MESSAGES.FAQ.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -198,7 +199,7 @@ export async function DELETE(
     // Check if FAQ exists
     const faq = await faqsRepository.findById(id);
     if (!faq) {
-      throw new NotFoundError("FAQ not found");
+      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
     }
 
     // Hard delete FAQ (FAQs can be removed completely)
@@ -206,7 +207,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "FAQ deleted successfully",
+      message: SUCCESS_MESSAGES.FAQ.DELETED,
     });
   } catch (error) {
     if (error instanceof AuthenticationError) {
@@ -232,7 +233,7 @@ export async function DELETE(
 
     serverLogger.error("DELETE /api/faqs/[id] error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to delete FAQ" },
+      { success: false, error: ERROR_MESSAGES.FAQ.DELETE_FAILED },
       { status: 500 },
     );
   }

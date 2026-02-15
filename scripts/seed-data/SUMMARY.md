@@ -19,7 +19,7 @@ All seed data now follows SEO-friendly ID patterns from `@/utils/id-generators`:
 | Bids       | `bid-{product}-{user}-{YYYYMMDD}-{random}`               | 8     | `bid-vintage-canon-ae-1-film-camera-jane-20260208-p4q8r7`                               |
 | Coupons    | `coupon-{CODE}`                                          | 10    | `coupon-WELCOME10`                                                                      |
 | Carousel   | `carousel-{title}-{timestamp}`                           | 6     | `carousel-welcome-hero-slide-1707300000001`                                             |
-| Homepage   | `section-{type}-{timestamp}`                             | 14    | `section-products-featured-1707300000009`                                               |
+| Homepage   | `section-{type}-{timestamp}`                             | 13    | `section-products-1707300000004`                                                        |
 
 ### 2. Auction System Implementation
 

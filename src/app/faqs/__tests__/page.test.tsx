@@ -4,18 +4,29 @@ import FAQPage from "../page";
 
 // Mock the FAQ components
 jest.mock("@/components/faq/FAQCategorySidebar", () => ({
-  __esModule: true,
-  default: ({ selectedCategory, onSelectCategory, categoryStats }: any) => (
+  FAQCategorySidebar: ({
+    selectedCategory,
+    onCategorySelect,
+    categoryCounts,
+  }: any) => (
     <div data-testid="faq-category-sidebar">
-      <button onClick={() => onSelectCategory("general")}>General</button>
-      <span>Stats: {JSON.stringify(categoryStats)}</span>
+      <button onClick={() => onCategorySelect("general")}>General</button>
+      <span>Stats: {JSON.stringify(categoryCounts)}</span>
     </div>
   ),
+  FAQ_CATEGORIES: {
+    general: { label: "General" },
+    products: { label: "Products" },
+    shipping: { label: "Shipping" },
+    returns: { label: "Returns" },
+    payment: { label: "Payment" },
+    account: { label: "Account" },
+    sellers: { label: "Sellers" },
+  },
 }));
 
 jest.mock("@/components/faq/FAQSearchBar", () => ({
-  __esModule: true,
-  default: ({ query, onSearch, onClear }: any) => (
+  FAQSearchBar: ({ query, onSearch, onClear }: any) => (
     <div data-testid="faq-search-bar">
       <input
         data-testid="search-input"
@@ -28,8 +39,7 @@ jest.mock("@/components/faq/FAQSearchBar", () => ({
 }));
 
 jest.mock("@/components/faq/FAQSortDropdown", () => ({
-  __esModule: true,
-  default: ({ sortOption, onSortChange }: any) => (
+  FAQSortDropdown: ({ sortOption, onSortChange }: any) => (
     <div data-testid="faq-sort-dropdown">
       <select
         data-testid="sort-select"
@@ -45,29 +55,31 @@ jest.mock("@/components/faq/FAQSortDropdown", () => ({
 }));
 
 jest.mock("@/components/faq/FAQAccordion", () => ({
-  __esModule: true,
-  default: ({ faqs }: any) => (
-    <div data-testid="faq-accordion">
-      {faqs.map((faq: any) => (
-        <div key={faq.id} data-testid={`faq-item-${faq.id}`}>
-          <h3>{faq.question}</h3>
-          <p>{faq.answer}</p>
-        </div>
-      ))}
-    </div>
-  ),
+  FAQAccordion: ({ faqs }: any) =>
+    faqs.length === 0 ? (
+      <div data-testid="faq-accordion">
+        <p>No FAQs found matching your criteria.</p>
+      </div>
+    ) : (
+      <div data-testid="faq-accordion">
+        {faqs.map((faq: any) => (
+          <div key={faq.id} data-testid={`faq-item-${faq.id}`}>
+            <h3>{faq.question}</h3>
+            <p>{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    ),
 }));
 
 jest.mock("@/components/faq/ContactCTA", () => ({
-  __esModule: true,
-  default: () => <div data-testid="contact-cta">Contact Support</div>,
+  ContactCTA: () => <div data-testid="contact-cta">Contact Support</div>,
 }));
 
 // Mock useApiQuery hook
 const mockUseApiQuery = jest.fn();
-jest.mock("@/hooks/useApiQuery", () => ({
-  __esModule: true,
-  default: (options: any) => mockUseApiQuery(options),
+jest.mock("@/hooks", () => ({
+  useApiQuery: (options: any) => mockUseApiQuery(options),
 }));
 
 // Mock next/navigation
@@ -170,7 +182,9 @@ describe("FAQ Page", () => {
 
       render(<FAQPage />);
 
-      expect(screen.getByText(/no faqs found/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/no faqs found matching your criteria/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -227,7 +241,7 @@ describe("FAQ Page", () => {
       render(<FAQPage />);
 
       // Verify search bar is present for answer searching
-      expect(screen.getByTestId("search-bar")).toBeInTheDocument();
+      expect(screen.getByTestId("faq-search-bar")).toBeInTheDocument();
     });
 
     it("should filter FAQs by search query in tags", async () => {

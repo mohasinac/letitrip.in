@@ -2,7 +2,10 @@
  * User Type Definitions
  *
  * TypeScript interfaces for user data, roles, and authentication.
+ * These types MUST stay in sync with UserDocument in @/db/schema.
  */
+
+import type { AvatarMetadata } from "@/db/schema";
 
 export type UserRole = "user" | "seller" | "moderator" | "admin";
 
@@ -10,14 +13,10 @@ export interface UserProfile {
   uid: string;
   email: string | null;
   phoneNumber: string | null;
-  phoneVerified: boolean;
+  phoneVerified?: boolean;
   displayName: string | null;
   photoURL: string | null;
-  avatarMetadata?: {
-    url: string;
-    position: { x: number; y: number };
-    zoom: number;
-  } | null;
+  avatarMetadata?: AvatarMetadata | null;
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
@@ -47,9 +46,8 @@ export interface UserProfile {
     rating?: number;
   };
   metadata?: {
-    lastSignInTime?: string;
+    lastSignInTime?: Date;
     creationTime?: string;
-    lastLoginAt?: string;
     loginCount?: number;
   };
 }

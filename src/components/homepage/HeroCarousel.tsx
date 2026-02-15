@@ -7,61 +7,14 @@ import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface CarouselCard {
-  id: string;
-  gridPosition: { row: number; col: number }; // 3x3 grid (1-3)
-  mobilePosition?: { row: number; col: number }; // 2x2 grid (1-2)
-  width: number; // Grid cells span
-  height: number; // Grid cells span
-  background: {
-    type: "color" | "gradient" | "image";
-    value: string;
-  };
-  content: {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-  };
-  buttons: {
-    id: string;
-    text: string;
-    link: string;
-    variant: "primary" | "secondary" | "outline";
-    openInNewTab: boolean;
-  }[];
-  isButtonOnly: boolean;
-  mobileHideText: boolean;
-}
-
-interface CarouselSlide {
-  id: string;
-  title: string;
-  order: number;
-  active: boolean;
-  media: {
-    type: "image" | "video";
-    url: string;
-    alt: string;
-    thumbnail?: string;
-  };
-  link?: {
-    url: string;
-    openInNewTab: boolean;
-  };
-  mobileMedia?: {
-    type: "image" | "video";
-    url: string;
-  };
-  cards: CarouselCard[];
-}
+import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
 export function HeroCarousel() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { data, isLoading } = useApiQuery<CarouselSlide[]>({
+  const { data, isLoading } = useApiQuery<CarouselSlideDocument[]>({
     queryKey: ["carousel", "active"],
     queryFn: () => apiClient.get(API_ENDPOINTS.CAROUSEL.LIST + "?active=true"),
   });
@@ -108,7 +61,7 @@ export function HeroCarousel() {
 
   const slide = slides[currentSlide];
 
-  const getBackgroundStyle = (card: CarouselCard) => {
+  const getBackgroundStyle = (card: GridCard) => {
     const { type, value } = card.background;
 
     if (type === "color") {
@@ -125,7 +78,7 @@ export function HeroCarousel() {
     return {};
   };
 
-  const getGridPosition = (card: CarouselCard) => {
+  const getGridPosition = (card: GridCard) => {
     const pos =
       isMobile && card.mobilePosition ? card.mobilePosition : card.gridPosition;
     const gridSize = isMobile ? 2 : 3;

@@ -35,11 +35,15 @@ export async function POST(req: NextRequest) {
 
     // Validate inputs
     if (!verificationId || !code) {
-      throw new ValidationError("Verification ID and code are required");
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION.VERIFICATION_FIELDS_REQUIRED,
+      );
     }
 
     if (code.length !== 6 || !/^\d+$/.test(code)) {
-      throw new ValidationError("Verification code must be 6 digits");
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION.VERIFICATION_CODE_FORMAT,
+      );
     }
 
     // NOTE: Firebase Admin SDK cannot verify SMS codes
@@ -53,7 +57,7 @@ export async function POST(req: NextRequest) {
     const userRecord = await auth.getUser(userId);
 
     if (!userRecord.phoneNumber) {
-      throw new ValidationError("No phone number associated with this account");
+      throw new ValidationError(ERROR_MESSAGES.PHONE.NO_PHONE);
     }
 
     // Update phoneVerified flag via repository
@@ -75,7 +79,7 @@ export async function POST(req: NextRequest) {
         error:
           error instanceof Error
             ? error.message
-            : "Failed to verify phone number",
+            : ERROR_MESSAGES.PHONE.VERIFY_FAILED,
       },
       {
         status:

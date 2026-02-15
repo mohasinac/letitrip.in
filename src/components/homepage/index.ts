@@ -3,7 +3,6 @@ export { WelcomeSection } from "./WelcomeSection";
 export { TrustIndicatorsSection } from "./TrustIndicatorsSection";
 export { TopCategoriesSection } from "./TopCategoriesSection";
 export { FeaturedProductsSection } from "./FeaturedProductsSection";
-export { SpecialCollectionsSection } from "./SpecialCollectionsSection";
 export { FeaturedAuctionsSection } from "./FeaturedAuctionsSection";
 export { AdvertisementBanner } from "./AdvertisementBanner";
 export { SiteFeaturesSection } from "./SiteFeaturesSection";

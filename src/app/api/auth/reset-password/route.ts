@@ -53,7 +53,9 @@ export async function PUT(req: NextRequest) {
       {
         success: false,
         error:
-          error instanceof Error ? error.message : "Failed to reset password",
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.PASSWORD.RESET_FAILED,
       },
       { status: error instanceof ValidationError ? 400 : 500 },
     );

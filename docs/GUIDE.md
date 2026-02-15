@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 10, 2026  
+**Last Updated**: February 11, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -367,6 +367,10 @@
 - `FAQS` - FAQ endpoints
 - `SETTINGS` - Settings endpoints
 - `SESSIONS` - Session management endpoints
+- `MEDIA` - Media upload/crop/trim endpoints
+- `ADMIN` - Admin dashboard and user management endpoints
+- `HOMEPAGE_SECTIONS` - Homepage section endpoints
+- `ADDRESSES` - Address management endpoints (deprecated, use top-level `ADDRESSES`)
 
 ---
 
@@ -487,18 +491,27 @@ import { SectionTabs } from '@/components';
 
 **Categories**:
 
-- `AUTH` - Authentication errors (LOGIN_FAILED, REGISTRATION_FAILED, EMAIL_VERIFICATION_REQUIRED, etc.)
-- `VALIDATION` - Validation errors (INVALID_EMAIL, INVALID_PASSWORD, REQUIRED_FIELD, etc.)
+- `AUTH` - Authentication errors (LOGIN_FAILED, REGISTRATION_FAILED, EMAIL_VERIFICATION_REQUIRED, UNAUTHORIZED, SESSION_EXPIRED, API_KEY_NOT_CONFIGURED, TOKEN_EXCHANGE_FAILED, ADMIN_ACCESS_REQUIRED, etc.)
+- `VALIDATION` - Validation errors (INVALID_EMAIL, INVALID_PASSWORD, REQUIRED_FIELD, FAILED, TOKEN_REQUIRED, VERIFICATION_FIELDS_REQUIRED, VERIFICATION_CODE_FORMAT, PRODUCT_ID_REQUIRED, INVALID_TIME_RANGE, etc.)
 - `USER` - User-specific errors (NOT_FOUND, NOT_AUTHENTICATED, ALREADY_EXISTS, etc.)
-- `PASSWORD` - Password-related errors (TOO_WEAK, MISMATCH, INCORRECT, etc.)
+- `PASSWORD` - Password-related errors (TOO_WEAK, MISMATCH, INCORRECT, SOCIAL_PROVIDER_NO_PASSWORD, etc.)
 - `EMAIL` - Email-related errors (SEND_FAILED, VERIFICATION_FAILED, ALREADY_VERIFIED, etc.)
 - `UPLOAD` - File upload errors (INVALID_TYPE, FILE_TOO_LARGE, UPLOAD_FAILED, UPLOAD_ERROR, SAVE_ROLLBACK, CLEANUP_FAILED, DELETE_OLD_FILE_FAILED)
-- `GENERIC` - Generic error messages (INTERNAL_ERROR, NOT_FOUND, BAD_REQUEST, NETWORK_ERROR, etc.)
+- `GENERIC` - Generic error messages (INTERNAL_ERROR, NOT_FOUND, BAD_REQUEST, NETWORK_ERROR, SERVER_CONFIG_ERROR, NOT_IMPLEMENTED, etc.)
 - `DATABASE` - Database errors (FETCH_FAILED, NOT_FOUND, CONNECTION_ERROR)
-- `SESSION` - Session errors (FETCH_USER_PROFILE_ERROR, FIRESTORE_SUBSCRIPTION_ERROR, VALIDATION_FAILED, SERVER_LOGOUT_ERROR, SIGN_OUT_ERROR, CREATION_ERROR)
-- `FAQ` - FAQ-specific errors (VOTE_FAILED)
-- `ADMIN` - Admin operation errors (REVOKE_SESSION_FAILED, REVOKE_USER_SESSIONS_FAILED)
-- `API` - API route logging errors (ROUTE_ERROR, CAROUSEL_GET_ERROR, PRODUCTS_POST_ERROR, MEDIA_UPLOAD_ERROR, etc.)
+- `SESSION` - Session errors (FETCH_FAILED, FETCH_USER_PROFILE_ERROR, FIRESTORE_SUBSCRIPTION_ERROR, VALIDATION_FAILED, SERVER_LOGOUT_ERROR, SIGN_OUT_ERROR, CREATION_ERROR, NOT_FOUND, INVALID, ID_REQUIRED, INVALID_COOKIE, REVOKED_OR_EXPIRED, USER_NOT_FOUND_OR_DISABLED, CANNOT_REVOKE_OTHERS)
+- `ADMIN` - Admin operation errors (REVOKE_SESSION_FAILED, REVOKE_USER_SESSIONS_FAILED, UPDATE_USER_ROLE_FAILED, BAN_USER_FAILED, etc.)
+- `REVIEW` - Review errors (NOT_FOUND, ALREADY_REVIEWED, UPDATE_NOT_ALLOWED, DELETE_NOT_ALLOWED, UPDATE_FAILED, VOTE_FAILED, FETCH_FAILED, SUBMIT_FAILED, etc.)
+- `FAQ` - FAQ errors (NOT_FOUND, CREATE_FAILED, VOTE_FAILED, SAVE_FAILED, DELETE_FAILED, FETCH_FAILED, UPDATE_FAILED)
+- `CATEGORY` - Category errors (NOT_FOUND, NOT_FOUND_AFTER_UPDATE, HAS_CHILDREN, HAS_PRODUCTS, SAVE_FAILED, DELETE_FAILED, FETCH_FAILED, etc.)
+- `CAROUSEL` - Carousel errors (NOT_FOUND, MAX_ACTIVE_REACHED, REORDER_FAILED, SAVE_FAILED, DELETE_FAILED, FETCH_FAILED, etc.)
+- `SECTION` - Homepage section errors (NOT_FOUND, REORDER_FAILED, SAVE_FAILED, DELETE_FAILED, FETCH_FAILED, etc.)
+- `ORDER` - Order errors (FETCH_FAILED, UPDATE_FAILED, CREATE_FAILED, CANCEL_FAILED)
+- `PRODUCT` - Product errors (NOT_FOUND, NOT_FOUND_AFTER_UPDATE, UPDATE_NOT_ALLOWED, DELETE_NOT_ALLOWED, FETCH_FAILED, etc.)
+- `PHONE` - Phone errors (NO_PHONE, ALREADY_IN_USE, VERIFY_FAILED, ADD_FAILED)
+- `MEDIA` - Media errors (TRIM_FAILED, CROP_FAILED, NO_FILE)
+- `ADDRESS` - Address errors (FETCH_FAILED, CREATE_FAILED, UPDATE_FAILED, DELETE_FAILED, SET_DEFAULT_FAILED)
+- `API` - API route logging errors (ROUTE*ERROR, CAROUSEL*_*ERROR, PRODUCTS*__ERROR, MEDIA__*ERROR, ADMIN_SESSIONS_ERROR, LOGOUT*_\_ERROR, etc.)
 
 ---
 
@@ -509,15 +522,26 @@ import { SectionTabs } from '@/components';
 
 **Categories**:
 
-- `AUTH` - Authentication success messages
-- `USER` - User action success messages
-- `PRODUCT` - Product action success messages
-- `ORDER` - Order action success messages
-- `SETTINGS` - Settings update success messages
+- `AUTH` - Authentication success messages (LOGIN_SUCCESS, LOGOUT_SUCCESS, REGISTER_SUCCESS)
+- `USER` - User action success messages (PROFILE_UPDATED, PASSWORD_CHANGED, SETTINGS_SAVED, USER_UPDATED, ACCOUNT_DELETED)
+- `UPLOAD` - File upload success (FILE_UPLOADED)
 - `EMAIL` - Email verification success (VERIFICATION_SENT, VERIFIED, VERIFIED_SUCCESS, RESET_SENT)
-- `PHONE` - Phone verification success (VERIFIED, VERIFIED_SUCCESS)
-- `UPLOAD` - File upload success
-- `PASSWORD` - Password reset success
+- `PHONE` - Phone verification success (VERIFIED, VERIFIED_SUCCESS, VALIDATED)
+- `PASSWORD` - Password reset success (UPDATED, RESET_EMAIL_SENT, RESET_SUCCESS)
+- `ACCOUNT` - Account success (DELETED)
+- `ADMIN` - Admin action success (USER_ROLE_UPDATED, USER_BANNED, USER_UNBANNED, SESSION_REVOKED, etc.)
+- `REVIEW` - Review success (SUBMITTED, UPDATED, DELETED, APPROVED, REJECTED, SUBMITTED_PENDING_MODERATION, VOTE_RECORDED)
+- `FAQ` - FAQ success (CREATED, UPDATED, DELETED, VOTE_HELPFUL, VOTE_NOT_HELPFUL)
+- `CATEGORY` - Category success (CREATED, UPDATED, DELETED)
+- `CAROUSEL` - Carousel success (CREATED, UPDATED, DELETED, REORDERED)
+- `SECTION` - Homepage section success (CREATED, UPDATED, DELETED, REORDERED)
+- `ORDER` - Order success (CREATED, UPDATED, CANCELLED)
+- `PRODUCT` - Product success (CREATED, UPDATED, DELETED)
+- `ADDRESS` - Address success (CREATED, UPDATED, DELETED, DEFAULT_SET)
+- `SESSION` - Session success (ACTIVITY_UPDATED)
+- `MEDIA` - Media success (VIDEO_TRIMMED, IMAGE_CROPPED)
+- `LOGS` - Log success (WRITTEN)
+- `NEWSLETTER` - Newsletter success (SUBSCRIBED)
 
 ---
 
@@ -1553,6 +1577,53 @@ if (Object.keys(errors).length === 0) {
 
 **Location**: `src/db/schema/`  
 **Import**: `import { SchemaName, COLLECTION_NAME } from '@/db/schema'`
+
+### Schema Field Constants
+
+**File**: `field-names.ts`  
+**Import**: `import { USER_FIELDS, SCHEMA_DEFAULTS, COMMON_FIELDS } from '@/db/schema'`  
+**Purpose**: Centralized string constants for ALL Firestore document field names. Use these instead of hardcoded strings in queries, serializers, and update operations.
+
+**Available constants**:
+
+| Constant                  | Collection       | Key fields                                                                                                                                                                                                  |
+| ------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `USER_FIELDS`             | users            | UID, EMAIL, ROLE, DISPLAY_NAME, PHONE_NUMBER, PHONE_VERIFIED, PHOTO_URL, AVATAR_METADATA, PASSWORD_HASH, EMAIL_VERIFIED, DISABLED, PUBLIC_PROFILE, STATS, METADATA, AVATAR.\*, PROFILE.\*, STAT.\*, META.\* |
+| `TOKEN_FIELDS`            | tokens           | ID, USER_ID, EMAIL, TOKEN, EXPIRES_AT, CREATED_AT, USED, USED_AT                                                                                                                                            |
+| `PRODUCT_FIELDS`          | products         | ID, TITLE, DESCRIPTION, CATEGORY, PRICE, SELLER_ID, STATUS, IMAGES, VIDEO, FEATURED, TAGS, IS_AUCTION, STATUS_VALUES.\*                                                                                     |
+| `ORDER_FIELDS`            | orders           | ID, PRODUCT_ID, USER_ID, QUANTITY, TOTAL_PRICE, STATUS, PAYMENT_STATUS, SHIPPING_ADDRESS, STATUS_VALUES.\*, PAYMENT_STATUS_VALUES.\*                                                                        |
+| `REVIEW_FIELDS`           | reviews          | ID, PRODUCT_ID, USER_ID, RATING, TITLE, COMMENT, STATUS, HELPFUL_COUNT, VERIFIED, FEATURED, STATUS_VALUES.\*                                                                                                |
+| `BID_FIELDS`              | bids             | ID, PRODUCT_ID, USER_ID, BID_AMOUNT, STATUS, IS_WINNING, BID_DATE, STATUS_VALUES.\*                                                                                                                         |
+| `SESSION_FIELDS`          | sessions         | ID, USER_ID, DEVICE_INFO, LOCATION, IS_ACTIVE, LAST_ACTIVITY, EXPIRES_AT, REVOKED_AT, REVOKED_BY, DEVICE.\*, LOC.\*                                                                                         |
+| `CAROUSEL_FIELDS`         | carouselSlides   | ID, TITLE, ORDER, ACTIVE, MEDIA, LINK, MOBILE_MEDIA, CARDS                                                                                                                                                  |
+| `CATEGORY_FIELDS`         | categories       | ID, NAME, SLUG, DESCRIPTION, ROOT_ID, PARENT_IDS, CHILDREN_IDS, TIER, PATH, ORDER, IS_LEAF, METRICS, METRIC.\*                                                                                              |
+| `COUPON_FIELDS`           | coupons          | ID, CODE, NAME, TYPE, DISCOUNT, USAGE, VALIDITY, TYPE_VALUES.\*, USAGE_FIELDS.\*, VALIDITY_FIELDS.\*                                                                                                        |
+| `FAQ_FIELDS`              | faqs             | ID, QUESTION, ANSWER, CATEGORY, ORDER, TAGS, STATS, STAT.\*, SEO_FIELDS.\*, CATEGORY_VALUES.\*                                                                                                              |
+| `HOMEPAGE_SECTION_FIELDS` | homepageSections | ID, TYPE, ORDER, ENABLED, CONFIG, TYPE_VALUES.\*                                                                                                                                                            |
+| `SITE_SETTINGS_FIELDS`    | siteSettings     | ID, SITE_NAME, MOTTO, LOGO, CONTACT, CONTACT_FIELDS.\*, SOCIAL_LINKS, EMAIL_SETTINGS, SEO, FEATURES, LEGAL_PAGES                                                                                            |
+| `COMMON_FIELDS`           | (shared)         | ID, CREATED_AT, UPDATED_AT, CREATED_BY, STATUS, IS_ACTIVE, ORDER                                                                                                                                            |
+| `SCHEMA_DEFAULTS`         | (defaults)       | USER_ROLE (`"user"`), CURRENCY (`"INR"`), UNKNOWN_USER_AGENT, UNKNOWN_USER, ANONYMOUS_USER, DEFAULT_DISPLAY_NAME, ADMIN_EMAIL                                                                               |
+
+**Usage**:
+
+```tsx
+import { USER_FIELDS, SCHEMA_DEFAULTS } from "@/db/schema";
+
+// Field references in Firestore updates
+await db
+  .collection(USER_COLLECTION)
+  .doc(uid)
+  .update({
+    [USER_FIELDS.META.LAST_SIGN_IN_TIME]: new Date(),
+    [USER_FIELDS.META.LOGIN_COUNT]: FieldValue.increment(1),
+  });
+
+// Default values
+const role = SCHEMA_DEFAULTS.USER_ROLE; // "user"
+const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
+```
+
+---
 
 ### Users Schema
 
@@ -2924,7 +2995,17 @@ if (Object.keys(errors).length === 0) {
 
 ### Admin API
 
+- `GET /api/admin/dashboard` - Get admin dashboard statistics (admin/moderator)
+- `GET /api/admin/users` - List users with search, role filter, disabled filter (admin/moderator)
+- `PATCH /api/admin/users/:uid` - Update user role, disabled status, displayName (admin)
+- `DELETE /api/admin/users/:uid` - Delete user (admin)
 - `GET /api/admin/sessions` - List all sessions with user details and stats (admin/moderator)
+
+### Media API
+
+- `POST /api/media/upload` - Upload file to Firebase Cloud Storage (authenticated)
+- `POST /api/media/crop` - Crop an image (authenticated, not yet implemented)
+- `POST /api/media/trim` - Trim a video (authenticated, not yet implemented)
 
 ### Session API
 

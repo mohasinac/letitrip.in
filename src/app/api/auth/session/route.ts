@@ -12,9 +12,10 @@ import {
 } from "@/lib/firebase/auth-server";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
-import { UI_LABELS } from "@/constants";
+import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
 import { sessionRepository } from "@/repositories";
-import { parseUserAgent } from "@/db/schema/sessions";
+import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * Create session cookie with session tracking
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     // Verify the ID token and get user info
     const decodedToken = await verifyIdToken(idToken);
     if (!decodedToken) {
-      throw new ValidationError("Invalid ID token");
+      throw new ValidationError(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
     // Ensure user profile exists in Firestore (important for OAuth users)
@@ -53,7 +54,10 @@ export async function POST(request: NextRequest) {
     if (!userProfile) {
       // Create profile for OAuth user (or any user without a profile)
       const authUser = await auth.getUser(decodedToken.uid);
-      const role = authUser.email === "admin@letitrip.in" ? "admin" : "user";
+      const role =
+        authUser.email === SCHEMA_DEFAULTS.ADMIN_EMAIL
+          ? "admin"
+          : SCHEMA_DEFAULTS.USER_ROLE;
 
       await db
         .collection(USER_COLLECTION)
@@ -63,7 +67,9 @@ export async function POST(request: NextRequest) {
           uid: decodedToken.uid,
           email: authUser.email,
           displayName:
-            authUser.displayName || authUser.email?.split("@")[0] || "User",
+            authUser.displayName ||
+            authUser.email?.split("@")[0] ||
+            SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
           photoURL: authUser.photoURL || null,
           emailVerified: authUser.emailVerified,
           role,
@@ -76,14 +82,15 @@ export async function POST(request: NextRequest) {
     const sessionCookie = await createSessionCookie(idToken);
 
     // Parse device info from user agent
-    const userAgent = request.headers.get("user-agent") || "Unknown";
+    const userAgent =
+      request.headers.get("user-agent") || SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT;
     const deviceInfo = parseUserAgent(userAgent);
 
     // Get IP address (anonymized - last octet removed for privacy)
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0] ||
       request.headers.get("x-real-ip") ||
-      "Unknown";
+      SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT;
     const anonymizedIp = ip.split(".").slice(0, 3).join(".") + ".xxx";
 
     // Store session in Firestore and get the generated session ID
@@ -142,7 +149,7 @@ export async function DELETE(request: NextRequest) {
         }
       } catch (e) {
         // Session may be expired, still clear cookies
-        console.debug("Session already expired, clearing cookies");
+        serverLogger.debug("Session already expired, clearing cookies");
       }
     }
 

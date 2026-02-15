@@ -11,8 +11,8 @@ import type {
   OrderCreateInput,
   OrderStatus,
   PaymentStatus,
-} from "@/db/schema/orders";
-import { createOrderId, ORDER_COLLECTION } from "@/db/schema/orders";
+} from "@/db/schema";
+import { createOrderId, ORDER_COLLECTION, ORDER_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
@@ -47,35 +47,35 @@ class OrderRepository extends BaseRepository<OrderDocument> {
    * Find orders by user ID
    */
   async findByUser(userId: string): Promise<OrderDocument[]> {
-    return this.findBy("userId", userId);
+    return this.findBy(ORDER_FIELDS.USER_ID, userId);
   }
 
   /**
    * Find orders by product ID
    */
   async findByProduct(productId: string): Promise<OrderDocument[]> {
-    return this.findBy("productId", productId);
+    return this.findBy(ORDER_FIELDS.PRODUCT_ID, productId);
   }
 
   /**
    * Find orders by status
    */
   async findByStatus(status: OrderStatus): Promise<OrderDocument[]> {
-    return this.findBy("status", status);
+    return this.findBy(ORDER_FIELDS.STATUS, status);
   }
 
   /**
    * Find confirmed orders
    */
   async findConfirmed(): Promise<OrderDocument[]> {
-    return this.findBy("status", "confirmed");
+    return this.findBy(ORDER_FIELDS.STATUS, "confirmed");
   }
 
   /**
    * Find pending orders
    */
   async findPending(): Promise<OrderDocument[]> {
-    return this.findBy("status", "pending");
+    return this.findBy(ORDER_FIELDS.STATUS, "pending");
   }
 
   /**

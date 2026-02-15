@@ -8,11 +8,17 @@
 
 "use client";
 
-import { useState } from "react";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Button, BackgroundSettings, AdminPageHeader } from "@/components";
+import { useState, useEffect } from "react";
+import { THEME_CONSTANTS, UI_LABELS, API_ENDPOINTS } from "@/constants";
+import {
+  Button,
+  BackgroundSettings,
+  AdminPageHeader,
+  Card,
+} from "@/components";
 import { useToast } from "@/components";
-import { logger } from "@/classes";
+import { useApiQuery, useApiMutation } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import {
   SiteBasicInfoForm,
   SiteContactForm,
@@ -21,8 +27,20 @@ import {
 import type { SiteSettingsDocument } from "@/db/schema";
 
 export default function AdminSiteSettings() {
-  const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
+
+  const { data, isLoading, error, refetch } = useApiQuery<{
+    data: SiteSettingsDocument;
+  }>({
+    queryKey: ["site-settings"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.SITE_SETTINGS.GET),
+  });
+
+  const updateMutation = useApiMutation<any, Partial<SiteSettingsDocument>>({
+    mutationFn: (data) =>
+      apiClient.patch(API_ENDPOINTS.SITE_SETTINGS.UPDATE, data),
+  });
+
   const [settings, setSettings] = useState<Partial<SiteSettingsDocument>>({
     siteName: "LetItRip",
     motto: "Your Marketplace, Your Rules",
@@ -51,18 +69,55 @@ export default function AdminSiteSettings() {
     },
   });
 
+  // Load settings from API when data is fetched
+  useEffect(() => {
+    if (data?.data) {
+      setSettings(data.data);
+    }
+  }, [data]);
+
   const handleSave = async () => {
-    setIsSaving(true);
     try {
-      // TODO: Implement API call to save settings
-      logger.info("Saving settings:", settings);
+      await updateMutation.mutate(settings);
+      await refetch();
       showToast(UI_LABELS.ADMIN.SITE.SETTINGS_SAVED, "success");
     } catch {
       showToast(UI_LABELS.ADMIN.SITE.SETTINGS_FAILED, "error");
-    } finally {
-      setIsSaving(false);
     }
   };
+
+  const isSaving = updateMutation.isLoading;
+
+  if (isLoading) {
+    return (
+      <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
+        <AdminPageHeader
+          title={UI_LABELS.ADMIN.SITE.TITLE}
+          subtitle={UI_LABELS.ADMIN.SITE.SUBTITLE}
+        />
+        <Card>
+          <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
+        <AdminPageHeader
+          title={UI_LABELS.ADMIN.SITE.TITLE}
+          subtitle={UI_LABELS.ADMIN.SITE.SUBTITLE}
+        />
+        <Card>
+          <div className="text-center py-8">
+            <p className="text-red-600 mb-4">{error.message}</p>
+            <Button onClick={() => refetch()}>{UI_LABELS.ACTIONS.RETRY}</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>

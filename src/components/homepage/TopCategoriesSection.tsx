@@ -7,16 +7,7 @@ import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  coverImage?: string;
-  metrics: {
-    totalItemCount: number;
-  };
-}
+import type { CategoryDocument } from "@/db/schema";
 
 export function TopCategoriesSection() {
   const router = useRouter();
@@ -24,7 +15,7 @@ export function TopCategoriesSection() {
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading } = useApiQuery<Category[]>({
+  const { data, isLoading } = useApiQuery<CategoryDocument[]>({
     queryKey: ["categories", "featured"],
     queryFn: () =>
       apiClient.get(
@@ -106,16 +97,16 @@ export function TopCategoriesSection() {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {visibleCategories.map((category) => (
+          {visibleCategories.map((category, index) => (
             <button
-              key={category.id}
+              key={`${category.id}-${currentIndex}-${index}`}
               className={`relative aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:shadow-xl transition-all`}
               onClick={() => router.push(`/categories/${category.slug}`)}
             >
               {/* Background Image */}
-              {category.coverImage ? (
+              {category.display?.coverImage ? (
                 <Image
-                  src={category.coverImage}
+                  src={category.display.coverImage}
                   alt={category.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -138,7 +129,7 @@ export function TopCategoriesSection() {
                 <p
                   className={`${THEME_CONSTANTS.typography.small} text-white/80`}
                 >
-                  {category.metrics.totalItemCount} items
+                  {category.metrics?.totalItemCount ?? 0} items
                 </p>
               </div>
             </button>

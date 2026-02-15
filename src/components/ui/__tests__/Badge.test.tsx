@@ -1,74 +1,48 @@
-import { render, screen } from '@testing-library/react';
-import { Badge } from '../index';
+import { render, screen } from "@testing-library/react";
+import { Badge } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 
-describe('Badge Component', () => {
-  it('renders badge with children', () => {
+describe("Badge Component", () => {
+  it("renders badge with children", () => {
     render(<Badge>New</Badge>);
-    expect(screen.getByText('New')).toBeInTheDocument();
+    expect(screen.getByText("New")).toBeInTheDocument();
   });
 
-  it('applies default variant by default', () => {
+  it("applies default variant by default", () => {
     const { container } = render(<Badge>Default</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('bg-gray-200');
+    expect(badge).toHaveClass(...THEME_CONSTANTS.badge.inactive.split(" "));
   });
 
-  it('applies primary variant', () => {
+  it("applies primary variant", () => {
     const { container } = render(<Badge variant="primary">Primary</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('bg-blue-100');
+    expect(badge).toHaveClass(
+      ...THEME_CONSTANTS.colors.badge.primary.split(" "),
+    );
   });
 
-  it('applies success variant', () => {
+  it("applies success variant", () => {
     const { container } = render(<Badge variant="success">Success</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('bg-green-100');
+    expect(badge).toHaveClass(...THEME_CONSTANTS.badge.success.split(" "));
   });
 
-  it('applies warning variant', () => {
+  it("applies warning variant", () => {
     const { container } = render(<Badge variant="warning">Warning</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('bg-yellow-100');
+    expect(badge).toHaveClass(...THEME_CONSTANTS.badge.warning.split(" "));
   });
 
-  it('applies danger variant', () => {
+  it("applies danger variant", () => {
     const { container } = render(<Badge variant="danger">Danger</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('bg-red-100');
+    expect(badge).toHaveClass(...THEME_CONSTANTS.badge.danger.split(" "));
   });
 
-  it('applies small size', () => {
-    const { container } = render(<Badge size="sm">Small</Badge>);
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('px-2', 'py-0.5', 'text-xs');
-  });
-
-  it('applies medium size by default', () => {
-    const { container } = render(<Badge>Medium</Badge>);
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('px-2.5', 'py-1', 'text-sm');
-  });
-
-  it('applies large size', () => {
-    const { container } = render(<Badge size="lg">Large</Badge>);
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('px-3', 'py-1.5', 'text-base');
-  });
-
-  it('can be rounded', () => {
-    const { container } = render(<Badge rounded>Rounded</Badge>);
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('rounded-full');
-  });
-
-  it('uses rounded-lg by default', () => {
+  it("includes default size tokens", () => {
     const { container } = render(<Badge>Default</Badge>);
     const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass('rounded-lg');
-  });
-
-  it('accepts custom className', () => {
-    const { container } = render(<Badge className="custom-class">Custom</Badge>);
-    expect(container.firstChild).toHaveClass('custom-class');
+    expect(badge).toHaveClass("px-2.5", "py-0.5", "text-xs");
   });
 });

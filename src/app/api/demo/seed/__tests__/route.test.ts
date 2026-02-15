@@ -43,6 +43,21 @@ jest.mock("../../../../../../scripts/seed-data", () => ({
       disabled: false,
     },
   ],
+  addressesSeedData: [
+    {
+      id: "addr-test-1",
+      userId: "test-user-1",
+      label: "Home",
+      fullName: "Test User 1",
+      phone: "+919876543210",
+      addressLine1: "123 Test Street",
+      city: "Mumbai",
+      state: "Maharashtra",
+      postalCode: "400001",
+      country: "India",
+      isDefault: true,
+    },
+  ],
   categoriesSeedData: [
     { id: "cat-1", name: "Electronics", slug: "electronics" },
   ],
@@ -285,6 +300,38 @@ describe("Demo Seed API", () => {
       );
     });
 
+    it("should handle addresses subcollection under users", async () => {
+      mockDocSnapshot.exists = false;
+
+      // Mock the subcollection structure
+      const mockSubCollectionRef = {
+        doc: jest.fn().mockReturnValue(mockDocRef),
+      };
+      mockDocRef.collection = jest.fn().mockReturnValue(mockSubCollectionRef);
+
+      const request = buildRequest("/api/demo/seed", {
+        method: "POST",
+        body: { action: "load", collections: ["addresses"] },
+      });
+
+      const response = await POST(request);
+      const { status, body } = await parseResponse(response);
+
+      expect(status).toBe(200);
+      expect(body.success).toBe(true);
+
+      // Should access users collection then addresses subcollection
+      expect(mockDb.collection).toHaveBeenCalledWith("users");
+      expect(mockDocRef.collection).toHaveBeenCalledWith("addresses");
+      expect(mockDocRef.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "Home",
+          fullName: "Test User 1",
+        }),
+        { merge: true },
+      );
+    });
+
     it("should process multiple collections", async () => {
       const request = buildRequest("/api/demo/seed", {
         method: "POST",
@@ -414,6 +461,33 @@ describe("Demo Seed API", () => {
       // Should use 'global' as doc ID
       expect(mockCollectionRef.doc).toHaveBeenCalledWith("global");
       expect(mockDocRef.delete).toHaveBeenCalled();
+    });
+
+    it("should delete addresses subcollection documents", async () => {
+      mockDocSnapshot.exists = true;
+
+      // Mock the subcollection structure
+      const mockSubCollectionRef = {
+        doc: jest.fn().mockReturnValue(mockDocRef),
+      };
+      mockDocRef.collection = jest.fn().mockReturnValue(mockSubCollectionRef);
+
+      const request = buildRequest("/api/demo/seed", {
+        method: "POST",
+        body: { action: "delete", collections: ["addresses"] },
+      });
+
+      const response = await POST(request);
+      const { status, body } = await parseResponse(response);
+
+      expect(status).toBe(200);
+      expect(body.success).toBe(true);
+
+      // Should access users collection then addresses subcollection
+      expect(mockDb.collection).toHaveBeenCalledWith("users");
+      expect(mockDocRef.collection).toHaveBeenCalledWith("addresses");
+      expect(mockDocRef.delete).toHaveBeenCalled();
+      expect(body.details.deleted).toBe(1);
     });
   });
 

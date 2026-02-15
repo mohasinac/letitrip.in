@@ -11,8 +11,8 @@ import type {
   ReviewCreateInput,
   ReviewStatus,
   ReviewModerationInput,
-} from "@/db/schema/reviews";
-import { createReviewId, REVIEW_COLLECTION } from "@/db/schema/reviews";
+} from "@/db/schema";
+import { createReviewId, REVIEW_COLLECTION, REVIEW_FIELDS } from "@/db/schema";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
@@ -55,7 +55,7 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
    * Find reviews by product ID
    */
   async findByProduct(productId: string): Promise<ReviewDocument[]> {
-    return this.findBy("productId", productId);
+    return this.findBy(REVIEW_FIELDS.PRODUCT_ID, productId);
   }
 
   /**
@@ -64,8 +64,8 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
   async findApprovedByProduct(productId: string): Promise<ReviewDocument[]> {
     const snapshot = await this.db
       .collection(this.collection)
-      .where("productId", "==", productId)
-      .where("status", "==", "approved")
+      .where(REVIEW_FIELDS.PRODUCT_ID, "==", productId)
+      .where(REVIEW_FIELDS.STATUS, "==", "approved")
       .orderBy("createdAt", "desc")
       .get();
 
@@ -79,21 +79,21 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
    * Find reviews by user ID
    */
   async findByUser(userId: string): Promise<ReviewDocument[]> {
-    return this.findBy("userId", userId);
+    return this.findBy(REVIEW_FIELDS.USER_ID, userId);
   }
 
   /**
    * Find pending reviews (for moderation)
    */
   async findPending(): Promise<ReviewDocument[]> {
-    return this.findBy("status", "pending");
+    return this.findBy(REVIEW_FIELDS.STATUS, "pending");
   }
 
   /**
    * Find reviews by status
    */
   async findByStatus(status: ReviewStatus): Promise<ReviewDocument[]> {
-    return this.findBy("status", status);
+    return this.findBy(REVIEW_FIELDS.STATUS, status);
   }
 
   /**
@@ -102,9 +102,9 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
   async findFeatured(limit: number = 18): Promise<ReviewDocument[]> {
     const snapshot = await this.db
       .collection(this.collection)
-      .where("featured", "==", true)
-      .where("status", "==", "approved")
-      .orderBy("createdAt", "desc")
+      .where(REVIEW_FIELDS.FEATURED, "==", true)
+      .where(REVIEW_FIELDS.STATUS, "==", "approved")
+      .orderBy(REVIEW_FIELDS.CREATED_AT, "desc")
       .limit(limit)
       .get();
 

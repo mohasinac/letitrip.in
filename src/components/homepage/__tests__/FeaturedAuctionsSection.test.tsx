@@ -38,7 +38,7 @@ const mockAuctions = [
     currency: "INR",
     mainImage: "/img/painting.jpg",
     auctionEndDate: futureDate,
-    totalBids: 15,
+    bidCount: 15,
     category: "Art",
   },
   {
@@ -50,7 +50,7 @@ const mockAuctions = [
     currency: "INR",
     mainImage: "/img/vase.jpg",
     auctionEndDate: futureDate,
-    totalBids: 1,
+    bidCount: 1,
     category: "Collectibles",
   },
   {
@@ -62,7 +62,7 @@ const mockAuctions = [
     currency: "INR",
     mainImage: "/img/jersey.jpg",
     auctionEndDate: pastDate,
-    totalBids: 0,
+    bidCount: 0,
     category: "Sports",
   },
 ];
@@ -96,7 +96,7 @@ describe("FeaturedAuctionsSection", () => {
   describe("No Data State", () => {
     it("returns null when no auctions", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: [] },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<FeaturedAuctionsSection />);
@@ -104,7 +104,7 @@ describe("FeaturedAuctionsSection", () => {
     });
 
     it("returns null when products array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: {}, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
       const { container } = render(<FeaturedAuctionsSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -116,7 +116,7 @@ describe("FeaturedAuctionsSection", () => {
   describe("Content Rendering", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockAuctions },
+        data: mockAuctions,
         isLoading: false,
       });
     });
@@ -130,14 +130,12 @@ describe("FeaturedAuctionsSection", () => {
 
     it("renders subtitle", () => {
       render(<FeaturedAuctionsSection />);
-      expect(
-        screen.getByText("Bid now on exclusive items"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Bid on exclusive items")).toBeInTheDocument();
     });
 
-    it('renders "View All Auctions" button', () => {
+    it('renders "View All" button', () => {
       render(<FeaturedAuctionsSection />);
-      expect(screen.getByText("View All Auctions")).toBeInTheDocument();
+      expect(screen.getByText(/view all/i)).toBeInTheDocument();
     });
 
     it("renders all auction titles", () => {
@@ -174,13 +172,13 @@ describe("FeaturedAuctionsSection", () => {
   describe("Price Formatting", () => {
     it("formats current bid prices in INR", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockAuctions },
+        data: mockAuctions,
         isLoading: false,
       });
       render(<FeaturedAuctionsSection />);
-      expect(screen.getByText("₹25,000")).toBeInTheDocument();
-      expect(screen.getByText("₹8,000")).toBeInTheDocument();
-      expect(screen.getByText("₹3,500")).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?25,000/)).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?8,000/)).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?3,500/)).toBeInTheDocument();
     });
   });
 
@@ -190,7 +188,7 @@ describe("FeaturedAuctionsSection", () => {
   describe("Countdown Timer", () => {
     it('shows "Ended" for past auctions', () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockAuctions },
+        data: mockAuctions,
         isLoading: false,
       });
       render(<FeaturedAuctionsSection />);
@@ -199,7 +197,7 @@ describe("FeaturedAuctionsSection", () => {
 
     it("shows time remaining for active auctions", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockAuctions },
+        data: mockAuctions,
         isLoading: false,
       });
       render(<FeaturedAuctionsSection />);
@@ -215,7 +213,7 @@ describe("FeaturedAuctionsSection", () => {
   describe("Accessibility", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockAuctions },
+        data: mockAuctions,
         isLoading: false,
       });
     });

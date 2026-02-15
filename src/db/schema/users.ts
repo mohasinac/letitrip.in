@@ -60,9 +60,8 @@ export interface UserDocument {
   };
 
   metadata?: {
-    lastSignInTime?: string;
+    lastSignInTime?: Date;
     creationTime?: string;
-    lastLoginAt?: Date;
     loginCount?: number;
   };
 }

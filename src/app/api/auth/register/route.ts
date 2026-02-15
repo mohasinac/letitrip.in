@@ -16,9 +16,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
-import { USER_COLLECTION, DEFAULT_USER_DATA } from "@/db/schema/users";
-import { parseUserAgent } from "@/db/schema/sessions";
-import { UserRole } from "@/types/auth";
+import {
+  USER_COLLECTION,
+  DEFAULT_USER_DATA,
+  SCHEMA_DEFAULTS,
+  parseUserAgent,
+} from "@/db/schema";
+import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
@@ -69,7 +73,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine role based on email
-    const role: UserRole = email === "admin@letitrip.in" ? "admin" : "user";
+    const role: UserRole =
+      email === SCHEMA_DEFAULTS.ADMIN_EMAIL
+        ? "admin"
+        : SCHEMA_DEFAULTS.USER_ROLE;
 
     // Create user with Firebase Admin (more secure)
     const userRecord = await auth.createUser({
@@ -111,7 +118,7 @@ export async function POST(request: NextRequest) {
     const apiKey =
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
-      throw new ValidationError("Firebase API key not configured");
+      throw new ValidationError(ERROR_MESSAGES.AUTH.API_KEY_NOT_CONFIGURED);
     }
     const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`;
     const signInResponse = await fetch(signInUrl, {
@@ -121,7 +128,7 @@ export async function POST(request: NextRequest) {
     });
     const signInData = await signInResponse.json();
     if (!signInData.idToken) {
-      throw new ValidationError("Failed to exchange custom token for ID token");
+      throw new ValidationError(ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED);
     }
 
     // Create session cookie
@@ -130,7 +137,7 @@ export async function POST(request: NextRequest) {
     // Create session in Firestore for tracking
     const session = await sessionRepository.createSession(userRecord.uid, {
       deviceInfo: parseUserAgent(
-        request.headers.get("user-agent") || "Unknown",
+        request.headers.get("user-agent") || SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT,
       ),
     });
 

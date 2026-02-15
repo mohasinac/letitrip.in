@@ -2,13 +2,15 @@
  * Shared User types for admin user management components.
  */
 
+import type { UserRole } from "@/types/auth";
+
 export interface AdminUser {
   id: string;
   uid: string;
-  email: string;
-  displayName: string;
-  photoURL?: string;
-  role: "user" | "seller" | "moderator" | "admin";
+  email: string | null;
+  displayName: string | null;
+  photoURL?: string | null;
+  role: UserRole;
   emailVerified: boolean;
   disabled: boolean;
   createdAt: string;

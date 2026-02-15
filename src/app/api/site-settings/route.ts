@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch site settings" },
+      { success: false, error: ERROR_MESSAGES.ADMIN.LOAD_SETTINGS_FAILED },
       { status: 500 },
     );
   }
@@ -117,7 +117,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -142,7 +142,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedSettings,
-      message: "Site settings updated successfully",
+      message: SUCCESS_MESSAGES.ADMIN.SETTINGS_SAVED,
     });
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, { error });
@@ -162,7 +162,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to update settings" },
+      { success: false, error: ERROR_MESSAGES.ADMIN.SAVE_SETTINGS_FAILED },
       { status: 500 },
     );
   }

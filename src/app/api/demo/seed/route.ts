@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import {
   usersSeedData,
+  addressesSeedData,
   categoriesSeedData,
   productsSeedData,
   ordersSeedData,
@@ -29,6 +30,7 @@ import {
 
 type CollectionName =
   | "users"
+  | "addresses"
   | "categories"
   | "products"
   | "orders"
@@ -47,6 +49,7 @@ interface SeedRequest {
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
+  addresses: "addresses", // Subcollection
   categories: CATEGORIES_COLLECTION,
   products: PRODUCT_COLLECTION,
   orders: ORDER_COLLECTION,
@@ -61,6 +64,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: usersSeedData,
+  addresses: addressesSeedData,
   categories: categoriesSeedData,
   products: productsSeedData,
   orders: ordersSeedData,
@@ -197,6 +201,40 @@ export async function POST(request: NextRequest) {
                 }
               } catch (err) {
                 console.error(`Error seeding user ${userData.uid}:`, err);
+                totalErrors++;
+              }
+            }
+          } else if (collectionName === "addresses") {
+            // Addresses are subcollection under users
+            for (const addressData of seedData) {
+              try {
+                const { userId, id, ...data } = addressData as any;
+
+                if (!userId || !id) {
+                  console.error("Address missing userId or id");
+                  totalErrors++;
+                  continue;
+                }
+
+                // Check if document exists
+                const docRef = db
+                  .collection(USER_COLLECTION)
+                  .doc(userId)
+                  .collection("addresses")
+                  .doc(id);
+                const docSnapshot = await docRef.get();
+                const exists = docSnapshot.exists;
+
+                // Upsert document
+                await docRef.set(data, { merge: true });
+
+                if (exists) {
+                  totalUpdated++;
+                } else {
+                  totalCreated++;
+                }
+              } catch (err) {
+                console.error(`Error seeding address:`, err);
                 totalErrors++;
               }
             }
@@ -340,6 +378,37 @@ export async function POST(request: NextRequest) {
                 }
               } catch (err) {
                 console.error(`Error deleting user ${userData.uid}:`, err);
+                totalErrors++;
+              }
+            }
+          } else if (collectionName === "addresses") {
+            // Addresses are subcollection under users
+            for (const addressData of seedData) {
+              try {
+                const { userId, id } = addressData as any;
+
+                if (!userId || !id) {
+                  console.error("Address missing userId or id");
+                  totalErrors++;
+                  continue;
+                }
+
+                // Check if document exists before deleting
+                const docRef = db
+                  .collection(USER_COLLECTION)
+                  .doc(userId)
+                  .collection("addresses")
+                  .doc(id);
+                const docSnapshot = await docRef.get();
+
+                if (docSnapshot.exists) {
+                  await docRef.delete();
+                  totalDeleted++;
+                } else {
+                  totalSkipped++;
+                }
+              } catch (err) {
+                console.error(`Error deleting address:`, err);
                 totalErrors++;
               }
             }

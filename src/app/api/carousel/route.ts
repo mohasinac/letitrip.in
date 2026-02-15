@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: "Admin access required to view inactive slides",
+            error: ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED,
           },
           { status: 403 },
         );
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.CAROUSEL_GET_ERROR, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch carousel slides" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: "Maximum 5 active carousel slides allowed",
+            error: ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED,
             details: {
               currentActive: activeSlides.length,
               maxAllowed: 5,
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: slide,
-        message: "Carousel slide created successfully",
+        message: SUCCESS_MESSAGES.CAROUSEL.CREATED,
       },
       { status: 201 },
     );
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to create carousel slide" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.CREATE_FAILED },
       { status: 500 },
     );
   }

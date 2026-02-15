@@ -39,6 +39,7 @@ import { groupBy } from '@/helpers';
 | Singletons (CacheManager, Logger, EventBus...) | `@/classes` |
 | Repositories (userRepository, orderRepository...) | `@/repositories` |
 | DB schemas & types | `@/db/schema` |
+| Schema field constants (USER_FIELDS, SCHEMA_DEFAULTS...) | `@/db/schema` |
 | API types | `@/types/api` |
 | Auth types (UserRole, UserProfile...) | `@/types/auth` |
 | Error classes (AppError, ApiError...) | `@/lib/errors` |
@@ -94,6 +95,36 @@ import { groupBy } from '@/helpers';
 **All from `@/constants`.**
 
 **If a constant doesn't exist yet**: ADD it to `src/constants/ui.ts` (labels/placeholders) or `src/constants/messages.ts` (error/success). Then export via `src/constants/index.ts`.
+
+### API Route Error/Success Messages
+
+**Every API route MUST use constants for ALL error and success strings.**
+
+| Instead of writing... | Use this constant |
+|----------------------|-------------------|
+| `"Validation failed"` | `ERROR_MESSAGES.VALIDATION.FAILED` |
+| `"Product not found"` | `ERROR_MESSAGES.PRODUCT.NOT_FOUND` |
+| `"Category not found"` | `ERROR_MESSAGES.CATEGORY.NOT_FOUND` |
+| `"Review not found"` | `ERROR_MESSAGES.REVIEW.NOT_FOUND` |
+| `"FAQ not found"` | `ERROR_MESSAGES.FAQ.NOT_FOUND` |
+| `"Carousel slide not found"` | `ERROR_MESSAGES.CAROUSEL.NOT_FOUND` |
+| `"Homepage section not found"` | `ERROR_MESSAGES.SECTION.NOT_FOUND` |
+| `"Session not found"` | `ERROR_MESSAGES.SESSION.NOT_FOUND` |
+| `"Admin access required"` | `ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED` |
+| `"No file provided"` | `ERROR_MESSAGES.MEDIA.NO_FILE` |
+| `"Invalid file type"` | `ERROR_MESSAGES.UPLOAD.INVALID_TYPE` |
+| `"File size exceeds limit"` | `ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE` |
+| `"Failed to fetch X"` | `ERROR_MESSAGES.X.FETCH_FAILED` |
+| `"Failed to create X"` | `ERROR_MESSAGES.X.CREATE_FAILED` |
+| `"Failed to update X"` | `ERROR_MESSAGES.X.UPDATE_FAILED` |
+| `"Failed to delete X"` | `ERROR_MESSAGES.X.DELETE_FAILED` |
+| `"X created successfully"` | `SUCCESS_MESSAGES.X.CREATED` |
+| `"X updated successfully"` | `SUCCESS_MESSAGES.X.UPDATED` |
+| `"X deleted successfully"` | `SUCCESS_MESSAGES.X.DELETED` |
+
+**Available ERROR_MESSAGES categories**: `AUTH`, `VALIDATION`, `USER`, `PASSWORD`, `EMAIL`, `UPLOAD`, `GENERIC`, `DATABASE`, `SESSION`, `ADMIN`, `REVIEW`, `FAQ`, `CATEGORY`, `CAROUSEL`, `SECTION`, `ORDER`, `PRODUCT`, `PHONE`, `MEDIA`, `ADDRESS`, `API`.
+
+**Available SUCCESS_MESSAGES categories**: `AUTH`, `USER`, `UPLOAD`, `EMAIL`, `PHONE`, `PASSWORD`, `ACCOUNT`, `ADMIN`, `REVIEW`, `FAQ`, `CATEGORY`, `CAROUSEL`, `SECTION`, `ORDER`, `PRODUCT`, `ADDRESS`, `SESSION`, `MEDIA`, `LOGS`, `NEWSLETTER`.
 
 ```tsx
 // WRONG
@@ -474,6 +505,41 @@ db.collection(USER_COLLECTION)
 
 Available constants: `USER_COLLECTION`, `PRODUCT_COLLECTION`, `ORDER_COLLECTION`, `REVIEW_COLLECTION`, `BID_COLLECTION`, `SESSION_COLLECTION`, `EMAIL_VERIFICATION_COLLECTION`, `PASSWORD_RESET_COLLECTION`, `CAROUSEL_SLIDES_COLLECTION`, `HOMEPAGE_SECTIONS_COLLECTION`, `CATEGORIES_COLLECTION`, `COUPONS_COLLECTION`, `FAQS_COLLECTION`, `SITE_SETTINGS_COLLECTION`.
 
+### Schema Field Constants
+
+**NEVER hardcode Firestore field names in queries, serializers, or update operations.**
+
+```tsx
+// WRONG
+await db.collection(USER_COLLECTION).doc(uid).update({ 'metadata.lastSignInTime': new Date() });
+const role = userData.role;
+
+// RIGHT
+import { USER_FIELDS, SCHEMA_DEFAULTS } from '@/db/schema';
+await db.collection(USER_COLLECTION).doc(uid).update({ [USER_FIELDS.META.LAST_SIGN_IN_TIME]: new Date() });
+const defaultRole = SCHEMA_DEFAULTS.USER_ROLE;
+```
+
+**Available field constant objects** (all from `@/db/schema`):
+
+| Constant | Collection | Key fields |
+|----------|-----------|------------|
+| `USER_FIELDS` | users | UID, EMAIL, ROLE, DISPLAY_NAME, META.LAST_SIGN_IN_TIME, STAT.TOTAL_ORDERS, PROFILE.IS_PUBLIC... |
+| `TOKEN_FIELDS` | tokens | USER_ID, EMAIL, TOKEN, EXPIRES_AT, USED |
+| `PRODUCT_FIELDS` | products | TITLE, PRICE, SELLER_ID, STATUS, STATUS_VALUES.PUBLISHED... |
+| `ORDER_FIELDS` | orders | USER_ID, STATUS, TOTAL_PRICE, STATUS_VALUES.PENDING... |
+| `REVIEW_FIELDS` | reviews | PRODUCT_ID, USER_ID, RATING, STATUS_VALUES.APPROVED... |
+| `BID_FIELDS` | bids | PRODUCT_ID, BID_AMOUNT, STATUS_VALUES.ACTIVE... |
+| `SESSION_FIELDS` | sessions | USER_ID, IS_ACTIVE, LAST_ACTIVITY, DEVICE.BROWSER... |
+| `CAROUSEL_FIELDS` | carouselSlides | TITLE, ORDER, ACTIVE, MEDIA |
+| `CATEGORY_FIELDS` | categories | NAME, SLUG, TIER, METRIC.PRODUCT_COUNT... |
+| `COUPON_FIELDS` | coupons | CODE, TYPE, DISCOUNT, TYPE_VALUES.PERCENTAGE... |
+| `FAQ_FIELDS` | faqs | QUESTION, CATEGORY, STAT.HELPFUL, CATEGORY_VALUES.GENERAL... |
+| `HOMEPAGE_SECTION_FIELDS` | homepageSections | TYPE, ORDER, ENABLED, TYPE_VALUES.WELCOME... |
+| `SITE_SETTINGS_FIELDS` | siteSettings | SITE_NAME, CONTACT_FIELDS.EMAIL, SOCIAL_LINKS... |
+| `COMMON_FIELDS` | (shared) | ID, CREATED_AT, UPDATED_AT, STATUS, IS_ACTIVE |
+| `SCHEMA_DEFAULTS` | (defaults) | USER_ROLE, ADMIN_EMAIL, UNKNOWN_USER_AGENT, DEFAULT_DISPLAY_NAME, ANONYMOUS_USER |
+
 ---
 
 ## RULE 14: Routes from Constants
@@ -687,6 +753,8 @@ Before writing ANY code, verify:
 - [ ] Am I using `API_ENDPOINTS` for all API paths?
 - [ ] Am I using barrel imports (`@/constants`, not `@/constants/theme`)?
 - [ ] Am I using repositories (not direct Firestore queries)?
+- [ ] Am I using `USER_FIELDS`, `SCHEMA_DEFAULTS`, etc. for Firestore field names (not hardcoded strings)?
+- [ ] Am I using `ERROR_MESSAGES.*` / `SUCCESS_MESSAGES.*` for all API error/success strings?
 - [ ] Am I using error classes (not raw `throw new Error(...)`)?
 - [ ] No inline styles for static values?
 - [ ] Firebase Admin SDK only in `src/app/api/**`?

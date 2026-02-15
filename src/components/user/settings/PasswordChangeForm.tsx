@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { FormField, Button, PasswordStrengthIndicator } from "@/components";
-import { UI_LABELS, UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
+import {
+  UI_LABELS,
+  UI_PLACEHOLDERS,
+  THEME_CONSTANTS,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { calculatePasswordStrength } from "@/utils";
 
 /**
@@ -46,17 +51,17 @@ export function PasswordChangeForm({
 
     // Validation
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      setError(ERROR_MESSAGES.VALIDATION.PASSWORD_MISMATCH);
       return;
     }
 
     if (isPasswordWeak) {
-      setError("Password is too weak. Please use a stronger password.");
+      setError(ERROR_MESSAGES.PASSWORD.TOO_WEAK);
       return;
     }
 
     if (currentPassword === newPassword) {
-      setError("New password must be different from current password");
+      setError(ERROR_MESSAGES.PASSWORD.SAME_AS_CURRENT);
       return;
     }
 
@@ -74,24 +79,24 @@ export function PasswordChangeForm({
     <form onSubmit={handleSubmit} className={spacing.stack}>
       {/* Current Password */}
       <FormField
-        label="Current Password"
+        label={UI_LABELS.FORM.CURRENT_PASSWORD}
         name="currentPassword"
         type="password"
         value={currentPassword}
         onChange={(value) => setCurrentPassword(value)}
-        placeholder={UI_PLACEHOLDERS.PASSWORD}
+        placeholder={UI_PLACEHOLDERS.CURRENT_PASSWORD}
         required
       />
 
       {/* New Password */}
       <div>
         <FormField
-          label="New Password"
+          label={UI_LABELS.FORM.NEW_PASSWORD}
           name="newPassword"
           type="password"
           value={newPassword}
           onChange={(value) => setNewPassword(value)}
-          placeholder="Enter new password"
+          placeholder={UI_PLACEHOLDERS.NEW_PASSWORD}
           required
         />
         {newPassword && (
@@ -103,16 +108,16 @@ export function PasswordChangeForm({
 
       {/* Confirm New Password */}
       <FormField
-        label="Confirm New Password"
+        label={UI_LABELS.FORM.CONFIRM_PASSWORD}
         name="confirmPassword"
         type="password"
         value={confirmPassword}
         onChange={(value) => setConfirmPassword(value)}
-        placeholder="Confirm new password"
+        placeholder={UI_PLACEHOLDERS.CONFIRM_PASSWORD}
         required
         error={
           confirmPassword && newPassword !== confirmPassword
-            ? "Passwords do not match"
+            ? ERROR_MESSAGES.VALIDATION.PASSWORD_MISMATCH
             : undefined
         }
       />
@@ -131,7 +136,9 @@ export function PasswordChangeForm({
             isLoading || !currentPassword || !newPassword || !confirmPassword
           }
         >
-          {isLoading ? UI_LABELS.LOADING.DEFAULT : "Change Password"}
+          {isLoading
+            ? UI_LABELS.LOADING.DEFAULT
+            : UI_LABELS.ACTIONS.CHANGE_PASSWORD}
         </Button>
       </div>
     </form>

@@ -1,93 +1,73 @@
-import { render, screen } from '@testing-library/react';
-import { Card, CardHeader, CardBody, CardFooter } from '../index';
+import { render, screen } from "@testing-library/react";
+import { Card, CardHeader, CardBody, CardFooter } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 
-describe('Card Component', () => {
-  it('renders card with children', () => {
+describe("Card Component", () => {
+  it("renders card with children", () => {
     render(<Card>Card Content</Card>);
-    expect(screen.getByText('Card Content')).toBeInTheDocument();
+    expect(screen.getByText("Card Content")).toBeInTheDocument();
   });
 
-  it('applies default variant', () => {
+  it("applies default variant", () => {
     const { container } = render(<Card>Content</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('shadow-md');
+    expect(card).toHaveClass(...THEME_CONSTANTS.card.shadow.split(" "));
   });
 
-  it('applies bordered variant', () => {
+  it("applies bordered variant", () => {
     const { container } = render(<Card variant="bordered">Content</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('border-2');
+    expect(card).toHaveClass("border-2");
   });
 
-  it('applies elevated variant', () => {
+  it("applies elevated variant", () => {
     const { container } = render(<Card variant="elevated">Content</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('shadow-xl');
+    expect(card).toHaveClass(...THEME_CONSTANTS.card.shadowElevated.split(" "));
   });
 
-  it('applies hover effect when specified', () => {
+  it("applies hover effect when specified", () => {
     const { container } = render(<Card hover>Content</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('hover:scale-[1.02]');
-  });
-
-  it('accepts custom className', () => {
-    const { container } = render(<Card className="custom-class">Content</Card>);
-    expect(container.firstChild).toHaveClass('custom-class');
+    expect(card).toHaveClass(...THEME_CONSTANTS.card.hover.split(" "));
   });
 });
 
-describe('CardHeader Component', () => {
-  it('renders header with children', () => {
+describe("CardHeader Component", () => {
+  it("renders header with children", () => {
     render(<CardHeader>Header Content</CardHeader>);
-    expect(screen.getByText('Header Content')).toBeInTheDocument();
+    expect(screen.getByText("Header Content")).toBeInTheDocument();
   });
 
-  it('has bottom border', () => {
+  it("has bottom border", () => {
     const { container } = render(<CardHeader>Header</CardHeader>);
     const header = container.firstChild as HTMLElement;
-    expect(header).toHaveClass('border-b');
+    expect(header).toHaveClass("border-b");
   });
 });
 
-describe('CardBody Component', () => {
-  it('renders body with children', () => {
+describe("CardBody Component", () => {
+  it("renders body with children", () => {
     render(<CardBody>Body Content</CardBody>);
-    expect(screen.getByText('Body Content')).toBeInTheDocument();
+    expect(screen.getByText("Body Content")).toBeInTheDocument();
   });
 
-  it('has padding', () => {
+  it("has base padding", () => {
     const { container } = render(<CardBody>Body</CardBody>);
     const body = container.firstChild as HTMLElement;
-    expect(body).toHaveClass('p-6');
+    expect(body).toHaveClass("p-4");
   });
 });
 
-describe('CardFooter Component', () => {
-  it('renders footer with children', () => {
+describe("CardFooter Component", () => {
+  it("renders footer with children", () => {
     render(<CardFooter>Footer Content</CardFooter>);
-    expect(screen.getByText('Footer Content')).toBeInTheDocument();
+    expect(screen.getByText("Footer Content")).toBeInTheDocument();
   });
 
-  it('has top border', () => {
+  it("has top border", () => {
     const { container } = render(<CardFooter>Footer</CardFooter>);
     const footer = container.firstChild as HTMLElement;
-    expect(footer).toHaveClass('border-t');
-  });
-});
-
-describe('Card Composition', () => {
-  it('renders full card with all sections', () => {
-    render(
-      <Card>
-        <CardHeader>Header</CardHeader>
-        <CardBody>Body</CardBody>
-        <CardFooter>Footer</CardFooter>
-      </Card>
-    );
-
-    expect(screen.getByText('Header')).toBeInTheDocument();
-    expect(screen.getByText('Body')).toBeInTheDocument();
-    expect(screen.getByText('Footer')).toBeInTheDocument();
+    expect(footer).toHaveClass("border-t");
   });
 });

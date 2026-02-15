@@ -24,9 +24,15 @@ jest.mock("@/components", () => ({
   ),
 }));
 
-const mockConfig = {
-  settings: {
-    whatsappCommunity: {
+const mockWhatsAppData = [
+  {
+    id: "whatsapp-1",
+    type: "whatsapp-community",
+    enabled: true,
+    config: {
+      title: "Join Our WhatsApp Community",
+      description: "Connect with thousands of shoppers",
+      buttonText: "Join Group Now",
       groupLink: "https://chat.whatsapp.com/test-group",
       memberCount: 15000,
       benefits: [
@@ -35,10 +41,9 @@ const mockConfig = {
         "Community support from members",
         "Tips and tricks from experts",
       ],
-      enabled: true,
     },
   },
-};
+];
 
 describe("WhatsAppCommunitySection", () => {
   beforeEach(() => {
@@ -67,15 +72,9 @@ describe("WhatsAppCommunitySection", () => {
     });
 
     it("returns null when config is disabled", () => {
+      // When disabled, API returns empty array (filtered by enabled=true query param)
       mockUseApiQuery.mockReturnValue({
-        data: {
-          settings: {
-            whatsappCommunity: {
-              ...mockConfig.settings.whatsappCommunity,
-              enabled: false,
-            },
-          },
-        },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<WhatsAppCommunitySection />);
@@ -84,7 +83,7 @@ describe("WhatsAppCommunitySection", () => {
 
     it("returns null when settings are empty", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { settings: {} },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<WhatsAppCommunitySection />);
@@ -97,7 +96,10 @@ describe("WhatsAppCommunitySection", () => {
   // ====================================
   describe("Content Rendering", () => {
     beforeEach(() => {
-      mockUseApiQuery.mockReturnValue({ data: mockConfig, isLoading: false });
+      mockUseApiQuery.mockReturnValue({
+        data: mockWhatsAppData,
+        isLoading: false,
+      });
     });
 
     it('renders "Join Our WhatsApp Community" heading', () => {
@@ -144,13 +146,19 @@ describe("WhatsAppCommunitySection", () => {
   // ====================================
   describe("Accessibility", () => {
     it("uses h2 for section heading", () => {
-      mockUseApiQuery.mockReturnValue({ data: mockConfig, isLoading: false });
+      mockUseApiQuery.mockReturnValue({
+        data: mockWhatsAppData,
+        isLoading: false,
+      });
       render(<WhatsAppCommunitySection />);
       expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
     });
 
     it("renders as a section element", () => {
-      mockUseApiQuery.mockReturnValue({ data: mockConfig, isLoading: false });
+      mockUseApiQuery.mockReturnValue({
+        data: mockWhatsAppData,
+        isLoading: false,
+      });
       const { container } = render(<WhatsAppCommunitySection />);
       expect(container.querySelector("section")).toBeInTheDocument();
     });

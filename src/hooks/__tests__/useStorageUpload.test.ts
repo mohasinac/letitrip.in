@@ -412,8 +412,8 @@ describe("useStorageUpload", () => {
 
       // Should log error for other errors
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Failed to delete old file:",
-        expect.any(Object),
+        expect.stringContaining("[ERROR]"),
+        expect.objectContaining({ err: expect.anything() }),
       );
 
       consoleErrorSpy.mockRestore();

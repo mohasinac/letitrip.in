@@ -15,6 +15,7 @@
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import {
   usersSeedData,
+  addressesSeedData,
   categoriesSeedData,
   productsSeedData,
   ordersSeedData,
@@ -186,6 +187,58 @@ async function seedCollection<T extends { id?: string }>(
 }
 
 /**
+ * Seed user addresses (subcollection)
+ */
+async function seedAddresses(options: SeedOptions) {
+  console.log("\n📍 Seeding User Addresses...");
+  const db = getAdminDb();
+  let created = 0;
+  let skipped = 0;
+  let errors = 0;
+
+  for (const address of addressesSeedData) {
+    try {
+      if (options.dryRun) {
+        console.log(
+          `  [DRY RUN] Would create address: ${address.label} for user ${address.userId}`,
+        );
+        created++;
+        continue;
+      }
+
+      const { userId, ...addressData } = address;
+      const addressRef = db
+        .collection(USER_COLLECTION)
+        .doc(userId)
+        .collection("addresses")
+        .doc(address.id);
+
+      const docSnapshot = await addressRef.get();
+
+      if (docSnapshot.exists) {
+        if (options.verbose) {
+          console.log(`  ⏭️  Address exists: ${address.label} (${address.id})`);
+        }
+        skipped++;
+      } else {
+        await addressRef.set(addressData);
+        if (options.verbose) {
+          console.log(`  ✅ Created address: ${address.label} (${address.id})`);
+        }
+        created++;
+      }
+    } catch (error: any) {
+      console.error(`  ❌ Error seeding address ${address.id}:`, error.message);
+      errors++;
+    }
+  }
+
+  console.log(
+    `\n📍 Addresses: ${created} created, ${skipped} skipped, ${errors} errors`,
+  );
+}
+
+/**
  * Seed singleton document
  */
 async function seedSingleton<T>(
@@ -256,6 +309,7 @@ async function seedAllData(options: SeedOptions) {
 
   const allCollections = [
     "users",
+    "addresses",
     "categories",
     "products",
     "orders",
@@ -280,6 +334,11 @@ async function seedAllData(options: SeedOptions) {
     if (collectionsToSeed.includes("users")) {
       await seedAuthUsers(options);
       await seedCollection(USER_COLLECTION, usersSeedData, options);
+    }
+
+    // Seed Addresses (subcollection of users)
+    if (collectionsToSeed.includes("addresses")) {
+      await seedAddresses(options);
     }
 
     // Seed Categories

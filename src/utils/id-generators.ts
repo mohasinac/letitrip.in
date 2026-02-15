@@ -190,7 +190,12 @@ export function generateReviewId(input: GenerateReviewIdInput): string {
   const productSlug = slugify(input.productName);
   const userSlug = slugify(input.userFirstName);
   const date = input.date || new Date();
-  const dateStr = getDateString();
+
+  // Format the provided date or today's date
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
 
   return `review-${productSlug}-${userSlug}-${dateStr}`;
 }
@@ -212,7 +217,14 @@ export interface GenerateOrderIdInput {
  * - order-1-20260207-x4y9z1
  */
 export function generateOrderId(input: GenerateOrderIdInput): string {
-  const dateStr = getDateString();
+  const date = input.date || new Date();
+
+  // Format the provided date or today's date
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+
   const random = generateRandomString(6);
 
   return `order-${input.productCount}-${dateStr}-${random}`;
@@ -324,7 +336,14 @@ export interface GenerateBidIdInput {
 export function generateBidId(input: GenerateBidIdInput): string {
   const productSlug = slugify(input.productName).substring(0, 30);
   const userSlug = slugify(input.userFirstName);
-  const dateStr = input.date ? getDateString() : getDateString();
+  const date = input.date || new Date();
+
+  // Format the provided date or today's date
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+
   const random = input.random || generateRandomString(6);
 
   return `bid-${productSlug}-${userSlug}-${dateStr}-${random}`;

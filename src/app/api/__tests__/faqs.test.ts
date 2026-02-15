@@ -126,6 +126,10 @@ const mockFAQs = [
 describe("FAQs API - GET /api/faqs", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Clear cache to prevent cached responses in tests
+    const { CacheManager } = require("@/classes");
+    const cache = CacheManager.getInstance();
+    cache.clear();
     mockFaqsFindAll.mockResolvedValue([...mockFAQs]);
     mockGetSingleton.mockResolvedValue(mockSiteSettings);
   });

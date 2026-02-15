@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   requireRoleFromRequest,
   getUserFromRequest,
@@ -59,7 +59,7 @@ export async function GET(
 
     // Handle not found
     if (!product) {
-      throw new NotFoundError("Product not found");
+      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
     }
 
     // Return product data
@@ -78,7 +78,7 @@ export async function GET(
       { error },
     );
     return NextResponse.json(
-      { success: false, error: "Failed to fetch product" },
+      { success: false, error: ERROR_MESSAGES.PRODUCT.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -114,7 +114,7 @@ export async function PATCH(
     // Check product exists
     const product = await productRepository.findById(id);
     if (!product) {
-      throw new NotFoundError("Product not found");
+      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
     }
 
     // Verify ownership (owner, moderator, or admin can update)
@@ -123,9 +123,7 @@ export async function PATCH(
     const isAdmin = user.role === "admin";
 
     if (!isOwner && !isModerator && !isAdmin) {
-      throw new AuthorizationError(
-        "You do not have permission to update this product",
-      );
+      throw new AuthorizationError(ERROR_MESSAGES.PRODUCT.UPDATE_NOT_ALLOWED);
     }
 
     // Parse and validate update data
@@ -136,7 +134,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -150,7 +148,7 @@ export async function PATCH(
     );
 
     if (!updatedProduct) {
-      throw new NotFoundError("Product not found after update");
+      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND_AFTER_UPDATE);
     }
 
     // Return updated product
@@ -186,7 +184,7 @@ export async function PATCH(
       { error },
     );
     return NextResponse.json(
-      { success: false, error: "Failed to update product" },
+      { success: false, error: ERROR_MESSAGES.PRODUCT.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -221,7 +219,7 @@ export async function DELETE(
     // Check product exists
     const product = await productRepository.findById(id);
     if (!product) {
-      throw new NotFoundError("Product not found");
+      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
     }
 
     // Verify ownership (owner, moderator, or admin can delete)
@@ -230,9 +228,7 @@ export async function DELETE(
     const isAdmin = user.role === "admin";
 
     if (!isOwner && !isModerator && !isAdmin) {
-      throw new AuthorizationError(
-        "You do not have permission to delete this product",
-      );
+      throw new AuthorizationError(ERROR_MESSAGES.PRODUCT.DELETE_NOT_ALLOWED);
     }
 
     // Soft delete product (set status to 'discontinued')
@@ -245,7 +241,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: true,
-        message: "Product deleted successfully",
+        message: SUCCESS_MESSAGES.PRODUCT.DELETED,
       },
       { status: 200 },
     );
@@ -277,7 +273,7 @@ export async function DELETE(
       { error },
     );
     return NextResponse.json(
-      { success: false, error: "Failed to delete product" },
+      { success: false, error: ERROR_MESSAGES.PRODUCT.DELETE_FAILED },
       { status: 500 },
     );
   }

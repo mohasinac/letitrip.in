@@ -8,48 +8,120 @@
  * Formats a date to a locale-specific date string
  *
  * @param date - The date to format (Date object or ISO string)
+ * @param format - The format type: 'short', 'medium', 'long', or 'full' (default: 'medium')
  * @param locale - The locale for formatting (default: 'en-US')
  * @returns The formatted date string
  *
  * @example
  * ```typescript
- * const result = formatDate(new Date('2024-01-15'));
- * console.log(result); // '1/15/2024'
+ * const result = formatDate(new Date('2024-01-15'), 'medium');
+ * console.log(result); // 'Jan 15, 2024'
  * ```
  */
 export function formatDate(
   date: Date | string,
+  format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return dateObj.toLocaleDateString(locale);
+
+  const options: Intl.DateTimeFormatOptions = {};
+
+  switch (format) {
+    case "short":
+      options.year = "2-digit";
+      options.month = "numeric";
+      options.day = "numeric";
+      break;
+    case "medium":
+      options.year = "numeric";
+      options.month = "short";
+      options.day = "numeric";
+      break;
+    case "long":
+      options.year = "numeric";
+      options.month = "long";
+      options.day = "numeric";
+      break;
+    case "full":
+      options.year = "numeric";
+      options.month = "long";
+      options.day = "numeric";
+      options.weekday = "long";
+      break;
+  }
+
+  return dateObj.toLocaleDateString(locale, options);
 }
 
 /**
  * Formats a date with both date and time
  *
  * @param date - The date to format (Date object or ISO string)
+ * @param format - The format type: 'short', 'medium', 'long', or 'full' (default: 'medium')
  * @param locale - The locale for formatting (default: 'en-US')
  * @returns The formatted date and time string
  *
  * @example
  * ```typescript
- * const result = formatDateTime(new Date('2024-01-15T14:30:00'));
- * console.log(result); // '1/15/2024, 2:30:00 PM'
+ * const result = formatDateTime(new Date('2024-01-15T14:30:00'), 'medium');
+ * console.log(result); // 'Jan 15, 2024, 2:30 PM'
  * ```
  */
 export function formatDateTime(
   date: Date | string,
+  format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return dateObj.toLocaleString(locale);
+
+  const dateOptions: Intl.DateTimeFormatOptions = {};
+  const timeOptions: Intl.DateTimeFormatOptions = {};
+
+  switch (format) {
+    case "short":
+      dateOptions.year = "2-digit";
+      dateOptions.month = "2-digit";
+      dateOptions.day = "2-digit";
+      timeOptions.hour = "2-digit";
+      timeOptions.minute = "2-digit";
+      break;
+    case "medium":
+      dateOptions.year = "numeric";
+      dateOptions.month = "short";
+      dateOptions.day = "numeric";
+      timeOptions.hour = "2-digit";
+      timeOptions.minute = "2-digit";
+      break;
+    case "long":
+      dateOptions.year = "numeric";
+      dateOptions.month = "long";
+      dateOptions.day = "numeric";
+      timeOptions.hour = "2-digit";
+      timeOptions.minute = "2-digit";
+      timeOptions.second = "2-digit";
+      break;
+    case "full":
+      dateOptions.year = "numeric";
+      dateOptions.month = "long";
+      dateOptions.day = "numeric";
+      dateOptions.weekday = "long";
+      timeOptions.hour = "2-digit";
+      timeOptions.minute = "2-digit";
+      timeOptions.second = "2-digit";
+      break;
+  }
+
+  const datePart = dateObj.toLocaleDateString(locale, dateOptions);
+  const timePart = dateObj.toLocaleTimeString(locale, timeOptions);
+  return `${datePart}, ${timePart}`;
 }
 
 /**
  * Formats time only without the date
  *
  * @param date - The date to extract time from (Date object or ISO string)
+ * @param format - The format type: 'short' or 'long' (default: 'long')
  * @param locale - The locale for formatting (default: 'en-US')
  * @returns The formatted time string
  *
@@ -61,10 +133,17 @@ export function formatDateTime(
  */
 export function formatTime(
   date: Date | string,
+  format: "short" | "long" = "long",
   locale: string = "en-US",
 ): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return dateObj.toLocaleTimeString(locale);
+
+  const options: Intl.DateTimeFormatOptions =
+    format === "short"
+      ? { hour: "2-digit", minute: "2-digit" }
+      : { hour: "2-digit", minute: "2-digit", second: "2-digit" };
+
+  return dateObj.toLocaleTimeString(locale, options);
 }
 
 /**
@@ -115,13 +194,48 @@ export function formatRelativeTime(date: Date | string): string {
  * console.log(result); // '1/15/2024 - 1/20/2024'
  * ```
  */
+/**
+ * Formats a date as "Month Year" (e.g., "January 2024")
+ *
+ * @param date - The date to format (Date object or ISO string)
+ * @param locale - The locale for formatting (default: 'en-US')
+ * @returns The formatted month and year string
+ *
+ * @example
+ * ```typescript
+ * const result = formatMonthYear(new Date('2024-01-15'));
+ * console.log(result); // 'January 2024'
+ * ```
+ */
+export function formatMonthYear(
+  date: Date | string,
+  locale: string = "en-US",
+): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return dateObj.toLocaleDateString(locale, { month: "long", year: "numeric" });
+}
+
 export function formatDateRange(
   startDate: Date | string,
   endDate: Date | string,
+  locale: string = "en-US",
 ): string {
-  const start = formatDate(startDate);
-  const end = formatDate(endDate);
-  return `${start} - ${end}`;
+  const start = typeof startDate === "string" ? new Date(startDate) : startDate;
+  const end = typeof endDate === "string" ? new Date(endDate) : endDate;
+
+  const startFormatted = start.toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+    year: start.getFullYear() !== end.getFullYear() ? "numeric" : undefined,
+  });
+
+  const endFormatted = end.toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return `${startFormatted} - ${endFormatted}`;
 }
 
 /**

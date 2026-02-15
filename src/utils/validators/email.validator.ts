@@ -17,8 +17,15 @@
  * ```
  */
 export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  // More comprehensive regex that disallows consecutive dots and other invalid patterns
+  const emailRegex =
+    /^[^\s@]+@[^\s@.][^\s@]*[^\s@.]\.[^\s@]+$|^[^\s@]+@[^\s@.]\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return false;
+
+  // Additional check to disallow consecutive dots
+  if (email.includes("..")) return false;
+
+  return true;
 }
 
 /**

@@ -7,22 +7,11 @@ import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface Product {
-  id: string;
-  title: string;
-  slug: string;
-  price: number;
-  currency: string;
-  mainImage: string;
-  isPromoted: boolean;
-  brand?: string;
-  category: string;
-}
+import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedProductsSection() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<Product[]>({
+  const { data, isLoading } = useApiQuery<ProductDocument[]>({
     queryKey: ["products", "featured"],
     queryFn: () =>
       apiClient.get(
@@ -99,7 +88,7 @@ export function FeaturedProductsSection() {
             <button
               key={product.id}
               className={`group ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-              onClick={() => router.push(`/products/${product.slug}`)}
+              onClick={() => router.push(`/products/${product.id}`)}
             >
               {/* Product Image */}
               <div className="relative aspect-square overflow-hidden">

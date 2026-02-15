@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { isValidPhone } from "@/utils";
 import { serverLogger } from "@/lib/server-logger";
@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
 
     // Validate phone number
     if (!isValidPhone(phoneNumber)) {
-      throw new ValidationError("Invalid phone number format");
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_PHONE);
     }
 
     // Check if phone number is already in use
     try {
       const existingUser = await auth.getUserByPhoneNumber(phoneNumber);
       if (existingUser && existingUser.uid !== userId) {
-        throw new ValidationError("Phone number is already in use");
+        throw new ValidationError(ERROR_MESSAGES.PHONE.ALREADY_IN_USE);
       }
     } catch (error: any) {
       // If error is "user not found", that's OK - phone is available
@@ -59,8 +59,7 @@ export async function POST(req: NextRequest) {
     // In production, you might use a third-party SMS service
     return NextResponse.json({
       success: true,
-      message:
-        "Phone number validated. Use Firebase Auth to send verification code.",
+      message: SUCCESS_MESSAGES.PHONE.VALIDATED,
       verificationId: null, // Client-side Firebase Auth will generate this
     });
   } catch (error) {
@@ -69,7 +68,9 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error:
-          error instanceof Error ? error.message : "Failed to add phone number",
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.PHONE.ADD_FAILED,
       },
       {
         status:

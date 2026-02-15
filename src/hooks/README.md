@@ -57,8 +57,8 @@ import { useApiQuery, useApiMutation } from '@/hooks';
 import { API_ENDPOINTS } from '@/constants';
 
 function UsersList() {
-  const { data: users, loading } = useApiQuery(API_ENDPOINTS.USERS.LIST);
-  const { mutate: deleteUser } = useApiMutation(API_ENDPOINTS.USERS.DELETE);
+  const { data: users, loading } = useApiQuery(API_ENDPOINTS.PRODUCTS.LIST);
+  const { mutate: deleteProduct } = useApiMutation(API_ENDPOINTS.PRODUCTS.DELETE('id'));
 
   return (
     // render users...

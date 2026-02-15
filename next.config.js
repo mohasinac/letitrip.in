@@ -15,6 +15,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com", // Google OAuth profile photos
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com", // Seed data placeholder images
+      },
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com", // Avatar placeholders
+      },
     ],
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

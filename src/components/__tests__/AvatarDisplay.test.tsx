@@ -29,8 +29,11 @@ describe("AvatarDisplay", () => {
         height: "120%",
         left: "50%",
         top: "50%",
-        transform: "translate(-50%, -50%)",
       });
+
+      // Check for transform via Tailwind classes
+      expect(img).toHaveClass("-translate-x-1/2");
+      expect(img).toHaveClass("-translate-y-1/2");
     });
 
     it("applies custom alt text", () => {

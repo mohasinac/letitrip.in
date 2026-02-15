@@ -18,6 +18,7 @@ import {
   NotFoundError,
 } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * GET /api/homepage-sections/[id]
@@ -37,7 +38,7 @@ export async function GET(
     const section = await homepageSectionsRepository.findById(id);
 
     if (!section) {
-      throw new NotFoundError("Homepage section not found");
+      throw new NotFoundError(ERROR_MESSAGES.SECTION.NOT_FOUND);
     }
 
     return NextResponse.json({
@@ -56,7 +57,7 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to fetch homepage section" },
+      { success: false, error: ERROR_MESSAGES.SECTION.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -83,7 +84,7 @@ export async function PATCH(
     const section = await homepageSectionsRepository.findById(id);
 
     if (!section) {
-      throw new NotFoundError("Homepage section not found");
+      throw new NotFoundError(ERROR_MESSAGES.SECTION.NOT_FOUND);
     }
 
     // Parse and validate request body
@@ -94,7 +95,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -137,7 +138,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to update homepage section" },
+      { success: false, error: ERROR_MESSAGES.SECTION.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -164,7 +165,7 @@ export async function DELETE(
     const section = await homepageSectionsRepository.findById(id);
 
     if (!section) {
-      throw new NotFoundError("Homepage section not found");
+      throw new NotFoundError(ERROR_MESSAGES.SECTION.NOT_FOUND);
     }
 
     // Delete homepage section (hard delete - sections can be removed)
@@ -172,7 +173,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Homepage section deleted successfully",
+      message: SUCCESS_MESSAGES.SECTION.DELETED,
     });
   } catch (error) {
     const { id } = await params;
@@ -200,7 +201,7 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to delete homepage section" },
+      { success: false, error: ERROR_MESSAGES.SECTION.DELETE_FAILED },
       { status: 500 },
     );
   }

@@ -4,6 +4,7 @@
  */
 
 export { usersSeedData } from "./users-seed-data";
+export { addressesSeedData } from "./addresses-seed-data";
 export { categoriesSeedData } from "./categories-seed-data";
 export { productsSeedData } from "./products-seed-data";
 export { ordersSeedData } from "./orders-seed-data";

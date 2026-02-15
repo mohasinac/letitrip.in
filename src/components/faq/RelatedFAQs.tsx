@@ -2,7 +2,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import Link from "next/link";
-import type { FAQDocument } from "@/db/schema/faqs";
+import type { FAQDocument } from "@/db/schema";
 
 interface RelatedFAQsProps {
   relatedFAQs: FAQDocument[];

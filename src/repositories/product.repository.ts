@@ -11,12 +11,13 @@ import type {
   ProductCreateInput,
   ProductUpdateInput,
   ProductStatus,
-} from "@/db/schema/products";
+} from "@/db/schema";
 import {
   createProductId,
   createAuctionId,
   PRODUCT_COLLECTION,
-} from "@/db/schema/products";
+  PRODUCT_FIELDS,
+} from "@/db/schema";
 import { generateUniqueId } from "@/utils";
 import { DatabaseError } from "@/lib/errors";
 
@@ -80,49 +81,49 @@ class ProductRepository extends BaseRepository<ProductDocument> {
    * Find products by seller ID
    */
   async findBySeller(sellerId: string): Promise<ProductDocument[]> {
-    return this.findBy("sellerId", sellerId);
+    return this.findBy(PRODUCT_FIELDS.SELLER_ID, sellerId);
   }
 
   /**
    * Find products by status
    */
   async findByStatus(status: ProductStatus): Promise<ProductDocument[]> {
-    return this.findBy("status", status);
+    return this.findBy(PRODUCT_FIELDS.STATUS, status);
   }
 
   /**
    * Find published products
    */
   async findPublished(): Promise<ProductDocument[]> {
-    return this.findBy("status", "published");
+    return this.findBy(PRODUCT_FIELDS.STATUS, "published");
   }
 
   /**
    * Find featured products
    */
   async findFeatured(): Promise<ProductDocument[]> {
-    return this.findBy("featured", true);
+    return this.findBy(PRODUCT_FIELDS.FEATURED, true);
   }
 
   /**
    * Find products by category
    */
   async findByCategory(category: string): Promise<ProductDocument[]> {
-    return this.findBy("category", category);
+    return this.findBy(PRODUCT_FIELDS.CATEGORY, category);
   }
 
   /**
    * Find auction products
    */
   async findAuctions(): Promise<ProductDocument[]> {
-    return this.findBy("isAuction", true);
+    return this.findBy(PRODUCT_FIELDS.IS_AUCTION, true);
   }
 
   /**
    * Find promoted/advertisement products
    */
   async findPromoted(): Promise<ProductDocument[]> {
-    return this.findBy("isPromoted", true);
+    return this.findBy(PRODUCT_FIELDS.IS_PROMOTED, true);
   }
 
   /**
@@ -172,8 +173,12 @@ class ProductRepository extends BaseRepository<ProductDocument> {
   async findAvailable(): Promise<ProductDocument[]> {
     const snapshot = await this.db
       .collection(this.collection)
-      .where("status", "==", "published")
-      .where("availableQuantity", ">", 0)
+      .where(
+        PRODUCT_FIELDS.STATUS,
+        "==",
+        PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED,
+      )
+      .where(PRODUCT_FIELDS.AVAILABLE_QUANTITY, ">", 0)
       .get();
 
     return snapshot.docs.map((doc) => ({
@@ -189,8 +194,8 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     const now = new Date();
     const snapshot = await this.db
       .collection(this.collection)
-      .where("isAuction", "==", true)
-      .where("auctionEndDate", ">=", now)
+      .where(PRODUCT_FIELDS.IS_AUCTION, "==", true)
+      .where(PRODUCT_FIELDS.AUCTION_END_DATE, ">=", now)
       .get();
 
     return snapshot.docs.map((doc) => ({
@@ -205,7 +210,7 @@ class ProductRepository extends BaseRepository<ProductDocument> {
   async deleteBySeller(sellerId: string): Promise<number> {
     try {
       const snapshot = await this.getCollection()
-        .where("sellerId", "==", sellerId)
+        .where(PRODUCT_FIELDS.SELLER_ID, "==", sellerId)
         .get();
 
       if (snapshot.empty) return 0;

@@ -14,6 +14,7 @@ import {
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * POST /api/homepage-sections/reorder
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedSections,
-      message: "Homepage sections reordered successfully",
+      message: SUCCESS_MESSAGES.SECTION.REORDERED,
     });
   } catch (error) {
     serverLogger.error("POST /api/homepage-sections/reorder error", { error });
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to reorder homepage sections" },
+      { success: false, error: ERROR_MESSAGES.SECTION.REORDER_FAILED },
       { status: 500 },
     );
   }

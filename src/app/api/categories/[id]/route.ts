@@ -28,6 +28,7 @@ import {
   NotFoundError,
 } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * GET /api/categories/[id]
@@ -56,7 +57,7 @@ export async function GET(
 
     // Handle not found
     if (!category) {
-      throw new NotFoundError("Category not found");
+      throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
     }
 
     // Return category data
@@ -75,7 +76,7 @@ export async function GET(
     const { id } = await params;
     serverLogger.error(`GET /api/categories/${id} error`, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch category" },
+      { success: false, error: ERROR_MESSAGES.CATEGORY.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -112,7 +113,7 @@ export async function PATCH(
     // Check category exists
     const category = await categoriesRepository.findById(id);
     if (!category) {
-      throw new NotFoundError("Category not found");
+      throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
     }
 
     // Parse and validate update data
@@ -123,7 +124,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -137,7 +138,7 @@ export async function PATCH(
     );
 
     if (!updated) {
-      throw new NotFoundError("Category not found after update");
+      throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND_AFTER_UPDATE);
     }
 
     // Return updated category
@@ -167,7 +168,7 @@ export async function PATCH(
     const { id } = await params;
     serverLogger.error(`PATCH /api/categories/${id} error`, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to update category" },
+      { success: false, error: ERROR_MESSAGES.CATEGORY.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -204,7 +205,7 @@ export async function DELETE(
     // Check category exists
     const category = await categoriesRepository.findById(id);
     if (!category) {
-      throw new NotFoundError("Category not found");
+      throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
     }
 
     // Check if category has children
@@ -212,7 +213,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete category with children",
+          error: ERROR_MESSAGES.CATEGORY.HAS_CHILDREN,
           details: {
             childrenCount: category.childrenIds.length,
             suggestion: "Delete or move child categories first",
@@ -227,7 +228,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete category with products",
+          error: ERROR_MESSAGES.CATEGORY.HAS_PRODUCTS,
           details: {
             productCount: category.metrics.productCount,
             suggestion: "Move products to another category first",
@@ -247,7 +248,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: true,
-        message: "Category deleted successfully",
+        message: SUCCESS_MESSAGES.CATEGORY.DELETED,
       },
       { status: 200 },
     );
@@ -276,7 +277,7 @@ export async function DELETE(
     const { id } = await params;
     serverLogger.error(`DELETE /api/categories/${id} error`, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to delete category" },
+      { success: false, error: ERROR_MESSAGES.CATEGORY.DELETE_FAILED },
       { status: 500 },
     );
   }

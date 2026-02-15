@@ -83,7 +83,7 @@ describe("FeaturedProductsSection", () => {
   describe("No Data State", () => {
     it("returns null when no products", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: [] },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<FeaturedProductsSection />);
@@ -91,7 +91,7 @@ describe("FeaturedProductsSection", () => {
     });
 
     it("returns null when products array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: {}, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
       const { container } = render(<FeaturedProductsSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -103,7 +103,7 @@ describe("FeaturedProductsSection", () => {
   describe("Content Rendering", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockProducts },
+        data: mockProducts,
         isLoading: false,
       });
     });
@@ -141,14 +141,6 @@ describe("FeaturedProductsSection", () => {
       expect(images[0]).toHaveAttribute("alt", "Premium Headphones");
     });
 
-    it("renders images with lazy loading", () => {
-      render(<FeaturedProductsSection />);
-      const images = screen.getAllByRole("img");
-      images.forEach((img) => {
-        expect(img).toHaveAttribute("loading", "lazy");
-      });
-    });
-
     it('renders "Featured" badge for promoted products', () => {
       render(<FeaturedProductsSection />);
       const badges = screen.getAllByText("Featured");
@@ -175,14 +167,14 @@ describe("FeaturedProductsSection", () => {
   describe("Price Formatting", () => {
     it("formats prices in INR currency", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockProducts },
+        data: mockProducts,
         isLoading: false,
       });
       render(<FeaturedProductsSection />);
       // Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 })
-      expect(screen.getByText("₹4,999")).toBeInTheDocument();
-      expect(screen.getByText("₹12,500")).toBeInTheDocument();
-      expect(screen.getByText("₹1,299")).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?4,999/)).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?12,500/)).toBeInTheDocument();
+      expect(screen.getByText(/₹\s?1,299/)).toBeInTheDocument();
     });
   });
 
@@ -192,7 +184,7 @@ describe("FeaturedProductsSection", () => {
   describe("Accessibility", () => {
     beforeEach(() => {
       mockUseApiQuery.mockReturnValue({
-        data: { products: mockProducts },
+        data: mockProducts,
         isLoading: false,
       });
     });

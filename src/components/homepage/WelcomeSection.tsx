@@ -5,19 +5,14 @@ import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
-
-interface WelcomeSectionData {
-  h1: string;
-  subtitle: string;
-  description: string; // Rich text HTML
-  showCTA: boolean;
-  ctaText?: string;
-  ctaLink?: string;
-}
+import type {
+  HomepageSectionDocument,
+  WelcomeSectionConfig,
+} from "@/db/schema";
 
 export function WelcomeSection() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<WelcomeSectionData[]>({
+  const { data, isLoading } = useApiQuery<HomepageSectionDocument[]>({
     queryKey: ["homepage-section", "welcome"],
     queryFn: () =>
       apiClient.get(
@@ -48,6 +43,7 @@ export function WelcomeSection() {
   }
 
   const section = data[0];
+  const config = section.config as WelcomeSectionConfig;
 
   return (
     <section
@@ -58,35 +54,35 @@ export function WelcomeSection() {
         <h1
           className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
-          {section.h1}
+          {config.h1}
         </h1>
 
         {/* Subtitle */}
-        {section.subtitle && (
+        {config.subtitle && (
           <p
             className={`${THEME_CONSTANTS.typography.body} text-lg ${THEME_CONSTANTS.themed.textSecondary} mb-8`}
           >
-            {section.subtitle}
+            {config.subtitle}
           </p>
         )}
 
         {/* Rich Text Description */}
-        {section.description && (
+        {config.description && (
           <div
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} max-w-4xl mx-auto mb-8 prose prose-lg dark:prose-invert`}
-            dangerouslySetInnerHTML={{ __html: section.description }}
+            dangerouslySetInnerHTML={{ __html: config.description }}
           />
         )}
 
         {/* CTA Button */}
-        {section.showCTA && section.ctaText && section.ctaLink && (
+        {config.showCTA && config.ctaText && config.ctaLink && (
           <div className="flex justify-center">
             <Button
               variant="primary"
               size="lg"
-              onClick={() => router.push(section.ctaLink!)}
+              onClick={() => router.push(config.ctaLink!)}
             >
-              {section.ctaText}
+              {config.ctaText}
             </Button>
           </div>
         )}

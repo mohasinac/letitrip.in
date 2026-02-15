@@ -24,16 +24,21 @@ jest.mock("@/components", () => ({
   ),
 }));
 
-const mockWelcomeData = {
-  section: {
-    h1: "Welcome to LetItRip",
-    subtitle: "Your trusted marketplace",
-    description: "<p>Find amazing products and great deals.</p>",
-    showCTA: true,
-    ctaText: "Shop Now",
-    ctaLink: "/products",
+const mockWelcomeData = [
+  {
+    id: "welcome-1",
+    type: "welcome",
+    enabled: true,
+    config: {
+      h1: "Welcome to LetItRip",
+      subtitle: "Your trusted marketplace",
+      description: "<p>Find amazing products and great deals.</p>",
+      showCTA: true,
+      ctaText: "Shop Now",
+      ctaLink: "/products",
+    },
   },
-};
+];
 
 describe("WelcomeSection", () => {
   beforeEach(() => {
@@ -68,7 +73,7 @@ describe("WelcomeSection", () => {
     });
 
     it("returns null when section is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: {}, isLoading: false });
+      mockUseApiQuery.mockReturnValue({ data: [], isLoading: false });
       const { container } = render(<WelcomeSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -120,7 +125,12 @@ describe("WelcomeSection", () => {
   describe("CTA Visibility", () => {
     it("hides CTA when showCTA is false", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: { ...mockWelcomeData.section, showCTA: false } },
+        data: [
+          {
+            ...mockWelcomeData[0],
+            config: { ...mockWelcomeData[0].config, showCTA: false },
+          },
+        ],
         isLoading: false,
       });
       render(<WelcomeSection />);
@@ -129,7 +139,12 @@ describe("WelcomeSection", () => {
 
     it("hides CTA when ctaText is missing", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: { ...mockWelcomeData.section, ctaText: undefined } },
+        data: [
+          {
+            ...mockWelcomeData[0],
+            config: { ...mockWelcomeData[0].config, ctaText: undefined },
+          },
+        ],
         isLoading: false,
       });
       render(<WelcomeSection />);
@@ -138,7 +153,12 @@ describe("WelcomeSection", () => {
 
     it("hides CTA when ctaLink is missing", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: { ...mockWelcomeData.section, ctaLink: undefined } },
+        data: [
+          {
+            ...mockWelcomeData[0],
+            config: { ...mockWelcomeData[0].config, ctaLink: undefined },
+          },
+        ],
         isLoading: false,
       });
       render(<WelcomeSection />);
@@ -152,7 +172,12 @@ describe("WelcomeSection", () => {
   describe("Optional Content", () => {
     it("hides subtitle when not provided", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: { ...mockWelcomeData.section, subtitle: "" } },
+        data: [
+          {
+            ...mockWelcomeData[0],
+            config: { ...mockWelcomeData[0].config, subtitle: "" },
+          },
+        ],
         isLoading: false,
       });
       render(<WelcomeSection />);
@@ -163,7 +188,12 @@ describe("WelcomeSection", () => {
 
     it("hides description when not provided", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: { ...mockWelcomeData.section, description: "" } },
+        data: [
+          {
+            ...mockWelcomeData[0],
+            config: { ...mockWelcomeData[0].config, description: "" },
+          },
+        ],
         isLoading: false,
       });
       render(<WelcomeSection />);

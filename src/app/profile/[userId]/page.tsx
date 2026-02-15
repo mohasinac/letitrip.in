@@ -9,9 +9,9 @@ import {
   ERROR_MESSAGES,
   API_ENDPOINTS,
 } from "@/constants";
-import { formatDate } from "@/utils";
+import { formatMonthYear } from "@/utils";
 import { logger } from "@/classes";
-import type { UserDocument } from "@/db/schema/users";
+import type { UserDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
 
@@ -69,10 +69,12 @@ export default function PublicProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
-          <Alert variant="error">{error || "Profile not found"}</Alert>
+          <Alert variant="error">
+            {error || ERROR_MESSAGES.USER.NOT_FOUND}
+          </Alert>
           <div className="mt-4">
             <Link href="/" className="text-primary-600 hover:underline">
-              Return to Home
+              {UI_LABELS.ACTIONS.GO_HOME}
             </Link>
           </div>
         </Card>
@@ -81,7 +83,7 @@ export default function PublicProfilePage() {
   }
 
   const profileName = user.displayName || user.email?.split("@")[0] || "User";
-  const memberSince = formatDate(user.createdAt, "MMMM yyyy");
+  const memberSince = formatMonthYear(user.createdAt);
 
   const avatarCropData: ImageCropData | null =
     user.avatarMetadata ||

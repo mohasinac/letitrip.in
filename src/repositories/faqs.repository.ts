@@ -17,7 +17,8 @@ import {
   validateFAQVariables,
   slugifyQuestion,
   createFAQId,
-} from "@/db/schema/faqs";
+  FAQ_FIELDS,
+} from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { siteSettingsRepository } from "./site-settings.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
@@ -41,7 +42,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
     try {
       const snapshot = await this.db
         .collection(this.collection)
-        .where("seo.slug", "==", slug)
+        .where(FAQ_FIELDS.SEO_FIELDS.SLUG, "==", slug)
         .limit(1)
         .get();
 

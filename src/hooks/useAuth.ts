@@ -267,7 +267,7 @@ export function useChangePassword(options?: {
 
       const user = getCurrentUser();
       if (!user?.email) {
-        throw new Error(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
+        throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
       }
 
       // Verify current password client-side first

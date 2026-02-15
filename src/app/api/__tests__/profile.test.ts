@@ -113,6 +113,14 @@ jest.mock("@/lib/errors", () => {
   };
 });
 
+jest.mock("@/lib/errors/error-handler", () => {
+  const errors = jest.requireMock("@/lib/errors");
+  return {
+    handleApiError: errors.handleApiError,
+    logError: jest.fn(),
+  };
+});
+
 jest.mock("@/constants", () => ({
   UI_LABELS: {
     AUTH: { RATE_LIMIT_EXCEEDED: "Rate limit exceeded" },
@@ -229,7 +237,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
     await updatePATCH(req);
 
     expect(mockUpdateProfileWithVerificationReset).toHaveBeenCalledWith(
-      "user-001",
+      defaultUser.uid,
       expect.objectContaining({ displayName: "New Name" }),
     );
   });

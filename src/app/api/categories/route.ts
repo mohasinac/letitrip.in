@@ -23,6 +23,7 @@ import {
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { CategoryCreateInput } from "@/db/schema/categories";
 
 /**
@@ -119,7 +120,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     serverLogger.error("GET /api/categories error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch categories" },
+      { success: false, error: ERROR_MESSAGES.CATEGORY.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: category,
-        message: "Category created successfully",
+        message: SUCCESS_MESSAGES.CATEGORY.CREATED,
       },
       { status: 201 },
     );
@@ -226,7 +227,7 @@ export async function POST(request: NextRequest) {
 
     serverLogger.error("POST /api/categories error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to create category" },
+      { success: false, error: ERROR_MESSAGES.CATEGORY.CREATE_FAILED },
       { status: 500 },
     );
   }

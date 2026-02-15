@@ -1,12 +1,24 @@
 /**
  * Homepage Sections Seed Data
  * Configurable sections for the homepage
+ *
+ * ID Pattern: section-{type}-{timestamp}
+ * All IDs follow the generateHomepageSectionId() pattern from @/utils
+ *
+ * Section order follows DEFAULT_SECTION_ORDER from schema:
+ * welcome(1) → trust-indicators(2) → categories(3) → products(4,5) →
+ * auctions(6) → banner(7) → features(8) → reviews(9) →
+ * whatsapp-community(10) → faq(11) → blog-articles(12) → newsletter(13)
+ *
+ * 13 total sections (12 enabled, 1 disabled for testing)
  */
 
 import type { HomepageSectionDocument } from "@/db/schema";
 
 export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
-  // Welcome Section
+  // ============================================
+  // 1. WELCOME SECTION
+  // ============================================
   {
     id: "section-welcome-1707300000001",
     type: "welcome",
@@ -14,7 +26,7 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       h1: "Welcome to LetItRip",
-      subtitle: "Your Marketplace",
+      subtitle: "Your Marketplace, Your Rules",
       description: JSON.stringify({
         type: "doc",
         content: [
@@ -23,7 +35,7 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
             content: [
               {
                 type: "text",
-                text: "Discover products from trusted sellers.",
+                text: "Discover amazing products from trusted sellers across India.",
               },
             ],
           },
@@ -37,7 +49,9 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Trust Indicators
+  // ============================================
+  // 2. TRUST INDICATORS
+  // ============================================
   {
     id: "section-trust-indicators-1707300000002",
     type: "trust-indicators",
@@ -76,7 +90,9 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Featured Categories
+  // ============================================
+  // 3. FEATURED CATEGORIES
+  // ============================================
   {
     id: "section-categories-1707300000003",
     type: "categories",
@@ -92,9 +108,11 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Featured Products
+  // ============================================
+  // 4. FEATURED PRODUCTS
+  // ============================================
   {
-    id: "section-products-featured-1707300000009",
+    id: "section-products-1707300000004",
     type: "products",
     order: 4,
     enabled: true,
@@ -112,52 +130,13 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Special Collections Banner
+  // ============================================
+  // 5. NEW ARRIVALS PRODUCTS
+  // ============================================
   {
-    id: "section-special-collections-1707300000010",
-    type: "special-collections",
-    order: 5,
-    enabled: true,
-    config: {
-      title: "Special Collections",
-      collections: [
-        {
-          id: "col_001",
-          name: "Electronics Sale",
-          description: "Up to 50% off",
-          image:
-            "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&h=600&fit=crop",
-          link: "/categories/electronics",
-          badgeText: "HOT",
-        },
-        {
-          id: "col_002",
-          name: "Fashion Trends",
-          description: "Latest arrivals",
-          image:
-            "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=600&fit=crop",
-          link: "/categories/fashion",
-          badgeText: "NEW",
-        },
-        {
-          id: "col_003",
-          name: "Home Essentials",
-          description: "For your home",
-          image:
-            "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=600&fit=crop",
-          link: "/categories/home-kitchen",
-        },
-      ],
-    },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
-  },
-
-  // New Arrivals Products
-  {
-    id: "section-products-new-1707300000011",
+    id: "section-products-1707300000005",
     type: "products",
-    order: 6,
+    order: 5,
     enabled: true,
     config: {
       title: "New Arrivals",
@@ -173,9 +152,33 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Promotional Banner
+  // ============================================
+  // 6. LIVE AUCTIONS
+  // ============================================
   {
-    id: "section-banner-promo-1707300000012",
+    id: "section-auctions-1707300000006",
+    type: "auctions",
+    order: 6,
+    enabled: true,
+    config: {
+      title: "Live Auctions",
+      subtitle: "Bid and win amazing products",
+      maxAuctions: 18,
+      rows: 2,
+      itemsPerRow: 3,
+      mobileItemsPerRow: 1,
+      autoScroll: false,
+      scrollInterval: 5000,
+    },
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-02-08T00:00:00Z"),
+  },
+
+  // ============================================
+  // 7. PROMOTIONAL BANNER
+  // ============================================
+  {
+    id: "section-banner-1707300000007",
     type: "banner",
     order: 7,
     enabled: true,
@@ -201,31 +204,13 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Live Auctions
+  // ============================================
+  // 8. FEATURES SECTION
+  // ============================================
   {
-    id: "section-auctions-1707300000013",
-    type: "auctions",
-    order: 8,
-    enabled: true,
-    config: {
-      title: "Live Auctions",
-      subtitle: "Bid and win amazing products",
-      maxAuctions: 18,
-      rows: 2,
-      itemsPerRow: 3,
-      mobileItemsPerRow: 1,
-      autoScroll: false,
-      scrollInterval: 5000,
-    },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
-  },
-
-  // Features Section
-  {
-    id: "section-features-1707300000014",
+    id: "section-features-1707300000008",
     type: "features",
-    order: 9,
+    order: 8,
     enabled: true,
     config: {
       title: "Platform Features",
@@ -235,11 +220,13 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Customer Reviews
+  // ============================================
+  // 9. CUSTOMER REVIEWS
+  // ============================================
   {
-    id: "section-reviews-1707300000015",
+    id: "section-reviews-1707300000009",
     type: "reviews",
-    order: 10,
+    order: 9,
     enabled: true,
     config: {
       title: "What Our Customers Say",
@@ -253,11 +240,13 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // WhatsApp Community
+  // ============================================
+  // 10. WHATSAPP COMMUNITY
+  // ============================================
   {
-    id: "section-whatsapp-1707300000016",
+    id: "section-whatsapp-community-1707300000010",
     type: "whatsapp-community",
-    order: 11,
+    order: 10,
     enabled: true,
     config: {
       title: "Join Our Community",
@@ -276,11 +265,13 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // FAQ Section
+  // ============================================
+  // 11. FAQ SECTION
+  // ============================================
   {
-    id: "section-faq-1707300000008",
+    id: "section-faq-1707300000011",
     type: "faq",
-    order: 12,
+    order: 11,
     enabled: true,
     config: {
       title: "Frequently Asked Questions",
@@ -295,9 +286,31 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: new Date("2026-02-08T00:00:00Z"),
   },
 
-  // Newsletter Signup
+  // ============================================
+  // 12. BLOG ARTICLES
+  // ============================================
   {
-    id: "section-newsletter-1707300000007",
+    id: "section-blog-articles-1707300000012",
+    type: "blog-articles",
+    order: 12,
+    enabled: true,
+    config: {
+      title: "From Our Blog",
+      subtitle: "Tips, guides, and stories from our community",
+      maxArticles: 4,
+      showReadTime: true,
+      showAuthor: true,
+      showThumbnails: true,
+    },
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-02-12T00:00:00Z"),
+  },
+
+  // ============================================
+  // 13. NEWSLETTER SIGNUP
+  // ============================================
+  {
+    id: "section-newsletter-1707300000013",
     type: "newsletter",
     order: 13,
     enabled: true,
@@ -308,23 +321,6 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       buttonText: "Subscribe",
       privacyText: "We respect your privacy",
       privacyLink: "/privacy-policy",
-    },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
-  },
-
-  // Disabled Section (for testing)
-  {
-    id: "section-blog-1707300000017",
-    type: "blog-articles",
-    order: 14,
-    enabled: false,
-    config: {
-      title: "From Our Blog",
-      maxArticles: 4,
-      showReadTime: true,
-      showAuthor: true,
-      showThumbnails: true,
     },
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),

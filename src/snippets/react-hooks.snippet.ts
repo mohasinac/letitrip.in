@@ -99,8 +99,11 @@ export function usePrevious<T>(value: T): T | undefined {
 /**
  * Custom Hook: useMediaQuery
  * Detect media query matches
+ *
+ * NOTE: This is a snippet example. Use the production version from @/hooks instead.
+ * The actual useMediaQuery hook is exported from @/hooks
  */
-export function useMediaQuery(query: string): boolean {
+function useMediaQuerySnippet(query: string): boolean {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {

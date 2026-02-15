@@ -58,9 +58,9 @@ describe("Date Formatter", () => {
       expect(formatted).toMatch(/\d{1,2}:\d{2}/); // Contains time
     });
 
-    it("should include seconds when requested", () => {
+    it("should handle different formats", () => {
       const date = new Date("2026-02-07T15:45:30Z");
-      const formatted = formatDateTime(date, "en-US");
+      const formatted = formatDateTime(date, "long");
       expect(formatted).toMatch(/\d{1,2}:\d{2}/); // Contains time
     });
 

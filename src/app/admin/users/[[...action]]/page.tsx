@@ -12,7 +12,7 @@ import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
 import {
   Card,
   Button,
@@ -64,16 +64,17 @@ export default function AdminUsersPage({ params }: PageProps) {
     total: number;
   }>({
     queryKey: ["admin", "users", activeTab, searchTerm, roleFilter],
-    queryFn: () => apiClient.get(`/api/admin/users?${queryParams.toString()}`),
+    queryFn: () =>
+      apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}?${queryParams.toString()}`),
   });
 
   const updateUserMutation = useApiMutation<any, { uid: string; data: any }>({
     mutationFn: ({ uid, data }) =>
-      apiClient.patch(`/api/admin/users/${uid}`, data),
+      apiClient.patch(API_ENDPOINTS.ADMIN.USER_BY_ID(uid), data),
   });
 
   const deleteUserMutation = useApiMutation<any, string>({
-    mutationFn: (uid) => apiClient.delete(`/api/admin/users/${uid}`),
+    mutationFn: (uid) => apiClient.delete(API_ENDPOINTS.ADMIN.USER_BY_ID(uid)),
   });
 
   const users = data?.users || [];

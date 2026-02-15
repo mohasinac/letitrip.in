@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import {
+  useAuth,
+  useAddresses,
+  useDeleteAddress,
+  useSetDefaultAddress,
+  useMessage,
+} from "@/hooks";
 import {
   Heading,
   Button,
@@ -15,11 +21,10 @@ import {
   ROUTES,
   UI_LABELS,
   THEME_CONSTANTS,
-  API_ENDPOINTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
-import type { Address } from "@/components";
+import type { Address } from "@/hooks";
 import { useState } from "react";
 
 export default function UserAddressesPage() {
@@ -31,32 +36,26 @@ export default function UserAddressesPage() {
   // Fetch addresses
   const {
     data: addresses,
-    loading: fetchLoading,
+    isLoading: fetchLoading,
     error,
     refetch,
-  } = useApiQuery<Address[]>(API_ENDPOINTS.USER.ADDRESSES.LIST);
+  } = useAddresses();
 
   // Delete mutation
-  const { mutate: deleteAddress, loading: deleting } = useApiMutation(
-    API_ENDPOINTS.USER.ADDRESSES.DELETE,
-    {
-      method: "DELETE",
-      onSuccess: () => {
-        showSuccess(SUCCESS_MESSAGES.ADDRESS.DELETED);
-        setDeleteId(null);
-        refetch();
-      },
-      onError: (error) => {
-        showError(error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-      },
+  const { mutate: deleteAddress, isLoading: deleting } = useDeleteAddress({
+    onSuccess: () => {
+      showSuccess(SUCCESS_MESSAGES.ADDRESS.DELETED);
+      setDeleteId(null);
+      refetch();
     },
-  );
+    onError: (error) => {
+      showError(error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
+    },
+  });
 
   // Set default mutation
-  const { mutate: setDefault, loading: settingDefault } = useApiMutation(
-    API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT,
-    {
-      method: "POST",
+  const { mutate: setDefault, isLoading: settingDefault } =
+    useSetDefaultAddress({
       onSuccess: () => {
         showSuccess(SUCCESS_MESSAGES.ADDRESS.DEFAULT_SET);
         refetch();
@@ -64,8 +63,7 @@ export default function UserAddressesPage() {
       onError: (error) => {
         showError(error?.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
       },
-    },
-  );
+    });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -83,12 +81,12 @@ export default function UserAddressesPage() {
 
   const confirmDelete = () => {
     if (deleteId) {
-      deleteAddress(deleteId);
+      deleteAddress({ id: deleteId });
     }
   };
 
   const handleSetDefault = (id: string) => {
-    setDefault(id);
+    setDefault({ addressId: id });
   };
 
   if (authLoading || fetchLoading) {

@@ -27,6 +27,7 @@ import {
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * GET /api/homepage-sections
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: "Admin access required to view disabled sections",
+            error: ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED,
           },
           { status: 403 },
         );
@@ -91,7 +92,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     serverLogger.error("GET /api/homepage-sections error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch homepage sections" },
+      { success: false, error: ERROR_MESSAGES.SECTION.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -104,10 +105,9 @@ export async function GET(request: NextRequest) {
  *
  * Body:
  * - type: SectionType (required)
- * - title: string (required)
- * - config: object (section-specific configuration)
- * - order: number
- * - enabled: boolean
+ * - config: object (section-specific configuration, required)
+ * - order: number (optional, auto-assigned if not provided)
+ * - enabled: boolean (optional, defaults to true)
  *
  * TODO: Implement section creation
  * TODO: Require admin authentication
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: section,
-        message: "Homepage section created successfully",
+        message: SUCCESS_MESSAGES.SECTION.CREATED,
       },
       { status: 201 },
     );
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to create homepage section" },
+      { success: false, error: ERROR_MESSAGES.SECTION.CREATE_FAILED },
       { status: 500 },
     );
   }

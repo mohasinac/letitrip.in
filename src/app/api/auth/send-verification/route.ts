@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (userRecord.emailVerified) {
       return NextResponse.json({
         success: false,
-        message: "Email is already verified",
+        message: ERROR_MESSAGES.EMAIL.ALREADY_VERIFIED,
       });
     }
 
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         error:
           error instanceof Error
             ? error.message
-            : "Failed to send verification email",
+            : ERROR_MESSAGES.EMAIL.SEND_FAILED,
       },
       { status: error instanceof ValidationError ? 400 : 500 },
     );

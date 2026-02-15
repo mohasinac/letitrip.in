@@ -4,6 +4,9 @@
  * Single import point for all schema definitions
  */
 
+// Schema field name constants (use these instead of hardcoded strings)
+export * from "./field-names";
+
 // Core schemas
 export * from "./users";
 export * from "./tokens";

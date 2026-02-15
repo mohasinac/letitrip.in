@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -15,6 +15,11 @@ import {
 import { AuthenticationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
+import ffmpeg from "fluent-ffmpeg";
+import fs from "fs";
+import path from "path";
+import os from "os";
+import axios from "axios";
 
 /**
  * POST /api/media/trim
@@ -31,6 +36,9 @@ import { getStorage } from "@/lib/firebase/admin";
  * - quality?: 'low' | 'medium' | 'high' - Output quality (default: 'medium')
  */
 export async function POST(request: NextRequest) {
+  let tempInputFile: string | null = null;
+  let tempOutputFile: string | null = null;
+
   try {
     // Require authentication
     const user = await requireAuthFromRequest(request);
@@ -43,7 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -54,7 +62,7 @@ export async function POST(request: NextRequest) {
       sourceUrl,
       startTime,
       endTime,
-      outputFolder,
+      outputFolder = "trimmed",
       outputFormat = "mp4",
       quality = "medium",
     } = validation.data;
@@ -64,7 +72,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid time range",
+          error: ERROR_MESSAGES.VALIDATION.INVALID_TIME_RANGE,
           details: {
             message: "Start time must be less than end time",
             startTime,
@@ -75,124 +83,108 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Implement video trimming with ffmpeg
-    // This is a placeholder implementation that needs ffmpeg installed:
-    // npm install fluent-ffmpeg
-    // Also requires ffmpeg binary installed on the system
+    // Download source video
+    serverLogger.info("Downloading video from source", { sourceUrl });
+    const response = await axios.get(sourceUrl, {
+      responseType: "arraybuffer",
+    });
+    const videoBuffer = Buffer.from(response.data);
 
-    // For now, return not implemented error with instructions
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Video trimming not yet implemented",
-        details: {
-          message: "This endpoint requires ffmpeg for video processing",
-          installation: {
-            npm: "npm install fluent-ffmpeg @types/fluent-ffmpeg",
-            system:
-              "ffmpeg must be installed on the system (https://ffmpeg.org/download.html)",
-          },
-          implementation: "Video processing requires server-side ffmpeg binary",
-        },
-        // TODO: Remove this when implemented
-        receivedData: {
-          sourceUrl,
-          trim: {
-            startTime,
-            endTime,
-            duration: endTime - startTime,
-          },
-          output: { format: outputFormat, quality },
-        },
-      },
-      { status: 501 },
-    );
-
-    /* 
-    // FUTURE IMPLEMENTATION (when ffmpeg is installed):
-    
-    const ffmpeg = require('fluent-ffmpeg');
-    const fs = require('fs');
-    const path = require('path');
-    const os = require('os');
-    
-    // Download source video from Storage
-    const storage = getStorage();
-    const bucket = storage.bucket();
-    
-    // Extract path from URL or use as path
-    const sourcePath = sourceUrl.includes('storage.googleapis.com')
-      ? sourceUrl.split(`${bucket.name}/`)[1]
-      : sourceUrl;
-    
-    const sourceFile = bucket.file(sourcePath);
-    const [sourceBuffer] = await sourceFile.download();
-    
     // Create temporary files
     const tempDir = os.tmpdir();
-    const inputPath = path.join(tempDir, `input-${Date.now()}.mp4`);
-    const outputPath = path.join(tempDir, `output-${Date.now()}.${outputFormat}`);
-    
-    // Write input buffer to temp file
-    fs.writeFileSync(inputPath, sourceBuffer);
-    
-    // Determine quality settings
-    const qualitySettings = {
-      low: { videoBitrate: '500k', audioBitrate: '64k' },
-      medium: { videoBitrate: '1000k', audioBitrate: '128k' },
-      high: { videoBitrate: '2000k', audioBitrate: '192k' },
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    tempInputFile = path.join(tempDir, `input-${timestamp}-${randomStr}.mp4`);
+    tempOutputFile = path.join(
+      tempDir,
+      `output-${timestamp}-${randomStr}.${outputFormat}`,
+    );
+
+    // Write input video to temp file
+    fs.writeFileSync(tempInputFile, videoBuffer);
+    serverLogger.info("Wrote input video to temp file", {
+      path: tempInputFile,
+    });
+
+    // Quality settings
+    const qualitySettings: Record<
+      string,
+      { videoBitrate: string; audioBitrate: string }
+    > = {
+      low: { videoBitrate: "500k", audioBitrate: "64k" },
+      medium: { videoBitrate: "1000k", audioBitrate: "128k" },
+      high: { videoBitrate: "2500k", audioBitrate: "192k" },
     };
-    
-    const settings = qualitySettings[quality];
-    
+
+    const settings =
+      qualitySettings[quality as string] || qualitySettings.medium;
+    const duration = endTime - startTime;
+
     // Trim video using ffmpeg
-    await new Promise((resolve, reject) => {
-      ffmpeg(inputPath)
-        .setStartTime(startTime)
-        .setDuration(endTime - startTime)
+    serverLogger.info("Starting video trim operation", {
+      startTime,
+      endTime,
+      duration,
+      quality,
+      outputFormat,
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      ffmpeg(tempInputFile!)
+        .seekInput(startTime)
+        .duration(duration)
         .videoBitrate(settings.videoBitrate)
         .audioBitrate(settings.audioBitrate)
-        .output(outputPath)
-        .on('end', resolve)
-        .on('error', reject)
+        .toFormat(outputFormat)
+        .output(tempOutputFile!)
+        .on("end", () => {
+          serverLogger.info("FFmpeg trimming completed");
+          resolve();
+        })
+        .on("error", (err: any) => {
+          serverLogger.error("FFmpeg error", { error: err.message });
+          reject(err);
+        })
         .run();
     });
-    
+
     // Read trimmed video
-    const trimmedBuffer = fs.readFileSync(outputPath);
-    
-    // Cleanup temp files
-    fs.unlinkSync(inputPath);
-    fs.unlinkSync(outputPath);
-    
-    // Generate output filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 8);
-    const filename = `trimmed-${timestamp}-${randomString}.${outputFormat}`;
-    
-    // Upload trimmed video
-    const uploadPath = `${outputFolder || 'trimmed'}/${user.uid}/${filename}`;
-    const outputFile = bucket.file(uploadPath);
-    
-    await outputFile.save(trimmedBuffer, {
+    const trimmedBuffer = fs.readFileSync(tempOutputFile);
+    serverLogger.info("Read trimmed video from temp file", {
+      size: trimmedBuffer.length,
+    });
+
+    // Upload to storage
+    const storage = getStorage();
+    const bucket = storage.bucket();
+    const filename = `trimmed-${timestamp}-${randomStr}.${outputFormat}`;
+    const uploadPath = `${outputFolder}/${user.uid}/${filename}`;
+    const file = bucket.file(uploadPath);
+
+    await file.save(trimmedBuffer, {
       metadata: {
         contentType: `video/${outputFormat}`,
-        metadata: {
+        customMetadata: {
           uploadedBy: user.uid,
-          trimmedFrom: sourcePath,
-          trimData: JSON.stringify({ startTime, endTime }),
+          trimmedFrom: sourceUrl,
+          trimData: JSON.stringify({ startTime, endTime, duration }),
           quality,
           trimmedAt: new Date().toISOString(),
         },
       },
+    } as any);
+
+    serverLogger.info("Uploaded trimmed video to storage", {
+      path: uploadPath,
     });
-    
-    // Generate signed URL
-    const [signedUrl] = await outputFile.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+
+    // Generate signed URL (7 days)
+    const [signedUrl] = await file.getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
-    
+
     return NextResponse.json(
       {
         success: true,
@@ -200,15 +192,15 @@ export async function POST(request: NextRequest) {
           url: signedUrl,
           path: uploadPath,
           filename,
-          trimData: { startTime, endTime, duration: endTime - startTime },
+          trimData: { startTime, endTime, duration },
           format: outputFormat,
           quality,
+          size: trimmedBuffer.length,
         },
-        message: 'Video trimmed successfully',
+        message: SUCCESS_MESSAGES.MEDIA.VIDEO_TRIMMED,
       },
-      { status: 200 }
+      { status: 200 },
     );
-    */
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -221,10 +213,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to trim video",
+        error: ERROR_MESSAGES.MEDIA.TRIM_FAILED,
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     );
+  } finally {
+    // Cleanup temporary files
+    if (tempInputFile && fs.existsSync(tempInputFile)) {
+      try {
+        fs.unlinkSync(tempInputFile);
+        serverLogger.info("Deleted temp input file");
+      } catch (err) {
+        serverLogger.error("Failed to delete temp input file", { error: err });
+      }
+    }
+    if (tempOutputFile && fs.existsSync(tempOutputFile)) {
+      try {
+        fs.unlinkSync(tempOutputFile);
+        serverLogger.info("Deleted temp output file");
+      } catch (err) {
+        serverLogger.error("Failed to delete temp output file", { error: err });
+      }
+    }
   }
 }

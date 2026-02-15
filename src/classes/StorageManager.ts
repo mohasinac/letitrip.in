@@ -37,8 +37,16 @@ export class StorageManager {
    * Get storage object
    */
   private getStorage(type: StorageType): Storage | null {
-    if (typeof window === "undefined") return null;
-    return type === "local" ? window.localStorage : window.sessionStorage;
+    try {
+      if (typeof window === "undefined" || !window) return null;
+      const storage =
+        type === "local" ? window.localStorage : window.sessionStorage;
+      if (!storage) return null;
+      return storage;
+    } catch (error) {
+      // In SSR or when storage is not available
+      return null;
+    }
   }
 
   /**

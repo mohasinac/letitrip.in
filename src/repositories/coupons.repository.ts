@@ -18,8 +18,9 @@ import {
   canUserUseCoupon,
   calculateDiscount,
   createCouponId,
-} from "@/db/schema/coupons";
-import { USER_COLLECTION } from "@/db/schema/users";
+  COUPON_FIELDS,
+  USER_COLLECTION,
+} from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";
@@ -71,7 +72,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       const upperCode = code.toUpperCase();
       const snapshot = await this.db
         .collection(this.collection)
-        .where("code", "==", upperCode)
+        .where(COUPON_FIELDS.CODE, "==", upperCode)
         .limit(1)
         .get();
 

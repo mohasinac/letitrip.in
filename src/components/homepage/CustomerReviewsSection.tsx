@@ -3,26 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { apiClient } from "@/lib/api-client";
-
-interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  productId: string;
-  productTitle: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
+import type { ReviewDocument } from "@/db/schema";
 
 export function CustomerReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  const { data, isLoading } = useApiQuery<Review[]>({
+  const { data, isLoading } = useApiQuery<ReviewDocument[]>({
     queryKey: ["reviews", "featured"],
     queryFn: () =>
       apiClient.get(
@@ -84,12 +73,12 @@ export function CustomerReviewsSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            What Our Customers Say
+            {UI_LABELS.HOMEPAGE.REVIEWS.TITLE}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            Real reviews from verified buyers
+            {UI_LABELS.HOMEPAGE.REVIEWS.SUBTITLE}
           </p>
         </div>
 

@@ -45,9 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (currentPassword === newPassword) {
-      throw new ValidationError(
-        "New password must be different from current password",
-      );
+      throw new ValidationError(ERROR_MESSAGES.PASSWORD.SAME_AS_CURRENT);
     }
 
     // NOTE: Firebase Admin SDK cannot verify passwords
@@ -69,7 +67,9 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error:
-          error instanceof Error ? error.message : "Failed to change password",
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
       },
       {
         status:

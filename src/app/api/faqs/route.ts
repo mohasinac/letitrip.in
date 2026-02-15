@@ -29,6 +29,7 @@ import {
   invalidateCache,
 } from "@/lib/api/cache-middleware";
 import { serverLogger } from "@/lib/server-logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * GET /api/faqs
@@ -85,13 +86,22 @@ export const GET = withCache(async (request: NextRequest) => {
       faqs = faqs.filter((faq) => faq.tags?.some((tag) => tags.includes(tag)));
     }
 
+    // Normalize answer field: handle both string and { text, format } shapes
+    faqs = faqs.map((faq) => ({
+      ...faq,
+      answer:
+        typeof faq.answer === "string"
+          ? { text: faq.answer, format: "plain" as const }
+          : (faq.answer ?? { text: "", format: "plain" as const }),
+    }));
+
     // Filter by search query (question + answer)
     if (search) {
       const searchLower = search.toLowerCase();
       faqs = faqs.filter(
         (faq) =>
           faq.question.toLowerCase().includes(searchLower) ||
-          faq.answer.text.toLowerCase().includes(searchLower),
+          (faq.answer.text ?? "").toLowerCase().includes(searchLower),
       );
     }
 
@@ -100,9 +110,10 @@ export const GET = withCache(async (request: NextRequest) => {
 
     // Helper function to interpolate variables
     const interpolateVariables = (
-      text: string,
+      text: string | undefined,
       variables: Record<string, string | undefined>,
     ) => {
+      if (!text) return "";
       let result = text;
       Object.entries(variables).forEach(([key, value]) => {
         if (value) {
@@ -164,7 +175,7 @@ export const GET = withCache(async (request: NextRequest) => {
   } catch (error) {
     serverLogger.error("GET /api/faqs error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch FAQs" },
+      { success: false, error: ERROR_MESSAGES.FAQ.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -203,7 +214,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -229,14 +240,14 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: faq,
-        message: "FAQ created successfully",
+        message: SUCCESS_MESSAGES.FAQ.CREATED,
       },
       { status: 201 },
     );
   } catch (error) {
     serverLogger.error("POST /api/faqs error", { error });
     return NextResponse.json(
-      { success: false, error: "Failed to create FAQ" },
+      { success: false, error: ERROR_MESSAGES.FAQ.CREATE_FAILED },
       { status: 500 },
     );
   }

@@ -18,7 +18,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -89,16 +89,16 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit);
     const hasMore = page < totalPages;
 
-    // STUB: Return empty array for now
     return NextResponse.json(
       {
         success: true,
-        data: [],
+        data: products,
         meta: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          hasMore: false,
+          page,
+          limit,
+          total,
+          totalPages,
+          hasMore,
         },
       },
       {
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     // TODO: Use handleApiError from error handler
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch products" },
+      { success: false, error: ERROR_MESSAGES.PRODUCT.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           fields: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: product,
-        message: "Product created successfully",
+        message: SUCCESS_MESSAGES.PRODUCT.CREATED,
       },
       { status: 201 },
     );
@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
 
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to create product" },
+      { success: false, error: ERROR_MESSAGES.PRODUCT.CREATE_FAILED },
       { status: 500 },
     );
   }

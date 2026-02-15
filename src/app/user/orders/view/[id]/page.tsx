@@ -119,7 +119,7 @@ export default function OrderViewPage() {
             </svg>
           }
           title={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND}
-          message={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND_MESSAGE}
+          description={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND_MESSAGE}
           actionLabel={UI_LABELS.USER.ORDERS.VIEW_ALL_ORDERS}
           onAction={() => router.push(ROUTES.USER.ORDERS)}
         />

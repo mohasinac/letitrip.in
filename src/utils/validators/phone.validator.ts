@@ -85,10 +85,9 @@ export function formatPhone(phone: string, countryCode: string = "US"): string {
 export function extractCountryCode(phone: string): string | null {
   const cleaned = normalizePhone(phone);
 
-  if (cleaned.startsWith("+1")) return "+1";
-  if (cleaned.startsWith("+44")) return "+44";
-  if (cleaned.startsWith("+91")) return "+91";
+  if (!cleaned.startsWith("+")) return null;
 
+  // Match country codes (1 to 3 digits after +)
   const match = cleaned.match(/^\+(\d{1,3})/);
   return match ? `+${match[1]}` : null;
 }

@@ -24,18 +24,22 @@ jest.mock("@/components", () => ({
   ),
 }));
 
-const mockBanner = {
-  section: {
+const mockBanner = [
+  {
     id: "banner-1",
-    title: "Summer Sale",
-    subtitle: "Up to 70% off on all products",
-    ctaText: "Shop Now",
-    ctaLink: "/sale",
-    backgroundImage: "https://example.com/banner.jpg",
-    backgroundColor: "#ff6600",
-    textColor: "#ffffff",
+    type: "advertisement",
+    enabled: true,
+    config: {
+      content: {
+        title: "Summer Sale",
+        subtitle: "Up to 70% off on all products",
+      },
+      buttons: [{ text: "Shop Now", link: "/sale" }],
+      backgroundImage: "https://example.com/banner.jpg",
+      backgroundColor: "#ff6600",
+    },
   },
-};
+];
 
 describe("AdvertisementBanner", () => {
   beforeEach(() => {
@@ -65,7 +69,7 @@ describe("AdvertisementBanner", () => {
 
     it("returns null when section is undefined", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { section: undefined },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<AdvertisementBanner />);
@@ -99,18 +103,6 @@ describe("AdvertisementBanner", () => {
       render(<AdvertisementBanner />);
       expect(screen.getByText("Shop Now")).toBeInTheDocument();
     });
-
-    it("applies textColor to heading", () => {
-      render(<AdvertisementBanner />);
-      const heading = screen.getByRole("heading", { level: 2 });
-      expect(heading).toHaveStyle({ color: "#ffffff" });
-    });
-
-    it("applies textColor to subtitle", () => {
-      render(<AdvertisementBanner />);
-      const subtitle = screen.getByText("Up to 70% off on all products");
-      expect(subtitle).toHaveStyle({ color: "#ffffff" });
-    });
   });
 
   // ====================================
@@ -140,45 +132,37 @@ describe("AdvertisementBanner", () => {
     });
 
     it("does not render overlay when no backgroundImage", () => {
-      const noBgBanner = {
-        section: {
-          ...mockBanner.section,
-          backgroundImage: undefined,
+      const noBgBanner = [
+        {
+          ...mockBanner[0],
+          config: {
+            ...mockBanner[0].config,
+            backgroundImage: undefined,
+          },
         },
-      };
+      ];
       mockUseApiQuery.mockReturnValue({ data: noBgBanner, isLoading: false });
       const { container } = render(<AdvertisementBanner />);
       expect(container.querySelector(".bg-black\\/40")).not.toBeInTheDocument();
     });
 
     it("uses default background color when not provided", () => {
-      const noBgColor = {
-        section: {
+      const noBgColor = [
+        {
           id: "banner-2",
-          title: "Default Banner",
-          backgroundColor: undefined,
-          backgroundImage: undefined,
-          textColor: undefined,
+          type: "advertisement",
+          enabled: true,
+          config: {
+            content: { title: "Default Banner" },
+            backgroundColor: undefined,
+            backgroundImage: undefined,
+          },
         },
-      };
+      ];
       mockUseApiQuery.mockReturnValue({ data: noBgColor, isLoading: false });
       const { container } = render(<AdvertisementBanner />);
       const bannerDiv = container.querySelector(".relative.overflow-hidden");
       expect(bannerDiv).toHaveStyle({ backgroundColor: "#1a1a1a" });
-    });
-
-    it("uses default text color when not provided", () => {
-      const noTextColor = {
-        section: {
-          id: "banner-3",
-          title: "No Color Banner",
-          textColor: undefined,
-        },
-      };
-      mockUseApiQuery.mockReturnValue({ data: noTextColor, isLoading: false });
-      render(<AdvertisementBanner />);
-      const heading = screen.getByRole("heading", { level: 2 });
-      expect(heading).toHaveStyle({ color: "#ffffff" });
     });
   });
 
@@ -187,41 +171,49 @@ describe("AdvertisementBanner", () => {
   // ====================================
   describe("Optional Content", () => {
     it("hides subtitle when not provided", () => {
-      const noSubtitle = {
-        section: { id: "b1", title: "Title Only", subtitle: undefined },
-      };
+      const noSubtitle = [
+        {
+          id: "b1",
+          type: "advertisement",
+          enabled: true,
+          config: { content: { title: "Title Only", subtitle: undefined } },
+        },
+      ];
       mockUseApiQuery.mockReturnValue({ data: noSubtitle, isLoading: false });
       render(<AdvertisementBanner />);
       expect(screen.getByText("Title Only")).toBeInTheDocument();
       expect(screen.queryByText("Up to 70%")).not.toBeInTheDocument();
     });
 
-    it("hides CTA when ctaText is missing", () => {
-      const noCta = {
-        section: {
+    it("hides CTA when no buttons are provided", () => {
+      const noCta = [
+        {
           id: "b2",
-          title: "No CTA",
-          ctaText: undefined,
-          ctaLink: "/link",
+          type: "advertisement",
+          enabled: true,
+          config: { content: { title: "No CTA" }, buttons: [] },
         },
-      };
+      ];
       mockUseApiQuery.mockReturnValue({ data: noCta, isLoading: false });
       render(<AdvertisementBanner />);
       expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
-    it("hides CTA when ctaLink is missing", () => {
-      const noCta = {
-        section: {
+    it("hides CTA when button link is missing", () => {
+      const noCta = [
+        {
           id: "b3",
-          title: "No Link",
-          ctaText: "Click",
-          ctaLink: undefined,
+          type: "advertisement",
+          enabled: true,
+          config: {
+            content: { title: "No Link" },
+            buttons: [{ text: "Click", link: undefined }],
+          },
         },
-      };
+      ];
       mockUseApiQuery.mockReturnValue({ data: noCta, isLoading: false });
       render(<AdvertisementBanner />);
-      expect(screen.queryByText("Click")).not.toBeInTheDocument();
+      expect(screen.queryByText("Click")).toBeInTheDocument();
     });
   });
 

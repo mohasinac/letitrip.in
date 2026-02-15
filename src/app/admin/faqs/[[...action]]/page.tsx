@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
 import {
@@ -26,6 +26,7 @@ const LABELS = UI_LABELS.ADMIN.FAQS;
 export default function AdminFAQsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const { showError } = useMessage();
 
   const { data, isLoading, error, refetch } = useApiQuery<{ faqs: FAQ[] }>({
     queryKey: ["faqs", "list"],
@@ -161,7 +162,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      alert(LABELS.SAVE_FAILED);
+      showError(LABELS.SAVE_FAILED);
     }
   };
 
@@ -172,7 +173,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      alert(LABELS.DELETE_FAILED);
+      showError(LABELS.DELETE_FAILED);
     }
   };
 

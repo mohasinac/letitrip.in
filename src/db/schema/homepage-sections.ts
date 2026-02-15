@@ -49,18 +49,6 @@ export interface ProductsSectionConfig {
   scrollInterval: number;
 }
 
-export interface SpecialCollectionsSectionConfig {
-  title: string;
-  collections: {
-    id: string;
-    name: string;
-    description: string;
-    image?: string;
-    link: string;
-    badgeText?: string;
-  }[];
-}
-
 export interface AuctionsSectionConfig {
   title: string;
   subtitle?: string;
@@ -157,7 +145,6 @@ export type SectionType =
   | "trust-indicators"
   | "categories"
   | "products"
-  | "special-collections"
   | "auctions"
   | "banner"
   | "features"
@@ -172,7 +159,6 @@ export type SectionConfig =
   | TrustIndicatorsSectionConfig
   | CategoriesSectionConfig
   | ProductsSectionConfig
-  | SpecialCollectionsSectionConfig
   | AuctionsSectionConfig
   | BannerSectionConfig
   | FeaturesSectionConfig
@@ -236,15 +222,14 @@ export const DEFAULT_SECTION_ORDER: Record<SectionType, number> = {
   "trust-indicators": 2,
   categories: 3,
   products: 4,
-  "special-collections": 5,
-  auctions: 6,
-  banner: 7,
-  features: 8,
-  reviews: 9,
-  "whatsapp-community": 10,
-  faq: 11,
-  "blog-articles": 12,
-  newsletter: 13,
+  auctions: 5,
+  banner: 6,
+  features: 7,
+  reviews: 8,
+  "whatsapp-community": 9,
+  faq: 10,
+  "blog-articles": 11,
+  newsletter: 12,
 };
 
 /**
@@ -314,31 +299,12 @@ export const DEFAULT_SECTION_CONFIGS: Record<SectionType, SectionConfig> = {
     autoScroll: false,
     scrollInterval: 0,
   } as ProductsSectionConfig,
-  "special-collections": {
-    title: "Special Collections",
-    collections: [
-      {
-        id: "new-arrivals",
-        name: "New Arrivals",
-        description: "Latest products",
-        link: "/products?filter=new",
-        badgeText: "NEW",
-      },
-      {
-        id: "budget-friendly",
-        name: "Under ₹1000",
-        description: "Best deals",
-        link: "/products?maxPrice=1000",
-      },
-    ],
-  } as SpecialCollectionsSectionConfig,
   auctions: {
     title: "Live Auctions",
     subtitle: "Bid on exclusive items",
     maxAuctions: 18,
     rows: 2,
     itemsPerRow: 3,
-    mobileItemsPerView: 1,
     mobileItemsPerRow: 1,
     autoScroll: false,
     scrollInterval: 0,

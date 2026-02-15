@@ -6,6 +6,7 @@ import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 type CollectionName =
   | "users"
+  | "addresses"
   | "categories"
   | "products"
   | "orders"
@@ -39,6 +40,7 @@ export default function DemoSeedPage() {
 
   const allCollections: CollectionName[] = [
     "users",
+    "addresses",
     "categories",
     "products",
     "orders",
@@ -220,7 +222,7 @@ export default function DemoSeedPage() {
                 {loading ? "Processing..." : "📥 Load All Seed Data"}
               </Button>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Loads all seed data into Firestore (209 documents)
+                Loads all seed data into Firestore (226 documents)
               </p>
             </div>
 
@@ -380,7 +382,10 @@ export default function DemoSeedPage() {
               This prevents accidentally affecting other data in the database
             </li>
             <li>Safe to use even if database has other non-seed documents</li>
-            <li>Total seed documents: 209 across 11 collections</li>
+            <li>
+              Total seed documents: 226 across 12 collections (includes 17
+              addresses)
+            </li>
           </ul>
         </Card>
       </div>

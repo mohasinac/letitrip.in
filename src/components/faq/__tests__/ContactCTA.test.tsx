@@ -26,6 +26,13 @@ jest.mock("@/constants/site", () => ({
       phone: "+1 (555) 123-4567",
       address: "123 Marketplace Street, City, Country",
     },
+    nav: {
+      home: "/",
+      products: "/products",
+      auctions: "/auctions",
+      sellers: "/sellers",
+      promotions: "/promotions",
+    },
   },
 }));
 

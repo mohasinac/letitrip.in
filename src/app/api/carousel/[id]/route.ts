@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -38,7 +38,7 @@ export async function GET(
     const slide = await carouselRepository.findById(id);
 
     if (!slide) {
-      throw new NotFoundError("Carousel slide not found");
+      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
     }
 
     return NextResponse.json({
@@ -60,7 +60,7 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to fetch carousel slide" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -87,7 +87,7 @@ export async function PATCH(
     const slide = await carouselRepository.findById(id);
 
     if (!slide) {
-      throw new NotFoundError("Carousel slide not found");
+      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
     }
 
     // Parse and validate request body
@@ -98,7 +98,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -112,7 +112,7 @@ export async function PATCH(
         return NextResponse.json(
           {
             success: false,
-            error: "Maximum 5 active carousel slides allowed",
+            error: ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED,
             details: {
               currentActive: activeSlides.length,
               maxAllowed: 5,
@@ -161,7 +161,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to update carousel slide" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -188,7 +188,7 @@ export async function DELETE(
     const slide = await carouselRepository.findById(id);
 
     if (!slide) {
-      throw new NotFoundError("Carousel slide not found");
+      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
     }
 
     // Delete carousel slide (hard delete - carousel slides can be removed)
@@ -196,7 +196,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Carousel slide deleted successfully",
+      message: SUCCESS_MESSAGES.CAROUSEL.DELETED,
     });
   } catch (error) {
     const { id } = await params;
@@ -227,7 +227,7 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to delete carousel slide" },
+      { success: false, error: ERROR_MESSAGES.CAROUSEL.DELETE_FAILED },
       { status: 500 },
     );
   }

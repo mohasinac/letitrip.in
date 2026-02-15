@@ -1,4 +1,18 @@
 import "@testing-library/jest-dom";
+import { TextEncoder, TextDecoder } from "util";
+
+// ============================================
+// Global Polyfills for Test Environment
+// ============================================
+
+// Add TextEncoder and TextDecoder to global scope
+if (typeof global.TextEncoder === "undefined") {
+  global.TextEncoder = TextEncoder as any;
+}
+
+if (typeof global.TextDecoder === "undefined") {
+  global.TextDecoder = TextDecoder as any;
+}
 
 // ============================================
 // Firebase Auth Polyfills for Test Environment
@@ -117,6 +131,18 @@ jest.mock("firebase/app", () => ({
   })),
 }));
 
+// Mock Firebase Config
+jest.mock("@/lib/firebase/config", () => ({
+  app: {
+    name: "[DEFAULT]",
+    options: {},
+  },
+  db: {},
+  auth: {},
+  storage: {},
+  realtimeDb: {},
+}));
+
 // Mock Firebase Auth
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(() => ({
@@ -200,4 +226,47 @@ jest.mock("firebase/database", () => ({
   get: jest.fn(() => Promise.resolve({ exists: () => false, val: () => null })),
   onValue: jest.fn(),
   off: jest.fn(),
+}));
+// Mock Firebase Performance
+jest.mock("firebase/performance", () => ({
+  getPerformance: jest.fn(() => ({
+    trace: jest.fn(() => ({
+      start: jest.fn(),
+      stop: jest.fn(),
+      incrementMetric: jest.fn(),
+      putAttribute: jest.fn(),
+    })),
+  })),
+}));
+
+// Mock Firebase Analytics
+jest.mock("firebase/analytics", () => ({
+  getAnalytics: jest.fn(() => ({})),
+  logEvent: jest.fn(),
+  setUserId: jest.fn(),
+  setUserProperties: jest.fn(),
+}));
+
+// ============================================
+// Next.js Router & Image Mocks
+// ============================================
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({}),
+}));
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({ alt, ...props }: { alt?: string } & Record<string, unknown>) => {
+    const React = require("react");
+    return React.createElement("img", { alt: alt || "", ...props });
+  },
 }));

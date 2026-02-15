@@ -14,7 +14,8 @@ import {
   sessionQueryHelpers,
   SESSION_EXPIRATION_MS,
   generateSessionId,
-} from "@/db/schema/sessions";
+  SESSION_FIELDS,
+} from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
@@ -97,9 +98,9 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
     try {
       const now = new Date();
       const snapshot = await this.getCollection()
-        .where("userId", "==", userId)
-        .where("isActive", "==", true)
-        .where("expiresAt", ">", now)
+        .where(SESSION_FIELDS.USER_ID, "==", userId)
+        .where(SESSION_FIELDS.IS_ACTIVE, "==", true)
+        .where(SESSION_FIELDS.EXPIRES_AT, ">", now)
         .orderBy("expiresAt", "desc")
         .orderBy("lastActivity", "desc")
         .get();
@@ -124,8 +125,8 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
   ): Promise<SessionDocument[]> {
     try {
       const snapshot = await this.getCollection()
-        .where("userId", "==", userId)
-        .orderBy("createdAt", "desc")
+        .where(SESSION_FIELDS.USER_ID, "==", userId)
+        .orderBy(SESSION_FIELDS.CREATED_AT, "desc")
         .limit(limitCount)
         .get();
 
@@ -160,10 +161,10 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
     try {
       const now = new Date();
       const snapshot = await this.getCollection()
-        .where("isActive", "==", true)
-        .where("expiresAt", ">", now)
-        .orderBy("expiresAt", "desc")
-        .orderBy("lastActivity", "desc")
+        .where(SESSION_FIELDS.IS_ACTIVE, "==", true)
+        .where(SESSION_FIELDS.EXPIRES_AT, ">", now)
+        .orderBy(SESSION_FIELDS.EXPIRES_AT, "desc")
+        .orderBy(SESSION_FIELDS.LAST_ACTIVITY, "desc")
         .limit(limitCount)
         .get();
 
@@ -185,7 +186,7 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
     try {
       const now = new Date();
       const snapshot = await this.getCollection()
-        .where("expiresAt", "<=", now)
+        .where(SESSION_FIELDS.EXPIRES_AT, "<=", now)
         .limit(500)
         .get();
 

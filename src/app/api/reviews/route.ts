@@ -17,7 +17,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -88,7 +88,10 @@ export async function GET(request: NextRequest) {
     // Require productId parameter for product-specific reviews
     if (!productId) {
       return NextResponse.json(
-        { success: false, error: "productId is required" },
+        {
+          success: false,
+          error: ERROR_MESSAGES.VALIDATION.PRODUCT_ID_REQUIRED,
+        },
         { status: 400 },
       );
     }
@@ -168,7 +171,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, { error });
     return NextResponse.json(
-      { success: false, error: "Failed to fetch reviews" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -209,7 +212,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -224,7 +227,7 @@ export async function POST(request: NextRequest) {
 
     if (userReview) {
       return NextResponse.json(
-        { success: false, error: "You have already reviewed this product" },
+        { success: false, error: ERROR_MESSAGES.REVIEW.ALREADY_REVIEWED },
         { status: 400 },
       );
     }
@@ -250,8 +253,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: review,
-        message:
-          "Review submitted successfully. It will be visible after moderation.",
+        message: SUCCESS_MESSAGES.REVIEW.SUBMITTED_PENDING_MODERATION,
       },
       { status: 201 },
     );
@@ -267,7 +269,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to create review" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.SUBMIT_FAILED },
       { status: 500 },
     );
   }

@@ -275,7 +275,7 @@ Admin dashboard components:
 import { DataTable, AdminTabs } from '@/components';
 
 function UsersManagement() {
-  const { data: users, loading } = useApiQuery(API_ENDPOINTS.USERS.LIST);
+  const { data: users, loading } = useApiQuery(API_ENDPOINTS.PRODUCTS.LIST);
 
   return (
     <>
@@ -575,7 +575,7 @@ export function Button({
 import { Spinner, Alert } from '@/components';
 
 function UsersList() {
-  const { data, loading, error } = useApiQuery(API_ENDPOINTS.USERS.LIST);
+  const { data, loading, error } = useApiQuery(API_ENDPOINTS.PRODUCTS.LIST);
 
   if (loading) return <Spinner />;
   if (error) return <Alert type="error" message={error.message} />;

@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -41,7 +41,7 @@ export async function POST(
     const review = await reviewRepository.findById(id);
 
     if (!review) {
-      throw new NotFoundError("Review not found");
+      throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
     }
 
     // Parse and validate request body
@@ -52,7 +52,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -76,7 +76,7 @@ export async function POST(
       data: {
         helpfulCount: updatedReview.helpfulCount,
       },
-      message: "Vote recorded successfully",
+      message: SUCCESS_MESSAGES.REVIEW.VOTE_RECORDED,
     });
   } catch (error) {
     const { id } = await params;
@@ -100,7 +100,7 @@ export async function POST(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to record vote" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.VOTE_FAILED },
       { status: 500 },
     );
   }

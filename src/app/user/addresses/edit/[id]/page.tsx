@@ -11,7 +11,7 @@ import {
   ConfirmDeleteModal,
   useToast,
 } from "@/components";
-import type { AddressFormData } from "@/components";
+import type { AddressFormData } from "@/hooks";
 import { useRouter, useParams } from "next/navigation";
 import { logger } from "@/classes";
 import {

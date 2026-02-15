@@ -15,7 +15,7 @@ import { getAdminApp } from "@/lib/firebase/admin";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function POST(request: NextRequest) {
@@ -28,7 +28,9 @@ export async function POST(request: NextRequest) {
       try {
         await sessionRepository.revokeSession(sessionId, "user");
       } catch (error) {
-        serverLogger.error("Session revocation error", { error });
+        serverLogger.error(ERROR_MESSAGES.API.LOGOUT_REVOCATION_ERROR, {
+          error,
+        });
       }
     }
 
@@ -42,7 +44,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         // Ignore errors during token revocation
-        serverLogger.error("Token revocation error", { error });
+        serverLogger.error(ERROR_MESSAGES.API.LOGOUT_TOKEN_ERROR, { error });
       }
     }
 

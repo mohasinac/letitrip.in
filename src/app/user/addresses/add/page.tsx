@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
 import { Card, Heading, Spinner, AddressForm, useToast } from "@/components";
-import type { AddressFormData } from "@/components";
+import type { AddressFormData } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { logger } from "@/classes";
 import {

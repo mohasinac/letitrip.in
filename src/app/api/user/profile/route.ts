@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       throw new AuthenticationError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
     }
 
-    // 3. Return user profile (excluding sensitive data)
+    // 3. Return user profile (excluding sensitive data like passwordHash)
     return NextResponse.json({
       success: true,
       data: {
@@ -49,6 +49,20 @@ export async function GET(request: NextRequest) {
         role: user.role,
         disabled: user.disabled,
         avatarMetadata: user.avatarMetadata,
+        publicProfile: user.publicProfile,
+        stats: user.stats,
+        metadata: user.metadata
+          ? {
+              lastSignInTime:
+                user.metadata.lastSignInTime instanceof Date
+                  ? user.metadata.lastSignInTime.toISOString()
+                  : ((user.metadata.lastSignInTime as any)
+                      ?.toDate?.()
+                      ?.toISOString() ?? user.metadata.lastSignInTime),
+              creationTime: user.metadata.creationTime,
+              loginCount: user.metadata.loginCount,
+            }
+          : undefined,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

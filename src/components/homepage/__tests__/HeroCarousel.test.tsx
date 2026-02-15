@@ -24,13 +24,6 @@ jest.mock("@/components", () => ({
   ),
 }));
 
-// Mock UI_LABELS
-jest.mock("@/constants", () => ({
-  UI_LABELS: {
-    LOADING: { DEFAULT: "Loading..." },
-  },
-}));
-
 const makeSlide = (
   id: string,
   title: string,
@@ -74,19 +67,17 @@ const mockCard = (overrides: object = {}) => ({
   ...overrides,
 });
 
-const mockSlides = {
-  slides: [
-    makeSlide("slide-1", "First Slide", 1, [mockCard()]),
-    makeSlide("slide-2", "Second Slide", 2, [
-      mockCard({
-        id: "card-2",
-        content: { title: "Second Card" },
-        buttons: [],
-      }),
-    ]),
-    makeSlide("slide-3", "Third Slide", 3),
-  ],
-};
+const mockSlides = [
+  makeSlide("slide-1", "First Slide", 1, [mockCard()]),
+  makeSlide("slide-2", "Second Slide", 2, [
+    mockCard({
+      id: "card-2",
+      content: { title: "Second Card" },
+      buttons: [],
+    }),
+  ]),
+  makeSlide("slide-3", "Third Slide", 3),
+];
 
 describe("HeroCarousel", () => {
   const originalInnerWidth = window.innerWidth;
@@ -140,7 +131,7 @@ describe("HeroCarousel", () => {
 
     it("returns null when slides array is empty", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { slides: [] },
+        data: [],
         isLoading: false,
       });
       const { container } = render(<HeroCarousel />);
@@ -148,9 +139,9 @@ describe("HeroCarousel", () => {
     });
 
     it("returns null when all slides are inactive", () => {
-      const inactiveSlides = {
-        slides: [{ ...makeSlide("s1", "Inactive", 1), active: false }],
-      };
+      const inactiveSlides = [
+        { ...makeSlide("s1", "Inactive", 1), active: false },
+      ];
       mockUseApiQuery.mockReturnValue({
         data: inactiveSlides,
         isLoading: false,
@@ -181,13 +172,11 @@ describe("HeroCarousel", () => {
     });
 
     it("renders slides sorted by order", () => {
-      const unorderedSlides = {
-        slides: [
-          makeSlide("s3", "Third", 3),
-          makeSlide("s1", "First", 1),
-          makeSlide("s2", "Second", 2),
-        ],
-      };
+      const unorderedSlides = [
+        makeSlide("s3", "Third", 3),
+        makeSlide("s1", "First", 1),
+        makeSlide("s2", "Second", 2),
+      ];
       mockUseApiQuery.mockReturnValue({
         data: unorderedSlides,
         isLoading: false,
@@ -198,12 +187,10 @@ describe("HeroCarousel", () => {
     });
 
     it("filters out inactive slides", () => {
-      const mixedSlides = {
-        slides: [
-          { ...makeSlide("s1", "Active", 1), active: true },
-          { ...makeSlide("s2", "Inactive", 2), active: false },
-        ],
-      };
+      const mixedSlides = [
+        { ...makeSlide("s1", "Active", 1), active: true },
+        { ...makeSlide("s2", "Inactive", 2), active: false },
+      ];
       mockUseApiQuery.mockReturnValue({ data: mixedSlides, isLoading: false });
       const { container } = render(<HeroCarousel />);
       // Should render but with only 1 active slide, no nav dots
@@ -218,23 +205,21 @@ describe("HeroCarousel", () => {
   // ====================================
   describe("Video Support", () => {
     it("renders video element when media type is video", () => {
-      const videoSlides = {
-        slides: [
-          {
-            id: "vs1",
-            title: "Video Slide",
-            order: 1,
-            active: true,
-            media: {
-              type: "video" as const,
-              url: "https://example.com/video.mp4",
-              alt: "Video alt",
-              thumbnail: "https://example.com/thumb.jpg",
-            },
-            cards: [],
+      const videoSlides = [
+        {
+          id: "vs1",
+          title: "Video Slide",
+          order: 1,
+          active: true,
+          media: {
+            type: "video" as const,
+            url: "https://example.com/video.mp4",
+            alt: "Video alt",
+            thumbnail: "https://example.com/thumb.jpg",
           },
-        ],
-      };
+          cards: [],
+        },
+      ];
       mockUseApiQuery.mockReturnValue({ data: videoSlides, isLoading: false });
       const { container } = render(<HeroCarousel />);
       const video = container.querySelector("video");
@@ -268,25 +253,23 @@ describe("HeroCarousel", () => {
     });
 
     it("renders button-only card as clickable button", () => {
-      const btnOnlySlides = {
-        slides: [
-          makeSlide("s1", "Slide", 1, [
-            mockCard({
-              id: "btn-card",
-              isButtonOnly: true,
-              buttons: [
-                {
-                  id: "b1",
-                  text: "Click Me",
-                  link: "/click",
-                  variant: "primary",
-                  openInNewTab: false,
-                },
-              ],
-            }),
-          ]),
-        ],
-      };
+      const btnOnlySlides = [
+        makeSlide("s1", "Slide", 1, [
+          mockCard({
+            id: "btn-card",
+            isButtonOnly: true,
+            buttons: [
+              {
+                id: "b1",
+                text: "Click Me",
+                link: "/click",
+                variant: "primary",
+                openInNewTab: false,
+              },
+            ],
+          }),
+        ]),
+      ];
       mockUseApiQuery.mockReturnValue({
         data: btnOnlySlides,
         isLoading: false,
@@ -339,7 +322,7 @@ describe("HeroCarousel", () => {
     });
 
     it("does not render dots for a single slide", () => {
-      const singleSlide = { slides: [makeSlide("s1", "Only", 1)] };
+      const singleSlide = [makeSlide("s1", "Only", 1)];
       mockUseApiQuery.mockReturnValue({ data: singleSlide, isLoading: false });
       render(<HeroCarousel />);
       expect(screen.queryByLabelText("Go to slide 1")).not.toBeInTheDocument();

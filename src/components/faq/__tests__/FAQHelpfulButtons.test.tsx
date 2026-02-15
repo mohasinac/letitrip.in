@@ -403,7 +403,7 @@ describe("FAQHelpfulButtons", () => {
 
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Failed to submit vote:",
+          expect.stringContaining("Failed to submit vote"),
           expect.any(Error),
         );
       });

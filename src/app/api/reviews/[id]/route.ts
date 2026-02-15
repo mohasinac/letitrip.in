@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   requireAuthFromRequest,
   requireRoleFromRequest,
@@ -41,7 +41,7 @@ export async function GET(
     const review = await reviewRepository.findById(id);
 
     if (!review) {
-      throw new NotFoundError("Review not found");
+      throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
     }
 
     return NextResponse.json({
@@ -63,7 +63,7 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to fetch review" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.FETCH_FAILED },
       { status: 500 },
     );
   }
@@ -90,7 +90,7 @@ export async function PATCH(
     const review = await reviewRepository.findById(id);
 
     if (!review) {
-      throw new NotFoundError("Review not found");
+      throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
     }
 
     // Check ownership or admin/moderator role
@@ -98,9 +98,7 @@ export async function PATCH(
     const isModerator = ["moderator", "admin"].includes(user.role);
 
     if (!isOwner && !isModerator) {
-      throw new AuthorizationError(
-        "You do not have permission to update this review",
-      );
+      throw new AuthorizationError(ERROR_MESSAGES.REVIEW.UPDATE_NOT_ALLOWED);
     }
 
     // Parse and validate request body
@@ -111,7 +109,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          error: "Validation failed",
+          error: ERROR_MESSAGES.VALIDATION.FAILED,
           errors: formatZodErrors(validation.errors),
         },
         { status: 400 },
@@ -154,7 +152,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to update review" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.UPDATE_FAILED },
       { status: 500 },
     );
   }
@@ -181,7 +179,7 @@ export async function DELETE(
     const review = await reviewRepository.findById(id);
 
     if (!review) {
-      throw new NotFoundError("Review not found");
+      throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
     }
 
     // Check ownership or admin/moderator role
@@ -189,9 +187,7 @@ export async function DELETE(
     const isModerator = ["moderator", "admin"].includes(user.role);
 
     if (!isOwner && !isModerator) {
-      throw new AuthorizationError(
-        "You do not have permission to delete this review",
-      );
+      throw new AuthorizationError(ERROR_MESSAGES.REVIEW.DELETE_NOT_ALLOWED);
     }
 
     // Delete review (hard delete - reviews can be removed completely)
@@ -199,7 +195,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Review deleted successfully",
+      message: SUCCESS_MESSAGES.REVIEW.DELETED,
     });
   } catch (error) {
     const { id } = await params;
@@ -230,7 +226,7 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      { success: false, error: "Failed to delete review" },
+      { success: false, error: ERROR_MESSAGES.REVIEW.DELETE_FAILED },
       { status: 500 },
     );
   }
