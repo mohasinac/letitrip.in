@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { isRequired, minLength } from "@/utils";
 import { serverLogger } from "@/lib/server-logger";
@@ -43,21 +44,14 @@ export async function PUT(req: NextRequest) {
     // 1. Client calls Firebase Auth confirmPasswordReset(auth, token, newPassword)
     // 2. Then optionally call this endpoint to log the password change
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.USER.PASSWORD_CHANGED,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   } catch (error) {
     serverLogger.error("Reset password error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.PASSWORD.RESET_FAILED,
-      },
-      { status: error instanceof ValidationError ? 400 : 500 },
+    return errorResponse(
+      error instanceof Error
+        ? error.message
+        : ERROR_MESSAGES.PASSWORD.RESET_FAILED,
+      error instanceof ValidationError ? 400 : 500,
     );
   }
 }

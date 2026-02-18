@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { isValidEmail } from "@/utils";
 import { serverLogger } from "@/lib/server-logger";
@@ -60,21 +61,12 @@ export async function POST(req: NextRequest) {
     // TODO: Send email via Resend or other email service
     // await sendVerificationEmail(email, verificationLink);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT);
   } catch (error) {
     serverLogger.error("Send verification error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.EMAIL.SEND_FAILED,
-      },
-      { status: error instanceof ValidationError ? 400 : 500 },
+    return errorResponse(
+      error instanceof Error ? error.message : ERROR_MESSAGES.EMAIL.SEND_FAILED,
+      error instanceof ValidationError ? 400 : 500,
     );
   }
 }

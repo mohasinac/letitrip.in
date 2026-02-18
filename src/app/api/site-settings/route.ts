@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse } from "@/lib/api-response";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -82,10 +83,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.ADMIN.LOAD_SETTINGS_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.ADMIN.LOAD_SETTINGS_FAILED, 500);
   }
 }
 
@@ -148,22 +146,13 @@ export async function PATCH(request: NextRequest) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, { error });
 
     if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
+      return errorResponse(error.message, 401);
     }
 
     if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
+      return errorResponse(error.message, 403);
     }
 
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.ADMIN.SAVE_SETTINGS_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.ADMIN.SAVE_SETTINGS_FAILED, 500);
   }
 }

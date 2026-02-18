@@ -88,6 +88,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preserved existing status code behavior (`401`, `400`, `500`) while reducing repetitive manual `NextResponse.json` response blocks.
 - Validated with focused Jest suites for `auth` and `profile` API routes.
 
+### API Maintainability Migration — Safe Batch 6 (Feb 18, 2026)
+
+- Standardized shared response helper usage in:
+  - `src/app/api/auth/send-verification/route.ts`
+  - `src/app/api/auth/reset-password/route.ts`
+  - `src/app/api/site-settings/route.ts`
+- Converted manual catch-path `NextResponse.json` error returns to `errorResponse()` while preserving route behavior and status mapping.
+- Validated with focused Jest suites for `auth` and `site-settings` API routes.
+
 ### Documentation Cleanup (Feb 18, 2026)
 
 - Removed non-essential phase/status/session/report markdown files to keep documentation focused on core references.
