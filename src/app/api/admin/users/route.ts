@@ -6,7 +6,11 @@
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { userRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
@@ -27,13 +31,13 @@ export const GET = createApiHandler({
   handler: async ({ request }: { request: NextRequest }) => {
     const searchParams = getSearchParams(request);
 
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = Math.min(
-      parseInt(searchParams.get("pageSize") || "100", 10),
-      500,
-    );
-    const filters = searchParams.get("filters") || undefined;
-    const sorts = searchParams.get("sorts") || "-createdAt";
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 100, {
+      min: 1,
+      max: 500,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
     serverLogger.info("Admin users list requested", {
       filters,

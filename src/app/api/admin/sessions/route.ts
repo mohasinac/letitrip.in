@@ -11,8 +11,10 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import {
+  getNumberParam,
   getRequiredSessionCookie,
   getSearchParams,
+  getStringParam,
 } from "@/lib/api/request-helpers";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -32,8 +34,11 @@ export async function GET(req: NextRequest) {
 
     // Get query parameters
     const searchParams = getSearchParams(req);
-    const userId = searchParams.get("userId");
-    const limit = parseInt(searchParams.get("limit") || "100", 10);
+    const userId = getStringParam(searchParams, "userId");
+    const limit = getNumberParam(searchParams, "limit", 100, {
+      min: 1,
+      max: 1000,
+    });
 
     // Fetch sessions and stats via repository
     const { sessions: rawSessions, stats } =

@@ -17,7 +17,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import {
+  getBooleanParam,
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -50,15 +55,15 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const productId = searchParams.get("productId");
-    const featured = searchParams.get("featured") === "true";
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = Math.min(
-      parseInt(searchParams.get("pageSize") || "10", 10),
-      50,
-    );
-    const filters = searchParams.get("filters") || undefined;
-    const sorts = searchParams.get("sorts") || "-createdAt";
+    const productId = getStringParam(searchParams, "productId");
+    const featured = getBooleanParam(searchParams, "featured") === true;
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 10, {
+      min: 1,
+      max: 50,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
     // Handle featured reviews query (no productId required)
     if (featured) {

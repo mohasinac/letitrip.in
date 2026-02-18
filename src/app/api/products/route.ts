@@ -20,7 +20,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applySieveToArray } from "@/helpers";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -39,13 +43,13 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = Math.min(
-      parseInt(searchParams.get("pageSize") || "20", 10),
-      100,
-    );
-    const filters = searchParams.get("filters") || undefined;
-    const sorts = searchParams.get("sorts") || "-createdAt";
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 20, {
+      min: 1,
+      max: 100,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
     // Get all products from repository
     const allProducts = await productRepository.findAll();
