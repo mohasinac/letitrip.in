@@ -511,7 +511,7 @@ import { SectionTabs } from '@/components';
 - `PHONE` - Phone errors (NO_PHONE, ALREADY_IN_USE, VERIFY_FAILED, ADD_FAILED)
 - `MEDIA` - Media errors (TRIM_FAILED, CROP_FAILED, NO_FILE)
 - `ADDRESS` - Address errors (FETCH_FAILED, CREATE_FAILED, UPDATE_FAILED, DELETE_FAILED, SET_DEFAULT_FAILED)
-- `API` - API route logging errors (ROUTE*ERROR, CAROUSEL*_*ERROR, PRODUCTS*__ERROR, MEDIA__*ERROR, ADMIN_SESSIONS_ERROR, LOGOUT*_\_ERROR, etc.)
+- `API` - API route logging errors (ROUTE*ERROR, CAROUSEL*_*ERROR, PRODUCTS***ERROR, MEDIA***ERROR, ADMIN_SESSIONS_ERROR, LOGOUT*_\_ERROR, etc.)
 
 ---
 
@@ -3325,9 +3325,8 @@ This guide provides a complete reference for:
 
 ### Core Documentation
 
-- [Coding Standards](../copilot-instructions.md) - Full coding guidelines and mandatory rules
+- [Coding Standards](../.github/copilot-instructions.md) - Full coding guidelines and mandatory rules
 - [Changelog](./CHANGELOG.md) - Version history and recent changes
-- [Refactoring Plan](./REFACTOR.md) - Comprehensive refactoring roadmap (100% complete)
 - [Quick Reference](./QUICK_REFERENCE.md) - Common patterns and shortcuts
 - [Security](./SECURITY.md) - Security best practices
 

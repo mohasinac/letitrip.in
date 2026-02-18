@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation Cleanup (Feb 18, 2026)
+
+- Removed non-essential phase/status/session/report markdown files to keep documentation focused on core references.
+- Simplified [docs/README.md](./README.md) to a minimal index of maintained documentation.
+- Updated [README.md](../README.md) documentation links to only reference retained core docs.
+
 ### Phase 4: Admin Dashboard Creation — Media Operations & UI Components
 
 #### New Media Admin Dashboard
@@ -854,7 +860,7 @@ Replaced all hardcoded error/success strings across every API route with `ERROR_
   - Real-time result display with detailed metrics
   - Select All / Deselect All convenience buttons
   - Confirmation dialogs for delete operations
-  - [README.md](src/app/demo/seed/README.md): 282-line comprehensive documentation
+  - [README.md](../src/app/demo/seed/README.md): 282-line comprehensive documentation
 
 - **Demo Layout** ([src/app/demo/layout.tsx](src/app/demo/layout.tsx)):
   - `noindex, nofollow` metadata for search engine exclusion
@@ -965,7 +971,7 @@ Replaced all hardcoded error/success strings across every API route with `ERROR_
   - Complete keyframes for all animations
   - Extended animation support for loading states and transitions
 
-- **New Styling Guide** ([docs/STYLING_GUIDE.md](docs/STYLING_GUIDE.md)):
+- **New Styling Guide** ([docs/STYLING_GUIDE.md](STYLING_GUIDE.md)):
   - Complete 500+ line styling reference guide
   - Sections: Overview, Core Principles, Global System, THEME_CONSTANTS Reference
   - CSS utility classes catalog with examples
@@ -1785,7 +1791,7 @@ firebase firestore:indexes
 
 **Comprehensive analysis and enhancement roadmap for e-commerce platform**
 
-- **Created [docs/ARCHITECTURE_ENHANCEMENTS.md](ARCHITECTURE_ENHANCEMENTS.md)**: Complete architectural analysis document
+- **Created docs/ARCHITECTURE_ENHANCEMENTS.md**: Complete architectural analysis document
   - 14 missing critical e-commerce features identified
   - 4-phase implementation roadmap (16-week plan)
   - Backend-focused enhancement strategy
@@ -4241,7 +4247,7 @@ firebase firestore:indexes
 #### ✅ User Role Confirmed Admin in Firestore
 
 - User successfully updated role from "user" to "admin" in Firebase Console
-- Manual fix completed as documented in [docs/FIX_ADMIN_ROLE.md](docs/FIX_ADMIN_ROLE.md)
+- Manual fix completed as documented in docs/FIX_ADMIN_ROLE.md
 - Future registrations with admin@letitrip.in will automatically get admin role via `getDefaultRole()`
 
 #### 🐛 Fixed Session Cookie Creation Error
@@ -4276,7 +4282,7 @@ firebase firestore:indexes
 
 - **Issue**: Users who registered with `admin@letitrip.in` BEFORE the role system was implemented have role="user" in database
 - **Solution**: Manual update required in Firebase Console
-- **Documentation**: Created [docs/FIX_ADMIN_ROLE.md](docs/FIX_ADMIN_ROLE.md) with step-by-step instructions
+- **Documentation**: Created docs/FIX_ADMIN_ROLE.md with step-by-step instructions
 - **Note**: Future registrations with admin@letitrip.in will automatically get admin role
 
 #### 🐛 Removed Phone UI from Login/Registration Pages

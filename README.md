@@ -35,17 +35,17 @@ A modern Next.js 16 e-commerce platform with multi-seller marketplace, auction s
 **Start Here:**
 
 - 🌟 **[Quick Reference Guide](./docs/QUICK_REFERENCE.md)** - Common patterns and quick lookups
-- 📖 **[Getting Started](./docs/getting-started.md)** - Installation and setup
 - 📋 **[Changelog](./docs/CHANGELOG.md)** - Version history and updates
 - 🤝 **[Contributing](./CONTRIBUTING.md)** - How to contribute
 
 **Full Documentation:**
 
 - [Documentation Index](./docs/README.md) - Complete documentation navigation
-- [Project Structure](./docs/project-structure.md) - Directory organization
-- [Component Library](./docs/components/README.md) - UI components
-- [API Documentation](./docs/api/) - API reference
-- [Firebase Complete Stack](./docs/guides/FIREBASE_COMPLETE_STACK.md) - Backend services
+- [Guide](./docs/GUIDE.md) - Complete codebase reference
+- [Security](./docs/SECURITY.md) - Security practices
+- [RBAC](./docs/RBAC.md) - Role access system
+- [Error Handling](./docs/ERROR_HANDLING.md) - Error architecture
+- [Styling Guide](./docs/STYLING_GUIDE.md) - UI and styling standards
 
 ## 🚀 Quick Start
 
@@ -233,9 +233,9 @@ MIT
 ## 🔗 Links
 
 - [Documentation](./docs/README.md)
-- [Component API](./docs/components/README.md)
-- [Gesture Hooks](./docs/api/hooks.md)
-- [Testing Guide](./docs/guides/testing.md)
+- [Guide](./docs/GUIDE.md)
+- [Quick Reference](./docs/QUICK_REFERENCE.md)
+- [Security](./docs/SECURITY.md)
 
 ---
 

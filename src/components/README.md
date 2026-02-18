@@ -638,7 +638,7 @@ When creating a new component:
 
 - [GUIDE.md](../../docs/GUIDE.md) - Complete codebase reference
 - [Hooks](../hooks/README.md) - React hooks
-- [Constants](../constants/README.md) - UI constants and theme
+- [Quick Reference](../../docs/QUICK_REFERENCE.md) - UI constants and theme usage patterns
 - [Coding Standards](../../.github/copilot-instructions.md) - Component best practices
 
 ---

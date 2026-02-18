@@ -658,6 +658,19 @@ When adding indices, update BOTH the schema file AND `firestore.indexes.json`, t
 - Extend existing docs in `docs/` - NEVER create session-specific files
 - NEVER create `REFACTORING_DATE.md`, `SESSION_SUMMARY.md`, etc.
 
+### Core Documentation Set (Keep Updated)
+
+- `docs/README.md` (documentation index)
+- `docs/GUIDE.md` (complete reference)
+- `docs/QUICK_REFERENCE.md` (common patterns)
+- `docs/CHANGELOG.md` (history)
+- `docs/SECURITY.md` (security)
+- `docs/RBAC.md` (role access)
+- `docs/ERROR_HANDLING.md` (error handling)
+- `docs/STYLING_GUIDE.md` (styling standards)
+
+When updating links, reference only existing docs from this maintained set unless a new doc is explicitly approved.
+
 ---
 
 ## Development Commands
