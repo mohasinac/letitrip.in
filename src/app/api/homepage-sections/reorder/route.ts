@@ -4,7 +4,7 @@
  * Handles reordering homepage sections
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
@@ -13,6 +13,8 @@ import {
   homepageSectionsReorderSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
@@ -36,13 +38,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(homepageSectionsReorderSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -59,31 +58,8 @@ export async function POST(request: NextRequest) {
     const updatedSections = await homepageSectionsRepository.findAll();
     updatedSections.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    return NextResponse.json({
-      success: true,
-      data: updatedSections,
-      message: SUCCESS_MESSAGES.SECTION.REORDERED,
-    });
+    return successResponse(updatedSections, SUCCESS_MESSAGES.SECTION.REORDERED);
   } catch (error) {
-    serverLogger.error("POST /api/homepage-sections/reorder error", { error });
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.REORDER_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

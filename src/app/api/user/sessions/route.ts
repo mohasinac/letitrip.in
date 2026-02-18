@@ -6,10 +6,10 @@
  * Allows users to view and manage their own sessions.
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
+import { successResponse } from "@/lib/api-response";
 
 /**
  * Get current user's sessions
@@ -25,12 +25,7 @@ export async function GET() {
     // Count active sessions
     const activeCount = await sessionRepository.countActiveByUser(user.uid);
 
-    return NextResponse.json({
-      success: true,
-      sessions,
-      activeCount,
-      total: sessions.length,
-    });
+    return successResponse({ sessions, activeCount, total: sessions.length });
   } catch (error: unknown) {
     return handleApiError(error);
   }

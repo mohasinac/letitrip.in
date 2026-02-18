@@ -6,12 +6,13 @@
  * maintaining the API-only architecture and avoiding client-side Firestore access.
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { AuthenticationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
 import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 
 export async function GET(request: NextRequest) {
@@ -33,36 +34,33 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Return user profile (excluding sensitive data like passwordHash)
-    return NextResponse.json({
-      success: true,
-      data: {
-        uid: user.uid,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        phoneNumber: user.phoneNumber,
-        phoneVerified: user.phoneVerified,
-        role: user.role,
-        disabled: user.disabled,
-        avatarMetadata: user.avatarMetadata,
-        publicProfile: user.publicProfile,
-        stats: user.stats,
-        metadata: user.metadata
-          ? {
-              lastSignInTime:
-                user.metadata.lastSignInTime instanceof Date
-                  ? user.metadata.lastSignInTime.toISOString()
-                  : ((user.metadata.lastSignInTime as any)
-                      ?.toDate?.()
-                      ?.toISOString() ?? user.metadata.lastSignInTime),
-              creationTime: user.metadata.creationTime,
-              loginCount: user.metadata.loginCount,
-            }
-          : undefined,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+    return successResponse({
+      uid: user.uid,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      phoneNumber: user.phoneNumber,
+      phoneVerified: user.phoneVerified,
+      role: user.role,
+      disabled: user.disabled,
+      avatarMetadata: user.avatarMetadata,
+      publicProfile: user.publicProfile,
+      stats: user.stats,
+      metadata: user.metadata
+        ? {
+            lastSignInTime:
+              user.metadata.lastSignInTime instanceof Date
+                ? user.metadata.lastSignInTime.toISOString()
+                : ((user.metadata.lastSignInTime as any)
+                    ?.toDate?.()
+                    ?.toISOString() ?? user.metadata.lastSignInTime),
+            creationTime: user.metadata.creationTime,
+            loginCount: user.metadata.loginCount,
+          }
+        : undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     });
   } catch (error: unknown) {
     return handleApiError(error);

@@ -3,12 +3,13 @@
  * POST /api/auth/session/activity - Update session last activity timestamp
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
 import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 
 export async function POST(request: NextRequest) {
@@ -36,10 +37,10 @@ export async function POST(request: NextRequest) {
     // Update session activity
     await sessionRepository.updateActivity(sessionId);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.SESSION.ACTIVITY_UPDATED,
-    });
+    return successResponse(
+      undefined,
+      SUCCESS_MESSAGES.SESSION.ACTIVITY_UPDATED,
+    );
   } catch (error: unknown) {
     return handleApiError(error);
   }

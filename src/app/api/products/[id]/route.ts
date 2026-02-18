@@ -13,7 +13,7 @@
  * - Implement webhook notifications for status changes
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -31,6 +31,8 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -63,24 +65,9 @@ export async function GET(
     }
 
     // Return product data
-    return NextResponse.json({ success: true, data: product }, { status: 200 });
+    return successResponse(product);
   } catch (error) {
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(
-      `GET /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_GET_ERROR}`,
-      { error },
-    );
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.PRODUCT.FETCH_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -131,13 +118,10 @@ export async function PATCH(
     const validation = validateRequestBody(productUpdateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -152,41 +136,9 @@ export async function PATCH(
     }
 
     // Return updated product
-    return NextResponse.json(
-      { success: true, data: updatedProduct },
-      { status: 200 },
-    );
+    return successResponse(updatedProduct);
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(
-      `PATCH /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_PATCH_ERROR}`,
-      { error },
-    );
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.PRODUCT.UPDATE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -238,43 +190,8 @@ export async function DELETE(
     });
 
     // Return success
-    return NextResponse.json(
-      {
-        success: true,
-        message: SUCCESS_MESSAGES.PRODUCT.DELETED,
-      },
-      { status: 200 },
-    );
+    return successResponse(undefined, SUCCESS_MESSAGES.PRODUCT.DELETED);
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(
-      `DELETE /api/products/${id} ${ERROR_MESSAGES.API.PRODUCTS_ID_DELETE_ERROR}`,
-      { error },
-    );
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.PRODUCT.DELETE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

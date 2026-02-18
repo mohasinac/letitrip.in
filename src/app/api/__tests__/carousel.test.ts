@@ -55,20 +55,55 @@ jest.mock("@/lib/validation/schemas", () => ({
   carouselCreateSchema: {},
 }));
 
-jest.mock("@/lib/errors", () => ({
-  AuthenticationError: class AuthenticationError extends Error {
-    constructor(message: string) {
+jest.mock("@/lib/errors", () => {
+  class AppError extends Error {
+    statusCode: number;
+    code: string;
+    constructor(statusCode: number, message: string, code: string) {
       super(message);
+      this.statusCode = statusCode;
+      this.code = code;
+    }
+    toJSON() {
+      return { success: false, error: this.message, code: this.code };
+    }
+  }
+  class AuthenticationError extends AppError {
+    constructor(message: string) {
+      super(401, message, "AUTH_ERROR");
       this.name = "AuthenticationError";
     }
-  },
-  AuthorizationError: class AuthorizationError extends Error {
+  }
+  class AuthorizationError extends AppError {
     constructor(message: string) {
-      super(message);
+      super(403, message, "FORBIDDEN");
       this.name = "AuthorizationError";
     }
-  },
-}));
+  }
+  return {
+    AppError,
+    AuthenticationError,
+    AuthorizationError,
+    handleApiError: (error: unknown) => {
+      const { NextResponse } = require("next/server");
+      if (error instanceof AppError) {
+        return NextResponse.json(error.toJSON(), { status: error.statusCode });
+      }
+      return NextResponse.json(
+        { success: false, error: "Internal server error" },
+        { status: 500 },
+      );
+    },
+  };
+});
+
+jest.mock("@/lib/errors/error-handler", () => {
+  const errors = jest.requireMock("@/lib/errors");
+  return {
+    handleApiError: errors.handleApiError,
+    logError: jest.fn(),
+  };
+});
 
 import { GET, POST } from "../carousel/route";
 

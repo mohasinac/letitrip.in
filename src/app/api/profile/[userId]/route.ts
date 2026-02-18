@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { USER_COLLECTION } from "@/db/schema/users";
 import type { UserDocument } from "@/db/schema/users";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse } from "@/lib/api-response";
 import {
   ValidationError,
   NotFoundError,
@@ -60,13 +61,7 @@ export async function GET(
       publicProfile.phoneNumber = userData.phoneNumber;
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        user: publicProfile,
-      },
-      { status: 200 },
-    );
+    return successResponse(publicProfile);
   } catch (error) {
     return handleApiError(error);
   }

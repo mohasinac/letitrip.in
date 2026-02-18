@@ -4,7 +4,7 @@
  * Handles individual review operations
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -21,6 +21,8 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -44,28 +46,9 @@ export async function GET(
       throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
     }
 
-    return NextResponse.json({
-      success: true,
-      data: review,
-    });
+    return successResponse(review);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `GET /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_GET_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.FETCH_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -106,55 +89,19 @@ export async function PATCH(
     const validation = validateRequestBody(reviewUpdateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
     // Update review
     const updatedReview = await reviewRepository.update(id, validation.data);
 
-    return NextResponse.json({
-      success: true,
-      data: updatedReview,
-    });
+    return successResponse(updatedReview);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `PATCH /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_PATCH_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.UPDATE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -193,41 +140,8 @@ export async function DELETE(
     // Delete review (hard delete - reviews can be removed completely)
     await reviewRepository.delete(id);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.REVIEW.DELETED,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.REVIEW.DELETED);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `DELETE /api/reviews/${id} ${ERROR_MESSAGES.API.REVIEWS_ID_DELETE_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.DELETE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

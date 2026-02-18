@@ -167,13 +167,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(productCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          fields: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 

@@ -10,7 +10,7 @@
  * - Add webhook notifications for changes
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { categoriesRepository } from "@/repositories";
 import { CategoryDocument } from "@/db/schema/categories";
 import {
@@ -27,6 +27,8 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
@@ -61,24 +63,9 @@ export async function GET(
     }
 
     // Return category data
-    return NextResponse.json(
-      { success: true, data: category },
-      { status: 200 },
-    );
+    return successResponse(category);
   } catch (error) {
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(`GET /api/categories/${id} error`, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CATEGORY.FETCH_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -121,13 +108,10 @@ export async function PATCH(
     const validation = validateRequestBody(categoryUpdateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -142,35 +126,9 @@ export async function PATCH(
     }
 
     // Return updated category
-    return NextResponse.json({ success: true, data: updated }, { status: 200 });
+    return successResponse(updated);
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(`PATCH /api/categories/${id} error`, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CATEGORY.UPDATE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -210,32 +168,18 @@ export async function DELETE(
 
     // Check if category has children
     if (category.childrenIds.length > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.CATEGORY.HAS_CHILDREN,
-          details: {
-            childrenCount: category.childrenIds.length,
-            suggestion: "Delete or move child categories first",
-          },
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.CATEGORY.HAS_CHILDREN, 400, {
+        childrenCount: category.childrenIds.length,
+        suggestion: "Delete or move child categories first",
+      });
     }
 
     // Check if category has products
     if (category.metrics && category.metrics.productCount > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.CATEGORY.HAS_PRODUCTS,
-          details: {
-            productCount: category.metrics.productCount,
-            suggestion: "Move products to another category first",
-          },
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.CATEGORY.HAS_PRODUCTS, 400, {
+        productCount: category.metrics.productCount,
+        suggestion: "Move products to another category first",
+      });
     }
 
     // Soft delete category (set isActive to false)
@@ -245,40 +189,8 @@ export async function DELETE(
     });
 
     // Return success
-    return NextResponse.json(
-      {
-        success: true,
-        message: SUCCESS_MESSAGES.CATEGORY.DELETED,
-      },
-      { status: 200 },
-    );
+    return successResponse(undefined, SUCCESS_MESSAGES.CATEGORY.DELETED);
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    const { id } = await params;
-    serverLogger.error(`DELETE /api/categories/${id} error`, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CATEGORY.DELETE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

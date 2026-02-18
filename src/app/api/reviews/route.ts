@@ -92,13 +92,7 @@ export async function GET(request: NextRequest) {
 
     // Require productId parameter for product-specific reviews
     if (!productId) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.PRODUCT_ID_REQUIRED,
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.VALIDATION.PRODUCT_ID_REQUIRED, 400);
     }
 
     // Fetch all reviews for the product (for stats calculation)
@@ -222,13 +216,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(reviewCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 

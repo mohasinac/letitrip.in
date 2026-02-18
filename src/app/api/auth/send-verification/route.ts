@@ -5,7 +5,7 @@
  * Resends email verification to user
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { errorResponse, successResponse } from "@/lib/api-response";
@@ -33,10 +33,7 @@ export async function POST(req: NextRequest) {
     const userRecord = await auth.getUserByEmail(email);
 
     if (userRecord.emailVerified) {
-      return NextResponse.json({
-        success: false,
-        message: ERROR_MESSAGES.EMAIL.ALREADY_VERIFIED,
-      });
+      return errorResponse(ERROR_MESSAGES.EMAIL.ALREADY_VERIFIED, 400);
     }
 
     // Generate email verification link

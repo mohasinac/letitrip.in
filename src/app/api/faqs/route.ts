@@ -16,7 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
   getSearchParams,
@@ -215,13 +215,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(faqCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -240,14 +237,7 @@ export async function POST(request: NextRequest) {
     // Invalidate FAQ cache
     invalidateCache("/api/faqs");
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: faq,
-        message: SUCCESS_MESSAGES.FAQ.CREATED,
-      },
-      { status: 201 },
-    );
+    return successResponse(faq, SUCCESS_MESSAGES.FAQ.CREATED, 201);
   } catch (error) {
     serverLogger.error("POST /api/faqs error", { error });
     return errorResponse(ERROR_MESSAGES.FAQ.CREATE_FAILED, 500);

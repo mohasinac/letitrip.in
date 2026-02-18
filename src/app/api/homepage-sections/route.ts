@@ -16,7 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
@@ -28,6 +28,7 @@ import {
   homepageSectionCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
@@ -119,13 +120,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(homepageSectionCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -150,25 +148,8 @@ export async function POST(request: NextRequest) {
       order,
     } as any);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: section,
-        message: SUCCESS_MESSAGES.SECTION.CREATED,
-      },
-      { status: 201 },
-    );
+    return successResponse(section, SUCCESS_MESSAGES.SECTION.CREATED, 201);
   } catch (error) {
-    serverLogger.error("POST /api/homepage-sections error", { error });
-
-    if (error instanceof AuthenticationError) {
-      return errorResponse(error.message, 401);
-    }
-
-    if (error instanceof AuthorizationError) {
-      return errorResponse(error.message, 403);
-    }
-
-    return errorResponse(ERROR_MESSAGES.SECTION.CREATE_FAILED, 500);
+    return handleApiError(error);
   }
 }

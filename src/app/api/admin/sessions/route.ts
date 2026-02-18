@@ -6,10 +6,10 @@
  * Supports filtering by userId and limiting results
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import {
   getNumberParam,
@@ -105,12 +105,7 @@ export async function GET(req: NextRequest) {
       session.user = userMap.get(session.userId) || null;
     });
 
-    return NextResponse.json({
-      success: true,
-      sessions,
-      stats,
-      count: sessions.length,
-    });
+    return successResponse({ sessions, stats, count: sessions.length });
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.ADMIN_SESSIONS_ERROR, { error });
     return errorResponse(

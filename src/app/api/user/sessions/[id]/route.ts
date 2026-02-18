@@ -5,12 +5,13 @@
  * Allows users to revoke their own sessions (e.g., logout from other devices).
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthorizationError } from "@/lib/errors";
+import { AuthorizationError, NotFoundError } from "@/lib/errors";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function DELETE(
   request: NextRequest,
@@ -26,10 +27,7 @@ export async function DELETE(
     const session = await sessionRepository.findById(sessionId);
 
     if (!session) {
-      return NextResponse.json(
-        { success: false, error: ERROR_MESSAGES.SESSION.NOT_FOUND },
-        { status: 404 },
-      );
+      throw new NotFoundError(ERROR_MESSAGES.SESSION.NOT_FOUND);
     }
 
     // Verify user owns this session
@@ -40,11 +38,10 @@ export async function DELETE(
     // Revoke the session
     await sessionRepository.revokeSession(sessionId, user.uid);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
-      sessionId,
-    });
+    return successResponse(
+      { sessionId },
+      SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
+    );
   } catch (error: unknown) {
     return handleApiError(error);
   }

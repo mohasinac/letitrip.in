@@ -339,8 +339,8 @@ describe("Profile API - GET /api/profile/[userId]", () => {
 
     expect(status).toBe(200);
     expect(body.success).toBe(true);
-    expect(body.user.uid).toBe("user-pub-001");
-    expect(body.user.displayName).toBe("Public User");
+    expect(body.data.uid).toBe("user-pub-001");
+    expect(body.data.displayName).toBe("Public User");
   });
 
   it("includes email when showEmail is true", async () => {
@@ -349,7 +349,7 @@ describe("Profile API - GET /api/profile/[userId]", () => {
     const res = await callProfileGET("user-pub-001");
     const { body } = await parseResponse(res);
 
-    expect(body.user.email).toBe("pub@example.com");
+    expect(body.data.email).toBe("pub@example.com");
   });
 
   it("excludes phone when showPhone is false", async () => {
@@ -358,7 +358,7 @@ describe("Profile API - GET /api/profile/[userId]", () => {
     const res = await callProfileGET("user-pub-001");
     const { body } = await parseResponse(res);
 
-    expect(body.user.phoneNumber).toBeUndefined();
+    expect(body.data.phoneNumber).toBeUndefined();
   });
 
   it("returns 404 for non-existent user", async () => {
@@ -388,8 +388,8 @@ describe("Profile API - GET /api/profile/[userId]", () => {
     const res = await callProfileGET("user-pub-001");
     const { body } = await parseResponse(res);
 
-    expect(body.user.stats).toBeDefined();
-    expect(body.user.stats.ordersCount).toBe(5);
+    expect(body.data.stats).toBeDefined();
+    expect(body.data.stats.ordersCount).toBe(5);
   });
 
   it("includes role in public profile", async () => {
@@ -398,6 +398,6 @@ describe("Profile API - GET /api/profile/[userId]", () => {
     const res = await callProfileGET("user-pub-001");
     const { body } = await parseResponse(res);
 
-    expect(body.user.role).toBe("user");
+    expect(body.data.role).toBe("user");
   });
 });

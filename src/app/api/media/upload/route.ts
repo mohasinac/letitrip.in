@@ -4,7 +4,7 @@
  * Upload files to Firebase Cloud Storage
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -13,6 +13,8 @@ import {
   mediaUploadRequestSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
 
@@ -40,13 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Validate file exists
     if (!file) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.MEDIA.NO_FILE,
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.MEDIA.NO_FILE, 400);
     }
 
     // Validate file type and size
@@ -61,17 +57,10 @@ export async function POST(request: NextRequest) {
     const allowedTypes = [...allowedImageTypes, ...allowedVideoTypes];
 
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.UPLOAD.INVALID_TYPE,
-          details: {
-            allowed: "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime",
-            received: file.type,
-          },
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
+        allowed: "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime",
+        received: file.type,
+      });
     }
 
     // Validate file size (max 10MB for images, 50MB for videos)
@@ -79,17 +68,10 @@ export async function POST(request: NextRequest) {
     const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB or 10MB
 
     if (file.size > maxSize) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE,
-          details: {
-            maxSize: isVideo ? "50MB" : "10MB",
-            fileSize: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
-          },
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
+        maxSize: isVideo ? "50MB" : "10MB",
+        fileSize: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+      });
     }
 
     // Generate unique filename
@@ -136,39 +118,21 @@ export async function POST(request: NextRequest) {
       downloadURL = signedUrl;
     }
 
-    return NextResponse.json(
+    return successResponse(
       {
-        success: true,
-        data: {
-          url: downloadURL,
-          path: storagePath,
-          filename,
-          size: file.size,
-          type: file.type,
-          isPublic,
-          uploadedBy: user.uid,
-          uploadedAt: new Date().toISOString(),
-        },
-        message: SUCCESS_MESSAGES.UPLOAD.FILE_UPLOADED,
+        url: downloadURL,
+        path: storagePath,
+        filename,
+        size: file.size,
+        type: file.type,
+        isPublic,
+        uploadedBy: user.uid,
+        uploadedAt: new Date().toISOString(),
       },
-      { status: 201 },
+      SUCCESS_MESSAGES.UPLOAD.FILE_UPLOADED,
+      201,
     );
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    serverLogger.error(ERROR_MESSAGES.API.MEDIA_UPLOAD_ERROR, { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error: ERROR_MESSAGES.UPLOAD.UPLOAD_FAILED,
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

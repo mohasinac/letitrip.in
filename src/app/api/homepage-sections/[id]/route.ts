@@ -4,7 +4,7 @@
  * Handles individual homepage section operations
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
@@ -17,6 +17,8 @@ import {
   AuthorizationError,
   NotFoundError,
 } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
@@ -41,25 +43,9 @@ export async function GET(
       throw new NotFoundError(ERROR_MESSAGES.SECTION.NOT_FOUND);
     }
 
-    return NextResponse.json({
-      success: true,
-      data: section,
-    });
+    return successResponse(section);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(`GET /api/homepage-sections/${id} error`, { error });
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.FETCH_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -92,13 +78,10 @@ export async function PATCH(
     const validation = validateRequestBody(homepageSectionUpdateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -108,39 +91,9 @@ export async function PATCH(
       validation.data as any,
     );
 
-    return NextResponse.json({
-      success: true,
-      data: updatedSection,
-    });
+    return successResponse(updatedSection);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(`PATCH /api/homepage-sections/${id} error`, { error });
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.UPDATE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }
 
@@ -171,38 +124,8 @@ export async function DELETE(
     // Delete homepage section (hard delete - sections can be removed)
     await homepageSectionsRepository.delete(id);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.SECTION.DELETED,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.SECTION.DELETED);
   } catch (error) {
-    const { id } = await params;
-    serverLogger.error(`DELETE /api/homepage-sections/${id} error`, { error });
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.DELETE_FAILED },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

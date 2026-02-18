@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { categoriesRepository } from "@/repositories";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
   getSearchParams,
@@ -28,6 +28,7 @@ import {
   categoryCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { CategoryCreateInput } from "@/db/schema/categories";
@@ -162,13 +163,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(categoryCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -204,15 +202,7 @@ export async function POST(request: NextRequest) {
     const category =
       await categoriesRepository.createWithHierarchy(categoryData);
 
-    // Return created category
-    return NextResponse.json(
-      {
-        success: true,
-        data: category,
-        message: SUCCESS_MESSAGES.CATEGORY.CREATED,
-      },
-      { status: 201 },
-    );
+    return successResponse(category, SUCCESS_MESSAGES.CATEGORY.CREATED, 201);
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return errorResponse(error.message, 401);

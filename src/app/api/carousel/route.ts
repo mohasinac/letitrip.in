@@ -16,7 +16,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
@@ -28,6 +28,7 @@ import {
   carouselCreateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -115,13 +116,10 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(carouselCreateSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
       );
     }
 
@@ -129,19 +127,12 @@ export async function POST(request: NextRequest) {
     if (validation.data.active) {
       const activeSlides = await carouselRepository.getActiveSlides();
       if (activeSlides.length >= 5) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED,
-            details: {
-              currentActive: activeSlides.length,
-              maxAllowed: 5,
-              suggestion:
-                "Deactivate an existing slide before creating a new active one",
-            },
-          },
-          { status: 400 },
-        );
+        return errorResponse(ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED, 400, {
+          currentActive: activeSlides.length,
+          maxAllowed: 5,
+          suggestion:
+            "Deactivate an existing slide before creating a new active one",
+        });
       }
     }
 
@@ -169,25 +160,8 @@ export async function POST(request: NextRequest) {
       createdBy: user.uid,
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: slide,
-        message: SUCCESS_MESSAGES.CAROUSEL.CREATED,
-      },
-      { status: 201 },
-    );
+    return successResponse(slide, SUCCESS_MESSAGES.CAROUSEL.CREATED, 201);
   } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.CAROUSEL_POST_ERROR, { error });
-
-    if (error instanceof AuthenticationError) {
-      return errorResponse(error.message, 401);
-    }
-
-    if (error instanceof AuthorizationError) {
-      return errorResponse(error.message, 403);
-    }
-
-    return errorResponse(ERROR_MESSAGES.CAROUSEL.CREATE_FAILED, 500);
+    return handleApiError(error);
   }
 }
