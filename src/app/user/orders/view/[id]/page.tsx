@@ -72,7 +72,7 @@ export default function OrderViewPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    // NOTE: /api/user/orders route not yet created — this will remain null until the route is added
+    // TODO: Wire up once orders page uses useApiQuery
     // const { data: orderData } = useApiQuery(API_ENDPOINTS.ORDERS.GET_BY_ID(orderId));
     // setOrder(orderData);
     // For now, show empty state

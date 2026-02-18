@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
     SESSION_VALIDATE: "/api/auth/session/validate",
   },
 
-  // User endpoints ✅ Routes exist (except addresses — no route yet)
+  // User endpoints ✅ All routes exist
   USER: {
     /** GET profile or PATCH to update — same path, different method */
     PROFILE: "/api/user/profile",
@@ -47,7 +47,7 @@ export const API_ENDPOINTS = {
     DELETE_ACCOUNT: "/api/profile/delete-account",
   },
 
-  // Address endpoints ❌ No route files yet — TODO: create /api/user/addresses routes
+  // Address endpoints ✅ Routes exist
   ADDRESSES: {
     LIST: "/api/user/addresses", // GET - List user addresses
     CREATE: "/api/user/addresses", // POST - Create new address
@@ -57,7 +57,7 @@ export const API_ENDPOINTS = {
     SET_DEFAULT: (id: string) => `/api/user/addresses/${id}/set-default`, // POST - Set default address
   },
 
-  // Order endpoints ❌ No route files yet — TODO: create /api/user/orders routes
+  // Order endpoints ✅ Routes exist
   ORDERS: {
     LIST: "/api/user/orders", // GET - List user orders
     GET_BY_ID: (id: string) => `/api/user/orders/${id}`, // GET - Get single order details

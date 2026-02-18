@@ -121,6 +121,37 @@ export const addressSchema = z.object({
 });
 
 // ============================================
+// ADDRESS SCHEMAS (user subcollection)
+// ============================================
+
+/**
+ * Base user address schema — covers Indian addresses
+ */
+const userAddressBaseSchema = z.object({
+  label: z.string().min(1, "Label is required").max(50, "Label too long"),
+  fullName: z
+    .string()
+    .min(2, "Full name too short")
+    .max(100, "Full name too long"),
+  phone: z.string().regex(/^\+?[0-9]{10,15}$/, "Invalid phone number"),
+  addressLine1: z
+    .string()
+    .min(5, "Address line 1 too short")
+    .max(150, "Address line 1 too long"),
+  addressLine2: z.string().max(150, "Address line 2 too long").optional(),
+  landmark: z.string().max(100, "Landmark too long").optional(),
+  city: z.string().min(2, "City too short").max(60, "City too long"),
+  state: z.string().min(2, "State too short").max(60, "State too long"),
+  postalCode: z.string().regex(/^\d{6}$/, "Pincode must be exactly 6 digits"),
+  country: z.string().min(2, "Country required").max(60).default("India"),
+  isDefault: z.boolean().optional().default(false),
+});
+
+export const userAddressCreateSchema = userAddressBaseSchema;
+
+export const userAddressUpdateSchema = userAddressBaseSchema.partial();
+
+// ============================================
 // PRODUCT SCHEMAS
 // ============================================
 

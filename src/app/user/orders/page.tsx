@@ -28,7 +28,7 @@ export default function UserOrdersPage() {
     return null;
   }
 
-  // NOTE: Replace with useApiQuery once /api/user/orders route is created (see API_ENDPOINTS.ORDERS)
+  // TODO: Wire up useApiQuery once hooks support optional auth headers
   // const { data: orders, isLoading } = useApiQuery(API_ENDPOINTS.ORDERS.LIST);
 
   return (

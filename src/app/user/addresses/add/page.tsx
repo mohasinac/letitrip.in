@@ -31,7 +31,6 @@ export default function AddAddressPage() {
     setSaving(true);
 
     try {
-      // NOTE: /api/user/addresses routes not yet created — these calls will fail until routes are added
       const response = await fetch(API_ENDPOINTS.ADDRESSES.CREATE, {
         method: "POST",
         headers: {
@@ -47,7 +46,7 @@ export default function AddAddressPage() {
         );
       }
 
-      showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
+      showToast(SUCCESS_MESSAGES.ADDRESS.CREATED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
       logger.error("Error saving address:", error);

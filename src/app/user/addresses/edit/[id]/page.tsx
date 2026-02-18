@@ -47,7 +47,6 @@ export default function EditAddressPage() {
     if (user && addressId) {
       const fetchAddress = async () => {
         try {
-          // NOTE: /api/user/addresses routes not yet created — these calls will fail until routes are added
           const response = await fetch(
             API_ENDPOINTS.ADDRESSES.GET_BY_ID(addressId),
           );
@@ -80,7 +79,6 @@ export default function EditAddressPage() {
     setSaving(true);
 
     try {
-      // NOTE: /api/user/addresses routes not yet created — these calls will fail until routes are added
       const response = await fetch(API_ENDPOINTS.ADDRESSES.UPDATE(addressId), {
         method: "PATCH",
         headers: {
@@ -96,7 +94,7 @@ export default function EditAddressPage() {
         );
       }
 
-      showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
+      showToast(SUCCESS_MESSAGES.ADDRESS.UPDATED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
       logger.error("Error updating address:", error);
@@ -115,7 +113,6 @@ export default function EditAddressPage() {
     setDeleting(true);
 
     try {
-      // NOTE: /api/user/addresses routes not yet created — these calls will fail until routes are added
       const response = await fetch(API_ENDPOINTS.ADDRESSES.DELETE(addressId), {
         method: "DELETE",
       });

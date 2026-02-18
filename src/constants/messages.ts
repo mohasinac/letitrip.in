@@ -228,6 +228,8 @@ export const ERROR_MESSAGES = {
     UPDATE_FAILED: "Failed to update order",
     CREATE_FAILED: "Failed to create order",
     CANCEL_FAILED: "Failed to cancel order",
+    NOT_FOUND: "Order not found",
+    CANNOT_CANCEL: "This order cannot be cancelled",
   },
 
   // Product Errors
@@ -264,6 +266,7 @@ export const ERROR_MESSAGES = {
     UPDATE_FAILED: "Failed to update address",
     DELETE_FAILED: "Failed to delete address",
     SET_DEFAULT_FAILED: "Failed to set default address",
+    NOT_FOUND: "Address not found",
   },
 
   // API Route Errors (server-side logging)

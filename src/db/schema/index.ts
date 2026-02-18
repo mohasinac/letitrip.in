@@ -10,6 +10,7 @@ export * from "./field-names";
 // Core schemas
 export * from "./users";
 export * from "./tokens";
+export * from "./addresses";
 export * from "./products";
 export * from "./orders";
 export * from "./reviews";
