@@ -57,11 +57,32 @@ jest.mock("@/lib/validation/schemas", () => ({
 }));
 
 jest.mock("@/lib/errors", () => ({
+  AppError: class AppError extends Error {
+    constructor(
+      message: string,
+      public statusCode: number = 500,
+    ) {
+      super(message);
+      this.name = "AppError";
+    }
+  },
   AuthenticationError: class AuthenticationError extends Error {
+    statusCode = 401;
     constructor(message: string) {
       super(message);
       this.name = "AuthenticationError";
     }
+  },
+}));
+
+jest.mock("@/lib/errors/error-handler", () => ({
+  handleApiError: (error: any) => {
+    const { NextResponse } = require("next/server");
+    const status = error.statusCode ?? 500;
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status },
+    );
   },
 }));
 

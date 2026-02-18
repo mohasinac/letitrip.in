@@ -14,7 +14,7 @@
  * - Implement review analytics
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
 import { errorResponse, successResponse } from "@/lib/api-response";
@@ -31,8 +31,9 @@ import {
   formatZodErrors,
   reviewCreateSchema,
 } from "@/lib/validation/schemas";
-import { AuthenticationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
+import { NextResponse } from "next/server";
 
 /**
  * GET /api/reviews
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
     // Handle featured reviews query (no productId required)
     if (featured) {
       const featuredReviews = await reviewRepository.findFeatured(pageSize);
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           success: true,
           data: featuredReviews,
@@ -81,13 +82,13 @@ export async function GET(request: NextRequest) {
             hasMore: false,
           },
         },
-        {
-          headers: {
-            "Cache-Control":
-              "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-          },
-        },
+        { status: 200 },
       );
+      response.headers.set(
+        "Cache-Control",
+        "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
+      );
+      return response;
     }
 
     // Require productId parameter for product-specific reviews
@@ -157,7 +158,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         data: sieveResult.items,
@@ -168,19 +169,19 @@ export async function GET(request: NextRequest) {
           totalPages: sieveResult.totalPages,
           hasMore: sieveResult.hasMore,
           ratingDistribution,
-          averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+          averageRating: Math.round(averageRating * 10) / 10,
         },
       },
-      {
-        headers: {
-          "Cache-Control":
-            "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
-        },
-      },
+      { status: 200 },
     );
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
+    );
+    return response;
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, { error });
-    return errorResponse(ERROR_MESSAGES.REVIEW.FETCH_FAILED, 500);
+    return handleApiError(error);
   }
 }
 
@@ -257,12 +258,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, { error });
-
-    // Handle authentication errors
-    if (error instanceof AuthenticationError) {
-      return errorResponse(error.message, 401);
-    }
-
-    return errorResponse(ERROR_MESSAGES.REVIEW.SUBMIT_FAILED, 500);
+    return handleApiError(error);
   }
 }

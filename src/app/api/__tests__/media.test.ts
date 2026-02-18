@@ -161,16 +161,36 @@ jest.mock("@/lib/firebase/admin", () => ({
 }));
 
 jest.mock("@/lib/errors", () => {
-  class AuthenticationError extends Error {
+  class AppError extends Error {
+    constructor(
+      message: string,
+      public statusCode: number = 500,
+    ) {
+      super(message);
+      this.name = "AppError";
+    }
+  }
+  class AuthenticationError extends AppError {
     statusCode = 401;
     code = "AUTH_ERROR";
     constructor(message: string) {
-      super(message);
+      super(message, 401);
       this.name = "AuthenticationError";
     }
   }
-  return { AuthenticationError };
+  return { AppError, AuthenticationError };
 });
+
+jest.mock("@/lib/errors/error-handler", () => ({
+  handleApiError: (error: any) => {
+    const { NextResponse } = require("next/server");
+    const status = error.statusCode ?? 500;
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status },
+    );
+  },
+}));
 
 import { POST as cropPOST } from "../media/crop/route";
 import { POST as trimPOST } from "../media/trim/route";

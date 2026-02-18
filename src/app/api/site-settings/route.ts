@@ -13,7 +13,7 @@
  * - Implement feature flag management
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { errorResponse, successResponse } from "@/lib/api-response";
@@ -70,17 +70,12 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    return NextResponse.json(
-      { success: true, data: responseData },
-      {
-        headers: {
-          // Add cache headers for performance
-          "Cache-Control": isAdmin
-            ? "private, no-cache" // Admin: no cache
-            : "public, max-age=300, s-maxage=600, stale-while-revalidate=120", // Public: 5-10 min cache + SWR
-        },
-      },
-    );
+    const cacheControl = isAdmin
+      ? "private, no-cache"
+      : "public, max-age=300, s-maxage=600, stale-while-revalidate=120";
+    const response = successResponse(responseData);
+    response.headers.set("Cache-Control", cacheControl);
+    return response;
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
     return errorResponse(ERROR_MESSAGES.ADMIN.LOAD_SETTINGS_FAILED, 500);

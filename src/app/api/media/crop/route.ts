@@ -4,7 +4,7 @@
  * Crop images using sharp library
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -12,8 +12,9 @@ import {
   formatZodErrors,
   cropDataSchema,
 } from "@/lib/validation/schemas";
-import { AuthenticationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ApiErrors, successResponse } from "@/lib/api-response";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { getStorage } from "@/lib/firebase/admin";
 import sharp from "sharp";
 import axios from "axios";
@@ -44,14 +45,7 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(cropDataSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
-      );
+      return ApiErrors.validationError(formatZodErrors(validation.errors));
     }
 
     const {
@@ -129,38 +123,20 @@ export async function POST(request: NextRequest) {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
 
-    return NextResponse.json(
+    return successResponse(
       {
-        success: true,
-        data: {
-          url: signedUrl,
-          path: uploadPath,
-          filename,
-          cropData: { x, y, width, height },
-          format: finalFormat,
-          quality,
-          size: croppedBuffer.length,
-        },
-        message: SUCCESS_MESSAGES.MEDIA.IMAGE_CROPPED,
+        url: signedUrl,
+        path: uploadPath,
+        filename,
+        cropData: { x, y, width, height },
+        format: finalFormat,
+        quality,
+        size: croppedBuffer.length,
       },
-      { status: 200 },
+      SUCCESS_MESSAGES.MEDIA.IMAGE_CROPPED,
     );
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
     serverLogger.error(ERROR_MESSAGES.API.MEDIA_CROP_ERROR, { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error: ERROR_MESSAGES.MEDIA.CROP_FAILED,
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

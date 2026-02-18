@@ -16,7 +16,7 @@
  * - Add metrics tracking (response time, error rate)
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applySieveToArray } from "@/helpers";
@@ -32,8 +32,9 @@ import {
   formatZodErrors,
   productCreateSchema,
 } from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { NextResponse } from "next/server";
 
 /**
  * GET /api/products
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         data: sieveResult.items,
@@ -115,17 +116,16 @@ export async function GET(request: NextRequest) {
           hasMore: sieveResult.hasMore,
         },
       },
-      {
-        headers: {
-          "Cache-Control":
-            "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
-        },
-      },
+      { status: 200 },
     );
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
+    );
+    return response;
   } catch (error) {
-    // TODO: Use handleApiError from error handler
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, { error });
-    return errorResponse(ERROR_MESSAGES.PRODUCT.FETCH_FAILED, 500);
+    return handleApiError(error);
   }
 }
 
@@ -187,17 +187,7 @@ export async function POST(request: NextRequest) {
 
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   } catch (error) {
-    if (
-      error instanceof AuthenticationError ||
-      error instanceof AuthorizationError
-    ) {
-      return errorResponse(
-        error.message,
-        error instanceof AuthenticationError ? 401 : 403,
-      );
-    }
-
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { error });
-    return errorResponse(ERROR_MESSAGES.PRODUCT.CREATE_FAILED, 500);
+    return handleApiError(error);
   }
 }

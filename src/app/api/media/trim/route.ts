@@ -4,7 +4,7 @@
  * Trim videos using ffmpeg
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -12,8 +12,9 @@ import {
   formatZodErrors,
   trimDataSchema,
 } from "@/lib/validation/schemas";
-import { AuthenticationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { ApiErrors, errorResponse, successResponse } from "@/lib/api-response";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { getStorage } from "@/lib/firebase/admin";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
@@ -48,14 +49,7 @@ export async function POST(request: NextRequest) {
     const validation = validateRequestBody(trimDataSchema, body);
 
     if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
-      );
+      return ApiErrors.validationError(formatZodErrors(validation.errors));
     }
 
     const {
@@ -69,18 +63,11 @@ export async function POST(request: NextRequest) {
 
     // Validate time range
     if (startTime >= endTime) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.INVALID_TIME_RANGE,
-          details: {
-            message: "Start time must be less than end time",
-            startTime,
-            endTime,
-          },
-        },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.VALIDATION.INVALID_TIME_RANGE, 400, {
+        message: "Start time must be less than end time",
+        startTime,
+        endTime,
+      });
     }
 
     // Download source video
@@ -185,39 +172,21 @@ export async function POST(request: NextRequest) {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
 
-    return NextResponse.json(
+    return successResponse(
       {
-        success: true,
-        data: {
-          url: signedUrl,
-          path: uploadPath,
-          filename,
-          trimData: { startTime, endTime, duration },
-          format: outputFormat,
-          quality,
-          size: trimmedBuffer.length,
-        },
-        message: SUCCESS_MESSAGES.MEDIA.VIDEO_TRIMMED,
+        url: signedUrl,
+        path: uploadPath,
+        filename,
+        trimData: { startTime, endTime, duration },
+        format: outputFormat,
+        quality,
+        size: trimmedBuffer.length,
       },
-      { status: 200 },
+      SUCCESS_MESSAGES.MEDIA.VIDEO_TRIMMED,
     );
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
     serverLogger.error(ERROR_MESSAGES.API.MEDIA_TRIM_ERROR, { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error: ERROR_MESSAGES.MEDIA.TRIM_FAILED,
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    return handleApiError(error);
   } finally {
     // Cleanup temporary files
     if (tempInputFile && fs.existsSync(tempInputFile)) {
