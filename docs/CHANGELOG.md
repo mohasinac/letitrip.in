@@ -47,6 +47,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `src/app/api/profile/add-phone/route.ts`
   - `src/app/api/profile/verify-phone/route.ts`
 
+### API Maintainability Migration — Safe Batch 2 (Feb 18, 2026)
+
+- Continued query parsing standardization with shared request helpers in:
+  - `src/app/api/carousel/route.ts`
+  - `src/app/api/homepage-sections/route.ts`
+  - `src/app/api/categories/route.ts`
+  - `src/app/api/faqs/route.ts`
+- Standardized response helper usage in:
+  - `src/app/api/auth/verify-email/route.ts`
+- Validated with focused Jest suites for `carousel`, `homepage-sections`, `categories`, `faqs`, and `auth` API routes.
+
+### API Maintainability Migration — Safe Batch 3 (Feb 18, 2026)
+
+- Standardized shared response helper usage (`successResponse`/`errorResponse`) in:
+  - `src/app/api/products/route.ts`
+  - `src/app/api/reviews/route.ts`
+  - `src/app/api/admin/sessions/route.ts`
+- Updated API route tests to mock the shared Sieve helper for route-level behavior validation and ESM-safe execution:
+  - `src/app/api/__tests__/products.test.ts`
+  - `src/app/api/__tests__/reviews.test.ts`
+- Updated review pagination test query to use Sieve model (`pageSize` instead of legacy `limit`).
+- Validated with focused Jest suites for `carousel`, `homepage-sections`, `categories`, `faqs`, `auth`, `products`, and `reviews` API routes.
+
+### API Maintainability Migration — Safe Batch 4 (Feb 18, 2026)
+
+- Standardized catch-block error responses to shared `errorResponse()` in:
+  - `src/app/api/carousel/route.ts`
+  - `src/app/api/homepage-sections/route.ts`
+  - `src/app/api/categories/route.ts`
+  - `src/app/api/faqs/route.ts`
+- Validated with focused Jest suites for `carousel`, `homepage-sections`, `categories`, and `faqs` API routes.
+
+### API Maintainability Migration — Safe Batch 5 (Feb 18, 2026)
+
+- Standardized shared response helper usage (`successResponse`/`errorResponse`) in profile/auth-adjacent routes:
+  - `src/app/api/user/change-password/route.ts`
+  - `src/app/api/profile/add-phone/route.ts`
+  - `src/app/api/profile/verify-phone/route.ts`
+- Preserved existing status code behavior (`401`, `400`, `500`) while reducing repetitive manual `NextResponse.json` response blocks.
+- Validated with focused Jest suites for `auth` and `profile` API routes.
+
 ### Documentation Cleanup (Feb 18, 2026)
 
 - Removed non-essential phase/status/session/report markdown files to keep documentation focused on core references.

@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 import { userRepository } from "@/repositories";
@@ -64,29 +65,21 @@ export async function POST(req: NextRequest) {
       phoneNumber: userRecord.phoneNumber,
     } as any);
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
-      phoneNumber: userRecord.phoneNumber,
-    });
+    return successResponse(
+      { phoneNumber: userRecord.phoneNumber },
+      SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
+    );
   } catch (error) {
     serverLogger.error("Verify phone error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.PHONE.VERIFY_FAILED,
-      },
-      {
-        status:
-          error instanceof AuthenticationError
-            ? 401
-            : error instanceof ValidationError
-              ? 400
-              : 500,
-      },
+    return errorResponse(
+      error instanceof Error
+        ? error.message
+        : ERROR_MESSAGES.PHONE.VERIFY_FAILED,
+      error instanceof AuthenticationError
+        ? 401
+        : error instanceof ValidationError
+          ? 400
+          : 500,
     );
   }
 }

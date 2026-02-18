@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
@@ -38,21 +39,14 @@ export async function GET(req: NextRequest) {
     // 2. Verify the token with Firebase
     // 3. Mark email as verified in database if needed
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.EMAIL.VERIFIED,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
   } catch (error) {
     serverLogger.error("Verify email error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.EMAIL.VERIFICATION_FAILED,
-      },
-      { status: error instanceof ValidationError ? 400 : 500 },
+    return errorResponse(
+      error instanceof Error
+        ? error.message
+        : ERROR_MESSAGES.EMAIL.VERIFICATION_FAILED,
+      error instanceof ValidationError ? 400 : 500,
     );
   }
 }

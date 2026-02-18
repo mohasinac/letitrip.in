@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 import { isValidPhone } from "@/utils";
@@ -55,29 +56,19 @@ export async function POST(req: NextRequest) {
 
     // For now, return success and let client handle verification
     // In production, you might use a third-party SMS service
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.PHONE.VALIDATED,
-      verificationId: null, // Client-side Firebase Auth will generate this
-    });
+    return successResponse(
+      { verificationId: null },
+      SUCCESS_MESSAGES.PHONE.VALIDATED,
+    );
   } catch (error) {
     serverLogger.error("Add phone error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.PHONE.ADD_FAILED,
-      },
-      {
-        status:
-          error instanceof AuthenticationError
-            ? 401
-            : error instanceof ValidationError
-              ? 400
-              : 500,
-      },
+    return errorResponse(
+      error instanceof Error ? error.message : ERROR_MESSAGES.PHONE.ADD_FAILED,
+      error instanceof AuthenticationError
+        ? 401
+        : error instanceof ValidationError
+          ? 400
+          : 500,
     );
   }
 }

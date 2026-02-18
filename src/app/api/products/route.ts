@@ -20,6 +20,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applySieveToArray } from "@/helpers";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
   getSearchParams,
@@ -124,10 +125,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     // TODO: Use handleApiError from error handler
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.PRODUCT.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.PRODUCT.FETCH_FAILED, 500);
   }
 }
 
@@ -190,29 +188,19 @@ export async function POST(request: NextRequest) {
       isPromoted: false,
     } as any);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: product,
-        message: SUCCESS_MESSAGES.PRODUCT.CREATED,
-      },
-      { status: 201 },
-    );
+    return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   } catch (error) {
     if (
       error instanceof AuthenticationError ||
       error instanceof AuthorizationError
     ) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: error instanceof AuthenticationError ? 401 : 403 },
+      return errorResponse(
+        error.message,
+        error instanceof AuthenticationError ? 401 : 403,
       );
     }
 
     serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.PRODUCT.CREATE_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.PRODUCT.CREATE_FAILED, 500);
   }
 }

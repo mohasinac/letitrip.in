@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse } from "@/lib/api-response";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import {
   getNumberParam,
@@ -112,15 +113,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.ADMIN_SESSIONS_ERROR, { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.SESSION.FETCH_FAILED,
-      },
-      { status: 500 },
+    return errorResponse(
+      error instanceof Error
+        ? error.message
+        : ERROR_MESSAGES.SESSION.FETCH_FAILED,
+      500,
     );
   }
 }

@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 import { isRequired, minLength } from "@/utils";
@@ -54,28 +55,18 @@ export async function POST(req: NextRequest) {
       password: newPassword,
     });
 
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.USER.PASSWORD_CHANGED,
-    });
+    return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   } catch (error) {
     serverLogger.error("Change password error", { error });
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
-      },
-      {
-        status:
-          error instanceof AuthenticationError
-            ? 401
-            : error instanceof ValidationError
-              ? 400
-              : 500,
-      },
+    return errorResponse(
+      error instanceof Error
+        ? error.message
+        : ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
+      error instanceof AuthenticationError
+        ? 401
+        : error instanceof ValidationError
+          ? 400
+          : 500,
     );
   }
 }

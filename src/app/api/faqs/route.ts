@@ -16,7 +16,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import { errorResponse } from "@/lib/api-response";
+import {
+  getBooleanParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -54,15 +59,16 @@ export const GET = withCache(async (request: NextRequest) => {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
+    const category = getStringParam(searchParams, "category");
+    const search = getStringParam(searchParams, "search");
     const priorityStr = searchParams.get("priority");
+    const showOnHomepageParam = getBooleanParam(searchParams, "showOnHomepage");
     const showOnHomepageStr = searchParams.get("showOnHomepage");
     const tags = searchParams.get("tags")?.split(",").filter(Boolean);
 
     // Parse filters
     const priority = priorityStr ? parseInt(priorityStr, 10) : undefined;
-    const showOnHomepage = showOnHomepageStr === "true";
+    const showOnHomepage = showOnHomepageParam === true;
 
     // Query all FAQs
     let faqs = await faqsRepository.findAll();
@@ -175,10 +181,7 @@ export const GET = withCache(async (request: NextRequest) => {
     );
   } catch (error) {
     serverLogger.error("GET /api/faqs error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.FAQ.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.FAQ.FETCH_FAILED, 500);
   }
 }, CachePresets.LONG);
 
@@ -247,9 +250,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error("POST /api/faqs error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.FAQ.CREATE_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.FAQ.CREATE_FAILED, 500);
   }
 }

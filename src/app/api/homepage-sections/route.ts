@@ -16,7 +16,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import { errorResponse } from "@/lib/api-response";
+import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -48,19 +49,14 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const includeDisabled = searchParams.get("includeDisabled") === "true";
+    const includeDisabled =
+      getBooleanParam(searchParams, "includeDisabled") === true;
 
     // Check authorization for disabled sections (admin only)
     if (includeDisabled) {
       const user = await getUserFromRequest(request);
       if (user?.role !== "admin") {
-        return NextResponse.json(
-          {
-            success: false,
-            error: ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED,
-          },
-          { status: 403 },
-        );
+        return errorResponse(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED, 403);
       }
     }
 
@@ -92,10 +88,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error("GET /api/homepage-sections error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.SECTION.FETCH_FAILED, 500);
   }
 }
 
@@ -169,22 +162,13 @@ export async function POST(request: NextRequest) {
     serverLogger.error("POST /api/homepage-sections error", { error });
 
     if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
+      return errorResponse(error.message, 401);
     }
 
     if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
+      return errorResponse(error.message, 403);
     }
 
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.SECTION.CREATE_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.SECTION.CREATE_FAILED, 500);
   }
 }

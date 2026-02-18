@@ -16,7 +16,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import { errorResponse } from "@/lib/api-response";
+import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -47,19 +48,14 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const includeInactive = searchParams.get("includeInactive") === "true";
+    const includeInactive =
+      getBooleanParam(searchParams, "includeInactive") === true;
 
     // Check authorization for inactive slides (admin only)
     if (includeInactive) {
       const user = await getUserFromRequest(request);
       if (user?.role !== "admin") {
-        return NextResponse.json(
-          {
-            success: false,
-            error: ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED,
-          },
-          { status: 403 },
-        );
+        return errorResponse(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED, 403);
       }
     }
 
@@ -87,10 +83,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.CAROUSEL_GET_ERROR, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.CAROUSEL.FETCH_FAILED, 500);
   }
 }
 
@@ -188,22 +181,13 @@ export async function POST(request: NextRequest) {
     serverLogger.error(ERROR_MESSAGES.API.CAROUSEL_POST_ERROR, { error });
 
     if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
+      return errorResponse(error.message, 401);
     }
 
     if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
+      return errorResponse(error.message, 403);
     }
 
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.CREATE_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.CAROUSEL.CREATE_FAILED, 500);
   }
 }

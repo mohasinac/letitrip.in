@@ -33,10 +33,15 @@ jest.mock("@/repositories", () => ({
 }));
 
 const mockRequireRoleFromRequest = jest.fn();
+const mockApplySieveToArray = jest.fn();
 
 jest.mock("@/lib/security/authorization", () => ({
   requireRoleFromRequest: (...args: unknown[]) =>
     mockRequireRoleFromRequest(...args),
+}));
+
+jest.mock("@/helpers", () => ({
+  applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
@@ -106,6 +111,23 @@ describe("Products API - GET /api/products", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFindAll.mockResolvedValue([...mockProducts]);
+    mockApplySieveToArray.mockImplementation(
+      async ({ items, model }: { items: any[]; model: any }) => {
+        const page = model?.page ?? 1;
+        const pageSize = model?.pageSize ?? 20;
+        const start = (page - 1) * pageSize;
+        const pagedItems = items.slice(start, start + pageSize);
+
+        return {
+          items: pagedItems,
+          page,
+          pageSize,
+          total: items.length,
+          totalPages: Math.max(1, Math.ceil(items.length / pageSize)),
+          hasMore: start + pageSize < items.length,
+        };
+      },
+    );
   });
 
   it("returns products with default pagination", async () => {

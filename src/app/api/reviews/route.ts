@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
+import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
   getNumberParam,
@@ -185,10 +186,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.REVIEW.FETCH_FAILED, 500);
   }
 }
 
@@ -241,10 +239,7 @@ export async function POST(request: NextRequest) {
     const userReview = existingReviews.find((r) => r.userId === user.uid);
 
     if (userReview) {
-      return NextResponse.json(
-        { success: false, error: ERROR_MESSAGES.REVIEW.ALREADY_REVIEWED },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.REVIEW.ALREADY_REVIEWED, 400);
     }
 
     // TODO (Future): Verify user purchased the product
@@ -264,28 +259,19 @@ export async function POST(request: NextRequest) {
       status: "pending" as any, // Requires moderation before appearing publicly
     } as any);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: review,
-        message: SUCCESS_MESSAGES.REVIEW.SUBMITTED_PENDING_MODERATION,
-      },
-      { status: 201 },
+    return successResponse(
+      review,
+      SUCCESS_MESSAGES.REVIEW.SUBMITTED_PENDING_MODERATION,
+      201,
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, { error });
 
     // Handle authentication errors
     if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
+      return errorResponse(error.message, 401);
     }
 
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.SUBMIT_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.REVIEW.SUBMIT_FAILED, 500);
   }
 }

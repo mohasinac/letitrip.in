@@ -15,7 +15,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { categoriesRepository } from "@/repositories";
-import { getSearchParams } from "@/lib/api/request-helpers";
+import { errorResponse } from "@/lib/api-response";
+import {
+  getBooleanParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -53,10 +58,10 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = getSearchParams(request);
-    const rootId = searchParams.get("rootId") || undefined;
-    const parentId = searchParams.get("parentId");
-    const featured = searchParams.get("featured") === "true";
-    const flat = searchParams.get("flat") === "true";
+    const rootId = getStringParam(searchParams, "rootId");
+    const parentId = getStringParam(searchParams, "parentId");
+    const featured = getBooleanParam(searchParams, "featured") === true;
+    const flat = getBooleanParam(searchParams, "flat") === true;
 
     // Get categories based on filters
     let categories;
@@ -120,10 +125,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error("GET /api/categories error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CATEGORY.FETCH_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.CATEGORY.FETCH_FAILED, 500);
   }
 }
 
@@ -213,23 +215,14 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
+      return errorResponse(error.message, 401);
     }
 
     if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
+      return errorResponse(error.message, 403);
     }
 
     serverLogger.error("POST /api/categories error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CATEGORY.CREATE_FAILED },
-      { status: 500 },
-    );
+    return errorResponse(ERROR_MESSAGES.CATEGORY.CREATE_FAILED, 500);
   }
 }

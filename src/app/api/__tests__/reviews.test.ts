@@ -21,6 +21,7 @@ import {
 
 const mockFindByProduct = jest.fn();
 const mockCreate = jest.fn();
+const mockApplySieveToArray = jest.fn();
 
 jest.mock("@/repositories", () => ({
   reviewRepository: {
@@ -33,6 +34,10 @@ const mockRequireAuthFromRequest = jest.fn();
 jest.mock("@/lib/security/authorization", () => ({
   requireAuthFromRequest: (...args: unknown[]) =>
     mockRequireAuthFromRequest(...args),
+}));
+
+jest.mock("@/helpers", () => ({
+  applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
@@ -116,6 +121,32 @@ describe("Reviews API - GET /api/reviews", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFindByProduct.mockResolvedValue([...mockReviews]);
+    mockApplySieveToArray.mockImplementation(
+      async ({ items, model }: { items: any[]; model: any }) => {
+        const page = model?.page ?? 1;
+        const pageSize = model?.pageSize ?? 10;
+        const filters = model?.filters as string | undefined;
+
+        let filteredItems = [...items];
+        if (filters === "status==approved") {
+          filteredItems = filteredItems.filter(
+            (review) => review.status === "approved",
+          );
+        }
+
+        const start = (page - 1) * pageSize;
+        const pagedItems = filteredItems.slice(start, start + pageSize);
+
+        return {
+          items: pagedItems,
+          page,
+          pageSize,
+          total: filteredItems.length,
+          totalPages: Math.max(1, Math.ceil(filteredItems.length / pageSize)),
+          hasMore: start + pageSize < filteredItems.length,
+        };
+      },
+    );
   });
 
   it("requires productId parameter", async () => {
@@ -170,7 +201,7 @@ describe("Reviews API - GET /api/reviews", () => {
   });
 
   it("supports pagination", async () => {
-    const req = buildRequest("/api/reviews?productId=prod-1&page=1&limit=1");
+    const req = buildRequest("/api/reviews?productId=prod-1&page=1&pageSize=1");
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
