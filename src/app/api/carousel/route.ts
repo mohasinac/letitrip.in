@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -45,7 +46,7 @@ import { serverLogger } from "@/lib/server-logger";
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
     const includeInactive = searchParams.get("includeInactive") === "true";
 
     // Check authorization for inactive slides (admin only)

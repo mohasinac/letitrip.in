@@ -9,11 +9,12 @@ import { ValidationError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 
 export async function POST(request: NextRequest) {
   try {
     // Get session cookie to verify user
-    const sessionCookie = request.cookies.get("__session")?.value;
+    const sessionCookie = getOptionalSessionCookie(request);
     if (!sessionCookie) {
       throw new ValidationError(ERROR_MESSAGES.SESSION.NOT_FOUND);
     }

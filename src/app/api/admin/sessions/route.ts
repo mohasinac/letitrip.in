@@ -10,16 +10,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import {
+  getRequiredSessionCookie,
+  getSearchParams,
+} from "@/lib/api/request-helpers";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function GET(req: NextRequest) {
   try {
     // Verify admin session
-    const sessionCookie = req.cookies.get("__session")?.value;
-    if (!sessionCookie) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
+    const sessionCookie = getRequiredSessionCookie(req);
 
     const auth = getAdminAuth();
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get query parameters
-    const { searchParams } = new URL(req.url);
+    const searchParams = getSearchParams(req);
     const userId = searchParams.get("userId");
     const limit = parseInt(searchParams.get("limit") || "100", 10);
 

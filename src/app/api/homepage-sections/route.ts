@@ -16,6 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import {
   getUserFromRequest,
   requireRoleFromRequest,
@@ -46,7 +47,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
     const includeDisabled = searchParams.get("includeDisabled") === "true";
 
     // Check authorization for disabled sections (admin only)

@@ -16,11 +16,12 @@ import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function POST(request: NextRequest) {
   try {
-    const sessionCookie = request.cookies.get("__session")?.value;
+    const sessionCookie = getOptionalSessionCookie(request);
     const sessionId = request.cookies.get("__session_id")?.value;
 
     // Revoke session in Firestore

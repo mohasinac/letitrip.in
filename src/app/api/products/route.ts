@@ -19,6 +19,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { applySieveToArray } from "@/helpers";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -36,69 +38,76 @@ import { serverLogger } from "@/lib/server-logger";
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);
-    const category = searchParams.get("category") || undefined;
-    const subcategory = searchParams.get("subcategory") || undefined;
-    const status = searchParams.get("status") || undefined;
-    const sellerId = searchParams.get("sellerId") || undefined;
-    const featured = searchParams.get("featured") === "true" ? true : undefined;
-    const isAuction =
-      searchParams.get("isAuction") === "true" ? true : undefined;
-    const isPromoted =
-      searchParams.get("isPromoted") === "true" ? true : undefined;
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
+    const searchParams = getSearchParams(request);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = Math.min(
+      parseInt(searchParams.get("pageSize") || "20", 10),
+      100,
+    );
+    const filters = searchParams.get("filters") || undefined;
+    const sorts = searchParams.get("sorts") || "-createdAt";
 
     // Get all products from repository
     const allProducts = await productRepository.findAll();
 
-    // Apply filters manually
-    let filtered = allProducts;
-    if (category) filtered = filtered.filter((p) => p.category === category);
-    if (subcategory)
-      filtered = filtered.filter((p) => p.subcategory === subcategory);
-    if (status) filtered = filtered.filter((p) => p.status === status);
-    if (sellerId) filtered = filtered.filter((p) => p.sellerId === sellerId);
-    if (featured !== undefined)
-      filtered = filtered.filter((p) => p.featured === featured);
-    if (isAuction !== undefined)
-      filtered = filtered.filter((p) => p.isAuction === isAuction);
-    if (isPromoted !== undefined)
-      filtered = filtered.filter((p) => p.isPromoted === isPromoted);
-
-    // Apply sorting
-    filtered.sort((a: any, b: any) => {
-      const aVal = a[sortBy];
-      const bVal = b[sortBy];
-      if (sortOrder === "asc") return aVal > bVal ? 1 : -1;
-      return aVal < bVal ? 1 : -1;
+    const sieveResult = await applySieveToArray({
+      items: allProducts,
+      model: {
+        filters,
+        sorts,
+        page,
+        pageSize,
+      },
+      fields: {
+        id: { canFilter: true, canSort: false },
+        title: { canFilter: true, canSort: true },
+        category: { canFilter: true, canSort: true },
+        subcategory: { canFilter: true, canSort: true },
+        status: { canFilter: true, canSort: true },
+        sellerId: { canFilter: true, canSort: false },
+        featured: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (value: string) => value === "true",
+        },
+        isAuction: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (value: string) => value === "true",
+        },
+        isPromoted: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (value: string) => value === "true",
+        },
+        price: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => Number(value),
+        },
+        createdAt: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => new Date(value),
+        },
+      },
+      options: {
+        defaultPageSize: 20,
+        maxPageSize: 100,
+        throwExceptions: false,
+      },
     });
-
-    // Get total count for pagination
-    const total = filtered.length;
-
-    // Apply pagination
-    const offset = (page - 1) * limit;
-    const products = filtered.slice(offset, offset + limit);
-
-    // Calculate pagination metadata
-    const totalPages = Math.ceil(total / limit);
-    const hasMore = page < totalPages;
 
     return NextResponse.json(
       {
         success: true,
-        data: products,
+        data: sieveResult.items,
         meta: {
-          page,
-          limit,
-          total,
-          totalPages,
-          hasMore,
+          page: sieveResult.page,
+          limit: sieveResult.pageSize,
+          total: sieveResult.total,
+          totalPages: sieveResult.totalPages,
+          hasMore: sieveResult.hasMore,
         },
       },
       {

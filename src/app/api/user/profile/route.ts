@@ -12,15 +12,12 @@ import { userRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { AuthenticationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Verify session cookie
-    const sessionCookie = request.cookies.get("__session")?.value;
-
-    if (!sessionCookie) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
+    const sessionCookie = getRequiredSessionCookie(request);
 
     const decodedToken = await verifySessionCookie(sessionCookie);
 

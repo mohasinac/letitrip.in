@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
+import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 import { isValidPhone } from "@/utils";
 import { serverLogger } from "@/lib/server-logger";
 
@@ -19,10 +20,7 @@ interface AddPhoneRequest {
 export async function POST(req: NextRequest) {
   try {
     // Verify session
-    const sessionCookie = req.cookies.get("__session")?.value;
-    if (!sessionCookie) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
+    const sessionCookie = getRequiredSessionCookie(req);
 
     const auth = getAdminAuth();
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);

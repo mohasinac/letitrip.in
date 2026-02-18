@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { categoriesRepository } from "@/repositories";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -51,7 +52,7 @@ import { CategoryCreateInput } from "@/db/schema/categories";
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
     const rootId = searchParams.get("rootId") || undefined;
     const parentId = searchParams.get("parentId");
     const featured = searchParams.get("featured") === "true";

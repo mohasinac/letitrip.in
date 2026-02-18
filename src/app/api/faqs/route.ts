@@ -16,6 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -52,7 +53,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 export const GET = withCache(async (request: NextRequest) => {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
     const category = searchParams.get("category");
     const search = searchParams.get("search");
     const priorityStr = searchParams.get("priority");

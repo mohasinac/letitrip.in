@@ -16,6 +16,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { reviewRepository } from "@/repositories";
+import { applySieveToArray } from "@/helpers";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -33,12 +35,10 @@ import { serverLogger } from "@/lib/server-logger";
  *
  * Query Parameters:
  * - productId: string (required)
+ * - filters: string (Sieve filters)
+ * - sorts: string (Sieve sorts)
  * - page: number (default: 1)
- * - limit: number (default: 10, max: 50)
- * - status: string (optional: pending, approved, rejected)
- * - rating: number (optional: 1-5)
- * - verified: boolean (optional)
- * - sortBy: string (optional: date, rating, helpful)
+ * - pageSize: number (default: 10, max: 50)
  *
  * TODO: Implement review querying
  * TODO: Filter by product ID (required)
@@ -49,28 +49,27 @@ import { serverLogger } from "@/lib/server-logger";
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
     const productId = searchParams.get("productId");
     const featured = searchParams.get("featured") === "true";
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = Math.min(parseInt(searchParams.get("limit") || "10"), 50);
-    const status = searchParams.get("status");
-    const rating = searchParams.get("rating")
-      ? parseInt(searchParams.get("rating")!)
-      : undefined;
-    const verified = searchParams.get("verified") === "true";
-    const sortBy = searchParams.get("sortBy") || "date";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = Math.min(
+      parseInt(searchParams.get("pageSize") || "10", 10),
+      50,
+    );
+    const filters = searchParams.get("filters") || undefined;
+    const sorts = searchParams.get("sorts") || "-createdAt";
 
     // Handle featured reviews query (no productId required)
-    if (featured && status === "approved") {
-      const featuredReviews = await reviewRepository.findFeatured(limit);
+    if (featured) {
+      const featuredReviews = await reviewRepository.findFeatured(pageSize);
       return NextResponse.json(
         {
           success: true,
           data: featuredReviews,
           meta: {
             page: 1,
-            limit,
+            limit: pageSize,
             total: featuredReviews.length,
             totalPages: 1,
             hasMore: false,
@@ -120,43 +119,54 @@ export async function GET(request: NextRequest) {
 
     const averageRating = approvedCount > 0 ? totalRating / approvedCount : 0;
 
-    // Filter reviews based on criteria
-    let filteredReviews = allReviews.filter((review) => {
-      // Only show approved reviews by default (unless user is admin/moderator)
-      if (!status && review.status !== "approved") return false;
-      if (status && review.status !== status) return false;
-      if (rating && review.rating !== rating) return false;
-      if (verified && !review.verified) return false;
-      return true;
+    const sieveResult = await applySieveToArray({
+      items: allReviews,
+      model: {
+        filters: filters || "status==approved",
+        sorts,
+        page,
+        pageSize,
+      },
+      fields: {
+        status: { canFilter: true, canSort: false },
+        rating: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => Number(value),
+        },
+        verified: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (value: string) => value === "true",
+        },
+        helpfulCount: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => Number(value),
+        },
+        createdAt: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => new Date(value),
+        },
+      },
+      options: {
+        defaultPageSize: 10,
+        maxPageSize: 50,
+        throwExceptions: false,
+      },
     });
-
-    // Sort reviews
-    filteredReviews.sort((a, b) => {
-      if (sortBy === "rating") return b.rating - a.rating;
-      if (sortBy === "helpful")
-        return (b.helpfulCount || 0) - (a.helpfulCount || 0);
-      // Default: sort by date (newest first)
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-
-    // Paginate results
-    const total = filteredReviews.length;
-    const startIndex = (page - 1) * limit;
-    const paginatedReviews = filteredReviews.slice(
-      startIndex,
-      startIndex + limit,
-    );
 
     return NextResponse.json(
       {
         success: true,
-        data: paginatedReviews,
+        data: sieveResult.items,
         meta: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-          hasMore: startIndex + limit < total,
+          page: sieveResult.page,
+          limit: sieveResult.pageSize,
+          total: sieveResult.total,
+          totalPages: sieveResult.totalPages,
+          hasMore: sieveResult.hasMore,
           ratingDistribution,
           averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
         },

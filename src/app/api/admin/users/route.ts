@@ -6,89 +6,77 @@
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { userRepository } from "@/repositories";
+import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import type { UserDocument } from "@/db/schema";
-import type { UserRole } from "@/types/auth";
 
 /**
  * GET /api/admin/users
  *
  * Query params:
- *  - search   (string)  — partial match on displayName or email
- *  - role     (string)  — filter by role (admin, moderator, seller, user)
- *  - disabled (boolean) — filter by disabled status ("true"/"false")
- *  - limit    (number)  — max results, default 100
- *  - offset   (number)  — pagination offset, default 0
+ *  - filters  (string)  — Sieve filters
+ *  - sorts    (string)  — Sieve sorts
+ *  - page     (number)  — page number (default 1)
+ *  - pageSize (number)  — max results per page (default 100)
  */
 export const GET = createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }: { request: NextRequest }) => {
-    const { searchParams } = new URL(request.url);
+    const searchParams = getSearchParams(request);
 
-    const search = searchParams.get("search")?.toLowerCase().trim() || "";
-    const roleFilter = searchParams.get("role") || "";
-    const disabledParam = searchParams.get("disabled");
-    const limit = Math.min(
-      parseInt(searchParams.get("limit") || "100", 10),
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = Math.min(
+      parseInt(searchParams.get("pageSize") || "100", 10),
       500,
     );
-    const offset = parseInt(searchParams.get("offset") || "0", 10);
+    const filters = searchParams.get("filters") || undefined;
+    const sorts = searchParams.get("sorts") || "-createdAt";
 
     serverLogger.info("Admin users list requested", {
-      search,
-      roleFilter,
-      disabledParam,
-      limit,
-      offset,
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
-    // Fetch users using available repository methods
-    let users: UserDocument[];
+    const users: UserDocument[] = await userRepository.findAll();
 
-    if (roleFilter && roleFilter !== "all") {
-      users = await userRepository.findByRole(roleFilter as UserRole);
-    } else if (disabledParam === "true") {
-      // Fetch all and filter disabled (repo doesn't have findDisabled with no limit)
-      const all = await userRepository.findAll();
-      users = all.filter((u) => u.disabled);
-    } else if (disabledParam === "false") {
-      users = await userRepository.findActive();
-    } else {
-      users = await userRepository.findAll();
-    }
-
-    // Apply search filter (displayName or email)
-    if (search) {
-      users = users.filter(
-        (u) =>
-          u.displayName?.toLowerCase().includes(search) ||
-          u.email?.toLowerCase().includes(search) ||
-          u.uid.toLowerCase().includes(search),
-      );
-    }
-
-    const total = users.length;
-
-    // Sort: newest first
-    users.sort((a, b) => {
-      const dateA =
-        a.createdAt instanceof Date
-          ? a.createdAt.getTime()
-          : new Date(a.createdAt as unknown as string).getTime();
-      const dateB =
-        b.createdAt instanceof Date
-          ? b.createdAt.getTime()
-          : new Date(b.createdAt as unknown as string).getTime();
-      return dateB - dateA;
+    const sieveResult = await applySieveToArray({
+      items: users,
+      model: {
+        filters,
+        sorts,
+        page,
+        pageSize,
+      },
+      fields: {
+        uid: { canFilter: true, canSort: false },
+        email: { canFilter: true, canSort: false },
+        displayName: { canFilter: true, canSort: false },
+        role: { canFilter: true, canSort: true },
+        disabled: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => value === "true",
+        },
+        createdAt: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (value: string) => new Date(value),
+        },
+      },
+      options: {
+        defaultPageSize: 100,
+        maxPageSize: 500,
+        throwExceptions: false,
+      },
     });
-
-    // Paginate
-    const paginated = users.slice(offset, offset + limit);
 
     // Serialize dates and strip sensitive fields
-    const serialized = paginated.map((u) => ({
+    const serialized = sieveResult.items.map((u) => ({
       id: u.id || u.uid,
       uid: u.uid,
       email: u.email,
@@ -110,6 +98,16 @@ export const GET = createApiHandler({
       metadata: u.metadata ? { loginCount: u.metadata.loginCount } : undefined,
     }));
 
-    return successResponse({ users: serialized, total });
+    return successResponse({
+      users: serialized,
+      total: sieveResult.total,
+      meta: {
+        page: sieveResult.page,
+        limit: sieveResult.pageSize,
+        total: sieveResult.total,
+        totalPages: sieveResult.totalPages,
+        hasMore: sieveResult.hasMore,
+      },
+    });
   },
 });

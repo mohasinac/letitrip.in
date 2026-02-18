@@ -8,11 +8,12 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
+import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 
 export async function GET(request: NextRequest) {
   try {
     // Get session cookie
-    const sessionCookie = request.cookies.get("__session")?.value;
+    const sessionCookie = getOptionalSessionCookie(request);
     const sessionId = request.cookies.get("__session_id")?.value;
 
     if (!sessionCookie || !sessionId) {

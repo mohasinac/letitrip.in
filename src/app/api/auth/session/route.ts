@@ -13,6 +13,7 @@ import {
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
+import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 import { sessionRepository } from "@/repositories";
 import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -138,7 +139,7 @@ export async function DELETE(request: NextRequest) {
   try {
     // Get session ID from cookie
     const sessionId = request.cookies.get("__session_id")?.value;
-    const sessionCookie = request.cookies.get("__session")?.value;
+    const sessionCookie = getOptionalSessionCookie(request);
 
     // Revoke session in Firestore if we have the ID
     if (sessionId && sessionCookie) {

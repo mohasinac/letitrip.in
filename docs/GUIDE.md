@@ -511,7 +511,7 @@ import { SectionTabs } from '@/components';
 - `PHONE` - Phone errors (NO_PHONE, ALREADY_IN_USE, VERIFY_FAILED, ADD_FAILED)
 - `MEDIA` - Media errors (TRIM_FAILED, CROP_FAILED, NO_FILE)
 - `ADDRESS` - Address errors (FETCH_FAILED, CREATE_FAILED, UPDATE_FAILED, DELETE_FAILED, SET_DEFAULT_FAILED)
-- `API` - API route logging errors (ROUTE*ERROR, CAROUSEL*_*ERROR, PRODUCTS***ERROR, MEDIA***ERROR, ADMIN_SESSIONS_ERROR, LOGOUT*_\_ERROR, etc.)
+- `API` - API route logging errors (ROUTE*ERROR, CAROUSEL*_\*ERROR, PRODUCTS***ERROR, MEDIA***ERROR, ADMIN_SESSIONS_ERROR, LOGOUT\*_\_ERROR, etc.)
 
 ---
 
@@ -1231,10 +1231,28 @@ if (Object.keys(errors).length === 0) {
 - `sortByMultiple<T>(arr: T[], sortKeys: SortKey[]): T[]` - Multi-field sort
 - `createSorter<T>(key: string, order?: SortOrder): (a: T, b: T) => number` - Create comparator function
 
+#### Sieve Helper (`sieve.helper.ts`)
+
+- `applySieveToArray<TItem>(input: SieveArrayQueryInput<TItem>): Promise<SieveArrayQueryResult<TItem>>` - Apply Sieve-style backend filters, sorts, and pagination over in-memory collections.
+- Uses `@mohasinac/sievejs` as the processing engine.
+
 **Types**:
 
 - `SortOrder` - "asc" | "desc"
 - `SortKey` - `{ key: string, order: SortOrder }`
+
+---
+
+### API Helpers (`src/lib/api/`)
+
+#### Request Helpers (`request-helpers.ts`)
+
+- `getSearchParams(request: NextRequest): URLSearchParams` - Standardized query parameter access for route handlers.
+- `getOptionalSessionCookie(request: NextRequest): string | undefined` - Read `__session` cookie without throwing.
+- `getRequiredSessionCookie(request: NextRequest): string` - Read `__session` cookie and throw auth error if missing.
+- `getBooleanParam(searchParams: URLSearchParams, key: string): boolean | undefined` - Parse boolean query parameters.
+- `getStringParam(searchParams: URLSearchParams, key: string): string | undefined` - Parse optional string query parameters.
+- `getNumberParam(searchParams: URLSearchParams, key: string, fallback: number, options?: { min?: number; max?: number }): number` - Parse bounded numeric query parameters.
 
 ---
 

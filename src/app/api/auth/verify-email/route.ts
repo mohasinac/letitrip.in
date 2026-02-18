@@ -9,11 +9,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
+import { getSearchParams } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const searchParams = getSearchParams(req);
     const token = searchParams.get("token");
 
     if (!token) {

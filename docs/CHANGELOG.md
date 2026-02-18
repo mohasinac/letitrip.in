@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Backend Pagination: SieveJS Integration (Feb 18, 2026)
+
+- Added `@mohasinac/sievejs` dependency for standardized backend filtering, sorting, and pagination.
+- Added shared helper `src/helpers/data/sieve.helper.ts` with `applySieveToArray()` and barrel export via `@/helpers`.
+- Refactored backend list routes to use Sieve-driven pagination/filter/sort flow using Sieve query model (`filters`, `sorts`, `page`, `pageSize`):
+  - `src/app/api/products/route.ts`
+  - `src/app/api/reviews/route.ts`
+  - `src/app/api/admin/users/route.ts`
+
+### API Maintainability Migration (Feb 18, 2026)
+
+- Added shared API request helpers in `src/lib/api/request-helpers.ts`:
+  - `getSearchParams()`
+  - `getOptionalSessionCookie()`
+  - `getRequiredSessionCookie()`
+  - `getBooleanParam()`
+  - `getStringParam()`
+  - `getNumberParam()`
+- Migrated query-param parsing to shared helper across API routes:
+  - `src/app/api/products/route.ts`
+  - `src/app/api/reviews/route.ts`
+  - `src/app/api/admin/users/route.ts`
+  - `src/app/api/admin/sessions/route.ts`
+  - `src/app/api/carousel/route.ts`
+  - `src/app/api/homepage-sections/route.ts`
+  - `src/app/api/categories/route.ts`
+  - `src/app/api/faqs/route.ts`
+  - `src/app/api/auth/verify-email/route.ts`
+- Migrated session cookie extraction to shared helper across auth/profile/user routes:
+  - `src/app/api/auth/session/route.ts`
+  - `src/app/api/auth/session/validate/route.ts`
+  - `src/app/api/auth/session/activity/route.ts`
+  - `src/app/api/auth/logout/route.ts`
+  - `src/app/api/user/profile/route.ts`
+  - `src/app/api/user/change-password/route.ts`
+  - `src/app/api/profile/add-phone/route.ts`
+  - `src/app/api/profile/verify-phone/route.ts`
+
 ### Documentation Cleanup (Feb 18, 2026)
 
 - Removed non-essential phase/status/session/report markdown files to keep documentation focused on core references.
