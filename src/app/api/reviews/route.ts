@@ -47,11 +47,12 @@ import { NextResponse } from "next/server";
  * - page: number (default: 1)
  * - pageSize: number (default: 10, max: 50)
  *
- * TODO: Implement review querying
- * TODO: Filter by product ID (required)
- * TODO: Add pagination
- * TODO: Return rating distribution (1-5 stars count)
- * TODO: Add cache headers
+ * ✅ Fetches reviews via reviewRepository.findByProduct(productId)
+ * ✅ productId required parameter (returns 400 if missing)
+ * ✅ Pagination via Sieve (page/pageSize params, max 50)
+ * ✅ Returns ratingDistribution (1-5 stars count) and averageRating in meta
+ * ✅ Cache-Control headers set (2 min public)
+ * ✅ Featured reviews shortcut (featured=true param, no productId required)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -198,14 +199,13 @@ export async function GET(request: NextRequest) {
  * - images: string[] (optional, max 10)
  * - video: object (optional)
  *
- * TODO: Implement review creation
- * TODO: Require authentication
- * TODO: Verify user purchased the product
- * TODO: Prevent duplicate reviews (one per product per user)
- * TODO: Validate rating (1-5)
- * TODO: Default status to 'pending' for moderation
- * TODO: Send notification to product seller and admins
- * TODO: Return created review
+ * ✅ Requires authentication via requireAuthFromRequest
+ * ✅ Validates body with reviewCreateSchema (Zod, includes rating 1-5 validation)
+ * ✅ Prevents duplicate reviews (checks existing reviews for same userId+productId)
+ * ✅ Status defaults to 'pending' for moderation
+ * ✅ Returns created review with 201 status
+ * TODO (Future): Verify user purchased the product (requires order lookup)
+ * TODO (Future): Send notification to product seller and admins on new review
  */
 export async function POST(request: NextRequest) {
   try {

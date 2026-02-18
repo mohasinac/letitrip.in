@@ -298,6 +298,9 @@ export const ERROR_MESSAGES = {
 } as const;
 
 export const SUCCESS_MESSAGES = {
+  CLIPBOARD: {
+    LINK_COPIED: "Link copied to clipboard!",
+  },
   // Authentication Success
   AUTH: {
     LOGIN_SUCCESS: "Welcome back!",

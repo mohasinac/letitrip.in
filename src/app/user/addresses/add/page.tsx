@@ -31,7 +31,7 @@ export default function AddAddressPage() {
     setSaving(true);
 
     try {
-      // TODO: Replace with actual API call once endpoint exists
+      // NOTE: /api/user/addresses routes not yet created — these calls will fail until routes are added
       const response = await fetch(API_ENDPOINTS.ADDRESSES.CREATE, {
         method: "POST",
         headers: {

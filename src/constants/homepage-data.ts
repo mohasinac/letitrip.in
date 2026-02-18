@@ -103,7 +103,7 @@ export const SITE_FEATURES: SiteFeature[] = [
 
 /**
  * Mock blog articles for homepage display
- * TODO: Replace with actual API call when blog feature is implemented
+ * NOTE: Replace MOCK_BLOG_ARTICLES usage with useApiQuery('/api/blog') when the blog feature is implemented
  */
 export const MOCK_BLOG_ARTICLES: BlogArticle[] = [
   {

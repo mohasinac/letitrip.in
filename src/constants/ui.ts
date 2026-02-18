@@ -113,6 +113,8 @@ export const UI_LABELS = {
     SUBSCRIBE: "Subscribe",
     UPDATE_PASSWORD: "Update Password",
     DISCARD: "Discard",
+    COPY_LINK: "Copy Link",
+    LINK_COPIED: "Link copied to clipboard!",
   },
 
   // Form labels

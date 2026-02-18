@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { THEME_CONSTANTS } from "@/constants";
+import { useRouter } from "next/navigation";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
@@ -32,13 +33,15 @@ export default function LayoutClient({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
-  // TODO: Fetch background settings from site settings API
-  // For now, using default values
+  // TODO (Future): Fetch background settings from site settings API
+  // The site settings API (/api/site-settings) is implemented and returns backgroundConfig.
+  // Wire up useApiQuery(API_ENDPOINTS.SITE.SETTINGS) here when the UI design requires dynamic backgrounds.
   const backgroundConfig = {
     lightMode: {
       type: "color" as const,
@@ -117,8 +120,11 @@ export default function LayoutClient({
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
         onSearch={(query) => {
-          // TODO: Implement search navigation/logic
-          logger.debug("Searching for:", query);
+          setSearchOpen(false);
+          router.push(
+            `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
+          );
+          logger.debug("Search navigating to products:", query);
         }}
       />
 

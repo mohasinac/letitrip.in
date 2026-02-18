@@ -110,7 +110,7 @@ export const trackError = (
   });
 
   // In production, this would also send to Crashlytics
-  // TODO: Implement Firebase Crashlytics integration when SDK is added
+  // TODO (Future): Implement Firebase Crashlytics integration when @react-native-firebase/crashlytics SDK is added
   if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
     // Firebase Crashlytics would be initialized here
     // crashlytics().recordError(error);
@@ -309,7 +309,7 @@ export const setErrorTrackingUser = (user: {
     (window as any).__errorTrackingUser = user;
   }
 
-  // TODO: Set user in Crashlytics when SDK is added
+  // TODO (Future): Set user in Crashlytics when SDK is added
   // crashlytics().setUserId(user.userId);
   // crashlytics().setAttributes({
   //   role: user.userRole,
@@ -325,7 +325,7 @@ export const clearErrorTrackingUser = (): void => {
     delete (window as any).__errorTrackingUser;
   }
 
-  // TODO: Clear user in Crashlytics when SDK is added
+  // TODO (Future): Clear user in Crashlytics when SDK is added
   // crashlytics().setUserId('');
 };
 

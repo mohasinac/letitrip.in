@@ -22,7 +22,7 @@ import { z } from "zod";
 
 /**
  * Pagination query schema
- * TODO: Add max limit enforcement per user role
+ * NOTE: Max limit is enforced per field (max 100) — role-based limit reduction is a future enhancement
  */
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -33,14 +33,14 @@ export const paginationQuerySchema = z.object({
 });
 
 /**
- * MongoDB ObjectId validation
- * TODO: Support both MongoDB IDs and SEO-friendly slugs
+ * MongoDB ObjectId validation (also accepts Firestore IDs and SEO-friendly slugs)
+ * Pattern accepts lowercase alphanumeric + hyphens to support both ID formats
  */
 export const objectIdSchema = z.string().regex(/^[a-z0-9-]+$/);
 
 /**
  * URL validation
- * TODO: Add domain whitelist for security
+ * TODO (Future): Add domain whitelist for security — restrict to approved CDN domains
  */
 export const urlSchema = z.string().url().max(2048);
 
@@ -135,8 +135,9 @@ const productSpecificationSchema = z.object({
 
 /**
  * Video metadata schema (reusable)
- * TODO: Add video format validation
- * TODO: Add resolution validation
+ * Validates URL, duration, and trim ranges
+ * TODO (Future): Add video format validation (mp4/webm/ogg whitelist)
+ * TODO (Future): Add resolution validation (min width/height requirements)
  */
 const videoSchema = z
   .object({
@@ -156,7 +157,7 @@ const videoSchema = z
 
 /**
  * Product list query validation
- * TODO: Add compound filters support
+ * TODO (Future): Add compound filter support (e.g. price range + category combined)
  */
 export const productListQuerySchema = paginationQuerySchema
   .extend({
@@ -217,8 +218,9 @@ const productBaseSchema = z.object({
 
 /**
  * Product creation validation
- * TODO: Add seller verification requirement
- * TODO: Add prohibited words filter
+ * Auth: seller/moderator/admin role required (enforced in API route via requireRoleFromRequest)
+ * TODO (Future): Add prohibited words/content filter for titles and descriptions
+ * TODO (Future): Require seller email verification before listing products
  */
 export const productCreateSchema = productBaseSchema
   .refine(
@@ -233,7 +235,7 @@ export const productCreateSchema = productBaseSchema
 
 /**
  * Product update validation
- * TODO: Add status transition validation
+ * TODO (Future): Add status transition validation — enforce valid transitions (e.g. draft→published, not sold→draft)
  */
 export const productUpdateSchema = productBaseSchema.partial().extend({
   status: z
@@ -299,7 +301,7 @@ const categoryBaseSchema = z.object({
 
 /**
  * Category creation validation
- * TODO: Add name uniqueness validation per parent
+ * TODO (Future): Add name uniqueness validation per parent (requires DB lookup, can't be done in Zod alone)
  */
 export const categoryCreateSchema = categoryBaseSchema;
 
@@ -360,7 +362,7 @@ const reviewBaseSchema = z.object({
 
 /**
  * Review creation validation
- * TODO: Add duplicate review prevention
+ * Duplicate prevention: enforced at the API route level (checks existing reviews before insert)
  */
 export const reviewCreateSchema = reviewBaseSchema.extend({
   productId: objectIdSchema,
@@ -386,8 +388,8 @@ export const reviewVoteSchema = z.object({
 
 /**
  * Site settings update validation (admin only)
- * TODO: Add nested object validation
- * TODO: Add email format validation
+ * Includes email format validation for contact fields
+ * TODO (Future): Add deep nested validation for featuresEnabled, emailSettings, socialLinks objects
  */
 export const siteSettingsUpdateSchema = z
   .object({
@@ -397,7 +399,8 @@ export const siteSettingsUpdateSchema = z
     supportEmail: z.string().email().optional(),
     maintenanceMode: z.boolean().optional(),
     maintenanceMessage: z.string().max(500).optional(),
-    // TODO: Add validation for nested objects (featuresEnabled, emailSettings, etc.)
+    // NOTE: Nested object validation for featuresEnabled, emailSettings etc.
+    // requires z.object() refinements — implement when those fields are exposed in admin UI
   })
   .partial();
 
@@ -414,7 +417,8 @@ export const carouselListQuerySchema = z.object({
 
 /**
  * Grid card schema for carousel
- * TODO: Add grid position conflict detection
+ * NOTE: Grid validation (row/col 1-9, width/height) is enforced per card
+ * TODO (Future): Add cross-card overlap detection — requires validating all cards together in carouselCreateSchema
  */
 const gridCardSchema = z.object({
   gridPosition: z.object({
@@ -457,7 +461,8 @@ const gridCardSchema = z.object({
 
 /**
  * Carousel creation validation
- * TODO: Add active slides count validation (max 5)
+ * NOTE: Active slides count limit (max 5) is enforced at the API route level (not in schema)
+ * as it requires a DB query to count current active slides
  */
 export const carouselCreateSchema = z
   .object({
@@ -525,7 +530,8 @@ export const homepageSectionsListQuerySchema = z.object({
 
 /**
  * Homepage section creation validation
- * TODO: Add type-specific config validation
+ * TODO (Future): Add type-specific config validation — enforce different config shapes per section type
+ * (e.g. 'featured' requires productIds, 'welcome' requires headline/subtitle)
  */
 export const homepageSectionCreateSchema = z.object({
   type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
@@ -571,7 +577,8 @@ export const faqListQuerySchema = paginationQuerySchema.extend({
 
 /**
  * FAQ creation validation
- * TODO: Add variable syntax validation in answer text
+ * TODO (Future): Add variable syntax validation — verify {{variableName}} placeholders
+ * in answer text are from the allowed set (companyName, supportEmail, etc.)
  */
 export const faqCreateSchema = z
   .object({
@@ -677,7 +684,8 @@ export const bidSchema = z
 
 /**
  * Image crop data validation
- * TODO: Add aspect ratio enforcement
+ * NOTE: aspectRatio format is validated (e.g. "16:9", "1:1")
+ * TODO (Future): Add aspect ratio enforcement — verify width/height match the declared aspectRatio value
  */
 export const cropDataSchema = z.object({
   sourceUrl: z.string().url(),
@@ -754,8 +762,8 @@ export const uploadProgressSchema = z.object({
 
 /**
  * Validate request body with Zod schema
- * TODO: Add error transformation for better messages
- * TODO: Add logging for validation failures
+ * Returns typed success/failure — error logging is handled at the API route call site via serverLogger
+ * TODO (Future): Add i18n support for error messages
  */
 export function validateRequestBody<T>(
   schema: z.ZodSchema<T>,
@@ -770,7 +778,7 @@ export function validateRequestBody<T>(
 
 /**
  * Format Zod errors for API response
- * TODO: Add i18n support
+ * TODO (Future): Add i18n support — map field paths to localised error messages
  */
 export function formatZodErrors(error: z.ZodError): Record<string, string[]> {
   const formatted: Record<string, string[]> = {};

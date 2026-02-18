@@ -22,6 +22,31 @@ jest.mock("@/classes", () => ({
   logger: { info: jest.fn(), error: jest.fn() },
 }));
 
+jest.mock("@/hooks", () => ({
+  useApiQuery: () => ({
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+  useApiMutation: () => ({
+    mutate: jest.fn(),
+    mutateAsync: jest.fn(),
+    isLoading: false,
+    error: null,
+  }),
+}));
+
+jest.mock("@/lib/api-client", () => ({
+  apiClient: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
 describe("Admin Site Settings Page", () => {
   it("renders site settings content", () => {
     render(<AdminSiteSettings />);

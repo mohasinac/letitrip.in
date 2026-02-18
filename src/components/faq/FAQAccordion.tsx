@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useMessage } from "@/hooks";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { FAQDocument } from "@/db/schema";
 
@@ -17,6 +18,7 @@ export function FAQAccordion({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
     expandedByDefault ? new Set(faqs.map((faq) => faq.id)) : new Set(),
   );
+  const { showSuccess } = useMessage();
 
   const toggleFAQ = (faqId: string) => {
     setExpandedIds((prev) => {
@@ -33,7 +35,7 @@ export function FAQAccordion({
   const copyLink = (faqId: string) => {
     const url = `${window.location.origin}/faqs#${faqId}`;
     navigator.clipboard.writeText(url);
-    // TODO: Show toast notification
+    showSuccess(UI_LABELS.ACTIONS.LINK_COPIED);
   };
 
   if (faqs.length === 0) {

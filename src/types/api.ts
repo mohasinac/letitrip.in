@@ -443,8 +443,8 @@ export interface ReviewVoteRequest {
 
 /**
  * Site settings update request (admin only)
- * TODO: Add validation for each nested object
- * TODO: Add settings diff for change tracking
+ * Validated by siteSettingsUpdateSchema (Zod) in the API route
+ * TODO (Future): Add settings diff tracking — compare old vs new to generate change log entries
  */
 export type SiteSettingsUpdateRequest = Partial<
   Omit<SiteSettingsDocument, "id" | "createdAt" | "updatedAt">

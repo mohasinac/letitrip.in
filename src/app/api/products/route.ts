@@ -145,13 +145,13 @@ export async function GET(request: NextRequest) {
  * - video: object (optional)
  * - ... (see ProductDocument interface)
  *
- * TODO: Implement product creation
- * TODO: Add authentication requirement (sellers only)
- * TODO: Validate request body with Zod schema
- * TODO: Handle image uploads (if not pre-uploaded)
- * TODO: Generate SEO-friendly product ID
- * TODO: Send notification to admins for approval
- * TODO: Return created product with ID
+ * ✅ Requires seller/moderator/admin authentication via requireRoleFromRequest
+ * ✅ Validates body with productCreateSchema (Zod)
+ * ✅ Creates product via productRepository.create() with status='draft'
+ * ✅ Returns created product with 201 status
+ * NOTE: Images are pre-uploaded via /api/media/upload before product creation
+ * TODO (Future): Generate SEO-friendly slug/ID for product URLs
+ * TODO (Future): Send notification to admins when new product submitted for approval
  */
 export async function POST(request: NextRequest) {
   try {

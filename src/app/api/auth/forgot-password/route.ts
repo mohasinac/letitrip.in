@@ -19,6 +19,7 @@ import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
 import { serverLogger } from "@/lib/server-logger";
+import { sendPasswordResetEmailWithLink } from "@/lib/email";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -44,16 +45,9 @@ export async function POST(request: NextRequest) {
     try {
       const resetLink = await auth.generatePasswordResetLink(email);
 
-      // TODO: Send email via your email service (Resend, SendGrid, etc.)
-      // For now, log the link
+      // Send password reset email via Resend
       serverLogger.info("Password reset link generated", { resetLink });
-
-      // In production, use your email service:
-      // await sendEmail({
-      //   to: email,
-      //   subject: 'Reset your password',
-      //   html: `Click here to reset your password: ${resetLink}`
-      // });
+      await sendPasswordResetEmailWithLink(email, resetLink);
     } catch (error: any) {
       // Don't reveal if user exists or not
       if (error.code === "auth/user-not-found") {

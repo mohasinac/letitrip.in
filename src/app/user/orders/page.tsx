@@ -28,7 +28,7 @@ export default function UserOrdersPage() {
     return null;
   }
 
-  // TODO: Replace with useApiQuery when API route is implemented
+  // NOTE: Replace with useApiQuery once /api/user/orders route is created (see API_ENDPOINTS.ORDERS)
   // const { data: orders, isLoading } = useApiQuery(API_ENDPOINTS.ORDERS.LIST);
 
   return (

@@ -12,6 +12,7 @@ import { errorResponse, successResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { isValidEmail } from "@/utils";
 import { serverLogger } from "@/lib/server-logger";
+import { sendVerificationEmailWithLink } from "@/lib/email";
 
 interface SendVerificationRequest {
   email: string;
@@ -55,8 +56,8 @@ export async function POST(req: NextRequest) {
     // For now, return the link (in production, send via email service)
     serverLogger.info("Verification link generated", { verificationLink });
 
-    // TODO: Send email via Resend or other email service
-    // await sendVerificationEmail(email, verificationLink);
+    // Send verification email via Resend
+    await sendVerificationEmailWithLink(email, verificationLink);
 
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT);
   } catch (error) {

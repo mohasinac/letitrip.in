@@ -48,11 +48,11 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * - priority: number (optional, 1-10)
  * - featured: boolean (optional)
  *
- * TODO: Implement FAQ fetching
- * TODO: Filter by category
- * TODO: Implement search (question + answer)
- * TODO: Sort by priority
- * TODO: Interpolate variables in answers
+ * ✅ Fetches FAQs via faqsRepository.findAll()
+ * ✅ Filters by category, priority, tags, showOnHomepage params
+ * ✅ Full-text search on question + answer text
+ * ✅ Sorted by priority (desc) then order (asc)
+ * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
  * ✅ Caching implemented with LONG preset (30 min TTL)
  */
 export const GET = withCache(async (request: NextRequest) => {
@@ -199,11 +199,13 @@ export const GET = withCache(async (request: NextRequest) => {
  * - tags: string[]
  * - relatedFAQs: string[]
  *
- * TODO: Implement FAQ creation
- * TODO: Require admin authentication
- * TODO: Validate request body with Zod schema
- * TODO: Generate SEO-friendly slug
- * TODO: Return created FAQ
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with faqCreateSchema (Zod)
+ * ✅ Auto-assigns order (max existing + 1)
+ * ✅ Creates FAQ via faqsRepository.create()
+ * ✅ Invalidates FAQ cache after creation
+ * ✅ Returns created FAQ with 201 status
+ * TODO (Future): Generate SEO-friendly slug for FAQ permalinks
  */
 export async function POST(request: NextRequest) {
   try {

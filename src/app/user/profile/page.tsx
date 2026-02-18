@@ -36,7 +36,8 @@ export default function UserProfilePage() {
 
   const { spacing } = THEME_CONSTANTS;
 
-  // TODO: Wire up actual counts from API once endpoints exist
+  // NOTE: Address/order counts require /api/user/addresses and /api/user/orders routes (not yet created)
+  // Wire up useApiQuery(API_ENDPOINTS.ADDRESSES.LIST) and API_ENDPOINTS.ORDERS.LIST once routes exist
   const stats = {
     orders: 0,
     wishlist: 0,

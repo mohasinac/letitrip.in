@@ -27,6 +27,7 @@ import {
   siteSettingsUpdateSchema,
 } from "@/lib/validation/schemas";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -34,10 +35,11 @@ import { serverLogger } from "@/lib/server-logger";
  *
  * Get global site settings
  *
- * TODO: Implement settings fetching
- * TODO: Return public fields only for non-admin users
- * TODO: Add aggressive caching (CDN + Redis)
- * TODO: Support ETag for conditional requests
+ * ✅ Fetches settings via siteSettingsRepository.getSingleton()
+ * ✅ Returns public fields only for non-admin users (strips emailSettings, legalPages)
+ * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * TODO (Future): Support ETag for conditional requests
+ * TODO (Future): Integrate Redis for distributed caching
  */
 export async function GET(request: NextRequest) {
   try {
@@ -89,13 +91,13 @@ export async function GET(request: NextRequest) {
  *
  * Body: Partial<SiteSettingsDocument>
  *
- * TODO: Implement settings update
- * TODO: Require admin authentication
- * TODO: Validate update data with Zod schema
- * TODO: Track changes in audit log
- * TODO: Invalidate all caches
- * TODO: Send notification to all admins
- * TODO: Return updated settings
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with siteSettingsUpdateSchema (Zod)
+ * ✅ Updates via siteSettingsRepository.updateSingleton()
+ * ✅ Returns updated settings
+ * TODO (Future): Track changes in audit log
+ * TODO (Future): Invalidate distributed caches (Redis)
+ * TODO (Future): Send notification to all admins on settings change
  */
 export async function PATCH(request: NextRequest) {
   try {
@@ -135,15 +137,6 @@ export async function PATCH(request: NextRequest) {
     );
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, { error });
-
-    if (error instanceof AuthenticationError) {
-      return errorResponse(error.message, 401);
-    }
-
-    if (error instanceof AuthorizationError) {
-      return errorResponse(error.message, 403);
-    }
-
-    return errorResponse(ERROR_MESSAGES.ADMIN.SAVE_SETTINGS_FAILED, 500);
+    return handleApiError(error);
   }
 }

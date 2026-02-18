@@ -40,11 +40,11 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * Query Parameters:
  * - includeDisabled: boolean (optional, admin only)
  *
- * TODO: Implement sections fetching
- * TODO: Return only enabled sections by default
- * TODO: Sort by order field
- * TODO: Add aggressive caching (CDN + Redis, 5 min TTL)
- * TODO: Support personalization based on user data
+ * ✅ Fetches enabled sections via homepageSectionsRepository.findAll()
+ * ✅ Returns only enabled sections by default; all for admins (includeDisabled=true)
+ * ✅ Sorted by order field ascending
+ * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * TODO (Future): Support personalization based on user segments
  */
 export async function GET(request: NextRequest) {
   try {
@@ -104,11 +104,12 @@ export async function GET(request: NextRequest) {
  * - order: number (optional, auto-assigned if not provided)
  * - enabled: boolean (optional, defaults to true)
  *
- * TODO: Implement section creation
- * TODO: Require admin authentication
- * TODO: Validate section type and config
- * TODO: Handle section-specific validation (e.g., max products for products section)
- * TODO: Return created section
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with homepageSectionCreateSchema (Zod)
+ * ✅ Auto-assigns order (max existing + 1) when not provided
+ * ✅ Creates section via homepageSectionsRepository.create()
+ * ✅ Returns created section with 201 status
+ * TODO (Future): Validate section-specific config structure per type
  */
 export async function POST(request: NextRequest) {
   try {

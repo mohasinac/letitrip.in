@@ -12,12 +12,9 @@ import { formatDate } from "@/utils";
 
 export function BlogArticlesSection() {
   const router = useRouter();
-  // TODO: Replace with actual API call when blog feature is implemented
-  // const { data, isLoading } = useApiQuery<{ articles: BlogArticle[] }>({
-  //   queryKey: ['blog', 'latest'],
-  //   queryFn: () => fetch(`/api/blog?limit=4`).then(r => r.json()),
-  // });
-
+  // NOTE: Using mock data until /api/blog route is implemented (blog feature not yet built)
+  // Replace with: const { data, isLoading } = useApiQuery('/api/blog?limit=4')
+  // when the blog feature is added.
   const articles = MOCK_BLOG_ARTICLES;
 
   if (articles.length === 0) {

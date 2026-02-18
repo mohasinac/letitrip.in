@@ -39,11 +39,11 @@ import { serverLogger } from "@/lib/server-logger";
  * Query Parameters:
  * - includeInactive: boolean (optional, admin only)
  *
- * TODO: Implement carousel fetching
- * TODO: Return only active slides (max 5) by default
- * TODO: Sort by order field
- * TODO: Add aggressive caching (CDN + Redis, 5 min TTL)
- * TODO: Track views analytics
+ * ✅ Fetches active slides via carouselRepository.getActiveSlides()
+ * ✅ Returns only active slides (max 5) for public; all slides for admins
+ * ✅ Sorted by order field ascending
+ * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * TODO (Future): Track views analytics per slide
  */
 export async function GET(request: NextRequest) {
   try {
@@ -100,11 +100,12 @@ export async function GET(request: NextRequest) {
  * - order: number
  * - active: boolean
  *
- * TODO: Implement slide creation
- * TODO: Require admin authentication
- * TODO: Validate grid card positions (no overlaps)
- * TODO: Enforce max 5 active slides limit
- * TODO: Return created slide
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with carouselCreateSchema (Zod)
+ * ✅ Enforces max 5 active slides limit
+ * ✅ Creates slide via carouselRepository.create()
+ * ✅ Returns created slide with 201 status
+ * TODO (Future): Validate grid card positions for overlaps in 9x9 grid
  */
 export async function POST(request: NextRequest) {
   try {

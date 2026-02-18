@@ -30,6 +30,7 @@ import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { z } from "zod";
 import { serverLogger } from "@/lib/server-logger";
+import { sendVerificationEmailWithLink } from "@/lib/email";
 
 const registerSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -145,8 +146,14 @@ export async function POST(request: NextRequest) {
     auth
       .generateEmailVerificationLink(email)
       .then((link) => {
-        // TODO: Send email via your email service (Resend, SendGrid, etc.)
-        serverLogger.info("Verification link generated", { link });
+        // Send verification email via Resend
+        sendVerificationEmailWithLink(email, link)
+          .then(() => serverLogger.info("Verification email sent", { email }))
+          .catch((emailErr) =>
+            serverLogger.error("Failed to send verification email", {
+              error: emailErr,
+            }),
+          );
       })
       .catch((err) =>
         serverLogger.error("Failed to generate verification link", {
