@@ -981,6 +981,29 @@ export const UI_LABELS = {
     EMPTY_QUERY: "Start typing to search for products",
   },
 
+  // Auctions listing page labels
+  AUCTIONS_PAGE: {
+    TITLE: "Live Auctions",
+    SUBTITLE: "Bid on unique items — auctions ending soon",
+    NO_AUCTIONS: "No active auctions",
+    NO_AUCTIONS_SUBTITLE: "Check back soon for new auction listings",
+    CURRENT_BID: "Current Bid",
+    STARTING_BID: "Starting Bid",
+    BID_COUNT: (count: number) => `${count} bid${count !== 1 ? "s" : ""}`,
+    ENDS_IN: "Ends in",
+    ENDED: "Auction Ended",
+    PLACE_BID: "Place Bid",
+    VIEW_AUCTION: "View Auction",
+    LIVE_BADGE: "LIVE",
+    ENDING_SOON: "Ending Soon",
+    SORT_ENDING_SOON: "Ending Soonest",
+    SORT_LOWEST_BID: "Lowest Bid",
+    SORT_HIGHEST_BID: "Highest Bid",
+    SORT_MOST_BIDS: "Most Bids",
+    RESULTS_COUNT: (count: number) =>
+      `${count} active auction${count !== 1 ? "s" : ""}`,
+  },
+
   // Product detail page labels
   PRODUCT_DETAIL: {
     BACK_TO_PRODUCTS: "Back to Products",

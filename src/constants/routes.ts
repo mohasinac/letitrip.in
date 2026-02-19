@@ -13,6 +13,7 @@ export const ROUTES = {
     PROFILE: (userId: string) => `/profile/${userId}`,
     PRODUCTS: "/products",
     AUCTIONS: "/auctions",
+    AUCTION_DETAIL: (id: string) => `/auctions/${id}`,
     SELLERS: "/sellers",
     CATEGORIES: "/categories",
     SEARCH: "/search",

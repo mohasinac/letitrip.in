@@ -186,13 +186,14 @@
 
 **Goal:** Sellers can list products (including auctions); buyers can bid.
 
-### 3.1 Auction Listing Page
+### 3.1 Auction Listing Page ✅
 
-- **Route:** `/auctions` 🔗💀
+- **Route:** `/auctions`
 - **File:** `src/app/auctions/page.tsx`
-- **API:** `GET /api/products?isAuction=true` (filter on existing endpoint)
-- **Components:** `AuctionCard` (shows countdown timer, current bid, bid count)
-- **Priority:** 🟡 P2
+- **API:** `GET /api/products?filters=isAuction==true,status==published` (existing endpoint)
+- **Components:** `AuctionCard` (countdown timer, current/starting bid, bid count), `AuctionGrid`
+- **Constants Added:** `ROUTES.PUBLIC.AUCTION_DETAIL`, `UI_LABELS.AUCTIONS_PAGE.*`
+- **Status:** Complete
 
 ### 3.2 Auction Detail + Bidding Page
 

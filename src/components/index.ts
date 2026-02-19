@@ -96,3 +96,6 @@ export * from "./checkout";
 
 // ==================== CATEGORIES ====================
 export * from "./categories";
+
+// ==================== AUCTIONS ====================
+export * from "./auctions";
