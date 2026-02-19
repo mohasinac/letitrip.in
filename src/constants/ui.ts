@@ -1037,6 +1037,17 @@ export const UI_LABELS = {
     WELCOME: (name: string) => `Welcome back, ${name}`,
     LISTING_STAT_LABEL: "listings",
     AUCTION_STAT_LABEL: "active auctions",
+    // Products list page
+    PRODUCTS_TITLE: "My Products",
+    PRODUCTS_SUBTITLE: "Manage and update your store listings",
+    CREATE_LISTING_TITLE: "Create New Listing",
+    EDIT_LISTING_TITLE: "Edit Listing",
+    DELETE_LISTING_CONFIRM:
+      "Are you sure you want to delete this listing? This action cannot be undone.",
+    PUBLISH_ACTION: "Publish",
+    UNPUBLISH_ACTION: "Unpublish",
+    SAVE_LISTING: "Save Listing",
+    SAVING: "Saving...",
   },
 
   // Product detail page labels

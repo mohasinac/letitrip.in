@@ -1,6 +1,6 @@
 # LetItRip — Feature Roadmap & Build Plan
 
-> Last updated: February 21, 2026  
+> Last updated: February 22, 2026  
 > Every item links to the relevant file location once created. Dead-link routes are marked 🔗💀.
 
 ---
@@ -24,7 +24,7 @@
 | Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
 | Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
 | Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
-| Seller portal                                                                                | ✅ Dashboard at /seller — layout, tabs, stats cards   |
+| Seller portal                                                                                | ✅ Dashboard + Products CRUD at /seller               |
 | Search                                                                                       | ✅ Complete — /search page + /api/search route        |
 
 ---
@@ -223,13 +223,15 @@
 - **Stats:** Total products, active listings, active auctions, draft products — fetched via `GET /api/products?filters=sellerId==uid`
 - **Priority:** 🟡 P2
 
-### 3.5 Seller Products Management
+### 3.5 Seller Products Management ✅
 
 - **Routes:**
-  - `/seller/products` — list with CRUD actions
-  - `/seller/products/new` — create listing
-  - `/seller/products/[id]/edit` — edit listing
-- **API:** POST/PATCH/DELETE `/api/products` with seller-scoped authorization
+  - `/seller/products` — list with CRUD actions (DataTable + delete confirm)
+  - `/seller/products/new` — full-page create listing form
+  - `/seller/products/[id]/edit` — full-page edit listing form
+- **Files:** `src/app/seller/products/page.tsx`, `src/app/seller/products/new/page.tsx`, `src/app/seller/products/[id]/edit/page.tsx`
+- **API:** Reuses POST/PATCH/DELETE `/api/products` — already seller-scoped (ownership check via `sellerId`)
+- **Components reused:** `ProductForm`, `getProductTableColumns`, `DataTable`, `ConfirmDeleteModal`, `AdminPageHeader`
 - **Priority:** 🟡 P2
 
 ### 3.6 Seller Orders / Sales
