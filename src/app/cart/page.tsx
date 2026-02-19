@@ -51,6 +51,8 @@ export default function CartPage() {
   const { showError, showSuccess } = useMessage();
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
 
   const { data, isLoading, refetch } = useApiQuery<CartApiResponse>({
     queryKey: ["cart"],
@@ -133,7 +135,17 @@ export default function CartPage() {
             <div
               className={`p-4 rounded-xl border ${themed.bgPrimary} ${themed.border}`}
             >
-              <PromoCodeInput />
+              <PromoCodeInput
+                subtotal={subtotal}
+                onApply={(amount, code) => {
+                  setDiscount(amount);
+                  setCouponCode(code);
+                }}
+                onRemove={() => {
+                  setDiscount(0);
+                  setCouponCode(null);
+                }}
+              />
             </div>
 
             {/* Order summary */}
@@ -142,6 +154,8 @@ export default function CartPage() {
               itemCount={itemCount}
               onCheckout={handleCheckout}
               isCheckingOut={isCheckingOut}
+              discount={discount}
+              couponCode={couponCode ?? undefined}
             />
           </div>
         )}

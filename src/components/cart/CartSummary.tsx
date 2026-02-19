@@ -11,6 +11,8 @@ interface CartSummaryProps {
   itemCount: number;
   onCheckout: () => void;
   isCheckingOut?: boolean;
+  discount?: number;
+  couponCode?: string;
 }
 
 export function CartSummary({
@@ -18,7 +20,11 @@ export function CartSummary({
   itemCount,
   onCheckout,
   isCheckingOut = false,
+  discount = 0,
+  couponCode,
 }: CartSummaryProps) {
+  const total = Math.max(0, subtotal - discount);
+
   return (
     <div
       className={`${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} p-5 space-y-4 sticky top-20`}
@@ -36,6 +42,16 @@ export function CartSummary({
           </span>
           <span className={themed.textPrimary}>{formatCurrency(subtotal)}</span>
         </div>
+        {discount > 0 && couponCode && (
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-emerald-600 dark:text-emerald-400">
+              {UI_LABELS.CART.DISCOUNT} ({couponCode})
+            </span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+              -{formatCurrency(discount)}
+            </span>
+          </div>
+        )}
         <div className="flex items-center justify-between text-sm">
           <span className={themed.textSecondary}>
             {UI_LABELS.CART.SHIPPING}
@@ -61,7 +77,7 @@ export function CartSummary({
           {UI_LABELS.CART.TOTAL}
         </span>
         <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
-          {formatCurrency(subtotal)}
+          {formatCurrency(total)}
         </span>
       </div>
 

@@ -161,7 +161,9 @@
 ### 2.6 Coupon Validate API + Checkout Integration ✅
 
 - **API:** `POST /api/coupons/validate` — validates code, returns discount amount (implemented in 2.2)
-- **Status:** API complete. Checkout UI integration for promo input pending (cart already has PromoCodeInput placeholder)
+- **PromoCodeInput:** Wired to call validate API, shows applied discount, remove button
+- **CartSummary:** Updated to display discount line item and adjusted total
+- **Status:** Complete
 
 ### 2.7 Search Page + API
 
