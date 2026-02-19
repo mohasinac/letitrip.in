@@ -7,25 +7,25 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                                      |
-| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                                                 |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                                                 |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                                 |
-| Admin: products management                                                                   | ✅ Complete                                                 |
-| Admin: orders management                                                                     | ✅ Complete                                                 |
-| Homepage sections                                                                            | ✅ Complete                                                 |
-| Product API + repository                                                                     | ✅ Complete                                                 |
-| Order API + repository                                                                       | ✅ Complete                                                 |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                          |
-| Admin: coupons management                                                                    | ✅ Complete                                                 |
-| Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management            |
-| Cart                                                                                         | ✅ Schema + repo + API + page complete                      |
-| Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email       |
-| Products browsing pages                                                                      | ✅ Listing + detail pages complete                          |
-| Categories browsing pages                                                                    | ✅ Listing page complete, ❌ Category products page missing |
-| Seller portal                                                                                | ❌ Nothing exists                                           |
-| Search                                                                                       | ❌ Nothing exists                                           |
+| Area                                                                                         | Status                                                |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                                           |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                                           |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                           |
+| Admin: products management                                                                   | ✅ Complete                                           |
+| Admin: orders management                                                                     | ✅ Complete                                           |
+| Homepage sections                                                                            | ✅ Complete                                           |
+| Product API + repository                                                                     | ✅ Complete                                           |
+| Order API + repository                                                                       | ✅ Complete                                           |
+| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                    |
+| Admin: coupons management                                                                    | ✅ Complete                                           |
+| Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management      |
+| Cart                                                                                         | ✅ Schema + repo + API + page complete                |
+| Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
+| Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
+| Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
+| Seller portal                                                                                | ❌ Nothing exists                                     |
+| Search                                                                                       | ❌ Nothing exists                                     |
 
 ---
 
@@ -141,12 +141,13 @@
 - **Features:** Responsive grid, client-side search filter, product/subcategory counts, featured badge, cover image or icon fallback
 - **Status:** Complete
 
-### 2.4 Category Products Page
+### 2.4 Category Products Page ✅
 
 - **Route:** `/categories/[slug]`
 - **File:** `src/app/categories/[slug]/page.tsx`
-- **Reuses:** `ProductGrid`, `ProductFilters` from Phase 1
-- **Priority:** 🟠 P1
+- **Components:** Reuses `ProductGrid`, `ProductSortBar` from Phase 1
+- **Features:** Resolves slug → category via flat categories API, filters products by `category==id`, breadcrumb nav, pagination, sort bar
+- **Status:** Complete
 
 ### 2.5 Wishlist API + Functional Wishlist Page
 

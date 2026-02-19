@@ -955,6 +955,9 @@ export const UI_LABELS = {
     SUBCATEGORIES_COUNT: (count: number) =>
       count === 1 ? "1 subcategory" : `${count} subcategories`,
     FEATURED: "Featured",
+    BACK_TO_CATEGORIES: "Back to Categories",
+    ALL_PRODUCTS_IN: (name: string) => `All products in ${name}`,
+    NO_PRODUCTS_IN: (name: string) => `No products found in ${name}`,
   },
 
   // Product detail page labels
