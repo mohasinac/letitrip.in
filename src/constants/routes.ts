@@ -58,6 +58,11 @@ export const ROUTES = {
   // Seller Routes
   SELLER: {
     DASHBOARD: "/seller",
+    PRODUCTS: "/seller/products",
+    PRODUCTS_NEW: "/seller/products/new",
+    PRODUCTS_EDIT: (id: string) => `/seller/products/${id}`,
+    ORDERS: "/seller/orders",
+    AUCTIONS: "/seller/auctions",
   },
 
   // Admin Routes

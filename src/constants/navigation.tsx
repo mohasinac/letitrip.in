@@ -264,3 +264,16 @@ export const USER_TAB_ITEMS = [
   { label: UI_LABELS.USER.ADDRESSES.TITLE, href: ROUTES.USER.ADDRESSES },
   { label: UI_LABELS.USER.SETTINGS.TITLE, href: ROUTES.USER.SETTINGS },
 ] as const;
+
+/**
+ * Seller Section Tabs
+ *
+ * Navigation tabs for seller section pages.
+ * Used by: SellerTabs component via SectionTabs
+ */
+export const SELLER_TAB_ITEMS = [
+  { label: UI_LABELS.NAV.DASHBOARD, href: ROUTES.SELLER.DASHBOARD },
+  { label: UI_LABELS.NAV.MY_PRODUCTS, href: ROUTES.SELLER.PRODUCTS },
+  { label: UI_LABELS.NAV.MY_AUCTIONS, href: ROUTES.SELLER.AUCTIONS },
+  { label: UI_LABELS.NAV.MY_SALES, href: ROUTES.SELLER.ORDERS },
+] as const;

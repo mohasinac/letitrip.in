@@ -99,3 +99,5 @@ export * from "./categories";
 
 // ==================== AUCTIONS ====================
 export * from "./auctions";
+// ==================== SELLER ====================
+export * from "./seller";

@@ -1,6 +1,6 @@
 # LetItRip — Feature Roadmap & Build Plan
 
-> Last updated: February 20, 2026  
+> Last updated: February 21, 2026  
 > Every item links to the relevant file location once created. Dead-link routes are marked 🔗💀.
 
 ---
@@ -24,7 +24,7 @@
 | Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
 | Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
 | Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
-| Seller portal                                                                                | ❌ Nothing exists                                     |
+| Seller portal                                                                                | ✅ Dashboard at /seller — layout, tabs, stats cards   |
 | Search                                                                                       | ✅ Complete — /search page + /api/search route        |
 
 ---
@@ -214,11 +214,13 @@
 - **Side-effects:** Updates `product.currentBid` and `product.bidCount` after successful bid
 - **Status:** Complete
 
-### 3.4 Seller Dashboard
+### 3.4 Seller Dashboard ✅
 
-- **Route:** `/seller` 🔗💀
-- **File:** `src/app/seller/layout.tsx`, `src/app/seller/dashboard/page.tsx`
-- **Stats:** Total sales, active listings, pending orders, active auctions
+- **Route:** `/seller`
+- **Files:** `src/app/seller/layout.tsx`, `src/app/seller/page.tsx`
+- **Components:** `SellerTabs` (new), `StatCard` (inline), `QuickActionButton` (inline)
+- **Constants added:** `ROUTES.SELLER.*` (PRODUCTS, ORDERS, AUCTIONS, PRODUCTS_NEW, PRODUCTS_EDIT), `UI_LABELS.SELLER_PAGE.*`, `UI_LABELS.NAV.MY_PRODUCTS/MY_SALES/MY_AUCTIONS`, `SELLER_TAB_ITEMS`
+- **Stats:** Total products, active listings, active auctions, draft products — fetched via `GET /api/products?filters=sellerId==uid`
 - **Priority:** 🟡 P2
 
 ### 3.5 Seller Products Management

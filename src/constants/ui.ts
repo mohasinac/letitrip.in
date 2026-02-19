@@ -210,6 +210,9 @@ export const UI_LABELS = {
     MY_ORDERS: "My Orders",
     USERS: "Users",
     PRODUCTS_ADMIN: "Products",
+    MY_PRODUCTS: "My Products",
+    MY_SALES: "My Sales",
+    MY_AUCTIONS: "My Auctions",
   },
 
   // Profile section
@@ -1013,6 +1016,27 @@ export const UI_LABELS = {
     AUCTION_ENDED_INFO:
       "This auction has ended and is no longer accepting bids",
     BID_PLACED: "Bid placed successfully!",
+  },
+
+  // Seller dashboard page labels
+  SELLER_PAGE: {
+    TITLE: "Seller Dashboard",
+    SUBTITLE: "Manage your listings, orders, and earnings",
+    TOTAL_PRODUCTS: "Total Products",
+    ACTIVE_LISTINGS: "Active Listings",
+    DRAFT_PRODUCTS: "Draft Products",
+    ACTIVE_AUCTIONS: "Active Auctions",
+    QUICK_ACTIONS: "Quick Actions",
+    ADD_PRODUCT: "Add New Listing",
+    VIEW_PRODUCTS: "View All Products",
+    VIEW_SALES: "View Sales",
+    VIEW_AUCTIONS: "View Auctions",
+    NO_PRODUCTS: "No products yet",
+    NO_PRODUCTS_SUBTITLE: "Start by adding your first listing",
+    LOADING_STATS: "Loading dashboard stats...",
+    WELCOME: (name: string) => `Welcome back, ${name}`,
+    LISTING_STAT_LABEL: "listings",
+    AUCTION_STAT_LABEL: "active auctions",
   },
 
   // Product detail page labels
