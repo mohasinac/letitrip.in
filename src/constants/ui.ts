@@ -940,6 +940,23 @@ export const UI_LABELS = {
     PROMOTED_BADGE: "Promoted",
   },
 
+  // Categories listing page labels
+  CATEGORIES_PAGE: {
+    TITLE: "Categories",
+    SUBTITLE: "Browse all product categories",
+    ALL_CATEGORIES: "All Categories",
+    TOP_LEVEL: "Top-Level Categories",
+    NO_CATEGORIES: "No categories found",
+    NO_CATEGORIES_SUBTITLE: "Check back soon for new categories",
+    PRODUCTS_COUNT: (count: number) =>
+      count === 1 ? "1 product" : `${count} products`,
+    VIEW_PRODUCTS: "View Products",
+    SUBCATEGORIES: "Subcategories",
+    SUBCATEGORIES_COUNT: (count: number) =>
+      count === 1 ? "1 subcategory" : `${count} subcategories`,
+    FEATURED: "Featured",
+  },
+
   // Product detail page labels
   PRODUCT_DETAIL: {
     BACK_TO_PRODUCTS: "Back to Products",

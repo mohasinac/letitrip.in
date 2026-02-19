@@ -93,3 +93,6 @@ export * from "./cart";
 
 // ==================== CHECKOUT ====================
 export * from "./checkout";
+
+// ==================== CATEGORIES ====================
+export * from "./categories";
