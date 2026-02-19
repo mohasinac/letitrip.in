@@ -291,6 +291,19 @@ export const ERROR_MESSAGES = {
     INSUFFICIENT_STOCK: "Insufficient stock for one or more items",
     PAYMENT_FAILED: "Payment processing failed",
   },
+  COUPON: {
+    NOT_FOUND: "Coupon not found",
+    FETCH_FAILED: "Failed to load coupons",
+    CREATE_FAILED: "Failed to create coupon",
+    UPDATE_FAILED: "Failed to update coupon",
+    DELETE_FAILED: "Failed to delete coupon",
+    INVALID: "This coupon is invalid or has expired",
+    ALREADY_USED: "You have already used this coupon",
+    USAGE_LIMIT_REACHED: "This coupon has reached its usage limit",
+    MIN_PURCHASE_NOT_MET: "Minimum purchase amount not met for this coupon",
+    NOT_APPLICABLE: "This coupon is not applicable to your cart",
+    DUPLICATE_CODE: "A coupon with this code already exists",
+  },
   NEWSLETTER: {
     SUBSCRIBE_FAILED: "Failed to subscribe to newsletter",
     INVALID_EMAIL: "Please enter a valid email address to subscribe",
@@ -481,6 +494,16 @@ export const SUCCESS_MESSAGES = {
   CHECKOUT: {
     ORDER_PLACED: "Order placed successfully!",
     PAYMENT_RECEIVED: "Payment received. Your order is confirmed.",
+  },
+  // Coupon Success
+  COUPON: {
+    CREATED: "Coupon created successfully",
+    UPDATED: "Coupon updated successfully",
+    DELETED: "Coupon deleted successfully",
+    DEACTIVATED: "Coupon deactivated",
+    REACTIVATED: "Coupon reactivated",
+    APPLIED: "Coupon applied successfully",
+    VALIDATED: "Coupon is valid",
   },
   SESSION: {
     ACTIVITY_UPDATED: "Activity updated",

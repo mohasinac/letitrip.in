@@ -18,7 +18,8 @@
 | Product API + repository                                                                     | ✅ Complete                                           |
 | Order API + repository                                                                       | ✅ Complete                                           |
 | Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                    |
-| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes                    |
+| Admin: coupons management                                                                    | ✅ Complete                                           |
+| Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management      |
 | Cart                                                                                         | ✅ Schema + repo + API + page complete                |
 | Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
 | Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
@@ -122,12 +123,14 @@
 - **Features:** Status filter tabs (All/Pending/Confirmed/Shipped/Delivered/Cancelled), DataTable with order ID/product/customer/amount/status/payment columns, side drawer to update status + tracking number + notes
 - **Status:** Complete
 
-### 2.2 Admin Coupons Page
+### 2.2 Admin Coupons Page ✅
 
-- **Route:** `/admin/coupons` 🔗💀 (in `ROUTES.ADMIN.COUPONS` but no page)
+- **Route:** `/admin/coupons`
 - **File:** `src/app/admin/coupons/[[...action]]/page.tsx`
-- **API:** `GET/POST /api/coupons`, `GET/PATCH/DELETE /api/coupons/[id]`, `POST /api/coupons/validate`
-- **Priority:** 🟠 P1
+- **API:** `GET/POST /api/admin/coupons`, `GET/PATCH/DELETE /api/admin/coupons/[id]`, `POST /api/coupons/validate`
+- **Components:** `CouponTableColumns`, `CouponForm` in `src/components/admin/coupons/`
+- **Features:** Full CRUD via DataTable + SideDrawer create/edit, ConfirmDeleteModal for deletes, coupon type/discount/validity/restrictions forms, public validate endpoint for checkout
+- **Status:** Complete
 
 ### 2.3 Categories Listing Page
 

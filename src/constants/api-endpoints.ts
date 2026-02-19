@@ -81,6 +81,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin orders endpoints */
     ORDERS: "/api/admin/orders", // GET - List all orders
     ORDER_BY_ID: (id: string) => `/api/admin/orders/${id}`, // PATCH - Update order
+    /** ✅ Admin coupons endpoints */
+    COUPONS: "/api/admin/coupons", // GET/POST - List/create coupons
+    COUPON_BY_ID: (id: string) => `/api/admin/coupons/${id}`, // GET/PATCH/DELETE
   },
 
   // Product endpoints ✅ All routes exist
@@ -188,6 +191,11 @@ export const API_ENDPOINTS = {
     CREATE_ORDER: "/api/payment/create-order", // POST - Create Razorpay order
     VERIFY: "/api/payment/verify", // POST - Verify payment & place orders
     WEBHOOK: "/api/payment/webhook", // POST - Razorpay webhook events
+  },
+
+  // Coupon endpoints
+  COUPONS: {
+    VALIDATE: "/api/coupons/validate", // POST - Validate a coupon code (public)
   },
 } as const;
 

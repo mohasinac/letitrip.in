@@ -67,3 +67,12 @@ export type { AdminProduct, ProductDrawerMode } from "./products";
 // Phase 6: Admin Orders
 export { getOrderTableColumns, OrderStatusForm } from "./orders";
 export type { OrderStatusFormState } from "./orders";
+
+// Phase 6: Admin Coupons
+export {
+  getCouponTableColumns,
+  CouponForm,
+  couponToFormState,
+  formStateToCouponPayload,
+} from "./coupons";
+export type { CouponFormState } from "./coupons";
