@@ -1048,6 +1048,18 @@ export const UI_LABELS = {
     UNPUBLISH_ACTION: "Unpublish",
     SAVE_LISTING: "Save Listing",
     SAVING: "Saving...",
+    // Orders page
+    ORDERS_TITLE: "My Sales",
+    ORDERS_SUBTITLE: "Orders placed for your products",
+    ORDERS_EMPTY: "No orders yet",
+    ORDERS_EMPTY_SUBTITLE:
+      "When customers purchase your products, orders will appear here",
+    ORDER_ID: "Order ID",
+    BUYER: "Buyer",
+    PRODUCT_SOLD: "Product",
+    ORDER_DATE: "Order Date",
+    ORDER_AMOUNT: "Amount",
+    ORDER_STATUS: "Status",
   },
 
   // Product detail page labels

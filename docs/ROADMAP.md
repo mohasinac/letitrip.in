@@ -1,6 +1,6 @@
 # LetItRip — Feature Roadmap & Build Plan
 
-> Last updated: February 22, 2026  
+> Last updated: February 23, 2026  
 > Every item links to the relevant file location once created. Dead-link routes are marked 🔗💀.
 
 ---
@@ -24,7 +24,7 @@
 | Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
 | Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
 | Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
-| Seller portal                                                                                | ✅ Dashboard + Products CRUD at /seller               |
+| Seller portal                                                                                | ✅ Dashboard + Products CRUD + Orders at /seller      |
 | Search                                                                                       | ✅ Complete — /search page + /api/search route        |
 
 ---
@@ -234,10 +234,13 @@
 - **Components reused:** `ProductForm`, `getProductTableColumns`, `DataTable`, `ConfirmDeleteModal`, `AdminPageHeader`
 - **Priority:** 🟡 P2
 
-### 3.6 Seller Orders / Sales
+### 3.6 Seller Orders / Sales ✅
 
 - **Route:** `/seller/orders`
-- **API:** `GET /api/seller/orders` (filtered by `sellerId`)
+- **Files:** `src/app/seller/orders/page.tsx`, `src/app/api/seller/orders/route.ts`
+- **Strategy:** Fetch seller's product IDs → filter all orders by productId
+- **Features:** Status filter tabs, summary stat cards (Total/Pending/Confirmed/Delivered), DataTable with `getOrderTableColumns`, revenue summary footer
+- **Constants added:** `API_ENDPOINTS.SELLER.ORDERS`, `UI_LABELS.SELLER_PAGE.ORDERS_*`
 - **Priority:** 🟡 P2
 
 ### 3.7 Admin Bids/Auctions Page

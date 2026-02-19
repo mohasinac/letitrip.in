@@ -215,6 +215,11 @@ export const API_ENDPOINTS = {
     CREATE: "/api/bids", // POST - Place a bid (auth required)
     GET_BY_ID: (id: string) => `/api/bids/${id}`, // GET - Get single bid
   },
+
+  // Seller endpoints ✅ Routes exist
+  SELLER: {
+    ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
+  },
 } as const;
 
 // Type for API endpoints
