@@ -269,6 +269,12 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: "Address not found",
   },
 
+  // Newsletter Errors
+  NEWSLETTER: {
+    SUBSCRIBE_FAILED: "Failed to subscribe to newsletter",
+    INVALID_EMAIL: "Please enter a valid email address to subscribe",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"

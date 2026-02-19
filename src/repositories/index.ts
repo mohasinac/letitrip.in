@@ -18,6 +18,7 @@ export * from "./base.repository";
 // Core repositories
 export * from "./user.repository";
 export * from "./address.repository";
+export * from "./newsletter.repository";
 export * from "./token.repository";
 export * from "./product.repository";
 export * from "./order.repository";
@@ -52,3 +53,4 @@ export { categoriesRepository } from "./categories.repository";
 export { couponsRepository } from "./coupons.repository";
 export { faqsRepository } from "./faqs.repository";
 export { addressRepository } from "./address.repository";
+export { newsletterRepository } from "./newsletter.repository";

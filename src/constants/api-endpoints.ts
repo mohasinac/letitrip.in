@@ -65,7 +65,7 @@ export const API_ENDPOINTS = {
     CANCEL: (id: string) => `/api/user/orders/${id}/cancel`, // POST - Cancel order
   },
 
-  // Admin endpoints ⚠️ REVOKE_SESSION and REVOKE_USER_SESSIONS have no route files yet
+  // Admin endpoints ✅ All routes exist
   ADMIN: {
     DASHBOARD: "/api/admin/dashboard",
     USERS: "/api/admin/users",
@@ -148,12 +148,12 @@ export const API_ENDPOINTS = {
     TRIM: "/api/media/trim", // POST - Trim video
   },
 
-  // Logging endpoints ❌ No route — TODO: create /api/logs/write route
+  // Logging endpoints ✅ Route exists
   LOGS: {
     WRITE: "/api/logs/write", // POST - Write log entry
   },
 
-  // Newsletter endpoints ❌ No route — TODO: create /api/newsletter/subscribe route
+  // Newsletter endpoints ✅ Route exists
   NEWSLETTER: {
     SUBSCRIBE: "/api/newsletter/subscribe", // POST - Subscribe to newsletter
   },

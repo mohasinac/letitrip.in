@@ -24,3 +24,4 @@ export * from "./homepage-sections";
 export * from "./categories";
 export * from "./coupons";
 export * from "./faqs";
+export * from "./newsletter";
