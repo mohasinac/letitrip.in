@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feature Roadmap + Comprehensive Seed Data (Feb 19, 2026)
+
+#### docs/ROADMAP.md (new)
+
+- Created full feature roadmap with 5 phases: Core Buying Flow, Discovery & Merchandising, Auctions & Seller Portal, Content & Trust Pages, Platform Maturity.
+- Documented all 18 dead-link routes with priority levels (P0–P3).
+- Listed all missing API endpoints (24+) with target phase.
+- Documented component library gaps and schema/repository gaps.
+- Added environment variables needed for Razorpay and Algolia.
+
+#### scripts/seed-data — Expanded Coverage
+
+- **users-seed-data.ts**: Added moderator user, 3 new seller users (`user-sports-zone-sportszone`, `user-beauty-hub-beautyhub`, `user-artisan-crafts-artisan`) with `seller` role, and 3 additional buyer users (`user-priya-sharma-priya`, `user-raj-patel-rajpatel`, `user-meera-nair-meera`). Total: 15 users.
+- **products-seed-data.ts**: Added 20 new products: 3 men's fashion, 3 women's fashion, 4 home & kitchen, 4 sports & outdoors, 3 electronics, 3 auction items (MacBook M3, Vintage Leica M6, Air Jordan 1 OG). Total: 31 products.
+- **orders-seed-data.ts**: Added 14 orders covering all statuses: 2 pending, 3 confirmed, 3 shipped, 3 cancelled (with reasons and refund info), 2 returned (with refund statuses). Total: 26 orders.
+- **bids-seed-data.ts**: Added 20 new bids across 3 new auction products (MacBook M3 × 7, Leica M6 × 5, Air Jordan × 8 spread over multiple bidders). Total: 28 bids.
+- **reviews-seed-data.ts**: Added 10 new verified/approved reviews for all new product categories (fashion, home, sports, electronics). Total: 25 reviews.
+- **newsletter-seed-data.ts** (new): Created 17 newsletter subscribers covering active (15) and unsubscribed (2) statuses from sources: homepage, checkout, product_page, register.
+- **seed-data/index.ts**: Exported `newsletterSeedData`.
+- **seed-all-data.ts**: Imported `NEWSLETTER_COLLECTION` + `newsletterSeedData`; wired newsletter into `allCollections` array and seeding loop.
+
 ### Backend Pagination: SieveJS Integration (Feb 18, 2026)
 
 - Added `@mohasinac/sievejs` dependency for standardized backend filtering, sorting, and pagination.

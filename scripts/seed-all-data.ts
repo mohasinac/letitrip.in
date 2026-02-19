@@ -26,6 +26,7 @@ import {
   homepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
+  newsletterSeedData,
 } from "./seed-data";
 import {
   USER_COLLECTION,
@@ -39,6 +40,7 @@ import {
   HOMEPAGE_SECTIONS_COLLECTION,
   SITE_SETTINGS_COLLECTION,
   FAQS_COLLECTION,
+  NEWSLETTER_COLLECTION,
 } from "@/db/schema";
 
 interface SeedOptions {
@@ -320,6 +322,7 @@ async function seedAllData(options: SeedOptions) {
     "homepageSections",
     "siteSettings",
     "faqs",
+    "newsletter",
   ];
 
   const collectionsToSeed =
@@ -402,6 +405,11 @@ async function seedAllData(options: SeedOptions) {
     // Seed FAQs
     if (collectionsToSeed.includes("faqs")) {
       await seedCollection(FAQS_COLLECTION, faqSeedData, options);
+    }
+
+    // Seed Newsletter Subscribers
+    if (collectionsToSeed.includes("newsletter")) {
+      await seedCollection(NEWSLETTER_COLLECTION, newsletterSeedData, options);
     }
 
     console.log("\n✅ Database seeding completed successfully!\n");

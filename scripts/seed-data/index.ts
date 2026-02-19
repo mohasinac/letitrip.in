@@ -15,3 +15,4 @@ export { carouselSlidesSeedData } from "./carousel-slides-seed-data";
 export { homepageSectionsSeedData } from "./homepage-sections-seed-data";
 export { siteSettingsSeedData } from "./site-settings-seed-data";
 export { faqSeedData } from "./faq-seed-data";
+export { newsletterSeedData } from "./newsletter-seed-data";
