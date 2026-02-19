@@ -960,6 +960,27 @@ export const UI_LABELS = {
     NO_PRODUCTS_IN: (name: string) => `No products found in ${name}`,
   },
 
+  // Search page labels
+  SEARCH_PAGE: {
+    TITLE: "Search",
+    SUBTITLE: "Find products across the store",
+    PLACEHOLDER: "Search for products...",
+    NO_RESULTS: "No results found",
+    NO_RESULTS_SUBTITLE: (q: string) =>
+      `We couldn't find anything matching "${q}". Try a different search term.`,
+    RESULTS_COUNT: (count: number, q: string) =>
+      `${count} result${count !== 1 ? "s" : ""} for "${q}"`,
+    SEARCHING: "Searching...",
+    FILTERS: "Filters",
+    CLEAR_FILTERS: "Clear Filters",
+    PRICE_RANGE: "Price Range",
+    MIN_PRICE: "Min price",
+    MAX_PRICE: "Max price",
+    CATEGORY_FILTER: "Category",
+    ALL_CATEGORIES: "All Categories",
+    EMPTY_QUERY: "Start typing to search for products",
+  },
+
   // Product detail page labels
   PRODUCT_DETAIL: {
     BACK_TO_PRODUCTS: "Back to Products",

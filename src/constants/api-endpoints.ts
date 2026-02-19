@@ -203,6 +203,11 @@ export const API_ENDPOINTS = {
   COUPONS: {
     VALIDATE: "/api/coupons/validate", // POST - Validate a coupon code (public)
   },
+
+  // Search endpoint
+  SEARCH: {
+    QUERY: "/api/search", // GET - Full-text product search with filters
+  },
 } as const;
 
 // Type for API endpoints

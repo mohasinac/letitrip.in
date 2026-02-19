@@ -1,6 +1,6 @@
 # LetItRip — Feature Roadmap & Build Plan
 
-> Last updated: February 19, 2026  
+> Last updated: February 20, 2026  
 > Every item links to the relevant file location once created. Dead-link routes are marked 🔗💀.
 
 ---
@@ -25,7 +25,7 @@
 | Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
 | Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
 | Seller portal                                                                                | ❌ Nothing exists                                     |
-| Search                                                                                       | ❌ Nothing exists                                     |
+| Search                                                                                       | ✅ Complete — /search page + /api/search route        |
 
 ---
 
@@ -165,14 +165,15 @@
 - **CartSummary:** Updated to display discount line item and adjusted total
 - **Status:** Complete
 
-### 2.7 Search Page + API
+### 2.7 Search Page + API ✅
 
 - **Route:** `/search`
 - **File:** `src/app/search/page.tsx`
 - **API:** `GET /api/search?q=...&category=...&minPrice=...&maxPrice=...`
-- **Approach (Phase 2):** Firestore full-text workaround (tags + title matching)
+- **Approach (Phase 2):** In-memory full-text search on title, description, tags, brand — followed by Sieve for category/price filtering + sort/pagination
 - **Approach (Phase 3):** Integrate Algolia / Typesense for real full-text search
-- **Priority:** 🟠 P1
+- **Constants Added:** `ROUTES.PUBLIC.SEARCH`, `API_ENDPOINTS.SEARCH.QUERY`, `UI_LABELS.SEARCH_PAGE.*`
+- **Status:** Complete
 
 ### 2.8 Order Confirmation Emails ✅
 
