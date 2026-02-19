@@ -857,6 +857,43 @@ export const UI_LABELS = {
     },
   },
 
+  // Products listing page labels
+  PRODUCTS_PAGE: {
+    TITLE: "Products",
+    SUBTITLE: "Discover amazing products and deals",
+    NO_PRODUCTS: "No products found",
+    NO_PRODUCTS_SUBTITLE: "Try adjusting your filters or search term",
+    FILTERS: "Filters",
+    CLEAR_FILTERS: "Clear Filters",
+    SORT_BY: "Sort By",
+    SHOWING: (count: number, total: number) =>
+      `Showing ${count} of ${total} products`,
+    SORT_OPTIONS: {
+      NEWEST: "Newest First",
+      OLDEST: "Oldest First",
+      PRICE_LOW: "Price: Low to High",
+      PRICE_HIGH: "Price: High to Low",
+      NAME_AZ: "Name: A to Z",
+      NAME_ZA: "Name: Z to A",
+    },
+    FILTER_CATEGORY: "Category",
+    FILTER_ALL_CATEGORIES: "All Categories",
+    FILTER_PRICE_RANGE: "Price Range",
+    FILTER_MIN_PRICE: "Min Price",
+    FILTER_MAX_PRICE: "Max Price",
+    FILTER_STATUS: "Status",
+    FILTER_ALL_STATUSES: "All Statuses",
+    LOAD_MORE: "Load More",
+    ADD_TO_CART: "Add to Cart",
+    VIEW_DETAILS: "View Details",
+    IN_STOCK: "In Stock",
+    OUT_OF_STOCK: "Out of Stock",
+    SOLD: "Sold",
+    AUCTION: "Auction",
+    FEATURED_BADGE: "Featured",
+    PROMOTED_BADGE: "Promoted",
+  },
+
   // Footer section labels
   FOOTER: {
     QUICK_LINKS: "Quick Links",

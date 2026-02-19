@@ -7,23 +7,23 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                 |
-| -------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                            |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                            |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                            |
-| Admin: products management                                                                   | ✅ Complete                            |
-| Homepage sections                                                                            | ✅ Complete                            |
-| Product API + repository                                                                     | ✅ Complete                            |
-| Order API + repository                                                                       | ✅ Complete                            |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes     |
-| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes     |
-| Cart                                                                                         | ❌ No schema, no repo, no API, no page |
-| Checkout + Payment                                                                           | ❌ Nothing exists                      |
-| Products browsing pages                                                                      | ❌ Page missing                        |
-| Categories browsing pages                                                                    | ❌ Pages missing                       |
-| Seller portal                                                                                | ❌ Nothing exists                      |
-| Search                                                                                       | ❌ Nothing exists                      |
+| Area                                                                                         | Status                                           |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                                      |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                                      |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                      |
+| Admin: products management                                                                   | ✅ Complete                                      |
+| Homepage sections                                                                            | ✅ Complete                                      |
+| Product API + repository                                                                     | ✅ Complete                                      |
+| Order API + repository                                                                       | ✅ Complete                                      |
+| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes               |
+| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes               |
+| Cart                                                                                         | ❌ No schema, no repo, no API, no page           |
+| Checkout + Payment                                                                           | ❌ Nothing exists                                |
+| Products browsing pages                                                                      | ✅ Listing page complete, ❌ detail page missing |
+| Categories browsing pages                                                                    | ❌ Pages missing                                 |
+| Seller portal                                                                                | ❌ Nothing exists                                |
+| Search                                                                                       | ❌ Nothing exists                                |
 
 ---
 
@@ -39,13 +39,14 @@
 - **Components:** `ProductForm`, `getProductTableColumns` in `src/components/admin/products/`
 - **Status:** Complete
 
-### 1.2 Product Listing Page
+### 1.2 Product Listing Page ✅
 
-- **Route:** `/products` 🔗💀
+- **Route:** `/products`
 - **File:** `src/app/products/page.tsx`
-- **Requires:** `GET /api/products` (exists ✅), category filter, pagination, sort
-- **Components needed:** `ProductGrid`, `ProductCard`, `ProductFilters`, `ProductSortBar`
-- **Priority:** 🔴 P0
+- **API:** `GET /api/products` with `status==published` filter, pagination, sort
+- **Components:** `ProductCard`, `ProductGrid`, `ProductFilters`, `ProductSortBar` in `src/components/products/`
+- **Features:** URL-driven filters (category, price range), sortable, paginated, responsive sidebar filters, mobile filter strip, loading skeletons
+- **Status:** Complete
 
 ### 1.3 Product Detail Page
 
