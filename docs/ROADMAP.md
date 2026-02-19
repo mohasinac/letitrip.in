@@ -7,23 +7,23 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                           |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                                      |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                                      |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                      |
-| Admin: products management                                                                   | ✅ Complete                                      |
-| Homepage sections                                                                            | ✅ Complete                                      |
-| Product API + repository                                                                     | ✅ Complete                                      |
-| Order API + repository                                                                       | ✅ Complete                                      |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes               |
-| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes               |
-| Cart                                                                                         | ❌ No schema, no repo, no API, no page           |
-| Checkout + Payment                                                                           | ❌ Nothing exists                                |
-| Products browsing pages                                                                      | ✅ Listing page complete, ❌ detail page missing |
-| Categories browsing pages                                                                    | ❌ Pages missing                                 |
-| Seller portal                                                                                | ❌ Nothing exists                                |
-| Search                                                                                       | ❌ Nothing exists                                |
+| Area                                                                                         | Status                                 |
+| -------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                            |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                            |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                            |
+| Admin: products management                                                                   | ✅ Complete                            |
+| Homepage sections                                                                            | ✅ Complete                            |
+| Product API + repository                                                                     | ✅ Complete                            |
+| Order API + repository                                                                       | ✅ Complete                            |
+| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes     |
+| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes     |
+| Cart                                                                                         | ❌ No schema, no repo, no API, no page |
+| Checkout + Payment                                                                           | ❌ Nothing exists                      |
+| Products browsing pages                                                                      | ✅ Listing + detail pages complete     |
+| Categories browsing pages                                                                    | ❌ Pages missing                       |
+| Seller portal                                                                                | ❌ Nothing exists                      |
+| Search                                                                                       | ❌ Nothing exists                      |
 
 ---
 
@@ -48,13 +48,14 @@
 - **Features:** URL-driven filters (category, price range), sortable, paginated, responsive sidebar filters, mobile filter strip, loading skeletons
 - **Status:** Complete
 
-### 1.3 Product Detail Page
+### 1.3 Product Detail Page ✅
 
-- **Route:** `/products/[id]` 🔗💀
+- **Route:** `/products/[id]`
 - **File:** `src/app/products/[id]/page.tsx`
-- **Requires:** `GET /api/products/[id]` (exists ✅), review list, add-to-cart button
-- **Components needed:** `ProductImageGallery`, `ProductInfo`, `ProductReviews`, `RelatedProducts`, `AddToCartButton`
-- **Priority:** 🔴 P0
+- **API:** `GET /api/products/[id]` (exists ✅), `GET /api/reviews?productId=` (exists ✅)
+- **Components:** `ProductImageGallery`, `ProductInfo`, `ProductReviews`, `AddToCartButton` (stub — wires to cart in 1.4), `RelatedProducts` in `src/components/products/`
+- **Features:** Image gallery with thumbnails, product info with specs/features/shipping, paginated reviews with rating distribution, related products by category, skeleton loading, 404 state
+- **Status:** Complete (AddToCartButton is stub until Task 1.4)
 
 ### 1.4 Cart Schema + Repository + API
 

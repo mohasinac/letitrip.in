@@ -894,6 +894,43 @@ export const UI_LABELS = {
     PROMOTED_BADGE: "Promoted",
   },
 
+  // Product detail page labels
+  PRODUCT_DETAIL: {
+    BACK_TO_PRODUCTS: "Back to Products",
+    ADD_TO_CART: "Add to Cart",
+    BUY_NOW: "Buy Now",
+    OUT_OF_STOCK: "Out of Stock",
+    SOLD: "Sold",
+    DESCRIPTION: "Description",
+    SPECIFICATIONS: "Specifications",
+    FEATURES: "Features",
+    SHIPPING: "Shipping",
+    RETURN_POLICY: "Return Policy",
+    SELLER: "Seller",
+    BRAND: "Brand",
+    CATEGORY: "Category",
+    AVAILABLE_STOCK: (qty: number) => `${qty} in stock`,
+    AUCTION_ENDS: "Auction ends",
+    CURRENT_BID: "Current Bid",
+    STARTING_BID: "Starting Bid",
+    PLACE_BID: "Place Bid",
+    TOTAL_BIDS: (count: number) => `${count} bid${count !== 1 ? "s" : ""}`,
+    REVIEWS_TITLE: "Customer Reviews",
+    REVIEWS_NONE: "No reviews yet",
+    REVIEWS_BE_FIRST: "Be the first to review this product",
+    WRITE_REVIEW: "Write a Review",
+    AVERAGE_RATING: "Average Rating",
+    VERIFIED_PURCHASE: "Verified Purchase",
+    HELPFUL: (count: number) => `${count} found this helpful`,
+    RELATED_TITLE: "You might also like",
+    PRODUCT_NOT_FOUND: "Product not found",
+    PRODUCT_NOT_FOUND_SUBTITLE:
+      "This product may have been removed or the link is incorrect",
+    SHARE: "Share",
+    COPY_LINK: "Copy Link",
+    LINK_COPIED: "Link copied!",
+  },
+
   // Footer section labels
   FOOTER: {
     QUICK_LINKS: "Quick Links",
