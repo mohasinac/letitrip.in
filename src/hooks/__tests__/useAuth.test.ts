@@ -20,7 +20,7 @@ describe("useAuth", () => {
 
   it("exposes user and loading from SessionProvider", async () => {
     mockOnAuthStateChanged.mockImplementation((_, callback) => {
-      callback(null);
+      if (typeof callback === "function") callback(null);
       return jest.fn();
     });
 

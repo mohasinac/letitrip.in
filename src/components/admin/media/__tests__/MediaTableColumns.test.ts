@@ -10,31 +10,31 @@ describe("getMediaTableColumns", () => {
     });
 
     it("includes type column", () => {
-      const typeColumn = columns.find((c) => c.accessorKey === "type");
+      const typeColumn = columns.find((c) => c.key === "type");
       expect(typeColumn).toBeDefined();
       expect(typeColumn?.header).toBe("Operation Type");
     });
 
     it("includes status column", () => {
-      const statusColumn = columns.find((c) => c.accessorKey === "status");
+      const statusColumn = columns.find((c) => c.key === "status");
       expect(statusColumn).toBeDefined();
       expect(statusColumn?.header).toBe("Status");
     });
 
     it("includes format column", () => {
-      const formatColumn = columns.find((c) => c.accessorKey === "format");
+      const formatColumn = columns.find((c) => c.key === "format");
       expect(formatColumn).toBeDefined();
       expect(formatColumn?.header).toBe("Format");
     });
 
     it("includes createdAt column", () => {
-      const createdColumn = columns.find((c) => c.accessorKey === "createdAt");
+      const createdColumn = columns.find((c) => c.key === "createdAt");
       expect(createdColumn).toBeDefined();
       expect(createdColumn?.header).toBe("Created");
     });
 
     it("includes actions column", () => {
-      const actionsColumn = columns.find((c) => c.accessorKey === "actions");
+      const actionsColumn = columns.find((c) => c.key === "actions");
       expect(actionsColumn).toBeDefined();
       expect(actionsColumn?.header).toBe("Actions");
     });

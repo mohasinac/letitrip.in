@@ -159,6 +159,7 @@ export default function AdminMediaPage() {
           <DataTable
             columns={tableColumns}
             data={recentOperations}
+            keyExtractor={(item) => item.id}
             loading={false}
           />
         </Card>

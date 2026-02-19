@@ -125,7 +125,7 @@ describe("Sidebar", () => {
 
   describe("Navigation Interaction", () => {
     it("handles menu item click", () => {
-      render(<Sidebar />);
+      render(<Sidebar {...defaultProps} />);
       const sidebar = screen.getByRole("navigation");
       const firstLink = sidebar.querySelector("a");
       if (firstLink) {
@@ -137,12 +137,12 @@ describe("Sidebar", () => {
 
   describe("Accessibility", () => {
     it("has semantic navigation element", () => {
-      render(<Sidebar />);
+      render(<Sidebar {...defaultProps} />);
       expect(screen.getByRole("navigation")).toBeInTheDocument();
     });
 
     it("menu links have labels", () => {
-      render(<Sidebar />);
+      render(<Sidebar {...defaultProps} />);
       const sidebar = screen.getByRole("navigation");
       const links = sidebar.querySelectorAll("a");
       links.forEach((link) => {
@@ -151,7 +151,7 @@ describe("Sidebar", () => {
     });
 
     it("supports keyboard navigation", () => {
-      render(<Sidebar />);
+      render(<Sidebar {...defaultProps} />);
       const sidebar = screen.getByRole("navigation");
       const firstLink = sidebar.querySelector("a") as HTMLElement;
       if (firstLink) {

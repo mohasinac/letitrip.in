@@ -1,5 +1,5 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Button, Badge, Text } from "@/components";
+import { ReactNode } from "react";
+import { Badge, Button, Text } from "@/components";
 import { formatDate } from "@/utils";
 import { UI_LABELS } from "@/constants";
 
@@ -15,88 +15,85 @@ export interface MediaOperation {
   error?: string;
 }
 
+interface Column<T> {
+  key: string;
+  header: string;
+  render?: (item: T) => ReactNode;
+  sortable?: boolean;
+  width?: string;
+}
+
 const LABELS = UI_LABELS.ADMIN.MEDIA;
 
 export function getMediaTableColumns(
   onDownload: (op: MediaOperation) => void,
-): ColumnDef<MediaOperation>[] {
+): Column<MediaOperation>[] {
   return [
     {
-      accessorKey: "type",
+      key: "type",
       header: LABELS.OPERATION_TYPE,
-      cell: ({ row }) => {
-        const type = row.original.type;
-        return (
-          <Badge variant={type === "crop" ? "secondary" : "outline"}>
-            {type === "crop" ? "🖼️ Crop" : "🎬 Trim"}
-          </Badge>
-        );
-      },
+      render: (op) => (
+        <Badge variant={op.type === "crop" ? "secondary" : "info"}>
+          {op.type === "crop" ? "🖼️ Crop" : "🎬 Trim"}
+        </Badge>
+      ),
     },
     {
-      accessorKey: "status",
+      key: "status",
       header: LABELS.OPERATION_STATUS,
-      cell: ({ row }) => {
-        const status = row.original.status;
-        return (
-          <Badge
-            variant={
-              status === "completed"
-                ? "default"
-                : status === "failed"
-                  ? "destructive"
-                  : "outline"
-            }
-          >
-            {status === "completed"
-              ? "✅ Completed"
-              : status === "failed"
-                ? "❌ Failed"
-                : "⏳ Processing"}
-          </Badge>
-        );
-      },
+      render: (op) => (
+        <Badge
+          variant={
+            op.status === "completed"
+              ? "success"
+              : op.status === "failed"
+                ? "danger"
+                : "pending"
+          }
+        >
+          {op.status === "completed"
+            ? "✅ Completed"
+            : op.status === "failed"
+              ? "❌ Failed"
+              : "⏳ Processing"}
+        </Badge>
+      ),
     },
     {
-      accessorKey: "format",
+      key: "format",
       header: "Format",
-      cell: ({ row }) => {
-        const format = row.original.format;
-        return <Text className="text-sm">{format.toUpperCase()}</Text>;
-      },
+      render: (op) => (
+        <Text className="text-sm">{op.format.toUpperCase()}</Text>
+      ),
     },
     {
-      accessorKey: "createdAt",
+      key: "createdAt",
       header: "Created",
-      cell: ({ row }) => {
-        const date = new Date(row.original.createdAt);
-        return <Text className="text-sm">{formatDate(date)}</Text>;
-      },
+      render: (op) => (
+        <Text className="text-sm">{formatDate(new Date(op.createdAt))}</Text>
+      ),
     },
     {
-      accessorKey: "actions",
+      key: "actions",
       header: "Actions",
-      cell: ({ row }) => {
-        const operation = row.original;
-        return (
-          <div className="flex gap-2">
-            {operation.status === "completed" && operation.outputUrl && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => onDownload(operation)}
-              >
-                {LABELS.DOWNLOAD_RESULT}
-              </Button>
-            )}
-            {operation.status === "failed" && operation.error && (
-              <Button size="sm" variant="ghost" title={operation.error}>
-                Error
-              </Button>
-            )}
-          </div>
-        );
-      },
+      render: (op) => (
+        <div className="flex gap-2">
+          {op.status === "completed" && op.outputUrl && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => onDownload(op)}
+            >
+              {LABELS.DOWNLOAD_RESULT}
+            </Button>
+          )}
+          {op.status === "failed" && op.error && (
+            <Button size="sm" variant="secondary" title={op.error}>
+              Error
+            </Button>
+          )}
+        </div>
+      ),
     },
   ];
 }

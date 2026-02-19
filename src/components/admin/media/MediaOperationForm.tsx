@@ -57,10 +57,11 @@ export function MediaOperationForm({
           {/* Source URL */}
           <FormField
             label={LABELS.SOURCE_URL}
-            type="url"
+            name="sourceUrl"
+            type="text"
             placeholder={LABELS.SOURCE_URL_PLACEHOLDER}
             value={formData.sourceUrl || ""}
-            onChange={(e) => handleChange("sourceUrl", e.target.value)}
+            onChange={(value) => handleChange("sourceUrl", value)}
             required
           />
 
@@ -72,40 +73,36 @@ export function MediaOperationForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 label={LABELS.X_POSITION}
+                name="x"
                 type="number"
-                value={formData.x || 0}
-                onChange={(e) =>
-                  handleChange("x", parseInt(e.target.value) || 0)
-                }
-                min="0"
+                value={String(formData.x ?? 0)}
+                onChange={(value) => handleChange("x", parseInt(value) || 0)}
               />
               <FormField
                 label={LABELS.Y_POSITION}
+                name="y"
                 type="number"
-                value={formData.y || 0}
-                onChange={(e) =>
-                  handleChange("y", parseInt(e.target.value) || 0)
-                }
-                min="0"
+                value={String(formData.y ?? 0)}
+                onChange={(value) => handleChange("y", parseInt(value) || 0)}
               />
               <FormField
                 label={LABELS.WIDTH}
+                name="width"
                 type="number"
-                value={formData.width || 100}
-                onChange={(e) =>
-                  handleChange("width", parseInt(e.target.value) || 100)
+                value={String(formData.width ?? 100)}
+                onChange={(value) =>
+                  handleChange("width", parseInt(value) || 100)
                 }
-                min="1"
                 required
               />
               <FormField
                 label={LABELS.HEIGHT}
+                name="height"
                 type="number"
-                value={formData.height || 100}
-                onChange={(e) =>
-                  handleChange("height", parseInt(e.target.value) || 100)
+                value={String(formData.height ?? 100)}
+                onChange={(value) =>
+                  handleChange("height", parseInt(value) || 100)
                 }
-                min="1"
                 required
               />
             </div>
@@ -117,26 +114,30 @@ export function MediaOperationForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 label={LABELS.OUTPUT_FORMAT}
+                name="outputFormat"
                 type="select"
                 value={formData.outputFormat || "jpeg"}
-                onChange={(e) => handleChange("outputFormat", e.target.value)}
-              >
-                <option value="jpeg">JPEG</option>
-                <option value="png">PNG</option>
-                <option value="webp">WebP</option>
-              </FormField>
+                onChange={(value) => handleChange("outputFormat", value)}
+                options={[
+                  { value: "jpeg", label: "JPEG" },
+                  { value: "png", label: "PNG" },
+                  { value: "webp", label: "WebP" },
+                ]}
+              />
               <FormField
                 label={LABELS.QUALITY}
+                name="quality"
                 type="select"
-                value={formData.quality || 90}
-                onChange={(e) =>
-                  handleChange("quality", parseInt(e.target.value) || 90)
+                value={String(formData.quality ?? 90)}
+                onChange={(value) =>
+                  handleChange("quality", parseInt(value) || 90)
                 }
-              >
-                <option value="60">Low (60)</option>
-                <option value="75">Medium (75)</option>
-                <option value="90">High (90)</option>
-              </FormField>
+                options={[
+                  { value: "60", label: "Low (60)" },
+                  { value: "75", label: "Medium (75)" },
+                  { value: "90", label: "High (90)" },
+                ]}
+              />
             </div>
           </div>
 
@@ -157,10 +158,11 @@ export function MediaOperationForm({
         {/* Source URL */}
         <FormField
           label={LABELS.SOURCE_URL}
-          type="url"
+          name="sourceUrl"
+          type="text"
           placeholder="https://example.com/video.mp4"
           value={formData.sourceUrl || ""}
-          onChange={(e) => handleChange("sourceUrl", e.target.value)}
+          onChange={(value) => handleChange("sourceUrl", value)}
           required
         />
 
@@ -172,24 +174,22 @@ export function MediaOperationForm({
           <div className="grid grid-cols-2 gap-4">
             <FormField
               label={LABELS.START_TIME}
+              name="startTime"
               type="number"
-              value={formData.startTime || 0}
-              onChange={(e) =>
-                handleChange("startTime", parseFloat(e.target.value) || 0)
+              value={String(formData.startTime ?? 0)}
+              onChange={(value) =>
+                handleChange("startTime", parseFloat(value) || 0)
               }
-              min="0"
-              step="0.1"
               required
             />
             <FormField
               label={LABELS.END_TIME}
+              name="endTime"
               type="number"
-              value={formData.endTime || 10}
-              onChange={(e) =>
-                handleChange("endTime", parseFloat(e.target.value) || 10)
+              value={String(formData.endTime ?? 10)}
+              onChange={(value) =>
+                handleChange("endTime", parseFloat(value) || 10)
               }
-              min="0"
-              step="0.1"
               required
             />
           </div>
@@ -201,23 +201,27 @@ export function MediaOperationForm({
           <div className="grid grid-cols-2 gap-4">
             <FormField
               label={LABELS.OUTPUT_FORMAT}
+              name="outputFormat"
               type="select"
               value={formData.outputFormat || "mp4"}
-              onChange={(e) => handleChange("outputFormat", e.target.value)}
-            >
-              <option value="mp4">MP4</option>
-              <option value="webm">WebM</option>
-            </FormField>
+              onChange={(value) => handleChange("outputFormat", value)}
+              options={[
+                { value: "mp4", label: "MP4" },
+                { value: "webm", label: "WebM" },
+              ]}
+            />
             <FormField
               label={LABELS.VIDEO_QUALITY}
+              name="quality"
               type="select"
               value={formData.quality || "medium"}
-              onChange={(e) => handleChange("quality", e.target.value)}
-            >
-              <option value="low">Low (500k/64k)</option>
-              <option value="medium">Medium (1000k/128k)</option>
-              <option value="high">High (2500k/192k)</option>
-            </FormField>
+              onChange={(value) => handleChange("quality", value)}
+              options={[
+                { value: "low", label: "Low (500k/64k)" },
+                { value: "medium", label: "Medium (1000k/128k)" },
+                { value: "high", label: "High (2500k/192k)" },
+              ]}
+            />
           </div>
         </div>
 

@@ -137,7 +137,7 @@ describe("ConfirmDeleteModal", () => {
           title="Delete Item"
           message="Confirm deletion?"
           onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
+          onClose={mockOnClose}
         />,
       );
       const modal = screen.getByTestId("confirm-delete-modal");
@@ -151,7 +151,7 @@ describe("ConfirmDeleteModal", () => {
           title="Delete Item"
           message="Confirm?"
           onConfirm={mockOnConfirm}
-          onCancel={mockOnCancel}
+          onClose={mockOnClose}
         />,
       );
       const buttons = screen.getAllByRole("button");
