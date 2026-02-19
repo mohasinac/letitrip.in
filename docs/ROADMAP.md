@@ -7,23 +7,23 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                                  |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                                             |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                                             |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                             |
-| Admin: products management                                                                   | ✅ Complete                                             |
-| Homepage sections                                                                            | ✅ Complete                                             |
-| Product API + repository                                                                     | ✅ Complete                                             |
-| Order API + repository                                                                       | ✅ Complete                                             |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                      |
-| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes                      |
-| Cart                                                                                         | ✅ Schema + repo + API + page complete                  |
-| Checkout + Payment                                                                           | ✅ Checkout page + API complete, ✅ Razorpay integrated |
-| Products browsing pages                                                                      | ✅ Listing + detail pages complete                      |
-| Categories browsing pages                                                                    | ❌ Pages missing                                        |
-| Seller portal                                                                                | ❌ Nothing exists                                       |
-| Search                                                                                       | ❌ Nothing exists                                       |
+| Area                                                                                         | Status                                                |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                                           |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                                           |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                           |
+| Admin: products management                                                                   | ✅ Complete                                           |
+| Homepage sections                                                                            | ✅ Complete                                           |
+| Product API + repository                                                                     | ✅ Complete                                           |
+| Order API + repository                                                                       | ✅ Complete                                           |
+| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                    |
+| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes                    |
+| Cart                                                                                         | ✅ Schema + repo + API + page complete                |
+| Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
+| Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
+| Categories browsing pages                                                                    | ❌ Pages missing                                      |
+| Seller portal                                                                                | ❌ Nothing exists                                     |
+| Search                                                                                       | ❌ Nothing exists                                     |
 
 ---
 
@@ -97,12 +97,14 @@
 - **Env vars required:** `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`
 - **Status:** Complete
 
-### 1.8 Order Confirmation Page
+### 1.8 Order Confirmation Page ✅
 
 - **Route:** `/checkout/success`
 - **File:** `src/app/checkout/success/page.tsx`
-- **Sends:** Confirmation email via Resend using order details
-- **Priority:** 🔴 P0
+- **Email:** `sendOrderConfirmationEmail` added to `src/lib/email.ts` — full HTML template with order details, CTA link
+- **API integration:** Both `/api/checkout` and `/api/payment/verify` fire confirmation emails (fire-and-forget) after clearing cart
+- **Page features:** Displays order status, product details, payment method + status, shipping address, "View Order Details" / "My Orders" / "Continue Shopping" CTAs; loading state via `Spinner`; redirect to products if `orderId` missing
+- **Status:** Complete
 
 ---
 

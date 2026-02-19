@@ -417,3 +417,150 @@ ${SITE_URL}/auth/forgot-password
     throw error;
   }
 }
+
+/**
+ * Send order confirmation email
+ */
+export interface OrderConfirmationEmailParams {
+  to: string;
+  userName: string;
+  orderId: string;
+  productTitle: string;
+  quantity: number;
+  totalPrice: number;
+  currency: string;
+  shippingAddress: string;
+  paymentMethod: string;
+}
+
+export async function sendOrderConfirmationEmail(
+  params: OrderConfirmationEmailParams,
+) {
+  const {
+    to,
+    userName,
+    orderId,
+    productTitle,
+    quantity,
+    totalPrice,
+    currency,
+    shippingAddress,
+    paymentMethod,
+  } = params;
+
+  const orderUrl = `${SITE_URL}/user/orders/view/${orderId}`;
+  const formattedTotal = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+  }).format(totalPrice);
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to,
+      subject: `Order Confirmed — ${orderId}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Order Confirmation</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px; text-align: center;">
+                      <p style="font-size: 48px; margin: 0 0 12px;">✅</p>
+                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Order Confirmed!</h1>
+                    </td>
+                  </tr>
+                  <!-- Body -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hi ${userName},</p>
+                      <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                        Thank you for your order! We've received it and will process it shortly.
+                      </p>
+
+                      <!-- Order Details -->
+                      <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background-color: #f8f9fa; border-radius: 8px; margin-bottom: 24px;">
+                        <tr>
+                          <td style="color: #666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e9ecef;" colspan="2">Order Details</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px; width: 40%;">Order ID</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 600;">${orderId}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px;">Product</td>
+                          <td style="color: #333; font-size: 14px;">${productTitle}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px;">Quantity</td>
+                          <td style="color: #333; font-size: 14px;">${quantity}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px;">Total</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 700;">${formattedTotal}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px;">Payment</td>
+                          <td style="color: #333; font-size: 14px;">${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #666; font-size: 14px; vertical-align: top;">Ship to</td>
+                          <td style="color: #333; font-size: 14px;">${shippingAddress}</td>
+                        </tr>
+                      </table>
+
+                      <!-- CTA -->
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${orderUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                              View Order
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">
+                        We'll send you another email when your order is shipped.
+                      </p>
+                    </td>
+                  </tr>
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eee;">
+                      <p style="color: #999; font-size: 12px; margin: 0;">
+                        © ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `,
+      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\nProduct: ${productTitle}\nQuantity: ${quantity}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${new Date().getFullYear()} ${SITE_NAME}`,
+    });
+
+    if (error) {
+      serverLogger.error("Failed to send order confirmation email", { error });
+      // Don't throw — email failure should not break checkout
+    }
+
+    return { success: !error, data };
+  } catch (error) {
+    serverLogger.error("Error sending order confirmation email", { error });
+    // Don't rethrow — email failure should not break checkout
+    return { success: false };
+  }
+}

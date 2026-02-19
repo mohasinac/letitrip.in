@@ -32,6 +32,7 @@ import { successResponse, ApiErrors } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 import type { AddressDocument } from "@/db/schema";
 
 const verifySchema = z.object({
@@ -126,6 +127,7 @@ export async function POST(request: NextRequest) {
     const userEmail = user.email ?? "";
     const orderIds: string[] = [];
     let total = 0;
+    const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
 
     for (const { item, product } of productChecks) {
       if (!product) continue;
@@ -154,6 +156,20 @@ export async function POST(request: NextRequest) {
 
       orderIds.push(order.id);
 
+      if (userEmail) {
+        emailsToSend.push({
+          to: userEmail,
+          userName,
+          orderId: order.id,
+          productTitle: item.productTitle,
+          quantity: item.quantity,
+          totalPrice,
+          currency: item.currency ?? "INR",
+          shippingAddress,
+          paymentMethod: "online",
+        });
+      }
+
       // 8. Deduct stock
       await productRepository.updateAvailableQuantity(
         item.productId,
@@ -163,6 +179,13 @@ export async function POST(request: NextRequest) {
 
     // 9. Clear cart
     await cartRepository.clearCart(user.uid);
+
+    // 10. Send confirmation emails (fire-and-forget)
+    if (emailsToSend.length > 0) {
+      Promise.all(emailsToSend.map((e) => sendOrderConfirmationEmail(e))).catch(
+        (err) => serverLogger.error("Order confirmation email error:", err),
+      );
+    }
 
     serverLogger.info(
       `Payment verified & ${orderIds.length} orders placed for user ${user.uid} — payment ${razorpay_payment_id}`,
