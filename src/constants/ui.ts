@@ -1002,6 +1002,17 @@ export const UI_LABELS = {
     SORT_MOST_BIDS: "Most Bids",
     RESULTS_COUNT: (count: number) =>
       `${count} active auction${count !== 1 ? "s" : ""}`,
+    // Bid history labels
+    BID_HISTORY_TITLE: "Bid History",
+    BID_HISTORY_EMPTY: "No bids yet — be the first to bid!",
+    WINNING_BID: "Winning Bid",
+    // Place bid form labels
+    YOUR_BID_LABEL: "Your Bid Amount",
+    MINIMUM_BID: (amount: string) => `Minimum bid: ${amount}`,
+    LOGIN_TO_BID: "Login to place a bid",
+    AUCTION_ENDED_INFO:
+      "This auction has ended and is no longer accepting bids",
+    BID_PLACED: "Bid placed successfully!",
   },
 
   // Product detail page labels

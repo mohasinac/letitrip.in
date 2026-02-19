@@ -208,6 +208,13 @@ export const API_ENDPOINTS = {
   SEARCH: {
     QUERY: "/api/search", // GET - Full-text product search with filters
   },
+
+  // Bids endpoints
+  BIDS: {
+    LIST: "/api/bids", // GET ?productId=... - List bids for a product
+    CREATE: "/api/bids", // POST - Place a bid (auth required)
+    GET_BY_ID: (id: string) => `/api/bids/${id}`, // GET - Get single bid
+  },
 } as const;
 
 // Type for API endpoints

@@ -17,7 +17,7 @@
 | Homepage sections                                                                            | ✅ Complete                                           |
 | Product API + repository                                                                     | ✅ Complete                                           |
 | Order API + repository                                                                       | ✅ Complete                                           |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                    |
+| Bid / Auction repository                                                                     | ✅ Schema + repo + API routes (GET/POST bids)         |
 | Admin: coupons management                                                                    | ✅ Complete                                           |
 | Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management      |
 | Cart                                                                                         | ✅ Schema + repo + API + page complete                |
@@ -195,22 +195,24 @@
 - **Constants Added:** `ROUTES.PUBLIC.AUCTION_DETAIL`, `UI_LABELS.AUCTIONS_PAGE.*`
 - **Status:** Complete
 
-### 3.2 Auction Detail + Bidding Page
+### 3.2 Auction Detail + Bidding Page ✅
 
 - **Route:** `/auctions/[id]`
 - **File:** `src/app/auctions/[id]/page.tsx`
 - **API:** `POST /api/bids`, `GET /api/bids?productId=...`
-- **Real-time:** Firebase Realtime DB listener for live bid updates
-- **Components:** `BidHistory`, `PlaceBidForm`, `AuctionCountdown`
-- **Priority:** 🟡 P2
+- **Real-time:** 15-second polling via `refetchInterval` (Phase 3: upgrade to Firebase Realtime DB listener)
+- **Components:** `BidHistory`, `PlaceBidForm` (inline countdown via hook)
+- **Status:** Complete
 
-### 3.3 Bids API Routes
+### 3.3 Bids API Routes ✅
 
 - **Files:**
-  - `src/app/api/bids/route.ts` (GET list, POST new bid)
-  - `src/app/api/bids/[id]/route.ts` (GET single)
-- **Repository:** `bidRepository` exists ✅
-- **Priority:** 🟡 P2
+  - `src/app/api/bids/route.ts` (GET bids by productId, POST new bid with validation)
+  - `src/app/api/bids/[id]/route.ts` (GET single bid)
+- **Repository:** `bidRepository` ✅
+- **Validation:** Must exceed current bid, auction must be active, no self-bidding
+- **Side-effects:** Updates `product.currentBid` and `product.bidCount` after successful bid
+- **Status:** Complete
 
 ### 3.4 Seller Dashboard
 

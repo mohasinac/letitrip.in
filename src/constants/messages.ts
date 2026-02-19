@@ -318,6 +318,17 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: "Item not found in wishlist",
   },
 
+  BID: {
+    FETCH_FAILED: "Failed to load bids",
+    CREATE_FAILED: "Failed to place bid",
+    NOT_FOUND: "Bid not found",
+    AUCTION_ENDED: "This auction has already ended",
+    AUCTION_NOT_FOUND: "Auction product not found",
+    NOT_AN_AUCTION: "This product is not an auction",
+    BID_TOO_LOW: "Your bid must be higher than the current bid",
+    OWN_AUCTION: "You cannot bid on your own auction",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
@@ -542,6 +553,10 @@ export const SUCCESS_MESSAGES = {
     ADDED: "Item added to wishlist",
     REMOVED: "Item removed from wishlist",
     CLEARED: "Wishlist cleared",
+  },
+
+  BID: {
+    PLACED: "Bid placed successfully",
   },
 } as const;
 
