@@ -309,6 +309,15 @@ export const ERROR_MESSAGES = {
     INVALID_EMAIL: "Please enter a valid email address to subscribe",
   },
 
+  // Wishlist Errors
+  WISHLIST: {
+    FETCH_FAILED: "Failed to load wishlist",
+    ADD_FAILED: "Failed to add item to wishlist",
+    REMOVE_FAILED: "Failed to remove item from wishlist",
+    ALREADY_EXISTS: "Item is already in your wishlist",
+    NOT_FOUND: "Item not found in wishlist",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
@@ -526,6 +535,13 @@ export const SUCCESS_MESSAGES = {
   // Newsletter Success
   NEWSLETTER: {
     SUBSCRIBED: "Thank you for subscribing! Check your email for confirmation.",
+  },
+
+  // Wishlist Success
+  WISHLIST: {
+    ADDED: "Item added to wishlist",
+    REMOVED: "Item removed from wishlist",
+    CLEARED: "Wishlist cleared",
   },
 } as const;
 

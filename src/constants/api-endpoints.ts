@@ -26,6 +26,12 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: "/api/user/change-password",
     SESSIONS: "/api/user/sessions",
     REVOKE_SESSION: (id: string) => `/api/user/sessions/${id}`,
+    WISHLIST: {
+      LIST: "/api/user/wishlist",
+      ADD: "/api/user/wishlist",
+      REMOVE: (productId: string) => `/api/user/wishlist/${productId}`,
+      CHECK: (productId: string) => `/api/user/wishlist/${productId}`,
+    },
     /** @deprecated Use top-level API_ENDPOINTS.ADDRESSES instead (identical paths) */
     ADDRESSES: {
       LIST: "/api/user/addresses",

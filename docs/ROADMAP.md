@@ -149,19 +149,19 @@
 - **Features:** Resolves slug → category via flat categories API, filters products by `category==id`, breadcrumb nav, pagination, sort bar
 - **Status:** Complete
 
-### 2.5 Wishlist API + Functional Wishlist Page
+### 2.5 Wishlist API + Functional Wishlist Page ✅
 
-- **Schema:** Add `wishlists` collection or subcollection under user
-- **Repository:** `src/repositories/wishlist.repository.ts`
-- **API:** `GET/POST /api/user/wishlist`, `DELETE /api/user/wishlist/[productId]`
-- **Page:** `/user/wishlist` (page shell exists ✅, needs API wiring)
-- **Priority:** 🟠 P1
+- **Schema:** Subcollection `users/{uid}/wishlist/{productId}` — no separate collection needed
+- **Repository:** `src/repositories/wishlist.repository.ts` — `getWishlistItems`, `addItem`, `removeItem`, `isInWishlist`, `clearWishlist`
+- **API:** `GET/POST /api/user/wishlist`, `GET/DELETE /api/user/wishlist/[productId]`
+- **Page:** `/user/wishlist` — ProductGrid of saved items with per-card WishlistButton
+- **Components:** `WishlistButton` in `src/components/user/WishlistButton.tsx`
+- **Status:** Complete
 
-### 2.6 Coupon Validate API + Checkout Integration
+### 2.6 Coupon Validate API + Checkout Integration ✅
 
-- **API:** `POST /api/coupons/validate` — validates code, returns discount amount
-- **Integrates:** into Cart and Checkout pages
-- **Priority:** 🟠 P1
+- **API:** `POST /api/coupons/validate` — validates code, returns discount amount (implemented in 2.2)
+- **Status:** API complete. Checkout UI integration for promo input pending (cart already has PromoCodeInput placeholder)
 
 ### 2.7 Search Page + API
 

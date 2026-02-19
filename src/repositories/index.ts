@@ -34,6 +34,7 @@ export * from "./homepage-sections.repository";
 export * from "./categories.repository";
 export * from "./coupons.repository";
 export * from "./faqs.repository";
+export * from "./wishlist.repository";
 
 // Re-export singleton instances for convenience
 export { userRepository } from "./user.repository";
@@ -56,3 +57,5 @@ export { couponsRepository } from "./coupons.repository";
 export { faqsRepository } from "./faqs.repository";
 export { addressRepository } from "./address.repository";
 export { newsletterRepository } from "./newsletter.repository";
+export { wishlistRepository } from "./wishlist.repository";
+export type { WishlistItem } from "./wishlist.repository";
