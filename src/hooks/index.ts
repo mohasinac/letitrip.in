@@ -88,4 +88,8 @@ export {
 
 // Responsive hooks (Phase 3)
 export { useMediaQuery } from "./useMediaQuery";
+
+// Payment hooks
+export { useRazorpay } from "./useRazorpay";
+export type { RazorpayOptions, RazorpayPaymentResponse } from "./useRazorpay";
 export { useBreakpoint } from "./useBreakpoint";

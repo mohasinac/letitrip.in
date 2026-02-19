@@ -177,7 +177,14 @@ export const API_ENDPOINTS = {
 
   // Checkout endpoints
   CHECKOUT: {
-    PLACE_ORDER: "/api/checkout", // POST - Place order from cart
+    PLACE_ORDER: "/api/checkout", // POST - Place order from cart (COD)
+  },
+
+  // Payment endpoints (Razorpay)
+  PAYMENT: {
+    CREATE_ORDER: "/api/payment/create-order", // POST - Create Razorpay order
+    VERIFY: "/api/payment/verify", // POST - Verify payment & place orders
+    WEBHOOK: "/api/payment/webhook", // POST - Razorpay webhook events
   },
 } as const;
 

@@ -133,22 +133,32 @@ export function CheckoutOrderReview({
             </div>
           </button>
 
-          {/* Online payment (stub) */}
+          {/* Online payment */}
           <button
-            disabled
-            className={`w-full text-left px-4 py-3 rounded-xl border-2 opacity-50 cursor-not-allowed ${themed.border} ${themed.bgPrimary}`}
+            onClick={() => onPaymentMethodChange("online")}
+            className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
+              paymentMethod === "online"
+                ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                : `${themed.border} ${themed.bgPrimary}`
+            }`}
           >
             <div className="flex items-center gap-3">
               <div
-                className={`w-5 h-5 rounded-full border-2 flex-shrink-0 ${themed.border}`}
-              />
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  paymentMethod === "online"
+                    ? "border-indigo-500"
+                    : themed.border
+                }`}
+              >
+                {paymentMethod === "online" && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                )}
+              </div>
               <div>
                 <p className={`text-sm font-medium ${themed.textPrimary}`}>
                   {UI_LABELS.CHECKOUT.ONLINE_PAYMENT}
                 </p>
-                <p className={`text-xs ${themed.textSecondary}`}>
-                  {UI_LABELS.CHECKOUT.ONLINE_PAYMENT_HINT}
-                </p>
+                <p className="text-xs text-emerald-600">Powered by Razorpay</p>
               </div>
             </div>
           </button>

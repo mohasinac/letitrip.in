@@ -7,23 +7,23 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                              |
-| -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                                         |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                                         |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                         |
-| Admin: products management                                                                   | ✅ Complete                                         |
-| Homepage sections                                                                            | ✅ Complete                                         |
-| Product API + repository                                                                     | ✅ Complete                                         |
-| Order API + repository                                                                       | ✅ Complete                                         |
-| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                  |
-| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes                  |
-| Cart                                                                                         | ✅ Schema + repo + API + page complete              |
-| Checkout + Payment                                                                           | ✅ Checkout page + API complete, ❌ Payment pending |
-| Products browsing pages                                                                      | ✅ Listing + detail pages complete                  |
-| Categories browsing pages                                                                    | ❌ Pages missing                                    |
-| Seller portal                                                                                | ❌ Nothing exists                                   |
-| Search                                                                                       | ❌ Nothing exists                                   |
+| Area                                                                                         | Status                                                  |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                                             |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                                             |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                             |
+| Admin: products management                                                                   | ✅ Complete                                             |
+| Homepage sections                                                                            | ✅ Complete                                             |
+| Product API + repository                                                                     | ✅ Complete                                             |
+| Order API + repository                                                                       | ✅ Complete                                             |
+| Bid / Auction repository                                                                     | ✅ Schema + repo, ❌ no API routes                      |
+| Coupon repository                                                                            | ✅ Schema + repo, ❌ no API routes                      |
+| Cart                                                                                         | ✅ Schema + repo + API + page complete                  |
+| Checkout + Payment                                                                           | ✅ Checkout page + API complete, ✅ Razorpay integrated |
+| Products browsing pages                                                                      | ✅ Listing + detail pages complete                      |
+| Categories browsing pages                                                                    | ❌ Pages missing                                        |
+| Seller portal                                                                                | ❌ Nothing exists                                       |
+| Search                                                                                       | ❌ Nothing exists                                       |
 
 ---
 
@@ -84,15 +84,18 @@
 - **Payment methods:** Cash on Delivery (live), Online Payment (stub — Task 1.7)
 - **Status:** Complete
 
-### 1.7 Payment Integration
+### 1.7 Payment Integration ✅
 
-- **Provider:** Razorpay (recommended for India) or Stripe
-- **Files:**
-  - `src/lib/payment/razorpay.ts` — SDK wrapper
-  - `src/app/api/payment/create-order/route.ts` — Create Razorpay order
-  - `src/app/api/payment/verify/route.ts` — Signature verification
-  - `src/app/api/payment/webhook/route.ts` — Webhook handler
-- **Priority:** 🔴 P0
+- **Provider:** Razorpay
+- **SDK Wrapper:** `src/lib/payment/razorpay.ts` — `createRazorpayOrder`, `verifyPaymentSignature`, `verifyWebhookSignature`, `rupeesToPaise`
+- **Hook:** `src/hooks/useRazorpay.ts` — loads `checkout.js`, opens payment modal, returns Promise
+- **API:**
+  - `POST /api/payment/create-order` — creates Razorpay order (returns orderId + keyId)
+  - `POST /api/payment/verify` — verifies signature, creates app orders, deducts stock, clears cart
+  - `POST /api/payment/webhook` — handles Razorpay webhook events (payment.captured, payment.failed, order.paid)
+- **Checkout integration:** "Online Payment" option in checkout now opens real Razorpay modal
+- **Env vars required:** `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`
+- **Status:** Complete
 
 ### 1.8 Order Confirmation Page
 

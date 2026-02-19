@@ -9,7 +9,7 @@ import {
   CheckoutOrderReview,
   OrderSummaryPanel,
 } from "@/components";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage, useRazorpay } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
@@ -17,7 +17,6 @@ import {
   UI_LABELS,
   THEME_CONSTANTS,
   ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
 } from "@/constants";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
@@ -38,6 +37,13 @@ interface PlaceOrderResponse {
   orderIds: string[];
   total: number;
   itemCount: number;
+}
+
+interface CreateRazorpayOrderResponse {
+  razorpayOrderId: string;
+  amount: number;
+  currency: string;
+  keyId: string;
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -78,12 +84,14 @@ const STEPS = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { showError } = useMessage();
+  const { openRazorpay } = useRazorpay();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   );
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   // Fetch addresses
   const { data: addrData, isLoading: addrLoading } =
@@ -99,8 +107,8 @@ export default function CheckoutPage() {
       queryFn: () => apiClient.get(API_ENDPOINTS.CART.GET),
     });
 
-  // Place order mutation
-  const { mutate: placeOrder, isLoading: isPlacingOrder } = useApiMutation<
+  // COD: place order mutation
+  const { mutate: placeCodOrder } = useApiMutation<
     PlaceOrderResponse,
     { addressId: string; paymentMethod: "cod" | "online" }
   >({
@@ -112,6 +120,7 @@ export default function CheckoutPage() {
     },
     onError: () => {
       showError(ERROR_MESSAGES.CHECKOUT.FAILED);
+      setIsPlacingOrder(false);
     },
   });
 
@@ -140,12 +149,62 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
       showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
       return;
     }
-    placeOrder({ addressId: selectedAddressId, paymentMethod });
+
+    setIsPlacingOrder(true);
+
+    if (paymentMethod === "cod") {
+      // COD: directly create orders via /api/checkout
+      placeCodOrder({ addressId: selectedAddressId, paymentMethod: "cod" });
+    } else {
+      // Online: Razorpay flow
+      try {
+        // 1. Create Razorpay order on backend
+        const rzpOrder = await apiClient.post<CreateRazorpayOrderResponse>(
+          API_ENDPOINTS.PAYMENT.CREATE_ORDER,
+          { amount: subtotal, currency: "INR" },
+        );
+
+        // 2. Open Razorpay checkout modal
+        const paymentResult = await openRazorpay({
+          key: rzpOrder.keyId,
+          amount: rzpOrder.amount,
+          currency: rzpOrder.currency,
+          order_id: rzpOrder.razorpayOrderId,
+          name: "LetItRip",
+          description: `Order of ${itemCount} item${itemCount !== 1 ? "s" : ""}`,
+          theme: { color: "#6366f1" },
+          handler: () => {}, // handled via Promise resolve in hook
+        });
+
+        // 3. Verify payment & create orders
+        const verifyResult = await apiClient.post<PlaceOrderResponse>(
+          API_ENDPOINTS.PAYMENT.VERIFY,
+          {
+            razorpay_order_id: paymentResult.razorpay_order_id,
+            razorpay_payment_id: paymentResult.razorpay_payment_id,
+            razorpay_signature: paymentResult.razorpay_signature,
+            addressId: selectedAddressId,
+          },
+        );
+
+        const primaryOrderId = verifyResult?.orderIds?.[0] ?? "";
+        router.push(
+          `${ROUTES.USER.CHECKOUT_SUCCESS}?orderId=${primaryOrderId}`,
+        );
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error && err.message === "Payment cancelled by user"
+            ? undefined
+            : ERROR_MESSAGES.CHECKOUT.PAYMENT_FAILED;
+        if (msg) showError(msg);
+        setIsPlacingOrder(false);
+      }
+    }
   };
 
   return (
