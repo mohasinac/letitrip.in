@@ -63,3 +63,7 @@ export type { MediaOperation } from "./media";
 // Phase 5: Admin Products
 export { ProductForm, getProductTableColumns } from "./products";
 export type { AdminProduct, ProductDrawerMode } from "./products";
+
+// Phase 6: Admin Orders
+export { getOrderTableColumns, OrderStatusForm } from "./orders";
+export type { OrderStatusFormState } from "./orders";

@@ -78,6 +78,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin products endpoints */
     PRODUCTS: "/api/admin/products",
     PRODUCT_BY_ID: (id: string) => `/api/admin/products/${id}`,
+    /** ✅ Admin orders endpoints */
+    ORDERS: "/api/admin/orders", // GET - List all orders
+    ORDER_BY_ID: (id: string) => `/api/admin/orders/${id}`, // PATCH - Update order
   },
 
   // Product endpoints ✅ All routes exist

@@ -13,6 +13,7 @@
 | User profile, addresses, orders, settings                                                    | ✅ Complete                                           |
 | Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                           |
 | Admin: products management                                                                   | ✅ Complete                                           |
+| Admin: orders management                                                                     | ✅ Complete                                           |
 | Homepage sections                                                                            | ✅ Complete                                           |
 | Product API + repository                                                                     | ✅ Complete                                           |
 | Order API + repository                                                                       | ✅ Complete                                           |
@@ -112,13 +113,14 @@
 
 **Goal:** Shoppers can find products through categories, search, and wishlisting.
 
-### 2.1 Admin Orders Page
+### 2.1 Admin Orders Page ✅
 
 - **Route:** `/admin/orders/[[...action]]`
 - **File:** `src/app/admin/orders/[[...action]]/page.tsx`
-- **API:** `GET /api/admin/orders`, `PATCH /api/admin/orders/[id]`
-- **Features:** Status filter, bulk status update, export CSV, view order details
-- **Priority:** 🟠 P1
+- **API:** `GET /api/admin/orders` (pagination, Sieve filtering by status/user/payment), `GET /api/admin/orders/[id]`, `PATCH /api/admin/orders/[id]`
+- **Components:** `OrderTableColumns`, `OrderStatusForm` in `src/components/admin/orders/`
+- **Features:** Status filter tabs (All/Pending/Confirmed/Shipped/Delivered/Cancelled), DataTable with order ID/product/customer/amount/status/payment columns, side drawer to update status + tracking number + notes
+- **Status:** Complete
 
 ### 2.2 Admin Coupons Page
 
@@ -165,11 +167,10 @@
 - **Approach (Phase 3):** Integrate Algolia / Typesense for real full-text search
 - **Priority:** 🟠 P1
 
-### 2.8 Order Confirmation Emails
+### 2.8 Order Confirmation Emails ✅
 
-- **File:** `src/lib/email/templates/order-confirmation.tsx`
-- **Trigger:** On successful checkout via Resend
-- **Priority:** 🟠 P1
+- **Implemented in Task 1.8** — `sendOrderConfirmationEmail` in `src/lib/email.ts`
+- **Trigger:** Called fire-and-forget from `/api/checkout` and `/api/payment/verify` routes
 
 ---
 
