@@ -90,3 +90,6 @@ export * from "./products";
 
 // ==================== CART ====================
 export * from "./cart";
+
+// ==================== CHECKOUT ====================
+export * from "./checkout";

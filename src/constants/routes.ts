@@ -50,6 +50,7 @@ export const ROUTES = {
     ORDER_DETAIL: (id: string) => `/user/orders/view/${id}`,
     CART: "/cart",
     CHECKOUT: "/checkout",
+    CHECKOUT_SUCCESS: "/checkout/success",
   },
 
   // Seller Routes

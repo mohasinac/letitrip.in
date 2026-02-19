@@ -282,7 +282,15 @@ export const ERROR_MESSAGES = {
     INSUFFICIENT_STOCK: "Insufficient stock available",
   },
 
-  // Newsletter Errors
+  // Checkout Errors
+  CHECKOUT: {
+    FAILED: "Failed to place order. Please try again.",
+    CART_EMPTY: "Your cart is empty",
+    ADDRESS_REQUIRED: "Please select a shipping address",
+    PRODUCT_UNAVAILABLE: "One or more products are no longer available",
+    INSUFFICIENT_STOCK: "Insufficient stock for one or more items",
+    PAYMENT_FAILED: "Payment processing failed",
+  },
   NEWSLETTER: {
     SUBSCRIBE_FAILED: "Failed to subscribe to newsletter",
     INVALID_EMAIL: "Please enter a valid email address to subscribe",
@@ -469,7 +477,11 @@ export const SUCCESS_MESSAGES = {
     CLEARED: "Cart cleared",
   },
 
-  // Session Success
+  // Checkout Success
+  CHECKOUT: {
+    ORDER_PLACED: "Order placed successfully!",
+    PAYMENT_RECEIVED: "Payment received. Your order is confirmed.",
+  },
   SESSION: {
     ACTIVITY_UPDATED: "Activity updated",
   },

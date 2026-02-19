@@ -174,6 +174,11 @@ export const API_ENDPOINTS = {
     REMOVE_ITEM: (itemId: string) => `/api/cart/${itemId}`, // DELETE - Remove item
     CLEAR: "/api/cart/clear", // DELETE - Clear entire cart
   },
+
+  // Checkout endpoints
+  CHECKOUT: {
+    PLACE_ORDER: "/api/checkout", // POST - Place order from cart
+  },
 } as const;
 
 // Type for API endpoints
