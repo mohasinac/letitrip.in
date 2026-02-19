@@ -49,6 +49,7 @@ export const ROUTES = {
     ADDRESSES_EDIT: (id: string) => `/user/addresses/edit/${id}`,
     ORDER_DETAIL: (id: string) => `/user/orders/view/${id}`,
     CART: "/cart",
+    CHECKOUT: "/checkout",
   },
 
   // Seller Routes

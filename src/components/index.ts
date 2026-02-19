@@ -87,3 +87,6 @@ export * from "./providers";
 // ==================== PRODUCTS ====================
 // Re-export from products subdirectory
 export * from "./products";
+
+// ==================== CART ====================
+export * from "./cart";

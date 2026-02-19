@@ -931,6 +931,36 @@ export const UI_LABELS = {
     LINK_COPIED: "Link copied!",
   },
 
+  // Cart page labels
+  CART: {
+    TITLE: "Shopping Cart",
+    EMPTY: "Your cart is empty",
+    EMPTY_SUBTITLE: "Browse products and add items to your cart",
+    START_SHOPPING: "Start Shopping",
+    ITEM_COUNT: (count: number) => `${count} item${count !== 1 ? "s" : ""}`,
+    REMOVE: "Remove",
+    QUANTITY: "Qty",
+    PRICE: "Price",
+    SUBTOTAL: "Subtotal",
+    PROMO_CODE: "Promo Code",
+    PROMO_PLACEHOLDER: "Enter code",
+    PROMO_APPLY: "Apply",
+    PROMO_APPLIED: "Promo applied!",
+    PROMO_INVALID: "Invalid promo code",
+    ORDER_SUMMARY: "Order Summary",
+    ITEMS_SUBTOTAL: "Items Subtotal",
+    SHIPPING: "Shipping",
+    SHIPPING_FREE: "Free",
+    SHIPPING_CALCULATED: "Calculated at checkout",
+    TAX: "Tax",
+    TAX_CALCULATED: "Calculated at checkout",
+    TOTAL: "Total",
+    CHECKOUT: "Proceed to Checkout",
+    CONTINUE_SHOPPING: "Continue Shopping",
+    UPDATING: "Updating...",
+    UPDATE_QUANTITY: "Update quantity",
+  },
+
   // Footer section labels
   FOOTER: {
     QUICK_LINKS: "Quick Links",
