@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks";
+import { useAuth, useApiQuery } from "@/hooks";
 import {
   Heading,
   Button,
@@ -8,9 +8,10 @@ import {
   ProfileHeader,
   ProfileStatsGrid,
 } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { apiClient } from "@/lib/api-client";
 
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
@@ -36,12 +37,24 @@ export default function UserProfilePage() {
 
   const { spacing } = THEME_CONSTANTS;
 
-  // NOTE: Address/order counts require /api/user/addresses and /api/user/orders routes (not yet created)
-  // Wire up useApiQuery(API_ENDPOINTS.ADDRESSES.LIST) and API_ENDPOINTS.ORDERS.LIST once routes exist
+  const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
+    queryKey: ["user-orders-count"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.LIST),
+    enabled: !!user,
+  });
+
+  const { data: addressesData } = useApiQuery<{ data: unknown[] }>({
+    queryKey: ["user-addresses-count"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
+    enabled: !!user,
+  });
+
   const stats = {
-    orders: 0,
+    orders: ordersData?.data?.total ?? 0,
     wishlist: 0,
-    addresses: 0,
+    addresses: Array.isArray(addressesData?.data)
+      ? addressesData.data.length
+      : 0,
   };
 
   return (

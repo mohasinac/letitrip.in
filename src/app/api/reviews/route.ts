@@ -3,7 +3,7 @@
  *
  * Handles product review creation and listing
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement pagination and filtering
  * - Add review moderation workflow
  * - Implement review voting (helpful/not helpful)
@@ -47,12 +47,12 @@ import { NextResponse } from "next/server";
  * - page: number (default: 1)
  * - pageSize: number (default: 10, max: 50)
  *
- * ✅ Fetches reviews via reviewRepository.findByProduct(productId)
- * ✅ productId required parameter (returns 400 if missing)
- * ✅ Pagination via Sieve (page/pageSize params, max 50)
- * ✅ Returns ratingDistribution (1-5 stars count) and averageRating in meta
- * ✅ Cache-Control headers set (2 min public)
- * ✅ Featured reviews shortcut (featured=true param, no productId required)
+ * Ã¢Å“â€¦ Fetches reviews via reviewRepository.findByProduct(productId)
+ * Ã¢Å“â€¦ productId required parameter (returns 400 if missing)
+ * Ã¢Å“â€¦ Pagination via Sieve (page/pageSize params, max 50)
+ * Ã¢Å“â€¦ Returns ratingDistribution (1-5 stars count) and averageRating in meta
+ * Ã¢Å“â€¦ Cache-Control headers set (2 min public)
+ * Ã¢Å“â€¦ Featured reviews shortcut (featured=true param, no productId required)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -199,11 +199,11 @@ export async function GET(request: NextRequest) {
  * - images: string[] (optional, max 10)
  * - video: object (optional)
  *
- * ✅ Requires authentication via requireAuthFromRequest
- * ✅ Validates body with reviewCreateSchema (Zod, includes rating 1-5 validation)
- * ✅ Prevents duplicate reviews (checks existing reviews for same userId+productId)
- * ✅ Status defaults to 'pending' for moderation
- * ✅ Returns created review with 201 status
+ * Ã¢Å“â€¦ Requires authentication via requireAuthFromRequest
+ * Ã¢Å“â€¦ Validates body with reviewCreateSchema (Zod, includes rating 1-5 validation)
+ * Ã¢Å“â€¦ Prevents duplicate reviews (checks existing reviews for same userId+productId)
+ * Ã¢Å“â€¦ Status defaults to 'pending' for moderation
+ * Ã¢Å“â€¦ Returns created review with 201 status
  * TODO (Future): Verify user purchased the product (requires order lookup)
  * TODO (Future): Send notification to product seller and admins on new review
  */

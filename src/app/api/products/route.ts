@@ -3,7 +3,7 @@
  *
  * Handles product listing and creation
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement pagination with cursor-based or offset pagination
  * - Add filtering by category, price range, status, seller
  * - Add sorting options (price, date, popularity)
@@ -145,10 +145,10 @@ export async function GET(request: NextRequest) {
  * - video: object (optional)
  * - ... (see ProductDocument interface)
  *
- * ✅ Requires seller/moderator/admin authentication via requireRoleFromRequest
- * ✅ Validates body with productCreateSchema (Zod)
- * ✅ Creates product via productRepository.create() with status='draft'
- * ✅ Returns created product with 201 status
+ * Ã¢Å“â€¦ Requires seller/moderator/admin authentication via requireRoleFromRequest
+ * Ã¢Å“â€¦ Validates body with productCreateSchema (Zod)
+ * Ã¢Å“â€¦ Creates product via productRepository.create() with status='draft'
+ * Ã¢Å“â€¦ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
  * TODO (Future): Generate SEO-friendly slug/ID for product URLs
  * TODO (Future): Send notification to admins when new product submitted for approval

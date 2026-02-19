@@ -3,7 +3,7 @@
  *
  * Handles global site configuration (singleton document)
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement settings caching (Redis/memory)
  * - Add settings versioning/history
  * - Implement settings validation rules
@@ -35,9 +35,9 @@ import { serverLogger } from "@/lib/server-logger";
  *
  * Get global site settings
  *
- * ✅ Fetches settings via siteSettingsRepository.getSingleton()
- * ✅ Returns public fields only for non-admin users (strips emailSettings, legalPages)
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * Ã¢Å“â€¦ Fetches settings via siteSettingsRepository.getSingleton()
+ * Ã¢Å“â€¦ Returns public fields only for non-admin users (strips emailSettings, legalPages)
+ * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Support ETag for conditional requests
  * TODO (Future): Integrate Redis for distributed caching
  */
@@ -91,10 +91,10 @@ export async function GET(request: NextRequest) {
  *
  * Body: Partial<SiteSettingsDocument>
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with siteSettingsUpdateSchema (Zod)
- * ✅ Updates via siteSettingsRepository.updateSingleton()
- * ✅ Returns updated settings
+ * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
+ * Ã¢Å“â€¦ Validates body with siteSettingsUpdateSchema (Zod)
+ * Ã¢Å“â€¦ Updates via siteSettingsRepository.updateSingleton()
+ * Ã¢Å“â€¦ Returns updated settings
  * TODO (Future): Track changes in audit log
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change

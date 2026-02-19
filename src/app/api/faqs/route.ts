@@ -3,7 +3,7 @@
  *
  * Handles FAQ management with variable interpolation
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement FAQ management (create, update, delete)
  * - Add FAQ search functionality
  * - Implement FAQ voting (helpful/not helpful)
@@ -48,12 +48,12 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * - priority: number (optional, 1-10)
  * - featured: boolean (optional)
  *
- * ✅ Fetches FAQs via faqsRepository.findAll()
- * ✅ Filters by category, priority, tags, showOnHomepage params
- * ✅ Full-text search on question + answer text
- * ✅ Sorted by priority (desc) then order (asc)
- * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
- * ✅ Caching implemented with LONG preset (30 min TTL)
+ * Ã¢Å“â€¦ Fetches FAQs via faqsRepository.findAll()
+ * Ã¢Å“â€¦ Filters by category, priority, tags, showOnHomepage params
+ * Ã¢Å“â€¦ Full-text search on question + answer text
+ * Ã¢Å“â€¦ Sorted by priority (desc) then order (asc)
+ * Ã¢Å“â€¦ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
+ * Ã¢Å“â€¦ Caching implemented with LONG preset (30 min TTL)
  */
 export const GET = withCache(async (request: NextRequest) => {
   try {
@@ -199,12 +199,12 @@ export const GET = withCache(async (request: NextRequest) => {
  * - tags: string[]
  * - relatedFAQs: string[]
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with faqCreateSchema (Zod)
- * ✅ Auto-assigns order (max existing + 1)
- * ✅ Creates FAQ via faqsRepository.create()
- * ✅ Invalidates FAQ cache after creation
- * ✅ Returns created FAQ with 201 status
+ * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
+ * Ã¢Å“â€¦ Validates body with faqCreateSchema (Zod)
+ * Ã¢Å“â€¦ Auto-assigns order (max existing + 1)
+ * Ã¢Å“â€¦ Creates FAQ via faqsRepository.create()
+ * Ã¢Å“â€¦ Invalidates FAQ cache after creation
+ * Ã¢Å“â€¦ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks
  */
 export async function POST(request: NextRequest) {

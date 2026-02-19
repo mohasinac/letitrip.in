@@ -3,7 +3,7 @@
  *
  * Handles homepage carousel with 9x9 grid system
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement slide management (create, update, delete)
  * - Add slide ordering/reordering
  * - Implement slide activation (max 5 active)
@@ -39,10 +39,10 @@ import { serverLogger } from "@/lib/server-logger";
  * Query Parameters:
  * - includeInactive: boolean (optional, admin only)
  *
- * ✅ Fetches active slides via carouselRepository.getActiveSlides()
- * ✅ Returns only active slides (max 5) for public; all slides for admins
- * ✅ Sorted by order field ascending
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * Ã¢Å“â€¦ Fetches active slides via carouselRepository.getActiveSlides()
+ * Ã¢Å“â€¦ Returns only active slides (max 5) for public; all slides for admins
+ * Ã¢Å“â€¦ Sorted by order field ascending
+ * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Track views analytics per slide
  */
 export async function GET(request: NextRequest) {
@@ -100,11 +100,11 @@ export async function GET(request: NextRequest) {
  * - order: number
  * - active: boolean
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with carouselCreateSchema (Zod)
- * ✅ Enforces max 5 active slides limit
- * ✅ Creates slide via carouselRepository.create()
- * ✅ Returns created slide with 201 status
+ * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
+ * Ã¢Å“â€¦ Validates body with carouselCreateSchema (Zod)
+ * Ã¢Å“â€¦ Enforces max 5 active slides limit
+ * Ã¢Å“â€¦ Creates slide via carouselRepository.create()
+ * Ã¢Å“â€¦ Returns created slide with 201 status
  * TODO (Future): Validate grid card positions for overlaps in 9x9 grid
  */
 export async function POST(request: NextRequest) {

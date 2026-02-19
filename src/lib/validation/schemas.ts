@@ -3,7 +3,7 @@
  *
  * Centralized request validation using Zod
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Add custom error messages for better UX
  * - Implement conditional validation rules
  * - Add cross-field validation (e.g., end date > start date)
@@ -22,7 +22,7 @@ import { z } from "zod";
 
 /**
  * Pagination query schema
- * NOTE: Max limit is enforced per field (max 100) — role-based limit reduction is a future enhancement
+ * NOTE: Max limit is enforced per field (max 100) Ã¢â‚¬â€ role-based limit reduction is a future enhancement
  */
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -40,7 +40,7 @@ export const objectIdSchema = z.string().regex(/^[a-z0-9-]+$/);
 
 /**
  * URL validation
- * TODO (Future): Add domain whitelist for security — restrict to approved CDN domains
+ * TODO (Future): Add domain whitelist for security Ã¢â‚¬â€ restrict to approved CDN domains
  */
 export const urlSchema = z.string().url().max(2048);
 
@@ -125,7 +125,7 @@ export const addressSchema = z.object({
 // ============================================
 
 /**
- * Base user address schema — covers Indian addresses
+ * Base user address schema Ã¢â‚¬â€ covers Indian addresses
  */
 const userAddressBaseSchema = z.object({
   label: z.string().min(1, "Label is required").max(50, "Label too long"),
@@ -266,7 +266,7 @@ export const productCreateSchema = productBaseSchema
 
 /**
  * Product update validation
- * TODO (Future): Add status transition validation — enforce valid transitions (e.g. draft→published, not sold→draft)
+ * TODO (Future): Add status transition validation Ã¢â‚¬â€ enforce valid transitions (e.g. draftÃ¢â€ â€™published, not soldÃ¢â€ â€™draft)
  */
 export const productUpdateSchema = productBaseSchema.partial().extend({
   status: z
@@ -431,7 +431,7 @@ export const siteSettingsUpdateSchema = z
     maintenanceMode: z.boolean().optional(),
     maintenanceMessage: z.string().max(500).optional(),
     // NOTE: Nested object validation for featuresEnabled, emailSettings etc.
-    // requires z.object() refinements — implement when those fields are exposed in admin UI
+    // requires z.object() refinements Ã¢â‚¬â€ implement when those fields are exposed in admin UI
   })
   .partial();
 
@@ -449,7 +449,7 @@ export const carouselListQuerySchema = z.object({
 /**
  * Grid card schema for carousel
  * NOTE: Grid validation (row/col 1-9, width/height) is enforced per card
- * TODO (Future): Add cross-card overlap detection — requires validating all cards together in carouselCreateSchema
+ * TODO (Future): Add cross-card overlap detection Ã¢â‚¬â€ requires validating all cards together in carouselCreateSchema
  */
 const gridCardSchema = z.object({
   gridPosition: z.object({
@@ -561,7 +561,7 @@ export const homepageSectionsListQuerySchema = z.object({
 
 /**
  * Homepage section creation validation
- * TODO (Future): Add type-specific config validation — enforce different config shapes per section type
+ * TODO (Future): Add type-specific config validation Ã¢â‚¬â€ enforce different config shapes per section type
  * (e.g. 'featured' requires productIds, 'welcome' requires headline/subtitle)
  */
 export const homepageSectionCreateSchema = z.object({
@@ -608,7 +608,7 @@ export const faqListQuerySchema = paginationQuerySchema.extend({
 
 /**
  * FAQ creation validation
- * TODO (Future): Add variable syntax validation — verify {{variableName}} placeholders
+ * TODO (Future): Add variable syntax validation Ã¢â‚¬â€ verify {{variableName}} placeholders
  * in answer text are from the allowed set (companyName, supportEmail, etc.)
  */
 export const faqCreateSchema = z
@@ -716,7 +716,7 @@ export const bidSchema = z
 /**
  * Image crop data validation
  * NOTE: aspectRatio format is validated (e.g. "16:9", "1:1")
- * TODO (Future): Add aspect ratio enforcement — verify width/height match the declared aspectRatio value
+ * TODO (Future): Add aspect ratio enforcement Ã¢â‚¬â€ verify width/height match the declared aspectRatio value
  */
 export const cropDataSchema = z.object({
   sourceUrl: z.string().url(),
@@ -793,7 +793,7 @@ export const uploadProgressSchema = z.object({
 
 /**
  * Validate request body with Zod schema
- * Returns typed success/failure — error logging is handled at the API route call site via serverLogger
+ * Returns typed success/failure Ã¢â‚¬â€ error logging is handled at the API route call site via serverLogger
  * TODO (Future): Add i18n support for error messages
  */
 export function validateRequestBody<T>(
@@ -809,7 +809,7 @@ export function validateRequestBody<T>(
 
 /**
  * Format Zod errors for API response
- * TODO (Future): Add i18n support — map field paths to localised error messages
+ * TODO (Future): Add i18n support Ã¢â‚¬â€ map field paths to localised error messages
  */
 export function formatZodErrors(error: z.ZodError): Record<string, string[]> {
   const formatted: Record<string, string[]> = {};

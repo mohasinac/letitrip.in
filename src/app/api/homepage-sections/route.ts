@@ -3,7 +3,7 @@
  *
  * Handles dynamic homepage section configuration
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement section management (create, update, delete, reorder)
  * - Add section templates/presets
  * - Implement section A/B testing
@@ -40,10 +40,10 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * Query Parameters:
  * - includeDisabled: boolean (optional, admin only)
  *
- * ✅ Fetches enabled sections via homepageSectionsRepository.findAll()
- * ✅ Returns only enabled sections by default; all for admins (includeDisabled=true)
- * ✅ Sorted by order field ascending
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
+ * Ã¢Å“â€¦ Fetches enabled sections via homepageSectionsRepository.findAll()
+ * Ã¢Å“â€¦ Returns only enabled sections by default; all for admins (includeDisabled=true)
+ * Ã¢Å“â€¦ Sorted by order field ascending
+ * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Support personalization based on user segments
  */
 export async function GET(request: NextRequest) {
@@ -104,11 +104,11 @@ export async function GET(request: NextRequest) {
  * - order: number (optional, auto-assigned if not provided)
  * - enabled: boolean (optional, defaults to true)
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with homepageSectionCreateSchema (Zod)
- * ✅ Auto-assigns order (max existing + 1) when not provided
- * ✅ Creates section via homepageSectionsRepository.create()
- * ✅ Returns created section with 201 status
+ * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
+ * Ã¢Å“â€¦ Validates body with homepageSectionCreateSchema (Zod)
+ * Ã¢Å“â€¦ Auto-assigns order (max existing + 1) when not provided
+ * Ã¢Å“â€¦ Creates section via homepageSectionsRepository.create()
+ * Ã¢Å“â€¦ Returns created section with 201 status
  * TODO (Future): Validate section-specific config structure per type
  */
 export async function POST(request: NextRequest) {

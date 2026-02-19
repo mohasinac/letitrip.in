@@ -207,7 +207,7 @@ export function useResendVerification(options?: {
 
 /**
  * Hook for forgot password using Firebase client SDK.
- * Uses client SDK's sendPasswordResetEmail which actually sends the email (unlike the server API which has a TODO).
+ * Uses client SDK's sendPasswordResetEmail to send a password reset email.
  * Includes user-enumeration protection: returns success even if user doesn't exist.
  */
 export function useForgotPassword(options?: {

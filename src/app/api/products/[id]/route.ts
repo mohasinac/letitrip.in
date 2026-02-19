@@ -3,7 +3,7 @@
  *
  * Handles individual product operations (get, update, delete)
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement view counting/analytics
  * - Add related products recommendations
  * - Add caching with Redis/CloudFlare
@@ -46,7 +46,7 @@ import { serverLogger } from "@/lib/server-logger";
  * - Return 404 if not found
  * - Public access (no authentication required)
  *
- * TODO - Phase 3:
+ * TODO (Future) - Phase 3:
  * - Add cache headers (public, max-age=300)
  * - Add related products recommendations
  */
@@ -84,7 +84,7 @@ export async function GET(
  * - Zod validation for update data
  * - Return updated product
  *
- * TODO - Phase 3:
+ * TODO (Future) - Phase 3:
  * - Handle status transitions (draft -> published requires approval)
  * - Send notifications on status change
  * - Implement optimistic locking for concurrent updates
@@ -153,7 +153,7 @@ export async function PATCH(
  * - Soft delete (set status to 'discontinued')
  * - Return success status
  *
- * TODO - Phase 3:
+ * TODO (Future) - Phase 3:
  * - Handle cascade deletion (reviews, orders, etc.)
  * - Send notification to seller
  * - Add restore capability

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
+import { useAuth, useApiQuery } from "@/hooks";
 import {
   Card,
   Heading,
@@ -12,49 +11,31 @@ import {
   EmptyState,
 } from "@/components";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
-import { formatCurrency } from "@/utils";
-
-interface OrderItem {
-  id: string;
-  name: string;
-  image: string;
-  quantity: number;
-  price: number;
-}
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
-  items: OrderItem[];
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-  shippingAddress: {
-    fullName: string;
-    phoneNumber: string;
-    addressLine1: string;
-    addressLine2: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-  paymentMethod: string;
-  trackingNumber?: string;
-}
+import { THEME_CONSTANTS, ROUTES, UI_LABELS, API_ENDPOINTS } from "@/constants";
+import { formatCurrency, formatDate } from "@/utils";
+import { apiClient } from "@/lib/api-client";
+import type { OrderDocument } from "@/db/schema";
 
 const STATUS_MAP: Record<
   string,
   "pending" | "info" | "active" | "success" | "danger"
 > = {
   pending: "pending",
-  processing: "info",
+  confirmed: "info",
   shipped: "info",
   delivered: "success",
   cancelled: "danger",
+  returned: "danger",
+};
+
+const PAYMENT_STATUS_MAP: Record<
+  string,
+  "pending" | "info" | "active" | "success" | "danger"
+> = {
+  pending: "pending",
+  paid: "success",
+  failed: "danger",
+  refunded: "info",
 };
 
 export default function OrderViewPage() {
@@ -63,23 +44,15 @@ export default function OrderViewPage() {
   const params = useParams();
   const orderId = params?.id as string;
 
-  const [order, setOrder] = useState<Order | null>(null);
+  const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
+    queryKey: ["user-order", orderId],
+    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.GET_BY_ID(orderId)),
+    enabled: !!user && !loading && !!orderId,
+  });
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push(ROUTES.AUTH.LOGIN);
-    }
-  }, [user, loading, router]);
+  const order: OrderDocument | null = data?.data ?? null;
 
-  useEffect(() => {
-    // TODO: Wire up once orders page uses useApiQuery
-    // const { data: orderData } = useApiQuery(API_ENDPOINTS.ORDERS.GET_BY_ID(orderId));
-    // setOrder(orderData);
-    // For now, show empty state
-    setOrder(null);
-  }, [orderId]);
-
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
@@ -88,10 +61,11 @@ export default function OrderViewPage() {
   }
 
   if (!user) {
+    router.push(ROUTES.AUTH.LOGIN);
     return null;
   }
 
-  if (!order) {
+  if (error || !order) {
     return (
       <div className={THEME_CONSTANTS.spacing.stack}>
         <Button
@@ -144,10 +118,11 @@ export default function OrderViewPage() {
         >
           <div>
             <Heading level={4}>
-              {UI_LABELS.USER.ORDERS.ORDER_NUMBER} #{order.orderNumber}
+              {UI_LABELS.USER.ORDERS.ORDER_NUMBER} #
+              {order.id.slice(0, 8).toUpperCase()}
             </Heading>
             <Text className={`${THEME_CONSTANTS.typography.caption} mt-1`}>
-              {UI_LABELS.USER.ORDERS.PLACED_ON} {order.date}
+              {UI_LABELS.USER.ORDERS.PLACED_ON} {formatDate(order.orderDate)}
             </Text>
           </div>
           <div
@@ -173,53 +148,28 @@ export default function OrderViewPage() {
         <Heading level={5} className="mb-4">
           {UI_LABELS.USER.ORDERS.ORDER_ITEMS}
         </Heading>
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          {order.items.map((item) => (
-            <div
-              key={item.id}
-              className={`flex ${THEME_CONSTANTS.spacing.gap.md} pb-4 ${THEME_CONSTANTS.themed.border} border-b last:border-b-0 last:pb-0`}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className={`w-20 h-20 object-cover ${THEME_CONSTANTS.borderRadius.md}`}
-                loading="lazy"
-              />
-              <div className="flex-1">
-                <Heading level={6}>{item.name}</Heading>
-                <Text className={THEME_CONSTANTS.typography.caption}>
-                  {UI_LABELS.USER.ORDERS.QUANTITY}: {item.quantity}
-                </Text>
-              </div>
-              <div className="text-right">
-                <Text className="font-semibold">
-                  {formatCurrency(item.price, "INR")}
-                </Text>
-                <Text className={THEME_CONSTANTS.typography.caption}>
-                  {formatCurrency(item.price / item.quantity, "INR")}{" "}
-                  {UI_LABELS.USER.ORDERS.EACH}
-                </Text>
-              </div>
-            </div>
-          ))}
+        <div className={`flex ${THEME_CONSTANTS.spacing.gap.md} pb-4`}>
+          <div className="flex-1">
+            <Heading level={6}>{order.productTitle}</Heading>
+            <Text className={THEME_CONSTANTS.typography.caption}>
+              {UI_LABELS.USER.ORDERS.QUANTITY}: {order.quantity}
+            </Text>
+            <Text className={THEME_CONSTANTS.typography.caption}>
+              {formatCurrency(order.unitPrice, order.currency)}{" "}
+              {UI_LABELS.USER.ORDERS.EACH}
+            </Text>
+          </div>
+          <div className="text-right">
+            <Text className="font-semibold">
+              {formatCurrency(order.totalPrice, order.currency)}
+            </Text>
+          </div>
         </div>
 
         {/* Order Summary */}
         <div
           className={`mt-6 pt-6 ${THEME_CONSTANTS.themed.border} border-t ${THEME_CONSTANTS.spacing.stackSmall}`}
         >
-          <div className="flex justify-between">
-            <Text>{UI_LABELS.USER.ORDERS.SUBTOTAL}</Text>
-            <Text>{formatCurrency(order.subtotal, "INR")}</Text>
-          </div>
-          <div className="flex justify-between">
-            <Text>{UI_LABELS.USER.ORDERS.SHIPPING}</Text>
-            <Text>{formatCurrency(order.shipping, "INR")}</Text>
-          </div>
-          <div className="flex justify-between">
-            <Text>{UI_LABELS.USER.ORDERS.TAX}</Text>
-            <Text>{formatCurrency(order.tax, "INR")}</Text>
-          </div>
           <div
             className={`flex justify-between pt-2 ${THEME_CONSTANTS.themed.border} border-t`}
           >
@@ -227,7 +177,7 @@ export default function OrderViewPage() {
               {UI_LABELS.USER.ORDERS.TOTAL}
             </Text>
             <Text className="font-semibold text-lg">
-              {formatCurrency(order.total, "INR")}
+              {formatCurrency(order.totalPrice, order.currency)}
             </Text>
           </div>
         </div>
@@ -242,18 +192,11 @@ export default function OrderViewPage() {
             {UI_LABELS.USER.ORDERS.SHIPPING_ADDRESS}
           </Heading>
           <div className={THEME_CONSTANTS.spacing.stackSmall}>
-            <Text className="font-semibold">
-              {order.shippingAddress.fullName}
-            </Text>
-            <Text>{order.shippingAddress.phoneNumber}</Text>
-            <Text>{order.shippingAddress.addressLine1}</Text>
-            {order.shippingAddress.addressLine2 && (
-              <Text>{order.shippingAddress.addressLine2}</Text>
+            {order.shippingAddress ? (
+              <Text>{order.shippingAddress}</Text>
+            ) : (
+              <Text className={THEME_CONSTANTS.typography.caption}>—</Text>
             )}
-            <Text>
-              {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-              {order.shippingAddress.pincode}
-            </Text>
           </div>
         </Card>
 
@@ -265,13 +208,18 @@ export default function OrderViewPage() {
           <div className={THEME_CONSTANTS.spacing.stackSmall}>
             <div className="flex justify-between">
               <Text>{UI_LABELS.USER.ORDERS.PAYMENT_METHOD}</Text>
-              <Text className="font-semibold">{order.paymentMethod}</Text>
+              <Text className="font-semibold">
+                {order.paymentMethod ?? "—"}
+              </Text>
             </div>
             <div className="flex justify-between">
               <Text>{UI_LABELS.USER.ORDERS.PAYMENT_STATUS}</Text>
               <StatusBadge
-                status="success"
-                label={UI_LABELS.USER.ORDERS.PAID}
+                status={PAYMENT_STATUS_MAP[order.paymentStatus]}
+                label={
+                  order.paymentStatus.charAt(0).toUpperCase() +
+                  order.paymentStatus.slice(1)
+                }
               />
             </div>
           </div>

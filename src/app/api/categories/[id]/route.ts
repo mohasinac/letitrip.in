@@ -3,7 +3,7 @@
  *
  * Handles individual category operations (get, update, delete)
  *
- * TODO - Phase 3 Refactoring:
+ * TODO (Future) - Phase 3:
  * - Implement category analytics
  * - Add category merge functionality
  * - Implement category export/import
@@ -43,7 +43,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * - Include children info
  * - Public access (no authentication required)
  *
- * TODO - Phase 4:
+ * TODO (Future) - Phase 4:
  * - Add related products count
  * - Add breadcrumb trail
  * - Add cache headers
@@ -84,7 +84,7 @@ export async function GET(
  *
  * Note: To move category to new parent, use POST /api/categories/[id]/move
  *
- * TODO - Phase 4:
+ * TODO (Future) - Phase 4:
  * - Handle featured status validation (min 8 items)
  * - Send notification on status change
  */
@@ -146,7 +146,7 @@ export async function PATCH(
  *
  * Note: Categories with children cannot be deleted directly
  *
- * TODO - Phase 4:
+ * TODO (Future) - Phase 4:
  * - Implement cascade delete option (delete all descendants)
  * - Implement reassign option (move products to another category)
  * - Send notification to affected users

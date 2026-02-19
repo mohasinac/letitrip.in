@@ -3,7 +3,7 @@
  *
  * Handles category hierarchy management
  *
- * TODO - Phase 2 Refactoring:
+ * TODO (Future) - Phase 2:
  * - Implement tree traversal optimization
  * - Add caching for entire category tree
  * - Implement category metrics calculation (product counts)
@@ -51,7 +51,7 @@ import { CategoryCreateInput } from "@/db/schema/categories";
  * - Return nested or flat structure
  * - Public access (no authentication required)
  *
- * TODO - Phase 3:
+ * TODO (Future) - Phase 3:
  * - Add caching with 5-minute TTL
  * - Add pagination for flat lists
  */
@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
  * - Auto-update parent's childrenIds
  * - Generate SEO-friendly slug
  *
- * TODO - Phase 3:
+ * TODO (Future) - Phase 3:
  * - Send notification on category creation
  * - Implement category templates
  */
