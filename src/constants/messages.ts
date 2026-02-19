@@ -269,6 +269,19 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: "Address not found",
   },
 
+  // Cart Errors
+  CART: {
+    FETCH_FAILED: "Failed to load cart",
+    ADD_FAILED: "Failed to add item to cart",
+    UPDATE_FAILED: "Failed to update cart item",
+    REMOVE_FAILED: "Failed to remove item from cart",
+    CLEAR_FAILED: "Failed to clear cart",
+    ITEM_NOT_FOUND: "Cart item not found",
+    PRODUCT_NOT_FOUND: "Product not found or unavailable",
+    OUT_OF_STOCK: "Product is out of stock",
+    INSUFFICIENT_STOCK: "Insufficient stock available",
+  },
+
   // Newsletter Errors
   NEWSLETTER: {
     SUBSCRIBE_FAILED: "Failed to subscribe to newsletter",
@@ -296,6 +309,10 @@ export const ERROR_MESSAGES = {
     PRODUCTS_ID_GET_ERROR: "error:", // Template: `GET /api/products/${id} error:`
     PRODUCTS_ID_PATCH_ERROR: "error:", // Template: `PATCH /api/products/${id} error:`
     PRODUCTS_ID_DELETE_ERROR: "error:", // Template: `DELETE /api/products/${id} error:`
+    CART_GET_ERROR: "GET /api/cart error:",
+    CART_POST_ERROR: "POST /api/cart error:",
+    CART_ITEM_PATCH_ERROR: "error:", // Template: `PATCH /api/cart/${itemId} error:`
+    CART_ITEM_DELETE_ERROR: "error:", // Template: `DELETE /api/cart/${itemId} error:`
     MEDIA_UPLOAD_ERROR: "POST /api/media/upload error:",
     MEDIA_TRIM_ERROR: "POST /api/media/trim error:",
     MEDIA_CROP_ERROR: "POST /api/media/crop error:",
@@ -442,6 +459,14 @@ export const SUCCESS_MESSAGES = {
     UPDATED: "Address updated successfully",
     DELETED: "Address deleted successfully",
     DEFAULT_SET: "Default address set successfully",
+  },
+
+  // Cart Success
+  CART: {
+    ITEM_ADDED: "Item added to cart",
+    ITEM_UPDATED: "Cart updated",
+    ITEM_REMOVED: "Item removed from cart",
+    CLEARED: "Cart cleared",
   },
 
   // Session Success

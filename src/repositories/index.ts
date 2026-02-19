@@ -25,6 +25,7 @@ export * from "./order.repository";
 export * from "./review.repository";
 export * from "./session.repository";
 export * from "./bid.repository";
+export * from "./cart.repository";
 
 // Platform configuration repositories
 export * from "./site-settings.repository";
@@ -46,6 +47,7 @@ export { orderRepository } from "./order.repository";
 export { reviewRepository } from "./review.repository";
 export { sessionRepository } from "./session.repository";
 export { bidRepository } from "./bid.repository";
+export { cartRepository } from "./cart.repository";
 export { siteSettingsRepository } from "./site-settings.repository";
 export { carouselRepository } from "./carousel.repository";
 export { homepageSectionsRepository } from "./homepage-sections.repository";

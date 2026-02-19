@@ -165,6 +165,15 @@ export const API_ENDPOINTS = {
   DEMO: {
     SEED: "/api/demo/seed", // POST - Seed database with test data
   },
+
+  // Cart endpoints
+  CART: {
+    GET: "/api/cart", // GET - Get user's cart (auth required)
+    ADD_ITEM: "/api/cart", // POST - Add item to cart (auth required)
+    UPDATE_ITEM: (itemId: string) => `/api/cart/${itemId}`, // PATCH - Update item quantity
+    REMOVE_ITEM: (itemId: string) => `/api/cart/${itemId}`, // DELETE - Remove item
+    CLEAR: "/api/cart/clear", // DELETE - Clear entire cart
+  },
 } as const;
 
 // Type for API endpoints
