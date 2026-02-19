@@ -59,3 +59,7 @@ export type { Review, ReviewStatus } from "./reviews";
 // Phase 4: Admin Media
 export { MediaOperationForm, getMediaTableColumns } from "./media";
 export type { MediaOperation } from "./media";
+
+// Phase 5: Admin Products
+export { ProductForm, getProductTableColumns } from "./products";
+export type { AdminProduct, ProductDrawerMode } from "./products";

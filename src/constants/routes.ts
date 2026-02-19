@@ -68,6 +68,8 @@ export const ROUTES = {
     REVIEWS: "/admin/reviews",
     COUPONS: "/admin/coupons",
     MEDIA: "/admin/media",
+    PRODUCTS: "/admin/products",
+    ORDERS: "/admin/orders",
   },
 
   // Demo Routes (dev-only)

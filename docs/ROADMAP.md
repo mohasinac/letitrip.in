@@ -12,6 +12,7 @@
 | Auth (login, register, reset, verify)                                                        | ✅ Complete                            |
 | User profile, addresses, orders, settings                                                    | ✅ Complete                            |
 | Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                            |
+| Admin: products management                                                                   | ✅ Complete                            |
 | Homepage sections                                                                            | ✅ Complete                            |
 | Product API + repository                                                                     | ✅ Complete                            |
 | Order API + repository                                                                       | ✅ Complete                            |
@@ -30,14 +31,13 @@
 
 **Goal:** A customer can browse, add to cart, and buy a product.
 
-### 1.1 Admin Products Page
+### 1.1 Admin Products Page ✅
 
 - **Route:** `/admin/products/[[...action]]`
 - **File:** `src/app/admin/products/[[...action]]/page.tsx`
 - **API:** `GET/POST /api/admin/products`, `GET/PATCH/DELETE /api/admin/products/[id]`
-- **Enables:** Admin can create/publish products before shoppers can see anything
-- **Components needed:** `AdminProductsTable`, `ProductDrawerForm`
-- **Priority:** 🔴 P0 — must be first since no products in the system without it
+- **Components:** `ProductForm`, `getProductTableColumns` in `src/components/admin/products/`
+- **Status:** Complete
 
 ### 1.2 Product Listing Page
 
@@ -326,30 +326,30 @@
 
 ## API Endpoints to Build
 
-| Endpoint                         | Method             | Phase |
-| -------------------------------- | ------------------ | ----- |
-| `/api/cart`                      | GET, POST          | P0    |
-| `/api/cart/[itemId]`             | PATCH, DELETE      | P0    |
-| `/api/checkout`                  | POST               | P0    |
-| `/api/payment/create-order`      | POST               | P0    |
-| `/api/payment/verify`            | POST               | P0    |
-| `/api/payment/webhook`           | POST               | P0    |
-| `/api/admin/orders`              | GET                | P1    |
-| `/api/admin/orders/[id]`         | GET, PATCH         | P1    |
-| `/api/admin/products`            | GET                | P1    |
-| `/api/admin/products/[id]`       | GET, PATCH, DELETE | P1    |
-| `/api/admin/coupons`             | GET, POST          | P1    |
-| `/api/admin/coupons/[id]`        | GET, PATCH, DELETE | P1    |
-| `/api/coupons/validate`          | POST               | P1    |
-| `/api/user/wishlist`             | GET, POST          | P1    |
-| `/api/user/wishlist/[productId]` | DELETE             | P1    |
-| `/api/search`                    | GET                | P1    |
-| `/api/bids`                      | GET, POST          | P2    |
-| `/api/bids/[id]`                 | GET                | P2    |
-| `/api/seller/products`           | GET, POST          | P2    |
-| `/api/seller/orders`             | GET                | P2    |
-| `/api/contact`                   | POST               | P3    |
-| `/api/notifications`             | GET, POST          | P3+   |
+| Endpoint                         | Method                      | Phase |
+| -------------------------------- | --------------------------- | ----- |
+| `/api/cart`                      | GET, POST                   | P0    |
+| `/api/cart/[itemId]`             | PATCH, DELETE               | P0    |
+| `/api/checkout`                  | POST                        | P0    |
+| `/api/payment/create-order`      | POST                        | P0    |
+| `/api/payment/verify`            | POST                        | P0    |
+| `/api/payment/webhook`           | POST                        | P0    |
+| `/api/admin/orders`              | GET                         | P1    |
+| `/api/admin/orders/[id]`         | GET, PATCH                  | P1    |
+| `/api/admin/products`            | GET ✅                      | P1    |
+| `/api/admin/products/[id]`       | GET ✅, PATCH ✅, DELETE ✅ | P1    |
+| `/api/admin/coupons`             | GET, POST                   | P1    |
+| `/api/admin/coupons/[id]`        | GET, PATCH, DELETE          | P1    |
+| `/api/coupons/validate`          | POST                        | P1    |
+| `/api/user/wishlist`             | GET, POST                   | P1    |
+| `/api/user/wishlist/[productId]` | DELETE                      | P1    |
+| `/api/search`                    | GET                         | P1    |
+| `/api/bids`                      | GET, POST                   | P2    |
+| `/api/bids/[id]`                 | GET                         | P2    |
+| `/api/seller/products`           | GET, POST                   | P2    |
+| `/api/seller/orders`             | GET                         | P2    |
+| `/api/contact`                   | POST                        | P3    |
+| `/api/notifications`             | GET, POST                   | P3+   |
 
 ---
 

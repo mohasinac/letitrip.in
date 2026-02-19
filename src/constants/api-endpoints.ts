@@ -75,6 +75,9 @@ export const API_ENDPOINTS = {
     REVOKE_SESSION: (id: string) => `/api/admin/sessions/${id}`,
     /** ❌ No route — needs /api/admin/sessions/revoke-user/route.ts */
     REVOKE_USER_SESSIONS: "/api/admin/sessions/revoke-user",
+    /** ✅ Admin products endpoints */
+    PRODUCTS: "/api/admin/products",
+    PRODUCT_BY_ID: (id: string) => `/api/admin/products/${id}`,
   },
 
   // Product endpoints ✅ All routes exist
