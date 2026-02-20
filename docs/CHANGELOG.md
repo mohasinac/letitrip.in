@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.8 — Promotions Page Decomposition (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `PROMOTIONS_PAGE.BUY_X_GET_Y` and `PROMOTIONS_PAGE.SPECIAL_OFFER` labels
+
+#### `src/components/promotions/CouponCard.tsx` — NEW
+
+- `CouponCard` component + `getDiscountLabel` helper extracted from `src/app/promotions/page.tsx`
+- Uses `UI_LABELS.STATUS.ACTIVE` instead of hardcoded `"Active"`
+
+#### `src/components/promotions/ProductSection.tsx` — NEW
+
+- `ProductSection` reusable section component (title + subtitle + product grid)
+
+#### `src/components/promotions/index.ts` — NEW
+
+- Barrel export for promotions components
+
+#### `src/components/index.ts`
+
+- Added `export * from "./promotions"` section
+
+#### `src/app/promotions/page.tsx`
+
+- Reduced from 236 → 95 lines (thin orchestration layer)
+
+---
+
 ### Phase 6.2.6 — Blog Page Decomposition (Feb 2026)
 
 #### `src/components/blog/BlogCard.tsx` — NEW

@@ -1594,6 +1594,8 @@ export const UI_LABELS = {
     OFF: "off",
     FLAT_OFF: "flat off",
     FREE_SHIPPING: "Free shipping",
+    BUY_X_GET_Y: "Buy X Get Y",
+    SPECIAL_OFFER: "Special Offer",
     EMPTY_DEALS: "No deals available right now",
     EMPTY_COUPONS: "No active coupons at this time",
     CHECK_BACK: "Check back soon for new promotions!",
