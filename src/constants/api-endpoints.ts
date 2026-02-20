@@ -49,6 +49,8 @@ export const API_ENDPOINTS = {
     GET_SELLER_REVIEWS: (userId: string) => `/api/profile/${userId}/reviews`,
     GET_SELLER_PRODUCTS: (userId: string) =>
       `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=6`,
+    GET_STOREFRONT_PRODUCTS: (userId: string) =>
+      `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=12`,
     UPDATE: "/api/profile/update",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",

@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.4 — Seller Public Storefront (Feb 2026)
+
+#### `src/app/sellers/[id]/page.tsx` (new)
+
+- Created `/sellers/[id]` seller public storefront page.
+- Seller header card: avatar, name, joined date, location, aggregate star rating, products-listed count, items-sold count, link to full profile.
+- Products grid (up to 12 published products via `GET_STOREFRONT_PRODUCTS`): image, title, price (with "From X" label for auctions), auction badge.
+- Reviews section: same aggregated reviews feed as public profile, with reviewer initial, star rating, comment, verified-purchase badge, and product link.
+- 404-style error if user is not found or doesn't have `seller` / `admin` role.
+- Back link to `/sellers` marketing page.
+
+#### `src/constants/routes.ts` (updated)
+
+- Added `ROUTES.PUBLIC.SELLER_DETAIL = (id) => \`/sellers/\${id}\``
+
+#### `src/constants/api-endpoints.ts` (updated)
+
+- Added `API_ENDPOINTS.PROFILE.GET_STOREFRONT_PRODUCTS(userId)` — 12-product variant of the seller products query.
+
+#### `src/constants/ui.ts` (updated)
+
+- Added `UI_LABELS.SELLER_STOREFRONT.*` (23 labels: BACK, MEMBER_SINCE, PRODUCTS_TITLE, REVIEWS_TITLE, TOTAL_PRODUCTS, TOTAL_SALES, TOTAL_REVIEWS, LOADING, NOT_FOUND, NOT_FOUND_DESC, NO_PRODUCTS, NO_PRODUCTS_DESC, NO_REVIEWS, NO_REVIEWS_DESC, VISIT_PROFILE, AUCTION_BADGE, VERIFIED_PURCHASE).
+
 ### Phase 5.3 — User Public Profile: Seller Products & Reviews (Feb 2026)
 
 #### `src/app/profile/[userId]/page.tsx` (updated)

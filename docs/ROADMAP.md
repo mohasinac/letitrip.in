@@ -355,7 +355,7 @@
 | Feature                 | Description                                                                 |
 | ----------------------- | --------------------------------------------------------------------------- |
 | ~~User public profile~~ | ✅ `/profile/[userId]` — seller products grid + aggregated reviews wired up |
-| Product seller page     | `/sellers/[id]` — seller's public storefront                                |
+| ~~Product seller page~~ | ✅ `/sellers/[id]` — seller public storefront with products grid + reviews  |
 | Rate limiting           | `src/lib/middleware/rate-limit.ts` on all public API routes                 |
 | Real-time bid updates   | Firebase Realtime DB for auction bid streaming                              |
 | Algolia search          | Replace basic search with full-text index                                   |

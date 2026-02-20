@@ -1447,6 +1447,26 @@ export const UI_LABELS = {
     SIGN_IN_LINK: "Sign in",
   },
 
+  SELLER_STOREFRONT: {
+    BACK: "Back to Sellers",
+    MEMBER_SINCE: "Member since",
+    PRODUCTS_TITLE: "Products",
+    REVIEWS_TITLE: "Reviews",
+    TOTAL_PRODUCTS: "Products Listed",
+    TOTAL_SALES: "Items Sold",
+    TOTAL_REVIEWS: "Reviews",
+    LOADING: "Loading storefront...",
+    NOT_FOUND: "Seller not found",
+    NOT_FOUND_DESC: "This seller profile could not be found.",
+    NO_PRODUCTS: "No products listed",
+    NO_PRODUCTS_DESC: "This seller hasn't listed any products yet.",
+    NO_REVIEWS: "No reviews yet",
+    NO_REVIEWS_DESC: "Be the first to review this seller's products.",
+    VISIT_PROFILE: "View Full Profile",
+    AUCTION_BADGE: "Auction",
+    VERIFIED_PURCHASE: "Verified",
+  },
+
   PROMOTIONS_PAGE: {
     TITLE: "Promotions & Deals",
     SUBTITLE:

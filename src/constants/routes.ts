@@ -15,6 +15,7 @@ export const ROUTES = {
     AUCTIONS: "/auctions",
     AUCTION_DETAIL: (id: string) => `/auctions/${id}`,
     SELLERS: "/sellers",
+    SELLER_DETAIL: (id: string) => `/sellers/${id}`,
     CATEGORIES: "/categories",
     SEARCH: "/search",
     PROMOTIONS: "/promotions",
