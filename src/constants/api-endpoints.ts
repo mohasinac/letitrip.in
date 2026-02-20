@@ -103,6 +103,8 @@ export const API_ENDPOINTS = {
     BLOG_BY_ID: (id: string) => `/api/admin/blog/${id}`, // GET/PATCH/DELETE
     /** ✅ Algolia sync endpoint */
     ALGOLIA_SYNC: "/api/admin/algolia/sync", // POST - Bulk sync products to Algolia
+    /** ✅ Admin analytics */
+    ANALYTICS: "/api/admin/analytics", // GET - Revenue + orders charts for admin
   },
 
   // Product endpoints ✅ All routes exist
@@ -232,6 +234,7 @@ export const API_ENDPOINTS = {
   // Seller endpoints ✅ Routes exist
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
+    ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
   },
 
   // Blog endpoints — public

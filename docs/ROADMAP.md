@@ -352,16 +352,16 @@
 - **Constants added:** `ROUTES.USER.ORDER_TRACK`, `UI_LABELS.USER.ORDERS.STEP_*` (6 step labels + tracking UI labels)
 - **Priority:** 🔵 P5
 
-| Feature                   | Description                                                                                                                                |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| ~~User public profile~~   | ✅ `/profile/[userId]` — seller products grid + aggregated reviews wired up                                                                |
-| ~~Product seller page~~   | ✅ `/sellers/[id]` — seller public storefront with products grid + reviews                                                                 |
-| ~~Rate limiting~~         | ✅ `applyRateLimit` applied to auth (AUTH/PASSWORD_RESET), contact (STRICT), products/reviews/profile-reviews GET (API/GENEROUS)           |
-| ~~Real-time bid updates~~ | ✅ `useRealtimeBids` hook + RTDB write on bid POST; auction page uses live data, falls back to 60s poll                                    |
-| ~~Algolia search~~        | ✅ `src/lib/search/algolia.ts` — client + indexProducts + algoliaSearch; /api/search uses Algolia when configured, falls back to in-memory |
-| Analytics                 | Seller analytics, admin sales charts                                                                                                       |
-| Payout system             | `/seller/payouts`, payout calculation, bank account management                                                                             |
-| PWA                       | `next-pwa`, manifest, service worker for mobile install                                                                                    |
+| Feature                   | Description                                                                                                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~User public profile~~   | ✅ `/profile/[userId]` — seller products grid + aggregated reviews wired up                                                                                                  |
+| ~~Product seller page~~   | ✅ `/sellers/[id]` — seller public storefront with products grid + reviews                                                                                                   |
+| ~~Rate limiting~~         | ✅ `applyRateLimit` applied to auth (AUTH/PASSWORD_RESET), contact (STRICT), products/reviews/profile-reviews GET (API/GENEROUS)                                             |
+| ~~Real-time bid updates~~ | ✅ `useRealtimeBids` hook + RTDB write on bid POST; auction page uses live data, falls back to 60s poll                                                                      |
+| ~~Algolia search~~        | ✅ `src/lib/search/algolia.ts` — client + indexProducts + algoliaSearch; /api/search uses Algolia when configured, falls back to in-memory                                   |
+| ~~Analytics~~             | ✅ Seller analytics (`/seller/analytics`) + Admin charts (`/admin/analytics`) using recharts AreaChart/BarChart; API routes `/api/admin/analytics` + `/api/seller/analytics` |
+| Payout system             | `/seller/payouts`, payout calculation, bank account management                                                                                                               |
+| PWA                       | `next-pwa`, manifest, service worker for mobile install                                                                                                                      |
 
 ---
 

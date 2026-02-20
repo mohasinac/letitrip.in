@@ -9,6 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.8 — Analytics — Seller + Admin Charts (Feb 2026)
+
+#### `src/app/api/admin/analytics/route.ts` (new)
+
+- `GET /api/admin/analytics` — admin/moderator-only; computes platform-wide:
+  - `summary`: totalOrders, totalRevenue, newOrdersThisMonth, revenueThisMonth, totalProducts, publishedProducts
+  - `ordersByMonth`: last 12 months `{ month, orders, revenue }` array
+  - `topProducts`: top 5 products by revenue with title, orders count, mainImage
+
+#### `src/app/api/seller/analytics/route.ts` (new)
+
+- `GET /api/seller/analytics` — seller-auth-required; computes for authenticated seller:
+  - `summary`: totalOrders, totalRevenue, totalProducts, publishedProducts
+  - `revenueByMonth`: last 6 months `{ month, orders, revenue }` array
+  - `topProducts`: top 5 products by revenue
+
+#### `src/app/admin/analytics/page.tsx` (new)
+
+- `/admin/analytics` — admin analytics dashboard.
+- Summary stat cards: total revenue, total orders, revenue this month, orders this month.
+- Recharts `AreaChart` for monthly revenue (last 12 months).
+- Recharts `BarChart` for monthly order counts.
+- Top products ranked by revenue with order count.
+- All recharts components loaded with `dynamic({ ssr: false })` to avoid SSR issues.
+
+#### `src/app/seller/analytics/page.tsx` (new)
+
+- `/seller/analytics` — seller-facing analytics page.
+- Stat cards: total revenue, orders, products listed, published count.
+- Recharts `BarChart` for revenue by month (last 6 months).
+- Top products by revenue with empty-state CTA.
+
+#### Constants updated
+
+- `ROUTES.ADMIN.ANALYTICS = "/admin/analytics"`
+- `ROUTES.SELLER.ANALYTICS = "/seller/analytics"`
+- `API_ENDPOINTS.ADMIN.ANALYTICS = "/api/admin/analytics"`
+- `API_ENDPOINTS.SELLER.ANALYTICS = "/api/seller/analytics"`
+- `UI_LABELS.ADMIN_ANALYTICS.*` (15 labels)
+- `UI_LABELS.SELLER_ANALYTICS.*` (14 labels)
+- `RBAC_CONFIG[ROUTES.ADMIN.ANALYTICS]` — admin/moderator
+
+#### Dependencies
+
+- `recharts` v2 installed
+
+---
+
 ### Phase 5.7 — Algolia Search Integration (Feb 2026)
 
 #### `src/lib/search/algolia.ts` (new)

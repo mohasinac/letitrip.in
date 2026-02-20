@@ -162,6 +162,13 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
+  [ROUTES.ADMIN.ANALYTICS]: {
+    path: ROUTES.ADMIN.ANALYTICS,
+    allowedRoles: ["admin", "moderator"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
 };
 
 /**

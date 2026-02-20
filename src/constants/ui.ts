@@ -1470,6 +1470,43 @@ export const UI_LABELS = {
     VERIFIED_PURCHASE: "Verified",
   },
 
+  // ── Admin Analytics ────────────────────────────────────────────────────────
+  ADMIN_ANALYTICS: {
+    PAGE_TITLE: "Sales Analytics",
+    PAGE_SUBTITLE: "Revenue and order trends across the platform",
+    TOTAL_REVENUE: "Total Revenue",
+    TOTAL_ORDERS: "Total Orders",
+    REVENUE_THIS_MONTH: "Revenue This Month",
+    ORDERS_THIS_MONTH: "Orders This Month",
+    REVENUE_CHART_TITLE: "Monthly Revenue",
+    ORDERS_CHART_TITLE: "Monthly Orders",
+    TOP_PRODUCTS_TITLE: "Top Products by Revenue",
+    LOADING: "Loading analytics...",
+    NO_DATA: "No data available",
+    MONTH_LABEL: "Month",
+    REVENUE_LABEL: "Revenue",
+    ORDERS_LABEL: "Orders",
+  },
+
+  // ── Seller Analytics ───────────────────────────────────────────────────────
+  SELLER_ANALYTICS: {
+    PAGE_TITLE: "Your Analytics",
+    PAGE_SUBTITLE: "Sales performance and revenue overview",
+    TOTAL_REVENUE: "Total Revenue",
+    TOTAL_ORDERS: "Total Orders",
+    TOTAL_PRODUCTS: "Products Listed",
+    PUBLISHED_PRODUCTS: "Published Products",
+    REVENUE_CHART_TITLE: "Revenue Last 6 Months",
+    TOP_PRODUCTS_TITLE: "Top Products by Revenue",
+    LOADING: "Loading your analytics...",
+    NO_DATA: "No sales data yet",
+    NO_DATA_DESC: "Start selling to see your analytics here",
+    MONTH_LABEL: "Month",
+    REVENUE_LABEL: "Revenue",
+    ORDERS_LABEL: "Orders",
+    VIEW_PRODUCTS: "View Products",
+  },
+
   PROMOTIONS_PAGE: {
     TITLE: "Promotions & Deals",
     SUBTITLE:

@@ -66,6 +66,7 @@ export const ROUTES = {
     PRODUCTS_EDIT: (id: string) => `/seller/products/${id}`,
     ORDERS: "/seller/orders",
     AUCTIONS: "/seller/auctions",
+    ANALYTICS: "/seller/analytics",
   },
 
   // Admin Routes
@@ -84,6 +85,7 @@ export const ROUTES = {
     ORDERS: "/admin/orders",
     BIDS: "/admin/bids",
     BLOG: "/admin/blog",
+    ANALYTICS: "/admin/analytics",
   },
 
   // Demo Routes (dev-only)
