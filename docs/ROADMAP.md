@@ -415,13 +415,13 @@
 - Extract `NotificationsBulkActions` (mark-all-read button row)
 - Resulting page: ~70 lines
 
-#### 6.2.4 `seller/analytics/page.tsx` (306 lines)
+#### 6.2.4 `seller/analytics/page.tsx` (306 lines) ✅
 
-- Extract `SellerRevenueChart` (Recharts AreaChart wrapper)
-- Extract `SellerOrdersChart` (Recharts BarChart wrapper)
-- Extract `SellerAnalyticsStats` (KPI stat cards row)
-- Remove inline `style={{ height: 240 }}` — use Tailwind `h-60` via `THEME_CONSTANTS.chart.height`
-- Resulting page: ~70 lines
+- Extracted `SellerAnalyticsStats` — 4-card summary grid with stat cards
+- Extracted `SellerRevenueChart` — BarChart (Recharts) showing revenue last 6 months
+- Extracted `SellerTopProducts` — ranked product list with revenue per product
+- Exported types `SellerAnalyticsSummary`, `MonthEntry`, `TopProduct` from components barrel
+- Resulting page: 84 lines
 
 #### 6.2.5 `seller/page.tsx` (273 lines)
 
@@ -588,7 +588,7 @@ Spots to audit:
 | 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
 | 6.2.2 search page decomposition    | 🔴 Pending                 |
 | 6.2.3 user/notifications decompose | 🔴 Pending                 |
-| 6.2.4 seller/analytics decompose   | 🔴 Pending                 |
+| 6.2.4 seller/analytics decompose   | ✅ Done                    |
 | 6.2.5 seller/page decompose        | ✅ Done                    |
 | 6.2.6 blog page decompose          | ✅ Done                    |
 | 6.2.7 checkout/success decompose   | ✅ Done                    |

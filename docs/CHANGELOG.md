@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.4 — Seller Analytics Page Decomposition (Feb 2026)
+
+#### `src/components/seller/SellerAnalyticsStats.tsx` — NEW
+
+- `SellerAnalyticsStats` — 4-card summary grid using internal `StatCard`; exports `SellerAnalyticsSummary` type
+
+#### `src/components/seller/SellerRevenueChart.tsx` — NEW
+
+- `SellerRevenueChart` — Recharts BarChart (lazy-loaded) showing revenue last 6 months; exports `MonthEntry` type
+
+#### `src/components/seller/SellerTopProducts.tsx` — NEW
+
+- `SellerTopProducts` — ranked product list by revenue with empty state and View Products link; exports `TopProduct` type
+
+#### `src/components/seller/index.ts`
+
+- Added exports for SellerAnalyticsStats, SellerRevenueChart, SellerTopProducts and their associated types
+
+#### `src/app/seller/analytics/page.tsx`
+
+- Reduced from 306 → 84 lines
+
+---
+
 ### Phase 6.2.7 — Checkout Success Page Decomposition (Feb 2026)
 
 #### `src/constants/ui.ts`
