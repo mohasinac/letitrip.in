@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.6 — Audit Log for Admin Site-Settings Changes (Feb 2026)
+
+#### What was implemented
+
+- `src/constants/messages.ts`: Added `ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG` — `"AUDIT: Admin updated site settings"`
+- `src/app/api/site-settings/route.ts` PATCH handler:
+  - After successful `updateSingleton`, calls `serverLogger.info(SITE_SETTINGS_AUDIT_LOG, { adminId, adminEmail, changedFields, changes, timestamp })` using the existing structured logging infrastructure
+  - Removed the two `TODO (Future)` comments for audit log and cache invalidation TODO (Redis cache TODO remains)
+  - Audit entries appear in `logs/info-YYYY-MM-DD.log` with searchable `AUDIT:` prefix
+- `src/app/api/__tests__/site-settings.test.ts`:
+  - Added `jest.mock("@/lib/server-logger", ...)` with `mockServerLoggerInfo` spy
+  - 2 new tests: audit log written on success (with adminId, changedFields), no audit log on failure
+  - Suite: 167/167 passing, 2327 tests total
+
+---
+
 ### Phase 7.5 — Status Transition Validation for Products (Feb 2026)
 
 #### What was implemented

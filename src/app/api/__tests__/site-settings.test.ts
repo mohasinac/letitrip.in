@@ -91,6 +91,16 @@ jest.mock("@/lib/errors/error-handler", () => ({
   logError: jest.fn(),
 }));
 
+const mockServerLoggerInfo = jest.fn();
+jest.mock("@/lib/server-logger", () => ({
+  serverLogger: {
+    info: (...args: unknown[]) => mockServerLoggerInfo(...args),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
 import { GET, PATCH } from "../site-settings/route";
 
 // ============================================
@@ -290,5 +300,41 @@ describe("Site Settings API - PATCH /api/site-settings", () => {
 
     expect(status).toBe(500);
     expect(body.success).toBe(false);
+  });
+
+  // ──────────────────────────────────────────
+  // Audit logging (Phase 7.6)
+  // ──────────────────────────────────────────
+
+  it("writes an audit log entry on successful update", async () => {
+    const admin = mockAdminUser();
+    mockRequireRoleFromRequest.mockResolvedValue(admin);
+
+    const req = buildRequest("/api/site-settings", {
+      method: "PATCH",
+      body: { siteName: "Audited Name" },
+    });
+    await PATCH(req);
+
+    expect(mockServerLoggerInfo).toHaveBeenCalledWith(
+      expect.stringContaining("AUDIT"),
+      expect.objectContaining({
+        adminId: admin.uid,
+        adminEmail: admin.email,
+        changedFields: expect.arrayContaining(["siteName"]),
+      }),
+    );
+  });
+
+  it("does not write audit log when update fails", async () => {
+    mockUpdateSingleton.mockRejectedValue(new Error("DB error"));
+
+    const req = buildRequest("/api/site-settings", {
+      method: "PATCH",
+      body: { siteName: "Test" },
+    });
+    await PATCH(req);
+
+    expect(mockServerLoggerInfo).not.toHaveBeenCalled();
   });
 });

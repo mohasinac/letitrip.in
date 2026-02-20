@@ -384,6 +384,7 @@ export const ERROR_MESSAGES = {
     CAROUSEL_ID_DELETE_ERROR: "error:", // Template: `DELETE /api/carousel/${id} error:`
     SITE_SETTINGS_GET_ERROR: "GET /api/site-settings error:",
     SITE_SETTINGS_PATCH_ERROR: "PATCH /api/site-settings error:",
+    SITE_SETTINGS_AUDIT_LOG: "AUDIT: Admin updated site settings",
     REVIEWS_GET_ERROR: "GET /api/reviews error:",
     REVIEWS_POST_ERROR: "POST /api/reviews error:",
     REVIEWS_ID_GET_ERROR: "error:", // Template: `GET /api/reviews/${id} error:`

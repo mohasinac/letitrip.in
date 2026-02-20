@@ -94,8 +94,8 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
  * Ã¢Å“â€¦ Validates body with siteSettingsUpdateSchema (Zod)
  * Ã¢Å“â€¦ Updates via siteSettingsRepository.updateSingleton()
- * Ã¢Å“â€¦ Returns updated settings
- * TODO (Future): Track changes in audit log
+ * Ã¢Å„â¦ Writes audit log entry via serverLogger with changed fields and admin identity
+ * Ã¢Å„â¦ Returns updated settings
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change
  */
@@ -121,15 +121,14 @@ export async function PATCH(request: NextRequest) {
       validation.data,
     );
 
-    // TODO (Future): Invalidate caches
-    // await cacheManager.invalidate('site-settings');
-
-    // TODO (Future): Log change in audit trail
-    // await auditLog.log({
-    //   action: 'SETTINGS_UPDATED',
-    //   userId: user.uid,
-    //   changes: validation.data,
-    // });
+    // Audit log — record which admin changed what fields
+    serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {
+      adminId: user.uid,
+      adminEmail: user.email,
+      changedFields: Object.keys(validation.data),
+      changes: validation.data,
+      timestamp: new Date().toISOString(),
+    });
 
     return successResponse(
       updatedSettings,

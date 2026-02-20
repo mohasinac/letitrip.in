@@ -68,14 +68,14 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/app/api/site-settings/route.ts` — 6 items
 
-| Line    | Description                                            |
-| ------- | ------------------------------------------------------ |
-| 41      | ETag support for conditional GET requests              |
-| 42      | Redis integration for distributed caching              |
-| 98      | Track changes in audit log on PUT                      |
-| 99      | Invalidate distributed caches (Redis) on PUT           |
-| 100     | Send notification to all admins on settings change     |
-| 124–127 | Invalidate caches + log change in audit trail on PATCH |
+| Line    | Description                                                              |
+| ------- | ------------------------------------------------------------------------ |
+| 41      | ETag support for conditional GET requests                                |
+| 42      | Redis integration for distributed caching                                |
+| 98      | ~~Track changes in audit log on PUT~~ ✅ Done — Phase 7.6                |
+| 99      | Invalidate distributed caches (Redis) on PUT                             |
+| 100     | Send notification to all admins on settings change                       |
+| 124–127 | Invalidate caches (Redis) + ~~audit trail~~ ✅ Done — Phase 7.6 on PATCH |
 
 ---
 
@@ -169,11 +169,11 @@ This document organises them by file and category so future phases can pick them
 
 ### Medium Impact (production hardening)
 
-| Item                                   | File                               | Description |
-| -------------------------------------- | ---------------------------------- | ----------- |
-| ETag / Redis caching for site-settings | `api/site-settings/route.ts:41-42` | Performance |
-| Audit log for settings changes         | `api/site-settings/route.ts:98`    | Compliance  |
-| Admin notification on new product      | `api/products/route.ts:167`        | Workflow    |
+| Item                                   | File                               | Description         |
+| -------------------------------------- | ---------------------------------- | ------------------- |
+| ETag / Redis caching for site-settings | `api/site-settings/route.ts:41-42` | Performance         |
+| ~~Audit log for settings changes~~     | `api/site-settings/route.ts:98`    | ✅ Done — Phase 7.6 |
+| Admin notification on new product      | `api/products/route.ts:167`        | Workflow            |
 
 ### Low Impact / Nice-to-Have
 
