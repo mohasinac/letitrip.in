@@ -91,10 +91,10 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/app/api/products/route.ts` — 2 items
 
-| Line | Description                                           |
-| ---- | ----------------------------------------------------- |
-| 166  | Generate SEO-friendly slug/ID for product URLs        |
-| 167  | Notify admins when new product submitted for approval |
+| Line | Description                                                                   |
+| ---- | ----------------------------------------------------------------------------- |
+| 166  | ~~Generate SEO-friendly slug/ID for product URLs~~ ✅ Done — Phase 7.8        |
+| 167  | ~~Notify admins when new product submitted for approval~~ ✅ Done — Phase 7.7 |
 
 ---
 
@@ -121,9 +121,9 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/app/api/faqs/route.ts` — 1 item
 
-| Line | Description                                   |
-| ---- | --------------------------------------------- |
-| 208  | Generate SEO-friendly slug for FAQ permalinks |
+| Line | Description                                                           |
+| ---- | --------------------------------------------------------------------- |
+| 208  | ~~Generate SEO-friendly slug for FAQ permalinks~~ ✅ Done — Phase 7.8 |
 
 ---
 
@@ -173,13 +173,13 @@ This document organises them by file and category so future phases can pick them
 | -------------------------------------- | ---------------------------------- | ------------------- |
 | ETag / Redis caching for site-settings | `api/site-settings/route.ts:41-42` | Performance         |
 | ~~Audit log for settings changes~~     | `api/site-settings/route.ts:98`    | ✅ Done — Phase 7.6 |
-| Admin notification on new product      | `api/products/route.ts:167`        | Workflow            |
+| Admin notification on new product      | `api/products/route.ts:167`        | ✅ Done — Phase 7.7 |
 
 ### Low Impact / Nice-to-Have
 
 | Item                            | Files                      | Description          |
 | ------------------------------- | -------------------------- | -------------------- |
-| SEO slugs for products & FAQs   | `api/products`, `api/faqs` | SEO enhancement      |
+| SEO slugs for products & FAQs   | `api/products`, `api/faqs` | ✅ Done — Phase 7.8  |
 | Crashlytics integration         | `lib/monitoring`           | Crash tracking       |
 | Carousel slide analytics        | `api/carousel/route.ts:46` | Analytics            |
 | i18n for Zod error messages     | `schemas.ts:797,812`       | Internationalisation |
