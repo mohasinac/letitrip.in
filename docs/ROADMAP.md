@@ -1,6 +1,6 @@
 # LetItRip — Feature Roadmap & Build Plan
 
-> Last updated: February 23, 2026  
+> Last updated: February 20, 2026  
 > Every item links to the relevant file location once created. Dead-link routes are marked 🔗💀.
 
 ---
@@ -14,6 +14,7 @@
 | Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                                        |
 | Admin: products management                                                                   | ✅ Complete                                                        |
 | Admin: orders management                                                                     | ✅ Complete                                                        |
+| Admin: payouts management                                                                    | 🔴 Phase 6.1 — UI pending (API done)                               |
 | Homepage sections                                                                            | ✅ Complete                                                        |
 | Product API + repository                                                                     | ✅ Complete                                                        |
 | Order API + repository                                                                       | ✅ Complete                                                        |
@@ -362,6 +363,243 @@
 | ~~Analytics~~             | ✅ Seller analytics (`/seller/analytics`) + Admin charts (`/admin/analytics`) using recharts AreaChart/BarChart; API routes `/api/admin/analytics` + `/api/seller/analytics`                                                   |
 | ~~Payout system~~         | ✅ `PayoutDocument` schema + `payoutRepository`; `GET/POST /api/seller/payouts` (earnings calc + request); `GET /api/admin/payouts` + `PATCH /api/admin/payouts/[id]`; `/seller/payouts` page with stat cards + form + history |
 | ~~PWA~~                   | ✅ `@serwist/next` service worker; `src/app/manifest.ts` (name, short_name, start_url, standalone, theme_color #3b82f6, SVG icon); `viewport` export in root layout (themeColor light/dark); SW disabled in dev                |
+| UI Polish (Phase 6)       | 🔴 In progress — admin payouts UI, fat page decomposition (10 pages), THEME_CONSTANTS audit, empty states, skeletons, mobile polish, dark mode sweep, a11y                                                                     |
+
+---
+
+## Phase 6 — UI Polish & Consistent Styling
+
+**Goal:** Every page is visually consistent, properly decomposed, uses project-wide constants, and has polished UX patterns (skeletons, empty states, dark mode, mobile).
+
+---
+
+### 6.1 Admin Payouts Management UI
+
+- **Route:** `/admin/payouts`
+- **File:** `src/app/admin/payouts/page.tsx`
+- **API:** `GET /api/admin/payouts`, `PATCH /api/admin/payouts/[id]` (already built ✅)
+- **Components to create:** `src/components/admin/payouts/PayoutTableColumns.tsx`, `PayoutStatusForm.tsx`
+- **Features:**
+  - `AdminPageHeader` + `AdminFilterBar` (filter by status: pending / processing / paid / failed)
+  - `DataTable` with payout rows: seller name, amount, method, status badge, requested date
+  - `SideDrawer` with `PayoutStatusForm` — update status + admin note
+  - Stats row: total pending amount, total paid this month, failure count
+  - `StatusBadge` for payout status
+- **Constants needed:** `UI_LABELS.ADMIN.PAYOUTS.*`, `SUCCESS_MESSAGES.ADMIN.PAYOUT_*`, `API_ENDPOINTS.ADMIN.PAYOUTS`
+- **Priority:** 🔴 P0
+
+---
+
+### 6.2 Fat Page Decomposition
+
+> **Rule:** Pages > 150 lines with inline JSX/logic must be split into sub-components.
+
+#### 6.2.1 `seller/payouts/page.tsx` (418 lines)
+
+- Extract `SellerPayoutStatsRow` — 3 stat cards (available, pending, paid)
+- Extract `SellerPayoutRequestForm` — bank account + submit form
+- Extract `SellerPayoutHistoryTable` — paginated history table
+- Resulting page: ~60 lines of orchestration
+
+#### 6.2.2 `search/page.tsx` (346 lines)
+
+- Already has `ProductCard`, `ProductGrid` — extract inline filter sidebar to `SearchFiltersSidebar`
+- Extract search bar + sort controls to `SearchControlBar`
+- Extract no-results state to use `EmptyState` component
+- Resulting page: ~80 lines
+
+#### 6.2.3 `user/notifications/page.tsx` (309 lines)
+
+- Extract `NotificationItem` (individual row with mark-read / delete actions)
+- Extract `NotificationsEmptyState` using `EmptyState` component
+- Extract `NotificationsBulkActions` (mark-all-read button row)
+- Resulting page: ~70 lines
+
+#### 6.2.4 `seller/analytics/page.tsx` (306 lines)
+
+- Extract `SellerRevenueChart` (Recharts AreaChart wrapper)
+- Extract `SellerOrdersChart` (Recharts BarChart wrapper)
+- Extract `SellerAnalyticsStats` (KPI stat cards row)
+- Remove inline `style={{ height: 240 }}` — use Tailwind `h-60` via `THEME_CONSTANTS.chart.height`
+- Resulting page: ~70 lines
+
+#### 6.2.5 `seller/page.tsx` (273 lines)
+
+- Extract `SellerQuickStats` — stat cards (products, orders, revenue, ratings)
+- Extract `SellerRecentOrdersTable`
+- Extract `SellerRecentProductsList`
+- Resulting page: ~70 lines
+
+#### 6.2.6 `blog/page.tsx` (260 lines)
+
+- Move inline `BlogCard` component → `src/components/blog/BlogCard.tsx`
+- Move `CATEGORY_BADGE` map → `src/constants/ui.ts` as `UI_BADGE_VARIANTS.BLOG_CATEGORY`
+- Extract `BlogCategoryTabs` → `src/components/blog/BlogCategoryTabs.tsx`
+- Resulting page: ~60 lines
+
+#### 6.2.7 `checkout/success/page.tsx` (262 lines)
+
+- Extract `OrderSummarySuccessCard` (items list + totals)
+- Extract `OrderSuccessHero` (checkmark animation + order number)
+- Resulting page: ~50 lines
+
+#### 6.2.8 `promotions/page.tsx` (236 lines)
+
+- Move inline `CouponCard` → `src/components/promotions/CouponCard.tsx`
+- Move inline `getDiscountLabel` util → `src/utils/formatters/currency.formatter.ts` or `promotions.util.ts`
+- Extract `FeaturedProductsSection` → reuse or delegate to `FeaturedProductsSection` from homepage
+- Resulting page: ~60 lines
+
+#### 6.2.9 `contact/page.tsx` (215 lines)
+
+- Extract `ContactForm` → `src/components/forms/ContactForm.tsx`
+- Extract `ContactInfoCards` (address / phone / email info cards)
+- Resulting page: ~40 lines
+
+#### 6.2.10 `sellers/page.tsx` (170 lines) and `about/page.tsx` (176 lines)
+
+- `sellers/page.tsx`: extract `SellerListingGrid` and inline CTA button classes to THEME_CONSTANTS
+- `about/page.tsx`: borderline — review for any remaining hardcoded strings
+
+---
+
+### 6.3 Styling Consistency Audit
+
+> **Goal:** Zero raw Tailwind strings that duplicate what `THEME_CONSTANTS` already defines.
+
+| Location                          | Issue                                                        | Fix                                                    |
+| --------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| `sellers/page.tsx` L46, L52, L156 | Raw `bg-white text-emerald-700 ... rounded-full` CTA buttons | Add `THEME_CONSTANTS.button.ctaPrimary/ctaOutline`     |
+| Star ratings across 4+ pages      | `text-yellow-400` / `text-gray-300` hardcoded per file       | Add `THEME_CONSTANTS.rating.filled` / `.empty`         |
+| `promotions/page.tsx` L55         | `"Active"` string hardcoded                                  | Use `UI_LABELS.STATUS.ACTIVE`                          |
+| `seller/page.tsx` L242            | Raw `bg-gray-100 text-gray-700` status variant               | Use `THEME_CONSTANTS.badge.*` or `StatusBadge`         |
+| `seller/orders/page.tsx` L151     | Raw `hover:text-gray-700 dark:hover:text-gray-300` tab hover | Extract tab active/inactive to `THEME_CONSTANTS.tab`   |
+| `search/page.tsx` L211            | Raw `text-gray-400` search icon                              | Use `themed.textMuted` or `THEME_CONSTANTS.icon.muted` |
+| Analytics pages                   | `style={{ height: 240 }}` inline style                       | Use `THEME_CONSTANTS.chart.height` Tailwind token      |
+
+**New THEME_CONSTANTS to add** in `src/constants/theme.ts`:
+
+```ts
+rating: { filled: "text-yellow-400", empty: "text-gray-300 dark:text-gray-600" },
+button: { ctaPrimary: "bg-white text-emerald-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-emerald-50 transition-colors shadow-lg",
+          ctaOutline: "border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors" },
+tab: { active: "border-b-2 border-indigo-600 text-indigo-600 font-medium",
+       inactive: "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" },
+chart: { height: "h-60" },
+icon: { muted: "text-gray-400 dark:text-gray-500" },
+```
+
+---
+
+### 6.4 Empty States & Loading Skeletons
+
+> **Goal:** Every list/table has a consistent `EmptyState` and a skeleton loading screen instead of raw spinners.
+
+| Page / Component                              | Current                | Target                         |
+| --------------------------------------------- | ---------------------- | ------------------------------ |
+| `user/orders/page.tsx`                        | SVG inline + raw text  | `EmptyState` component         |
+| `user/orders/view/[id]/page.tsx`              | SVG inline + raw text  | `EmptyState` component         |
+| `user/notifications/page.tsx`                 | SVG inline + raw text  | `EmptyState` component         |
+| `search/page.tsx`                             | Custom no-results div  | `EmptyState` component         |
+| `blog/page.tsx`                               | Simple "No posts" text | `EmptyState` component         |
+| `seller/page.tsx`                             | Spinner while loading  | Skeleton cards                 |
+| `products/page.tsx`                           | `Spinner`              | `ProductGrid` skeleton variant |
+| Product list pages (categories, search, home) | Spinner                | Skeleton 3×2 grid              |
+
+**EmptyState props interface to confirm/standardize:**
+
+```ts
+<EmptyState
+  icon={<ShoppingBagIcon />}
+  title="No orders yet"
+  description="Your completed orders will appear here."
+  action={{ label: "Browse products", href: ROUTES.PUBLIC.PRODUCTS }}
+/>
+```
+
+---
+
+### 6.5 PWA Icon Assets
+
+- **Add** `/public/icons/icon-192.png` (192×192 px, opaque background, LetItRip logo)
+- **Add** `/public/icons/icon-512.png` (512×512 px, maskable, safe zone center logo)
+- **Update** `src/app/manifest.ts` — replace SVG-only icon array with:
+  ```ts
+  icons: [
+    { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    {
+      src: "/icons/icon-512.png",
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "maskable",
+    },
+    { src: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
+  ];
+  ```
+- **Prerequisite:** Design/generate icons (can use [Maskable.app](https://maskable.app) or Figma export)
+- **Priority:** 🟡 P2 (needed for full PWA installability score)
+
+---
+
+### 6.6 Mobile & Responsive Polish
+
+| Area                        | Issue                                              | Fix                                      |
+| --------------------------- | -------------------------------------------------- | ---------------------------------------- |
+| `search/page.tsx`           | Desktop filter sidebar hidden on mobile, no drawer | Add mobile filter drawer (use `Modal`)   |
+| `blog/page.tsx`             | Category tabs overflow on narrow screens           | Horizontal scroll with `overflow-x-auto` |
+| `seller/analytics/page.tsx` | Charts overflow on mobile                          | Responsive `ResponsiveContainer` usage   |
+| `checkout/page.tsx`         | Stepper layout narrow on xs screens                | Stack stepper labels below icons on xs   |
+| Admin tables                | Horizontal scroll missing on some tables           | Wrap in `overflow-x-auto` consistently   |
+| `BottomNavbar`              | Missing `/seller` and `/search` tab shortcuts      | Add seller quick-link for seller users   |
+
+---
+
+### 6.7 Dark Mode Consistency Sweep
+
+> **Goal:** No page has light-only colors visible in dark mode.
+
+Spots to audit:
+
+- Any remaining `bg-white` / `text-black` / `text-gray-900` not wrapped in dark variant
+- Recharts axis labels and tooltip backgrounds (need `fill` overrides for dark mode)
+- Image placeholder divs (use `themed.bgSecondary` not `bg-gray-100`)
+- Badge colors — confirm all badge variants have dark mode counterparts in `THEME_CONSTANTS.badge.*`
+
+---
+
+### 6.8 Accessibility Improvements
+
+| Issue                           | Location                          | Fix                                         |
+| ------------------------------- | --------------------------------- | ------------------------------------------- |
+| Images missing `alt`            | Product cards, blog cards         | Ensure descriptive alt text from data       |
+| Buttons without `aria-label`    | Icon-only buttons (delete, close) | Add `aria-label` from `UI_LABELS.ACTIONS.*` |
+| Focus ring missing              | Custom `div`-based clickables     | Add `focus:ring-2 focus:ring-indigo-500`    |
+| Color contrast below 4.5:1      | `text-gray-400` on white bg       | Use `text-gray-500` minimum                 |
+| Form inputs lack `id`+`htmlFor` | Some `FormField` usages           | Confirm FormField wires label `htmlFor`     |
+
+---
+
+### Phase 6 Progress Tracker
+
+| Task                               | Status                     |
+| ---------------------------------- | -------------------------- |
+| 6.1 Admin Payouts UI               | 🔴 Pending                 |
+| 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
+| 6.2.2 search page decomposition    | 🔴 Pending                 |
+| 6.2.3 user/notifications decompose | 🔴 Pending                 |
+| 6.2.4 seller/analytics decompose   | 🔴 Pending                 |
+| 6.2.5 seller/page decompose        | 🔴 Pending                 |
+| 6.2.6 blog page decompose          | 🔴 Pending                 |
+| 6.2.7 checkout/success decompose   | 🔴 Pending                 |
+| 6.2.8 promotions page decompose    | 🔴 Pending                 |
+| 6.2.9 contact page decompose       | 🔴 Pending                 |
+| 6.2.10 sellers + about cleanup     | 🔴 Pending                 |
+| 6.3 THEME_CONSTANTS audit          | 🔴 Pending                 |
+| 6.4 Empty states & skeletons       | 🔴 Pending                 |
+| 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
+| 6.6 Mobile & responsive polish     | 🔴 Pending                 |
+| 6.7 Dark mode sweep                | 🔴 Pending                 |
+| 6.8 Accessibility improvements     | 🔴 Pending                 |
 
 ---
 

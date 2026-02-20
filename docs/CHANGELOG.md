@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6 Roadmap — UI Polish & Consistent Styling (Feb 2026)
+
+#### `docs/ROADMAP.md`
+
+- Added **Phase 6** covering 8 major UI polish areas:
+  - 6.1 Admin Payouts Management UI (`/admin/payouts` page — API already built)
+  - 6.2 Fat page decomposition — 10 pages > 150 lines extracted to sub-components
+  - 6.3 THEME_CONSTANTS audit — new tokens: `rating`, `button.cta*`, `tab`, `chart`, `icon.muted`
+  - 6.4 Empty states & loading skeletons — consistent `EmptyState` + skeleton screens
+  - 6.5 PWA icon assets — 192×192 and 512×512 PNG icons
+  - 6.6 Mobile & responsive polish — filter drawers, chart responsive, admin table scroll
+  - 6.7 Dark mode consistency sweep
+  - 6.8 Accessibility improvements
+- Updated Current Status Snapshot — admin payouts UI and Phase 6 status
+
+---
+
 ### ROADMAP Cleanup (Feb 2026)
 
 #### `docs/ROADMAP.md`
