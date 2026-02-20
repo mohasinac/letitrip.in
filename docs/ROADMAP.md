@@ -708,7 +708,7 @@ WHATSAPP_PHONE_ID=
 | 7.5       | Status transition validation (draft→published; block invalid moves)     | ✅ Done — PRODUCT_STATUS_TRANSITIONS map + 422 gate in PATCH     |
 | 7.6       | Audit log for admin site-settings changes                               | ✅ Done — serverLogger.info audit entry on PATCH                 |
 | 7.7       | Admin notification on new product submitted for approval                | ✅ Done — sendNewProductSubmittedEmail + fire-and-forget in POST |
-| 7.8       | SEO slug generation for products and FAQs                               | 🔲 Not Started                                                   |
+| 7.8       | SEO slug generation for products and FAQs                               | ✅ Done — slug on ProductDocument + create; seo.slug in FAQ POST |
 | 7.9       | 6.5 PWA icons — unblock when design assets provided                     | 🟡 Blocked (design)                                              |
 
 ---

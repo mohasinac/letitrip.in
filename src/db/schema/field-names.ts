@@ -104,6 +104,7 @@ export const PRODUCT_FIELDS = {
   ID: "id",
   TITLE: "title",
   DESCRIPTION: "description",
+  SLUG: "slug",
   CATEGORY: "category",
   SUBCATEGORY: "subcategory",
   BRAND: "brand",

@@ -36,6 +36,7 @@ import {
 } from "@/lib/api/cache-middleware";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { slugifyQuestion } from "@/db/schema";
 
 /**
  * GET /api/faqs
@@ -205,7 +206,7 @@ export const GET = withCache(async (request: NextRequest) => {
  * Ã¢Å“â€¦ Creates FAQ via faqsRepository.create()
  * Ã¢Å“â€¦ Invalidates FAQ cache after creation
  * Ã¢Å“â€¦ Returns created FAQ with 201 status
- * TODO (Future): Generate SEO-friendly slug for FAQ permalinks
+ * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
 export async function POST(request: NextRequest) {
   try {
@@ -229,11 +230,13 @@ export async function POST(request: NextRequest) {
     const maxOrder = Math.max(...allFAQs.map((f) => f.order || 0), 0);
     const order = maxOrder + 1;
 
-    // Create FAQ with admin as creator
+    // Create FAQ with admin as creator and SEO slug derived from the question
+    const seoSlug = slugifyQuestion(validation.data.question);
     const faq = await faqsRepository.create({
       ...validation.data,
       order,
       createdBy: user.uid,
+      seo: { slug: seoSlug },
     } as any);
 
     // Invalidate FAQ cache

@@ -19,6 +19,7 @@ export interface ProductDocument {
   id: string;
   title: string;
   description: string;
+  slug?: string; // SEO-friendly URL slug (e.g. "vintage-camera-1700000000000")
   category: string;
   subcategory?: string;
   brand?: string;

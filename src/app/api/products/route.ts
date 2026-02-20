@@ -20,6 +20,7 @@ import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applySieveToArray } from "@/helpers";
+import { slugify } from "@/utils";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -168,6 +169,7 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
  * TODO (Future): Generate SEO-friendly slug/ID for product URLs
+ * ✅ Generates SEO-friendly slug from title (e.g. "vintage-camera-1700000000000")
  * ✅ Sends fire-and-forget admin notification email on successful submission
  */
 export async function POST(request: NextRequest) {
@@ -194,9 +196,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create product with seller ID and defaults
+    // Create product with seller ID, defaults, and SEO slug
+    const slug = `${slugify(validation.data.title).slice(0, 50)}-${Date.now()}`;
     const product = await productRepository.create({
       ...validation.data,
+      slug,
       sellerId: user.uid,
       sellerName: user.displayName || user.email || "Unknown Seller",
       sellerEmail: user.email || "",

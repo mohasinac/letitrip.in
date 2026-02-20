@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.8 — SEO Slug Generation for Products and FAQs (Feb 2026)
+
+#### What was implemented
+
+- `src/db/schema/products.ts` (`ProductDocument`): Added `slug?: string` field — SEO-friendly URL slug stored with each product
+- `src/db/schema/field-names.ts` (`PRODUCT_FIELDS`): Added `SLUG: "slug"` constant for consistent field-name access
+- `src/app/api/products/route.ts` POST handler:
+  - Imports `slugify` from `@/utils`
+  - Generates `slug = \`${slugify(title).slice(0, 50)}-${Date.now()}\`` (timestamp suffix ensures uniqueness)
+  - Passes `slug` into `productRepository.create()` payload
+  - Removed `TODO (Future): Generate SEO-friendly slug/ID` comment
+- `src/app/api/faqs/route.ts` POST handler:
+  - Imports `slugifyQuestion` from `@/db/schema` (already existed in `src/db/schema/faqs.ts`)
+  - Generates `seoSlug = slugifyQuestion(validation.data.question)` and passes `seo: { slug: seoSlug }` to `faqsRepository.create()`
+  - Removed `TODO (Future): Generate SEO-friendly slug for FAQ permalinks` comment
+- `src/app/api/__tests__/products.test.ts`:
+  - Added `jest.mock("@/utils", ...)` with deterministic `slugify` implementation for tests
+  - Suite: 167/167 passing, 2330 tests total
+
+---
+
 ### Phase 7.7 — Admin Email Notification on New Product Submitted (Feb 2026)
 
 #### What was implemented

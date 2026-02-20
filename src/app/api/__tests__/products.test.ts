@@ -49,6 +49,10 @@ jest.mock("@/lib/email", () => ({
     mockSendNewProductSubmittedEmail(...args),
 }));
 
+jest.mock("@/utils", () => ({
+  slugify: (str: string) => str.toLowerCase().replace(/\s+/g, "-"),
+}));
+
 jest.mock("@/helpers", () => ({
   applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
