@@ -105,6 +105,9 @@ export const API_ENDPOINTS = {
     ALGOLIA_SYNC: "/api/admin/algolia/sync", // POST - Bulk sync products to Algolia
     /** ✅ Admin analytics */
     ANALYTICS: "/api/admin/analytics", // GET - Revenue + orders charts for admin
+    /** ✅ Admin payouts */
+    PAYOUTS: "/api/admin/payouts", // GET - List all payouts
+    PAYOUT_BY_ID: (id: string) => `/api/admin/payouts/${id}`, // PATCH - Update payout status
   },
 
   // Product endpoints ✅ All routes exist
@@ -235,6 +238,7 @@ export const API_ENDPOINTS = {
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
     ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
+    PAYOUTS: "/api/seller/payouts", // GET/POST - List/request payouts (auth: seller)
   },
 
   // Blog endpoints — public

@@ -67,6 +67,7 @@ export const ROUTES = {
     ORDERS: "/seller/orders",
     AUCTIONS: "/seller/auctions",
     ANALYTICS: "/seller/analytics",
+    PAYOUTS: "/seller/payouts",
   },
 
   // Admin Routes
@@ -86,6 +87,7 @@ export const ROUTES = {
     BIDS: "/admin/bids",
     BLOG: "/admin/blog",
     ANALYTICS: "/admin/analytics",
+    PAYOUTS: "/admin/payouts",
   },
 
   // Demo Routes (dev-only)

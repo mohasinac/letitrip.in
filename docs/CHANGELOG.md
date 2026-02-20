@@ -9,6 +9,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.9 — Payout System (Feb 2026)
+
+#### `src/db/schema/payouts.ts` (new)
+
+- `PayoutDocument` interface with `id, sellerId, sellerName, sellerEmail, amount, grossAmount, platformFee, platformFeeRate, currency, status, paymentMethod, bankAccount?, upiId?, notes?, adminNote?, orderIds[], requestedAt, processedAt?, createdAt, updatedAt`
+- `PayoutBankAccount` interface (accountHolderName, accountNumberMasked, ifscCode, bankName)
+- `PAYOUT_COLLECTION = "payouts"`, `PAYOUT_FIELDS`, `DEFAULT_PLATFORM_FEE_RATE = 0.05`
+- `PayoutCreateInput`, `PayoutUpdateInput` types; `payoutQueryHelpers`
+
+#### `src/repositories/payout.repository.ts` (new)
+
+- `create(input)` — auto-generates ID `payout-${sellerId.slice(0,8)}-${Date.now()}`
+- `findBySeller(sellerId)` — ordered by createdAt desc
+- `findByStatus(status)`, `findPending()`
+- `updateStatus(id, status, extra?)` — sets processedAt when completed/failed
+- `getPaidOutOrderIds(sellerId)` — returns `Set<string>` of orderIds from pending/processing/completed payouts (deduplication)
+
+#### `src/app/api/seller/payouts/route.ts` (new)
+
+- `GET /api/seller/payouts` — `requireAuth()`; returns payouts + summary (availableEarnings, grossEarnings, platformFee, totalPaidOut, pendingAmount, hasPendingPayout)
+- `POST /api/seller/payouts` — validates no existing pending payout; computes eligible delivered orders not yet paid; creates payout request with 5% platform fee deducted
+
+#### `src/app/api/admin/payouts/route.ts` (new)
+
+- `GET /api/admin/payouts` — admin/moderator; optional `?status=` filter; returns all payouts + summary counts
+
+#### `src/app/api/admin/payouts/[id]/route.ts` (new)
+
+- `PATCH /api/admin/payouts/{id}` — admin; validates `{ status, adminNote? }`; calls `payoutRepository.updateStatus()`
+
+#### `src/app/seller/payouts/page.tsx` (new)
+
+- `/seller/payouts` — stat cards (available earnings, total paid, pending); request payout form (bank_transfer/upi method selector via FormField); payout history table with status badges
+
+#### Constants updated
+
+- `ROUTES.SELLER.PAYOUTS = "/seller/payouts"`, `ROUTES.ADMIN.PAYOUTS = "/admin/payouts"`
+- `API_ENDPOINTS.SELLER.PAYOUTS`, `API_ENDPOINTS.ADMIN.PAYOUTS`, `API_ENDPOINTS.ADMIN.PAYOUT_BY_ID`
+- `UI_LABELS.SELLER_PAYOUTS.*` (31 labels)
+- `ERROR_MESSAGES.PAYOUT.*` (7 entries), `SUCCESS_MESSAGES.PAYOUT.*` (3 entries)
+- `RBAC_CONFIG[ROUTES.ADMIN.PAYOUTS]` — admin/moderator
+
+---
+
 ### Phase 5.8 — Analytics — Seller + Admin Charts (Feb 2026)
 
 #### `src/app/api/admin/analytics/route.ts` (new)

@@ -235,6 +235,17 @@ export const ERROR_MESSAGES = {
     CANNOT_CANCEL: "This order cannot be cancelled",
   },
 
+  // Payout Errors
+  PAYOUT: {
+    FETCH_FAILED: "Failed to load payouts",
+    CREATE_FAILED: "Failed to create payout request",
+    UPDATE_FAILED: "Failed to update payout",
+    NOT_FOUND: "Payout not found",
+    NO_EARNINGS: "No available earnings to request a payout",
+    ALREADY_PENDING: "You already have a pending payout request",
+    INVALID_METHOD: "Invalid payment method",
+  },
+
   // Product Errors
   PRODUCT: {
     FETCH_FAILED: "Failed to load products",
@@ -517,6 +528,13 @@ export const SUCCESS_MESSAGES = {
     CREATED: "Order placed successfully",
     UPDATED: "Order updated successfully",
     CANCELLED: "Order cancelled successfully",
+  },
+
+  // Payout Success
+  PAYOUT: {
+    CREATED: "Payout request submitted successfully",
+    UPDATED: "Payout updated successfully",
+    COMPLETED: "Payout processed successfully",
   },
 
   // Product Success
