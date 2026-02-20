@@ -79,6 +79,7 @@ export const ROUTES = {
     MEDIA: "/admin/media",
     PRODUCTS: "/admin/products",
     ORDERS: "/admin/orders",
+    BIDS: "/admin/bids",
   },
 
   // Demo Routes (dev-only)

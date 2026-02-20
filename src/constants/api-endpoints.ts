@@ -90,6 +90,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin coupons endpoints */
     COUPONS: "/api/admin/coupons", // GET/POST - List/create coupons
     COUPON_BY_ID: (id: string) => `/api/admin/coupons/${id}`, // GET/PATCH/DELETE
+    /** ✅ Admin bids/auctions endpoints */
+    BIDS: "/api/admin/bids", // GET - List all bids with filters
+    BID_BY_ID: (id: string) => `/api/admin/bids/${id}`, // GET single bid
   },
 
   // Product endpoints ✅ All routes exist

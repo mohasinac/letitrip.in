@@ -249,6 +249,7 @@ export const ADMIN_TAB_ITEMS = [
   { label: UI_LABELS.NAV.FAQS, href: ROUTES.ADMIN.FAQS },
   { label: UI_LABELS.NAV.REVIEWS, href: ROUTES.ADMIN.REVIEWS },
   { label: UI_LABELS.NAV.MEDIA, href: ROUTES.ADMIN.MEDIA },
+  { label: UI_LABELS.NAV.BIDS_ADMIN, href: ROUTES.ADMIN.BIDS },
 ] as const;
 
 /**

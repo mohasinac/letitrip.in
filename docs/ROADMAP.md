@@ -243,10 +243,13 @@
 - **Constants added:** `API_ENDPOINTS.SELLER.ORDERS`, `UI_LABELS.SELLER_PAGE.ORDERS_*`
 - **Priority:** 🟡 P2
 
-### 3.7 Admin Bids/Auctions Page
+### 3.7 Admin Bids/Auctions Page ✅
 
 - **Route:** `/admin/bids`
-- **File:** `src/app/admin/bids/[[...action]]/page.tsx`
+- **Files:** `src/app/admin/bids/[[...action]]/page.tsx`, `src/app/api/admin/bids/route.ts`
+- **Features:** Status filter tabs, summary stat cards (Total/Active/Won/Total Value), DataTable with `getBidTableColumns`, read-only bid detail drawer
+- **Components added:** `getBidTableColumns` in `src/components/admin/bids/`
+- **Constants added:** `ROUTES.ADMIN.BIDS`, `API_ENDPOINTS.ADMIN.BIDS`, `UI_LABELS.ADMIN.BIDS.*`, `UI_LABELS.NAV.BIDS_ADMIN`, RBAC entry
 - **Priority:** 🟡 P2
 
 ---
