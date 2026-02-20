@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
+
 const withSerwist = require("@serwist/next").default;
 
 const nextConfig = {
@@ -98,10 +103,12 @@ const nextConfig = {
   },
 };
 
-module.exports = withSerwist({
-  swSrc: "src/sw.ts",
-  swDest: "public/sw.js",
-  reloadOnOnline: true,
-  // Disable in development to avoid service worker caching issues during dev
-  disable: process.env.NODE_ENV === "development",
-})(nextConfig);
+module.exports = withBundleAnalyzer(
+  withSerwist({
+    swSrc: "src/sw.ts",
+    swDest: "public/sw.js",
+    reloadOnOnline: true,
+    // Disable in development to avoid service worker caching issues during dev
+    disable: process.env.NODE_ENV === "development",
+  })(nextConfig),
+);

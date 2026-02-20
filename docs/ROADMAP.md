@@ -699,17 +699,17 @@ WHATSAPP_PHONE_ID=
 
 **Tracker:**
 
-| Sub-phase | Task                                                                    | Status                                       |
-| --------- | ----------------------------------------------------------------------- | -------------------------------------------- |
-| 7.1       | Test coverage sweep — fix failing test suites                           | ✅ Done — 166/166 suites, 2285 tests passing |
-| 7.2       | Performance audit — bundle analysis, image optimisation, code splitting | 🔲 Not Started                               |
-| 7.3       | Purchase verification gate for reviews                                  | 🔲 Not Started                               |
-| 7.4       | Seller email verification required before listing products              | 🔲 Not Started                               |
-| 7.5       | Status transition validation (draft→published; block invalid moves)     | 🔲 Not Started                               |
-| 7.6       | Audit log for admin site-settings changes                               | 🔲 Not Started                               |
-| 7.7       | Admin notification on new product submitted for approval                | 🔲 Not Started                               |
-| 7.8       | SEO slug generation for products and FAQs                               | 🔲 Not Started                               |
-| 7.9       | 6.5 PWA icons — unblock when design assets provided                     | 🟡 Blocked (design)                          |
+| Sub-phase | Task                                                                    | Status                                                  |
+| --------- | ----------------------------------------------------------------------- | ------------------------------------------------------- |
+| 7.1       | Test coverage sweep — fix failing test suites                           | ✅ Done — 166/166 suites, 2285 tests passing            |
+| 7.2       | Performance audit — bundle analysis, image optimisation, code splitting | ✅ Done — bundle analyzer, dynamic imports, image sizes |
+| 7.3       | Purchase verification gate for reviews                                  | 🔲 Not Started                                          |
+| 7.4       | Seller email verification required before listing products              | 🔲 Not Started                                          |
+| 7.5       | Status transition validation (draft→published; block invalid moves)     | 🔲 Not Started                                          |
+| 7.6       | Audit log for admin site-settings changes                               | 🔲 Not Started                                          |
+| 7.7       | Admin notification on new product submitted for approval                | 🔲 Not Started                                          |
+| 7.8       | SEO slug generation for products and FAQs                               | 🔲 Not Started                                          |
+| 7.9       | 6.5 PWA icons — unblock when design assets provided                     | 🟡 Blocked (design)                                     |
 
 ---
 
@@ -725,16 +725,20 @@ WHATSAPP_PHONE_ID=
 
 ---
 
-### Phase 7.2 — Performance Audit
+### Phase 7.2 — Performance Audit ✅
 
 **Goal**: Reduce initial page-load time and bundle size before public launch.
 
-**Scope**:
+**Completed**:
 
-- `next build` + `@next/bundle-analyzer` — identify large chunks
-- Dynamic `import()` for heavy below-fold sections (carousel, top categories, homepage widget rows)
-- Audit all `<Image>` usage — correct `sizes`, `priority`, and `loading` attributes
-- Verify font preloading and critical CSS paths
+- Installed `@next/bundle-analyzer`; added `npm run analyze` script and `withBundleAnalyzer` wrapper in `next.config.js`
+- `src/app/page.tsx`: 10 below-fold homepage sections converted to `dynamic()` with `ssr: true` (`TopCategories`, `FeaturedProducts`, `FeaturedAuctions`, `AdvertisementBanner`, `SiteFeatures`, `CustomerReviews`, `WhatsApp`, `FAQ`, `BlogArticles`, `Newsletter`)
+- Above-fold sections (`HeroCarousel`, `WelcomeSection`, `TrustIndicatorsSection`) remain static
+- `CustomerReviewsSection`: added missing `sizes="40px"` to review avatar `<Image>`
+- All other `<Image>` usages already have correct `sizes` and `priority` attributes
+- Font audit: only system fonts in `globals.css` — no external font loading, already optimal
+- Recharts already lazy-imported with `ssr: false` in `SellerRevenueChart.tsx`
+- Test fix: `page.test.tsx` updated to mock `next/dynamic` via `React.lazy` + `findByTestId` for async sections
 
 ---
 

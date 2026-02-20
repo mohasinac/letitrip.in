@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.2 — Performance Audit: Bundle Analyzer, Dynamic Imports, Image Optimization (Feb 2026)
+
+#### Bundle Analysis tooling
+
+- Installed `@next/bundle-analyzer` as a dev dependency
+- Added `"analyze": "ANALYZE=true next build"` npm script
+- Wrapped `next.config.js` with `withBundleAnalyzer` (enabled only when `ANALYZE=true`)
+
+#### Code splitting — dynamic imports for below-fold homepage sections
+
+- `src/app/page.tsx`: replaced static imports with `dynamic()` (ssr: true) for 10 below-fold sections: `TopCategoriesSection`, `FeaturedProductsSection`, `FeaturedAuctionsSection`, `AdvertisementBanner`, `SiteFeaturesSection`, `CustomerReviewsSection`, `WhatsAppCommunitySection`, `FAQSection`, `BlogArticlesSection`, `NewsletterSection`
+- Above-fold sections (`HeroCarousel`, `WelcomeSection`, `TrustIndicatorsSection`) remain static imports
+
+#### Image optimization
+
+- `src/components/homepage/CustomerReviewsSection.tsx`: added `sizes="40px"` to review avatar `<Image>` (was missing, causing Next.js to download full-resolution images for 40×40 avatars)
+
+#### Test fix
+
+- `src/app/__tests__/page.test.tsx`: mocked `next/dynamic` using `React.lazy` + `Suspense` wrapper so dynamic imports resolve in tests; switched assertions for dynamic sections to `findByTestId` (async) — maintains full 166/166 suite coverage
+
+---
+
 ### Phase 7.1 — Test Coverage Sweep: Fix All Failing Test Suites (Feb 2026)
 
 **Result**: 166/166 suites passing, 2285/2289 tests passing (4 intentionally skipped)

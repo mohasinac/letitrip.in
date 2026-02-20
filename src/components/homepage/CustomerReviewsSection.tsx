@@ -118,6 +118,7 @@ export function CustomerReviewsSection() {
                     alt={review.userName}
                     width={40}
                     height={40}
+                    sizes="40px"
                     className="rounded-full object-cover"
                   />
                 ) : (
