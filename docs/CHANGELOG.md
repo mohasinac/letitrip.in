@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.4 — Empty States & Loading Skeletons (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `BLOG_PAGE` constants: `TITLE`, `SUBTITLE`, `NO_POSTS`, `NO_POSTS_DESCRIPTION`, `PAGE_OF`
+
+#### `src/app/blog/page.tsx`
+
+- Imported `EmptyState` from `@/components`
+- Replaced hardcoded `"Blog"` heading and subtitle with `BLOG_PAGE.TITLE` / `BLOG_PAGE.SUBTITLE`
+- Replaced inline `<p>No posts yet</p>` with `<EmptyState title={BLOG.NO_POSTS} description={BLOG.NO_POSTS_DESCRIPTION} />`
+- Replaced hardcoded `"Page X of Y"` string with `BLOG.PAGE_OF(page, totalPages)`
+
+#### `src/components/search/SearchResultsSection.tsx`
+
+- Imported `EmptyState` from `@/components/ui`
+- Replaced inline flex-col empty div with `<EmptyState title={...} description={...} />`
+
+#### `src/app/seller/page.tsx`
+
+- Imported `EmptyState` from `@/components`; removed unused `Card` import
+- Replaced custom `Card`-based no-products section with `<EmptyState icon={…} title={…} description={…} actionLabel={…} onAction={…} />`
+
+**Status of all 6.4 targets:**
+
+- `user/orders/page.tsx` — already used `EmptyState` ✅
+- `user/orders/view/[id]/page.tsx` — already used `EmptyState` ✅
+- `user/notifications/page.tsx` — already used `EmptyState` ✅
+- `search/page.tsx` (via `SearchResultsSection`) — now uses `EmptyState` ✅
+- `blog/page.tsx` — now uses `EmptyState` ✅
+- `seller/page.tsx` — now uses `EmptyState` ✅
+
+---
+
 ### Phase 6.2.10 — Sellers & About Page Cleanup (Feb 2026)
 
 #### `src/constants/ui.ts`

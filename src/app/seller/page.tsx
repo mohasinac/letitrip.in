@@ -10,13 +10,13 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@/components";
+import { Spinner, EmptyState } from "@/components";
 import {
   SellerStatCard,
   SellerQuickActions,
   SellerRecentListings,
 } from "@/components";
-import { Card, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { Heading, Text } from "@/components/typography";
 import { useAuth, useApiQuery } from "@/hooks";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
@@ -133,21 +133,13 @@ export default function SellerDashboardPage() {
 
       {/* Empty State */}
       {!productsLoading && (productsData?.data?.length ?? 0) === 0 && (
-        <Card className="p-10 text-center">
-          <p className="text-4xl mb-3">🏪</p>
-          <Heading level={4} variant="primary" className="mb-2">
-            {UI_LABELS.SELLER_PAGE.NO_PRODUCTS}
-          </Heading>
-          <Text className={`${themed.textSecondary} mb-4`}>
-            {UI_LABELS.SELLER_PAGE.NO_PRODUCTS_SUBTITLE}
-          </Text>
-          <Button
-            variant="primary"
-            onClick={() => router.push(ROUTES.SELLER.PRODUCTS_NEW)}
-          >
-            {UI_LABELS.SELLER_PAGE.ADD_PRODUCT}
-          </Button>
-        </Card>
+        <EmptyState
+          icon={<span className="text-4xl">🏪</span>}
+          title={UI_LABELS.SELLER_PAGE.NO_PRODUCTS}
+          description={UI_LABELS.SELLER_PAGE.NO_PRODUCTS_SUBTITLE}
+          actionLabel={UI_LABELS.SELLER_PAGE.ADD_PRODUCT}
+          onAction={() => router.push(ROUTES.SELLER.PRODUCTS_NEW)}
+        />
       )}
     </div>
   );

@@ -10,10 +10,12 @@ import {
   BlogCard,
   BlogFeaturedCard,
   BlogCategoryTabs,
+  EmptyState,
 } from "@/components";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
-const { themed, typography } = THEME_CONSTANTS;
+const { themed } = THEME_CONSTANTS;
+const BLOG = UI_LABELS.BLOG_PAGE;
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState<"" | BlogPostCategory>(
@@ -53,9 +55,9 @@ export default function BlogPage() {
       {/* Header */}
       <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{BLOG.TITLE}</h1>
           <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
-            Insights, guides, and updates from the LetItRip team
+            {BLOG.SUBTITLE}
           </p>
         </div>
       </div>
@@ -81,11 +83,10 @@ export default function BlogPage() {
         )}
 
         {!isLoading && !error && posts.length === 0 && (
-          <div className="text-center py-16">
-            <p className={`${typography.h4} ${themed.textSecondary}`}>
-              No posts yet
-            </p>
-          </div>
+          <EmptyState
+            title={BLOG.NO_POSTS}
+            description={BLOG.NO_POSTS_DESCRIPTION}
+          />
         )}
 
         {!isLoading && !error && posts.length > 0 && (
@@ -112,7 +113,7 @@ export default function BlogPage() {
                   {UI_LABELS.ACTIONS.BACK}
                 </Button>
                 <span className={`text-sm ${themed.textSecondary}`}>
-                  Page {page} of {totalPages}
+                  {BLOG.PAGE_OF(page, totalPages)}
                 </span>
                 <Button
                   variant="outline"

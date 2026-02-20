@@ -493,31 +493,21 @@ icon: { muted: "text-gray-400 dark:text-gray-500" },
 
 ---
 
-### 6.4 Empty States & Loading Skeletons
+### 6.4 Empty States & Loading Skeletons ✅
 
 > **Goal:** Every list/table has a consistent `EmptyState` and a skeleton loading screen instead of raw spinners.
 
-| Page / Component                              | Current                | Target                         |
-| --------------------------------------------- | ---------------------- | ------------------------------ |
-| `user/orders/page.tsx`                        | SVG inline + raw text  | `EmptyState` component         |
-| `user/orders/view/[id]/page.tsx`              | SVG inline + raw text  | `EmptyState` component         |
-| `user/notifications/page.tsx`                 | SVG inline + raw text  | `EmptyState` component         |
-| `search/page.tsx`                             | Custom no-results div  | `EmptyState` component         |
-| `blog/page.tsx`                               | Simple "No posts" text | `EmptyState` component         |
-| `seller/page.tsx`                             | Spinner while loading  | Skeleton cards                 |
-| `products/page.tsx`                           | `Spinner`              | `ProductGrid` skeleton variant |
-| Product list pages (categories, search, home) | Spinner                | Skeleton 3×2 grid              |
+| Page / Component                             | Status                     |
+| -------------------------------------------- | -------------------------- |
+| `user/orders/page.tsx`                       | ✅ Already used EmptyState |
+| `user/orders/view/[id]/page.tsx`             | ✅ Already used EmptyState |
+| `user/notifications/page.tsx`                | ✅ Already used EmptyState |
+| `search/page.tsx` (via SearchResultsSection) | ✅ Now uses EmptyState     |
+| `blog/page.tsx`                              | ✅ Now uses EmptyState     |
+| `seller/page.tsx`                            | ✅ Now uses EmptyState     |
 
-**EmptyState props interface to confirm/standardize:**
-
-```ts
-<EmptyState
-  icon={<ShoppingBagIcon />}
-  title="No orders yet"
-  description="Your completed orders will appear here."
-  action={{ label: "Browse products", href: ROUTES.PUBLIC.PRODUCTS }}
-/>
-```
+Added `BLOG_PAGE` constants (`TITLE`, `SUBTITLE`, `NO_POSTS`, `NO_POSTS_DESCRIPTION`, `PAGE_OF`) to `ui.ts`.  
+Replaced all hardcoded blog string literals with constants.
 
 ---
 
@@ -597,7 +587,7 @@ Spots to audit:
 | 6.2.9 contact page decompose       | ✅ Done                    |
 | 6.2.10 sellers + about cleanup     | ✅ Done                    |
 | 6.3 THEME_CONSTANTS audit          | ✅ Done                    |
-| 6.4 Empty states & skeletons       | 🔴 Pending                 |
+| 6.4 Empty states & skeletons       | ✅ Done                    |
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
 | 6.6 Mobile & responsive polish     | 🔴 Pending                 |
 | 6.7 Dark mode sweep                | 🔴 Pending                 |

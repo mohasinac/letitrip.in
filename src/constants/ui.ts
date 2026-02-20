@@ -1120,6 +1120,16 @@ export const UI_LABELS = {
     EMPTY_QUERY: "Start typing to search for products",
   },
 
+  // Blog public page labels
+  BLOG_PAGE: {
+    TITLE: "Blog",
+    SUBTITLE: "Insights, guides, and updates from the LetItRip team",
+    NO_POSTS: "No posts yet",
+    NO_POSTS_DESCRIPTION:
+      "Check back soon for articles and updates from our team.",
+    PAGE_OF: (page: number, total: number) => `Page ${page} of ${total}`,
+  },
+
   // Auctions listing page labels
   AUCTIONS_PAGE: {
     TITLE: "Live Auctions",

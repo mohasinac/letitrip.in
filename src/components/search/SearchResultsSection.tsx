@@ -1,6 +1,7 @@
 "use client";
 
 import { ProductGrid, ProductSortBar } from "@/components/products";
+import { EmptyState } from "@/components/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { ProductSortValue } from "@/components/products";
 import type { ProductDocument } from "@/db/schema";
@@ -61,16 +62,10 @@ export function SearchResultsSection({
       {isLoading ? (
         <ProductGrid products={[]} loading skeletonCount={PAGE_SIZE} />
       ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className={`text-lg font-medium ${themed.textPrimary}`}>
-            {LABELS.NO_RESULTS}
-          </p>
-          {urlQ && (
-            <p className={`mt-2 text-sm ${themed.textSecondary}`}>
-              {LABELS.NO_RESULTS_SUBTITLE(urlQ)}
-            </p>
-          )}
-        </div>
+        <EmptyState
+          title={LABELS.NO_RESULTS}
+          description={urlQ ? LABELS.NO_RESULTS_SUBTITLE(urlQ) : undefined}
+        />
       ) : (
         <ProductGrid products={products} />
       )}
