@@ -865,6 +865,33 @@ export const UI_LABELS = {
       QUANTITY: "Quantity",
       EACH: "each",
       PLACED_ON: "Placed on",
+
+      // Tracking page labels
+      TRACK_TITLE: "Order Tracking",
+      TRACK_SUBTITLE: "Real-time order status",
+      TRACK_BACK: "Back to Order",
+      TRACKING_NUMBER_LABEL: "Tracking Number",
+      TRACKING_NUMBER_COPY: "Copy",
+      TRACKING_NUMBER_COPIED: "Copied!",
+      ESTIMATED_DELIVERY: "Estimated Delivery",
+
+      // Timeline step labels
+      STEP_PLACED: "Order Placed",
+      STEP_PLACED_DESC: "Your order has been received and is being processed.",
+      STEP_CONFIRMED: "Order Confirmed",
+      STEP_CONFIRMED_DESC:
+        "Your order has been confirmed and is being prepared.",
+      STEP_SHIPPED: "Shipped",
+      STEP_SHIPPED_DESC: "Your order is on its way.",
+      STEP_DELIVERED: "Delivered",
+      STEP_DELIVERED_DESC: "Your order has been delivered successfully.",
+      STEP_CANCELLED: "Cancelled",
+      STEP_CANCELLED_DESC: "This order has been cancelled.",
+      STEP_RETURNED: "Returned",
+      STEP_RETURNED_DESC: "This order has been returned.",
+
+      PENDING: "Processing",
+      CONTACT_SUPPORT: "Contact Support",
     },
     WISHLIST: {
       TITLE: "My Wishlist",

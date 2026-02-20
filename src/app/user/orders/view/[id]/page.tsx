@@ -134,8 +134,13 @@ export default function OrderViewPage() {
                 order.status.charAt(0).toUpperCase() + order.status.slice(1)
               }
             />
-            {order.trackingNumber && (
-              <Button variant="secondary" size="sm">
+            {(order.trackingNumber ||
+              ["confirmed", "shipped", "delivered"].includes(order.status)) && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push(ROUTES.USER.ORDER_TRACK(orderId))}
+              >
                 {UI_LABELS.USER.ORDERS.TRACK_ORDER}
               </Button>
             )}

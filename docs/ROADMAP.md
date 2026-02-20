@@ -29,6 +29,7 @@
 | Admin: bids/auctions management                                                              | ✅ Complete — /admin/bids page with stats + drawer                 |
 | Content & Trust pages                                                                        | ✅ About, Contact, Help, Terms, Privacy, Sellers, Blog, Promotions |
 | Notifications                                                                                | ✅ Schema + repo + API + NotificationBell component + user page    |
+| Order tracking UI                                                                            | ✅ Timeline visualization at `/user/orders/[id]/track`             |
 
 ---
 
@@ -341,9 +342,18 @@
 - **RBAC:** `ROUTES.USER.NOTIFICATIONS` added to access control config
 - **Priority:** 🔵 P5
 
+### 5.2 Order Tracking UI ✅
+
+- **Route:** `/user/orders/[id]/track`
+- **File:** `src/app/user/orders/[id]/track/page.tsx`
+- **API:** Reuses `GET /api/user/orders/[id]` — all tracking data in `OrderDocument`
+- **Features:** Visual 4-step timeline (Placed → Confirmed → Shipped → Delivered), handles cancelled/returned terminal states, tracking number copy-to-clipboard, animated active step, date + relative time display
+- **Integration:** "Track Order" button in the order detail page now links to tracking for confirmed/shipped/delivered orders
+- **Constants added:** `ROUTES.USER.ORDER_TRACK`, `UI_LABELS.USER.ORDERS.STEP_*` (6 step labels + tracking UI labels)
+- **Priority:** 🔵 P5
+
 | Feature               | Description                                                        |
 | --------------------- | ------------------------------------------------------------------ |
-| Order tracking UI     | `/user/orders/[id]/track` — timeline visualization                 |
 | User public profile   | `/profile/[userId]` (exists ✅) — wire up seller products, reviews |
 | Product seller page   | `/sellers/[id]` — seller's public storefront                       |
 | Rate limiting         | `src/lib/middleware/rate-limit.ts` on all public API routes        |

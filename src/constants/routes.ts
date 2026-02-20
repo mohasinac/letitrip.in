@@ -50,6 +50,7 @@ export const ROUTES = {
     ADDRESSES_ADD: "/user/addresses/add",
     ADDRESSES_EDIT: (id: string) => `/user/addresses/edit/${id}`,
     ORDER_DETAIL: (id: string) => `/user/orders/view/${id}`,
+    ORDER_TRACK: (id: string) => `/user/orders/${id}/track`,
     NOTIFICATIONS: "/user/notifications",
     CART: "/cart",
     CHECKOUT: "/checkout",
