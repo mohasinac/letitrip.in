@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.1 — Admin Payouts Management UI (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `UI_LABELS.ADMIN.PAYOUTS` — 38 label strings for the admin payouts page
+- Added `UI_LABELS.NAV.PAYOUTS_ADMIN = "Payouts"` to navigation labels
+
+#### `src/constants/navigation.tsx`
+
+- Added `{ label: UI_LABELS.NAV.PAYOUTS_ADMIN, href: ROUTES.ADMIN.PAYOUTS }` to `ADMIN_TAB_ITEMS`
+
+#### `src/components/admin/payouts/PayoutTableColumns.tsx` — NEW
+
+- `getPayoutTableColumns(onView)` — columns: seller name/email, net amount + order count, payment method + account masked, status badge, requested date, view action
+- Status badge styles: pending (yellow), processing (blue), completed (green), failed (red)
+
+#### `src/components/admin/payouts/PayoutStatusForm.tsx` — NEW
+
+- `PayoutStatusForm({ payout, onChange })` — shows read-only payout summary (seller, amounts, fee, bank/UPI details), editable `Select` for status + `Textarea` for admin note
+- Exports `PayoutStatusFormState` type: `{ status: PayoutStatus; adminNote: string }`
+
+#### `src/components/admin/payouts/index.ts` — NEW
+
+- Barrel export for payouts components
+
+#### `src/components/admin/index.ts`
+
+- Added Phase 6.1 payouts exports: `getPayoutTableColumns`, `PayoutStatusForm`, `PayoutStatusFormState`
+
+#### `src/app/admin/payouts/page.tsx` — NEW
+
+- `AdminPayoutsPage` — stats row (total pending, paid this month, failed this month), status filter tabs, `DataTable` with payout rows, `SideDrawer` with `PayoutStatusForm` + `DrawerFormFooter`
+- Uses `GET /api/admin/payouts?status=` + `PATCH /api/admin/payouts/[id]`
+- RBAC already configured: admin + moderator only
+
+---
+
 ### Phase 6 Roadmap — UI Polish & Consistent Styling (Feb 2026)
 
 #### `docs/ROADMAP.md`

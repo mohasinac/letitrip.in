@@ -14,7 +14,7 @@
 | Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                                        |
 | Admin: products management                                                                   | ✅ Complete                                                        |
 | Admin: orders management                                                                     | ✅ Complete                                                        |
-| Admin: payouts management                                                                    | 🔴 Phase 6.1 — UI pending (API done)                               |
+| Admin: payouts management                                                                    | ✅ Complete — `/admin/payouts` page + API done                     |
 | Homepage sections                                                                            | ✅ Complete                                                        |
 | Product API + repository                                                                     | ✅ Complete                                                        |
 | Order API + repository                                                                       | ✅ Complete                                                        |
@@ -583,7 +583,7 @@ Spots to audit:
 
 | Task                               | Status                     |
 | ---------------------------------- | -------------------------- |
-| 6.1 Admin Payouts UI               | 🔴 Pending                 |
+| 6.1 Admin Payouts UI               | ✅ Done                    |
 | 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
 | 6.2.2 search page decomposition    | 🔴 Pending                 |
 | 6.2.3 user/notifications decompose | 🔴 Pending                 |

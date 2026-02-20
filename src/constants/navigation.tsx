@@ -251,6 +251,7 @@ export const ADMIN_TAB_ITEMS = [
   { label: UI_LABELS.NAV.MEDIA, href: ROUTES.ADMIN.MEDIA },
   { label: UI_LABELS.NAV.BIDS_ADMIN, href: ROUTES.ADMIN.BIDS },
   { label: UI_LABELS.NAV.BLOG_ADMIN, href: ROUTES.ADMIN.BLOG },
+  { label: UI_LABELS.NAV.PAYOUTS_ADMIN, href: ROUTES.ADMIN.PAYOUTS },
 ] as const;
 
 /**
