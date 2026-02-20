@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Feature Roadmap + Comprehensive Seed Data (Feb 19, 2026)
+### Phase 5.3 — User Public Profile: Seller Products & Reviews (Feb 2026)
+
+#### `src/app/profile/[userId]/page.tsx` (updated)
+
+- Added "Listed Products" section for seller profiles: fetches up to 6 published products via `GET /api/products?filters=sellerId==...` and renders a responsive 2–3 column grid with product image, title, price and auction badge.
+- Added "Reviews Received" section for seller profiles: fetches aggregated approved reviews via the new `GET /api/profile/[userId]/reviews` endpoint; shows reviewer avatar initial, star rating, comment, verified-purchase badge, and a link back to the product.
+- Both sections are only rendered when the viewed user has `role === "seller"` and use `useApiQuery` with 60 s cache.
+
+#### `src/app/api/profile/[userId]/reviews/route.ts` (new)
+
+- `GET /api/profile/[userId]/reviews` — public endpoint (no auth required) that fetches the seller's published products, then aggregates approved reviews across them in parallel, returning the 10 most recent reviews plus `averageRating`, `totalReviews`, and `ratingDistribution`.
+
+#### `src/constants/api-endpoints.ts` (updated)
+
+- Added `API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(userId)` — dynamically resolved URL for the new reviews endpoint.
+- Added `API_ENDPOINTS.PROFILE.GET_SELLER_PRODUCTS(userId)` — products list URL pre-filtered by `sellerId` and `status == published`.
+
+#### `src/constants/ui.ts` (updated)
+
+- Added `UI_LABELS.PROFILE.SELLER_PRODUCTS_TITLE`, `SELLER_REVIEWS_TITLE`, `NO_PRODUCTS`, `NO_PRODUCTS_DESC`, `NO_REVIEWS`, `NO_REVIEWS_DESC`, `VIEW_PRODUCT`, `VERIFIED_PURCHASE`.
 
 #### docs/ROADMAP.md (new)
 

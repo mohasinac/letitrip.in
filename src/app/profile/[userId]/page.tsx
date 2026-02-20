@@ -2,18 +2,48 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Card, Badge, Alert, Text, AvatarDisplay } from "@/components";
+import {
+  Card,
+  Badge,
+  Alert,
+  Text,
+  AvatarDisplay,
+  EmptyState,
+} from "@/components";
 import {
   THEME_CONSTANTS,
   UI_LABELS,
   ERROR_MESSAGES,
   API_ENDPOINTS,
 } from "@/constants";
-import { formatMonthYear } from "@/utils";
+import { formatMonthYear, formatCurrency } from "@/utils";
+import { useApiQuery } from "@/hooks";
 import { logger } from "@/classes";
-import type { UserDocument } from "@/db/schema";
+import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
+
+interface SellerReviewsData {
+  reviews: Array<{
+    id: string;
+    userName: string;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+    productId: string;
+    productTitle: string;
+    productMainImage: string | null;
+    verified: boolean;
+  }>;
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: Record<number, number>;
+}
+
+interface ProductsApiResponse {
+  data: ProductDocument[];
+  meta: { total: number; page: number; pageSize: number };
+}
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -21,6 +51,38 @@ export default function PublicProfilePage() {
   const [user, setUser] = useState<UserDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const isSeller = user?.role === "seller";
+
+  // Fetch seller products (only relevant once user is loaded and is a seller)
+  const { data: productsData, isLoading: productsLoading } =
+    useApiQuery<ProductsApiResponse>({
+      queryKey: ["profile-products", userId],
+      queryFn: async () => {
+        const res = await fetch(
+          API_ENDPOINTS.PROFILE.GET_SELLER_PRODUCTS(userId),
+        );
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const json = await res.json();
+        return json;
+      },
+      enabled: !!userId && isSeller,
+      cacheTTL: 60000,
+    });
+
+  // Fetch seller reviews
+  const { data: reviewsData, isLoading: reviewsLoading } = useApiQuery<{
+    data: SellerReviewsData;
+  }>({
+    queryKey: ["profile-reviews", userId],
+    queryFn: async () => {
+      const res = await fetch(API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(userId));
+      if (!res.ok) throw new Error("Failed to fetch reviews");
+      return res.json();
+    },
+    enabled: !!userId && isSeller,
+    cacheTTL: 60000,
+  });
 
   useEffect(() => {
     if (!userId) return;
@@ -338,6 +400,162 @@ export default function PublicProfilePage() {
                 ({user.stats.reviewsCount} reviews)
               </Text>
             </div>
+          </Card>
+        )}
+
+        {/* Seller Products Section */}
+        {isSeller && (
+          <Card className="mb-6">
+            <h2 className={`${THEME_CONSTANTS.typography.h4} mb-4`}>
+              {UI_LABELS.PROFILE.SELLER_PRODUCTS_TITLE}
+            </h2>
+            {productsLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : productsData?.data && productsData.data.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {productsData.data.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
+                  >
+                    {/* Product Image */}
+                    <div className="aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                      {product.mainImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={product.mainImage}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+                          🛍️
+                        </div>
+                      )}
+                    </div>
+                    {/* Product Info */}
+                    <div className={THEME_CONSTANTS.spacing.padding.xs}>
+                      <Text className="text-sm font-medium line-clamp-2 mb-1">
+                        {product.title}
+                      </Text>
+                      <Text className="text-sm font-bold text-primary-600">
+                        {formatCurrency(product.price)}
+                      </Text>
+                      {product.isAuction && (
+                        <Badge variant="warning" className="mt-1 text-xs">
+                          Auction
+                        </Badge>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title={UI_LABELS.PROFILE.NO_PRODUCTS}
+                description={UI_LABELS.PROFILE.NO_PRODUCTS_DESC}
+              />
+            )}
+          </Card>
+        )}
+
+        {/* Reviews Received Section */}
+        {isSeller && (
+          <Card className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={THEME_CONSTANTS.typography.h4}>
+                {UI_LABELS.PROFILE.SELLER_REVIEWS_TITLE}
+              </h2>
+              {reviewsData?.data && reviewsData.data.totalReviews > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className={`w-4 h-4 ${i < Math.round(reviewsData.data.averageRating) ? "text-yellow-400" : "text-gray-300"}`}
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <Text className="text-sm font-semibold">
+                    {reviewsData.data.averageRating.toFixed(1)}
+                  </Text>
+                  <Text variant="secondary" className="text-xs">
+                    ({reviewsData.data.totalReviews})
+                  </Text>
+                </div>
+              )}
+            </div>
+
+            {reviewsLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : reviewsData?.data && reviewsData.data.reviews.length > 0 ? (
+              <div className={THEME_CONSTANTS.spacing.stack}>
+                {reviewsData.data.reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 font-semibold text-sm flex-shrink-0">
+                        {review.userName.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <Text className="text-sm font-semibold">
+                            {review.userName}
+                          </Text>
+                          {review.verified && (
+                            <Badge variant="success" className="text-xs">
+                              {UI_LABELS.PROFILE.VERIFIED_PURCHASE}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`w-3.5 h-3.5 ${i < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <Text variant="secondary" className="text-sm">
+                          {review.comment}
+                        </Text>
+                        {review.productTitle && (
+                          <Text variant="secondary" className="text-xs mt-2">
+                            on{" "}
+                            <Link
+                              href={`/products/${review.productId}`}
+                              className="text-primary-600 hover:underline"
+                            >
+                              {review.productTitle}
+                            </Link>
+                          </Text>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title={UI_LABELS.PROFILE.NO_REVIEWS}
+                description={UI_LABELS.PROFILE.NO_REVIEWS_DESC}
+              />
+            )}
           </Card>
         )}
       </div>

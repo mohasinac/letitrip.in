@@ -46,6 +46,9 @@ export const API_ENDPOINTS = {
   // Profile endpoints ✅ All routes exist
   PROFILE: {
     GET_BY_ID: (userId: string) => `/api/profile/${userId}`,
+    GET_SELLER_REVIEWS: (userId: string) => `/api/profile/${userId}/reviews`,
+    GET_SELLER_PRODUCTS: (userId: string) =>
+      `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=6`,
     UPDATE: "/api/profile/update",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",

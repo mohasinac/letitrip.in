@@ -233,6 +233,14 @@ export const UI_LABELS = {
     ROLE: "Role",
     ACCOUNT_ROLE: "Account Role",
     TOTAL_ORDERS: "Total Orders",
+    SELLER_PRODUCTS_TITLE: "Listed Products",
+    SELLER_REVIEWS_TITLE: "Reviews Received",
+    NO_PRODUCTS: "No products listed yet",
+    NO_PRODUCTS_DESC: "This seller hasn't listed any products yet.",
+    NO_REVIEWS: "No reviews yet",
+    NO_REVIEWS_DESC: "This seller hasn't received any reviews yet.",
+    VIEW_PRODUCT: "View Product",
+    VERIFIED_PURCHASE: "Verified Purchase",
   },
 
   // Wishlist section
