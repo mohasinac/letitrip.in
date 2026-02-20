@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.5 — Seller Dashboard Page Decomposition (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `SELLER_PAGE.RECENT_LISTINGS` label
+
+#### `src/components/seller/SellerStatCard.tsx` — NEW
+
+- `SellerStatCard` component extracted from `src/app/seller/page.tsx`
+
+#### `src/components/seller/SellerQuickActions.tsx` — NEW
+
+- `SellerQuickActions` card with navigation buttons (add product, view products, view auctions, view sales)
+
+#### `src/components/seller/SellerRecentListings.tsx` — NEW
+
+- `SellerRecentListings` card showing recent product listings with status badges
+
+#### `src/components/seller/index.ts`
+
+- Added exports for all three new seller components
+
+#### `src/app/seller/page.tsx`
+
+- Reduced from 273 → 155 lines (state/logic stays in page, inline UI moved to components)
+
+---
+
 ### Phase 6.2.9 — Contact Page Decomposition (Feb 2026)
 
 #### `src/constants/messages.ts`

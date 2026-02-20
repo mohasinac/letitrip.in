@@ -1173,6 +1173,7 @@ export const UI_LABELS = {
     NO_PRODUCTS: "No products yet",
     NO_PRODUCTS_SUBTITLE: "Start by adding your first listing",
     LOADING_STATS: "Loading dashboard stats...",
+    RECENT_LISTINGS: "Recent Listings",
     WELCOME: (name: string) => `Welcome back, ${name}`,
     LISTING_STAT_LABEL: "listings",
     AUCTION_STAT_LABEL: "active auctions",
