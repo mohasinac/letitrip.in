@@ -437,11 +437,12 @@
 - Extract `BlogCategoryTabs` → `src/components/blog/BlogCategoryTabs.tsx`
 - Resulting page: ~60 lines
 
-#### 6.2.7 `checkout/success/page.tsx` (262 lines)
+#### 6.2.7 `checkout/success/page.tsx` (262 lines) ✅
 
-- Extract `OrderSummarySuccessCard` (items list + totals)
-- Extract `OrderSuccessHero` (checkmark animation + order number)
-- Resulting page: ~50 lines
+- Extracted `OrderSuccessHero` — green checkmark hero with title, subtitle, email confirmation
+- Extracted `OrderSuccessCard` — full order detail card (ID, status badge, product row, payment, shipping)
+- Extracted `OrderSuccessActions` — bottom action links (view order, my orders, continue shopping)
+- Resulting page: ~95 lines
 
 #### 6.2.8 `promotions/page.tsx` (236 lines)
 
@@ -590,7 +591,7 @@ Spots to audit:
 | 6.2.4 seller/analytics decompose   | 🔴 Pending                 |
 | 6.2.5 seller/page decompose        | ✅ Done                    |
 | 6.2.6 blog page decompose          | ✅ Done                    |
-| 6.2.7 checkout/success decompose   | 🔴 Pending                 |
+| 6.2.7 checkout/success decompose   | ✅ Done                    |
 | 6.2.8 promotions page decompose    | ✅ Done                    |
 | 6.2.9 contact page decompose       | ✅ Done                    |
 | 6.2.10 sellers + about cleanup     | 🔴 Pending                 |

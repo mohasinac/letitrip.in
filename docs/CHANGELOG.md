@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.7 — Checkout Success Page Decomposition (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `UI_LABELS.ORDER_SUCCESS_PAGE` (14 labels): TITLE, SUBTITLE, EMAIL_SENT, ORDER_DETAILS, ORDER_ID_LABEL, PAYMENT_METHOD_LABEL, COD_LABEL, ONLINE_PAYMENT_LABEL, SHIPPING_TO_LABEL, QTY_LABEL, VIEW_ORDER, CONTINUE_SHOPPING, FALLBACK_TITLE, FALLBACK_SUBTITLE
+
+#### `src/components/checkout/OrderSuccessHero.tsx` — NEW
+
+- Green SVG checkmark hero with order confirmed title, subtitle, and email confirmation text
+
+#### `src/components/checkout/OrderSuccessCard.tsx` — NEW
+
+- Full order detail card: order ID + status badge, product row, payment method card, shipping address
+- `orderStatusVariant` and `paymentStatusVariant` badge helper functions
+
+#### `src/components/checkout/OrderSuccessActions.tsx` — NEW
+
+- Three action links: View Order Details, My Orders, Continue Shopping
+
+#### `src/components/checkout/index.ts`
+
+- Added exports for OrderSuccessHero, OrderSuccessCard, OrderSuccessActions
+
+#### `src/app/checkout/success/page.tsx`
+
+- Reduced from 262 → 95 lines; thin orchestration using new components
+
+---
+
 ### Phase 6.2.5 — Seller Dashboard Page Decomposition (Feb 2026)
 
 #### `src/constants/ui.ts`

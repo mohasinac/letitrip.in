@@ -1302,6 +1302,26 @@ export const UI_LABELS = {
     CONFIRM_TITLE: "Confirm your order",
     PAYMENT_ON_DELIVERY: "You will pay on delivery",
   },
+
+  ORDER_SUCCESS_PAGE: {
+    TITLE: "Order Confirmed!",
+    SUBTITLE:
+      "Thank you for your purchase. Your order has been placed successfully.",
+    EMAIL_SENT:
+      "A confirmation email has been sent to your registered email address.",
+    ORDER_DETAILS: "Order Details",
+    ORDER_ID_LABEL: "Order ID",
+    PAYMENT_METHOD_LABEL: "Payment Method",
+    COD_LABEL: "Cash on Delivery",
+    ONLINE_PAYMENT_LABEL: "Online Payment",
+    SHIPPING_TO_LABEL: "Shipping To",
+    QTY_LABEL: "Qty",
+    VIEW_ORDER: "View Order Details",
+    CONTINUE_SHOPPING: "Continue Shopping",
+    FALLBACK_TITLE: "Order Placed!",
+    FALLBACK_SUBTITLE: "A confirmation email is on its way to you.",
+  },
+
   // Content & Trust pages
   ABOUT_PAGE: {
     TITLE: "About LetItRip",
