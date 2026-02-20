@@ -1,85 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Card, Button, Spinner } from "@/components";
-import { formatDate } from "@/utils";
+import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import {
+  Button,
+  Spinner,
+  BlogCard,
+  BlogFeaturedCard,
+  BlogCategoryTabs,
+} from "@/components";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.BLOG;
-const { themed, typography, spacing } = THEME_CONSTANTS;
-
-const CATEGORY_TABS: { key: "" | BlogPostCategory; label: string }[] = [
-  { key: "", label: "All" },
-  { key: "news", label: "News" },
-  { key: "tips", label: "Tips" },
-  { key: "guides", label: "Guides" },
-  { key: "updates", label: "Updates" },
-  { key: "community", label: "Community" },
-];
-
-const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
-  news: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-  tips: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
-  guides:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300",
-  updates:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300",
-  community:
-    "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
-};
-
-function BlogCard({ post }: { post: BlogPostDocument }) {
-  return (
-    <Link href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`} className="block group">
-      <Card className="h-full overflow-hidden hover:shadow-md transition-shadow duration-200">
-        {post.coverImage && (
-          <div className="relative h-48 overflow-hidden">
-            <img
-              src={post.coverImage}
-              alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        )}
-        <div className="p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[post.category]}`}
-            >
-              {post.category}
-            </span>
-            {post.isFeatured && (
-              <span className="text-yellow-500 text-sm">★</span>
-            )}
-          </div>
-          <h3
-            className={`${typography.h4} ${themed.textPrimary} mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2`}
-          >
-            {post.title}
-          </h3>
-          <p className={`text-sm ${themed.textSecondary} mb-4 line-clamp-3`}>
-            {post.excerpt}
-          </p>
-          <div
-            className={`flex items-center justify-between text-xs ${themed.textSecondary}`}
-          >
-            <span>{post.authorName}</span>
-            <div className="flex items-center gap-3">
-              <span>
-                {post.readTimeMinutes} {LABELS.READ_TIME}
-              </span>
-              {post.publishedAt && <span>{formatDate(post.publishedAt)}</span>}
-            </div>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
+const { themed, typography } = THEME_CONSTANTS;
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState<"" | BlogPostCategory>(
@@ -127,19 +61,10 @@ export default function BlogPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Category tabs */}
-        <div className={`flex gap-2 flex-wrap mb-8 ${spacing.inline}`}>
-          {CATEGORY_TABS.map((tab) => (
-            <Button
-              key={tab.key}
-              variant={activeCategory === tab.key ? "primary" : "outline"}
-              onClick={() => handleCategoryChange(tab.key)}
-              className="text-sm"
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </div>
+        <BlogCategoryTabs
+          activeCategory={activeCategory}
+          onChange={handleCategoryChange}
+        />
 
         {isLoading && (
           <div className="flex justify-center py-16">
@@ -165,61 +90,8 @@ export default function BlogPage() {
 
         {!isLoading && !error && posts.length > 0 && (
           <>
-            {/* Featured post (first page only, category all) */}
             {featuredPost && page === 1 && (
-              <div className="mb-10">
-                <Link
-                  href={`${ROUTES.PUBLIC.BLOG}/${featuredPost.slug}`}
-                  className="block group"
-                >
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                    <div className="md:flex">
-                      {featuredPost.coverImage && (
-                        <div className="md:w-1/2 relative">
-                          <img
-                            src={featuredPost.coverImage}
-                            alt={featuredPost.title}
-                            className="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
-                      <div className="p-8 md:w-1/2 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[featuredPost.category]}`}
-                          >
-                            {featuredPost.category}
-                          </span>
-                          <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">
-                            Featured
-                          </span>
-                        </div>
-                        <h2
-                          className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors`}
-                        >
-                          {featuredPost.title}
-                        </h2>
-                        <p
-                          className={`${themed.textSecondary} mb-4 line-clamp-3`}
-                        >
-                          {featuredPost.excerpt}
-                        </p>
-                        <div
-                          className={`flex items-center gap-4 text-xs ${themed.textSecondary}`}
-                        >
-                          <span>{featuredPost.authorName}</span>
-                          <span>
-                            {featuredPost.readTimeMinutes} {LABELS.READ_TIME}
-                          </span>
-                          {featuredPost.publishedAt && (
-                            <span>{formatDate(featuredPost.publishedAt)}</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              </div>
+              <BlogFeaturedCard post={featuredPost} />
             )}
 
             {/* Grid of posts */}

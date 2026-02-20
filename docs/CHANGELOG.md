@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.6 — Blog Page Decomposition (Feb 2026)
+
+#### `src/components/blog/BlogCard.tsx` — NEW
+
+- `BlogCard` component extracted from `src/app/blog/page.tsx`
+- Exports `CATEGORY_BADGE` record (category → Tailwind badge classes)
+
+#### `src/components/blog/BlogFeaturedCard.tsx` — NEW
+
+- `BlogFeaturedCard` component — featured post hero card with image + metadata
+
+#### `src/components/blog/BlogCategoryTabs.tsx` — NEW
+
+- `BlogCategoryTabs` component + `BLOG_CATEGORY_TABS` constant
+
+#### `src/components/blog/index.ts` — NEW
+
+- Barrel export for all blog components
+
+#### `src/components/index.ts`
+
+- Added `export * from "./blog"` section
+
+#### `src/app/blog/page.tsx`
+
+- Reduced from 260 → 100 lines (thin orchestration layer)
+- All inline component logic moved to `src/components/blog/`
+
+---
+
 ### Phase 6.3 — New THEME_CONSTANTS Tokens (Feb 2026)
 
 #### `src/constants/theme.ts`

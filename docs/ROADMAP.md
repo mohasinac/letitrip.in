@@ -589,7 +589,7 @@ Spots to audit:
 | 6.2.3 user/notifications decompose | 🔴 Pending                 |
 | 6.2.4 seller/analytics decompose   | 🔴 Pending                 |
 | 6.2.5 seller/page decompose        | 🔴 Pending                 |
-| 6.2.6 blog page decompose          | 🔴 Pending                 |
+| 6.2.6 blog page decompose          | ✅ Done                    |
 | 6.2.7 checkout/success decompose   | 🔴 Pending                 |
 | 6.2.8 promotions page decompose    | 🔴 Pending                 |
 | 6.2.9 contact page decompose       | 🔴 Pending                 |
