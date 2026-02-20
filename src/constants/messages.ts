@@ -329,6 +329,11 @@ export const ERROR_MESSAGES = {
     OWN_AUCTION: "You cannot bid on your own auction",
   },
 
+  CONTACT: {
+    SEND_FAILED: "Failed to send your message. Please try again.",
+    VALIDATION_FAILED: "Please fill in all required fields.",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
@@ -557,6 +562,10 @@ export const SUCCESS_MESSAGES = {
 
   BID: {
     PLACED: "Bid placed successfully",
+  },
+
+  CONTACT: {
+    SENT: "Your message has been sent! We'll get back to you shortly.",
   },
 } as const;
 

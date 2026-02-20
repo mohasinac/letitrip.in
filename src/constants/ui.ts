@@ -1186,6 +1186,193 @@ export const UI_LABELS = {
     CONFIRM_TITLE: "Confirm your order",
     PAYMENT_ON_DELIVERY: "You will pay on delivery",
   },
+  // Content & Trust pages
+  ABOUT_PAGE: {
+    TITLE: "About LetItRip",
+    SUBTITLE:
+      "Connecting buyers, sellers, and bidders in one vibrant marketplace",
+    MISSION_TITLE: "Our Mission",
+    MISSION_TEXT:
+      "LetItRip was built to democratise commerce — giving independent sellers a powerful platform to reach buyers, and giving buyers access to a diverse catalogue of unique products and exciting live auctions.",
+    HOW_IT_WORKS_TITLE: "How It Works",
+    HOW_BUYERS_TITLE: "For Buyers",
+    HOW_BUYERS_TEXT:
+      "Browse thousands of products, place auction bids in real time, and shop with confidence knowing every transaction is protected.",
+    HOW_SELLERS_TITLE: "For Sellers",
+    HOW_SELLERS_TEXT:
+      "Create your seller account, list your products or auction items, and start earning. Our tools make inventory and order management simple.",
+    HOW_BIDDERS_TITLE: "For Bidders",
+    HOW_BIDDERS_TEXT:
+      "Join live auctions, set auto-bid limits, and win unique items at prices you decide.",
+    VALUES_TITLE: "Our Values",
+    VALUES_TRUST: "Trust & Safety",
+    VALUES_TRUST_TEXT:
+      "Every seller is verified and every transaction is monitored for your protection.",
+    VALUES_COMMUNITY: "Community First",
+    VALUES_COMMUNITY_TEXT:
+      "We nurture a fair, inclusive marketplace where every voice matters.",
+    VALUES_INNOVATION: "Continuous Innovation",
+    VALUES_INNOVATION_TEXT:
+      "We keep improving our platform based on feedback from buyers and sellers.",
+    TEAM_TITLE: "Meet the Team",
+    TEAM_SUBTITLE: "The people behind LetItRip",
+    MILESTONES_TITLE: "Our Journey",
+    MILESTONE_FOUNDED:
+      "Founded with a vision to simplify multi-seller commerce in India",
+    MILESTONE_AUCTIONS:
+      "Launched real-time auction engine with auto-bid support",
+    MILESTONE_MOBILE: "Mobile-first redesign reaching thousands of new users",
+    CTA_TITLE: "Ready to get started?",
+    CTA_SELL: "Become a Seller",
+    CTA_SHOP: "Start Shopping",
+  },
+
+  CONTACT_PAGE: {
+    TITLE: "Contact Us",
+    SUBTITLE:
+      "We'd love to hear from you — reach out with any questions or feedback",
+    FORM_TITLE: "Send a Message",
+    FORM_NAME: "Your Name",
+    FORM_EMAIL: "Email Address",
+    FORM_SUBJECT: "Subject",
+    FORM_MESSAGE: "Message",
+    FORM_SEND: "Send Message",
+    FORM_SENDING: "Sending...",
+    FORM_SUCCESS: "Your message has been sent! We'll get back to you shortly.",
+    FORM_ERROR: "Failed to send your message. Please try again.",
+    INFO_TITLE: "Get in Touch",
+    INFO_EMAIL_LABEL: "Email",
+    INFO_PHONE_LABEL: "Phone",
+    INFO_ADDRESS_LABEL: "Address",
+    INFO_HOURS_LABEL: "Support Hours",
+    INFO_HOURS_VALUE: "Monday – Friday, 9 AM – 6 PM IST",
+    FAQ_LINK: "Check our FAQ page for quick answers",
+  },
+
+  HELP_PAGE: {
+    TITLE: "Help Center",
+    SUBTITLE: "Find quick answers to common questions",
+    SEARCH_PLACEHOLDER: "Search help articles...",
+    BROWSE_TITLE: "Browse Topics",
+    TOPIC_ORDERS: "Orders & Shipping",
+    TOPIC_PAYMENTS: "Payments & Refunds",
+    TOPIC_ACCOUNT: "Account & Profile",
+    TOPIC_SELLING: "Selling on LetItRip",
+    TOPIC_AUCTIONS: "Auctions & Bidding",
+    POPULAR_TITLE: "Popular Questions",
+    CONTACT_PROMPT: "Still need help?",
+    CONTACT_LINK: "Contact our support team",
+    FAQS_LINK: "Browse all FAQs",
+  },
+
+  TERMS_PAGE: {
+    TITLE: "Terms & Conditions",
+    SUBTITLE: "Please read these terms carefully before using LetItRip",
+    LAST_UPDATED: "Last updated: January 1, 2025",
+    ACCEPTANCE_TITLE: "1. Acceptance of Terms",
+    ACCEPTANCE_TEXT:
+      "By accessing or using the LetItRip platform, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree, please do not use our services.",
+    USE_TITLE: "2. Use of the Platform",
+    USE_TEXT:
+      "You may use LetItRip for lawful purposes only. You agree not to use the platform to post fraudulent listings, harass other users, or circumvent our payment and security systems.",
+    ACCOUNTS_TITLE: "3. User Accounts",
+    ACCOUNTS_TEXT:
+      "You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorised use of your account.",
+    SELLERS_TITLE: "4. Seller Responsibilities",
+    SELLERS_TEXT:
+      "Sellers are responsible for accurate product descriptions, timely shipping, and honouring return policies. LetItRip reserves the right to remove listings that violate these terms.",
+    AUCTIONS_TITLE: "5. Auction Rules",
+    AUCTIONS_TEXT:
+      "All bids placed in auctions are binding. Winning bidders must complete the purchase. Bid manipulation or shill bidding is strictly prohibited.",
+    LIABILITY_TITLE: "6. Limitation of Liability",
+    LIABILITY_TEXT:
+      "LetItRip is not liable for any indirect, incidental, or consequential damages arising from your use of the platform, including disputes between buyers and sellers.",
+    CHANGES_TITLE: "7. Changes to Terms",
+    CHANGES_TEXT:
+      "We may update these terms at any time. Continued use of the platform constitutes acceptance of the updated terms.",
+    CONTACT_TITLE: "Questions?",
+    CONTACT_TEXT:
+      "Contact us at legal@letitrip.in for any questions about these terms.",
+  },
+
+  PRIVACY_PAGE: {
+    TITLE: "Privacy Policy",
+    SUBTITLE: "Your privacy matters to us",
+    LAST_UPDATED: "Last updated: January 1, 2025",
+    INTRO_TITLE: "Introduction",
+    INTRO_TEXT:
+      'LetItRip ("we", "our", "us") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.',
+    COLLECT_TITLE: "1. Information We Collect",
+    COLLECT_TEXT:
+      "We collect information you provide directly (name, email, address, payment details) and information collected automatically (device data, usage logs, cookies) to provide and improve our services.",
+    USE_TITLE: "2. How We Use Your Information",
+    USE_TEXT:
+      "We use your information to process orders, facilitate auctions, communicate with you, prevent fraud, and improve our platform. We do not sell your personal data to third parties.",
+    SHARE_TITLE: "3. Sharing Your Information",
+    SHARE_TEXT:
+      "We may share your information with sellers to fulfil orders, with payment processors, and with service providers who assist our operations — all bound by confidentiality obligations.",
+    SECURITY_TITLE: "4. Data Security",
+    SECURITY_TEXT:
+      "We implement industry-standard security measures including encryption, secure access controls, and regular security audits to protect your data.",
+    RIGHTS_TITLE: "5. Your Rights",
+    RIGHTS_TEXT:
+      "You have the right to access, update, or delete your personal data at any time from your account settings. You may also opt out of marketing communications.",
+    COOKIES_TITLE: "6. Cookies",
+    COOKIES_TEXT:
+      "We use cookies to maintain your session, remember preferences, and analyse site usage. You can manage cookie preferences in your browser settings.",
+    CHANGES_TITLE: "7. Changes to this Policy",
+    CHANGES_TEXT:
+      "We may update this policy periodically. We will notify you of significant changes by email or via a notice on our platform.",
+    CONTACT_TITLE: "Contact",
+    CONTACT_TEXT:
+      "For privacy-related queries, contact us at privacy@letitrip.in.",
+  },
+
+  SELLERS_PAGE: {
+    TITLE: "Sell on LetItRip",
+    SUBTITLE: "Reach thousands of buyers. Your own storefront. Zero hassle.",
+    HERO_CTA: "Start Selling Today",
+    HERO_SECONDARY: "Learn how it works",
+    WHY_TITLE: "Why Sell on LetItRip?",
+    BENEFIT_REACH: "Massive Reach",
+    BENEFIT_REACH_TEXT:
+      "Access thousands of active buyers searching for products just like yours.",
+    BENEFIT_TOOLS: "Powerful Tools",
+    BENEFIT_TOOLS_TEXT:
+      "Manage inventory, track orders, run auctions, and analyse your sales — all in one dashboard.",
+    BENEFIT_TRUST: "Built-in Trust",
+    BENEFIT_TRUST_TEXT:
+      "Buyer protection and seller verification give customers the confidence to spend.",
+    BENEFIT_FEES: "Competitive Fees",
+    BENEFIT_FEES_TEXT:
+      "Keep more of what you earn with our transparent, low-fee structure.",
+    HOW_TITLE: "How to Get Started",
+    STEP_1_TITLE: "Create a Seller Account",
+    STEP_1_TEXT:
+      "Sign up for free and complete your seller profile in minutes.",
+    STEP_2_TITLE: "List Your Products",
+    STEP_2_TEXT:
+      "Add products or auction items with photos, descriptions, and pricing.",
+    STEP_3_TITLE: "Start Selling",
+    STEP_3_TEXT:
+      "Receive orders, ship products, and get paid directly to your account.",
+    TESTIMONIALS_TITLE: "What Our Sellers Say",
+    FAQ_TITLE: "Seller FAQs",
+    FAQ_1_Q: "How much does it cost to sell?",
+    FAQ_1_A:
+      "Creating your seller account is free. We charge a small commission per completed sale.",
+    FAQ_2_Q: "How do I get paid?",
+    FAQ_2_A:
+      "Payouts are processed to your registered bank account after order confirmation.",
+    FAQ_3_Q: "Can I run auctions?",
+    FAQ_3_A:
+      "Yes! You can list any product as an auction with a starting bid and end date.",
+    CTA_TITLE: "Ready to grow your business?",
+    CTA_BUTTON: "Create Seller Account",
+    SIGN_IN_PROMPT: "Already have an account?",
+    SIGN_IN_LINK: "Sign in",
+  },
+
   FOOTER: {
     QUICK_LINKS: "Quick Links",
     ABOUT_US: "About Us",

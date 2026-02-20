@@ -564,3 +564,57 @@ export async function sendOrderConfirmationEmail(
     return { success: false };
   }
 }
+
+/**
+ * Send contact form message to support
+ */
+export async function sendContactEmail(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) {
+  const { name, email, subject, message } = params;
+  const supportEmail = process.env.EMAIL_SUPPORT || "info@letitrip.in";
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: supportEmail,
+      replyTo: email,
+      subject: `[Contact] ${subject}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><title>Contact Form</title></head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px 0;">
+          <table width="600" style="margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <tr><td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px; text-align: center;">
+              <h1 style="color: #fff; margin: 0; font-size: 24px;">New Contact Message</h1>
+            </td></tr>
+            <tr><td style="padding: 32px;">
+              <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
+              <p><strong>Subject:</strong> ${subject}</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;">
+              <p style="white-space: pre-wrap;">${message}</p>
+            </td></tr>
+            <tr><td style="background: #f9f9f9; padding: 16px; text-align: center; color: #888; font-size: 12px;">
+              © ${new Date().getFullYear()} ${SITE_NAME}
+            </td></tr>
+          </table>
+        </body>
+        </html>
+      `,
+      text: `From: ${name} <${email}>\nSubject: ${subject}\n\n${message}`,
+    });
+
+    if (error) {
+      serverLogger.error("Failed to send contact email", { error });
+    }
+
+    return { success: !error, data };
+  } catch (error) {
+    serverLogger.error("Error sending contact email", { error });
+    return { success: false };
+  }
+}

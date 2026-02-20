@@ -223,6 +223,11 @@ export const API_ENDPOINTS = {
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
   },
+
+  // Contact endpoint
+  CONTACT: {
+    SEND: "/api/contact", // POST - Send a contact message
+  },
 } as const;
 
 // Type for API endpoints

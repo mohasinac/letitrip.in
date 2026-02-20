@@ -26,6 +26,8 @@
 | Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
 | Seller portal                                                                                | ✅ Dashboard + Products CRUD + Orders at /seller      |
 | Search                                                                                       | ✅ Complete — /search page + /api/search route        |
+| Admin: bids/auctions management                                                              | ✅ Complete — /admin/bids page with stats + drawer    |
+| Content & Trust pages                                                                        | ✅ About, Contact, Help, Terms, Privacy, Sellers      |
 
 ---
 
@@ -258,44 +260,44 @@
 
 **Goal:** Static and semi-static pages that build credibility.
 
-### 4.1 About Us
+### 4.1 About Us ✅
 
-- **Route:** `/about` 🔗💀
+- **Route:** `/about`
 - **File:** `src/app/about/page.tsx`
-- Content: mission, team, milestones, media coverage
+- Content: mission, how it works, values, milestones, CTA
 - **Priority:** 🟢 P3
 
-### 4.2 Contact Us
+### 4.2 Contact Us ✅
 
-- **Route:** `/contact` 🔗💀
+- **Route:** `/contact`
 - **File:** `src/app/contact/page.tsx`
-- **API:** `POST /api/contact` — email to support via Resend
+- **API:** `POST /api/contact` — email to support via Resend (`src/app/api/contact/route.ts`)
 - **Priority:** 🟢 P3
 
-### 4.3 Help Center
+### 4.3 Help Center ✅
 
-- **Route:** `/help` 🔗💀
+- **Route:** `/help`
 - **File:** `src/app/help/page.tsx`
-- Reuses FAQ content + links to categories of FAQs
+- Topic cards linking to FAQ categories
 - **Priority:** 🟢 P3
 
-### 4.4 Terms & Conditions
+### 4.4 Terms & Conditions ✅
 
-- **Route:** `/terms` 🔗💀
+- **Route:** `/terms`
 - **File:** `src/app/terms/page.tsx`
 - **Priority:** 🟢 P3
 
-### 4.5 Privacy Policy
+### 4.5 Privacy Policy ✅
 
-- **Route:** `/privacy` 🔗💀
+- **Route:** `/privacy`
 - **File:** `src/app/privacy/page.tsx`
 - **Priority:** 🟢 P3
 
-### 4.6 Sellers Landing Page
+### 4.6 Sellers Landing Page ✅
 
-- **Route:** `/sellers` 🔗💀
+- **Route:** `/sellers`
 - **File:** `src/app/sellers/page.tsx`
-- Marketing page: sell on LetItRip, how it works, seller benefits
+- Marketing page: sell on LetItRip, how it works, seller benefits, FAQs
 - **Priority:** 🟢 P3
 
 ### 4.7 Blog
