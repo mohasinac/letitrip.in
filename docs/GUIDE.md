@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 11, 2026  
+**Last Updated**: February 13, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -191,6 +191,11 @@
 - `AVATAR` - Avatar upload labels (TITLE, INSTRUCTION, ZOOM, POSITION, RESET, SAVE_CHANGES, CHOOSE_IMAGE, CHANGE_PHOTO, REMOVE_PHOTO, UPLOADING, SAVING, and more)
 - `ADMIN` - Admin content management labels (CONTENT with PRODUCTS, ORDERS, REVIEWS subsections)
 - `FAQ` - FAQ section labels (WAS_THIS_HELPFUL, HELPFUL, NOT_HELPFUL, RELATED_QUESTIONS, VIEW_ALL, SEARCH_PLACEHOLDER)
+- `BLOG_PAGE` - Blog page labels (TITLE, SUBTITLE, NO_POSTS, NO_POSTS_DESCRIPTION, PAGE_OF(page, total))
+- `HERO_CAROUSEL` - Carousel accessibility labels (PREV_SLIDE, NEXT_SLIDE, GO_TO_SLIDE(n))
+- `NOTIFICATIONS` - Notification UI labels (TITLE, MARK_READ, MARK_ALL_READ, DELETE, NO_NOTIFICATIONS, NO_NOTIFICATIONS_DESC, ALL, VIEW_ALL, LOADING, ERROR)
+- `ACTIONS` additions: `TRY_AGAIN`, `GO_HOME` — added in Phase 6.7 for ErrorBoundary
+- `NAV` additions: `SELLER` — short label for mobile bottom nav seller shortcut (Phase 6.6)
 
 ---
 

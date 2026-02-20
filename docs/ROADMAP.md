@@ -690,3 +690,71 @@ NEXT_PUBLIC_ALGOLIA_INDEX_NAME=
 WHATSAPP_API_KEY=
 WHATSAPP_PHONE_ID=
 ```
+
+---
+
+## Phase 7 — Production Hardening & Quality
+
+**Goal**: Close remaining gaps before public launch — test coverage, performance, and the high-priority `TODO (Future)` items catalogued in `docs/TECH_DEBT.md`.
+
+**Tracker:**
+
+| Sub-phase | Task                                                                    | Status           |
+| --------- | ----------------------------------------------------------------------- | ---------------- |
+| 7.1       | Test coverage sweep — untested hooks / utils / repositories             | Not Started      |
+| 7.2       | Performance audit — bundle analysis, image optimisation, code splitting | Not Started      |
+| 7.3       | Purchase verification gate for reviews                                  | Not Started      |
+| 7.4       | Seller email verification required before listing products              | Not Started      |
+| 7.5       | Status transition validation (draftpublished; block invalid moves)      | Not Started      |
+| 7.6       | Audit log for admin site-settings changes                               | Not Started      |
+| 7.7       | Admin notification on new product submitted for approval                | Not Started      |
+| 7.8       | SEO slug generation for products and FAQs                               | Not Started      |
+| 7.9       | 6.5 PWA icons — unblock when design assets provided                     | Blocked (design) |
+
+---
+
+### Phase 7.1 — Test Coverage Sweep
+
+**Goal**: Every exported hook / util / helper / repository function has at minimum a happy-path test.
+
+**Scope**:
+
+- Diff `src/**/__tests__/` against exported symbols in `@/hooks`, `@/utils`, `@/helpers`, `@/repositories`
+- Add missing tests for untested exports
+- Target: 80% statement coverage on `src/utils/`, `src/helpers/`, `src/hooks/`
+
+---
+
+### Phase 7.2 — Performance Audit
+
+**Goal**: Reduce initial page-load time and bundle size before public launch.
+
+**Scope**:
+
+- `next build` + `@next/bundle-analyzer` — identify large chunks
+- Dynamic `import()` for heavy below-fold sections (carousel, top categories, homepage widget rows)
+- Audit all `<Image>` usage — correct `sizes`, `priority`, and `loading` attributes
+- Verify font preloading and critical CSS paths
+
+---
+
+### Phase 7.3–7.8 — Tech Debt Execution
+
+See `docs/TECH_DEBT.md` **High Impact** and **Medium Impact** tables for full descriptions.
+
+---
+
+## Phase 8 — Internationalisation (i18n)
+
+**Goal**: Multi-language support (en + hi at minimum).
+
+**Prerequisite**: All UI text already uses `UI_LABELS.*` — constants become the translation key source.
+
+**Scope** (planned):
+
+- Integrate `next-intl` (App Router native)
+- Map all `UI_LABELS.*` keys to translation JSON files
+- Locale-aware routing (`/en/`, `/hi/`)
+- Update Zod schemas to use locale-aware error messages (`schemas.ts:797,812`)
+
+**Status**: Not Started — after Phase 7

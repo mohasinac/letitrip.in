@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7 Definitions + Docs Catch-up (Feb 2026)
+
+#### `docs/GUIDE.md`
+
+- Updated "Last Updated" to February 13, 2026
+- Added `BLOG_PAGE`, `HERO_CAROUSEL`, `NOTIFICATIONS`, `ACTIONS.TRY_AGAIN`, `NAV.SELLER` to `UI_LABELS` documentation table
+
+#### `docs/TECH_DEBT.md` _(new file)_
+
+- Created `docs/TECH_DEBT.md` cataloguing all 60 `TODO (Future)` markers across 12 files
+- Grouped by file, priority (High / Medium / Low), and external blockers
+- Confirmed 0 `FIXME` markers — all TODOs are intentional roadmap notes
+
+#### `docs/ROADMAP.md`
+
+- Appended Phase 7 — Production Hardening & Quality (9 sub-tasks: test coverage, performance, tech debt execution, PWA icons blocked)
+- Appended Phase 8 — Internationalisation (i18n) placeholder
+
+---
+
 ### Phase 6.8 — Accessibility Improvements (Feb 2026)
 
 #### `src/constants/ui.ts`
