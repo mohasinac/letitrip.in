@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.10 — Complete Sieve Migration: All Routes & Admin UI (Jan 2026)
+
+#### What was implemented
+
+**New API Route**
+
+- `src/app/api/admin/reviews/route.ts` (NEW) — Admin-only endpoint that lists **all** reviews across all products without requiring `productId`. Uses `applySieveToArray` with fields: `id`, `productId`, `productTitle`, `userId`, `userName`, `userEmail`, `status`, `rating`, `verified`, `helpfulCount`, `createdAt`.
+
+**API Routes Migrated to Sieve**
+
+- `src/app/api/admin/coupons/route.ts` — GET now accepts `filters`/`sorts`/`page`/`pageSize`. Fields: `code`, `name`, `type`, `validity.isActive`, `discount.value`, `usage.currentUsage`, `createdAt`.
+- `src/app/api/admin/blog/route.ts` — GET uses Sieve. Stat counts (`published`/`drafts`/`featured`) are computed from the full unfiltered dataset before Sieve so stat cards are always accurate. Returns `meta.filteredTotal` alongside `meta.total`.
+- `src/app/api/admin/payouts/route.ts` — GET uses Sieve. Summary totals computed from full dataset. No longer switches between `findByStatus` / `findAll`.
+- `src/app/api/faqs/route.ts` — GET replaces manual sort + filter loops with Sieve. Tags array membership and full-text search remain as pre-filters (Sieve DSL can't express them). Legacy params (`category`, `priority`, `showOnHomepage`) are mapped to Sieve filter strings internally for backward compatibility. Callers may also pass a `filters=` Sieve DSL param directly.
+
+**Constants Updated**
+
+- `src/constants/api-endpoints.ts` — Added `ADMIN.REVIEWS` (`/api/admin/reviews`) and `ADMIN.REVIEW_BY_ID` (reuses public review route for PATCH/DELETE).
+
+**Admin UI Pages Fixed**
+
+- `src/app/admin/reviews/[[...action]]/page.tsx` — Was silently broken: sent non-Sieve params to `/api/reviews` (public route requiring `productId`) → always 400. Now uses `API_ENDPOINTS.ADMIN.REVIEWS` with a Sieve filter string built from `statusFilter`/`ratingFilter`/`searchTerm`. **Rule 17 fixes**: `confirm()` replaced with `ConfirmDeleteModal`; `prompt()` replaced with `Modal` + controlled-textarea `rejectModal` state.
+- `src/app/admin/blog/[[...action]]/page.tsx` — Removed client-side `filteredPosts` `useMemo`; instead passes `?filters=status==<statusFilter>` Sieve param to the API. `queryKey` now includes `statusFilter`.
+- `src/app/admin/payouts/page.tsx` — Replaced `?status=<value>` raw param with `?filters=status==<value>` Sieve DSL.
+- `src/app/admin/users/[[...action]]/page.tsx` — Replaced broken `URLSearchParams({ disabled, role, search })` (silently ignored by route) with a proper Sieve filter string that maps `activeTab`/`roleFilter`/`searchTerm` — search now actually works.
+
+---
+
 ### Phase 7.9 — Codebase Audit: Schema Hardening, Notifications & Background Integration (Feb 2026)
 
 #### What was implemented
