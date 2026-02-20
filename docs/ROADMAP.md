@@ -363,7 +363,7 @@
 | ~~Analytics~~             | ✅ Seller analytics (`/seller/analytics`) + Admin charts (`/admin/analytics`) using recharts AreaChart/BarChart; API routes `/api/admin/analytics` + `/api/seller/analytics`                                                   |
 | ~~Payout system~~         | ✅ `PayoutDocument` schema + `payoutRepository`; `GET/POST /api/seller/payouts` (earnings calc + request); `GET /api/admin/payouts` + `PATCH /api/admin/payouts/[id]`; `/seller/payouts` page with stat cards + form + history |
 | ~~PWA~~                   | ✅ `@serwist/next` service worker; `src/app/manifest.ts` (name, short_name, start_url, standalone, theme_color #3b82f6, SVG icon); `viewport` export in root layout (themeColor light/dark); SW disabled in dev                |
-| UI Polish (Phase 6)       | 🔴 In progress — admin payouts UI, fat page decomposition (10 pages), THEME_CONSTANTS audit, empty states, skeletons, mobile polish, dark mode sweep, a11y                                                                     |
+| UI Polish (Phase 6)       | ✅ Complete — all sub-phases done (6.1–6.8, 6.5 blocked on design assets)                                                                                                                                                      |
 
 ---
 
