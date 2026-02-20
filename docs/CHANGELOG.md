@@ -9,6 +9,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.7 — Algolia Search Integration (Feb 2026)
+
+#### `src/lib/search/algolia.ts` (new)
+
+- Created Algolia integration module with lazy singleton admin client.
+- `isAlgoliaConfigured()` — returns `true` when `ALGOLIA_APP_ID` + `ALGOLIA_ADMIN_API_KEY` env vars are present.
+- `getAlgoliaAdminClient()` — lazy `algoliasearch(appId, adminKey)` singleton.
+- `productToAlgoliaRecord(product)` — serialises `ProductDocument` to flat Algolia record (dates as epoch ms).
+- `indexProducts(products[])` — bulk `saveObjects` to `ALGOLIA_INDEX_NAME` index.
+- `deleteProductFromIndex(productId)` — removes single object from index.
+- `algoliaSearch(params)` — full-text search with `status:published` + category facets + price numeric filters; returns 1-indexed paginated result.
+- Exports `ALGOLIA_INDEX_NAME`, `AlgoliaProductRecord`, `AlgoliaSearchParams`, `AlgoliaSearchResult` types.
+
+#### `src/app/api/admin/algolia/sync/route.ts` (new)
+
+- `POST /api/admin/algolia/sync` — admin-only bulk sync of all published products to Algolia.
+- Guards against missing env vars; throws `ValidationError` with `ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED`.
+- Returns `{ indexed, index, skipped }` on success.
+
+#### `src/app/api/search/route.ts` (updated)
+
+- Added Algolia fast-path: when `isAlgoliaConfigured()` is true, delegates to `algoliaSearch()` instead of in-memory Sieve scan.
+- Falls back to existing in-memory full-text + Sieve approach when Algolia is not configured.
+- Response `meta` now includes `backend: "algolia" | "in-memory"` for observability.
+- Updated JSDoc.
+
+#### `src/constants/api-endpoints.ts` (updated)
+
+- Added `API_ENDPOINTS.ADMIN.ALGOLIA_SYNC = "/api/admin/algolia/sync"`.
+
+#### `src/constants/messages.ts` (updated)
+
+- Added `ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED`
+- Added `ERROR_MESSAGES.ADMIN.ALGOLIA_SYNC_FAILED`
+- Added `SUCCESS_MESSAGES.ADMIN.ALGOLIA_SYNCED`
+
+**Required env vars** (add to `.env.local` and Vercel):
+
+```
+ALGOLIA_APP_ID=
+ALGOLIA_ADMIN_API_KEY=
+NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=
+ALGOLIA_INDEX_NAME=products
+```
+
+---
+
 ### Phase 5.6 — Real-time Bid Updates (Feb 2026)
 
 #### `src/hooks/useRealtimeBids.ts` (new)

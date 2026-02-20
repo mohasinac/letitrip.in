@@ -101,6 +101,8 @@ export const API_ENDPOINTS = {
     /** Admin blog endpoints */
     BLOG: "/api/admin/blog", // GET/POST - List/create posts
     BLOG_BY_ID: (id: string) => `/api/admin/blog/${id}`, // GET/PATCH/DELETE
+    /** ✅ Algolia sync endpoint */
+    ALGOLIA_SYNC: "/api/admin/algolia/sync", // POST - Bulk sync products to Algolia
   },
 
   // Product endpoints ✅ All routes exist

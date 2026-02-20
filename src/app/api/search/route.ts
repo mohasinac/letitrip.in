@@ -3,9 +3,12 @@
  *
  * GET /api/search?q=...&category=...&minPrice=...&maxPrice=...&sort=...&page=...&pageSize=...
  *
- * Performs in-memory full-text search across published products.
- * Phase 2 approach: fetch all published products, apply text + filter matching in-memory.
- * Phase 3: Replace with Algolia / Typesense for scalable full-text search.
+ * When Algolia env vars are configured (ALGOLIA_APP_ID + ALGOLIA_ADMIN_API_KEY),
+ * delegates to Algolia for scalable full-text search.
+ * Falls back to in-memory Sieve-based search otherwise (Phase 2 approach).
+ *
+ * Response meta includes `backend: "algolia" | "in-memory"` so callers can
+ * detect which engine served the request.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -19,6 +22,7 @@ import {
 } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { isAlgoliaConfigured, algoliaSearch } from "@/lib/search/algolia";
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,6 +37,45 @@ export async function GET(request: NextRequest) {
       min: 1,
       max: 100,
     });
+
+    // ── Algolia path ─────────────────────────────────────────────────────────
+    if (isAlgoliaConfigured()) {
+      const algoliaResult = await algoliaSearch({
+        q,
+        category,
+        minPrice,
+        maxPrice,
+        sort,
+        page,
+        pageSize,
+      });
+
+      serverLogger.info("Search completed (Algolia)", {
+        q: q || "(empty)",
+        category: category || "(all)",
+        total: algoliaResult.total,
+        page: algoliaResult.page,
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: algoliaResult.items,
+          meta: {
+            q,
+            page: algoliaResult.page,
+            limit: algoliaResult.pageSize,
+            total: algoliaResult.total,
+            totalPages: algoliaResult.totalPages,
+            hasMore: algoliaResult.hasMore,
+            backend: "algolia" as const,
+          },
+        },
+        { status: 200 },
+      );
+    }
+
+    // ── In-memory fallback path ───────────────────────────────────────────────
 
     // Fetch all products from repository
     const allProducts = await productRepository.findAll();
@@ -105,7 +148,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    serverLogger.info("Search completed", {
+    serverLogger.info("Search completed (in-memory)", {
       q: q || "(empty)",
       category: category || "(all)",
       minPrice,
@@ -125,6 +168,7 @@ export async function GET(request: NextRequest) {
           total: sieveResult.total,
           totalPages: sieveResult.totalPages,
           hasMore: sieveResult.hasMore,
+          backend: "in-memory" as const,
         },
       },
       { status: 200 },
