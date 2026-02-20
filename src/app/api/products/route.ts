@@ -168,7 +168,6 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Creates product via productRepository.create() with status='draft'
  * Ã¢Å“â€¦ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
- * TODO (Future): Generate SEO-friendly slug/ID for product URLs
  * ✅ Generates SEO-friendly slug from title (e.g. "vintage-camera-1700000000000")
  * ✅ Sends fire-and-forget admin notification email on successful submission
  */

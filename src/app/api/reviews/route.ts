@@ -15,7 +15,11 @@
  */
 
 import { NextRequest } from "next/server";
-import { reviewRepository, orderRepository } from "@/repositories";
+import {
+  reviewRepository,
+  orderRepository,
+  productRepository,
+} from "@/repositories";
 import { applySieveToArray } from "@/helpers";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
@@ -34,6 +38,8 @@ import {
 } from "@/lib/validation/schemas";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
+import { sendNewReviewNotificationEmail } from "@/lib/email";
+import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { NextResponse } from "next/server";
 
 /**
@@ -215,7 +221,7 @@ export async function GET(request: NextRequest) {
  * Ã¢Å"â€¦ Prevents duplicate reviews (checks existing reviews for same userId+productId)
  * Ã¢Å"â€¦ Sets verified=true on confirmed purchases — status defaults to 'pending' for moderation
  * Ã¢Å"â€¦ Returns created review with 201 status
- * TODO (Future): Send notification to product seller and admins on new review
+ * TODO (Future): Send notification to product seller and admins on new review — ✅ Done
  */
 export async function POST(request: NextRequest) {
   try {
@@ -265,6 +271,29 @@ export async function POST(request: NextRequest) {
       verified,
       status: "pending" as any, // Requires moderation before appearing publicly
     } as any);
+
+    // Fire-and-forget: notify seller + admin (do not await — keeps response fast)
+    const adminEmail =
+      process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
+    productRepository
+      .findById(validation.data.productId)
+      .then((product) => {
+        if (!product) return;
+        return sendNewReviewNotificationEmail({
+          sellerEmail: product.sellerEmail || adminEmail,
+          adminEmail,
+          reviewerName: user.displayName || "Anonymous",
+          productTitle: product.title,
+          productId: (product as any).id ?? validation.data.productId,
+          rating: validation.data.rating,
+          comment: validation.data.comment,
+        });
+      })
+      .catch((err) =>
+        serverLogger.error(ERROR_MESSAGES.API.REVIEW_NOTIFICATION_ERROR, {
+          err,
+        }),
+      );
 
     return successResponse(
       review,

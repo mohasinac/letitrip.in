@@ -3097,6 +3097,49 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 - `sendPasswordResetEmail(to, token)` - Send reset link
 - `sendWelcomeEmail(to, name)` - Send welcome email
 - `sendOrderConfirmation(to, order)` - Send order confirmation
+- `sendContactEmail(params)` - Forward contact form submission to admin
+- `sendNewProductSubmittedEmail(adminEmail, product)` - Notify admin of new product submission (fire-and-forget)
+- `sendNewReviewNotificationEmail({ sellerEmail, adminEmail, reviewerName, productTitle, productId, rating, comment })` - Notify seller + admin when a review is submitted; deduplicates identical addresses (Phase 7.9)
+- `sendSiteSettingsChangedEmail({ adminEmails, changedByEmail, changedFields })` - Notify all admin emails when site settings are changed via the PATCH API (Phase 7.9)
+
+---
+
+### Validation Schemas (`src/lib/validation/schemas.ts`)
+
+**Purpose**: Central Zod schema library — validates all API request bodies and shared data shapes.
+
+**URL Schemas**:
+
+- `urlSchema` — generic URL, max 2048 chars. No domain restriction.
+- `mediaUrlSchema` — URL restricted to approved CDN domains (`firebasestorage.googleapis.com`, `storage.googleapis.com`, `res.cloudinary.com`, `images.unsplash.com`, `cdn.letitrip.in`). Use for product images/videos.
+
+**Key exported schemas** (all accept the described shape via `safeParse`):
+
+- `productCreateSchema` — title/description prohibited-words check + auction validation
+- `productUpdateSchema` — partial of base; status transitions enforced separately in route
+- `videoSchema` — url (must be `.mp4/.webm/.ogg/.mov/.m4v`), thumbnail, duration, trim range
+- `carouselCreateSchema` — includes `.refine()` for 9×9 grid-card overlap detection
+- `homepageSectionCreateSchema` — includes `.refine()` for `featured`/`trending` `maxItems > 0`
+- `cropDataSchema` — includes `.refine()` for aspect-ratio tolerance (2%)
+- `reviewCreateSchema`, `reviewUpdateSchema`
+- `categoryCreateSchema`, `categoryUpdateSchema`
+- `faqCreateSchema`, `faqUpdateSchema`
+- `homepageSectionsReorderSchema`, `carouselReorderSchema`
+- `siteSettingsUpdateSchema`
+- `userAddressCreateSchema`, `userAddressUpdateSchema`
+- `cropDataSchema`, `trimDataSchema`, `thumbnailDataSchema`
+
+**Shared primitives**:
+
+- `objectIdSchema` — non-empty string max 128
+- `dateStringSchema` — ISO 8601 string
+- `paginationSchema` — `page`, `limit` with coerced integers
+- `sieveQuerySchema` — `filters`, `sorts`, `page`, `pageSize`
+
+**Exported helpers**:
+
+- `validateRequestBody(schema, body)` — wraps `safeParse`, returns `{ success, data }` or `{ success, errors }`
+- `formatZodErrors(errors)` — formats `ZodError.format()` for API responses
 
 ---
 

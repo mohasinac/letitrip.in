@@ -39,11 +39,39 @@ export const paginationQuerySchema = z.object({
 export const objectIdSchema = z.string().regex(/^[a-z0-9-]+$/);
 
 /**
- * URL validation
- * TODO (Future): Add domain whitelist for security Ã¢â‚¬â€ restrict to approved CDN domains
+ * URL validation — generic (no domain restriction).
+ * For media/CDN URLs use `mediaUrlSchema` which enforces the approved-domain whitelist.
  */
 export const urlSchema = z.string().url().max(2048);
+/**
+ * Media URL validation — restricts to approved CDN/storage domains.
+ * Use this for product images, videos, and avatars uploaded via /api/media/upload.
+ */
+const APPROVED_MEDIA_DOMAINS = [
+  "firebasestorage.googleapis.com",
+  "storage.googleapis.com",
+  "res.cloudinary.com",
+  "images.unsplash.com",
+  "cdn.letitrip.in",
+];
 
+export const mediaUrlSchema = z
+  .string()
+  .url()
+  .max(2048)
+  .refine(
+    (url) => {
+      try {
+        const { hostname } = new URL(url);
+        return APPROVED_MEDIA_DOMAINS.some(
+          (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+        );
+      } catch {
+        return false;
+      }
+    },
+    { message: "Image or video URL must be hosted on an approved CDN domain" },
+  );
 /**
  * Date string validation (ISO 8601)
  */
@@ -166,13 +194,20 @@ const productSpecificationSchema = z.object({
 
 /**
  * Video metadata schema (reusable)
- * Validates URL, duration, and trim ranges
- * TODO (Future): Add video format validation (mp4/webm/ogg whitelist)
- * TODO (Future): Add resolution validation (min width/height requirements)
+ * Validates URL, duration, and trim ranges.
+ * Video format: URL must end with a recognised container extension.
  */
+const ALLOWED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg", ".mov", ".m4v"];
+
 const videoSchema = z
   .object({
-    url: urlSchema,
+    url: urlSchema.refine(
+      (u) =>
+        ALLOWED_VIDEO_EXTENSIONS.some((ext) =>
+          u.toLowerCase().split("?")[0].endsWith(ext),
+        ),
+      { message: "Video must be mp4, webm, ogg, mov, or m4v format" },
+    ),
     thumbnailUrl: urlSchema,
     duration: z.number().positive().max(600), // Max 10 minutes
     trimStart: z.number().min(0).optional(),
@@ -220,11 +255,32 @@ export const productListQuerySchema = paginationQuerySchema
   );
 
 /**
+ * Prohibited words/content that cannot appear in product titles or descriptions.
+ * Extend this list as the moderation policy grows.
+ */
+const PROHIBITED_WORDS = ["scam", "fraud", "counterfeit", "replica", "illegal"];
+
+const containsProhibited = (text: string) =>
+  PROHIBITED_WORDS.some((word) => text.toLowerCase().includes(word));
+
+/**
  * Base product schema (without refinements)
  */
 const productBaseSchema = z.object({
-  title: z.string().min(3).max(200),
-  description: z.string().min(20).max(5000),
+  title: z
+    .string()
+    .min(3)
+    .max(200)
+    .refine((t) => !containsProhibited(t), {
+      message: "Title contains prohibited content",
+    }),
+  description: z
+    .string()
+    .min(20)
+    .max(5000)
+    .refine((d) => !containsProhibited(d), {
+      message: "Description contains prohibited content",
+    }),
   category: z.string().min(1).max(100),
   subcategory: z.string().min(1).max(100).optional(),
   brand: z.string().min(1).max(100).optional(),
@@ -250,8 +306,7 @@ const productBaseSchema = z.object({
 /**
  * Product creation validation
  * Auth: seller/moderator/admin role required (enforced in API route via requireRoleFromRequest)
- * TODO (Future): Add prohibited words/content filter for titles and descriptions
- * TODO (Future): Require seller email verification before listing products
+ * Seller email verification: enforced in API route via requireEmailVerified — ✅ Done (Phase 7.4)
  */
 export const productCreateSchema = productBaseSchema
   .refine(
@@ -266,7 +321,7 @@ export const productCreateSchema = productBaseSchema
 
 /**
  * Product update validation
- * TODO (Future): Add status transition validation Ã¢â‚¬â€ enforce valid transitions (e.g. draftÃ¢â€ â€™published, not soldÃ¢â€ â€™draft)
+ * Status transition logic: enforced in PATCH route via PRODUCT_STATUS_TRANSITIONS map — ✅ Done (Phase 7.5)
  */
 export const productUpdateSchema = productBaseSchema.partial().extend({
   status: z
@@ -448,8 +503,8 @@ export const carouselListQuerySchema = z.object({
 
 /**
  * Grid card schema for carousel
- * NOTE: Grid validation (row/col 1-9, width/height) is enforced per card
- * TODO (Future): Add cross-card overlap detection Ã¢â‚¬â€ requires validating all cards together in carouselCreateSchema
+ * NOTE: Grid validation (row/col 1-9, width/height) is enforced per card.
+ * Cross-card overlap detection is handled in `carouselCreateSchema` via a `.refine()` — ✅ Done
  */
 const gridCardSchema = z.object({
   gridPosition: z.object({
@@ -493,7 +548,8 @@ const gridCardSchema = z.object({
 /**
  * Carousel creation validation
  * NOTE: Active slides count limit (max 5) is enforced at the API route level (not in schema)
- * as it requires a DB query to count current active slides
+ * as it requires a DB query to count current active slides.
+ * Grid overlap detection: validates that no two cards occupy overlapping cells.
  */
 export const carouselCreateSchema = z
   .object({
@@ -513,10 +569,10 @@ export const carouselCreateSchema = z
       })
       .optional(),
     gridCards: z.array(gridCardSchema).min(1).max(20),
-    startDate: dateStringSchema.optional(), // Scheduling support
+    startDate: dateStringSchema.optional(),
     endDate: dateStringSchema.optional(),
     template: z.string().max(100).optional(),
-    duplicateFrom: objectIdSchema.optional(), // Duplication support
+    duplicateFrom: objectIdSchema.optional(),
   })
   .refine(
     (data) =>
@@ -524,6 +580,28 @@ export const carouselCreateSchema = z
       !data.startDate ||
       new Date(data.endDate) > new Date(data.startDate),
     { message: "End date must be after start date" },
+  )
+  .refine(
+    (data) => {
+      const cards = data.gridCards;
+      for (let i = 0; i < cards.length; i++) {
+        for (let j = i + 1; j < cards.length; j++) {
+          const a = cards[i];
+          const b = cards[j];
+          const aRowEnd = a.gridPosition.row + a.height - 1;
+          const aColEnd = a.gridPosition.col + a.width - 1;
+          const bRowEnd = b.gridPosition.row + b.height - 1;
+          const bColEnd = b.gridPosition.col + b.width - 1;
+          const rowOverlap =
+            a.gridPosition.row <= bRowEnd && aRowEnd >= b.gridPosition.row;
+          const colOverlap =
+            a.gridPosition.col <= bColEnd && aColEnd >= b.gridPosition.col;
+          if (rowOverlap && colOverlap) return false;
+        }
+      }
+      return true;
+    },
+    { message: "Carousel grid cards must not overlap in the 9×9 grid" },
   );
 
 /**
@@ -560,24 +638,41 @@ export const homepageSectionsListQuerySchema = z.object({
 });
 
 /**
- * Homepage section creation validation
- * TODO (Future): Add type-specific config validation Ã¢â‚¬â€ enforce different config shapes per section type
- * (e.g. 'featured' requires productIds, 'welcome' requires headline/subtitle)
+ * Homepage section creation validation.
+ * Type-specific config rules:
+ *   - 'featured' and 'trending': config.maxItems must be a positive integer when provided
+ *   - 'welcome': config.layout must be 'grid', 'carousel', or 'list' when provided
  */
-export const homepageSectionCreateSchema = z.object({
-  type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
-  title: z.string().min(1).max(200),
-  order: z.number().int().nonnegative().optional(),
-  enabled: z.boolean().default(true),
-  config: z
-    .object({
-      maxItems: z.number().int().positive().optional(),
-      layout: z.enum(["grid", "carousel", "list"]).optional(),
-      columns: z.number().int().min(1).max(12).optional(),
-      template: z.string().max(100).optional(),
-    })
-    .optional(),
-});
+export const homepageSectionCreateSchema = z
+  .object({
+    type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
+    title: z.string().min(1).max(200),
+    order: z.number().int().nonnegative().optional(),
+    enabled: z.boolean().default(true),
+    config: z
+      .object({
+        maxItems: z.number().int().positive().optional(),
+        layout: z.enum(["grid", "carousel", "list"]).optional(),
+        columns: z.number().int().min(1).max(12).optional(),
+        template: z.string().max(100).optional(),
+      })
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      if (
+        (data.type === "featured" || data.type === "trending") &&
+        data.config?.maxItems !== undefined
+      ) {
+        return data.config.maxItems > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        "Featured/trending sections require a positive maxItems in config",
+    },
+  );
 
 /**
  * Homepage section update validation
@@ -714,25 +809,37 @@ export const bidSchema = z
 // ============================================
 
 /**
- * Image crop data validation
- * NOTE: aspectRatio format is validated (e.g. "16:9", "1:1")
- * TODO (Future): Add aspect ratio enforcement Ã¢â‚¬â€ verify width/height match the declared aspectRatio value
+ * Image crop data validation.
+ * aspectRatio format is validated (e.g. "16:9", "1:1").
+ * Aspect ratio enforcement: when aspectRatio is provided the width/height must match within 2% tolerance.
  */
-export const cropDataSchema = z.object({
-  sourceUrl: z.string().url(),
-  x: z.number().nonnegative(),
-  y: z.number().nonnegative(),
-  width: z.number().positive(),
-  height: z.number().positive(),
-  rotation: z.number().min(0).max(360).optional(),
-  aspectRatio: z
-    .string()
-    .regex(/^\d+:\d+$/)
-    .optional(), // e.g., "1:1", "16:9"
-  outputFolder: z.string().optional(),
-  outputFormat: z.enum(["jpeg", "png", "webp"]).optional(),
-  quality: z.number().min(1).max(100).optional(),
-});
+export const cropDataSchema = z
+  .object({
+    sourceUrl: z.string().url(),
+    x: z.number().nonnegative(),
+    y: z.number().nonnegative(),
+    width: z.number().positive(),
+    height: z.number().positive(),
+    rotation: z.number().min(0).max(360).optional(),
+    aspectRatio: z
+      .string()
+      .regex(/^\d+:\d+$/)
+      .optional(), // e.g., "1:1", "16:9"
+    outputFolder: z.string().optional(),
+    outputFormat: z.enum(["jpeg", "png", "webp"]).optional(),
+    quality: z.number().min(1).max(100).optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.aspectRatio) return true;
+      const [wPart, hPart] = data.aspectRatio.split(":").map(Number);
+      if (!wPart || !hPart) return true;
+      const expectedRatio = wPart / hPart;
+      const actualRatio = data.width / data.height;
+      return Math.abs(actualRatio - expectedRatio) / expectedRatio < 0.02; // 2% tolerance
+    },
+    { message: "Crop dimensions do not match the declared aspect ratio" },
+  );
 
 /**
  * Video trim data validation

@@ -32,6 +32,15 @@ jest.mock("@/repositories", () => ({
   orderRepository: {
     hasUserPurchased: (...args: unknown[]) => mockHasUserPurchased(...args),
   },
+  productRepository: {
+    findById: jest.fn().mockResolvedValue(null),
+  },
+}));
+
+jest.mock("@/lib/email", () => ({
+  sendNewReviewNotificationEmail: jest.fn().mockResolvedValue(undefined),
+  sendNewProductSubmittedEmail: jest.fn().mockResolvedValue(undefined),
+  sendSiteSettingsChangedEmail: jest.fn().mockResolvedValue(undefined),
 }));
 
 const mockRequireAuthFromRequest = jest.fn();

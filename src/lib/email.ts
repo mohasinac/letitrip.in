@@ -749,3 +749,209 @@ export async function sendNewProductSubmittedEmail(
     return { success: false };
   }
 }
+
+/**
+ * Send notification email when a new review is submitted on a product.
+ * Fires to the product's seller and to the admin inbox.
+ */
+export async function sendNewReviewNotificationEmail(params: {
+  sellerEmail: string;
+  adminEmail: string;
+  reviewerName: string;
+  productTitle: string;
+  productId: string;
+  rating: number;
+  comment: string;
+}) {
+  const {
+    sellerEmail,
+    adminEmail,
+    reviewerName,
+    productTitle,
+    productId,
+    rating,
+    comment,
+  } = params;
+
+  const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+  const reviewUrl = `${SITE_URL}/admin/reviews`;
+  const recipients = [...new Set([sellerEmail, adminEmail])]; // deduplicate if same
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: recipients,
+      subject: `New review on "${productTitle}" — ${rating}/5 stars`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+        <body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#f5f5f5;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:40px 0;">
+            <tr><td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);padding:40px;text-align:center;">
+                    <p style="font-size:48px;margin:0 0 12px;">⭐</p>
+                    <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:600;">New Review Submitted</h1>
+                    <p style="color:#fef3c7;margin:8px 0 0;font-size:14px;">Pending moderation — review and approve</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:40px;">
+                    <p style="color:#333;font-size:16px;line-height:1.6;margin:0 0 20px;">
+                      <strong>${reviewerName}</strong> has left a new review on <strong>${productTitle}</strong>.
+                    </p>
+                    <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background:#f8f9fa;border-radius:8px;margin:0 0 24px;">
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;width:40%;">Product</td>
+                        <td style="color:#111827;font-size:14px;font-weight:600;">${productTitle}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Product ID</td>
+                        <td style="color:#111827;font-size:14px;font-family:monospace;">${productId}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Rating</td>
+                        <td style="color:#f59e0b;font-size:18px;">${stars} (${rating}/5)</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Reviewer</td>
+                        <td style="color:#111827;font-size:14px;">${reviewerName}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;vertical-align:top;">Comment</td>
+                        <td style="color:#111827;font-size:14px;line-height:1.6;">${comment.slice(0, 300)}${comment.length > 300 ? "…" : ""}</td>
+                      </tr>
+                    </table>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+                      <tr><td align="center">
+                        <a href="${reviewUrl}" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#ffffff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:600;">
+                          Review in Admin Panel
+                        </a>
+                      </td></tr>
+                    </table>
+                    <p style="color:#9ca3af;font-size:13px;line-height:1.6;margin:0;">This review is pending moderation and is not yet publicly visible.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
+                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+        </body>
+        </html>
+      `,
+      text: `New review on "${productTitle}"\n\nRating: ${rating}/5\nReviewer: ${reviewerName}\n\nComment:\n${comment}\n\nReview at: ${reviewUrl}`,
+    });
+
+    if (error) {
+      serverLogger.error("Failed to send review notification email", {
+        error,
+        productId,
+      });
+    }
+
+    return { success: !error, data };
+  } catch (error) {
+    serverLogger.error("Error sending review notification email", {
+      error,
+      productId,
+    });
+    return { success: false };
+  }
+}
+
+/**
+ * Send notification email to all admin addresses when site settings are changed.
+ */
+export async function sendSiteSettingsChangedEmail(params: {
+  adminEmails: string[];
+  changedByEmail: string;
+  changedFields: string[];
+}) {
+  const { adminEmails, changedByEmail, changedFields } = params;
+
+  if (adminEmails.length === 0) return { success: false };
+
+  const settingsUrl = `${SITE_URL}/admin/site-settings`;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: adminEmails,
+      subject: `Site settings updated by ${changedByEmail}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+        <body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#f5f5f5;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:40px 0;">
+            <tr><td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);padding:40px;text-align:center;">
+                    <p style="font-size:48px;margin:0 0 12px;">⚙️</p>
+                    <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:600;">Site Settings Changed</h1>
+                    <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">${new Date().toUTCString()}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:40px;">
+                    <p style="color:#333;font-size:16px;line-height:1.6;margin:0 0 20px;">
+                      <strong>${changedByEmail}</strong> has updated the following site settings:
+                    </p>
+                    <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background:#f8f9fa;border-radius:8px;margin:0 0 24px;">
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Changed Fields</td>
+                        <td style="color:#111827;font-size:14px;">${changedFields.map((f) => `<code style="background:#e5e7eb;padding:2px 6px;border-radius:3px;">${f}</code>`).join("&ensp;")}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Changed By</td>
+                        <td style="color:#111827;font-size:14px;">${changedByEmail}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Timestamp</td>
+                        <td style="color:#111827;font-size:14px;">${new Date().toUTCString()}</td>
+                      </tr>
+                    </table>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+                      <tr><td align="center">
+                        <a href="${settingsUrl}" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#ffffff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:600;">
+                          View Settings
+                        </a>
+                      </td></tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
+                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+        </body>
+        </html>
+      `,
+      text: `Site settings updated by ${changedByEmail}\n\nChanged fields: ${changedFields.join(", ")}\n\nView at: ${settingsUrl}`,
+    });
+
+    if (error) {
+      serverLogger.error("Failed to send settings change notification email", {
+        error,
+      });
+    }
+
+    return { success: !error, data };
+  } catch (error) {
+    serverLogger.error("Error sending settings change notification email", {
+      error,
+    });
+    return { success: false };
+  }
+}

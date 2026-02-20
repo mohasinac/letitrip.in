@@ -385,7 +385,10 @@ export const ERROR_MESSAGES = {
     SITE_SETTINGS_GET_ERROR: "GET /api/site-settings error:",
     SITE_SETTINGS_PATCH_ERROR: "PATCH /api/site-settings error:",
     SITE_SETTINGS_AUDIT_LOG: "AUDIT: Admin updated site settings",
+    SETTINGS_CHANGE_NOTIFICATION_ERROR:
+      "Failed to send settings change notification email",
     REVIEWS_GET_ERROR: "GET /api/reviews error:",
+    REVIEW_NOTIFICATION_ERROR: "Failed to send review notification email",
     REVIEWS_POST_ERROR: "POST /api/reviews error:",
     REVIEWS_ID_GET_ERROR: "error:", // Template: `GET /api/reviews/${id} error:`
     REVIEWS_ID_PATCH_ERROR: "error:", // Template: `PATCH /api/reviews/${id} error:`

@@ -101,6 +101,12 @@ jest.mock("@/lib/server-logger", () => ({
   },
 }));
 
+jest.mock("@/lib/email", () => ({
+  sendSiteSettingsChangedEmail: jest.fn().mockResolvedValue(undefined),
+  sendNewProductSubmittedEmail: jest.fn().mockResolvedValue(undefined),
+  sendNewReviewNotificationEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { GET, PATCH } from "../site-settings/route";
 
 // ============================================

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
@@ -11,6 +11,8 @@ import Breadcrumbs from "./utility/Breadcrumbs";
 import { BackgroundRenderer } from "./utility";
 import { classNames } from "@/helpers";
 import { logger } from "@/classes";
+import { useApiQuery } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 
 /**
  * LayoutClient Component
@@ -39,29 +41,34 @@ export default function LayoutClient({
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
-  // TODO (Future): Fetch background settings from site settings API
-  // The site settings API (/api/site-settings) is implemented and returns backgroundConfig.
-  // Wire up useApiQuery(API_ENDPOINTS.SITE.SETTINGS) here when the UI design requires dynamic backgrounds.
-  const backgroundConfig = {
+  const defaultBackgroundConfig = {
     lightMode: {
       type: "color" as const,
-      value: "#f9fafb", // gray-50
-      overlay: {
-        enabled: false,
-        color: "#000000",
-        opacity: 0,
-      },
+      value: "#f9fafb",
+      overlay: { enabled: false, color: "#000000", opacity: 0 },
     },
     darkMode: {
       type: "color" as const,
-      value: "#030712", // gray-950
-      overlay: {
-        enabled: false,
-        color: "#000000",
-        opacity: 0,
-      },
+      value: "#030712",
+      overlay: { enabled: false, color: "#000000", opacity: 0 },
     },
   };
+
+  // Fetch background settings from site settings API.
+  // Falls back to site defaults when data is not yet loaded or on error.
+  const { data: siteSettings } = useApiQuery<{
+    backgroundConfig?: typeof defaultBackgroundConfig;
+  }>({
+    queryKey: ["site-settings"],
+    queryFn: () =>
+      apiClient.get<{ backgroundConfig?: typeof defaultBackgroundConfig }>(
+        API_ENDPOINTS.SITE_SETTINGS.GET,
+      ),
+    cacheTTL: 10 * 60 * 1000, // 10 minutes — site settings rarely change
+  });
+
+  const backgroundConfig =
+    siteSettings?.backgroundConfig ?? defaultBackgroundConfig;
 
   // Set sidebar default state based on screen size and user preference
   // Desktop (>= 768px): visible by default (unless user closed it)

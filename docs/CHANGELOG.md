@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.9 — Codebase Audit: Schema Hardening, Notifications & Background Integration (Feb 2026)
+
+#### What was implemented
+
+**Schema Hardening (`src/lib/validation/schemas.ts`)**
+
+- Added `mediaUrlSchema` — a new exported Zod schema that validates image/video URLs against an approved CDN domain whitelist (`firebasestorage.googleapis.com`, `storage.googleapis.com`, `res.cloudinary.com`, `images.unsplash.com`, `cdn.letitrip.in`). Use instead of bare `urlSchema` for media fields.
+- `videoSchema.url`: Added `.refine()` to enforce allowed container extensions (`.mp4`, `.webm`, `.ogg`, `.mov`, `.m4v`). Invalid video URLs now fail validation.
+- `productBaseSchema.title` / `.description`: Added `PROHIBITED_WORDS` array (`scam`, `fraud`, `counterfeit`, `replica`, `illegal`) with `.refine()` checks. Titles/descriptions containing these words are rejected at validation time.
+- `carouselCreateSchema`: Added second `.refine()` using rectangle-intersection algorithm to detect overlapping grid cards in the 9×9 grid. Returns `"Carousel grid cards must not overlap in the 9×9 grid"` on conflict.
+- `homepageSectionCreateSchema` refactored from `z.object` to `z.object().refine()` — adds type-specific config rule: `featured`/`trending` sections must have `config.maxItems > 0` when `config` is provided.
+- `cropDataSchema` refactored from `z.object` to `z.object().refine()` — enforces aspect ratio: when `aspectRatio` (e.g. `"16:9"`) is present, actual `width / height` must match within 2% tolerance.
+- Cleaned stale `TODO (Future)` comments for items now completed; `urlSchema` doc updated to reference `mediaUrlSchema`.
+
+**Review Notifications (`src/app/api/reviews/route.ts`, `src/lib/email.ts`)**
+
+- `src/lib/email.ts`: Added `sendNewReviewNotificationEmail({ sellerEmail, adminEmail, reviewerName, productTitle, productId, rating, comment })` — fires branded HTML email to seller + admin (deduplicating identical addresses) with star rating display, reviewer name, product link, and comment preview.
+- `src/constants/messages.ts`: Added `ERROR_MESSAGES.API.REVIEW_NOTIFICATION_ERROR`.
+- `src/app/api/reviews/route.ts` POST handler: fire-and-forget `sendNewReviewNotificationEmail` wired after `reviewRepository.create()`. Fetches `productTitle` and `sellerEmail` from `productRepository.findById()`.
+
+**Site-Settings ETag + Admin Notification (`src/app/api/site-settings/route.ts`, `src/lib/email.ts`)**
+
+- `src/lib/email.ts`: Added `sendSiteSettingsChangedEmail({ adminEmails, changedByEmail, changedFields })` — branded HTML digest email listing changed field names and the admin who made the change.
+- `src/constants/messages.ts`: Added `ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR`.
+- `src/app/api/site-settings/route.ts` GET handler: Computes MD5 ETag from response JSON, returns `304 Not Modified` if `If-None-Match` matches, sets `ETag` header on 200.
+- `src/app/api/site-settings/route.ts` PATCH handler: fire-and-forget `sendSiteSettingsChangedEmail` after audit log call.
+
+**LayoutClient Background Settings (`src/components/LayoutClient.tsx`)**
+
+- Replaced hard-coded `backgroundConfig` object with `useApiQuery({ queryKey: ["site-settings"], queryFn: () => apiClient.get(API_ENDPOINTS.SITE_SETTINGS.GET), cacheTTL: 10min })`. The fetched `siteSettings.backgroundConfig` is used if present; falls back to the existing defaults.
+
+**Test Fixes**
+
+- `src/app/api/__tests__/reviews.test.ts`: Added `jest.mock("@/lib/email", ...)` and `productRepository.findById: jest.fn().mockResolvedValue(null)` to prevent `Resend` construction error.
+- `src/app/api/__tests__/site-settings.test.ts`: Added `jest.mock("@/lib/email", ...)` for same reason. Both suites: 56 tests, all passing.
+
+---
+
 ### Phase 7.8 — SEO Slug Generation for Products and FAQs (Feb 2026)
 
 #### What was implemented

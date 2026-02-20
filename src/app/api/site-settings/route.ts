@@ -14,6 +14,7 @@
  */
 
 import { NextRequest } from "next/server";
+import { createHash } from "crypto";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { errorResponse, successResponse } from "@/lib/api-response";
@@ -29,6 +30,8 @@ import {
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
+import { sendSiteSettingsChangedEmail } from "@/lib/email";
+import { SCHEMA_DEFAULTS } from "@/db/schema";
 
 /**
  * GET /api/site-settings
@@ -38,7 +41,7 @@ import { serverLogger } from "@/lib/server-logger";
  * Ã¢Å“â€¦ Fetches settings via siteSettingsRepository.getSingleton()
  * Ã¢Å“â€¦ Returns public fields only for non-admin users (strips emailSettings, legalPages)
  * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
- * TODO (Future): Support ETag for conditional requests
+ * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
 export async function GET(request: NextRequest) {
@@ -75,8 +78,20 @@ export async function GET(request: NextRequest) {
     const cacheControl = isAdmin
       ? "private, no-cache"
       : "public, max-age=300, s-maxage=600, stale-while-revalidate=120";
+
+    // ETag: shallow hash of the serialised response — enables conditional GET (304 Not Modified)
+    const etag = `"${createHash("md5").update(JSON.stringify(responseData)).digest("hex")}"`;
+    const ifNoneMatch = request.headers.get("if-none-match");
+    if (ifNoneMatch === etag) {
+      return new Response(null, {
+        status: 304,
+        headers: { ETag: etag, "Cache-Control": cacheControl },
+      });
+    }
+
     const response = successResponse(responseData);
     response.headers.set("Cache-Control", cacheControl);
+    response.headers.set("ETag", etag);
     return response;
   } catch (error) {
     serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
@@ -97,7 +112,7 @@ export async function GET(request: NextRequest) {
  * Ã¢Å„â¦ Writes audit log entry via serverLogger with changed fields and admin identity
  * Ã¢Å„â¦ Returns updated settings
  * TODO (Future): Invalidate distributed caches (Redis)
- * TODO (Future): Send notification to all admins on settings change
+ * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
 export async function PATCH(request: NextRequest) {
   try {
@@ -129,6 +144,20 @@ export async function PATCH(request: NextRequest) {
       changes: validation.data,
       timestamp: new Date().toISOString(),
     });
+
+    // Fire-and-forget: notify all admins about the settings change
+    const adminEmail =
+      process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
+    sendSiteSettingsChangedEmail({
+      adminEmails: [adminEmail],
+      changedByEmail: user.email || adminEmail,
+      changedFields: Object.keys(validation.data),
+    }).catch((err) =>
+      serverLogger.error(
+        ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
+        { err },
+      ),
+    );
 
     return successResponse(
       updatedSettings,
