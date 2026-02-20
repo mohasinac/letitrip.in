@@ -22,11 +22,15 @@ import {
 const mockFindByProduct = jest.fn();
 const mockCreate = jest.fn();
 const mockApplySieveToArray = jest.fn();
+const mockHasUserPurchased = jest.fn();
 
 jest.mock("@/repositories", () => ({
   reviewRepository: {
     findByProduct: (...args: unknown[]) => mockFindByProduct(...args),
     create: (...args: unknown[]) => mockCreate(...args),
+  },
+  orderRepository: {
+    hasUserPurchased: (...args: unknown[]) => mockHasUserPurchased(...args),
   },
 }));
 
@@ -256,6 +260,7 @@ describe("Reviews API - POST /api/reviews", () => {
     jest.clearAllMocks();
     mockRequireAuthFromRequest.mockResolvedValue(mockRegularUser());
     mockFindByProduct.mockResolvedValue([]); // No existing reviews
+    mockHasUserPurchased.mockResolvedValue(true); // User has purchased by default
     mockCreate.mockResolvedValue({ id: "new-rev", rating: 5, title: "Great" });
   });
 
@@ -370,5 +375,63 @@ describe("Reviews API - POST /api/reviews", () => {
 
     expect(status).toBe(500);
     expect(body.success).toBe(false);
+  });
+
+  // ──────────────────────────────────────────
+  // Purchase verification gate (Phase 7.3)
+  // ──────────────────────────────────────────
+
+  it("returns 403 when user has not purchased the product", async () => {
+    mockHasUserPurchased.mockResolvedValue(false);
+
+    const req = buildRequest("/api/reviews", {
+      method: "POST",
+      body: { productId: "prod-1", rating: 5, title: "Great", comment: "test" },
+    });
+    const res = await POST(req);
+    const { status, body } = await parseResponse(res);
+
+    expect(status).toBe(403);
+    expect(body.success).toBe(false);
+    expect(body.error).toContain("purchase");
+  });
+
+  it("sets verified=true when user has purchased the product", async () => {
+    mockHasUserPurchased.mockResolvedValue(true);
+
+    const req = buildRequest("/api/reviews", {
+      method: "POST",
+      body: { productId: "prod-1", rating: 5, title: "Great", comment: "test" },
+    });
+    await POST(req);
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ verified: true }),
+    );
+  });
+
+  it("checks purchase against correct userId and productId", async () => {
+    const user = mockRegularUser();
+    mockRequireAuthFromRequest.mockResolvedValue(user);
+
+    const req = buildRequest("/api/reviews", {
+      method: "POST",
+      body: { productId: "prod-42", rating: 4, title: "Nice", comment: "ok" },
+    });
+    await POST(req);
+
+    expect(mockHasUserPurchased).toHaveBeenCalledWith(user.uid, "prod-42");
+  });
+
+  it("does not create a review when purchase check fails (403 blocks create)", async () => {
+    mockHasUserPurchased.mockResolvedValue(false);
+
+    const req = buildRequest("/api/reviews", {
+      method: "POST",
+      body: { productId: "prod-1", rating: 5, title: "Great", comment: "test" },
+    });
+    await POST(req);
+
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 });

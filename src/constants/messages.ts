@@ -173,6 +173,7 @@ export const ERROR_MESSAGES = {
     SUBMIT_FAILED: "Failed to submit review",
     NOT_FOUND: "Review not found",
     ALREADY_REVIEWED: "You have already reviewed this product",
+    PURCHASE_REQUIRED: "You must purchase this product before leaving a review",
     UPDATE_NOT_ALLOWED: "You do not have permission to update this review",
     DELETE_NOT_ALLOWED: "You do not have permission to delete this review",
     UPDATE_FAILED: "Failed to update review",

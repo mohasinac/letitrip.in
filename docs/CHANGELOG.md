@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.3 — Purchase Verification Gate for Reviews (Feb 2026)
+
+#### What was implemented
+
+- `src/constants/messages.ts`: Added `ERROR_MESSAGES.REVIEW.PURCHASE_REQUIRED` — `"You must purchase this product before leaving a review"`
+- `src/repositories/order.repository.ts`: New `hasUserPurchased(userId, productId)` method — queries orders with compound equality on `userId` + `productId`, returns `true` if any doc has status `confirmed`, `shipped`, or `delivered`
+- `src/app/api/reviews/route.ts` POST handler:
+  - Imports `orderRepository` alongside `reviewRepository`
+  - After duplicate-review check, calls `orderRepository.hasUserPurchased(user.uid, productId)`
+  - Returns `403` with `ERROR_MESSAGES.REVIEW.PURCHASE_REQUIRED` if user has not purchased
+  - Sets `verified: true` on the created review when purchase is confirmed (previously hard-coded `false`)
+  - Removed the two `TODO (Future)` comments for purchase verification; notification TODO remains
+- `src/app/api/__tests__/reviews.test.ts`:
+  - Added `orderRepository.hasUserPurchased` mock (`mockHasUserPurchased`)
+  - Default `beforeEach` sets `mockHasUserPurchased.mockResolvedValue(true)` so existing tests pass unchanged
+  - 4 new tests: non-purchaser → 403, purchaser → `verified: true`, correct args forwarded, 403 blocks `create`
+  - Suite: 166/166 passing, 2293 tests total
+
+---
+
 ### Phase 7.2 — Performance Audit: Bundle Analyzer, Dynamic Imports, Image Optimization (Feb 2026)
 
 #### Bundle Analysis tooling

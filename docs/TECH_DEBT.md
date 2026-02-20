@@ -81,11 +81,11 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/app/api/reviews/route.ts` — 3 items
 
-| Line | Description                                                |
-| ---- | ---------------------------------------------------------- |
-| 217  | Verify user purchased the product before allowing a review |
-| 218  | Notify seller and admins on new review submission          |
-| 247  | Enforcement point for purchase verification                |
+| Line | Description                                                                        |
+| ---- | ---------------------------------------------------------------------------------- |
+| 217  | ~~Verify user purchased the product before allowing a review~~ ✅ Done — Phase 7.3 |
+| 218  | Notify seller and admins on new review submission                                  |
+| 247  | ~~Enforcement point for purchase verification~~ ✅ Done — Phase 7.3                |
 
 ---
 
@@ -161,11 +161,11 @@ This document organises them by file and category so future phases can pick them
 
 ### High Impact (unblock real features)
 
-| Item                                     | File                       | Description           |
-| ---------------------------------------- | -------------------------- | --------------------- |
-| Purchase verification for reviews        | `api/reviews/route.ts:217` | Prevents fake reviews |
-| Seller email verification before listing | `schemas.ts:254`           | Security gate         |
-| Status transition validation             | `schemas.ts:269`           | Data integrity        |
+| Item                                     | File                       | Description           | Status              |
+| ---------------------------------------- | -------------------------- | --------------------- | ------------------- |
+| Purchase verification for reviews        | `api/reviews/route.ts:217` | Prevents fake reviews | ✅ Done — Phase 7.3 |
+| Seller email verification before listing | `schemas.ts:254`           | Security gate         | Phase 7.4           |
+| Status transition validation             | `schemas.ts:269`           | Data integrity        | Phase 7.5           |
 
 ### Medium Impact (production hardening)
 

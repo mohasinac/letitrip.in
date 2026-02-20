@@ -15,7 +15,7 @@
  */
 
 import { NextRequest } from "next/server";
-import { reviewRepository } from "@/repositories";
+import { reviewRepository, orderRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
@@ -211,10 +211,10 @@ export async function GET(request: NextRequest) {
  *
  * Ã¢Å“â€¦ Requires authentication via requireAuthFromRequest
  * Ã¢Å“â€¦ Validates body with reviewCreateSchema (Zod, includes rating 1-5 validation)
- * Ã¢Å“â€¦ Prevents duplicate reviews (checks existing reviews for same userId+productId)
- * Ã¢Å“â€¦ Status defaults to 'pending' for moderation
- * Ã¢Å“â€¦ Returns created review with 201 status
- * TODO (Future): Verify user purchased the product (requires order lookup)
+ * Ã¢Å"â€¦ Verifies user purchased the product via orderRepository.hasUserPurchased (returns 403 if not)
+ * Ã¢Å"â€¦ Prevents duplicate reviews (checks existing reviews for same userId+productId)
+ * Ã¢Å"â€¦ Sets verified=true on confirmed purchases — status defaults to 'pending' for moderation
+ * Ã¢Å"â€¦ Returns created review with 201 status
  * TODO (Future): Send notification to product seller and admins on new review
  */
 export async function POST(request: NextRequest) {
@@ -244,12 +244,17 @@ export async function POST(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.REVIEW.ALREADY_REVIEWED, 400);
     }
 
-    // TODO (Future): Verify user purchased the product
-    // const hasPurchased = await orderRepository.hasUserPurchased(
-    //   user.uid,
-    //   validation.data.productId
-    // );
-    const verified = false; // For now, set to false (implement purchase verification later)
+    // Verify user purchased the product before allowing a review
+    const hasPurchased = await orderRepository.hasUserPurchased(
+      user.uid,
+      validation.data.productId,
+    );
+
+    if (!hasPurchased) {
+      return errorResponse(ERROR_MESSAGES.REVIEW.PURCHASE_REQUIRED, 403);
+    }
+
+    const verified = true; // Purchase confirmed — mark review as verified
 
     // Create review with moderation status
     const review = await reviewRepository.create({

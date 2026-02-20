@@ -148,6 +148,33 @@ class OrderRepository extends BaseRepository<OrderDocument> {
   }
 
   /**
+   * Check whether a user has a confirmed, shipped, or delivered order
+   * for a given product. Used as the purchase verification gate for reviews.
+   *
+   * @param userId    - Firebase Auth UID of the reviewer
+   * @param productId - ID of the product being reviewed
+   * @returns true if the user has at least one qualifying order for this product
+   */
+  async hasUserPurchased(userId: string, productId: string): Promise<boolean> {
+    const purchasedStatuses = new Set<string>([
+      ORDER_FIELDS.STATUS_VALUES.CONFIRMED,
+      ORDER_FIELDS.STATUS_VALUES.SHIPPED,
+      ORDER_FIELDS.STATUS_VALUES.DELIVERED,
+    ]);
+
+    // Compound equality query — no composite index needed (two == conditions)
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where(ORDER_FIELDS.USER_ID, "==", userId)
+      .where(ORDER_FIELDS.PRODUCT_ID, "==", productId)
+      .get();
+
+    return snapshot.docs.some((doc) =>
+      purchasedStatuses.has(doc.data()[ORDER_FIELDS.STATUS] as string),
+    );
+  }
+
+  /**
    * Delete all orders by user using batch writes
    */
   async deleteByUser(userId: string): Promise<number> {
