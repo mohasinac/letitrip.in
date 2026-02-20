@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.4 — Seller Email Verification Gate for Product Listings (Feb 2026)
+
+#### What was implemented
+
+- `src/app/api/products/route.ts` POST handler:
+  - Imports `requireEmailVerified` from `@/lib/security/authorization` (already existed, just not wired up)
+  - Calls `requireEmailVerified(user)` immediately after `requireRoleFromRequest` — throws `AuthorizationError(EMAIL_NOT_VERIFIED)` (403) if seller has not verified their email
+  - Admins and moderators are unaffected (their accounts are always email-verified by policy)
+- `src/app/api/__tests__/products.test.ts`:
+  - Added `requireEmailVerified` to the `@/lib/security/authorization` mock
+  - Default `beforeEach` sets mock to no-op (email is verified)
+  - 3 new tests: unverified seller → 403, `requireEmailVerified` called on every POST, 403 blocks `create`
+  - Suite: 166/166 passing, 2296 tests total
+
+---
+
 ### Phase 7.3 — Purchase Verification Gate for Reviews (Feb 2026)
 
 #### What was implemented

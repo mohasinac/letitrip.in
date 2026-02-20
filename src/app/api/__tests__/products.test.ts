@@ -33,11 +33,14 @@ jest.mock("@/repositories", () => ({
 }));
 
 const mockRequireRoleFromRequest = jest.fn();
+const mockRequireEmailVerified = jest.fn();
 const mockApplySieveToArray = jest.fn();
 
 jest.mock("@/lib/security/authorization", () => ({
   requireRoleFromRequest: (...args: unknown[]) =>
     mockRequireRoleFromRequest(...args),
+  requireEmailVerified: (...args: unknown[]) =>
+    mockRequireEmailVerified(...args),
 }));
 
 jest.mock("@/helpers", () => ({
@@ -214,6 +217,7 @@ describe("Products API - POST /api/products", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRequireRoleFromRequest.mockResolvedValue(mockSellerUser());
+    mockRequireEmailVerified.mockImplementation(() => {}); // No-op — email verified by default
     mockCreate.mockResolvedValue({ id: "new-prod", title: "New Product" });
   });
 
@@ -327,5 +331,55 @@ describe("Products API - POST /api/products", () => {
 
     expect(status).toBe(500);
     expect(body.success).toBe(false);
+  });
+
+  // ──────────────────────────────────────────
+  // Email verification gate (Phase 7.4)
+  // ──────────────────────────────────────────
+
+  it("returns 403 when seller email is not verified", async () => {
+    const { AuthorizationError } = require("@/lib/errors");
+    mockRequireEmailVerified.mockImplementation(() => {
+      throw new AuthorizationError(
+        "Please verify your email address to continue",
+      );
+    });
+
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: { title: "New Product" },
+    });
+    const res = await POST(req);
+    const { status, body } = await parseResponse(res);
+
+    expect(status).toBe(403);
+    expect(body.success).toBe(false);
+  });
+
+  it("calls requireEmailVerified after role check", async () => {
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: { title: "New Product" },
+    });
+    await POST(req);
+
+    expect(mockRequireEmailVerified).toHaveBeenCalled();
+  });
+
+  it("does not create product when email is not verified", async () => {
+    const { AuthorizationError } = require("@/lib/errors");
+    mockRequireEmailVerified.mockImplementation(() => {
+      throw new AuthorizationError(
+        "Please verify your email address to continue",
+      );
+    });
+
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: { title: "New Product" },
+    });
+    await POST(req);
+
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 });

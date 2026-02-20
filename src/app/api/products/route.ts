@@ -26,7 +26,10 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
+import {
+  requireRoleFromRequest,
+  requireEmailVerified,
+} from "@/lib/security/authorization";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import {
   validateRequestBody,
@@ -158,8 +161,7 @@ export async function GET(request: NextRequest) {
  * - video: object (optional)
  * - ... (see ProductDocument interface)
  *
- * Ã¢Å“â€¦ Requires seller/moderator/admin authentication via requireRoleFromRequest
- * Ã¢Å“â€¦ Validates body with productCreateSchema (Zod)
+ * Ã¢Å“â€¦ Requires seller/moderator/admin authentication via requireRoleFromRequest * Ã¢Å„â¦ Requires verified email for sellers (403 EMAIL_NOT_VERIFIED if unverified) * Ã¢Å“â€¦ Validates body with productCreateSchema (Zod)
  * Ã¢Å“â€¦ Creates product via productRepository.create() with status='draft'
  * Ã¢Å“â€¦ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
@@ -174,6 +176,9 @@ export async function POST(request: NextRequest) {
       "moderator",
       "admin",
     ]);
+
+    // Sellers must verify their email before listing products
+    requireEmailVerified(user as unknown as Record<string, unknown>);
 
     // Parse and validate body
     const body = await request.json();
