@@ -50,3 +50,4 @@ export type { SectionTab } from "./SectionTabs";
 export { StatusBadge } from "./StatusBadge";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
+export { default as NotificationBell } from "./NotificationBell";

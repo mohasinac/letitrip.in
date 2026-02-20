@@ -61,3 +61,5 @@ export { newsletterRepository } from "./newsletter.repository";
 export { wishlistRepository } from "./wishlist.repository";
 export { blogRepository } from "./blog.repository";
 export type { WishlistItem } from "./wishlist.repository";
+export * from "./notification.repository";
+export { notificationRepository } from "./notification.repository";

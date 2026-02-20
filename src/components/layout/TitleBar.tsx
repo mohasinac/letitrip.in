@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
-import { AvatarDisplay } from "@/components";
+import { AvatarDisplay, NotificationBell } from "@/components";
 
 /**
  * TitleBar Component
@@ -114,6 +114,9 @@ export default function TitleBar({
               />
             </svg>
           </button>
+
+          {/* Notification Bell - Authenticated users only, hidden on mobile */}
+          {user && <NotificationBell />}
 
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
           <Link

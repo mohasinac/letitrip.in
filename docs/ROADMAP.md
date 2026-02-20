@@ -28,6 +28,7 @@
 | Search                                                                                       | ✅ Complete — /search page + /api/search route                     |
 | Admin: bids/auctions management                                                              | ✅ Complete — /admin/bids page with stats + drawer                 |
 | Content & Trust pages                                                                        | ✅ About, Contact, Help, Terms, Privacy, Sellers, Blog, Promotions |
+| Notifications                                                                                | ✅ Schema + repo + API + NotificationBell component + user page    |
 
 ---
 
@@ -324,18 +325,33 @@
 
 ## Phase 5 — Platform Maturity
 
-| Feature               | Description                                                               |
-| --------------------- | ------------------------------------------------------------------------- |
-| Notifications         | In-app + email schema, `GET/POST /api/notifications`, bell icon in header |
-| Order tracking UI     | `/user/orders/[id]/track` — timeline visualization                        |
-| User public profile   | `/profile/[userId]` (exists ✅) — wire up seller products, reviews        |
-| Product seller page   | `/sellers/[id]` — seller's public storefront                              |
-| Rate limiting         | `src/lib/middleware/rate-limit.ts` on all public API routes               |
-| Real-time bid updates | Firebase Realtime DB for auction bid streaming                            |
-| Algolia search        | Replace basic search with full-text index                                 |
-| Analytics             | Seller analytics, admin sales charts                                      |
-| Payout system         | `/seller/payouts`, payout calculation, bank account management            |
-| PWA                   | `next-pwa`, manifest, service worker for mobile install                   |
+### 5.1 Notifications ✅
+
+- **Schema:** `src/db/schema/notifications.ts` — `NotificationDocument`, `NOTIFICATIONS_COLLECTION`, `NOTIFICATION_FIELDS`
+- **Repository:** `src/repositories/notification.repository.ts` — `findByUser`, `getUnreadCount`, `markAsRead`, `markAllAsRead`, `create`, `delete`, `deleteAllForUser`
+- **API:**
+  - `GET/POST /api/notifications` — list user notifications (paginated) / create (admin)
+  - `PATCH/DELETE /api/notifications/[id]` — mark as read / delete one
+  - `PATCH /api/notifications/read-all` — mark all as read
+  - `GET /api/notifications/unread-count` — fast unread badge count
+- **Component:** `NotificationBell` in `src/components/ui/NotificationBell.tsx` — bell icon with unread badge, dropdown with recent notifications, mark-as-read actions
+- **TitleBar:** `NotificationBell` added for authenticated users between search and profile icons
+- **Page:** `src/app/user/notifications` — full notifications list with mark-read, delete, mark-all-read
+- **Constants:** `ROUTES.USER.NOTIFICATIONS`, `API_ENDPOINTS.NOTIFICATIONS.*`, `UI_LABELS.NOTIFICATIONS.*`, `ERROR_MESSAGES.NOTIFICATION.*`, `SUCCESS_MESSAGES.NOTIFICATION.*`
+- **RBAC:** `ROUTES.USER.NOTIFICATIONS` added to access control config
+- **Priority:** 🔵 P5
+
+| Feature               | Description                                                        |
+| --------------------- | ------------------------------------------------------------------ |
+| Order tracking UI     | `/user/orders/[id]/track` — timeline visualization                 |
+| User public profile   | `/profile/[userId]` (exists ✅) — wire up seller products, reviews |
+| Product seller page   | `/sellers/[id]` — seller's public storefront                       |
+| Rate limiting         | `src/lib/middleware/rate-limit.ts` on all public API routes        |
+| Real-time bid updates | Firebase Realtime DB for auction bid streaming                     |
+| Algolia search        | Replace basic search with full-text index                          |
+| Analytics             | Seller analytics, admin sales charts                               |
+| Payout system         | `/seller/payouts`, payout calculation, bank account management     |
+| PWA                   | `next-pwa`, manifest, service worker for mobile install            |
 
 ---
 

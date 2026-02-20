@@ -242,6 +242,16 @@ export const API_ENDPOINTS = {
   CONTACT: {
     SEND: "/api/contact", // POST - Send a contact message
   },
+
+  // Notifications endpoints
+  NOTIFICATIONS: {
+    LIST: "/api/notifications", // GET - User's notifications (paginated)
+    CREATE: "/api/notifications", // POST - Create notification (admin/system)
+    MARK_READ: (id: string) => `/api/notifications/${id}`, // PATCH - Mark one as read
+    DELETE: (id: string) => `/api/notifications/${id}`, // DELETE - Delete one
+    READ_ALL: "/api/notifications/read-all", // PATCH - Mark all as read
+    UNREAD_COUNT: "/api/notifications/unread-count", // GET - Unread count
+  },
 } as const;
 
 // Type for API endpoints

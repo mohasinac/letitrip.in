@@ -1470,6 +1470,28 @@ export const UI_LABELS = {
     QUESTION_PLURAL: "questions",
     IN_CATEGORY: "in",
   },
+
+  NOTIFICATIONS: {
+    TITLE: "Notifications",
+    MARK_ALL_READ: "Mark all as read",
+    MARK_READ: "Mark as read",
+    DELETE: "Delete notification",
+    DELETE_ALL: "Clear all",
+    NO_NOTIFICATIONS: "No notifications yet",
+    NO_NOTIFICATIONS_DESC:
+      "We'll notify you about orders, bids, and promotions.",
+    UNREAD: "Unread",
+    ALL: "All Notifications",
+    VIEW_ALL: "View all notifications",
+    JUST_NOW: "Just now",
+    ORDER_UPDATE: "Order Update",
+    BID_UPDATE: "Bid Update",
+    PROMOTION: "Promotion",
+    SYSTEM: "System",
+    NEW_BADGE: "New",
+    LOADING: "Loading notifications...",
+    ERROR: "Failed to load notifications",
+  },
 } as const;
 
 export const UI_PLACEHOLDERS = {

@@ -348,6 +348,15 @@ export const ERROR_MESSAGES = {
     FETCH_FAILED: "Failed to fetch promotions",
   },
 
+  NOTIFICATION: {
+    NOT_FOUND: "Notification not found",
+    FETCH_FAILED: "Failed to fetch notifications",
+    CREATE_FAILED: "Failed to create notification",
+    UPDATE_FAILED: "Failed to update notification",
+    DELETE_FAILED: "Failed to delete notification",
+    COUNT_FAILED: "Failed to get unread count",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
@@ -587,6 +596,14 @@ export const SUCCESS_MESSAGES = {
     UPDATED: "Blog post updated successfully",
     DELETED: "Blog post deleted successfully",
     PUBLISHED: "Blog post published successfully",
+  },
+
+  NOTIFICATION: {
+    SENT: "Notification sent successfully",
+    READ: "Notification marked as read",
+    ALL_READ: "All notifications marked as read",
+    DELETED: "Notification deleted",
+    ALL_CLEARED: "All notifications cleared",
   },
 } as const;
 

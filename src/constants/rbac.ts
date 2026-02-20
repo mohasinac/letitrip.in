@@ -74,6 +74,13 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
     requireActiveAccount: true,
     redirectTo: ROUTES.AUTH.LOGIN,
   },
+  [ROUTES.USER.NOTIFICATIONS]: {
+    path: ROUTES.USER.NOTIFICATIONS,
+    allowedRoles: ["user", "seller", "moderator", "admin"],
+    requireEmailVerified: false,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.AUTH.LOGIN,
+  },
   [ROUTES.USER.ADDRESSES]: {
     path: ROUTES.USER.ADDRESSES,
     allowedRoles: ["user", "seller", "moderator", "admin"],

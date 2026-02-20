@@ -50,6 +50,7 @@ export const ROUTES = {
     ADDRESSES_ADD: "/user/addresses/add",
     ADDRESSES_EDIT: (id: string) => `/user/addresses/edit/${id}`,
     ORDER_DETAIL: (id: string) => `/user/orders/view/${id}`,
+    NOTIFICATIONS: "/user/notifications",
     CART: "/cart",
     CHECKOUT: "/checkout",
     CHECKOUT_SUCCESS: "/checkout/success",
@@ -125,6 +126,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.USER.WISHLIST,
   ROUTES.USER.ADDRESSES,
   ROUTES.USER.ADDRESSES_ADD,
+  ROUTES.USER.NOTIFICATIONS,
   ROUTES.USER.CART,
 ] as const;
 
