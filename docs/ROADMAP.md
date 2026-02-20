@@ -458,10 +458,10 @@
 - Extract `ContactInfoCards` (address / phone / email info cards)
 - Resulting page: ~40 lines
 
-#### 6.2.10 `sellers/page.tsx` (170 lines) and `about/page.tsx` (176 lines)
+#### 6.2.10 `sellers/page.tsx` (170 lines) and `about/page.tsx` (176 lines) ✅
 
-- `sellers/page.tsx`: extract `SellerListingGrid` and inline CTA button classes to THEME_CONSTANTS
-- `about/page.tsx`: borderline — review for any remaining hardcoded strings
+- `sellers/page.tsx`: Added `SELLERS_PAGE.STAT_*` constants (8 labels) replacing hardcoded stats bar strings ("500+", "Active Sellers", etc.)
+- `about/page.tsx`: Audited — already fully uses `LABELS.*` constants; years in timeline are data values, not UI strings
 
 ---
 
@@ -595,7 +595,7 @@ Spots to audit:
 | 6.2.7 checkout/success decompose   | ✅ Done                    |
 | 6.2.8 promotions page decompose    | ✅ Done                    |
 | 6.2.9 contact page decompose       | ✅ Done                    |
-| 6.2.10 sellers + about cleanup     | 🔴 Pending                 |
+| 6.2.10 sellers + about cleanup     | ✅ Done                    |
 | 6.3 THEME_CONSTANTS audit          | ✅ Done                    |
 | 6.4 Empty states & skeletons       | 🔴 Pending                 |
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |

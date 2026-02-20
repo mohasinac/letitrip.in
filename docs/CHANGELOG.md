@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.10 — Sellers & About Page Cleanup (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added 8 stats constants to `SELLERS_PAGE`: `STAT_SELLERS_LABEL`, `STAT_SELLERS_VALUE`, `STAT_PRODUCTS_LABEL`, `STAT_PRODUCTS_VALUE`, `STAT_BUYERS_LABEL`, `STAT_BUYERS_VALUE`, `STAT_COMMISSION_LABEL`, `STAT_COMMISSION_VALUE`
+
+#### `src/app/sellers/page.tsx`
+
+- Replaced all hardcoded stats bar strings (`"Active Sellers"`, `"500+"`, `"Products Listed"`, etc.) with `UI_LABELS.SELLERS_PAGE.STAT_*` constants
+
+#### `src/app/about/page.tsx`
+
+- Audited — already fully uses `LABELS.*` constants throughout; no changes needed
+
+---
+
 ### Phase 6.2.1 — Seller Payouts Page Decomposition (Feb 2026)
 
 #### `src/components/seller/SellerPayoutStats.tsx` — NEW

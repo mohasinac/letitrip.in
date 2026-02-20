@@ -61,10 +61,22 @@ export default function SellersPage() {
       <section className="bg-emerald-700 text-white py-6 px-4">
         <div className="max-w-4xl mx-auto flex justify-center gap-12 flex-wrap">
           {[
-            { label: "Active Sellers", value: "500+" },
-            { label: "Products Listed", value: "10,000+" },
-            { label: "Monthly Buyers", value: "25,000+" },
-            { label: "Commission", value: "From 3%" },
+            {
+              label: LABELS.STAT_SELLERS_LABEL,
+              value: LABELS.STAT_SELLERS_VALUE,
+            },
+            {
+              label: LABELS.STAT_PRODUCTS_LABEL,
+              value: LABELS.STAT_PRODUCTS_VALUE,
+            },
+            {
+              label: LABELS.STAT_BUYERS_LABEL,
+              value: LABELS.STAT_BUYERS_VALUE,
+            },
+            {
+              label: LABELS.STAT_COMMISSION_LABEL,
+              value: LABELS.STAT_COMMISSION_VALUE,
+            },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <p className="text-2xl font-bold">{value}</p>

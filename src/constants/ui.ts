@@ -1507,6 +1507,15 @@ export const UI_LABELS = {
     CTA_BUTTON: "Create Seller Account",
     SIGN_IN_PROMPT: "Already have an account?",
     SIGN_IN_LINK: "Sign in",
+    // Stats bar
+    STAT_SELLERS_LABEL: "Active Sellers",
+    STAT_SELLERS_VALUE: "500+",
+    STAT_PRODUCTS_LABEL: "Products Listed",
+    STAT_PRODUCTS_VALUE: "10,000+",
+    STAT_BUYERS_LABEL: "Monthly Buyers",
+    STAT_BUYERS_VALUE: "25,000+",
+    STAT_COMMISSION_LABEL: "Commission",
+    STAT_COMMISSION_VALUE: "From 3%",
   },
 
   SELLER_STOREFRONT: {
