@@ -365,89 +365,77 @@
 
 ---
 
-## Dead Links Summary (Routes with no page)
+## Dead Links Summary
 
-| Route             | Defined In                 | Priority |
-| ----------------- | -------------------------- | -------- |
-| `/products`       | `ROUTES.PUBLIC.PRODUCTS`   | 🔴 P0    |
-| `/cart`           | `ROUTES.USER.CART`         | 🔴 P0    |
-| `/checkout`       | —                          | 🔴 P0    |
-| `/admin/products` | —                          | 🔴 P0    |
-| `/admin/orders`   | —                          | 🟠 P1    |
-| `/admin/coupons`  | `ROUTES.ADMIN.COUPONS`     | 🟠 P1    |
-| `/categories`     | `ROUTES.PUBLIC.CATEGORIES` | 🟠 P1    |
-| `/search`         | —                          | 🟠 P1    |
-| `/auctions`       | `ROUTES.PUBLIC.AUCTIONS`   | 🟡 P2    |
-| `/seller`         | `ROUTES.SELLER.DASHBOARD`  | 🟡 P2    |
-| `/about`          | `ROUTES.PUBLIC.ABOUT`      | 🟢 P3    |
-| `/contact`        | `ROUTES.PUBLIC.CONTACT`    | 🟢 P3    |
-| `/help`           | `ROUTES.PUBLIC.HELP`       | 🟢 P3    |
-| `/terms`          | `ROUTES.PUBLIC.TERMS`      | 🟢 P3    |
-| `/privacy`        | `ROUTES.PUBLIC.PRIVACY`    | 🟢 P3    |
-| `/sellers`        | `ROUTES.PUBLIC.SELLERS`    | 🟢 P3    |
-| `/blog`           | `ROUTES.PUBLIC.BLOG`       | 🟢 P3    |
-| `/promotions`     | `ROUTES.PUBLIC.PROMOTIONS` | 🟢 P3    |
+**All routes are now implemented.** This table tracked routes without pages; all have since been built.
+
+| Route             | Status  |
+| ----------------- | ------- |
+| `/products`       | ✅ Done |
+| `/cart`           | ✅ Done |
+| `/checkout`       | ✅ Done |
+| `/admin/products` | ✅ Done |
+| `/admin/orders`   | ✅ Done |
+| `/admin/coupons`  | ✅ Done |
+| `/categories`     | ✅ Done |
+| `/search`         | ✅ Done |
+| `/auctions`       | ✅ Done |
+| `/seller`         | ✅ Done |
+| `/about`          | ✅ Done |
+| `/contact`        | ✅ Done |
+| `/help`           | ✅ Done |
+| `/terms`          | ✅ Done |
+| `/privacy`        | ✅ Done |
+| `/sellers`        | ✅ Done |
+| `/blog`           | ✅ Done |
+| `/promotions`     | ✅ Done |
 
 ---
 
 ## API Endpoints to Build
 
-| Endpoint                         | Method                      | Phase |
-| -------------------------------- | --------------------------- | ----- |
-| `/api/cart`                      | GET, POST                   | P0    |
-| `/api/cart/[itemId]`             | PATCH, DELETE               | P0    |
-| `/api/checkout`                  | POST                        | P0    |
-| `/api/payment/create-order`      | POST                        | P0    |
-| `/api/payment/verify`            | POST                        | P0    |
-| `/api/payment/webhook`           | POST                        | P0    |
-| `/api/admin/orders`              | GET                         | P1    |
-| `/api/admin/orders/[id]`         | GET, PATCH                  | P1    |
-| `/api/admin/products`            | GET ✅                      | P1    |
-| `/api/admin/products/[id]`       | GET ✅, PATCH ✅, DELETE ✅ | P1    |
-| `/api/admin/coupons`             | GET, POST                   | P1    |
-| `/api/admin/coupons/[id]`        | GET, PATCH, DELETE          | P1    |
-| `/api/coupons/validate`          | POST                        | P1    |
-| `/api/user/wishlist`             | GET, POST                   | P1    |
-| `/api/user/wishlist/[productId]` | DELETE                      | P1    |
-| `/api/search`                    | GET                         | P1    |
-| `/api/bids`                      | GET, POST                   | P2    |
-| `/api/bids/[id]`                 | GET                         | P2    |
-| `/api/seller/products`           | GET, POST                   | P2    |
-| `/api/seller/orders`             | GET                         | P2    |
-| `/api/contact`                   | POST                        | P3    |
-| `/api/notifications`             | GET, POST                   | P3+   |
+**All planned API endpoints are now implemented.**
+
+| Endpoint                         | Method             | Status |
+| -------------------------------- | ------------------ | ------ |
+| `/api/cart`                      | GET, POST          | ✅     |
+| `/api/cart/[itemId]`             | PATCH, DELETE      | ✅     |
+| `/api/checkout`                  | POST               | ✅     |
+| `/api/payment/create-order`      | POST               | ✅     |
+| `/api/payment/verify`            | POST               | ✅     |
+| `/api/payment/webhook`           | POST               | ✅     |
+| `/api/admin/orders`              | GET                | ✅     |
+| `/api/admin/orders/[id]`         | GET, PATCH         | ✅     |
+| `/api/admin/products`            | GET                | ✅     |
+| `/api/admin/products/[id]`       | GET, PATCH, DELETE | ✅     |
+| `/api/admin/coupons`             | GET, POST          | ✅     |
+| `/api/admin/coupons/[id]`        | GET, PATCH, DELETE | ✅     |
+| `/api/coupons/validate`          | POST               | ✅     |
+| `/api/user/wishlist`             | GET, POST          | ✅     |
+| `/api/user/wishlist/[productId]` | DELETE             | ✅     |
+| `/api/search`                    | GET                | ✅     |
+| `/api/bids`                      | GET, POST          | ✅     |
+| `/api/bids/[id]`                 | GET                | ✅     |
+| `/api/seller/orders`             | GET                | ✅     |
+| `/api/seller/analytics`          | GET                | ✅     |
+| `/api/seller/payouts`            | GET, POST          | ✅     |
+| `/api/admin/analytics`           | GET                | ✅     |
+| `/api/admin/payouts`             | GET                | ✅     |
+| `/api/admin/payouts/[id]`        | PATCH              | ✅     |
+| `/api/contact`                   | POST               | ✅     |
+| `/api/notifications`             | GET, POST          | ✅     |
 
 ---
 
 ## Component Library Gaps
 
-| Component             | Used By                                      | Phase |
-| --------------------- | -------------------------------------------- | ----- |
-| `ProductCard`         | `/products`, `/categories/[slug]`, homepage  | P0    |
-| `ProductGrid`         | `/products`, `/categories/[slug]`            | P0    |
-| `ProductFilters`      | `/products`, `/categories/[slug]`, `/search` | P0    |
-| `ProductImageGallery` | `/products/[id]`                             | P0    |
-| `AddToCartButton`     | `/products/[id]`, `ProductCard`              | P0    |
-| `CartItemRow`         | `/cart`                                      | P0    |
-| `CartSummary`         | `/cart`, `/checkout`                         | P0    |
-| `CheckoutStepper`     | `/checkout`                                  | P0    |
-| `AuctionCard`         | `/auctions`                                  | P2    |
-| `AuctionCountdown`    | `/auctions/[id]`                             | P2    |
-| `BidHistory`          | `/auctions/[id]`                             | P2    |
-| `SellerSidebar`       | `/seller/*`                                  | P2    |
-| `NotificationBell`    | Header                                       | P3+   |
+**All planned components are now implemented.**
 
 ---
 
 ## Schema / Repository Gaps
 
-| Need            | Action                                                                          |
-| --------------- | ------------------------------------------------------------------------------- |
-| Cart            | Create `src/db/schema/cart.ts` + `src/repositories/cart.repository.ts`          |
-| Wishlist        | Create `src/db/schema/wishlists.ts` + `src/repositories/wishlist.repository.ts` |
-| Blog posts      | Create `src/db/schema/blog-posts.ts` + `src/repositories/blog.repository.ts`    |
-| Notifications   | Create `src/db/schema/notifications.ts` + repository                            |
-| Payment records | Create `src/db/schema/payments.ts` for payment audit trail                      |
+**All planned schemas and repositories are now implemented.**
 
 ---
 

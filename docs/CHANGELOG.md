@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ROADMAP Cleanup (Feb 2026)
+
+#### `docs/ROADMAP.md`
+
+- **Dead Links Summary** — replaced stale "missing pages" table with confirmed ✅ status for all 18 routes
+- **API Endpoints to Build** — replaced per-phase table with final ✅ status for all 27 endpoints
+- **Component Library Gaps** — replaced table with "all implemented" note
+- **Schema / Repository Gaps** — replaced table with "all implemented" note
+
+---
+
 ### Phase 5.10 — PWA (Feb 2026)
 
 #### `package.json`
