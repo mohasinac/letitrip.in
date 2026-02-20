@@ -1680,6 +1680,12 @@ export const UI_LABELS = {
     IN_CATEGORY: "in",
   },
 
+  HERO_CAROUSEL: {
+    PREV_SLIDE: "Previous slide",
+    NEXT_SLIDE: "Next slide",
+    GO_TO_SLIDE: (n: number) => `Go to slide ${n}`,
+  },
+
   NOTIFICATIONS: {
     TITLE: "Notifications",
     MARK_ALL_READ: "Mark all as read",

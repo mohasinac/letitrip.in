@@ -75,6 +75,7 @@ export function NotificationItem({
               <button
                 onClick={() => onMarkRead(n.id)}
                 title={UI_LABELS.NOTIFICATIONS.MARK_READ}
+                aria-label={UI_LABELS.NOTIFICATIONS.MARK_READ}
                 className="p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
               >
                 <svg
@@ -95,6 +96,7 @@ export function NotificationItem({
             <button
               onClick={() => onDelete(n.id)}
               title={UI_LABELS.NOTIFICATIONS.DELETE}
+              aria-label={UI_LABELS.NOTIFICATIONS.DELETE}
               className={`p-1.5 rounded-lg ${themed.textSecondary} hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors`}
             >
               <svg

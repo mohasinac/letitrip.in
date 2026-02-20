@@ -232,7 +232,7 @@ export function HeroCarousel() {
                   : "bg-white/50 hover:bg-white/75"
               }`}
               onClick={() => setCurrentSlide(index)}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={UI_LABELS.HERO_CAROUSEL.GO_TO_SLIDE(index + 1)}
             />
           ))}
         </div>
@@ -248,7 +248,7 @@ export function HeroCarousel() {
                 (prev) => (prev - 1 + slides.length) % slides.length,
               )
             }
-            aria-label="Previous slide"
+            aria-label={UI_LABELS.HERO_CAROUSEL.PREV_SLIDE}
           >
             <svg
               className="w-6 h-6"
@@ -269,7 +269,7 @@ export function HeroCarousel() {
             onClick={() =>
               setCurrentSlide((prev) => (prev + 1) % slides.length)
             }
-            aria-label="Next slide"
+            aria-label={UI_LABELS.HERO_CAROUSEL.NEXT_SLIDE}
           >
             <svg
               className="w-6 h-6"

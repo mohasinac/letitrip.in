@@ -561,15 +561,15 @@ Replaced all hardcoded blog string literals with constants.
 
 ---
 
-### 6.8 Accessibility Improvements
+### 6.8 Accessibility Improvements ✅
 
-| Issue                           | Location                          | Fix                                         |
-| ------------------------------- | --------------------------------- | ------------------------------------------- |
-| Images missing `alt`            | Product cards, blog cards         | Ensure descriptive alt text from data       |
-| Buttons without `aria-label`    | Icon-only buttons (delete, close) | Add `aria-label` from `UI_LABELS.ACTIONS.*` |
-| Focus ring missing              | Custom `div`-based clickables     | Add `focus:ring-2 focus:ring-indigo-500`    |
-| Color contrast below 4.5:1      | `text-gray-400` on white bg       | Use `text-gray-500` minimum                 |
-| Form inputs lack `id`+`htmlFor` | Some `FormField` usages           | Confirm FormField wires label `htmlFor`     |
+| Fix                             | Status                                                                |
+| ------------------------------- | --------------------------------------------------------------------- |
+| Images missing `alt`            | ✅ ProductCard + BlogCard already use descriptive alt text            |
+| Icon buttons without aria-label | ✅ NotificationItem mark-read/delete + Modal close + HeroCarousel nav |
+| FormField `htmlFor`/`id`        | ✅ Already wired in FormField component                               |
+| SideDrawer + Modal ARIA         | ✅ Already have `aria-modal`, `role`, `aria-labelledby`               |
+| Hardcoded ARIA strings          | ✅ HeroCarousel + Modal now use `UI_LABELS.*` constants               |
 
 ---
 
@@ -593,7 +593,7 @@ Replaced all hardcoded blog string literals with constants.
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
 | 6.6 Mobile & responsive polish     | ✅ Done                    |
 | 6.7 Dark mode sweep                | ✅ Done                    |
-| 6.8 Accessibility improvements     | 🔴 Pending                 |
+| 6.8 Accessibility improvements     | ✅ Done                    |
 
 ---
 

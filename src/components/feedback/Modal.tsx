@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useSwipe } from "@/hooks";
 import { preventBodyScroll } from "@/utils";
 
@@ -237,7 +237,7 @@ export default function Modal({
               <button
                 onClick={onClose}
                 className={`p-2 rounded-lg transition-colors ${themed.hover}`}
-                aria-label="Close modal"
+                aria-label={UI_LABELS.ACTIONS.CLOSE}
               >
                 <svg
                   className={`w-5 h-5 ${themed.textMuted}`}

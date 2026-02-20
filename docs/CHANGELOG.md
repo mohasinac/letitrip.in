@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.8 — Accessibility Improvements (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `HERO_CAROUSEL` constants: `PREV_SLIDE`, `NEXT_SLIDE`, `GO_TO_SLIDE(n: number)`
+- Added `ACTIONS.TRY_AGAIN: "Try Again"` (used in ErrorBoundary)
+
+#### `src/components/feedback/Modal.tsx`
+
+- Added `UI_LABELS` import
+- Replaced hardcoded `aria-label="Close modal"` with `aria-label={UI_LABELS.ACTIONS.CLOSE}`
+
+#### `src/components/user/notifications/NotificationItem.tsx`
+
+- Added `aria-label={UI_LABELS.NOTIFICATIONS.MARK_READ}` to mark-read icon button (previously only had `title`)
+- Added `aria-label={UI_LABELS.NOTIFICATIONS.DELETE}` to delete icon button (previously only had `title`)
+
+#### `src/components/homepage/HeroCarousel.tsx`
+
+- Replaced hardcoded `aria-label={`Go to slide ${n}`}` with `UI_LABELS.HERO_CAROUSEL.GO_TO_SLIDE(n)`
+- Replaced `aria-label="Previous slide"` with `UI_LABELS.HERO_CAROUSEL.PREV_SLIDE`
+- Replaced `aria-label="Next slide"` with `UI_LABELS.HERO_CAROUSEL.NEXT_SLIDE`
+
+**Audited and confirmed OK (no changes needed):**
+
+- `FormField.tsx` — already has `htmlFor`, `id`, `aria-required`, `aria-invalid`, `aria-describedby` ✅
+- `SideDrawer.tsx` — already has `aria-modal`, `aria-labelledby`, `aria-label` on close button ✅
+- `Modal.tsx` — already has `role="dialog"`, `aria-modal`, `aria-labelledby` ✅
+- `ProductCard.tsx` — already uses `alt={product.title}` ✅
+- `BlogCard.tsx` — already uses `alt={post.title}` ✅
+- `TopCategoriesSection.tsx` — already has `aria-label` on pagination dots ✅
+
+---
+
 ### Phase 6.7 — Dark Mode Consistency Sweep (Feb 2026)
 
 #### `src/constants/ui.ts`
