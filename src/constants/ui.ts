@@ -1412,6 +1412,28 @@ export const UI_LABELS = {
     SIGN_IN_LINK: "Sign in",
   },
 
+  PROMOTIONS_PAGE: {
+    TITLE: "Promotions & Deals",
+    SUBTITLE:
+      "Discover exclusive offers, featured products, and active discount codes",
+    DEALS_TITLE: "Current Deals",
+    DEALS_SUBTITLE: "Promoted products with special pricing",
+    FEATURED_TITLE: "Featured Products",
+    FEATURED_SUBTITLE: "Handpicked products from our catalog",
+    COUPONS_TITLE: "Discount Coupons",
+    COUPONS_SUBTITLE: "Use these codes at checkout to save on your order",
+    COPY_CODE: "Copy Code",
+    COPIED: "Copied!",
+    VALID_UNTIL: "Valid until",
+    NO_EXPIRY: "No expiry",
+    OFF: "off",
+    FLAT_OFF: "flat off",
+    FREE_SHIPPING: "Free shipping",
+    EMPTY_DEALS: "No deals available right now",
+    EMPTY_COUPONS: "No active coupons at this time",
+    CHECK_BACK: "Check back soon for new promotions!",
+  },
+
   FOOTER: {
     QUICK_LINKS: "Quick Links",
     ABOUT_US: "About Us",

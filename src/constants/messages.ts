@@ -344,6 +344,10 @@ export const ERROR_MESSAGES = {
     SLUG_TAKEN: "A post with this slug already exists",
   },
 
+  PROMOTIONS: {
+    FETCH_FAILED: "Failed to fetch promotions",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"

@@ -233,6 +233,11 @@ export const API_ENDPOINTS = {
     GET_BY_SLUG: (slug: string) => `/api/blog/${slug}`, // GET - Single post by slug
   },
 
+  // Promotions/Deals endpoint
+  PROMOTIONS: {
+    LIST: "/api/promotions", // GET - Featured products + active coupons
+  },
+
   // Contact endpoint
   CONTACT: {
     SEND: "/api/contact", // POST - Send a contact message
