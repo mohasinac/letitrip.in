@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Card } from "@/components/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
+import { useTheme } from "@/contexts";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.SELLER_ANALYTICS;
@@ -44,6 +45,8 @@ interface SellerRevenueChartProps {
 }
 
 export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
+  const { theme } = useTheme();
+  const tickFill = theme === "dark" ? "#9ca3af" : "#6b7280";
   return (
     <Card className="p-6">
       <div className={spacing.stack}>
@@ -57,12 +60,12 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                 <XAxis
                   dataKey="month"
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: tickFill }}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: tickFill }}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(v) => `$${v}`}

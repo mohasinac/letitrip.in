@@ -546,16 +546,18 @@ Replaced all hardcoded blog string literals with constants.
 
 ---
 
-### 6.7 Dark Mode Consistency Sweep
+### 6.7 Dark Mode Consistency Sweep ✅
 
-> **Goal:** No page has light-only colors visible in dark mode.
+**Fixed:**
 
-Spots to audit:
+- `ErrorBoundary.tsx` — all 4 background classes now have `dark:` counterparts; hardcoded strings replaced with `UI_LABELS.*`
+- `SellerRevenueChart.tsx` — Recharts axis tick `fill` prop now uses `useTheme()` to pick `#9ca3af` (dark) or `#6b7280` (light)
 
-- Any remaining `bg-white` / `text-black` / `text-gray-900` not wrapped in dark variant
-- Recharts axis labels and tooltip backgrounds (need `fill` overrides for dark mode)
-- Image placeholder divs (use `themed.bgSecondary` not `bg-gray-100`)
-- Badge colors — confirm all badge variants have dark mode counterparts in `THEME_CONSTANTS.badge.*`
+**Audited, no changes needed:**
+
+- Hero CTA buttons (`bg-white` on gradient backgrounds) — intentional design
+- Carousel arrows (`bg-white/80`) — intentional on image overlay
+- Recharts Tooltip — default white background contrasts fine in both modes
 
 ---
 
@@ -590,7 +592,7 @@ Spots to audit:
 | 6.4 Empty states & skeletons       | ✅ Done                    |
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
 | 6.6 Mobile & responsive polish     | ✅ Done                    |
-| 6.7 Dark mode sweep                | 🔴 Pending                 |
+| 6.7 Dark mode sweep                | ✅ Done                    |
 | 6.8 Accessibility improvements     | 🔴 Pending                 |
 
 ---

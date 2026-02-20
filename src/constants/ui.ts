@@ -94,6 +94,7 @@ export const UI_LABELS = {
     RESET: "Reset",
     REFRESH: "Refresh",
     RETRY: "Retry",
+    TRY_AGAIN: "Try Again",
     UPLOAD: "Upload",
     DOWNLOAD: "Download",
     EXPORT: "Export",

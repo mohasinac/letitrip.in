@@ -8,7 +8,7 @@
 
 import React, { Component, ReactNode } from "react";
 import { Button } from "@/components";
-import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import { ERROR_MESSAGES, THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { Logger } from "@/classes";
 
 interface Props {
@@ -71,10 +71,10 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+          <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 text-center">
             <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
                 <svg
                   className="w-8 h-8 text-red-600"
                   fill="none"
@@ -92,14 +92,14 @@ export class ErrorBoundary extends Component<Props, State> {
               <h1
                 className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
               >
-                Oops! Something went wrong
+                {UI_LABELS.ERROR_PAGES.GENERIC_ERROR.TITLE}
               </h1>
               <p className={`${THEME_CONSTANTS.themed.textSecondary} mb-6`}>
                 {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
               </p>
 
               {process.env.NODE_ENV === "development" && this.state.error && (
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg text-left">
+                <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
                   <p className="text-sm font-mono text-red-600 break-all">
                     {this.state.error.message}
                   </p>
@@ -109,13 +109,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="primary" onClick={this.handleReset}>
-                Try Again
+                {UI_LABELS.ACTIONS.TRY_AGAIN}
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => (window.location.href = "/")}
               >
-                Go Home
+                {UI_LABELS.ACTIONS.GO_HOME}
               </Button>
             </div>
           </div>

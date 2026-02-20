@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.7 — Dark Mode Consistency Sweep (Feb 2026)
+
+#### `src/constants/ui.ts`
+
+- Added `ACTIONS.TRY_AGAIN: "Try Again"` action label
+- Added `NAV.SELLER: "Seller"` (already added in 6.6)
+
+#### `src/components/ErrorBoundary.tsx`
+
+- Fixed outer container: `bg-gray-50` → `bg-gray-50 dark:bg-gray-950`
+- Fixed card: `bg-white` → `bg-white dark:bg-gray-900`
+- Fixed icon ring: `bg-red-100` → `bg-red-100 dark:bg-red-900/30`
+- Fixed error detail box: `bg-gray-100` → `bg-gray-100 dark:bg-gray-800`
+- Replaced hardcoded `"Oops! Something went wrong"` → `UI_LABELS.ERROR_PAGES.GENERIC_ERROR.TITLE`
+- Replaced hardcoded `"Try Again"` → `UI_LABELS.ACTIONS.TRY_AGAIN`
+- Replaced hardcoded `"Go Home"` → `UI_LABELS.ACTIONS.GO_HOME`
+
+#### `src/components/seller/SellerRevenueChart.tsx`
+
+- Imported `useTheme` from `@/contexts`
+- Added `tickFill` variable: `theme === "dark" ? "#9ca3af" : "#6b7280"`
+- Applied `fill: tickFill` to both `XAxis` and `YAxis` tick props for dark-mode-visible axis labels
+
+**Audited and confirmed OK (no changes needed):**
+
+- `bg-white` on gradient hero CTAs (sellers, about, help): intentional over colored backgrounds
+- `bg-white` carousel arrows on HeroCarousel: intentional over image
+- `bg-white` overlay buttons in ImageUpload: intentional over dark backdrop overlay
+- Recharts Tooltip: default white background provides adequate contrast in both modes
+
+---
+
 ### Phase 6.6 — Mobile & Responsive Polish (Feb 2026)
 
 #### `src/components/blog/BlogCategoryTabs.tsx`
