@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.1 — Test Coverage Sweep: Fix All Failing Test Suites (Feb 2026)
+
+**Result**: 166/166 suites passing, 2285/2289 tests passing (4 intentionally skipped)
+
+#### Root causes fixed
+
+| Suite                                                   | Root Cause                                                                                                                                                                                | Fix                                                                                            |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/app/api/__tests__/auth.test.ts`                    | `new Resend(undefined)` throws at module init; shared in-memory rate-limiter exhausted after 10 login tests causing `UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED` TypeError                        | Mock `@/lib/email` exports + mock `@/lib/security/rate-limit` to always return `success: true` |
+| `src/app/api/__tests__/site-settings.test.ts`           | `handleApiError` from `@/lib/errors/error-handler` not mocked — real handler didn't recognise mocked `AuthenticationError`/`AuthorizationError` classes → returned 500 instead of 401/403 | Added `jest.mock("@/lib/errors/error-handler", ...)` with name-based status mapping            |
+| `src/app/user/orders/__tests__/page.test.tsx`           | `@/hooks` mock only exported `useAuth`; page also calls `useApiQuery`                                                                                                                     | Added `useApiQuery: () => ({ data: null, isLoading: false, ... })` to mock                     |
+| `src/app/user/wishlist/__tests__/page.test.tsx`         | Same — missing `useApiQuery` in `@/hooks` mock                                                                                                                                            | Same fix                                                                                       |
+| `src/app/user/orders/view/[id]/__tests__/page.test.tsx` | Same                                                                                                                                                                                      | Same fix                                                                                       |
+| `src/app/user/profile/__tests__/page.test.tsx`          | Same                                                                                                                                                                                      | Same fix                                                                                       |
+| `src/app/profile/[userId]/__tests__/page.test.tsx`      | No `@/hooks` mock at all → `CacheManager.getInstance(200)` called on undefined                                                                                                            | Added `jest.mock("@/hooks", ...)` with `useApiQuery` mock                                      |
+
+---
+
 ### Phase 7 Definitions + Docs Catch-up (Feb 2026)
 
 #### `docs/GUIDE.md`

@@ -11,6 +11,12 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("@/hooks", () => ({
   useAuth: () => ({ user: { uid: "user-1" }, loading: false }),
+  useApiQuery: () => ({
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
 }));
 
 jest.mock("@/components", () => ({

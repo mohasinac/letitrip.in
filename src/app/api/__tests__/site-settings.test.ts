@@ -68,6 +68,29 @@ jest.mock("@/lib/errors", () => ({
   },
 }));
 
+jest.mock("@/lib/errors/error-handler", () => ({
+  handleApiError: (error: any) => {
+    const { NextResponse } = require("next/server");
+    if (error?.name === "AuthenticationError") {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 401 },
+      );
+    }
+    if (error?.name === "AuthorizationError") {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 403 },
+      );
+    }
+    return NextResponse.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 },
+    );
+  },
+  logError: jest.fn(),
+}));
+
 import { GET, PATCH } from "../site-settings/route";
 
 // ============================================

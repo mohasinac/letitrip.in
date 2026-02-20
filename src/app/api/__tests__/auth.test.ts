@@ -150,6 +150,33 @@ jest.mock("@/constants", () => ({
   },
 }));
 
+// Mock rate limiter to always succeed (avoids shared in-memory state leaking between tests)
+jest.mock("@/lib/security/rate-limit", () => ({
+  applyRateLimit: jest
+    .fn()
+    .mockResolvedValue({ success: true, limit: 10, remaining: 10, reset: 0 }),
+  RateLimitPresets: {
+    STRICT: {},
+    AUTH: {},
+    API: {},
+    GENEROUS: {},
+    PASSWORD_RESET: {},
+    EMAIL_VERIFICATION: {},
+  },
+  rateLimit: jest
+    .fn()
+    .mockResolvedValue({ success: true, limit: 10, remaining: 10, reset: 0 }),
+  clearRateLimitStore: jest.fn(),
+}));
+
+// Mock email service to prevent Resend initialisation crash (no API key in test env)
+jest.mock("@/lib/email", () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+  sendVerificationEmailWithLink: jest.fn().mockResolvedValue(undefined),
+  sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+  sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Need to mock global fetch for Firebase REST API
 const mockFetch = jest.fn();
 global.fetch = mockFetch as any;

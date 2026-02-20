@@ -26,6 +26,15 @@ jest.mock("@/classes", () => ({
   logger: { error: jest.fn() },
 }));
 
+jest.mock("@/hooks", () => ({
+  useApiQuery: () => ({
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+}));
+
 jest.mock("@/components", () => ({
   Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Badge: ({ children }: { children: React.ReactNode }) => (

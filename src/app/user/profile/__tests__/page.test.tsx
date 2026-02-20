@@ -19,6 +19,12 @@ jest.mock("@/hooks", () => ({
     },
     loading: false,
   }),
+  useApiQuery: () => ({
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
 }));
 
 jest.mock("@/components", () => ({
