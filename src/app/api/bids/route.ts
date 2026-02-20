@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { bidRepository, productRepository } from "@/repositories";
+import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -131,6 +132,27 @@ export async function POST(request: NextRequest) {
       currentBid: bidAmount,
       bidCount: (product.bidCount ?? 0) + 1,
     } as Partial<typeof product>);
+
+    // Write to Realtime DB for live bid streaming
+    try {
+      const rtdb = getAdminRealtimeDb();
+      await rtdb.ref(`/auction-bids/${productId}`).set({
+        currentBid: bidAmount,
+        bidCount: (product.bidCount ?? 0) + 1,
+        lastBid: {
+          amount: bidAmount,
+          bidderName: bid.userName?.split(" ")[0] ?? "Bidder",
+          timestamp: Date.now(),
+        },
+        updatedAt: Date.now(),
+      });
+    } catch (rtdbErr) {
+      // Non-fatal: RTDB write failure should not fail the bid placement
+      serverLogger.warn("Failed to write bid to Realtime DB", {
+        error: rtdbErr,
+        productId,
+      });
+    }
 
     serverLogger.info("Bid placed", {
       bidId: bid.id,

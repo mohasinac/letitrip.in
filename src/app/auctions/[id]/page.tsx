@@ -3,7 +3,8 @@
  *
  * Route: /auctions/[id]
  * Shows full auction product details with live countdown, bid history,
- * and bid placement form. Polls bids every 15 seconds for near-real-time updates.
+ * and bid placement form. Uses Firebase Realtime Database for live bid updates
+ * with a 60-second fallback poll for bid history sync.
  */
 
 "use client";
@@ -13,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BidHistory, PlaceBidForm, Spinner } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
-import { useApiQuery, useAuth } from "@/hooks";
+import { useApiQuery, useAuth, useRealtimeBids } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument, BidDocument } from "@/db/schema";
 
@@ -85,7 +86,7 @@ export default function AuctionDetailPage({ params }: Props) {
 
   const product = productData?.data ?? null;
 
-  /* ---- Fetch bids (polls every 15s) ---- */
+  /* ---- Fetch bids (polls every 60s as fallback — RTDB provides live updates) ---- */
   const { data: bidsData, refetch: refetchBids } = useApiQuery<BidsResponse>({
     queryKey: ["bids", id],
     queryFn: () =>
@@ -93,10 +94,18 @@ export default function AuctionDetailPage({ params }: Props) {
         `${API_ENDPOINTS.BIDS.LIST}?productId=${encodeURIComponent(id)}`,
       ).then((r) => r.json()),
     enabled: !!product?.isAuction,
-    refetchInterval: 15000,
+    refetchInterval: 60000,
   });
 
   const bids = useMemo(() => bidsData?.data ?? [], [bidsData]);
+
+  /* ---- Real-time bid data via Firebase RTDB ---- */
+  const {
+    currentBid: rtdbBid,
+    bidCount: rtdbBidCount,
+    lastBid: lastRtdbBid,
+    connected: rtdbConnected,
+  } = useRealtimeBids(product?.isAuction ? id : null);
 
   /* ---- Countdown ---- */
   const remaining = useCountdown(product?.auctionEndDate);
@@ -104,11 +113,13 @@ export default function AuctionDetailPage({ params }: Props) {
   const { display: countdownDisplay, isEndingSoon } =
     formatCountdown(remaining);
 
-  /* ---- Derived bid info ---- */
-  const currentBid = product?.currentBid ?? 0;
+  /* ---- Derived bid info (RTDB takes precedence over Firestore snapshot) ---- */
+  const firestoreBid = product?.currentBid ?? 0;
+  const currentBid = rtdbBid ?? firestoreBid;
   const startingBid = product?.startingBid ?? product?.price ?? 0;
   const displayBid = currentBid > 0 ? currentBid : startingBid;
   const hasCurrentBid = currentBid > 0;
+  const liveBidCount = rtdbBidCount ?? bids.length;
 
   /* ---- Loading / Not found ---- */
   if (productLoading) {
@@ -198,6 +209,13 @@ export default function AuctionDetailPage({ params }: Props) {
               {UI_LABELS.AUCTIONS_PAGE.LIVE_BADGE}
             </span>
           )}
+          {/* Real-time connection indicator */}
+          {rtdbConnected && !isEnded && (
+            <span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              {UI_LABELS.AUCTIONS_PAGE.REALTIME_BADGE}
+            </span>
+          )}
         </div>
 
         {/* Right: info + bid panel */}
@@ -220,8 +238,13 @@ export default function AuctionDetailPage({ params }: Props) {
                 {formatCurrency(displayBid)}
               </p>
               <p className={`text-sm ${themed.textSecondary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.TOTAL_BIDS(bids.length)}
+                {UI_LABELS.PRODUCT_DETAIL.TOTAL_BIDS(liveBidCount)}
               </p>
+              {lastRtdbBid && (
+                <p className={`text-xs ${themed.textSecondary}`}>
+                  {UI_LABELS.AUCTIONS_PAGE.LAST_BID_BY(lastRtdbBid.bidderName)}
+                </p>
+              )}
             </div>
 
             {/* Countdown */}

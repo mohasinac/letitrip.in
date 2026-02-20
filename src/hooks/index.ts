@@ -93,3 +93,5 @@ export { useMediaQuery } from "./useMediaQuery";
 export { useRazorpay } from "./useRazorpay";
 export type { RazorpayOptions, RazorpayPaymentResponse } from "./useRazorpay";
 export { useBreakpoint } from "./useBreakpoint";
+export { useRealtimeBids } from "./useRealtimeBids";
+export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";

@@ -16,6 +16,7 @@ import {
   getStorage as getFirebaseStorage,
   Storage,
 } from "firebase-admin/storage";
+import { getDatabase, Database } from "firebase-admin/database";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -23,6 +24,7 @@ let _adminApp: App | null = null;
 let _adminAuth: Auth | null = null;
 let _adminDb: Firestore | null = null;
 let _adminStorage: Storage | null = null;
+let _adminRealtimeDb: Database | null = null;
 
 /**
  * Get Firebase Admin App instance (lazy initialization)
@@ -130,4 +132,16 @@ export function getStorage(): Storage {
     _adminStorage = getFirebaseStorage(getAdminApp());
   }
   return _adminStorage;
+}
+
+/**
+ * Get Firebase Admin Realtime Database instance (lazy initialization)
+ *
+ * Used for real-time features like live bid streaming.
+ */
+export function getAdminRealtimeDb(): Database {
+  if (!_adminRealtimeDb) {
+    _adminRealtimeDb = getDatabase(getAdminApp());
+  }
+  return _adminRealtimeDb;
 }

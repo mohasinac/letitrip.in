@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.6 — Real-time Bid Updates (Feb 2026)
+
+#### `src/hooks/useRealtimeBids.ts` (new)
+
+- Created `useRealtimeBids(productId)` hook that subscribes to `/auction-bids/${productId}` in Firebase Realtime Database via `onValue`.
+- Returns `{ currentBid, bidCount, lastBid, connected, updatedAt }` — all nullable when RTDB is unavailable or productId is null.
+- Falls back gracefully (no throw) if RTDB connection errors; logs a warning via `console.warn`.
+- Properly unsubscribes via `off(bidRef)` on cleanup.
+- Exported from `src/hooks/index.ts`.
+
+#### `src/lib/firebase/admin.ts` (updated)
+
+- Added `getAdminRealtimeDb()` function — lazy-initialises `firebase-admin/database` singleton via `getDatabase(getAdminApp())`.
+
+#### `src/app/api/bids/route.ts` (updated)
+
+- POST handler writes to RTDB at `/auction-bids/${productId}` after a successful bid, storing `{ currentBid, bidCount, lastBid.{ amount, bidderName, timestamp }, updatedAt }`.
+- Wrapped in non-fatal `try/catch` — RTDB failure does not fail the bid placement.
+
+#### `src/app/auctions/[id]/page.tsx` (updated)
+
+- Imported `useRealtimeBids` from `@/hooks`.
+- Added RTDB subscription: live `currentBid` and `bidCount` take precedence over Firestore snapshot values.
+- Reduced bid history poll interval from **15s → 60s** (RTDB provides live current-bid updates).
+- Added emerald `● Live` badge in the product image corner when RTDB is connected.
+- Displays last bidder name from RTDB `lastBid.bidderName` beneath the bid count.
+
+#### `src/constants/ui.ts` (updated)
+
+- Added `UI_LABELS.AUCTIONS_PAGE.REALTIME_BADGE = "Live"`
+- Added `UI_LABELS.AUCTIONS_PAGE.LAST_BID_BY = (name) => \`Last bid by ${name}\``
+
+---
+
 ### Phase 5.5 — Rate Limiting on Public API Routes (Feb 2026)
 
 Applied `applyRateLimit` + `RateLimitPresets` from `src/lib/security/rate-limit.ts` to key public routes. In-memory rate limiter skips checks in `development` automatically.

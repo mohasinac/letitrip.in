@@ -1114,6 +1114,9 @@ export const UI_LABELS = {
     AUCTION_ENDED_INFO:
       "This auction has ended and is no longer accepting bids",
     BID_PLACED: "Bid placed successfully!",
+    // Real-time bid labels
+    REALTIME_BADGE: "Live",
+    LAST_BID_BY: (name: string) => `Last bid by ${name}`,
   },
 
   // Seller dashboard page labels
