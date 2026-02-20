@@ -165,7 +165,7 @@ This document organises them by file and category so future phases can pick them
 | ---------------------------------------- | -------------------------- | --------------------- | ------------------- |
 | Purchase verification for reviews        | `api/reviews/route.ts:217` | Prevents fake reviews | ✅ Done — Phase 7.3 |
 | Seller email verification before listing | `schemas.ts:254`           | Security gate         | ✅ Done — Phase 7.4 |
-| Status transition validation             | `schemas.ts:269`           | Data integrity        | Phase 7.5           |
+| Status transition validation             | `schemas.ts:269`           | Data integrity        | ✅ Done — Phase 7.5 |
 
 ### Medium Impact (production hardening)
 

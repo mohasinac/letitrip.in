@@ -258,6 +258,7 @@ export const ERROR_MESSAGES = {
     NOT_FOUND_AFTER_UPDATE: "Product not found after update",
     UPDATE_NOT_ALLOWED: "You do not have permission to update this product",
     DELETE_NOT_ALLOWED: "You do not have permission to delete this product",
+    INVALID_STATUS_TRANSITION: "This status change is not allowed",
   },
 
   // Phone Errors

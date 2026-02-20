@@ -16,6 +16,7 @@
 import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { PRODUCT_STATUS_TRANSITIONS } from "@/db/schema";
 import {
   requireRoleFromRequest,
   getUserFromRequest,
@@ -85,7 +86,7 @@ export async function GET(
  * - Return updated product
  *
  * TODO (Future) - Phase 3:
- * - Handle status transitions (draft -> published requires approval)
+ * - Handle status transitions (draft -> published requires admin approval workflow)
  * - Send notifications on status change
  * - Implement optimistic locking for concurrent updates
  */
@@ -123,6 +124,20 @@ export async function PATCH(
         400,
         formatZodErrors(validation.errors),
       );
+    }
+
+    // Status transition validation — enforce valid state machine moves.
+    // Moderators and admins bypass this check (staff override).
+    const newStatus = validation.data.status;
+    if (newStatus && newStatus !== product.status && !isModerator && !isAdmin) {
+      const allowedTransitions =
+        PRODUCT_STATUS_TRANSITIONS[product.status as string] ?? [];
+      if (!allowedTransitions.includes(newStatus)) {
+        return errorResponse(
+          ERROR_MESSAGES.PRODUCT.INVALID_STATUS_TRANSITION,
+          422,
+        );
+      }
     }
 
     // Update product in repository

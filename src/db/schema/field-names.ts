@@ -144,6 +144,27 @@ export const PRODUCT_FIELDS = {
   },
 } as const;
 
+/**
+ * Valid product status transitions.
+ *
+ * Map of currentStatus → set of allowed next statuses.
+ * Admins and moderators bypass this map (policy override).
+ *
+ * Rules:
+ * - draft        → published | discontinued
+ * - published    → draft | out_of_stock | discontinued
+ * - out_of_stock → published | draft | discontinued
+ * - sold         → discontinued  (only archival allowed)
+ * - discontinued → draft         (reactivate as draft only)
+ */
+export const PRODUCT_STATUS_TRANSITIONS: Record<string, readonly string[]> = {
+  draft: ["published", "discontinued"],
+  published: ["draft", "out_of_stock", "discontinued"],
+  out_of_stock: ["published", "draft", "discontinued"],
+  sold: ["discontinued"],
+  discontinued: ["draft"],
+} as const;
+
 // ============================================================================
 // ORDER FIELDS
 // ============================================================================

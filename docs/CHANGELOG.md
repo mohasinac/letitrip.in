@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.5 — Status Transition Validation for Products (Feb 2026)
+
+#### What was implemented
+
+- `src/constants/messages.ts`: Added `ERROR_MESSAGES.PRODUCT.INVALID_STATUS_TRANSITION` — `"This status change is not allowed"`
+- `src/db/schema/field-names.ts`: New exported `PRODUCT_STATUS_TRANSITIONS` map defining valid next-statuses per current status:
+  - `draft` → `published`, `discontinued`
+  - `published` → `draft`, `out_of_stock`, `discontinued`
+  - `out_of_stock` → `published`, `draft`, `discontinued`
+  - `sold` → `discontinued` (only archival allowed)
+  - `discontinued` → `draft` (reactivate as draft only)
+- `src/app/api/products/[id]/route.ts` PATCH handler:
+  - Imports `PRODUCT_STATUS_TRANSITIONS` from `@/db/schema`
+  - After Zod validation, checks if the incoming `status` represents a valid transition from the current product status
+  - Returns `422` with `INVALID_STATUS_TRANSITION` if blocked
+  - Moderators and admins bypass the check (staff override)
+  - No-op same-status updates are allowed
+- `src/app/api/__tests__/products-id.test.ts` (new file):
+  - 29 tests covering GET, PATCH (general + status transitions), DELETE
+  - 10 parametrized valid-transition tests, 6 parametrized invalid-transition tests
+  - Admin/moderator bypass tests, same-status no-op test
+  - Suite: 167/167 passing, 2325 tests total
+
+---
+
 ### Phase 7.4 — Seller Email Verification Gate for Product Listings (Feb 2026)
 
 #### What was implemented
