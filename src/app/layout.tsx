@@ -2,7 +2,18 @@ import "./globals.css";
 import { LayoutClient, MonitoringProvider, ToastProvider } from "@/components";
 import { ThemeProvider, SessionProvider } from "@/contexts";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#3b82f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e3a5f" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 
 export const metadata: Metadata = genMetadata({
   title: SEO_CONFIG.defaultTitle,

@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const withSerwist = require("@serwist/next").default;
+
 const nextConfig = {
   // Image optimization for Firebase Storage and other remote sources
   images: {
@@ -96,4 +98,10 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSerwist({
+  swSrc: "src/sw.ts",
+  swDest: "public/sw.js",
+  reloadOnOnline: true,
+  // Disable in development to avoid service worker caching issues during dev
+  disable: process.env.NODE_ENV === "development",
+})(nextConfig);

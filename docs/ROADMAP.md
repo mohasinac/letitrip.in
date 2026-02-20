@@ -361,7 +361,7 @@
 | ~~Algolia search~~        | ✅ `src/lib/search/algolia.ts` — client + indexProducts + algoliaSearch; /api/search uses Algolia when configured, falls back to in-memory                                                                                     |
 | ~~Analytics~~             | ✅ Seller analytics (`/seller/analytics`) + Admin charts (`/admin/analytics`) using recharts AreaChart/BarChart; API routes `/api/admin/analytics` + `/api/seller/analytics`                                                   |
 | ~~Payout system~~         | ✅ `PayoutDocument` schema + `payoutRepository`; `GET/POST /api/seller/payouts` (earnings calc + request); `GET /api/admin/payouts` + `PATCH /api/admin/payouts/[id]`; `/seller/payouts` page with stat cards + form + history |
-| PWA                       | `next-pwa`, manifest, service worker for mobile install                                                                                                                                                                        |
+| ~~PWA~~                   | ✅ `@serwist/next` service worker; `src/app/manifest.ts` (name, short_name, start_url, standalone, theme_color #3b82f6, SVG icon); `viewport` export in root layout (themeColor light/dark); SW disabled in dev                |
 
 ---
 

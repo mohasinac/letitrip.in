@@ -102,3 +102,11 @@ test-results*.txt
 /react-library
 /tests
 .npmrc
+
+# PWA — generated service worker files (built by @serwist/next)
+/public/sw.js
+/public/sw.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map
+/public/worker-*.js
+/public/worker-*.js.map

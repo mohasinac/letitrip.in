@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.10 — PWA (Feb 2026)
+
+#### `package.json`
+
+- Added `@serwist/next@9.5.6` and `serwist@9.5.6`
+
+#### `src/sw.ts` (new)
+
+- Serwist service worker with `defaultCache` runtime caching, `skipWaiting: true`, `clientsClaim: true`, `navigationPreload: true`
+- Compiled by `@serwist/next` webpack plugin; excluded from main `tsconfig.json`
+
+#### `src/app/manifest.ts` (new)
+
+- Next.js built-in `MetadataRoute.Manifest` — `name: "LetItRip"`, `short_name`, `display: "standalone"`, `theme_color: "#3b82f6"`, `background_color: "#ffffff"`
+- SVG icon via `/favicon.svg` with `purpose: "any maskable"` (replace with PNG icons for production)
+- Shortcuts: Browse Products (`/`) + Auctions (`/auctions`)
+
+#### `src/app/layout.tsx`
+
+- Added `export const viewport: Viewport` with `themeColor` (light: `#3b82f6`, dark: `#1e3a5f`), `width: "device-width"`, `initialScale: 1`
+
+#### `next.config.js`
+
+- Wrapped with `withSerwist({ swSrc: "src/sw.ts", swDest: "public/sw.js", disable: NODE_ENV === "development" })`
+
+#### `tsconfig.json`
+
+- Added `"src/sw.ts"` to exclude list (compiled separately by webpack/serwist)
+
+#### `.gitignore`
+
+- Added `/public/sw.js`, `/public/workbox-*.js` and their map files
+
+---
+
 ### Phase 5.9 — Payout System (Feb 2026)
 
 #### `src/db/schema/payouts.ts` (new)
