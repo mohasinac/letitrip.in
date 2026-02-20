@@ -43,6 +43,7 @@ export const ERROR_MESSAGES = {
     PASSWORD_MISMATCH: "Passwords do not match",
     INVALID_INPUT: "Invalid input provided",
     FAILED: "Validation failed",
+    MESSAGE_TOO_SHORT: "Message must be at least 10 characters",
     TOKEN_REQUIRED: "Verification token is required",
     VERIFICATION_FIELDS_REQUIRED: "Verification ID and code are required",
     VERIFICATION_CODE_FORMAT: "Verification code must be 6 digits",

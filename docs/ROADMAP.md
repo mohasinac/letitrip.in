@@ -592,7 +592,7 @@ Spots to audit:
 | 6.2.6 blog page decompose          | ✅ Done                    |
 | 6.2.7 checkout/success decompose   | 🔴 Pending                 |
 | 6.2.8 promotions page decompose    | ✅ Done                    |
-| 6.2.9 contact page decompose       | 🔴 Pending                 |
+| 6.2.9 contact page decompose       | ✅ Done                    |
 | 6.2.10 sellers + about cleanup     | 🔴 Pending                 |
 | 6.3 THEME_CONSTANTS audit          | ✅ Done                    |
 | 6.4 Empty states & skeletons       | 🔴 Pending                 |

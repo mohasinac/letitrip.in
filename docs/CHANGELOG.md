@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.9 — Contact Page Decomposition (Feb 2026)
+
+#### `src/constants/messages.ts`
+
+- Added `ERROR_MESSAGES.VALIDATION.MESSAGE_TOO_SHORT` — replaces hardcoded validation string
+
+#### `src/components/contact/ContactInfoSidebar.tsx` — NEW
+
+- `ContactInfoSidebar` — contact info cards (email, phone, address, hours) + FAQ link block
+
+#### `src/components/contact/ContactForm.tsx` — NEW
+
+- `ContactForm` — full form with state, validation, and submit logic
+- Uses `ERROR_MESSAGES.VALIDATION.MESSAGE_TOO_SHORT` instead of hardcoded string
+
+#### `src/components/contact/index.ts` — NEW
+
+- Barrel export for contact components
+
+#### `src/components/index.ts`
+
+- Added `export * from "./contact"` section
+
+#### `src/app/contact/page.tsx`
+
+- Reduced from 216 → 28 lines (thin orchestration)
+
+---
+
 ### Phase 6.2.8 — Promotions Page Decomposition (Feb 2026)
 
 #### `src/constants/ui.ts`

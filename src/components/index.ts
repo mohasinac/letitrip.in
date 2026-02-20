@@ -107,3 +107,6 @@ export * from "./blog";
 
 // ==================== PROMOTIONS ====================
 export * from "./promotions";
+
+// ==================== CONTACT ====================
+export * from "./contact";
