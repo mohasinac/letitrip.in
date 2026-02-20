@@ -42,6 +42,7 @@ const nextConfig = {
     "bcryptjs",
     "firebase-admin",
     "@auth/firebase-adapter",
+    "@mohasinac/sievejs",
   ],
 
   experimental: {

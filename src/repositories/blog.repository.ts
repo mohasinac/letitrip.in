@@ -96,6 +96,49 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
   }
 
   /**
+   * Find all published blog posts without pagination (for Sieve-based pagination in API routes).
+   * Applies Firestore-level filtering for category and featuredOnly for query efficiency.
+   */
+  async findAllPublished(opts?: {
+    category?: BlogPostCategory;
+    featuredOnly?: boolean;
+  }): Promise<BlogPostDocument[]> {
+    try {
+      let query = this.db
+        .collection(this.collection)
+        .where(BLOG_POST_FIELDS.STATUS, "==", "published" as BlogPostStatus);
+
+      if (opts?.category) {
+        query = query.where(
+          BLOG_POST_FIELDS.CATEGORY,
+          "==",
+          opts.category,
+        ) as typeof query;
+      }
+
+      if (opts?.featuredOnly) {
+        query = query.where(
+          BLOG_POST_FIELDS.IS_FEATURED,
+          "==",
+          true,
+        ) as typeof query;
+      }
+
+      const snapshot = await query
+        .orderBy(BLOG_POST_FIELDS.PUBLISHED_AT, "desc")
+        .get();
+
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as BlogPostDocument,
+      );
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to find all published posts: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  /**
    * Find all blog posts (admin use)
    */
   async findAll(): Promise<BlogPostDocument[]> {

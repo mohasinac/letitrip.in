@@ -3,7 +3,13 @@
  *
  * Shared backend helper to apply SieveJS filtering, sorting, and pagination
  * over in-memory arrays while keeping a consistent API response contract.
+ *
+ * Uses @mohasinac/sievejs (https://www.npmjs.com/package/@mohasinac/sievejs) with a
+ * custom in-memory adapter, enabling the Sieve DSL (filters, sorts, page, pageSize)
+ * over plain JavaScript arrays fetched from Firestore.
  */
+
+import { createSieveProcessor } from "@mohasinac/sievejs";
 
 type InMemoryQuery<T> = T[];
 
@@ -70,17 +76,6 @@ type SieveProcessorOptions = {
   throwExceptions?: boolean;
   ignoreNullsOnNotEqual?: boolean;
 };
-
-type SieveModule = typeof import("@mohasinac/sievejs");
-let sieveModulePromise: Promise<SieveModule> | null = null;
-
-async function getSieveModule(): Promise<SieveModule> {
-  if (!sieveModulePromise) {
-    sieveModulePromise = import("@mohasinac/sievejs");
-  }
-
-  return sieveModulePromise;
-}
 
 export interface SieveArrayQueryInput<TItem> {
   items: TItem[];
@@ -284,8 +279,6 @@ function createInMemorySieveAdapter<TItem>(
 export async function applySieveToArray<TItem>(
   input: SieveArrayQueryInput<TItem>,
 ): Promise<SieveArrayQueryResult<TItem>> {
-  const { createSieveProcessor } = await getSieveModule();
-
   const mergedOptions = {
     ...DEFAULT_SIEVE_OPTIONS,
     ...(input.options || {}),
