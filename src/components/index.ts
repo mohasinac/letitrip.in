@@ -110,3 +110,6 @@ export * from "./promotions";
 
 // ==================== CONTACT ====================
 export * from "./contact";
+
+// ==================== SEARCH ====================
+export * from "./search";

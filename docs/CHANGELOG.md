@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.2 — Search Page Decomposition (Feb 2026)
+
+#### `src/components/search/SearchFiltersRow.tsx` — NEW
+
+- `SearchFiltersRow` — category select, price range inputs (local useState), apply button, optional clear button
+
+#### `src/components/search/SearchResultsSection.tsx` — NEW
+
+- `SearchResultsSection` — sort bar + product grid + pagination + no-results empty state
+
+#### `src/components/search/index.ts` — NEW
+
+- Barrel export for search components
+
+#### `src/components/index.ts`
+
+- Added `export * from "./search"` section
+
+#### `src/app/search/page.tsx`
+
+- Reduced from 346 → 188 lines; replaced DOM-id price reading with controlled callback props
+
+---
+
 ### Phase 6.2.3 — User Notifications Page Decomposition (Feb 2026)
 
 #### `src/components/user/notifications/NotificationItem.tsx` — NEW

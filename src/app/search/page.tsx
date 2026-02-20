@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Search Page
  *
  * Route: /search
@@ -8,9 +8,10 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ProductGrid, ProductSortBar, PRODUCT_SORT_VALUES } from "@/components";
+import { PRODUCT_SORT_VALUES } from "@/components";
+import { SearchFiltersRow, SearchResultsSection } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useApiQuery } from "@/hooks";
 import { debounce } from "@/utils";
@@ -65,15 +66,12 @@ export default function SearchPage() {
     PRODUCT_SORT_VALUES.NEWEST;
   const urlPage = Number(searchParams.get("page") ?? "1");
 
-  // Local input state (debounces to URL)
   const [inputValue, setInputValue] = useState(urlQ);
 
-  // Sync inputValue if URL q changes externally (e.g. browser back/forward)
   useEffect(() => {
     setInputValue(urlQ);
   }, [urlQ]);
 
-  /* ---- URL update helpers ---- */
   const buildUrl = useCallback(
     (overrides: Record<string, string>) => {
       const params = new URLSearchParams();
@@ -96,7 +94,6 @@ export default function SearchPage() {
     [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage],
   );
 
-  // Debounced router push for text input
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedPush = useCallback(
     debounce((q: string) => {
@@ -111,7 +108,6 @@ export default function SearchPage() {
     debouncedPush(val);
   };
 
-  /* ---- Fetch top-level categories for filter dropdown ---- */
   const { data: catData } = useApiQuery<CategoriesResponse>({
     queryKey: ["categories", "flat"],
     queryFn: () =>
@@ -123,7 +119,6 @@ export default function SearchPage() {
     [catData],
   );
 
-  /* ---- Build search API URL ---- */
   const searchUrl = useMemo(() => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);
@@ -136,7 +131,6 @@ export default function SearchPage() {
     return `${API_ENDPOINTS.SEARCH.QUERY}?${params.toString()}`;
   }, [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage]);
 
-  /* ---- Fetch search results ---- */
   const { data: searchData, isLoading } = useApiQuery<SearchResponse>({
     queryKey: [
       "search",
@@ -154,41 +148,22 @@ export default function SearchPage() {
   const total = searchData?.meta?.total ?? 0;
   const totalPages = searchData?.meta?.totalPages ?? 1;
 
-  /* ---- Handlers ---- */
-  const handleSortChange = (sort: string) => {
+  const handleSortChange = (sort: string) =>
     router.replace(buildUrl({ sort, page: "1" }));
-  };
-
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    router.replace(buildUrl({ category: e.target.value, page: "1" }));
-  };
-
-  const handlePriceFilter = () => {
-    const minEl = document.getElementById(
-      "min-price",
-    ) as HTMLInputElement | null;
-    const maxEl = document.getElementById(
-      "max-price",
-    ) as HTMLInputElement | null;
-    router.replace(
-      buildUrl({
-        minPrice: minEl?.value ?? "",
-        maxPrice: maxEl?.value ?? "",
-        page: "1",
-      }),
-    );
-  };
-
-  const handleClearFilters = () => {
+  const handleCategoryChange = (cat: string) =>
+    router.replace(buildUrl({ category: cat, page: "1" }));
+  const handlePriceFilter = (min: string, max: string) =>
+    router.replace(buildUrl({ minPrice: min, maxPrice: max, page: "1" }));
+  const handleClearFilters = () =>
     router.replace(`${ROUTES.PUBLIC.SEARCH}?q=${encodeURIComponent(urlQ)}`);
-  };
 
-  /* ---- Render ---- */
+  const hasActiveFilters = !!(urlCategory || urlMinPrice || urlMaxPrice);
+  const hasAnyFilter = !!(urlQ || urlCategory || urlMinPrice || urlMaxPrice);
+
   return (
     <main
       className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
     >
-      {/* Page heading */}
       <div>
         <h1 className={`${typography.h2} ${themed.textPrimary}`}>
           {UI_LABELS.SEARCH_PAGE.TITLE}
@@ -209,132 +184,39 @@ export default function SearchPage() {
           className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-          🔍
+          ðŸ”
         </span>
       </div>
 
-      {/* Filters Row */}
-      <div className={`flex flex-wrap gap-4 items-end`}>
-        {/* Category filter */}
-        <div className="flex flex-col gap-1">
-          <label className={`text-sm font-medium ${themed.textSecondary}`}>
-            {UI_LABELS.SEARCH_PAGE.CATEGORY_FILTER}
-          </label>
-          <select
-            value={urlCategory}
-            onChange={handleCategoryChange}
-            className={`h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-          >
-            <option value="">{UI_LABELS.SEARCH_PAGE.ALL_CATEGORIES}</option>
-            {topCategories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      <SearchFiltersRow
+        urlCategory={urlCategory}
+        topCategories={topCategories}
+        urlMinPrice={urlMinPrice}
+        urlMaxPrice={urlMaxPrice}
+        showClear={hasActiveFilters}
+        onCategoryChange={handleCategoryChange}
+        onPriceFilter={handlePriceFilter}
+        onClearFilters={handleClearFilters}
+      />
 
-        {/* Price range */}
-        <div className="flex flex-col gap-1">
-          <label className={`text-sm font-medium ${themed.textSecondary}`}>
-            {UI_LABELS.SEARCH_PAGE.PRICE_RANGE}
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              id="min-price"
-              type="number"
-              min={0}
-              defaultValue={urlMinPrice}
-              placeholder={UI_LABELS.SEARCH_PAGE.MIN_PRICE}
-              className={`w-28 h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            />
-            <span className={`text-sm ${themed.textSecondary}`}>–</span>
-            <input
-              id="max-price"
-              type="number"
-              min={0}
-              defaultValue={urlMaxPrice}
-              placeholder={UI_LABELS.SEARCH_PAGE.MAX_PRICE}
-              className={`w-28 h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            />
-            <button
-              onClick={handlePriceFilter}
-              className="h-10 px-4 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
-            >
-              {UI_LABELS.ACTIONS.SEARCH}
-            </button>
-          </div>
-        </div>
-
-        {/* Clear filters (only when filters active) */}
-        {(urlCategory || urlMinPrice || urlMaxPrice) && (
-          <button
-            onClick={handleClearFilters}
-            className={`h-10 px-4 rounded-lg text-sm border ${themed.border} ${themed.textSecondary} hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
-          >
-            {UI_LABELS.SEARCH_PAGE.CLEAR_FILTERS}
-          </button>
-        )}
-      </div>
-
-      {/* Results header */}
-      {urlQ || urlCategory || urlMinPrice || urlMaxPrice ? (
-        <>
-          {/* Sort bar */}
-          <ProductSortBar
-            total={total}
-            showing={products.length}
-            sort={urlSort}
-            onSortChange={handleSortChange}
-          />
-
-          {/* Product Grid */}
-          {isLoading ? (
-            <ProductGrid products={[]} loading skeletonCount={PAGE_SIZE} />
-          ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className={`text-lg font-medium ${themed.textPrimary}`}>
-                {UI_LABELS.SEARCH_PAGE.NO_RESULTS}
-              </p>
-              {urlQ && (
-                <p className={`mt-2 text-sm ${themed.textSecondary}`}>
-                  {UI_LABELS.SEARCH_PAGE.NO_RESULTS_SUBTITLE(urlQ)}
-                </p>
-              )}
-            </div>
-          ) : (
-            <ProductGrid products={products} />
-          )}
-
-          {/* Pagination */}
-          {total > PAGE_SIZE && (
-            <div className="flex justify-center gap-2">
-              <button
-                onClick={() =>
-                  router.replace(buildUrl({ page: String(urlPage - 1) }))
-                }
-                disabled={urlPage === 1}
-                className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-              >
-                {UI_LABELS.ACTIONS.BACK}
-              </button>
-              <span className={`px-4 py-2 text-sm ${themed.textSecondary}`}>
-                {urlPage} / {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  router.replace(buildUrl({ page: String(urlPage + 1) }))
-                }
-                disabled={urlPage >= totalPages}
-                className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-              >
-                {UI_LABELS.ACTIONS.NEXT}
-              </button>
-            </div>
-          )}
-        </>
+      {hasAnyFilter ? (
+        <SearchResultsSection
+          products={products}
+          total={total}
+          totalPages={totalPages}
+          urlQ={urlQ}
+          urlSort={urlSort}
+          urlPage={urlPage}
+          isLoading={isLoading}
+          onSortChange={handleSortChange}
+          onPrevPage={() =>
+            router.replace(buildUrl({ page: String(urlPage - 1) }))
+          }
+          onNextPage={() =>
+            router.replace(buildUrl({ page: String(urlPage + 1) }))
+          }
+        />
       ) : (
-        /* Empty state — no query yet */
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p className={`text-xl ${themed.textSecondary}`}>
             {UI_LABELS.SEARCH_PAGE.EMPTY_QUERY}

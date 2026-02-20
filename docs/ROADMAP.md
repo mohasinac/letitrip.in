@@ -401,12 +401,12 @@
 - Extract `SellerPayoutHistoryTable` — paginated history table
 - Resulting page: ~60 lines of orchestration
 
-#### 6.2.2 `search/page.tsx` (346 lines)
+#### 6.2.2 `search/page.tsx` (346 lines) ✅
 
-- Already has `ProductCard`, `ProductGrid` — extract inline filter sidebar to `SearchFiltersSidebar`
-- Extract search bar + sort controls to `SearchControlBar`
-- Extract no-results state to use `EmptyState` component
-- Resulting page: ~80 lines
+- Extracted `SearchFiltersRow` — category select, price range inputs (with local state) + clear button
+- Extracted `SearchResultsSection` — sort bar, product grid, pagination, no-results state
+- Replaced DOM id-based price reading with controlled `useState` + callback props
+- Resulting page: 188 lines
 
 #### 6.2.3 `user/notifications/page.tsx` (309 lines) ✅
 
@@ -586,7 +586,7 @@ Spots to audit:
 | ---------------------------------- | -------------------------- |
 | 6.1 Admin Payouts UI               | ✅ Done                    |
 | 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
-| 6.2.2 search page decomposition    | 🔴 Pending                 |
+| 6.2.2 search page decomposition    | ✅ Done                    |
 | 6.2.3 user/notifications decompose | ✅ Done                    |
 | 6.2.4 seller/analytics decompose   | ✅ Done                    |
 | 6.2.5 seller/page decompose        | ✅ Done                    |
