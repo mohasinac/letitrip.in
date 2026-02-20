@@ -93,6 +93,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin bids/auctions endpoints */
     BIDS: "/api/admin/bids", // GET - List all bids with filters
     BID_BY_ID: (id: string) => `/api/admin/bids/${id}`, // GET single bid
+    /** Admin blog endpoints */
+    BLOG: "/api/admin/blog", // GET/POST - List/create posts
+    BLOG_BY_ID: (id: string) => `/api/admin/blog/${id}`, // GET/PATCH/DELETE
   },
 
   // Product endpoints ✅ All routes exist
@@ -222,6 +225,12 @@ export const API_ENDPOINTS = {
   // Seller endpoints ✅ Routes exist
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
+  },
+
+  // Blog endpoints — public
+  BLOG: {
+    LIST: "/api/blog", // GET - List published posts
+    GET_BY_SLUG: (slug: string) => `/api/blog/${slug}`, // GET - Single post by slug
   },
 
   // Contact endpoint

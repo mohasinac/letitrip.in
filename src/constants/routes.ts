@@ -80,6 +80,7 @@ export const ROUTES = {
     PRODUCTS: "/admin/products",
     ORDERS: "/admin/orders",
     BIDS: "/admin/bids",
+    BLOG: "/admin/blog",
   },
 
   // Demo Routes (dev-only)

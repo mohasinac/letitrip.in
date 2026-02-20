@@ -26,3 +26,4 @@ export * from "./categories";
 export * from "./coupons";
 export * from "./faqs";
 export * from "./newsletter";
+export * from "./blog-posts";

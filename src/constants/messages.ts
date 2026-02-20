@@ -334,6 +334,16 @@ export const ERROR_MESSAGES = {
     VALIDATION_FAILED: "Please fill in all required fields.",
   },
 
+  BLOG: {
+    NOT_FOUND: "Blog post not found",
+    FETCH_FAILED: "Failed to fetch blog posts",
+    FETCH_POST_FAILED: "Failed to fetch blog post",
+    CREATE_FAILED: "Failed to create blog post",
+    UPDATE_FAILED: "Failed to update blog post",
+    DELETE_FAILED: "Failed to delete blog post",
+    SLUG_TAKEN: "A post with this slug already exists",
+  },
+
   // API Route Errors (server-side logging)
   API: {
     ROUTE_ERROR: "error:", // Used as suffix: "GET /api/endpoint error:"
@@ -566,6 +576,13 @@ export const SUCCESS_MESSAGES = {
 
   CONTACT: {
     SENT: "Your message has been sent! We'll get back to you shortly.",
+  },
+
+  BLOG: {
+    CREATED: "Blog post created successfully",
+    UPDATED: "Blog post updated successfully",
+    DELETED: "Blog post deleted successfully",
+    PUBLISHED: "Blog post published successfully",
   },
 } as const;
 

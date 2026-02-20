@@ -7,27 +7,27 @@
 
 ## Current Status Snapshot
 
-| Area                                                                                         | Status                                                |
-| -------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Auth (login, register, reset, verify)                                                        | ✅ Complete                                           |
-| User profile, addresses, orders, settings                                                    | ✅ Complete                                           |
-| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                           |
-| Admin: products management                                                                   | ✅ Complete                                           |
-| Admin: orders management                                                                     | ✅ Complete                                           |
-| Homepage sections                                                                            | ✅ Complete                                           |
-| Product API + repository                                                                     | ✅ Complete                                           |
-| Order API + repository                                                                       | ✅ Complete                                           |
-| Bid / Auction repository                                                                     | ✅ Schema + repo + API routes (GET/POST bids)         |
-| Admin: coupons management                                                                    | ✅ Complete                                           |
-| Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management      |
-| Cart                                                                                         | ✅ Schema + repo + API + page complete                |
-| Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email |
-| Products browsing pages                                                                      | ✅ Listing + detail pages complete                    |
-| Categories browsing pages                                                                    | ✅ Complete — listing + category products pages       |
-| Seller portal                                                                                | ✅ Dashboard + Products CRUD + Orders at /seller      |
-| Search                                                                                       | ✅ Complete — /search page + /api/search route        |
-| Admin: bids/auctions management                                                              | ✅ Complete — /admin/bids page with stats + drawer    |
-| Content & Trust pages                                                                        | ✅ About, Contact, Help, Terms, Privacy, Sellers      |
+| Area                                                                                         | Status                                                 |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Auth (login, register, reset, verify)                                                        | ✅ Complete                                            |
+| User profile, addresses, orders, settings                                                    | ✅ Complete                                            |
+| Admin: dashboard, users, categories, FAQs, carousel, reviews, sections, site settings, media | ✅ Complete                                            |
+| Admin: products management                                                                   | ✅ Complete                                            |
+| Admin: orders management                                                                     | ✅ Complete                                            |
+| Homepage sections                                                                            | ✅ Complete                                            |
+| Product API + repository                                                                     | ✅ Complete                                            |
+| Order API + repository                                                                       | ✅ Complete                                            |
+| Bid / Auction repository                                                                     | ✅ Schema + repo + API routes (GET/POST bids)          |
+| Admin: coupons management                                                                    | ✅ Complete                                            |
+| Coupon repository                                                                            | ✅ Schema + repo + API routes + admin management       |
+| Cart                                                                                         | ✅ Schema + repo + API + page complete                 |
+| Checkout + Payment                                                                           | ✅ Complete incl. Razorpay + order confirmation email  |
+| Products browsing pages                                                                      | ✅ Listing + detail pages complete                     |
+| Categories browsing pages                                                                    | ✅ Complete — listing + category products pages        |
+| Seller portal                                                                                | ✅ Dashboard + Products CRUD + Orders at /seller       |
+| Search                                                                                       | ✅ Complete — /search page + /api/search route         |
+| Admin: bids/auctions management                                                              | ✅ Complete — /admin/bids page with stats + drawer     |
+| Content & Trust pages                                                                        | ✅ About, Contact, Help, Terms, Privacy, Sellers, Blog |
 
 ---
 
@@ -300,11 +300,16 @@
 - Marketing page: sell on LetItRip, how it works, seller benefits, FAQs
 - **Priority:** 🟢 P3
 
-### 4.7 Blog
+### 4.7 Blog ✅
 
-- **Route:** `/blog` 🔗💀 , `/blog/[slug]`
-- **Schema:** `src/db/schema/blog-posts.ts`
-- **Repository:** `src/repositories/blog.repository.ts`
+- **Route:** `/blog`, `/blog/[slug]`
+- **Schema:** `src/db/schema/blog-posts.ts` — `BlogPostDocument`, `BLOG_POSTS_COLLECTION`, `BLOG_POST_FIELDS`
+- **Repository:** `src/repositories/blog.repository.ts` — findBySlug, findPublished, findRelated, incrementViews, create, update, delete
+- **API Public:** `GET /api/blog`, `GET /api/blog/[slug]`
+- **API Admin:** `GET/POST /api/admin/blog`, `GET/PATCH/DELETE /api/admin/blog/[id]`
+- **Components:** `BlogTableColumns`, `BlogForm` in `src/components/admin/blog/`
+- **Admin page:** `src/app/admin/blog/[[...action]]/page.tsx` — status filter tabs, stat cards, full CRUD drawer
+- **Public pages:** `src/app/blog/page.tsx` (listing with category tabs, featured hero), `src/app/blog/[slug]/page.tsx` (detail with related posts)
 - **Priority:** 🟢 P3
 
 ### 4.8 Promotions / Deals Page

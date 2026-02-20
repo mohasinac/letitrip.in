@@ -71,6 +71,10 @@ export type { OrderStatusFormState } from "./orders";
 // Phase 7: Admin Bids/Auctions
 export { getBidTableColumns } from "./bids";
 
+// Phase 8: Admin Blog
+export { getBlogTableColumns, BlogForm } from "./blog";
+export type { BlogFormData } from "./blog";
+
 // Phase 6: Admin Coupons
 export {
   getCouponTableColumns,
