@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.3 — User Notifications Page Decomposition (Feb 2026)
+
+#### `src/components/user/notifications/NotificationItem.tsx` — NEW
+
+- `NotificationItem` — individual notification row with type icon, title, message, relative timestamp, mark-read and delete action buttons; `NOTIFICATION_TYPE_ICONS` map co-located here
+
+#### `src/components/user/notifications/NotificationsBulkActions.tsx` — NEW
+
+- `NotificationsBulkActions` — page header with unread count text + Mark All Read button
+
+#### `src/components/user/notifications/index.ts` — NEW
+
+- Barrel export for notification components
+
+#### `src/components/user/index.ts`
+
+- Added `export * from "./notifications"`
+
+#### `src/app/user/notifications/page.tsx`
+
+- Reduced from 309 → 137 lines
+
+---
+
 ### Phase 6.2.4 — Seller Analytics Page Decomposition (Feb 2026)
 
 #### `src/components/seller/SellerAnalyticsStats.tsx` — NEW

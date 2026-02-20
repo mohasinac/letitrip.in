@@ -408,12 +408,12 @@
 - Extract no-results state to use `EmptyState` component
 - Resulting page: ~80 lines
 
-#### 6.2.3 `user/notifications/page.tsx` (309 lines)
+#### 6.2.3 `user/notifications/page.tsx` (309 lines) ✅
 
-- Extract `NotificationItem` (individual row with mark-read / delete actions)
-- Extract `NotificationsEmptyState` using `EmptyState` component
-- Extract `NotificationsBulkActions` (mark-all-read button row)
-- Resulting page: ~70 lines
+- Extracted `NotificationItem` — individual row with type icon, title, message, timestamp, mark-read + delete actions
+- Extracted `NotificationsBulkActions` — header with unread count + "Mark all as read" button
+- `NOTIFICATION_TYPE_ICONS` map lives inside `NotificationItem`
+- Resulting page: 137 lines
 
 #### 6.2.4 `seller/analytics/page.tsx` (306 lines) ✅
 
@@ -587,7 +587,7 @@ Spots to audit:
 | 6.1 Admin Payouts UI               | ✅ Done                    |
 | 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
 | 6.2.2 search page decomposition    | 🔴 Pending                 |
-| 6.2.3 user/notifications decompose | 🔴 Pending                 |
+| 6.2.3 user/notifications decompose | ✅ Done                    |
 | 6.2.4 seller/analytics decompose   | ✅ Done                    |
 | 6.2.5 seller/page decompose        | ✅ Done                    |
 | 6.2.6 blog page decompose          | ✅ Done                    |
