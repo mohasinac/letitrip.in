@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5.5 — Rate Limiting on Public API Routes (Feb 2026)
+
+Applied `applyRateLimit` + `RateLimitPresets` from `src/lib/security/rate-limit.ts` to key public routes. In-memory rate limiter skips checks in `development` automatically.
+
+| Route                               | Preset                  | Reason                 |
+| ----------------------------------- | ----------------------- | ---------------------- |
+| `POST /api/auth/login`              | AUTH (10/min)           | Brute-force protection |
+| `POST /api/auth/register`           | AUTH (10/min)           | Registration spam      |
+| `POST /api/auth/forgot-password`    | PASSWORD_RESET (3/hour) | Reset abuse            |
+| `POST /api/contact`                 | STRICT (5/min)          | Email spam             |
+| `GET /api/products`                 | GENEROUS (100/min)      | Scraping protection    |
+| `GET /api/reviews`                  | API (60/min)            | Public read            |
+| `GET /api/profile/[userId]/reviews` | API (60/min)            | Public read            |
+
+All routes return HTTP 429 with `UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED` when limit is exceeded.
+
 ### Phase 5.4 — Seller Public Storefront (Feb 2026)
 
 #### `src/app/sellers/[id]/page.tsx` (new)

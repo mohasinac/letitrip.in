@@ -22,7 +22,8 @@ import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError, AuthenticationError } from "@/lib/errors";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { z } from "zod";
 import { serverLogger } from "@/lib/server-logger";
 
@@ -33,6 +34,18 @@ const loginSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting — protect against brute force
+    const rateLimitResult = await applyRateLimit(
+      request,
+      RateLimitPresets.AUTH,
+    );
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const validation = loginSchema.safeParse(body);
 

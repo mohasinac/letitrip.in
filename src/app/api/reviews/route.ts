@@ -25,7 +25,8 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -56,6 +57,15 @@ import { NextResponse } from "next/server";
  */
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting — public read endpoint
+    const rateLimitResult = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+        { status: 429 },
+      );
+    }
+
     // Parse query parameters
     const searchParams = getSearchParams(request);
     const productId = getStringParam(searchParams, "productId");

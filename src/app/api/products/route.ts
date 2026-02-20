@@ -18,7 +18,7 @@
 
 import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applySieveToArray } from "@/helpers";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
@@ -27,6 +27,7 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import {
   validateRequestBody,
   formatZodErrors,
@@ -43,6 +44,18 @@ import { NextResponse } from "next/server";
  */
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting — prevent scraping
+    const rateLimitResult = await applyRateLimit(
+      request,
+      RateLimitPresets.GENEROUS,
+    );
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+        { status: 429 },
+      );
+    }
+
     // Parse query parameters
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

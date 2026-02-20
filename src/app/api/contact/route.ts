@@ -8,7 +8,8 @@ import { z } from "zod";
 import { sendContactEmail } from "@/lib/email";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 
 const contactSchema = z.object({
@@ -23,6 +24,18 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting — prevent contact form spam
+    const rateLimitResult = await applyRateLimit(
+      request,
+      RateLimitPresets.STRICT,
+    );
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const validation = contactSchema.safeParse(body);
 

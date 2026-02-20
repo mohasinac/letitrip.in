@@ -10,8 +10,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository, reviewRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, UI_LABELS } from "@/constants";
 
 interface RouteContext {
   params: Promise<{ userId: string }>;
@@ -28,6 +29,18 @@ export async function GET(
   context: RouteContext,
 ): Promise<NextResponse> {
   try {
+    // Rate limiting — public read endpoint
+    const rateLimitResult = await applyRateLimit(
+      _request,
+      RateLimitPresets.API,
+    );
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+        { status: 429 },
+      );
+    }
+
     const { userId } = await context.params;
 
     if (!userId) {
