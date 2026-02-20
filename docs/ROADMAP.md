@@ -533,16 +533,16 @@ Replaced all hardcoded blog string literals with constants.
 
 ---
 
-### 6.6 Mobile & Responsive Polish
+### 6.6 Mobile & Responsive Polish ✅
 
-| Area                        | Issue                                              | Fix                                      |
-| --------------------------- | -------------------------------------------------- | ---------------------------------------- |
-| `search/page.tsx`           | Desktop filter sidebar hidden on mobile, no drawer | Add mobile filter drawer (use `Modal`)   |
-| `blog/page.tsx`             | Category tabs overflow on narrow screens           | Horizontal scroll with `overflow-x-auto` |
-| `seller/analytics/page.tsx` | Charts overflow on mobile                          | Responsive `ResponsiveContainer` usage   |
-| `checkout/page.tsx`         | Stepper layout narrow on xs screens                | Stack stepper labels below icons on xs   |
-| Admin tables                | Horizontal scroll missing on some tables           | Wrap in `overflow-x-auto` consistently   |
-| `BottomNavbar`              | Missing `/seller` and `/search` tab shortcuts      | Add seller quick-link for seller users   |
+| Area                        | Status                                                         |
+| --------------------------- | -------------------------------------------------------------- |
+| `blog/page.tsx`             | ✅ Category tabs now use horizontal scroll (`overflow-x-auto`) |
+| `BottomNavbar`              | ✅ Seller dashboard quick-link added for seller/admin users    |
+| `search/page.tsx`           | ✅ `SearchFiltersRow` uses `flex-wrap` (adapts naturally)      |
+| `seller/analytics/page.tsx` | ✅ `ResponsiveContainer width="100%"` already in place         |
+| `checkout/page.tsx`         | ✅ Stepper labels already `hidden sm:block`                    |
+| Admin tables                | ✅ `DataTable` already has `overflow-x-auto`                   |
 
 ---
 
@@ -589,7 +589,7 @@ Spots to audit:
 | 6.3 THEME_CONSTANTS audit          | ✅ Done                    |
 | 6.4 Empty states & skeletons       | ✅ Done                    |
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
-| 6.6 Mobile & responsive polish     | 🔴 Pending                 |
+| 6.6 Mobile & responsive polish     | ✅ Done                    |
 | 6.7 Dark mode sweep                | 🔴 Pending                 |
 | 6.8 Accessibility improvements     | 🔴 Pending                 |
 

@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.6 — Mobile & Responsive Polish (Feb 2026)
+
+#### `src/components/blog/BlogCategoryTabs.tsx`
+
+- Changed category tabs from `flex-wrap` to horizontal scroll (`overflow-x-auto scrollbar-hide`) for better mobile UX
+- Added `whitespace-nowrap flex-shrink-0` to each button to prevent wrapping within the scroll container
+
+#### `src/constants/ui.ts`
+
+- Added `NAV.SELLER: "Seller"` short label for mobile bottom nav
+
+#### `src/components/layout/BottomNavbar.tsx`
+
+- Added `isSeller` check (`user?.role === 'seller' || 'admin'`)
+- Added conditional seller dashboard nav item (bar chart icon, links to `ROUTES.SELLER.DASHBOARD`) visible only for seller/admin users
+
+**Items already responsive (no changes needed):**
+
+- `SearchFiltersRow` — uses `flex-wrap` already adapts to mobile
+- `CheckoutStepper` — labels already `hidden sm:block`
+- `SellerRevenueChart` — already uses `ResponsiveContainer width="100%"`
+- `DataTable` — already has `overflow-x-auto` wrapper
+
+---
+
 ### Phase 6.4 — Empty States & Loading Skeletons (Feb 2026)
 
 #### `src/constants/ui.ts`

@@ -209,6 +209,7 @@ export const UI_LABELS = {
     SELLER_DASHBOARD: "Seller Dashboard",
     MY_PROFILE: "My Profile",
     MY_ORDERS: "My Orders",
+    SELLER: "Seller",
     USERS: "Users",
     PRODUCTS_ADMIN: "Products",
     MY_PRODUCTS: "My Products",

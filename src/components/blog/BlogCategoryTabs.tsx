@@ -25,13 +25,13 @@ export function BlogCategoryTabs({
   onChange,
 }: BlogCategoryTabsProps) {
   return (
-    <div className="flex gap-2 flex-wrap mb-8">
+    <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide -mx-1 px-1">
       {BLOG_CATEGORY_TABS.map((tab) => (
         <Button
           key={tab.key}
           variant={activeCategory === tab.key ? "primary" : "outline"}
           onClick={() => onChange(tab.key)}
-          className="text-sm"
+          className="text-sm whitespace-nowrap flex-shrink-0"
         >
           {tab.label}
         </Button>

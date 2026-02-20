@@ -74,6 +74,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
   const pathname = usePathname();
   const { user } = useAuth();
+  const isSeller = user?.role === "seller" || user?.role === "admin";
 
   return (
     <nav
@@ -94,7 +95,25 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             />
           </li>
         ))}
-
+        {/* Seller Dashboard - visible for seller/admin users only */}
+        {isSeller && (
+          <li className="flex-1">
+            <NavItem
+              href={ROUTES.SELLER.DASHBOARD}
+              label={UI_LABELS.NAV.SELLER}
+              icon={
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              }
+              isActive={pathname === ROUTES.SELLER.DASHBOARD}
+              variant="vertical"
+            />
+          </li>
+        )}
         {/* Search Button */}
         <li className="flex-1">
           <button
