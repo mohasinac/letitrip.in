@@ -394,12 +394,13 @@
 
 > **Rule:** Pages > 150 lines with inline JSX/logic must be split into sub-components.
 
-#### 6.2.1 `seller/payouts/page.tsx` (418 lines)
+#### 6.2.1 `seller/payouts/page.tsx` (418 lines) ✅
 
-- Extract `SellerPayoutStatsRow` — 3 stat cards (available, pending, paid)
-- Extract `SellerPayoutRequestForm` — bank account + submit form
-- Extract `SellerPayoutHistoryTable` — paginated history table
-- Resulting page: ~60 lines of orchestration
+- Extracted `SellerPayoutStats` — 3 stat cards (available earnings, total paid, pending payout)
+- Extracted `SellerPayoutRequestForm` — form card managing own state (paymentMethod, bankForm, upiId, notes, showForm toggle)
+- Extracted `SellerPayoutHistoryTable` — overflow table with badge status column
+- Exported `PayoutSummary` and `PayoutRecord` types through seller barrel
+- Resulting page: 100 lines
 
 #### 6.2.2 `search/page.tsx` (346 lines) ✅
 
@@ -585,7 +586,7 @@ Spots to audit:
 | Task                               | Status                     |
 | ---------------------------------- | -------------------------- |
 | 6.1 Admin Payouts UI               | ✅ Done                    |
-| 6.2.1 seller/payouts decomposition | 🔴 Pending                 |
+| 6.2.1 seller/payouts decomposition | ✅ Done                    |
 | 6.2.2 search page decomposition    | ✅ Done                    |
 | 6.2.3 user/notifications decompose | ✅ Done                    |
 | 6.2.4 seller/analytics decompose   | ✅ Done                    |

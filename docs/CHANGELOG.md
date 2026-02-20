@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.2.1 — Seller Payouts Page Decomposition (Feb 2026)
+
+#### `src/components/seller/SellerPayoutStats.tsx` — NEW
+
+- `SellerPayoutStats` — 3 stat cards (available earnings, total paid, pending payout); exports `PayoutSummary` type
+
+#### `src/components/seller/SellerPayoutRequestForm.tsx` — NEW
+
+- `SellerPayoutRequestForm` — full request card with form state (paymentMethod, bankForm, upiId, notes, showForm) managed internally; accepts `onSubmit` callback
+
+#### `src/components/seller/SellerPayoutHistoryTable.tsx` — NEW
+
+- `SellerPayoutHistoryTable` — overflow table with badge status column; exports `PayoutRecord` type
+
+#### `src/components/seller/index.ts`
+
+- Added exports for SellerPayoutStats, SellerPayoutRequestForm, SellerPayoutHistoryTable and types PayoutSummary, PayoutRecord
+
+#### `src/app/seller/payouts/page.tsx`
+
+- Reduced from 418 → 100 lines
+
+---
+
 ### Phase 6.2.2 — Search Page Decomposition (Feb 2026)
 
 #### `src/components/search/SearchFiltersRow.tsx` — NEW
