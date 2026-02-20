@@ -57,7 +57,7 @@ export default function AdminPayoutsPage() {
     queryKey,
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.ADMIN.PAYOUTS}${statusFilter ? `?status=${statusFilter}` : ""}`,
+        `${API_ENDPOINTS.ADMIN.PAYOUTS}${statusFilter ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}` : ""}`,
       ),
   });
 

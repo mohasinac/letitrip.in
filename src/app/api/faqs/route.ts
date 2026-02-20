@@ -19,9 +19,11 @@ import { faqsRepository, siteSettingsRepository } from "@/repositories";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
+  getNumberParam,
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
+import { applySieveToArray } from "@/helpers";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,
@@ -66,35 +68,29 @@ export const GET = withCache(async (request: NextRequest) => {
     const showOnHomepageParam = getBooleanParam(searchParams, "showOnHomepage");
     const showOnHomepageStr = searchParams.get("showOnHomepage");
     const tags = searchParams.get("tags")?.split(",").filter(Boolean);
+    // Sieve DSL params — allow callers to use full Sieve filter/sort expressions
+    const sieveFilters = getStringParam(searchParams, "filters");
+    const sieveSorts = getStringParam(searchParams, "sorts");
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 100, {
+      min: 1,
+      max: 200,
+    });
 
-    // Parse filters
+    // Parse legacy filters
     const priority = priorityStr ? parseInt(priorityStr, 10) : undefined;
     const showOnHomepage = showOnHomepageParam === true;
 
-    // Query all FAQs
+    // Step 1: Fetch all FAQs
     let faqs = await faqsRepository.findAll();
 
-    // Filter by category
-    if (category) {
-      faqs = faqs.filter((faq) => faq.category === category);
-    }
-
-    // Filter by homepage display
-    if (showOnHomepageStr) {
-      faqs = faqs.filter((faq) => faq.showOnHomepage === showOnHomepage);
-    }
-
-    // Filter by priority
-    if (priority !== undefined) {
-      faqs = faqs.filter((faq) => faq.priority === priority);
-    }
-
-    // Filter by tags (any tag match)
+    // Step 2: Pre-filter for complex cases that Sieve can't handle natively
+    // Tags: array membership (any tag in requested list)
     if (tags && tags.length > 0) {
       faqs = faqs.filter((faq) => faq.tags?.some((tag) => tags.includes(tag)));
     }
 
-    // Normalize answer field: handle both string and { text, format } shapes
+    // Step 3: Normalize answer field (must happen before Sieve so field paths resolve)
     faqs = faqs.map((faq) => ({
       ...faq,
       answer:
@@ -103,7 +99,7 @@ export const GET = withCache(async (request: NextRequest) => {
           : (faq.answer ?? { text: "", format: "plain" as const }),
     }));
 
-    // Filter by search query (question + answer)
+    // Step 4: Full-text search — multi-field, can't be done purely in Sieve DSL
     if (search) {
       const searchLower = search.toLowerCase();
       faqs = faqs.filter(
@@ -113,10 +109,66 @@ export const GET = withCache(async (request: NextRequest) => {
       );
     }
 
-    // Get site settings for variable interpolation
+    // Step 5: Build internal Sieve filter string from legacy params
+    const internalFiltersArr: string[] = [];
+    if (category) internalFiltersArr.push(`category==${category}`);
+    if (showOnHomepageStr)
+      internalFiltersArr.push(`showOnHomepage==${showOnHomepage}`);
+    if (priority !== undefined)
+      internalFiltersArr.push(`priority==${priority}`);
+
+    // Merge internal filters with any caller-provided Sieve filters
+    const mergedFilters =
+      [...internalFiltersArr, ...(sieveFilters ? [sieveFilters] : [])].join(
+        ",",
+      ) || undefined;
+
+    // Step 6: Apply Sieve (filter, sort, paginate)
+    const sieveResult = await applySieveToArray({
+      items: faqs,
+      model: {
+        filters: mergedFilters,
+        sorts: sieveSorts || "-priority,order",
+        page,
+        pageSize,
+      },
+      fields: {
+        id: { canFilter: true, canSort: false },
+        question: { canFilter: true, canSort: true },
+        category: { canFilter: true, canSort: true },
+        status: { canFilter: true, canSort: true },
+        priority: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => Number(v),
+        },
+        order: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => Number(v),
+        },
+        showOnHomepage: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (v: string) => v === "true",
+        },
+        isFeatured: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (v: string) => v === "true",
+        },
+        createdAt: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => new Date(v),
+        },
+      },
+      options: { defaultPageSize: 100, maxPageSize: 200 },
+    });
+
+    // Step 7: Get site settings, then interpolate only the current page's items
     const siteSettings = await siteSettingsRepository.getSingleton();
 
-    // Helper function to interpolate variables
     const interpolateVariables = (
       text: string | undefined,
       variables: Record<string, string | undefined>,
@@ -132,8 +184,7 @@ export const GET = withCache(async (request: NextRequest) => {
       return result;
     };
 
-    // Interpolate variables in answers
-    const interpolatedFAQs = faqs.map((faq) => ({
+    const interpolatedFAQs = sieveResult.items.map((faq) => ({
       ...faq,
       answer: {
         ...faq.answer,
@@ -147,21 +198,17 @@ export const GET = withCache(async (request: NextRequest) => {
       },
     }));
 
-    // Sort by priority (higher first), then by order
-    interpolatedFAQs.sort((a, b) => {
-      if (a.priority !== b.priority) {
-        return (b.priority || 0) - (a.priority || 0);
-      }
-      return (a.order || 0) - (b.order || 0);
-    });
-
     // Return with cache headers
     return NextResponse.json(
       {
         success: true,
         data: interpolatedFAQs,
         meta: {
-          total: interpolatedFAQs.length,
+          total: sieveResult.total,
+          page: sieveResult.page,
+          pageSize: sieveResult.pageSize,
+          totalPages: sieveResult.totalPages,
+          hasMore: sieveResult.hasMore,
           categories: [
             "orders_payment",
             "shipping_delivery",

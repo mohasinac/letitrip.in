@@ -72,10 +72,20 @@ export default function AdminBlogPage({ params }: PageProps) {
       published: number;
       drafts: number;
       featured: number;
+      filteredTotal: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+      hasMore: boolean;
     };
   }>({
-    queryKey: ["admin", "blog"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADMIN.BLOG),
+    queryKey: ["admin", "blog", statusFilter],
+    queryFn: () => {
+      const filtersParam = statusFilter
+        ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}&pageSize=200`
+        : "?pageSize=200";
+      return apiClient.get(`${API_ENDPOINTS.ADMIN.BLOG}${filtersParam}`);
+    },
   });
 
   const createMutation = useApiMutation<BlogPostDocument, BlogFormData>({
@@ -95,11 +105,6 @@ export default function AdminBlogPage({ params }: PageProps) {
   });
 
   const allPosts: BlogPostDocument[] = data?.posts || [];
-
-  const filteredPosts = useMemo(() => {
-    if (!statusFilter) return allPosts;
-    return allPosts.filter((p) => p.status === statusFilter);
-  }, [allPosts, statusFilter]);
 
   const isDirty = useMemo(() => {
     return JSON.stringify(formData) !== initialFormRef.current;
@@ -248,7 +253,7 @@ export default function AdminBlogPage({ params }: PageProps) {
         ) : (
           <DataTable
             columns={columns as any}
-            data={filteredPosts}
+            data={allPosts}
             keyExtractor={(p: any) => p.id}
             loading={isLoading}
             emptyMessage={LABELS.EMPTY}

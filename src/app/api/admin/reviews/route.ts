@@ -1,7 +1,6 @@
 /**
- * Admin Payouts API
- *
- * GET /api/admin/payouts — List all payouts (filterable by status)
+ * Admin Reviews API Route
+ * GET /api/admin/reviews — List ALL reviews with Sieve filtering, sorting, and pagination
  */
 
 import { NextRequest } from "next/server";
@@ -12,20 +11,26 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { payoutRepository } from "@/repositories";
+import { reviewRepository } from "@/repositories";
 import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
- * GET /api/admin/payouts
+ * GET /api/admin/reviews
+ *
+ * Returns all reviews across all products, paginated and filterable via the
+ * Sieve DSL. Unlike the public GET /api/reviews (which requires a productId),
+ * this endpoint is admin-only and operates on the full review dataset.
  *
  * Query params:
- *  - filters  (string) — Sieve filters (e.g. status==pending)
- *  - sorts    (string) — Sieve sorts (e.g. -createdAt)
- *  - page     (number) — page number (default 1)
- *  - pageSize (number) — results per page (default 50, max 200)
+ *  - filters  (string)  — Sieve filters (e.g. status==pending, rating>=4)
+ *  - sorts    (string)  — Sieve sorts (e.g. -createdAt)
+ *  - page     (number)  — page number (default 1)
+ *  - pageSize (number)  — results per page (default 50, max 200)
  *
- * summary stats are always computed from the full unfiltered dataset.
+ * Filterable / sortable fields:
+ *  id, productId, productTitle, userId, userName, userEmail,
+ *  status, rating, verified, helpfulCount, createdAt
  */
 export const GET = createApiHandler({
   auth: true,
@@ -41,34 +46,37 @@ export const GET = createApiHandler({
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
-    serverLogger.info("Admin payouts list requested", {
+    serverLogger.info("Admin reviews list requested", {
       filters,
       sorts,
       page,
       pageSize,
     });
 
-    const allPayouts = await payoutRepository.findAll();
-
-    // Summary always computed from the full dataset regardless of active filter
-    const summary = {
-      total: allPayouts.length,
-      pending: allPayouts.filter((p) => p.status === "pending").length,
-      processing: allPayouts.filter((p) => p.status === "processing").length,
-      completed: allPayouts.filter((p) => p.status === "completed").length,
-      failed: allPayouts.filter((p) => p.status === "failed").length,
-      totalAmount: allPayouts.reduce((sum, p) => sum + p.amount, 0),
-    };
+    const allReviews = await reviewRepository.findAll();
 
     const sieveResult = await applySieveToArray({
-      items: allPayouts,
+      items: allReviews,
       model: { filters, sorts, page, pageSize },
       fields: {
         id: { canFilter: true, canSort: false },
-        sellerId: { canFilter: true, canSort: false },
-        sellerName: { canFilter: true, canSort: true },
+        productId: { canFilter: true, canSort: false },
+        productTitle: { canFilter: true, canSort: true },
+        userId: { canFilter: true, canSort: false },
+        userName: { canFilter: true, canSort: true },
+        userEmail: { canFilter: true, canSort: true },
         status: { canFilter: true, canSort: true },
-        amount: {
+        rating: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => Number(v),
+        },
+        verified: {
+          canFilter: true,
+          canSort: false,
+          parseValue: (v: string) => v === "true",
+        },
+        helpfulCount: {
           canFilter: true,
           canSort: true,
           parseValue: (v: string) => Number(v),
@@ -78,18 +86,15 @@ export const GET = createApiHandler({
           canSort: true,
           parseValue: (v: string) => new Date(v),
         },
-        processedAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
       },
-      options: { defaultPageSize: 50, maxPageSize: 200 },
+      options: {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
     });
 
     return successResponse({
-      payouts: sieveResult.items,
-      summary,
+      reviews: sieveResult.items,
       meta: {
         total: sieveResult.total,
         page: sieveResult.page,

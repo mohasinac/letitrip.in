@@ -15,6 +15,7 @@ import {
   ReviewDetailView,
 } from "@/components";
 import { useToast } from "@/components";
+import { Modal, ConfirmDeleteModal } from "@/components";
 import type { Review, ReviewStatus } from "@/components";
 
 interface PageProps {
@@ -31,18 +32,33 @@ export default function AdminReviewsPage({ params }: PageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
-  const queryParams = new URLSearchParams();
-  if (statusFilter !== "all") queryParams.append("status", statusFilter);
-  if (ratingFilter !== "all") queryParams.append("rating", ratingFilter);
-  if (searchTerm) queryParams.append("search", searchTerm);
+  // Modal state for reject (replaces prompt())
+  const [rejectModal, setRejectModal] = useState<{
+    open: boolean;
+    review: Review | null;
+    reason: string;
+  }>({ open: false, review: null, reason: "" });
+
+  // Confirm-delete modal state (replaces confirm())
+  const [deleteConfirm, setDeleteConfirm] = useState<Review | null>(null);
+  const [bulkApproveConfirm, setBulkApproveConfirm] = useState(false);
+
+  // Build Sieve filter string
+  const filtersArr: string[] = [];
+  if (statusFilter !== "all") filtersArr.push(`status==${statusFilter}`);
+  if (ratingFilter !== "all") filtersArr.push(`rating==${ratingFilter}`);
+  if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
+  const filtersParam = filtersArr.join(",");
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     reviews: Review[];
-    total: number;
+    meta: { total: number };
   }>({
-    queryKey: ["reviews", "list", statusFilter, ratingFilter, searchTerm],
+    queryKey: ["admin", "reviews", statusFilter, ratingFilter, searchTerm],
     queryFn: () =>
-      apiClient.get(`${API_ENDPOINTS.REVIEWS.LIST}?${queryParams.toString()}`),
+      apiClient.get(
+        `${API_ENDPOINTS.ADMIN.REVIEWS}${filtersParam ? `?filters=${encodeURIComponent(filtersParam)}` : ""}`,
+      ),
   });
 
   const updateStatusMutation = useApiMutation<any, { id: string; data: any }>({
@@ -55,7 +71,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
   });
 
   const reviews = data?.reviews || [];
-  const total = data?.total || 0;
+  const total = data?.meta?.total || 0;
 
   const findReviewById = useCallback(
     (id: string): Review | undefined => reviews.find((r) => r.id === id),
@@ -116,8 +132,13 @@ export default function AdminReviewsPage({ params }: PageProps) {
     }
   };
 
-  const handleReject = async (review: Review) => {
-    const reason = prompt(`${REVIEWS.REJECTION_REASON}:`);
+  const handleReject = (review: Review) => {
+    setRejectModal({ open: true, review, reason: "" });
+  };
+
+  const confirmReject = async () => {
+    const { review, reason } = rejectModal;
+    if (!review) return;
     try {
       await updateStatusMutation.mutate({
         id: review.id,
@@ -127,28 +148,40 @@ export default function AdminReviewsPage({ params }: PageProps) {
       handleBackToList();
     } catch (err) {
       showToast(REVIEWS.REJECT_FAILED, "error");
+    } finally {
+      setRejectModal({ open: false, review: null, reason: "" });
     }
   };
 
-  const handleDelete = async (review: Review) => {
-    if (!confirm(`${REVIEWS.DELETE} - ${review.userName}?`)) return;
+  const handleDelete = (review: Review) => {
+    setDeleteConfirm(review);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
     try {
-      await deleteMutation.mutate(review.id);
+      await deleteMutation.mutate(deleteConfirm.id);
       await refetch();
       handleBackToList();
     } catch (err) {
       showToast(REVIEWS.DELETE_FAILED, "error");
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
-  const handleBulkApprove = async () => {
+  const handleBulkApprove = () => {
     const pendingReviews = reviews.filter((r) => r.status === "pending");
     if (pendingReviews.length === 0) {
       showToast(REVIEWS.NO_PENDING, "warning");
       return;
     }
-    if (!confirm(`${REVIEWS.APPROVE_ALL} (${pendingReviews.length})?`)) return;
+    setBulkApproveConfirm(true);
+  };
 
+  const confirmBulkApprove = async () => {
+    setBulkApproveConfirm(false);
+    const pendingReviews = reviews.filter((r) => r.status === "pending");
     try {
       await Promise.all(
         pendingReviews.map((review) =>
@@ -165,6 +198,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
   };
 
   const tableColumns = getReviewTableColumns();
+  const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
   if (selectedReview) {
     return (
@@ -177,8 +211,6 @@ export default function AdminReviewsPage({ params }: PageProps) {
       />
     );
   }
-
-  const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
   return (
     <div className={THEME_CONSTANTS.spacing.stack}>
@@ -274,6 +306,61 @@ export default function AdminReviewsPage({ params }: PageProps) {
           )}
         />
       )}
+
+      {/* Reject modal — replaces prompt() */}
+      <Modal
+        isOpen={rejectModal.open}
+        onClose={() =>
+          setRejectModal({ open: false, review: null, reason: "" })
+        }
+        title={REVIEWS.REJECTION_REASON}
+      >
+        <div className={THEME_CONSTANTS.spacing.stack}>
+          <textarea
+            className={THEME_CONSTANTS.input.base}
+            rows={4}
+            value={rejectModal.reason}
+            onChange={(e) =>
+              setRejectModal((prev) => ({ ...prev, reason: e.target.value }))
+            }
+            placeholder="Enter rejection reason..."
+          />
+          <div className="flex gap-3 justify-end">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setRejectModal({ open: false, review: null, reason: "" })
+              }
+            >
+              {UI_LABELS.ACTIONS.CANCEL}
+            </Button>
+            <Button variant="danger" onClick={confirmReject}>
+              {UI_LABELS.ACTIONS.CONFIRM}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete confirmation — replaces confirm() */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteConfirm}
+        onConfirm={confirmDelete}
+        onClose={() => setDeleteConfirm(null)}
+        title={REVIEWS.DELETE}
+        message={
+          deleteConfirm ? `${REVIEWS.DELETE} - ${deleteConfirm.userName}?` : ""
+        }
+      />
+
+      {/* Bulk approve confirmation — replaces confirm() */}
+      <ConfirmDeleteModal
+        isOpen={bulkApproveConfirm}
+        onConfirm={confirmBulkApprove}
+        onClose={() => setBulkApproveConfirm(false)}
+        title={REVIEWS.APPROVE_ALL}
+        message={`${REVIEWS.APPROVE_ALL} (${pendingCount})?`}
+        confirmText={UI_LABELS.ACTIONS.CONFIRM}
+      />
     </div>
   );
 }

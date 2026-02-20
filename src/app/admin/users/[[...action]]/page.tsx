@@ -52,20 +52,26 @@ export default function AdminUsersPage({ params }: PageProps) {
     requireTypedConfirmation?: boolean;
   }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
-  const queryParams = new URLSearchParams();
-  if (activeTab === "active") queryParams.append("disabled", "false");
-  if (activeTab === "banned") queryParams.append("disabled", "true");
-  if (activeTab === "admins") queryParams.append("role", "admin");
-  if (searchTerm) queryParams.append("search", searchTerm);
-  if (roleFilter !== "all") queryParams.append("role", roleFilter);
+  // Build Sieve filter string
+  const filtersArr: string[] = [];
+  if (activeTab === "active") filtersArr.push("disabled==false");
+  if (activeTab === "banned") filtersArr.push("disabled==true");
+  if (activeTab === "admins") filtersArr.push("role==admin");
+  else if (roleFilter !== "all") filtersArr.push(`role==${roleFilter}`);
+  if (searchTerm) filtersArr.push(`(displayName|email)@=*${searchTerm}`);
+  const filtersParam = filtersArr.join(",");
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     users: AdminUser[];
-    total: number;
+    meta: { total: number };
   }>({
     queryKey: ["admin", "users", activeTab, searchTerm, roleFilter],
     queryFn: () =>
-      apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}?${queryParams.toString()}`),
+      apiClient.get(
+        `${API_ENDPOINTS.ADMIN.USERS}?pageSize=500${
+          filtersParam ? `&filters=${encodeURIComponent(filtersParam)}` : ""
+        }`,
+      ),
   });
 
   const updateUserMutation = useApiMutation<any, { uid: string; data: any }>({
@@ -78,7 +84,7 @@ export default function AdminUsersPage({ params }: PageProps) {
   });
 
   const users = data?.users || [];
-  const total = data?.total || 0;
+  const total = data?.meta?.total ?? users.length;
 
   const findUserByUid = useCallback(
     (uid: string): AdminUser | undefined => users.find((u) => u.uid === uid),

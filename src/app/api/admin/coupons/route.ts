@@ -7,7 +7,13 @@
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
 import { couponsRepository } from "@/repositories";
+import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { CouponCreateInput } from "@/db/schema";
@@ -55,18 +61,80 @@ const couponCreateSchema = z.object({
 
 /**
  * GET /api/admin/coupons
+ *
+ * Query params:
+ *  - filters  (string) — Sieve filters (e.g. type==percentage, validity.isActive==true)
+ *  - sorts    (string) — Sieve sorts (e.g. -createdAt)
+ *  - page     (number) — page number (default 1)
+ *  - pageSize (number) — results per page (default 50, max 200)
  */
 export const GET = createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async (_: { request: NextRequest }) => {
-    serverLogger.info("Admin coupons list requested");
+  handler: async ({ request }: { request: NextRequest }) => {
+    const searchParams = getSearchParams(request);
 
-    const coupons = await couponsRepository.findAll();
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
+      min: 1,
+      max: 200,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+
+    serverLogger.info("Admin coupons list requested", {
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+
+    const allCoupons = await couponsRepository.findAll();
+
+    const sieveResult = await applySieveToArray({
+      items: allCoupons,
+      model: { filters, sorts, page, pageSize },
+      fields: {
+        id: { canFilter: true, canSort: false },
+        code: { canFilter: true, canSort: true },
+        name: { canFilter: true, canSort: true },
+        type: { canFilter: true, canSort: true },
+        "validity.isActive": {
+          path: "validity.isActive",
+          canFilter: true,
+          canSort: false,
+          parseValue: (v: string) => v === "true",
+        },
+        "discount.value": {
+          path: "discount.value",
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => Number(v),
+        },
+        "usage.currentUsage": {
+          path: "usage.currentUsage",
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => Number(v),
+        },
+        createdAt: {
+          canFilter: true,
+          canSort: true,
+          parseValue: (v: string) => new Date(v),
+        },
+      },
+      options: { defaultPageSize: 50, maxPageSize: 200 },
+    });
 
     return successResponse({
-      coupons,
-      meta: { total: coupons.length },
+      coupons: sieveResult.items,
+      meta: {
+        total: sieveResult.total,
+        page: sieveResult.page,
+        pageSize: sieveResult.pageSize,
+        totalPages: sieveResult.totalPages,
+        hasMore: sieveResult.hasMore,
+      },
     });
   },
 });

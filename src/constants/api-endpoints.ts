@@ -108,6 +108,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin payouts */
     PAYOUTS: "/api/admin/payouts", // GET - List all payouts
     PAYOUT_BY_ID: (id: string) => `/api/admin/payouts/${id}`, // PATCH - Update payout status
+    /** ✅ Admin reviews — GET all reviews across all products (admin-only) */
+    REVIEWS: "/api/admin/reviews", // GET - List all reviews with Sieve filters
+    REVIEW_BY_ID: (id: string) => `/api/reviews/${id}`, // PATCH/DELETE
   },
 
   // Product endpoints ✅ All routes exist
