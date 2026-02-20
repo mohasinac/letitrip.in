@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.7 — Admin Email Notification on New Product Submitted (Feb 2026)
+
+#### What was implemented
+
+- `src/lib/email.ts`: Added `sendNewProductSubmittedEmail(adminEmail, product)` — sends a branded HTML email to the admin with product title, ID, seller name/email, category, and a direct link to `/admin/products`. Catches errors internally via `serverLogger.error` so it never brings down the API.
+- `src/app/api/products/route.ts` POST handler:
+  - Imports `sendNewProductSubmittedEmail` from `@/lib/email` and `SCHEMA_DEFAULTS` from `@/db/schema`
+  - After successful `productRepository.create()`, fires the notification **fire-and-forget** (`.catch()` only — no `await`) so the API response is not delayed
+  - Admin target email: `process.env.ADMIN_NOTIFICATION_EMAIL` with fallback to `SCHEMA_DEFAULTS.ADMIN_EMAIL`
+  - Removed the `TODO (Future): Send notification to admins` comment; updated JSDoc
+- `src/app/api/__tests__/products.test.ts`:
+  - Added `jest.mock("@/lib/email", ...)` with `mockSendNewProductSubmittedEmail` spy
+  - Default `beforeEach` seeds `mockResolvedValue({ success: true })`
+  - 3 new tests: notification fired on success (with correct args), not fired on DB error, not fired on validation failure
+  - Suite: 167/167 passing, 2330 tests total
+
+---
+
 ### Phase 7.6 — Audit Log for Admin Site-Settings Changes (Feb 2026)
 
 #### What was implemented

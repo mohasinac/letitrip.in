@@ -618,3 +618,134 @@ export async function sendContactEmail(params: {
     return { success: false };
   }
 }
+
+/**
+ * Send admin notification email when a seller submits a new product for review.
+ *
+ * @param adminEmail   - Recipient admin email address
+ * @param product      - The newly-created product data
+ */
+export async function sendNewProductSubmittedEmail(
+  adminEmail: string,
+  product: {
+    id: string;
+    title: string;
+    sellerName: string;
+    sellerEmail: string;
+    category?: string;
+  },
+) {
+  const reviewUrl = `${SITE_URL}/admin/products`;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: adminEmail,
+      subject: `New Product Submitted — ${product.title}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Product Submitted</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 40px; text-align: center;">
+                      <p style="font-size: 48px; margin: 0 0 12px;">📦</p>
+                      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">New Product Submitted</h1>
+                      <p style="color: #c7d2fe; margin: 8px 0 0; font-size: 14px;">Action required — review and publish</p>
+                    </td>
+                  </tr>
+
+                  <!-- Body -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                        A new product has been submitted to <strong>${SITE_NAME}</strong> and is awaiting your review.
+                      </p>
+
+                      <!-- Product details -->
+                      <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background: #f8f9fa; border-radius: 8px; margin: 0 0 24px;">
+                        <tr>
+                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 40%;">Product ID</td>
+                          <td style="color: #111827; font-size: 14px; font-family: monospace;">${product.id}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Title</td>
+                          <td style="color: #111827; font-size: 14px; font-weight: 600;">${product.title}</td>
+                        </tr>
+                        ${
+                          product.category
+                            ? `
+                        <tr>
+                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Category</td>
+                          <td style="color: #111827; font-size: 14px;">${product.category}</td>
+                        </tr>
+                        `
+                            : ""
+                        }
+                        <tr>
+                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Seller</td>
+                          <td style="color: #111827; font-size: 14px;">${product.sellerName} (${product.sellerEmail})</td>
+                        </tr>
+                      </table>
+
+                      <!-- CTA -->
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 24px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${reviewUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">
+                              Review in Admin Panel
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="color: #9ca3af; font-size: 13px; line-height: 1.6; margin: 0;">
+                        You can publish or reject this product from the
+                        <a href="${reviewUrl}" style="color: #6366f1; text-decoration: none;">${SITE_NAME} admin panel</a>.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eeeeee;">
+                      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                        © ${new Date().getFullYear()} ${SITE_NAME}. This is an automated notification — do not reply.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `,
+      text: `New Product Submitted\n\nProduct: ${product.title} (${product.id})\nSeller: ${product.sellerName} (${product.sellerEmail})\n\nReview at: ${reviewUrl}`,
+    });
+
+    if (error) {
+      serverLogger.error("Failed to send new product notification email", {
+        error,
+        productId: product.id,
+      });
+    }
+
+    return { success: !error, data };
+  } catch (error) {
+    serverLogger.error("Error sending new product notification email", {
+      error,
+      productId: product.id,
+    });
+    return { success: false };
+  }
+}

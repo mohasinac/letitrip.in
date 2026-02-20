@@ -699,17 +699,17 @@ WHATSAPP_PHONE_ID=
 
 **Tracker:**
 
-| Sub-phase | Task                                                                    | Status                                                       |
-| --------- | ----------------------------------------------------------------------- | ------------------------------------------------------------ |
-| 7.1       | Test coverage sweep — fix failing test suites                           | ✅ Done — 166/166 suites, 2285 tests passing                 |
-| 7.2       | Performance audit — bundle analysis, image optimisation, code splitting | ✅ Done — bundle analyzer, dynamic imports, image sizes      |
-| 7.3       | Purchase verification gate for reviews                                  | ✅ Done — 403 gate + verified flag on confirmed orders       |
-| 7.4       | Seller email verification required before listing products              | ✅ Done — requireEmailVerified gate in POST /api/products    |
-| 7.5       | Status transition validation (draft→published; block invalid moves)     | ✅ Done — PRODUCT_STATUS_TRANSITIONS map + 422 gate in PATCH |
-| 7.6       | Audit log for admin site-settings changes                               | ✅ Done — serverLogger.info audit entry on PATCH             |
-| 7.7       | Admin notification on new product submitted for approval                | 🔲 Not Started                                               |
-| 7.8       | SEO slug generation for products and FAQs                               | 🔲 Not Started                                               |
-| 7.9       | 6.5 PWA icons — unblock when design assets provided                     | 🟡 Blocked (design)                                          |
+| Sub-phase | Task                                                                    | Status                                                           |
+| --------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 7.1       | Test coverage sweep — fix failing test suites                           | ✅ Done — 166/166 suites, 2285 tests passing                     |
+| 7.2       | Performance audit — bundle analysis, image optimisation, code splitting | ✅ Done — bundle analyzer, dynamic imports, image sizes          |
+| 7.3       | Purchase verification gate for reviews                                  | ✅ Done — 403 gate + verified flag on confirmed orders           |
+| 7.4       | Seller email verification required before listing products              | ✅ Done — requireEmailVerified gate in POST /api/products        |
+| 7.5       | Status transition validation (draft→published; block invalid moves)     | ✅ Done — PRODUCT_STATUS_TRANSITIONS map + 422 gate in PATCH     |
+| 7.6       | Audit log for admin site-settings changes                               | ✅ Done — serverLogger.info audit entry on PATCH                 |
+| 7.7       | Admin notification on new product submitted for approval                | ✅ Done — sendNewProductSubmittedEmail + fire-and-forget in POST |
+| 7.8       | SEO slug generation for products and FAQs                               | 🔲 Not Started                                                   |
+| 7.9       | 6.5 PWA icons — unblock when design assets provided                     | 🟡 Blocked (design)                                              |
 
 ---
 

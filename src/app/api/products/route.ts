@@ -38,6 +38,8 @@ import {
 } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { sendNewProductSubmittedEmail } from "@/lib/email";
+import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { NextResponse } from "next/server";
 
 /**
@@ -166,7 +168,7 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
  * TODO (Future): Generate SEO-friendly slug/ID for product URLs
- * TODO (Future): Send notification to admins when new product submitted for approval
+ * ✅ Sends fire-and-forget admin notification email on successful submission
  */
 export async function POST(request: NextRequest) {
   try {
@@ -202,6 +204,19 @@ export async function POST(request: NextRequest) {
       featured: false,
       isPromoted: false,
     } as any);
+
+    // Fire-and-forget admin notification — do not await to keep response fast
+    const adminEmail =
+      process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
+    sendNewProductSubmittedEmail(adminEmail, {
+      id: product.id ?? (product as any).id,
+      title: (product as any).title ?? validation.data.title,
+      sellerName: user.displayName || user.email || "Unknown Seller",
+      sellerEmail: user.email || "",
+      category: validation.data.category,
+    }).catch((err) =>
+      serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { err }),
+    );
 
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   } catch (error) {

@@ -35,12 +35,18 @@ jest.mock("@/repositories", () => ({
 const mockRequireRoleFromRequest = jest.fn();
 const mockRequireEmailVerified = jest.fn();
 const mockApplySieveToArray = jest.fn();
+const mockSendNewProductSubmittedEmail = jest.fn();
 
 jest.mock("@/lib/security/authorization", () => ({
   requireRoleFromRequest: (...args: unknown[]) =>
     mockRequireRoleFromRequest(...args),
   requireEmailVerified: (...args: unknown[]) =>
     mockRequireEmailVerified(...args),
+}));
+
+jest.mock("@/lib/email", () => ({
+  sendNewProductSubmittedEmail: (...args: unknown[]) =>
+    mockSendNewProductSubmittedEmail(...args),
 }));
 
 jest.mock("@/helpers", () => ({
@@ -219,6 +225,7 @@ describe("Products API - POST /api/products", () => {
     mockRequireRoleFromRequest.mockResolvedValue(mockSellerUser());
     mockRequireEmailVerified.mockImplementation(() => {}); // No-op — email verified by default
     mockCreate.mockResolvedValue({ id: "new-prod", title: "New Product" });
+    mockSendNewProductSubmittedEmail.mockResolvedValue({ success: true });
   });
 
   it("creates a product with valid data", async () => {
@@ -381,5 +388,66 @@ describe("Products API - POST /api/products", () => {
     await POST(req);
 
     expect(mockCreate).not.toHaveBeenCalled();
+  });
+
+  // ──────────────────────────────────────────
+  // Admin notification email (Phase 7.7)
+  // ──────────────────────────────────────────
+
+  it("fires admin notification email after successful product creation", async () => {
+    const seller = mockSellerUser();
+    mockRequireRoleFromRequest.mockResolvedValue(seller);
+    // Override create to return a titled product
+    mockCreate.mockResolvedValue({
+      id: "new-prod",
+      title: "Test Listing",
+    });
+
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: {
+        title: "Test Listing",
+        category: "electronics",
+        price: 5000,
+        stockQuantity: 10,
+        mainImage: "https://example.com/img.jpg",
+      },
+    });
+    const res = await POST(req);
+    const { status } = await parseResponse(res);
+
+    expect(status).toBe(201);
+    // Allow the fire-and-forget promise to settle
+    await Promise.resolve();
+    expect(mockSendNewProductSubmittedEmail).toHaveBeenCalledWith(
+      expect.any(String), // adminEmail
+      expect.objectContaining({
+        title: "Test Listing",
+        sellerEmail: seller.email,
+        category: "electronics",
+      }),
+    );
+  });
+
+  it("does not fire notification when product creation fails", async () => {
+    mockCreate.mockRejectedValue(new Error("DB write failed"));
+
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: { title: "Doomed Product" },
+    });
+    await POST(req);
+
+    expect(mockSendNewProductSubmittedEmail).not.toHaveBeenCalled();
+  });
+
+  it("does not fire notification when validation fails", async () => {
+    const req = buildRequest("/api/products", {
+      method: "POST",
+      body: { description: "no title" }, // missing title fails mock schema
+    });
+    await POST(req);
+
+    expect(mockSendNewProductSubmittedEmail).not.toHaveBeenCalled();
   });
 });
