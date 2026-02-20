@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.3 — New THEME_CONSTANTS Tokens (Feb 2026)
+
+#### `src/constants/theme.ts`
+
+- **`THEME_CONSTANTS.rating`** — `{ filled: "text-yellow-400", empty: "text-gray-300 dark:text-gray-600" }` for consistent star rating icons
+- **`THEME_CONSTANTS.button.ctaPrimary`** — hero CTA button class merged into existing `button` token
+- **`THEME_CONSTANTS.button.ctaOutline`** — outline hero CTA button class merged into existing `button` token
+- **`THEME_CONSTANTS.tab`** — `{ active, inactive }` for horizontal tab navigation (replaces per-file hardcoded tab styles)
+- **`THEME_CONSTANTS.chart`** — `{ height: "h-60", heightLg: "h-80" }` for Recharts container heights (replaces `style={{ height: 240 }}`)
+- **`THEME_CONSTANTS.icon`** — `{ muted, primary, success, danger, warning }` for icon color variants
+
+---
+
 ### Phase 6.1 — Admin Payouts Management UI (Feb 2026)
 
 #### `src/constants/ui.ts`

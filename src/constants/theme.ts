@@ -95,6 +95,10 @@ export const THEME_CONSTANTS = {
     base: "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
     active: "active:scale-95",
     minWidth: "min-w-[200px] w-full",
+    ctaPrimary:
+      "bg-white text-emerald-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-emerald-50 transition-colors shadow-lg",
+    ctaOutline:
+      "border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors",
   },
 
   /**
@@ -725,6 +729,46 @@ export const THEME_CONSTANTS = {
     inner: "shadow-inner",
     soft: "shadow-soft",
     glow: "shadow-glow",
+  },
+
+  /**
+   * Star Rating Colors
+   * Consistent star icons for product ratings, review scores etc.
+   */
+  rating: {
+    filled: "text-yellow-400",
+    empty: "text-gray-300 dark:text-gray-600",
+  },
+
+  /**
+   * Tab active / inactive states
+   * Horizontal tab navigation (orders, seller filters, search tabs etc.)
+   */
+  tab: {
+    active:
+      "border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-medium",
+    inactive:
+      "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
+  },
+
+  /**
+   * Chart / Visualisation helpers
+   * Consistent Recharts container height token.
+   */
+  chart: {
+    height: "h-60",
+    heightLg: "h-80",
+  },
+
+  /**
+   * Icon helper classes
+   */
+  icon: {
+    muted: "text-gray-400 dark:text-gray-500",
+    primary: "text-indigo-600 dark:text-indigo-400",
+    success: "text-emerald-500 dark:text-emerald-400",
+    danger: "text-red-500 dark:text-red-400",
+    warning: "text-yellow-500 dark:text-yellow-400",
   },
 } as const;
 

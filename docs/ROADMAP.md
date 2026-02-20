@@ -594,7 +594,7 @@ Spots to audit:
 | 6.2.8 promotions page decompose    | 🔴 Pending                 |
 | 6.2.9 contact page decompose       | 🔴 Pending                 |
 | 6.2.10 sellers + about cleanup     | 🔴 Pending                 |
-| 6.3 THEME_CONSTANTS audit          | 🔴 Pending                 |
+| 6.3 THEME_CONSTANTS audit          | ✅ Done                    |
 | 6.4 Empty states & skeletons       | 🔴 Pending                 |
 | 6.5 PWA icon assets                | 🟡 Blocked (design needed) |
 | 6.6 Mobile & responsive polish     | 🔴 Pending                 |
