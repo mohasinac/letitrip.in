@@ -18,12 +18,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
-import {
-  cartRepository,
-  orderRepository,
-  addressRepository,
-  productRepository,
-} from "@/repositories";
+import { unitOfWork } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
@@ -75,13 +70,13 @@ export async function POST(request: NextRequest) {
     const { addressId, paymentMethod, notes } = validation.data;
 
     // 3. Load cart
-    const cart = await cartRepository.getOrCreate(user.uid);
+    const cart = await unitOfWork.carts.getOrCreate(user.uid);
     if (!cart.items || cart.items.length === 0) {
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.CART_EMPTY);
     }
 
     // 4. Resolve shipping address (throws NotFoundError if missing)
-    const address = await addressRepository.findById(user.uid, addressId);
+    const address = await unitOfWork.addresses.findById(user.uid, addressId);
     if (!address) {
       throw new NotFoundError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
     }
@@ -90,7 +85,7 @@ export async function POST(request: NextRequest) {
     // 5. Pre-validate all products (fail fast before creating any orders)
     const productChecks = await Promise.all(
       cart.items.map(async (item) => {
-        const product = await productRepository.findById(item.productId);
+        const product = await unitOfWork.products.findById(item.productId);
         return { item, product };
       }),
     );
@@ -119,7 +114,7 @@ export async function POST(request: NextRequest) {
       const totalPrice = unitPrice * item.quantity;
       total += totalPrice;
 
-      const order = await orderRepository.create({
+      const order = await unitOfWork.orders.create({
         productId: item.productId,
         productTitle: item.productTitle,
         userId: user.uid,
@@ -151,16 +146,19 @@ export async function POST(request: NextRequest) {
           paymentMethod,
         });
       }
-
-      // 7. Deduct stock
-      await productRepository.updateAvailableQuantity(
-        item.productId,
-        product.availableQuantity - item.quantity,
-      );
     }
 
-    // 8. Clear the cart
-    await cartRepository.clearCart(user.uid);
+    // 7+8. Atomically deduct stock for every item and clear the cart
+    //      (batch ensures either ALL stock updates + cart clear succeed, or none do)
+    await unitOfWork.runBatch((batch) => {
+      for (const { item, product } of productChecks) {
+        if (!product) continue;
+        unitOfWork.products.updateInBatch(batch, item.productId, {
+          availableQuantity: product.availableQuantity - item.quantity,
+        } as any);
+      }
+      unitOfWork.carts.updateInBatch(batch, user.uid, { items: [] } as any);
+    });
 
     // 9. Send confirmation emails (fire-and-forget)
     if (emailsToSend.length > 0) {
@@ -173,7 +171,7 @@ export async function POST(request: NextRequest) {
       `POST /api/checkout: ${orderIds.length} orders placed for user ${user.uid}`,
     );
 
-    // 9. Return success
+    // 10. Return success
     return successResponse(
       { orderIds, total, itemCount: orderIds.length },
       SUCCESS_MESSAGES.CHECKOUT.ORDER_PLACED,

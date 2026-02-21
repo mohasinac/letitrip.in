@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seller Products Page
  *
  * Route: /seller/products
@@ -7,51 +7,109 @@
 
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Spinner,
   DataTable,
   AdminPageHeader,
+  AdminFilterBar,
+  TablePagination,
+  SideDrawer,
   ConfirmDeleteModal,
+  ProductForm,
   getProductTableColumns,
 } from "@/components";
 import type { AdminProduct } from "@/components";
-import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
+import {
+  useAuth,
+  useApiQuery,
+  useApiMutation,
+  useMessage,
+  useUrlTable,
+} from "@/hooks";
+import {
+  UI_LABELS,
+  ROUTES,
+  API_ENDPOINTS,
+  THEME_CONSTANTS,
+  SUCCESS_MESSAGES,
+} from "@/constants";
 import { apiClient } from "@/lib/api-client";
 
-interface ProductsResponse {
-  data: AdminProduct[];
-  meta: { total: number; page: number; limit: number; totalPages: number };
-}
-
+const { input, themed } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.ADMIN.PRODUCTS;
 const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
+
+const PAGE_SIZE = 25;
+
+const DEFAULT_PRODUCT: Partial<AdminProduct> = {
+  title: "",
+  description: "",
+  category: "",
+  subcategory: "",
+  brand: "",
+  price: 0,
+  stockQuantity: 0,
+  currency: "INR",
+  status: "draft",
+  featured: false,
+  isAuction: false,
+  isPromoted: false,
+  tags: [],
+  images: [],
+  mainImage: "",
+  shippingInfo: "",
+  returnPolicy: "",
+};
 
 export default function SellerProductsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { showSuccess, showError } = useMessage();
 
-  const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
+  const table = useUrlTable({
+    defaults: { pageSize: String(PAGE_SIZE), sort: "-createdAt" },
+  });
+  const searchParam = table.get("q");
+  const sortParam = table.get("sort") || "-createdAt";
+  const page = table.getNumber("page", 1);
 
-  // Redirect if not authenticated
+  // Drawer state
+  const [drawerMode, setDrawerMode] = useState<"create" | "edit" | null>(null);
+  const [formProduct, setFormProduct] =
+    useState<Partial<AdminProduct>>(DEFAULT_PRODUCT);
+  const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, authLoading, router]);
 
-  // Fetch seller's own products
   const productsUrl = useMemo(() => {
     if (!user?.uid) return null;
-    const filters = encodeURIComponent(`sellerId==${user.uid}`);
-    return `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${filters}&pageSize=100&sorts=-createdAt`;
-  }, [user?.uid]);
+    const filtersArr = [`sellerId==${user.uid}`];
+    if (searchParam) filtersArr.push(`title@=*${searchParam}`);
+    const params = new URLSearchParams({
+      filters: filtersArr.join(","),
+      pageSize: String(PAGE_SIZE),
+      page: String(page),
+      sorts: sortParam,
+    });
+    return `${API_ENDPOINTS.PRODUCTS.LIST}?${params.toString()}`;
+  }, [user?.uid, searchParam, page, sortParam]);
 
-  const { data, isLoading, refetch } = useApiQuery<ProductsResponse>({
-    queryKey: ["seller-products-list", user?.uid ?? ""],
+  const { data, isLoading, refetch } = useApiQuery<{
+    data: AdminProduct[];
+    meta: { total: number; page: number; limit: number; totalPages: number };
+  }>({
+    queryKey: [
+      "seller-products-list",
+      table.params.toString(),
+      user?.uid ?? "",
+    ],
     queryFn: () => fetch(productsUrl!).then((r) => r.json()),
     enabled: !!productsUrl,
   });
@@ -60,28 +118,66 @@ export default function SellerProductsPage() {
     mutationFn: (id) => apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE(id)),
   });
 
-  const handleEdit = useCallback(
-    (product: AdminProduct) => {
-      router.push(ROUTES.SELLER.PRODUCTS_EDIT(product.id));
-    },
-    [router],
-  );
+  const saveMutation = useApiMutation<void, Partial<AdminProduct>>({
+    mutationFn: (product) =>
+      drawerMode === "create"
+        ? apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, product)
+        : apiClient.patch(API_ENDPOINTS.PRODUCTS.UPDATE(product.id!), product),
+  });
 
-  const handleDeleteConfirm = useCallback(async () => {
+  const openCreate = () => {
+    setFormProduct(DEFAULT_PRODUCT);
+    setIsFormDirty(false);
+    setDrawerMode("create");
+  };
+
+  const openEdit = (product: AdminProduct) => {
+    setFormProduct({ ...product });
+    setIsFormDirty(false);
+    setDrawerMode("edit");
+  };
+
+  const closeDrawer = () => {
+    setDrawerMode(null);
+    setFormProduct(DEFAULT_PRODUCT);
+    setIsFormDirty(false);
+  };
+
+  const handleSave = async () => {
+    if (!formProduct.title?.trim()) {
+      showError("Title is required");
+      return;
+    }
+    try {
+      await saveMutation.mutate(formProduct);
+      showSuccess(
+        drawerMode === "create"
+          ? SUCCESS_MESSAGES.PRODUCT.CREATED
+          : SUCCESS_MESSAGES.PRODUCT.UPDATED,
+      );
+      closeDrawer();
+      refetch();
+    } catch {
+      showError(LABELS.SAVE_FAILED);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     try {
       await deleteMutation.mutate(deleteTarget.id);
-      showSuccess(UI_LABELS.ACTIONS.DELETE + " successful");
+      showSuccess(SUCCESS_MESSAGES.PRODUCT.DELETED);
       setDeleteTarget(null);
       refetch();
     } catch {
       showError(LABELS.DELETE_FAILED);
     }
-  }, [deleteTarget, deleteMutation, showSuccess, showError, refetch]);
+  };
 
   const { columns, actions } = useMemo(
-    () => getProductTableColumns(handleEdit, (p) => setDeleteTarget(p)),
-    [handleEdit],
+    () => getProductTableColumns(openEdit, (p) => setDeleteTarget(p)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   if (authLoading) {
@@ -95,6 +191,7 @@ export default function SellerProductsPage() {
   if (!user) return null;
 
   const products = data?.data ?? [];
+  const meta = data?.meta;
 
   return (
     <div className="space-y-6">
@@ -102,8 +199,30 @@ export default function SellerProductsPage() {
         title={SELLER_LABELS.PRODUCTS_TITLE}
         subtitle={SELLER_LABELS.PRODUCTS_SUBTITLE}
         actionLabel={SELLER_LABELS.ADD_PRODUCT}
-        onAction={() => router.push(ROUTES.SELLER.PRODUCTS_NEW)}
+        onAction={openCreate}
       />
+
+      {/* Filter bar */}
+      <AdminFilterBar withCard={false} columns={2}>
+        <input
+          type="search"
+          value={searchParam}
+          onChange={(e) => table.set("q", e.target.value)}
+          placeholder={LABELS.SEARCH_PLACEHOLDER}
+          className={input.base}
+        />
+        <select
+          value={sortParam}
+          onChange={(e) => table.setSort(e.target.value)}
+          className={input.base}
+        >
+          <option value="-createdAt">Newest First</option>
+          <option value="createdAt">Oldest First</option>
+          <option value="title">Title A–Z</option>
+          <option value="-price">Price High–Low</option>
+          <option value="price">Price Low–High</option>
+        </select>
+      </AdminFilterBar>
 
       <DataTable<AdminProduct>
         data={products}
@@ -113,8 +232,59 @@ export default function SellerProductsPage() {
         actions={actions}
         emptyTitle={LABELS.NO_PRODUCTS}
         emptyMessage={SELLER_LABELS.NO_PRODUCTS_SUBTITLE}
+        externalPagination
       />
 
+      {(meta?.totalPages ?? 1) > 1 && (
+        <TablePagination
+          currentPage={page}
+          totalPages={meta?.totalPages ?? 1}
+          pageSize={PAGE_SIZE}
+          total={meta?.total ?? 0}
+          onPageChange={table.setPage}
+          isLoading={isLoading}
+        />
+      )}
+
+      {/* Create / Edit Drawer */}
+      <SideDrawer
+        isOpen={drawerMode !== null}
+        onClose={closeDrawer}
+        title={
+          drawerMode === "create" ? LABELS.CREATE_PRODUCT : LABELS.EDIT_PRODUCT
+        }
+        mode={drawerMode ?? "view"}
+        isDirty={isFormDirty}
+        footer={
+          <div className={`flex gap-3 justify-end`}>
+            <button
+              onClick={closeDrawer}
+              className={`px-4 py-2 rounded-lg text-sm border ${themed.border} ${themed.textPrimary} ${themed.bgPrimary}`}
+            >
+              {UI_LABELS.ACTIONS.CANCEL}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saveMutation.isLoading}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+            >
+              {saveMutation.isLoading
+                ? UI_LABELS.LOADING.DEFAULT
+                : UI_LABELS.ACTIONS.SAVE}
+            </button>
+          </div>
+        }
+      >
+        <ProductForm
+          product={formProduct}
+          onChange={(updated) => {
+            setFormProduct(updated);
+            setIsFormDirty(true);
+          }}
+        />
+      </SideDrawer>
+
+      {/* Delete confirmation */}
       {deleteTarget && (
         <ConfirmDeleteModal
           isOpen={!!deleteTarget}

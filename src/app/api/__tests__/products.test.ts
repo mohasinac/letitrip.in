@@ -22,19 +22,18 @@ import {
 // Mocks
 // ============================================
 
-const mockFindAll = jest.fn();
+const mockList = jest.fn();
 const mockCreate = jest.fn();
 
 jest.mock("@/repositories", () => ({
   productRepository: {
-    findAll: (...args: unknown[]) => mockFindAll(...args),
+    list: (...args: unknown[]) => mockList(...args),
     create: (...args: unknown[]) => mockCreate(...args),
   },
 }));
 
 const mockRequireRoleFromRequest = jest.fn();
 const mockRequireEmailVerified = jest.fn();
-const mockApplySieveToArray = jest.fn();
 const mockSendNewProductSubmittedEmail = jest.fn();
 
 jest.mock("@/lib/security/authorization", () => ({
@@ -51,10 +50,6 @@ jest.mock("@/lib/email", () => ({
 
 jest.mock("@/utils", () => ({
   slugify: (str: string) => str.toLowerCase().replace(/\s+/g, "-"),
-}));
-
-jest.mock("@/helpers", () => ({
-  applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
@@ -145,24 +140,14 @@ const mockProducts = [
 describe("Products API - GET /api/products", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFindAll.mockResolvedValue([...mockProducts]);
-    mockApplySieveToArray.mockImplementation(
-      async ({ items, model }: { items: any[]; model: any }) => {
-        const page = model?.page ?? 1;
-        const pageSize = model?.pageSize ?? 20;
-        const start = (page - 1) * pageSize;
-        const pagedItems = items.slice(start, start + pageSize);
-
-        return {
-          items: pagedItems,
-          page,
-          pageSize,
-          total: items.length,
-          totalPages: Math.max(1, Math.ceil(items.length / pageSize)),
-          hasMore: start + pageSize < items.length,
-        };
-      },
-    );
+    mockList.mockResolvedValue({
+      items: [...mockProducts],
+      page: 1,
+      pageSize: 20,
+      total: mockProducts.length,
+      totalPages: 1,
+      hasMore: false,
+    });
   });
 
   it("returns products with default pagination", async () => {
@@ -199,14 +184,14 @@ describe("Products API - GET /api/products", () => {
     expect(body.meta).toHaveProperty("hasMore");
   });
 
-  it("calls findAll on repository", async () => {
+  it("calls list on repository", async () => {
     const req = buildRequest("/api/products");
     await GET(req);
-    expect(mockFindAll).toHaveBeenCalled();
+    expect(mockList).toHaveBeenCalled();
   });
 
   it("handles repository errors gracefully", async () => {
-    mockFindAll.mockRejectedValue(new Error("Database connection failed"));
+    mockList.mockRejectedValue(new Error("Database connection failed"));
     const req = buildRequest("/api/products");
     const res = await GET(req);
     const { status, body } = await parseResponse(res);

@@ -11,7 +11,7 @@ export function SellerQuickActions() {
   const ACTIONS = [
     {
       label: UI_LABELS.SELLER_PAGE.ADD_PRODUCT,
-      href: ROUTES.SELLER.PRODUCTS_NEW,
+      href: ROUTES.SELLER.PRODUCTS,
       icon: "➕",
       variant: "primary" as const,
     },

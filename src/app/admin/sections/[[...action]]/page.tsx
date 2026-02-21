@@ -254,6 +254,7 @@ export default function AdminSectionsPage({ params }: PageProps) {
           mode={drawerMode || "view"}
           isDirty={isDirty}
           footer={drawerFooter}
+          side="right"
         >
           <SectionForm
             section={editingSection}

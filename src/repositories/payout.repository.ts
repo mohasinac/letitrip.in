@@ -7,6 +7,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import type {
   PayoutDocument,
   PayoutCreateInput,
@@ -108,6 +109,34 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
       (data.orderIds ?? []).forEach((oid) => ids.add(oid));
     });
     return ids;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    sellerId: { canFilter: true, canSort: false },
+    sellerName: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    amount: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+    processedAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native payout list (admin use).
+   */
+  async list(model: SieveModel): Promise<FirebaseSieveResult<PayoutDocument>> {
+    return this.sieveQuery<PayoutDocument>(
+      model,
+      PayoutRepository.SIEVE_FIELDS,
+      {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
+    );
   }
 }
 

@@ -31,7 +31,7 @@ export function SearchFiltersRow({
   const [minPrice, setMinPrice] = useState(urlMinPrice);
   const [maxPrice, setMaxPrice] = useState(urlMaxPrice);
 
-  const inputBase = `h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`;
+  const inputBase = THEME_CONSTANTS.input.base;
 
   return (
     <div className="flex flex-wrap gap-4 items-end">

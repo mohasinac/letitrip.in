@@ -1,17 +1,16 @@
 /**
  * Reviews API Routes
  *
- * Handles product review creation and listing
+ * Handles product review creation and listing.
+ * GET uses a two-phase approach:
+ *  1. reviewRepository.findByProduct()  — full product reviews for aggregate stats
+ *  2. reviewRepository.listForProduct() — Firestore-native Sieve page (offset+limit)
  *
- * TODO (Future) - Phase 2:
- * - Implement pagination and filtering
- * - Add review moderation workflow
- * - Implement review voting (helpful/not helpful)
- * - Add spam detection with ML/AI
- * - Implement review verification (purchased product)
- * - Add review response from sellers
- * - Calculate product rating aggregates
- * - Implement review analytics
+ * TODO (Future):
+ * - Review voting (helpful/not helpful)
+ * - Spam detection with ML/AI
+ * - Review response from sellers
+ * - Review analytics
  */
 
 import { NextRequest } from "next/server";
@@ -20,7 +19,6 @@ import {
   orderRepository,
   productRepository,
 } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
@@ -113,7 +111,7 @@ export async function GET(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.VALIDATION.PRODUCT_ID_REQUIRED, 400);
     }
 
-    // Fetch all reviews for the product (for stats calculation)
+    // Fetch all reviews for rating stats (aggregate calculations use all docs)
     const allReviews = await reviewRepository.findByProduct(productId);
 
     // Calculate rating distribution (1-5 stars)
@@ -137,42 +135,12 @@ export async function GET(request: NextRequest) {
 
     const averageRating = approvedCount > 0 ? totalRating / approvedCount : 0;
 
-    const sieveResult = await applySieveToArray({
-      items: allReviews,
-      model: {
-        filters: filters || "status==approved",
-        sorts,
-        page,
-        pageSize,
-      },
-      fields: {
-        status: { canFilter: true, canSort: false },
-        rating: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => Number(value),
-        },
-        verified: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (value: string) => value === "true",
-        },
-        helpfulCount: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => Number(value),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => new Date(value),
-        },
-      },
-      options: {
-        defaultPageSize: 10,
-        maxPageSize: 50,
-        throwExceptions: false,
-      },
+    // Firestore-native paginated list scoped to this product
+    const sieveResult = await reviewRepository.listForProduct(productId, {
+      filters: filters || "status==approved",
+      sorts,
+      page,
+      pageSize,
     });
 
     const response = NextResponse.json(

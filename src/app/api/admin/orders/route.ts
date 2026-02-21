@@ -12,7 +12,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { orderRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -45,36 +44,11 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allOrders = await orderRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: allOrders,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        userId: { canFilter: true, canSort: false },
-        userName: { canFilter: true, canSort: true },
-        userEmail: { canFilter: true, canSort: true },
-        productId: { canFilter: true, canSort: false },
-        productTitle: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        paymentStatus: { canFilter: true, canSort: true },
-        paymentMethod: { canFilter: true, canSort: true },
-        totalPrice: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: {
-        defaultPageSize: 50,
-        maxPageSize: 200,
-      },
+    const sieveResult = await orderRepository.listAll({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

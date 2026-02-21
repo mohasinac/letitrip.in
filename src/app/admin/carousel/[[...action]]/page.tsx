@@ -247,6 +247,7 @@ export default function AdminCarouselPage({ params }: PageProps) {
           mode={drawerMode || "view"}
           isDirty={isDirty}
           footer={drawerFooter}
+          side="right"
         >
           <CarouselSlideForm
             slide={editingSlide}

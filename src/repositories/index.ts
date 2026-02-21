@@ -15,6 +15,10 @@
 // Base repository
 export * from "./base.repository";
 
+// Unit of Work — atomic multi-collection operations
+export { unitOfWork } from "./unit-of-work";
+export type { UnitOfWork } from "./unit-of-work";
+
 // Core repositories
 export * from "./user.repository";
 export * from "./address.repository";

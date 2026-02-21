@@ -42,6 +42,7 @@ export function UserDetailDrawer({
       onClose={onClose}
       title={UI_LABELS.ADMIN.USERS.DETAIL}
       mode="view"
+      side="right"
     >
       <div className={spacing.stack}>
         {/* User Avatar + Info */}

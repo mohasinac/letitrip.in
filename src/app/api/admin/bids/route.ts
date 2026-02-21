@@ -12,7 +12,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { bidRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -45,44 +44,11 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allBids = await bidRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: allBids,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        productId: { canFilter: true, canSort: false },
-        productTitle: { canFilter: true, canSort: true },
-        userId: { canFilter: true, canSort: false },
-        userName: { canFilter: true, canSort: true },
-        userEmail: { canFilter: true, canSort: true },
-        bidAmount: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        status: { canFilter: true, canSort: true },
-        isWinning: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        bidDate: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: {
-        defaultPageSize: 50,
-        maxPageSize: 200,
-      },
+    const sieveResult = await bidRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

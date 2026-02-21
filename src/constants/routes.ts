@@ -10,6 +10,7 @@ export const ROUTES = {
 
   PUBLIC: {
     FAQS: "/faqs",
+    FAQ_CATEGORY: (category: string) => `/faqs/${category}`,
     PROFILE: (userId: string) => `/profile/${userId}`,
     PRODUCTS: "/products",
     AUCTIONS: "/auctions",
@@ -25,6 +26,10 @@ export const ROUTES = {
     HELP: "/help",
     TERMS: "/terms",
     PRIVACY: "/privacy",
+    TRACK_ORDER: "/track",
+    SELLER_GUIDE: "/seller-guide",
+    COOKIE_POLICY: "/cookies",
+    REFUND_POLICY: "/refund-policy",
   },
 
   // Error Pages

@@ -310,6 +310,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
           mode={drawerMode || "view"}
           isDirty={isDirty}
           footer={drawerFooter}
+          side="right"
         >
           <CategoryForm
             category={editingCategory}

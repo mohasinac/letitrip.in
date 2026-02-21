@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import {
-  Button,
   Spinner,
+  Pagination,
   BlogCard,
   BlogFeaturedCard,
   BlogCategoryTabs,
@@ -18,10 +17,9 @@ const { themed } = THEME_CONSTANTS;
 const BLOG = UI_LABELS.BLOG_PAGE;
 
 export default function BlogPage() {
-  const [activeCategory, setActiveCategory] = useState<"" | BlogPostCategory>(
-    "",
-  );
-  const [page, setPage] = useState(1);
+  const table = useUrlTable({ defaults: { pageSize: "9" } });
+  const activeCategory = table.get("category") as "" | BlogPostCategory;
+  const page = table.getNumber("page", 1);
   const pageSize = 9;
 
   const apiUrl =
@@ -32,7 +30,7 @@ export default function BlogPage() {
     posts: BlogPostDocument[];
     meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
-    queryKey: ["blog", activeCategory, String(page)],
+    queryKey: ["blog", table.params.toString()],
     queryFn: () => apiClient.get(apiUrl),
   });
 
@@ -46,8 +44,7 @@ export default function BlogPage() {
       : posts;
 
   const handleCategoryChange = (key: "" | BlogPostCategory) => {
-    setActiveCategory(key);
-    setPage(1);
+    table.setMany({ category: key, page: "1" });
   };
 
   return (
@@ -104,24 +101,12 @@ export default function BlogPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-3 mt-10">
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  {UI_LABELS.ACTIONS.BACK}
-                </Button>
-                <span className={`text-sm ${themed.textSecondary}`}>
-                  {BLOG.PAGE_OF(page, totalPages)}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={page === totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  {UI_LABELS.ACTIONS.NEXT}
-                </Button>
+              <div className="flex justify-center mt-10">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={table.setPage}
+                />
               </div>
             )}
           </>

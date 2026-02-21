@@ -13,6 +13,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import {
   UserDocument,
   USER_COLLECTION,
@@ -270,6 +271,29 @@ export class UserRepository extends BaseRepository<UserDocument> {
     } catch (error) {
       throw new DatabaseError("Failed to count new users", error);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  static readonly SIEVE_FIELDS = {
+    uid: { canFilter: true, canSort: false },
+    email: { canFilter: true, canSort: false },
+    displayName: { canFilter: true, canSort: true },
+    role: { canFilter: true, canSort: true },
+    disabled: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native user list (admin use).
+   */
+  async list(model: SieveModel): Promise<FirebaseSieveResult<UserDocument>> {
+    return this.sieveQuery<UserDocument>(model, UserRepository.SIEVE_FIELDS, {
+      defaultPageSize: 100,
+      maxPageSize: 500,
+    });
   }
 }
 

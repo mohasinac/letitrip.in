@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import {
@@ -13,6 +13,7 @@ import {
   getReviewTableColumns,
   ReviewRowActions,
   ReviewDetailView,
+  TablePagination,
 } from "@/components";
 import { useToast } from "@/components";
 import { Modal, ConfirmDeleteModal } from "@/components";
@@ -27,9 +28,12 @@ export default function AdminReviewsPage({ params }: PageProps) {
   const router = useRouter();
   const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
   const { showToast } = useToast();
-  const [statusFilter, setStatusFilter] = useState<ReviewStatus>("pending");
-  const [ratingFilter, setRatingFilter] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt", status: "pending" },
+  });
+  const statusFilter = (table.get("status") || "pending") as ReviewStatus;
+  const ratingFilter = table.get("rating") || "all";
+  const searchTerm = table.get("q");
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
   // Modal state for reject (replaces prompt())
@@ -52,12 +56,12 @@ export default function AdminReviewsPage({ params }: PageProps) {
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     reviews: Review[];
-    meta: { total: number };
+    meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
-    queryKey: ["admin", "reviews", statusFilter, ratingFilter, searchTerm],
+    queryKey: ["admin", "reviews", table.params.toString()],
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.ADMIN.REVIEWS}${filtersParam ? `?filters=${encodeURIComponent(filtersParam)}` : ""}`,
+        `${API_ENDPOINTS.ADMIN.REVIEWS}${table.buildSieveParams(filtersParam)}`,
       ),
   });
 
@@ -232,7 +236,9 @@ export default function AdminReviewsPage({ params }: PageProps) {
             </label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as ReviewStatus)}
+              onChange={(e) =>
+                table.set("status", e.target.value as ReviewStatus)
+              }
               className={THEME_CONSTANTS.patterns.adminInput}
             >
               <option value="all">{UI_LABELS.STATUS.ALL}</option>
@@ -250,7 +256,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
             </label>
             <select
               value={ratingFilter}
-              onChange={(e) => setRatingFilter(e.target.value)}
+              onChange={(e) => table.set("rating", e.target.value)}
               className={THEME_CONSTANTS.patterns.adminInput}
             >
               <option value="all">{REVIEWS.ALL_RATINGS}</option>
@@ -271,7 +277,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => table.set("q", e.target.value)}
               placeholder={REVIEWS.SEARCH_PLACEHOLDER}
               className={THEME_CONSTANTS.patterns.adminInput}
             />
@@ -291,20 +297,31 @@ export default function AdminReviewsPage({ params }: PageProps) {
           </div>
         </Card>
       ) : (
-        <DataTable
-          data={reviews}
-          columns={tableColumns}
-          keyExtractor={(review) => review.id}
-          onRowClick={(review) => handleViewReview(review)}
-          actions={(review) => (
-            <ReviewRowActions
-              review={review}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              onDelete={handleDelete}
-            />
-          )}
-        />
+        <>
+          <DataTable
+            data={reviews}
+            columns={tableColumns}
+            keyExtractor={(review) => review.id}
+            onRowClick={(review) => handleViewReview(review)}
+            actions={(review) => (
+              <ReviewRowActions
+                review={review}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                onDelete={handleDelete}
+              />
+            )}
+            externalPagination
+          />
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={total}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        </>
       )}
 
       {/* Reject modal — replaces prompt() */}

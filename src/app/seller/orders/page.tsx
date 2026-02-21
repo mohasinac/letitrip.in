@@ -8,17 +8,18 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Spinner,
   Card,
   DataTable,
   AdminPageHeader,
+  TablePagination,
   Text,
   getOrderTableColumns,
 } from "@/components";
-import { useAuth, useApiQuery } from "@/hooks";
+import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
 import { UI_LABELS, ROUTES, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency, formatDate } from "@/utils";
@@ -26,14 +27,17 @@ import { formatCurrency, formatDate } from "@/utils";
 const { themed, spacing } = THEME_CONSTANTS;
 const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
 
-interface OrdersResponse {
-  orders: OrderDocument[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
+interface OrdersRaw {
+  success: boolean;
+  data: {
+    orders: OrderDocument[];
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasMore: boolean;
+    };
   };
 }
 
@@ -50,7 +54,11 @@ const STATUS_TABS = [
 export default function SellerOrdersPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [statusFilter, setStatusFilter] = useState("");
+
+  const table = useUrlTable({ defaults: { pageSize: "25" } });
+  const statusFilter = table.get("status");
+  const page = table.getNumber("page", 1);
+  const PAGE_SIZE = 25;
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -61,14 +69,17 @@ export default function SellerOrdersPage() {
 
   // Build API URL with optional status filter
   const ordersUrl = useMemo(() => {
-    const filters = statusFilter
-      ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}`
-      : "";
-    return `${API_ENDPOINTS.SELLER.ORDERS}${filters}`;
-  }, [statusFilter]);
+    const params = new URLSearchParams({
+      sorts: "-orderDate",
+      page: String(page),
+      pageSize: String(PAGE_SIZE),
+    });
+    if (statusFilter) params.set("filters", `status==${statusFilter}`);
+    return `${API_ENDPOINTS.SELLER.ORDERS}?${params.toString()}`;
+  }, [statusFilter, page, PAGE_SIZE]);
 
-  const { data, isLoading } = useApiQuery<OrdersResponse>({
-    queryKey: ["seller-orders", statusFilter],
+  const { data, isLoading } = useApiQuery<OrdersRaw>({
+    queryKey: ["seller-orders", table.params.toString()],
     queryFn: () => fetch(ordersUrl).then((r) => r.json()),
     enabled: !!user,
   });
@@ -91,7 +102,8 @@ export default function SellerOrdersPage() {
 
   if (!user) return null;
 
-  const orders = data?.orders ?? [];
+  const orders = data?.data?.orders ?? [];
+  const meta = data?.data?.meta;
 
   return (
     <div className={spacing.stack}>
@@ -144,7 +156,7 @@ export default function SellerOrdersPage() {
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setStatusFilter(tab.key)}
+            onClick={() => table.set("status", tab.key)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               statusFilter === tab.key
                 ? "border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
@@ -164,14 +176,28 @@ export default function SellerOrdersPage() {
         loading={isLoading}
         emptyTitle={SELLER_LABELS.ORDERS_EMPTY}
         emptyMessage={SELLER_LABELS.ORDERS_EMPTY_SUBTITLE}
+        externalPagination
       />
+
+      {(meta?.totalPages ?? 1) > 1 && (
+        <TablePagination
+          currentPage={page}
+          totalPages={meta?.totalPages ?? 1}
+          pageSize={PAGE_SIZE}
+          total={meta?.total ?? 0}
+          onPageChange={table.setPage}
+          isLoading={isLoading}
+        />
+      )}
 
       {/* Revenue Summary */}
       {!isLoading && orders.length > 0 && (
         <Card className={`p-4 ${themed.bgSecondary}`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <Text className={`font-medium ${themed.textPrimary}`}>
-              Total Revenue (all orders)
+              {statusFilter
+                ? `Revenue (${statusFilter} orders, this page)`
+                : "Revenue (this page)"}
             </Text>
             <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
               {formatCurrency(

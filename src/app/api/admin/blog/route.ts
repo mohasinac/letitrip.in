@@ -14,7 +14,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { blogRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
@@ -77,33 +76,11 @@ export const GET = createApiHandler({
     const drafts = allPosts.filter((p) => p.status === "draft").length;
     const featured = allPosts.filter((p) => p.isFeatured).length;
 
-    const sieveResult = await applySieveToArray({
-      items: allPosts,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        title: { canFilter: true, canSort: true },
-        slug: { canFilter: true, canSort: false },
-        status: { canFilter: true, canSort: true },
-        category: { canFilter: true, canSort: true },
-        authorName: { canFilter: true, canSort: true },
-        isFeatured: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        publishedAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: { defaultPageSize: 50, maxPageSize: 200 },
+    const sieveResult = await blogRepository.listAll({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

@@ -13,7 +13,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { applySieveToArray } from "@/helpers";
 import type { BlogPostCategory } from "@/db/schema";
 
 /**
@@ -46,43 +45,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const category = categoryParam as BlogPostCategory | undefined;
 
-    // Fetch all matching published posts (Firestore handles category/featured filtering)
-    const allPosts = await blogRepository.findAllPublished({
-      category: category || undefined,
-      featuredOnly,
-    });
-
-    // Apply Sieve DSL for additional filtering, sorting, and pagination
-    const sieveResult = await applySieveToArray({
-      items: allPosts,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        title: { canFilter: true, canSort: true },
-        slug: { canFilter: true, canSort: false },
-        category: { canFilter: true, canSort: true },
-        authorName: { canFilter: true, canSort: true },
-        readTimeMinutes: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        publishedAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: {
-        defaultPageSize: 12,
-        maxPageSize: 50,
-      },
-    });
+    // Firestore-native query — status==published enforced at DB level,
+    // optional category/featured pre-filtered, then Sieve pagination.
+    const sieveResult = await blogRepository.listPublished(
+      { category: category || undefined, featuredOnly },
+      { filters, sorts, page, pageSize },
+    );
 
     return successResponse({
       posts: sieveResult.items,

@@ -138,7 +138,7 @@ export default function SellerDashboardPage() {
           title={UI_LABELS.SELLER_PAGE.NO_PRODUCTS}
           description={UI_LABELS.SELLER_PAGE.NO_PRODUCTS_SUBTITLE}
           actionLabel={UI_LABELS.SELLER_PAGE.ADD_PRODUCT}
-          onAction={() => router.push(ROUTES.SELLER.PRODUCTS_NEW)}
+          onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
         />
       )}
     </div>

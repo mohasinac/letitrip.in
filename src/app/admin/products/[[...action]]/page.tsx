@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
 import {
@@ -14,6 +14,9 @@ import {
   DrawerFormFooter,
   getProductTableColumns,
   ProductForm,
+  TablePagination,
+  AdminFilterBar,
+  FormField,
 } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
@@ -27,14 +30,25 @@ export default function AdminProductsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showError } = useMessage();
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt" },
+  });
+  const searchTerm = table.get("q");
+  const statusFilter = table.get("status");
+
+  const filtersArr: string[] = [];
+  if (searchTerm) filtersArr.push(`title@=*${searchTerm}`);
+  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     products: AdminProduct[];
-    meta: { total: number };
+    meta: { page: number; limit: number; total: number; totalPages: number };
   }>({
-    queryKey: ["admin", "products"],
+    queryKey: ["admin", "products", table.params.toString()],
     queryFn: () =>
-      apiClient.get(`${API_ENDPOINTS.ADMIN.PRODUCTS}?pageSize=200`),
+      apiClient.get(
+        `${API_ENDPOINTS.ADMIN.PRODUCTS}${table.buildSieveParams(filtersArr.join(","))}`,
+      ),
   });
 
   const createMutation = useApiMutation<any, any>({
@@ -242,13 +256,43 @@ export default function AdminProductsPage({ params }: PageProps) {
             </div>
           </Card>
         ) : (
-          <DataTable
-            data={products}
-            columns={columns}
-            keyExtractor={(product) => product.id}
-            onRowClick={handleEdit}
-            actions={actions}
-          />
+          <>
+            <AdminFilterBar>
+              <FormField
+                type="text"
+                name="search"
+                value={searchTerm}
+                onChange={(value) => table.set("q", value)}
+                placeholder={UI_LABELS.ADMIN.PRODUCTS.SEARCH_PLACEHOLDER}
+              />
+              <select
+                value={statusFilter}
+                onChange={(e) => table.set("status", e.target.value)}
+                className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
+              >
+                <option value="">{UI_LABELS.ADMIN.PRODUCTS.FILTER_ALL}</option>
+                <option value="draft">{UI_LABELS.STATUS.DRAFT}</option>
+                <option value="published">{UI_LABELS.STATUS.PUBLISHED}</option>
+                <option value="archived">{UI_LABELS.STATUS.ARCHIVED}</option>
+              </select>
+            </AdminFilterBar>
+            <DataTable
+              data={products}
+              columns={columns}
+              keyExtractor={(product) => product.id}
+              onRowClick={handleEdit}
+              actions={actions}
+              externalPagination
+            />
+            <TablePagination
+              currentPage={data?.meta?.page ?? 1}
+              totalPages={data?.meta?.totalPages ?? 1}
+              pageSize={table.getNumber("pageSize", 25)}
+              total={data?.meta?.total ?? 0}
+              onPageChange={table.setPage}
+              onPageSizeChange={table.setPageSize}
+            />
+          </>
         )}
       </div>
 
@@ -260,6 +304,7 @@ export default function AdminProductsPage({ params }: PageProps) {
           mode={drawerMode || "view"}
           isDirty={isDirty}
           footer={drawerFooter}
+          side="right"
         >
           {drawerMode === "delete" ? (
             <div className="space-y-4">

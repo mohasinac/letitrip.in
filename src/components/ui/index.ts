@@ -44,6 +44,14 @@ export { default as ImageGallery } from "./ImageGallery";
 export type { GalleryImage } from "./ImageGallery";
 export { default as SideDrawer } from "./SideDrawer";
 
+// Phase 2: Shared UI Primitives
+export { FilterFacetSection } from "./FilterFacetSection";
+export { FilterDrawer } from "./FilterDrawer";
+export { ActiveFilterChips } from "./ActiveFilterChips";
+export type { ActiveFilter } from "./ActiveFilterChips";
+export { SortDropdown } from "./SortDropdown";
+export { TablePagination } from "./TablePagination";
+
 // Phase 3: Shared UI Infrastructure
 export { SectionTabs } from "./SectionTabs";
 export type { SectionTab } from "./SectionTabs";

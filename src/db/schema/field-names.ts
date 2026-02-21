@@ -132,6 +132,7 @@ export const PRODUCT_FIELDS = {
   BID_COUNT: "bidCount",
   IS_PROMOTED: "isPromoted",
   PROMOTION_END_DATE: "promotionEndDate",
+  PICKUP_ADDRESS_ID: "pickupAddressId",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
 

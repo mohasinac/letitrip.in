@@ -2,7 +2,7 @@
 
 import { useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
@@ -20,6 +20,7 @@ import {
   DrawerFormFooter,
   getOrderTableColumns,
   OrderStatusForm,
+  TablePagination,
 } from "@/components";
 import type { OrderStatusFormState } from "@/components";
 import type { OrderDocument } from "@/db/schema";
@@ -44,8 +45,11 @@ export default function AdminOrdersPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt" },
+  });
+  const statusFilter = table.get("status");
 
-  const [statusFilter, setStatusFilter] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<OrderDocument | null>(
     null,
   );
@@ -58,12 +62,10 @@ export default function AdminOrdersPage({ params }: PageProps) {
     orders: OrderDocument[];
     meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
-    queryKey: ["admin", "orders", statusFilter],
+    queryKey: ["admin", "orders", table.params.toString()],
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.ADMIN.ORDERS}?pageSize=200${
-          filtersParam ? `&filters=${encodeURIComponent(filtersParam)}` : ""
-        }`,
+        `${API_ENDPOINTS.ADMIN.ORDERS}${table.buildSieveParams(filtersParam ?? "")}`,
       ),
   });
 
@@ -144,7 +146,7 @@ export default function AdminOrdersPage({ params }: PageProps) {
             key={tab.key}
             variant={statusFilter === tab.key ? "primary" : "outline"}
             size="sm"
-            onClick={() => setStatusFilter(tab.key)}
+            onClick={() => table.set("status", tab.key)}
           >
             {tab.label}
           </Button>
@@ -160,6 +162,15 @@ export default function AdminOrdersPage({ params }: PageProps) {
             error ? ERROR_MESSAGES.ORDER.FETCH_FAILED : "No orders found"
           }
           keyExtractor={(order: OrderDocument) => order.id}
+          externalPagination
+        />
+        <TablePagination
+          currentPage={data?.meta?.page ?? 1}
+          totalPages={data?.meta?.totalPages ?? 1}
+          pageSize={table.getNumber("pageSize", 25)}
+          total={data?.meta?.total ?? 0}
+          onPageChange={table.setPage}
+          onPageSizeChange={table.setPageSize}
         />
       </Card>
 
@@ -168,6 +179,7 @@ export default function AdminOrdersPage({ params }: PageProps) {
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         title={LABELS.UPDATE_STATUS}
+        side="right"
       >
         {selectedOrder && (
           <div className="flex flex-col h-full">

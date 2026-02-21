@@ -210,6 +210,7 @@ export default function AdminPayoutsPage() {
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         title={LABELS.UPDATE_STATUS}
+        side="right"
       >
         {selectedPayout && (
           <div className="flex flex-col h-full">

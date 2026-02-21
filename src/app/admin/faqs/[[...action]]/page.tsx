@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
 import {
@@ -14,6 +14,8 @@ import {
   DrawerFormFooter,
   getFaqTableColumns,
   FaqForm,
+  AdminFilterBar,
+  FormField,
 } from "@/components";
 import type { FAQ, FaqDrawerMode } from "@/components";
 
@@ -27,10 +29,20 @@ export default function AdminFAQsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showError } = useMessage();
+  const table = useUrlTable({
+    defaults: { pageSize: "50", sort: "-priority,order" },
+  });
+  const searchTerm = table.get("q");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{ faqs: FAQ[] }>({
-    queryKey: ["faqs", "list"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.FAQS.LIST),
+  const { data, isLoading, error, refetch } = useApiQuery<FAQ[]>({
+    queryKey: ["faqs", "list", table.params.toString()],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      const sort = table.get("sort") || "-priority,order";
+      params.set("sorts", sort);
+      if (searchTerm) params.set("search", searchTerm);
+      return apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?${params.toString()}`);
+    },
   });
 
   const createMutation = useApiMutation<any, any>({
@@ -51,7 +63,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const initialFormRef = useRef<string>("");
 
-  const faqs = data?.faqs || [];
+  const faqs = Array.isArray(data) ? data : [];
 
   const isDirty = useMemo(() => {
     if (!editingFAQ || drawerMode === "delete") return false;
@@ -226,13 +238,24 @@ export default function AdminFAQsPage({ params }: PageProps) {
             </div>
           </Card>
         ) : (
-          <DataTable
-            data={faqs}
-            columns={columns}
-            keyExtractor={(faq) => faq.id}
-            onRowClick={handleEdit}
-            actions={actions}
-          />
+          <>
+            <AdminFilterBar>
+              <FormField
+                type="text"
+                name="search"
+                value={searchTerm}
+                onChange={(value) => table.set("q", value)}
+                placeholder={UI_LABELS.ADMIN.FAQS.SEARCH_PLACEHOLDER}
+              />
+            </AdminFilterBar>
+            <DataTable
+              data={faqs}
+              columns={columns}
+              keyExtractor={(faq) => faq.id}
+              onRowClick={handleEdit}
+              actions={actions}
+            />
+          </>
         )}
       </div>
 
@@ -244,6 +267,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
           mode={drawerMode || "view"}
           isDirty={isDirty}
           footer={drawerFooter}
+          side="right"
         >
           <FaqForm
             faq={editingFAQ}

@@ -2,7 +2,7 @@
 
 import { useState, use, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
@@ -23,6 +23,9 @@ import {
   CouponForm,
   couponToFormState,
   formStateToCouponPayload,
+  TablePagination,
+  AdminFilterBar,
+  FormField,
 } from "@/components";
 import type { CouponFormState } from "@/components";
 import type { CouponDocument } from "@/db/schema";
@@ -39,6 +42,13 @@ export default function AdminCouponsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt" },
+  });
+  const searchTerm = table.get("q");
+
+  const filtersArr: string[] = [];
+  if (searchTerm) filtersArr.push(`code@=*${searchTerm}`);
 
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -53,10 +63,13 @@ export default function AdminCouponsPage({ params }: PageProps) {
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     coupons: CouponDocument[];
-    meta: { total: number };
+    meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
-    queryKey: ["admin", "coupons"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADMIN.COUPONS),
+    queryKey: ["admin", "coupons", table.params.toString()],
+    queryFn: () =>
+      apiClient.get(
+        `${API_ENDPOINTS.ADMIN.COUPONS}${table.buildSieveParams(filtersArr.join(","))}`,
+      ),
   });
 
   const createMutation = useApiMutation<any, any>({
@@ -181,6 +194,15 @@ export default function AdminCouponsPage({ params }: PageProps) {
       />
 
       <Card>
+        <AdminFilterBar>
+          <FormField
+            type="text"
+            name="search"
+            value={searchTerm}
+            onChange={(value) => table.set("q", value)}
+            placeholder={UI_LABELS.ADMIN.COUPONS.SEARCH_PLACEHOLDER}
+          />
+        </AdminFilterBar>
         <DataTable
           columns={columns}
           data={coupons}
@@ -189,6 +211,15 @@ export default function AdminCouponsPage({ params }: PageProps) {
             error ? ERROR_MESSAGES.COUPON.FETCH_FAILED : LABELS.NO_COUPONS
           }
           keyExtractor={(c: CouponDocument) => c.id}
+          externalPagination
+        />
+        <TablePagination
+          currentPage={data?.meta?.page ?? 1}
+          totalPages={data?.meta?.totalPages ?? 1}
+          pageSize={table.getNumber("pageSize", 25)}
+          total={data?.meta?.total ?? 0}
+          onPageChange={table.setPage}
+          onPageSizeChange={table.setPageSize}
         />
       </Card>
 
@@ -197,6 +228,7 @@ export default function AdminCouponsPage({ params }: PageProps) {
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         title={drawerTitle}
+        side="right"
       >
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto p-4">

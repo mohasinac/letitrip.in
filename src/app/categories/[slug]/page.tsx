@@ -8,16 +8,17 @@
 
 "use client";
 
-import { use, useMemo, useState } from "react";
+import { use, useMemo } from "react";
 import Link from "next/link";
 import {
   ProductGrid,
   ProductSortBar,
+  Pagination,
   PRODUCT_SORT_VALUES,
   Spinner,
 } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 
@@ -54,10 +55,12 @@ interface Props {
 
 export default function CategoryProductsPage({ params }: Props) {
   const { slug } = use(params);
-  const [sort, setSort] = useState<ProductSortValue>(
-    PRODUCT_SORT_VALUES.NEWEST,
-  );
-  const [page, setPage] = useState(1);
+  const table = useUrlTable({
+    defaults: { pageSize: String(PAGE_SIZE), sort: PRODUCT_SORT_VALUES.NEWEST },
+  });
+  const sort = (table.get("sort") ||
+    PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
+  const page = table.getNumber("page", 1);
 
   /* ---- Fetch all categories (flat) to resolve slug → category doc ---- */
   const { data: catData, isLoading: catLoading } =
@@ -87,8 +90,7 @@ export default function CategoryProductsPage({ params }: Props) {
         "products",
         "by-category",
         category?.id ?? "",
-        sort,
-        String(page),
+        table.params.toString(),
       ],
       queryFn: () => fetch(productsUrl!).then((r) => r.json()),
       enabled: !!productsUrl,
@@ -96,6 +98,7 @@ export default function CategoryProductsPage({ params }: Props) {
 
   const products = useMemo(() => prodData?.data ?? [], [prodData]);
   const totalProducts = prodData?.meta?.total ?? 0;
+  const totalPages = prodData?.meta?.totalPages ?? 1;
 
   /* -------------------------------------------------------------------- */
 
@@ -163,10 +166,7 @@ export default function CategoryProductsPage({ params }: Props) {
         total={totalProducts}
         showing={products.length}
         sort={sort}
-        onSortChange={(v) => {
-          setSort(v as ProductSortValue);
-          setPage(1);
-        }}
+        onSortChange={(v) => table.set("sort", v as string)}
       />
 
       {/* Product Grid */}
@@ -189,25 +189,13 @@ export default function CategoryProductsPage({ params }: Props) {
       )}
 
       {/* Pagination */}
-      {totalProducts > PAGE_SIZE && (
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.BACK}
-          </button>
-          <span className={`px-4 py-2 text-sm ${themed.textSecondary}`}>
-            {UI_LABELS.ACTIONS.NEXT === "Next" ? `Page ${page}` : `${page}`}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={products.length < PAGE_SIZE}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.NEXT}
-          </button>
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={table.setPage}
+          />
         </div>
       )}
     </main>

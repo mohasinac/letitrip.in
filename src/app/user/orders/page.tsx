@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth, useApiQuery } from "@/hooks";
+import { useMemo } from "react";
+import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
 import {
   Heading,
   Spinner,
@@ -28,19 +29,36 @@ const STATUS_MAP: Record<
   returned: "danger",
 };
 
+const STATUS_TABS = [
+  { key: "", label: "All" },
+  { key: "pending", label: "Pending" },
+  { key: "confirmed", label: "Confirmed" },
+  { key: "shipped", label: "Shipped" },
+  { key: "delivered", label: "Delivered" },
+  { key: "cancelled", label: "Cancelled" },
+];
+
 export default function UserOrdersPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const table = useUrlTable({});
+  const statusFilter = table.get("status");
+
+  const ordersUrl = useMemo(() => {
+    const url = API_ENDPOINTS.ORDERS.LIST;
+    return statusFilter ? `${url}?status=${statusFilter}` : url;
+  }, [statusFilter]);
 
   const { data, isLoading } = useApiQuery<{
-    data: { orders: OrderDocument[]; total: number };
+    orders: OrderDocument[];
+    total: number;
   }>({
-    queryKey: ["user-orders"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.LIST),
+    queryKey: ["user-orders", table.params.toString()],
+    queryFn: () => apiClient.get(ordersUrl),
     enabled: !!user && !loading,
   });
 
-  const orders: OrderDocument[] = data?.data?.orders ?? [];
+  const orders: OrderDocument[] = data?.orders ?? [];
 
   if (loading || isLoading) {
     return (
@@ -58,6 +76,25 @@ export default function UserOrdersPage() {
   return (
     <div className={THEME_CONSTANTS.spacing.stack}>
       <Heading level={3}>{UI_LABELS.USER.ORDERS.TITLE}</Heading>
+
+      {/* Status filter tabs */}
+      <div
+        className={`flex gap-1 overflow-x-auto border-b ${THEME_CONSTANTS.themed.border} pb-0`}
+      >
+        {STATUS_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => table.set("status", tab.key)}
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              statusFilter === tab.key
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
+                : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:text-gray-700 dark:hover:text-gray-300`
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {orders.length === 0 ? (
         <EmptyState

@@ -20,6 +20,7 @@ import {
 } from "@/db/schema";
 import { generateUniqueId } from "@/utils";
 import { DatabaseError } from "@/lib/errors";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
 class ProductRepository extends BaseRepository<ProductDocument> {
   constructor() {
@@ -226,6 +227,77 @@ class ProductRepository extends BaseRepository<ProductDocument> {
         error,
       );
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // Filtering, sorting, and pagination run at the Firestore layer.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Fields that consumers may filter or sort on.
+   * Used by `list()` and available for reference in tests.
+   */
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    title: { canFilter: true, canSort: true },
+    slug: { canFilter: true, canSort: false },
+    category: { canFilter: true, canSort: true },
+    subcategory: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    sellerId: { canFilter: true, canSort: false },
+    sellerName: { canFilter: true, canSort: true },
+    featured: { canFilter: true, canSort: false },
+    isAuction: { canFilter: true, canSort: false },
+    isPromoted: { canFilter: true, canSort: false },
+    price: { canFilter: true, canSort: true },
+    stockQuantity: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated product list using Sieve DSL.
+   * All filtering, sorting, and pagination happen at the Firestore layer.
+   *
+   * @example
+   * ```ts
+   * const result = await productRepository.list({
+   *   filters: 'status==published,price>=100',
+   *   sorts:   '-createdAt',
+   *   page:    1,
+   *   pageSize: 20,
+   * });
+   * ```
+   */
+  async list(
+    model: SieveModel,
+    opts?: { sellerId?: string; status?: string },
+  ): Promise<FirebaseSieveResult<ProductDocument>> {
+    let baseQuery = this.getCollection();
+    if (opts?.status) {
+      baseQuery = baseQuery.where(
+        PRODUCT_FIELDS.STATUS,
+        "==",
+        opts.status,
+      ) as any;
+    }
+    if (opts?.sellerId) {
+      baseQuery = baseQuery.where(
+        PRODUCT_FIELDS.SELLER_ID,
+        "==",
+        opts.sellerId,
+      ) as any;
+    }
+    return this.sieveQuery<ProductDocument>(
+      model,
+      ProductRepository.SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 20,
+        maxPageSize: 100,
+      },
+    );
   }
 }
 

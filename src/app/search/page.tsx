@@ -8,12 +8,11 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { PRODUCT_SORT_VALUES } from "@/components";
 import { SearchFiltersRow, SearchResultsSection } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
-import { useApiQuery } from "@/hooks";
+import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import { debounce } from "@/utils";
 import type { ProductDocument, CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
@@ -54,17 +53,17 @@ interface CategoriesResponse {
 }
 
 export default function SearchPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const table = useUrlTable({
+    defaults: { sort: PRODUCT_SORT_VALUES.NEWEST, pageSize: String(PAGE_SIZE) },
+  });
 
-  const urlQ = searchParams.get("q") ?? "";
-  const urlCategory = searchParams.get("category") ?? "";
-  const urlMinPrice = searchParams.get("minPrice") ?? "";
-  const urlMaxPrice = searchParams.get("maxPrice") ?? "";
+  const urlQ = table.get("q");
+  const urlCategory = table.get("category");
+  const urlMinPrice = table.get("minPrice");
+  const urlMaxPrice = table.get("maxPrice");
   const urlSort =
-    (searchParams.get("sort") as ProductSortValue) ||
-    PRODUCT_SORT_VALUES.NEWEST;
-  const urlPage = Number(searchParams.get("page") ?? "1");
+    (table.get("sort") as ProductSortValue) || PRODUCT_SORT_VALUES.NEWEST;
+  const urlPage = table.getNumber("page", 1);
 
   const [inputValue, setInputValue] = useState(urlQ);
 
@@ -72,40 +71,16 @@ export default function SearchPage() {
     setInputValue(urlQ);
   }, [urlQ]);
 
-  const buildUrl = useCallback(
-    (overrides: Record<string, string>) => {
-      const params = new URLSearchParams();
-      const merged = {
-        q: urlQ,
-        category: urlCategory,
-        minPrice: urlMinPrice,
-        maxPrice: urlMaxPrice,
-        sort: urlSort,
-        page: String(urlPage),
-        ...overrides,
-      };
-      Object.entries(merged).forEach(([key, val]) => {
-        if ((val && val !== "1") || key === "q" || key === "sort") {
-          if (val) params.set(key, val);
-        }
-      });
-      return `${ROUTES.PUBLIC.SEARCH}?${params.toString()}`;
-    },
-    [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage],
-  );
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedPush = useCallback(
-    debounce((q: string) => {
-      router.replace(buildUrl({ q, page: "1" }));
-    }, DEBOUNCE_MS),
-    [buildUrl, router],
+  const debouncedSetQ = useMemo(
+    () => debounce((q: string) => table.set("q", q), DEBOUNCE_MS),
+    [],
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputValue(val);
-    debouncedPush(val);
+    debouncedSetQ(val);
   };
 
   const { data: catData } = useApiQuery<CategoriesResponse>({
@@ -132,15 +107,7 @@ export default function SearchPage() {
   }, [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage]);
 
   const { data: searchData, isLoading } = useApiQuery<SearchResponse>({
-    queryKey: [
-      "search",
-      urlQ,
-      urlCategory,
-      urlMinPrice,
-      urlMaxPrice,
-      urlSort,
-      String(urlPage),
-    ],
+    queryKey: ["search", table.params.toString()],
     queryFn: () => fetch(searchUrl).then((r) => r.json()),
   });
 
@@ -148,14 +115,12 @@ export default function SearchPage() {
   const total = searchData?.meta?.total ?? 0;
   const totalPages = searchData?.meta?.totalPages ?? 1;
 
-  const handleSortChange = (sort: string) =>
-    router.replace(buildUrl({ sort, page: "1" }));
-  const handleCategoryChange = (cat: string) =>
-    router.replace(buildUrl({ category: cat, page: "1" }));
+  const handleSortChange = (sort: string) => table.set("sort", sort);
+  const handleCategoryChange = (cat: string) => table.set("category", cat);
   const handlePriceFilter = (min: string, max: string) =>
-    router.replace(buildUrl({ minPrice: min, maxPrice: max, page: "1" }));
+    table.setMany({ minPrice: min, maxPrice: max });
   const handleClearFilters = () =>
-    router.replace(`${ROUTES.PUBLIC.SEARCH}?q=${encodeURIComponent(urlQ)}`);
+    table.clear(["category", "minPrice", "maxPrice"]);
 
   const hasActiveFilters = !!(urlCategory || urlMinPrice || urlMaxPrice);
   const hasAnyFilter = !!(urlQ || urlCategory || urlMinPrice || urlMaxPrice);
@@ -209,12 +174,7 @@ export default function SearchPage() {
           urlPage={urlPage}
           isLoading={isLoading}
           onSortChange={handleSortChange}
-          onPrevPage={() =>
-            router.replace(buildUrl({ page: String(urlPage - 1) }))
-          }
-          onNextPage={() =>
-            router.replace(buildUrl({ page: String(urlPage + 1) }))
-          }
+          onPageChange={table.setPage}
         />
       ) : (
         <div className="flex flex-col items-center justify-center py-24 text-center">

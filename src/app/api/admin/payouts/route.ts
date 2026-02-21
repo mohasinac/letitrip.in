@@ -13,7 +13,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { payoutRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 
 /**
@@ -60,31 +59,11 @@ export const GET = createApiHandler({
       totalAmount: allPayouts.reduce((sum, p) => sum + p.amount, 0),
     };
 
-    const sieveResult = await applySieveToArray({
-      items: allPayouts,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        sellerId: { canFilter: true, canSort: false },
-        sellerName: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        amount: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-        processedAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: { defaultPageSize: 50, maxPageSize: 200 },
+    const sieveResult = await payoutRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

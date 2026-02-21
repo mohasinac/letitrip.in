@@ -95,3 +95,7 @@ export type { RazorpayOptions, RazorpayPaymentResponse } from "./useRazorpay";
 export { useBreakpoint } from "./useBreakpoint";
 export { useRealtimeBids } from "./useRealtimeBids";
 export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";
+
+// Phase 2: URL-driven list/table state
+export { useUrlTable } from "./useUrlTable";
+export type { UseUrlTableOptions } from "./useUrlTable";

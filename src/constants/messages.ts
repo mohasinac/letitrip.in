@@ -553,7 +553,7 @@ export const SUCCESS_MESSAGES = {
 
   // Address Success
   ADDRESS: {
-    CREATED: "Address added successfully",
+    CREATED: "Address saved successfully",
     UPDATED: "Address updated successfully",
     DELETED: "Address deleted successfully",
     DEFAULT_SET: "Default address set successfully",

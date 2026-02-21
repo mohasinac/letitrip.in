@@ -20,13 +20,14 @@ import {
 // ============================================
 
 const mockFindByProduct = jest.fn();
+const mockListForProduct = jest.fn();
 const mockCreate = jest.fn();
-const mockApplySieveToArray = jest.fn();
 const mockHasUserPurchased = jest.fn();
 
 jest.mock("@/repositories", () => ({
   reviewRepository: {
     findByProduct: (...args: unknown[]) => mockFindByProduct(...args),
+    listForProduct: (...args: unknown[]) => mockListForProduct(...args),
     create: (...args: unknown[]) => mockCreate(...args),
   },
   orderRepository: {
@@ -47,10 +48,6 @@ const mockRequireAuthFromRequest = jest.fn();
 jest.mock("@/lib/security/authorization", () => ({
   requireAuthFromRequest: (...args: unknown[]) =>
     mockRequireAuthFromRequest(...args),
-}));
-
-jest.mock("@/helpers", () => ({
-  applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
@@ -155,14 +152,14 @@ describe("Reviews API - GET /api/reviews", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFindByProduct.mockResolvedValue([...mockReviews]);
-    mockApplySieveToArray.mockImplementation(
-      async ({ items, model }: { items: any[]; model: any }) => {
+    mockListForProduct.mockImplementation(
+      async (_productId: string, model: any) => {
         const page = model?.page ?? 1;
         const pageSize = model?.pageSize ?? 10;
         const filters = model?.filters as string | undefined;
 
-        let filteredItems = [...items];
-        if (filters === "status==approved") {
+        let filteredItems = [...mockReviews];
+        if (filters?.includes("status==approved")) {
           filteredItems = filteredItems.filter(
             (review) => review.status === "approved",
           );

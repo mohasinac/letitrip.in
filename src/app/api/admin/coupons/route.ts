@@ -13,7 +13,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { couponsRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { CouponCreateInput } from "@/db/schema";
@@ -89,41 +88,11 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allCoupons = await couponsRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: allCoupons,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        code: { canFilter: true, canSort: true },
-        name: { canFilter: true, canSort: true },
-        type: { canFilter: true, canSort: true },
-        "validity.isActive": {
-          path: "validity.isActive",
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        "discount.value": {
-          path: "discount.value",
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        "usage.currentUsage": {
-          path: "usage.currentUsage",
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: { defaultPageSize: 50, maxPageSize: 200 },
+    const sieveResult = await couponsRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

@@ -1,12 +1,11 @@
 "use client";
 
+import { Pagination, EmptyState } from "@/components/ui";
 import { ProductGrid, ProductSortBar } from "@/components/products";
-import { EmptyState } from "@/components/ui";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { UI_LABELS } from "@/constants";
 import type { ProductSortValue } from "@/components/products";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.SEARCH_PAGE;
 
 const PAGE_SIZE = 24;
@@ -34,8 +33,7 @@ interface SearchResultsSectionProps {
   urlPage: number;
   isLoading: boolean;
   onSortChange: (sort: string) => void;
-  onPrevPage: () => void;
-  onNextPage: () => void;
+  onPageChange: (page: number) => void;
 }
 
 export function SearchResultsSection({
@@ -47,8 +45,7 @@ export function SearchResultsSection({
   urlPage,
   isLoading,
   onSortChange,
-  onPrevPage,
-  onNextPage,
+  onPageChange,
 }: SearchResultsSectionProps) {
   return (
     <>
@@ -71,24 +68,12 @@ export function SearchResultsSection({
       )}
 
       {total > PAGE_SIZE && (
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={onPrevPage}
-            disabled={urlPage === 1}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.BACK}
-          </button>
-          <span className={`px-4 py-2 text-sm ${themed.textSecondary}`}>
-            {urlPage} / {totalPages}
-          </span>
-          <button
-            onClick={onNextPage}
-            disabled={urlPage >= totalPages}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.NEXT}
-          </button>
+        <div className="flex justify-center">
+          <Pagination
+            currentPage={urlPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
         </div>
       )}
     </>

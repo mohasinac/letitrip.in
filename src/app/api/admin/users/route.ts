@@ -12,9 +12,7 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { userRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
-import type { UserDocument } from "@/db/schema";
 
 /**
  * GET /api/admin/users
@@ -46,37 +44,11 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const users: UserDocument[] = await userRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: users,
-      model: {
-        filters,
-        sorts,
-        page,
-        pageSize,
-      },
-      fields: {
-        uid: { canFilter: true, canSort: false },
-        email: { canFilter: true, canSort: false },
-        displayName: { canFilter: true, canSort: false },
-        role: { canFilter: true, canSort: true },
-        disabled: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => value === "true",
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => new Date(value),
-        },
-      },
-      options: {
-        defaultPageSize: 100,
-        maxPageSize: 500,
-        throwExceptions: false,
-      },
+    const sieveResult = await userRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     // Serialize dates and strip sensitive fields

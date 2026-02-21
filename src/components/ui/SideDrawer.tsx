@@ -17,6 +17,8 @@ interface SideDrawerProps {
   mode?: DrawerMode;
   /** Whether form has unsaved changes - triggers warning on close */
   isDirty?: boolean;
+  /** Which side the drawer opens from. Defaults to 'right'. */
+  side?: "left" | "right";
 }
 
 export default function SideDrawer({
@@ -27,6 +29,7 @@ export default function SideDrawer({
   footer,
   mode = "view",
   isDirty = false,
+  side = "right",
 }: SideDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
@@ -71,15 +74,22 @@ export default function SideDrawer({
     };
   }, [isOpen]);
 
-  // Swipe right to close
+  // Swipe towards the edge to close
   useSwipe(drawerRef, {
-    onSwipeRight: () => attemptClose(),
+    ...(side === "left"
+      ? { onSwipeLeft: () => attemptClose() }
+      : { onSwipeRight: () => attemptClose() }),
     minSwipeDistance: 60,
   });
 
   if (!isOpen) return null;
 
   const { themed, spacing, borderRadius } = THEME_CONSTANTS;
+
+  const positionClass =
+    side === "left"
+      ? "left-0 w-full sm:w-96 md:w-[420px]"
+      : "right-0 w-full md:w-3/5 lg:max-w-2xl";
 
   const modeHeaderStyles: Record<DrawerMode, string> = {
     delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",
@@ -102,7 +112,7 @@ export default function SideDrawer({
       {/* Drawer — full width on mobile, wider on desktop */}
       <div
         ref={drawerRef}
-        className={`fixed right-0 top-0 bottom-0 z-50 w-full md:w-3/5 lg:${THEME_CONSTANTS.container["2xl"]} ${themed.bgPrimary} shadow-2xl flex flex-col transition-transform duration-300 ease-in-out`}
+        className={`fixed ${positionClass} top-0 bottom-0 z-50 ${themed.bgPrimary} shadow-2xl flex flex-col transition-transform duration-300 ease-in-out`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"

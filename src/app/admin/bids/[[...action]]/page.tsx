@@ -2,7 +2,7 @@
 
 import { useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, ROUTES, ERROR_MESSAGES } from "@/constants";
 import {
@@ -12,6 +12,7 @@ import {
   DataTable,
   AdminPageHeader,
   getBidTableColumns,
+  TablePagination,
 } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
 import { THEME_CONSTANTS } from "@/constants";
@@ -35,8 +36,9 @@ const STATUS_TABS = [
 export default function AdminBidsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const table = useUrlTable({ defaults: { pageSize: "25", sort: "-bidDate" } });
+  const statusFilter = table.get("status");
 
-  const [statusFilter, setStatusFilter] = useState("");
   const [selectedBid, setSelectedBid] = useState<BidDocument | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -46,12 +48,10 @@ export default function AdminBidsPage({ params }: PageProps) {
     bids: BidDocument[];
     meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
-    queryKey: ["admin", "bids", statusFilter],
+    queryKey: ["admin", "bids", table.params.toString()],
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.ADMIN.BIDS}?pageSize=200${
-          filtersParam ? `&filters=${encodeURIComponent(filtersParam)}` : ""
-        }`,
+        `${API_ENDPOINTS.ADMIN.BIDS}${table.buildSieveParams(filtersParam ?? "")}`,
       ),
   });
 
@@ -117,7 +117,7 @@ export default function AdminBidsPage({ params }: PageProps) {
             key={tab.key}
             variant={statusFilter === tab.key ? "primary" : "outline"}
             size="sm"
-            onClick={() => setStatusFilter(tab.key)}
+            onClick={() => table.set("status", tab.key)}
           >
             {tab.label}
           </Button>
@@ -134,6 +134,15 @@ export default function AdminBidsPage({ params }: PageProps) {
             error ? ERROR_MESSAGES.BID.FETCH_FAILED : LABELS.EMPTY_SUBTITLE
           }
           keyExtractor={(bid: BidDocument) => bid.id}
+          externalPagination
+        />
+        <TablePagination
+          currentPage={data?.meta?.page ?? 1}
+          totalPages={data?.meta?.totalPages ?? 1}
+          pageSize={table.getNumber("pageSize", 25)}
+          total={data?.meta?.total ?? 0}
+          onPageChange={table.setPage}
+          onPageSizeChange={table.setPageSize}
         />
       </Card>
 
@@ -142,6 +151,7 @@ export default function AdminBidsPage({ params }: PageProps) {
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         title={LABELS.TITLE}
+        side="right"
       >
         {selectedBid && (
           <div className="flex flex-col h-full p-4 space-y-4">

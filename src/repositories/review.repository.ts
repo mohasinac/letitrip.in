@@ -13,6 +13,7 @@ import type {
   ReviewModerationInput,
 } from "@/db/schema";
 import { createReviewId, REVIEW_COLLECTION, REVIEW_FIELDS } from "@/db/schema";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
@@ -205,6 +206,90 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
     });
 
     return distribution;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  /** Fields that consumers may filter or sort on. */
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    productId: { canFilter: true, canSort: false },
+    productTitle: { canFilter: true, canSort: true },
+    userId: { canFilter: true, canSort: false },
+    userName: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    rating: { canFilter: true, canSort: true },
+    verified: { canFilter: true, canSort: false },
+    helpfulCount: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native review list scoped to one product.
+   *
+   * All Sieve filtering, sorting, and pagination run at the DB layer.
+   * The `allReviews` fetch (for rating stats) is kept separate so that
+   * aggregations don't incur the cost of loading paginated docs twice.
+   *
+   * @example
+   * ```ts
+   * const page = await reviewRepository.listForProduct(productId, {
+   *   filters:  'status==approved',
+   *   sorts:    '-createdAt',
+   *   page:     1,
+   *   pageSize: 10,
+   * });
+   * ```
+   */
+  async listForProduct(
+    productId: string,
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<ReviewDocument>> {
+    const baseQuery = this.getCollection().where(
+      REVIEW_FIELDS.PRODUCT_ID,
+      "==",
+      productId,
+    );
+    return this.sieveQuery<ReviewDocument>(
+      model,
+      ReviewRepository.SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 10,
+        maxPageSize: 50,
+      },
+    );
+  }
+
+  /**
+   * Paginated, Firestore-native review list across ALL products (admin use).
+   *
+   * Unlike `listForProduct`, no `productId` pre-filter is applied — this
+   * returns reviews from every product and is intended for admin dashboards.
+   *
+   * @example
+   * ```ts
+   * const page = await reviewRepository.listAll({
+   *   filters:  'status==pending',
+   *   sorts:    '-createdAt',
+   *   page:     1,
+   *   pageSize: 50,
+   * });
+   * ```
+   */
+  async listAll(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<ReviewDocument>> {
+    return this.sieveQuery<ReviewDocument>(
+      model,
+      ReviewRepository.SIEVE_FIELDS,
+      {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
+    );
   }
 }
 

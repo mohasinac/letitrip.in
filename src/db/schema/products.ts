@@ -61,6 +61,9 @@ export interface ProductDocument {
   isPromoted?: boolean;
   promotionEndDate?: Date;
 
+  // Shipping options
+  pickupAddressId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -194,6 +197,7 @@ export const PRODUCT_UPDATABLE_FIELDS = [
   "features",
   "shippingInfo",
   "returnPolicy",
+  "pickupAddressId",
 ] as const;
 
 // ============================================

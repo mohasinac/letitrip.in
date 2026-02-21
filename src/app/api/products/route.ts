@@ -1,25 +1,18 @@
 /**
  * Products API Routes
  *
- * Handles product listing and creation
+ * Handles product listing and creation.
+ * Listing uses Firestore-native Sieve queries (offset + limit) via
+ * productRepository.list() — no full collection scan.
  *
- * TODO (Future) - Phase 2:
- * - Implement pagination with cursor-based or offset pagination
- * - Add filtering by category, price range, status, seller
- * - Add sorting options (price, date, popularity)
- * - Add search functionality with Algolia/Typesense integration
- * - Implement caching strategy for product listings
- * - Add rate limiting per user/IP
- * - Add request validation with Zod schemas
- * - Implement proper error handling with error classes
- * - Add logging for all operations
- * - Add metrics tracking (response time, error rate)
+ * TODO (Future):
+ * - Full-text search via Algolia/Typesense
+ * - Response-level metrics tracking (response time, error rate)
  */
 
 import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
-import { applySieveToArray } from "@/helpers";
 import { slugify } from "@/utils";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
@@ -72,55 +65,12 @@ export async function GET(request: NextRequest) {
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
-    // Get all products from repository
-    const allProducts = await productRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: allProducts,
-      model: {
-        filters,
-        sorts,
-        page,
-        pageSize,
-      },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        title: { canFilter: true, canSort: true },
-        category: { canFilter: true, canSort: true },
-        subcategory: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        sellerId: { canFilter: true, canSort: false },
-        featured: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (value: string) => value === "true",
-        },
-        isAuction: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (value: string) => value === "true",
-        },
-        isPromoted: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (value: string) => value === "true",
-        },
-        price: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => Number(value),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (value: string) => new Date(value),
-        },
-      },
-      options: {
-        defaultPageSize: 20,
-        maxPageSize: 100,
-        throwExceptions: false,
-      },
+    // Firestore-native query — no full collection scan
+    const sieveResult = await productRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     const response = NextResponse.json(

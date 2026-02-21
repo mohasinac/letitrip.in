@@ -10,7 +10,7 @@
 
 import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { THEME_CONSTANTS, UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
 import {
@@ -19,6 +19,7 @@ import {
   DataTable,
   AdminPageHeader,
   ConfirmDeleteModal,
+  TablePagination,
 } from "@/components";
 import { useToast } from "@/components";
 import {
@@ -37,9 +38,12 @@ export default function AdminUsersPage({ params }: PageProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const USERS = UI_LABELS.ADMIN.USERS;
-  const [activeTab, setActiveTab] = useState<UserTab>("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt" },
+  });
+  const activeTab = (table.get("tab") || "all") as UserTab;
+  const searchTerm = table.get("q");
+  const roleFilter = table.get("role") || "all";
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -63,14 +67,12 @@ export default function AdminUsersPage({ params }: PageProps) {
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     users: AdminUser[];
-    meta: { total: number };
+    meta: { page: number; limit: number; total: number; totalPages: number };
   }>({
-    queryKey: ["admin", "users", activeTab, searchTerm, roleFilter],
+    queryKey: ["admin", "users", table.params.toString()],
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.ADMIN.USERS}?pageSize=500${
-          filtersParam ? `&filters=${encodeURIComponent(filtersParam)}` : ""
-        }`,
+        `${API_ENDPOINTS.ADMIN.USERS}${table.buildSieveParams(filtersParam)}`,
       ),
   });
 
@@ -203,11 +205,11 @@ export default function AdminUsersPage({ params }: PageProps) {
 
         <UserFilters
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={(t) => table.set("tab", t)}
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+          onSearchChange={(v) => table.set("q", v)}
           roleFilter={roleFilter}
-          onRoleFilterChange={setRoleFilter}
+          onRoleFilterChange={(r) => table.set("role", r)}
           isAdminsTab={activeTab === "admins"}
         />
 
@@ -225,13 +227,24 @@ export default function AdminUsersPage({ params }: PageProps) {
             </div>
           </Card>
         ) : (
-          <DataTable
-            data={users}
-            columns={columns}
-            keyExtractor={(user) => user.uid}
-            onRowClick={handleViewUser}
-            actions={actions}
-          />
+          <>
+            <DataTable
+              data={users}
+              columns={columns}
+              keyExtractor={(user) => user.uid}
+              onRowClick={handleViewUser}
+              actions={actions}
+              externalPagination
+            />
+            <TablePagination
+              currentPage={data?.meta?.page ?? 1}
+              totalPages={data?.meta?.totalPages ?? 1}
+              pageSize={table.getNumber("pageSize", 25)}
+              total={data?.meta?.total ?? 0}
+              onPageChange={table.setPage}
+              onPageSizeChange={table.setPageSize}
+            />
+          </>
         )}
       </div>
 

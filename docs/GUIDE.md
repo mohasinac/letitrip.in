@@ -2,26 +2,166 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 13, 2026  
+**Last Updated**: February 21, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
 
 ## 📑 Table of Contents
 
+0. [Architecture Overview](#0-architecture-overview)
 1. [Classes (Singletons)](#1-classes-singletons)
 2. [Constants](#2-constants)
 3. [Hooks](#3-hooks)
 4. [Utils (Pure Functions)](#4-utils-pure-functions)
 5. [Helpers (Business Logic)](#5-helpers-business-logic)
-6. [Snippets (Reusable Pat
+6. [Snippets (Reusable Patterns)](#6-snippets-reusable-patterns)
 7. [Repositories (Data Access Layer)](#7-repositories-data-access-layer)
 8. [Database Schemas](#8-database-schemas)
 9. [Components](#9-components)
-10. [Pages (App Routes)](#10-pages-app-routes)
-11. [Types](#11-types)
-12. [API Endpoints](#12-api-endpoints)
-13. [Lib Modules](#13-lib-modules)
+10. [Feature Modules](#10-feature-modules)
+11. [Pages (App Routes)](#11-pages-app-routes)
+12. [Types](#12-types)
+13. [API Endpoints](#13-api-endpoints)
+14. [Lib Modules](#14-lib-modules)
+
+---
+
+## 0. Architecture Overview
+
+> For the full set of mandatory coding rules, see [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md).
+
+### Three-Tier Pluggable Design
+
+The codebase is structured in **three clearly separated tiers**. The boundary exists so that Tier 1 (shared primitives) can be extracted into a standalone npm package (`@letitrip/ui`, `@letitrip/utils`) at any point — requiring only `tsconfig.json` alias changes, with zero edits to page or feature files.
+
+```
+┌──────────────────────────────────────────────────────────
+│  Tier 3 — Page Layer          src/app/
+│  Thin orchestration. Composes Tier 1 + Tier 2.
+├──────────────────────────────────────────────────────────
+│  Tier 2 — Feature Modules     src/features/<name>/
+│  Vertically-sliced domains. Each feature owns its own
+│  components, hooks, types, constants, and utils.
+│  Consumes Tier 1. NEVER imports from other features.
+├──────────────────────────────────────────────────────────
+│  Tier 1 — Shared Primitives   src/components/ui|forms|…
+│                                src/hooks/  src/utils/
+│                                src/helpers/ src/classes/
+│                                src/constants/
+│  Feature-agnostic building blocks. Extractable to a
+│  package with only tsconfig alias changes.
+└──────────────────────────────────────────────────────────
+```
+
+---
+
+### Tier 1 — Shared Primitives (Extractable Layer)
+
+These are the modules that would become the `@letitrip/*` package family:
+
+| Directory              | Path                                                                              | Package target        |
+| ---------------------- | --------------------------------------------------------------------------------- | --------------------- |
+| UI design system       | `src/components/ui/`, `forms/`, `feedback/`, `typography/`, `utility/`, `layout/` | `@letitrip/ui`        |
+| Cross-feature hooks    | `src/hooks/`                                                                      | `@letitrip/hooks`     |
+| Pure utility functions | `src/utils/`                                                                      | `@letitrip/utils`     |
+| Business logic helpers | `src/helpers/`                                                                    | `@letitrip/helpers`   |
+| Singleton services     | `src/classes/`                                                                    | `@letitrip/services`  |
+| App-wide constants     | `src/constants/`                                                                  | `@letitrip/constants` |
+
+**Rules for Tier 1 code:**
+
+- No imports from `@/features/*` — ever.
+- No feature-domain terminology (e.g. no `ProductCard` in `src/components/ui/`).
+- Components are generic and composable (Button, Card, Input, Badge, Pagination…).
+
+---
+
+### Tier 2 — Feature Modules (`src/features/<name>/`)
+
+Each domain feature is a **self-contained vertical slice**:
+
+```
+src/features/
+  products/
+    components/    ← ProductCard, ProductGrid, ProductFilters, etc.
+    hooks/         ← useProducts, useProductFilters (data hooks for this feature)
+    types/         ← ProductFilter, ProductSort (feature-specific types)
+    constants/     ← PRODUCT_SORT_OPTIONS, PRODUCT_STATUS_TABS
+    utils/         ← product-specific mappers/formatters (optional)
+    index.ts       ← PUBLIC barrel — only export what pages need
+  auth/
+  orders/
+  cart/
+  auctions/
+  reviews/
+  search/
+  blog/
+  categories/
+  admin/
+  seller/
+  user/
+```
+
+**`index.ts` barrel pattern:**
+
+```typescript
+// src/features/products/index.ts
+export * from "./components";
+export * from "./hooks";
+export * from "./types";
+export * from "./constants";
+```
+
+**Import rules:**
+
+```tsx
+// INSIDE a feature module — only Tier 1
+import { Card, Button } from "@/components"; // ✅
+import { useApiQuery } from "@/hooks"; // ✅
+import { formatCurrency } from "@/utils"; // ✅
+import { CartButton } from "@/features/cart"; // ❌ cross-feature!
+
+// INSIDE a page — Tier 1 + Tier 2
+import { ProductGrid } from "@/features/products"; // ✅
+import { CartButton } from "@/features/cart"; // ✅
+import { Button } from "@/components"; // ✅
+```
+
+**Cross-feature shared logic:** move to Tier 1 (`src/hooks/`, `src/utils/`, `src/components/ui/`), then both features import it from there.
+
+---
+
+### Tier 3 — Page Layer (`src/app/`)
+
+- Thin orchestration only — no business logic, no inline forms/tables.
+- < 150 lines of JSX.
+- Composes feature modules (Tier 2) and shared primitives (Tier 1).
+- All filter/sort/pagination state lives in URL query params (see `useUrlTable` hook).
+
+---
+
+### Package Extraction Path
+
+When ready to extract shared code into a library:
+
+1. Copy `src/components/ui|forms|feedback|typography|utility|layout`, `src/hooks/`, `src/utils/`, `src/helpers/`, `src/classes/`, `src/constants/` into an npm package.
+2. Update `tsconfig.json` path aliases only:
+   ```json
+   { "@/components": ["@letitrip/ui"], "@/utils": ["@letitrip/utils"] }
+   ```
+3. **Zero page or feature files need to change** — all barrel imports resolve automatically.
+
+---
+
+### Migration Strategy (Gradual)
+
+| Stage                                                       | What to do                                                                                                                                                                                                |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **New features**                                            | Create directly in `src/features/<name>/`                                                                                                                                                                 |
+| **Existing `src/components/<feature>/`**                    | Keep working; migrate to `src/features/<name>/components/` when the feature is next touched                                                                                                               |
+| **Feature-specific hooks in `src/hooks/`**                  | Move to `src/features/<name>/hooks/` progressively (e.g. `useRealtimeBids` → `src/features/auctions/hooks/`, `useAdminStats` → `src/features/admin/hooks/`, `useRazorpay` → `src/features/orders/hooks/`) |
+| **Shared admin/user components in `src/components/admin/`** | Stay in Tier 1 until admin is fully its own feature module                                                                                                                                                |
 
 ---
 
@@ -806,47 +946,6 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 **Purpose**: Fetch admin dashboard statistics  
 **Returns**: `{ stats, loading, error, refresh }`
 
-#### useUserSessions
-
-**File**: `useSessions.ts`  
-**Purpose**: View sessions for specific user  
-**Parameters**: `(userId)`  
-**Returns**: `{ sessions, loading, error }`
-
-#### useMySessions (deprecated)
-
-**File**: `useSessions.ts`  
-**Purpose**: View current user's sessions  
-**Returns**: `{ sessions, loading, error }`
-
-#### useRevokeSession
-
-**File**: `useSessions.ts`  
-**Purpose**: Revoke a session (admin)  
-**Returns**: `{ revoke, loading, error }`
-
-#### useRevokeMySession (deprecated)
-
-**File**: `useSessions.ts`  
-**Purpose**: Revoke own session  
-**Returns**: `{ revoke, loading, error }`
-
-#### useRevokeUserSessions
-
-**File**: `useSessions.ts`  
-**Purpose**: Revoke all sessions for a user (admin)  
-**Returns**: `{ revokeAll, loading, error }`
-
----
-
-### Admin Hooks
-
-#### useAdminStats
-
-**File**: `useAdminStats.ts`  
-**Purpose**: Fetch admin dashboard statistics  
-**Returns**: `{ stats, loading, error, refresh }`
-
 ---
 
 ### Form Hooks
@@ -901,9 +1000,67 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 **Gesture Types**: `tap`, `doubleTap`, `longPress`, `swipe`, `pinch`
 
+#### useLongPress _(planned — Phase 10)_
+
+**File**: `useLongPress.ts`  
+**Purpose**: Fire a callback after pointer is held for a configurable duration; does NOT fire on quick tap  
+**Parameters**: `(callback, options)`  
+**Options**: `delay` (ms, default 500), `moveThreshold` (px, default 10)  
+**Returns**: `{ onPointerDown, onPointerUp, onPointerLeave }`
+
+#### usePullToRefresh _(planned — Phase 10)_
+
+**File**: `usePullToRefresh.ts`  
+**Purpose**: Detect downward overscroll pull gesture and trigger a refresh callback  
+**Parameters**: `(onRefresh, options)`  
+**Options**: `threshold` (px, default 80), `resistance` (default 2.5)  
+**Returns**: `{ isPulling, pullDistance, isRefreshing }`
+
 ---
 
-### UI Interaction Hooks
+### URL Table State Hook
+
+#### useUrlTable _(planned — Phase 2)_
+
+**File**: `useUrlTable.ts`  
+**Purpose**: Manage all list/table state (filters, sort, pagination) via URL query params — bookmark-safe, shareable, history-friendly. Replaces local `useState` for any page that filters or paginates.  
+**Parameters**: `(options?)` — `{ defaults?: Record<string, string> }`  
+**Returns**: See methods below
+
+```typescript
+import { useUrlTable } from '@/hooks';
+
+const table = useUrlTable({ defaults: { pageSize: '25', sort: '-createdAt' } });
+
+// Read
+table.get('status')           // string | ''
+table.getNumber('page', 1)    // number with fallback
+
+// Write (all trigger router.replace — no history spam)
+table.set('status', 'active') // also resets page → 1
+table.setPage(3)               // only changes page param
+table.setSort('-price')        // resets page → 1
+table.setMany({ status: 'active', role: 'seller' }) // single navigation
+
+// Build API query strings
+table.buildSieveParams('status==published')
+// → ?filters=status==published&sorts=-createdAt&page=1&pageSize=25
+
+table.buildSearchParams()
+// → ?q=...&category=...&sort=...&page=...&pageSize=...
+
+// Misc
+table.params          // URLSearchParams — use .toString() as queryKey
+table.clear(keys?)    // remove one/all params
+```
+
+**Rules:**
+
+- Always include `table.params.toString()` in the `useApiQuery` `queryKey` so filters bust the cache.
+- Filter/sort changes always reset page to 1 — this is automatic inside `set()` / `setMany()`.
+- Never use `router.push()` for filter changes — `useUrlTable` uses `router.replace()` internally.
+
+---
 
 #### useClickOutside
 
@@ -2548,8 +2705,8 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 #### AdminFilterBar
 
 **File**: `AdminFilterBar.tsx`  
-**Purpose**: Card-wrapped responsive grid of filter inputs for admin list pages  
-**Props**: `children`, `columns` (`1 | 2 | 3 | 4`), `className`
+**Purpose**: Responsive grid of filter inputs. Wraps in `<Card>` by default (admin pages). Pass `withCard={false}` for public/seller pages to get a bare grid with no card shell — same component, no extra import.  
+**Props**: `children`, `columns` (`1 | 2 | 3 | 4`), `className`, `withCard` (default: `true`) _(Phase 2)_
 
 #### DrawerFormFooter
 
@@ -2560,8 +2717,33 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 #### DataTable
 
 **File**: `DataTable.tsx`  
-**Purpose**: Data table with pagination, striped rows, sticky header, mobile card view  
-**Props**: `columns`, `data`, `loading`, `pageSize`, `striped`, `stickyHeader`
+**Purpose**: Data table with striped rows, sticky header, mobile card view, swipe-to-action rows. Does **not** handle server pagination internally — pair with `TablePagination` and pass `externalPagination`. Supports built-in grid/list/table view toggle via `showViewToggle`; card renderer reuses existing `mobileCardRender` prop.  
+**Props**: `columns`, `data`, `loading`, `striped`, `stickyHeader`, `mobileCardRender`, `externalPagination`, `showViewToggle`, `viewMode`, `defaultViewMode`, `onViewModeChange`  
+**Deprecated** (will remove after full migration): `showPagination`, `pageSize`
+
+#### TablePagination _(planned — Phase 2)_
+
+**File**: `src/components/ui/TablePagination.tsx`  
+**Purpose**: Standalone pagination control with "Showing X–Y of Z results", per-page selector, and page-number strip. Decoupled from DataTable so it can sit anywhere in the layout. Usable by admin, public, seller, and user pages.  
+**Props**: `total`, `page`, `pageSize`, `onPageChange`, `onPageSizeChange`, `pageSizeOptions`
+
+#### SortDropdown _(planned — Phase 2)_
+
+**File**: `src/components/ui/SortDropdown.tsx`  
+**Purpose**: `<label>` + `<select>` sort control for any list page (admin, public, seller, user). Human-readable labels; options from a constant array. Used inside `AdminFilterBar`.  
+**Props**: `value`, `onChange`, `options`, `label`, `id`
+
+#### FilterBar
+
+`FilterBar` is not a separate component — it is `AdminFilterBar` with `withCard={false}`. Pass `withCard={false}` to get a bare grid/flex container with no Card shell, suitable for public and seller pages.
+
+```tsx
+// Public/seller page filter row:
+<AdminFilterBar withCard={false} columns={2}>
+  <SortDropdown ... />
+  <Input ... />
+</AdminFilterBar>
+```
 
 #### AdminLayout
 
@@ -2580,6 +2762,37 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **File**: `UserManagementTable.tsx`  
 **Purpose**: User management interface  
 **Props**: `users`, `onEdit`, `onDelete`
+
+---
+
+### Filter & Pagination Components _(planned — Phase 2)_
+
+> These components are part of the frontend refactor (Phase 2). They replace the ad-hoc filter
+> implementations across admin, seller, public and search pages with shared, accessible primitives.
+
+#### FilterFacetSection
+
+**File**: `src/components/ui/FilterFacetSection.tsx` _(planned — Phase 2)_  
+**Tier**: 1 — Shared primitive. Not admin-specific.  
+**Purpose**: A single collapsible filter group (e.g. "Category", "Brand", "Price range") that renders a list of checkboxes, virtualises long lists with a "Load more" button, and includes an inline search input. Selected values are passed to `ActiveFilterChips` by the parent.  
+**Used by**: `FilterDrawer` (as children), `products/page.tsx`, `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`, and any admin page that adopts the drawer filter pattern.  
+**Props**: `label`, `options` (`{ label, value, count? }[]`), `selected` (`string[]`), `onChange`, `pageSize` (default 10), `searchable`
+
+#### FilterDrawer
+
+**File**: `src/components/ui/FilterDrawer.tsx` _(planned — Phase 2)_  
+**Tier**: 1 — Shared primitive. Not admin-specific.  
+**Purpose**: Toggleable left slide-in filter panel (uses `SideDrawer` with `side="left"`). Wraps one or more `FilterFacetSection` groups. Has a "Clear All" + "Apply" footer and shows an active-count badge on the trigger button. Replaces always-open filter sidebars on mobile and wherever screen space is limited.  
+**Used by**: `products/page.tsx` (mobile only; lg+ keeps `ProductFilters` as a left sidebar), `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`.  
+**Props**: `isOpen`, `onClose`, `onClear`, `activeCount`, `children` (one or more `<FilterFacetSection />`), `title`
+
+#### ActiveFilterChips
+
+**File**: `src/components/ui/ActiveFilterChips.tsx` _(planned — Phase 2)_  
+**Tier**: 1 — Shared primitive. Not admin-specific.  
+**Purpose**: Row of dismissible chips showing every currently-active filter. "Clear all" link when two or more filters are set. Hidden when none are active. Renders below the `FilterDrawer` trigger or inline `AdminFilterBar` on any list page — public, seller, or admin.  
+**Used by**: `products/page.tsx`, `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`, admin list pages.  
+**Props**: `filters` (`{ key, label, value }[]`), `onRemove(key)`, `onClearAll`
 
 ---
 
@@ -2651,7 +2864,73 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
-## 10. Pages (App Routes)
+## 10. Feature Modules
+
+**Location**: `src/features/`  
+**Import**: `import { ComponentName, useHook } from '@/features/<name>'`
+
+Each feature module is a **vertically-sliced, self-contained unit**. It owns its components, hooks, types, constants, and feature-specific utils — all accessible via a single barrel `index.ts`.
+
+### Directory Conventions
+
+```
+src/features/<name>/
+  components/    ← all UI components for this feature
+  hooks/         ← data-fetching & state hooks for this feature
+  types/         ← TypeScript interfaces specific to this feature
+  constants/     ← sort options, status tabs, config enums for this feature
+  utils/         ← mappers, formatters used only by this feature (optional)
+  index.ts       ← public barrel — only export what pages / other callers need
+```
+
+### Current Feature Modules
+
+| Module       | Path                       | Key exports                                                                  |
+| ------------ | -------------------------- | ---------------------------------------------------------------------------- |
+| `products`   | `src/features/products/`   | `ProductCard`, `ProductGrid`, `ProductFilters`, `ProductInfo`, `useProducts` |
+| `auth`       | `src/features/auth/`       | `LoginForm`, `RegisterForm`, `useLogin`, `useRegister`                       |
+| `orders`     | `src/features/orders/`     | `OrderCard`, `OrderTable`, `OrderStatusBadge`                                |
+| `cart`       | `src/features/cart/`       | `CartDrawer`, `CartItem`, `CartSummary`, `useCart`                           |
+| `auctions`   | `src/features/auctions/`   | `AuctionCard`, `BidForm`, `BidHistory`, `useRealtimeBids`                    |
+| `reviews`    | `src/features/reviews/`    | `ReviewCard`, `ReviewForm`, `StarRating`                                     |
+| `search`     | `src/features/search/`     | `SearchResultsSection`, `SearchFilters`                                      |
+| `blog`       | `src/features/blog/`       | `BlogCard`, `BlogContent`                                                    |
+| `categories` | `src/features/categories/` | `CategoryCard`, `CategoryBreadcrumb`                                         |
+| `admin`      | `src/features/admin/`      | `AdminPageHeader`, `AdminFilterBar`, `DataTable`, `useAdminStats`            |
+| `seller`     | `src/features/seller/`     | `SellerProductTable`, `SellerOrderTable`                                     |
+| `user`       | `src/features/user/`       | `ProfileHeader`, `AddressCard`, `SessionItem`, `useProfile`, `useAddresses`  |
+
+> **Migration note**: During the gradual migration, some of the above components may still live under `src/components/<feature>/`. They are accessible from `@/components` until migrated to their feature module folder. New code always goes under `src/features/<name>/`.
+
+### Import Rules
+
+```tsx
+// Page composing two features + a shared primitive
+import { ProductGrid, useProducts } from "@/features/products";
+import { CartButton } from "@/features/cart";
+import { Button } from "@/components"; // Tier 1
+import { ROUTES } from "@/constants"; // Tier 1
+
+// Feature component — Tier 1 only, NO cross-feature imports
+import { Card, Badge } from "@/components"; // ✅
+import { formatCurrency } from "@/utils"; // ✅
+import { CartButton } from "@/features/cart"; // ❌
+```
+
+### Feature `index.ts` Standard
+
+```typescript
+// src/features/products/index.ts
+export * from "./components";
+export * from "./hooks";
+export * from "./types";
+export * from "./constants";
+// do NOT re-export Tier 1 or infrastructure modules here
+```
+
+---
+
+## 11. Pages (App Routes)
 
 **Location**: `src/app/`
 
@@ -2871,7 +3150,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
-## 11. Types
+## 12. Types
 
 **Location**: `src/types/`  
 **Import**: `import type { TypeName } from '@/types'`
@@ -2907,7 +3186,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
-## 12. API Endpoints
+## 13. API Endpoints
 
 **Location**: `src/app/api/`
 
@@ -3048,7 +3327,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
-## 13. Lib Modules
+## 14. Lib Modules
 
 **Location**: `src/lib/`
 

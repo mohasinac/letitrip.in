@@ -16,7 +16,6 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES } from "@/constants";
 
@@ -52,13 +51,11 @@ export async function GET(request: NextRequest) {
       pageSize,
     });
 
-    // Step 1: Get all products owned by this seller
-    const allProducts = await productRepository.findAll();
-    const sellerProductIds = new Set(
-      allProducts.filter((p) => p.sellerId === user.uid).map((p) => p.id),
-    );
+    // Step 1: Get only this seller's products (indexed query, not findAll)
+    const sellerProducts = await productRepository.findBySeller(user.uid);
+    const sellerProductIds = sellerProducts.map((p) => p.id);
 
-    if (sellerProductIds.size === 0) {
+    if (sellerProductIds.length === 0) {
       return successResponse({
         orders: [],
         meta: {
@@ -71,44 +68,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Step 2: Get all orders and filter by seller's products
-    const allOrders = await orderRepository.findAll();
-    const sellerOrders = allOrders.filter((o) =>
-      sellerProductIds.has(o.productId),
-    );
-
-    // Step 3: Apply Sieve for filtering, sorting, pagination
-    const sieveResult = await applySieveToArray({
-      items: sellerOrders,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        productId: { canFilter: true, canSort: false },
-        productTitle: { canFilter: true, canSort: true },
-        userId: { canFilter: true, canSort: false },
-        userName: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        paymentStatus: { canFilter: true, canSort: true },
-        totalPrice: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        orderDate: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: {
-        defaultPageSize: 20,
-        maxPageSize: 100,
-      },
+    // Step 2: Firestore-native Sieve query — no full orders scan
+    const sieveResult = await orderRepository.listForSeller(sellerProductIds, {
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

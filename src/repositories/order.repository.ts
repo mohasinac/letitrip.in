@@ -14,6 +14,7 @@ import type {
 } from "@/db/schema";
 import { createOrderId, ORDER_COLLECTION, ORDER_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
   constructor() {
@@ -196,6 +197,102 @@ class OrderRepository extends BaseRepository<OrderDocument> {
         error,
       );
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  /** Fields that consumers may filter or sort on for seller order lists. */
+  static readonly SELLER_SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    productId: { canFilter: true, canSort: false },
+    productTitle: { canFilter: true, canSort: true },
+    userId: { canFilter: true, canSort: false },
+    userName: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    paymentStatus: { canFilter: true, canSort: true },
+    paymentMethod: { canFilter: true, canSort: true },
+    totalPrice: { canFilter: true, canSort: true },
+    orderDate: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native seller order list.
+   *
+   * Uses `where('productId', 'in', productIds)` as the base query so all
+   * filtering, sorting, and pagination run at the Firestore layer via the
+   * SieveJS Firebase adapter.
+   *
+   * @param productIds  IDs of all products owned by the seller.
+   * @param model       Sieve DSL model parsed from request query params.
+   */
+  async listForSeller(
+    productIds: string[],
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<OrderDocument>> {
+    if (productIds.length === 0) {
+      const page = Math.max(1, Number(model.page ?? 1));
+      const pageSize = Math.max(1, Number(model.pageSize ?? 20));
+      return {
+        items: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 0,
+        hasMore: false,
+      };
+    }
+
+    const baseQuery = this.getCollection().where(
+      ORDER_FIELDS.PRODUCT_ID,
+      "in",
+      productIds,
+    );
+    return this.sieveQuery<OrderDocument>(
+      model,
+      OrderRepository.SELLER_SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 20,
+        maxPageSize: 100,
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Admin list — all orders, no seller filter
+  // ---------------------------------------------------------------------------
+
+  static readonly ADMIN_SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    userId: { canFilter: true, canSort: false },
+    userName: { canFilter: true, canSort: true },
+    userEmail: { canFilter: true, canSort: true },
+    productId: { canFilter: true, canSort: false },
+    productTitle: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    paymentStatus: { canFilter: true, canSort: true },
+    paymentMethod: { canFilter: true, canSort: true },
+    totalPrice: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native order list across all sellers (admin use).
+   */
+  async listAll(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<OrderDocument>> {
+    return this.sieveQuery<OrderDocument>(
+      model,
+      OrderRepository.ADMIN_SIEVE_FIELDS,
+      {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
+    );
   }
 }
 

@@ -269,6 +269,7 @@ export default function AdminBlogPage({ params }: PageProps) {
         title={drawerTitle}
         mode={editingPost ? "edit" : "create"}
         isDirty={isDirty}
+        side="right"
         footer={
           <DrawerFormFooter
             onCancel={closeDrawer}

@@ -9,6 +9,116 @@ Next.js 16.1.1 (App Router) | TypeScript | Tailwind CSS | Firebase (Auth, Firest
 
 ---
 
+## Architecture: Three-Tier Pluggable Design
+
+The codebase is structured in three clearly separated tiers. This boundary is **enforced** to ensure that shared code can be extracted into a standalone package (e.g. `@letitrip/ui`, `@letitrip/utils`) in the future without touching page or feature code.
+
+```
+┌──────────────────────────────────────────────────────────
+│  Tier 3 — Page Layer          src/app/
+│  Thin orchestration. Composes Tier 1 + Tier 2.
+├──────────────────────────────────────────────────────────
+│  Tier 2 — Feature Modules     src/features/<name>/
+│  Vertically-sliced domains. Each feature owns its own
+│  components, hooks, types, constants, and utils.
+│  Consumes Tier 1. NEVER imports from other features.
+├──────────────────────────────────────────────────────────
+│  Tier 1 — Shared Primitives   src/components/ui|forms|…
+│                                src/hooks/  src/utils/
+│                                src/helpers/ src/classes/
+│                                src/constants/
+│  Feature-agnostic building blocks. Extractable to a
+│  package with only tsconfig alias changes.
+└──────────────────────────────────────────────────────────
+```
+
+### Feature Module Directory Layout
+
+Every domain feature lives under `src/features/<name>/` with this shape:
+
+```
+src/features/
+  products/
+    components/    ← ProductCard, ProductGrid, ProductFilters, etc.
+    hooks/         ← useProducts, useProductFilters (data hooks for this feature)
+    types/         ← ProductFilter, ProductSort (feature-specific types)
+    constants/     ← PRODUCT_SORT_OPTIONS, PRODUCT_STATUS_TABS
+    utils/         ← product-specific mappers/formatters (optional)
+    index.ts       ← PUBLIC barrel — only export what pages need
+  auth/
+  orders/
+  cart/
+  auctions/
+  reviews/
+  search/
+  blog/
+  categories/
+  admin/
+  seller/
+  user/
+```
+
+**Feature `index.ts` pattern:**
+```typescript
+// src/features/products/index.ts
+export * from './components';
+export * from './hooks';
+export * from './types';
+export * from './constants';
+```
+
+### Import Dependency Rules
+
+| From | May import | Must NOT import |
+|------|-----------|-----------------|
+| **Page** (`src/app/`) | Tier 1 + Tier 2 | — |
+| **Feature** (`src/features/X/`) | Tier 1 only | Other features (`src/features/Y/`) |
+| **Shared Primitives** | Other Tier 1 modules | Any feature module |
+
+**Cross-feature shared logic** → elevate to Tier 1 (`src/hooks/`, `src/utils/`, `src/components/ui/`).
+
+### Package Extraction Path
+
+When ready to extract the shared layer into a library:
+1. Copy `src/components/ui|forms|feedback|typography|utility|layout`, `src/hooks/`, `src/utils/`, `src/helpers/`, `src/classes/`, `src/constants/` into an npm package.
+2. Update `tsconfig.json` path aliases: `@/components` → `@letitrip/ui`, `@/utils` → `@letitrip/utils`, etc.
+3. No page or feature file needs to change because they all use barrel imports.
+
+### Migration (Gradual)
+
+Existing `src/components/<feature>/` folders continue to work. Migrate them to `src/features/<name>/components/` progressively as each feature is touched. Feature-specific hooks in `src/hooks/` (e.g. `useRealtimeBids`, `useAdminStats`, `useRazorpay`) migrate to their feature module over time.
+
+---
+
+## RULE 0: Feature Module Architecture
+
+**New features MUST be built as feature modules under `src/features/<name>/`.**
+
+```tsx
+// WRONG — feature component outside its feature folder
+src/components/auction/AuctionCard.tsx
+
+// WRONG — feature imports another feature directly
+// src/features/cart/components/CartItem.tsx
+import { ProductCard } from '@/features/products'; // ❌
+
+// RIGHT — feature uses shared primitives only
+import { Card, Button } from '@/components';      // ✅ Tier 1
+import { formatCurrency } from '@/utils';          // ✅ Tier 1
+import { useApiQuery } from '@/hooks';             // ✅ Tier 1
+
+// RIGHT — page composes features + shared
+import { ProductGrid, useProducts } from '@/features/products'; // ✅
+import { CartButton } from '@/features/cart';                   // ✅
+import { Button } from '@/components';                          // ✅
+```
+
+**If feature A needs a piece of feature B:**
+- Move that piece to `src/components/`, `src/hooks/`, or `src/utils/` (Tier 1).
+- Both features then import it from the shared barrel.
+
+---
+
 ## RULE 1: Use Barrel Imports Only
 
 **NEVER import from individual files. ALWAYS use barrel `index.ts` exports.**
@@ -25,26 +135,31 @@ import { isValidEmail } from '@/utils';
 import { groupBy } from '@/helpers';
 ```
 
-| Need | Import from |
-|------|------------|
-| UI components (Button, Card, Input, Alert, Modal...) | `@/components` |
-| Admin components (AdminPageHeader, AdminFilterBar, DrawerFormFooter...) | `@/components` |
-| User components (AddressForm, AddressCard, ProfileHeader...) | `@/components` |
-| Constants (UI_LABELS, THEME_CONSTANTS, ROUTES...) | `@/constants` |
-| Navigation tab configs (ADMIN_TAB_ITEMS, USER_TAB_ITEMS) | `@/constants` |
-| Role hierarchy (ROLE_HIERARCHY) | `@/constants` |
-| Hooks (useAuth, useApiQuery, useProfile...) | `@/hooks` |
-| Validators, formatters, converters, events | `@/utils` |
-| Auth/data/UI helpers | `@/helpers` |
-| Singletons (CacheManager, Logger, EventBus...) | `@/classes` |
-| Repositories (userRepository, orderRepository...) | `@/repositories` |
-| DB schemas & types | `@/db/schema` |
-| Schema field constants (USER_FIELDS, SCHEMA_DEFAULTS...) | `@/db/schema` |
-| API types | `@/types/api` |
-| Auth types (UserRole, UserProfile...) | `@/types/auth` |
-| Error classes (AppError, ApiError...) | `@/lib/errors` |
-| Contexts (useSession, useTheme) | `@/contexts` |
-| Snippets | `@/snippets/<name>.snippet` |
+| Need | Import from | Tier |
+|------|------------|------|
+| **Feature components & hooks** (ProductCard, useProducts...) | `@/features/<name>` | 2 |
+| UI primitives (Button, Card, Input, Alert, Modal...) | `@/components` | 1 |
+| Admin components (AdminPageHeader, AdminFilterBar, DrawerFormFooter...) | `@/components` | 1 |
+| User components (AddressForm, AddressCard, ProfileHeader...) | `@/components` | 1 |
+| Constants (UI_LABELS, THEME_CONSTANTS, ROUTES...) | `@/constants` | 1 |
+| Navigation tab configs (ADMIN_TAB_ITEMS, USER_TAB_ITEMS) | `@/constants` | 1 |
+| Role hierarchy (ROLE_HIERARCHY) | `@/constants` | 1 |
+| Hooks (useAuth, useApiQuery, useForm...) | `@/hooks` | 1 |
+| Validators, formatters, converters, events | `@/utils` | 1 |
+| Auth/data/UI helpers | `@/helpers` | 1 |
+| Singletons (CacheManager, Logger, EventBus...) | `@/classes` | 1 |
+| Repositories (userRepository, orderRepository...) | `@/repositories` | — |
+| DB schemas & types | `@/db/schema` | — |
+| Schema field constants (USER_FIELDS, SCHEMA_DEFAULTS...) | `@/db/schema` | — |
+| API types | `@/types/api` | — |
+| Auth types (UserRole, UserProfile...) | `@/types/auth` | — |
+| Error classes (AppError, ApiError...) | `@/lib/errors` | — |
+| Contexts (useSession, useTheme) | `@/contexts` | — |
+| Snippets | `@/snippets/<name>.snippet` | — |
+
+> **Tier 1** = shared primitives (extractable to a package).  
+> **Tier 2** = feature modules (pluggable, domain-specific).  
+> **—** = infrastructure / data layer (stays in this repo).
 
 ---
 
@@ -279,6 +394,8 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 | Click outside | `useClickOutside(ref, handler)` |
 | Keyboard shortcuts | `useKeyPress(key, handler)` |
 | Swipe gestures | `useSwipe(options)` |
+| Long-press gesture | `useLongPress(callback, options)` — fires after hold; no-op on quick tap _(planned Phase 10)_ |
+| Pull-to-refresh | `usePullToRefresh(onRefresh, options)` — overscroll detection _(planned Phase 10)_ |
 | Unsaved changes | `useUnsavedChanges(isDirty)` |
 | Toast/messages | `useMessage()` |
 | Admin stats | `useAdminStats()` |
@@ -286,6 +403,50 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 | Media query | `useMediaQuery(query)` |
 | RBAC checking | `useRBAC()` — exports `useHasRole`, `useIsAdmin`, `useIsModerator`, `useIsSeller`, `useCanAccess`, `useRequireAuth`, `useRequireRole` |
 | Session management | `useMySessions()`, `useAdminSessions()` |
+| URL-driven list state (filter/sort/page) | `useUrlTable(options)` — all state in URL query params; bookmark-able, history-safe |
+
+### `useUrlTable` — URL-Driven List / Table State
+
+**Import**: `import { useUrlTable } from '@/hooks'`  
+**Use for**: every page that has pagination, filtering, or sorting (admin, public, seller, user).
+
+```tsx
+const table = useUrlTable({ defaults: { pageSize: '25', sort: '-createdAt' } });
+
+// Read a param
+table.get('status')           // string | ''
+table.getNumber('page', 1)    // number
+
+// Write (router.replace — no history entry spam)
+table.set('status', 'active') // also resets page → 1
+table.setPage(3)               // only changes page
+table.setSort('-price')        // resets page → 1
+table.setMany({ status: 'active', role: 'seller' }) // single navigation
+
+// Build API query strings
+table.buildSieveParams('status==published,price>=100')
+// → ?filters=status==published,price>=100&sorts=-createdAt&page=1&pageSize=25
+
+table.buildSearchParams()
+// → ?q=...&category=...&minPrice=...&maxPrice=...&sort=...&page=...&pageSize=...
+```
+
+**Rules:**
+- Always use `table.params.toString()` as part of the `queryKey` → cache busts on any filter change.
+- Use `router.replace()` (built into the hook) — never `router.push()` for filter changes.
+- Filter/sort changes **always reset page to 1** — automatic inside `set()` / `setMany()`.
+- **`view` param changes do NOT reset page** — `'view'` is excluded from the page-reset guard alongside `'page'` and `'pageSize'`.
+
+**View toggle integration** _(planned Phase 2)_: pages that use `DataTable` with `showViewToggle` pass view mode through `useUrlTable`. Re-use the existing `mobileCardRender` prop as the card renderer — no separate prop needed:
+```tsx
+const table = useUrlTable({ defaults: { view: 'grid', pageSize: '24' } });
+<DataTable
+  showViewToggle
+  viewMode={(table.get('view') || 'grid') as 'table' | 'grid' | 'list'}
+  onViewModeChange={(mode) => table.set('view', mode)}
+  mobileCardRender={(item) => <ProductCard product={item} />}
+/>
+```
 
 ---
 
@@ -297,7 +458,14 @@ Key available components:
 
 **UI**: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `Text`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`, `SectionTabs`, `StatusBadge`, `RoleBadge`, `EmptyState`, `ResponsiveView`.
 
-**Admin**: `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`.
+**Filter / Facet / Pagination** — Tier 1 shared primitives, used on **public, seller, and admin pages** alike _(planned Phase 2)_:
+- `FilterFacetSection` — collapsible filter group (checkboxes + inline search + load-more). Compose inside `FilterDrawer` or inline.
+- `FilterDrawer` — toggleable left slide-in filter panel. Replaces always-open filter sidebars on mobile and space-constrained pages. Used on products, search, categories, auctions, seller/products, and admin list pages.
+- `ActiveFilterChips` — dismissible chips row for every active filter + "Clear all". Appears below the `FilterDrawer` trigger or inline `AdminFilterBar` on any list page.
+- `SortDropdown` — sort label + select control for any list page.
+- `TablePagination` — result count + per-page selector + `Pagination` for any paginated list.
+
+**Admin**: `AdminPageHeader`, `AdminFilterBar` (use `withCard={false}` for public/seller pages — no separate `FilterBar` needed), `DrawerFormFooter` _(planned Phase 2)_.
 
 **User**: `AddressForm`, `AddressCard`, `ProfileHeader`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `ProfileInfoForm`, `PasswordChangeForm`, `AccountInfoCard`.
 
@@ -346,6 +514,93 @@ Available repositories: `userRepository`, `tokenRepository`, `productRepository`
 ```tsx
 import type { UserCreateInput, UserUpdateInput } from '@/db/schema';
 import { USER_COLLECTION, userQueryHelpers } from '@/db/schema';
+```
+
+### Sieve List Queries — `sieveQuery()` in Repositories
+
+**NEVER** use `findAll()` + in-memory filtering for list / search / paginated endpoints.  
+**ALWAYS** use `sieveQuery()` (Firestore-native) for any endpoint that accepts `filters`, `sorts`, `page`, or `pageSize`.
+
+```typescript
+// WRONG — loads every document into RAM, then filters
+const all = await productRepository.findAll();
+return applySieveToArray(all, model); // ❌
+
+// RIGHT — filtering, sorting, pagination pushed to Firestore
+return productRepository.list(model); // ✅  (1 count read + pageSize doc reads)
+```
+
+**Billing impact**: `sieveQuery()` costs 1 aggregation read (count) + `pageSize` document reads per request, regardless of collection size. `findAll()` costs every document in the collection.
+
+#### Defining `SIEVE_FIELDS` and `list()` in a repository
+
+```typescript
+import type { SieveModel, FirebaseSieveFields } from '@/lib/query/firebase-sieve';
+
+// In your repository class:
+static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+  title:     { canFilter: true, canSort: true },
+  price:     { canFilter: true, canSort: true },
+  status:    { canFilter: true, canSort: false },
+  createdAt: { canFilter: true, canSort: true },
+};
+
+async list(model: SieveModel) {
+  // Without pre-filter — uses the full collection
+  return this.sieveQuery<ProductDocument>(model, ProductRepository.SIEVE_FIELDS);
+}
+
+async listForUser(userId: string, model: SieveModel) {
+  // With pre-filter — Sieve runs on top of the already-scoped query
+  return this.sieveQuery<OrderDocument>(model, OrderRepository.SIEVE_FIELDS, {
+    baseQuery: this.getCollection().where('userId', '==', userId),
+  });
+}
+```
+
+#### Sieve DSL Reference (for `filters` and `sorts` query params)
+
+| Operator | Meaning | Example |
+|----------|---------|---------|
+| `==` | equals | `status==published` |
+| `!=` | not equals | `status!=draft` |
+| `>` `<` `>=` `<=` | comparison | `price>=100,price<=500` |
+| `@=` | array-contains | `tags@=electronics` |
+| `_=` | starts-with | `title_=Shoe` |
+| `-fieldName` (sort) | descending | `sorts=-createdAt` |
+| `fieldName` (sort)  | ascending  | `sorts=price` |
+
+Multiple filters: comma-separated — `filters=status==published,price>=100`  
+Multiple sorts: comma-separated — `sorts=-createdAt,title`
+
+#### Unsupported operators (fall back to `applySieveToArray`)
+
+- Case-insensitive variants (`==*`, `@=*`, `_=*`)
+- Negated string checks (`!@=`, `!_=`, `_-=`)
+- Multi-field OR filters `(field1|field2)==value`
+- Full-text search → use Algolia / Typesense
+
+`applySieveToArray` from `@/helpers` is **legacy / in-memory fallback only**. Do not introduce new uses for collection-level lists.
+
+#### Atomic multi-collection writes — `unitOfWork`
+
+For operations that must succeed or fail together across collections:
+
+```typescript
+import { unitOfWork } from '@/repositories';
+
+// Transaction (read → write)
+await unitOfWork.runTransaction(async (tx) => {
+  const product = await unitOfWork.products.findByIdOrFailInTx(tx, productId);
+  unitOfWork.products.updateInTx(tx, productId, { stock: product.stock - 1 });
+  unitOfWork.orders.updateInTx(tx, orderId, { status: 'confirmed' });
+});
+
+// Batch (write-only, up to 500 ops)
+await unitOfWork.runBatch((batch) => {
+  unitOfWork.products.updateInBatch(batch, productId, { featured: true });
+  unitOfWork.categories.updateInBatch(batch, categoryId, { productCount: 10 });
+});
 ```
 
 ---
@@ -407,6 +662,54 @@ export async function POST(request: NextRequest) {
 - Use `handleApiError(error)` in catch blocks
 - Use `successResponse()` / `ApiErrors.*` for responses
 - Always use repositories, never direct Firestore queries
+
+#### GET list endpoint pattern (Sieve)
+
+All paginated list endpoints follow this pattern:
+
+```typescript
+import type { SieveModel } from '@/lib/query/firebase-sieve';
+
+export async function GET(request: NextRequest) {
+  try {
+    // 1. Auth (if required)
+    const sessionCookie = request.cookies.get('__session')?.value;
+    // ... verify ...
+
+    // 2. Parse Sieve model from URL params
+    const { searchParams } = request.nextUrl;
+    const model: SieveModel = {
+      filters:  searchParams.get('filters')  ?? undefined,
+      sorts:    searchParams.get('sorts')    ?? '-createdAt',
+      page:     searchParams.get('page')     ?? '1',
+      pageSize: searchParams.get('pageSize') ?? '25',
+    };
+
+    // 3. Build optional Sieve filter string from individual named params
+    const filtersArr: string[] = [];
+    const status = searchParams.get('status');
+    if (status) filtersArr.push(`status==${status}`);
+    if (model.filters) filtersArr.push(model.filters);
+    model.filters = filtersArr.join(',') || undefined;
+
+    // 4. Query via repository — Firestore-native
+    const result = await yourRepository.list(model);
+    //   result = { items, total, page, pageSize, totalPages, hasMore }
+
+    // 5. Return
+    return successResponse(result);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+```
+
+**Two API conventions in use — do not mix them on the same endpoint:**
+
+| Style | Params | Used by |
+|-------|--------|---------|
+| **Sieve** | `?filters=status==published&sorts=-createdAt&page=2&pageSize=25` | All admin routes, `/api/products`, `/api/seller/*` |
+| **Named** | `?q=shoes&category=footwear&sort=-createdAt&page=2&pageSize=24` | `/api/search` only |
 
 ---
 
@@ -757,8 +1060,11 @@ firebase deploy --only database:rules         # Realtime DB rules
 
 Before writing ANY code, verify:
 
-- [ ] Does a component for this already exist in `@/components`?
-- [ ] Does a hook for this already exist in `@/hooks`?
+- [ ] **Is this feature-specific code?** → put it in `src/features/<name>/` (Tier 2), not directly in `src/components/`
+- [ ] **Is this truly shared/reusable across features?** → put it in `src/components/ui/`, `src/hooks/`, `src/utils/`, etc. (Tier 1)
+- [ ] **Does my feature import another feature?** → move the shared piece to Tier 1 instead
+- [ ] Does a component for this already exist in `@/components` or `@/features/<name>`?
+- [ ] Does a hook for this already exist in `@/hooks` or `@/features/<name>/hooks`?
 - [ ] Does a util/helper for this already exist in `@/utils` or `@/helpers`?
 - [ ] Am I using `UI_LABELS` / `UI_PLACEHOLDERS` / `ERROR_MESSAGES` / `SUCCESS_MESSAGES` for all text?
 - [ ] Am I using `THEME_CONSTANTS` for all repeated Tailwind classes?

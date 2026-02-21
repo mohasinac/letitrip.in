@@ -9,13 +9,458 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7 — FAQ Routes + Homepage Tabs
+
+**Goal:** Introduce `/faqs/[category]` URL-segment routing, replace `?category=` query-param approach, add category tabs to the homepage `FAQSection`, and extract `FAQPageContent` as a shared component.
+
+#### Added
+
+- `src/app/faqs/[category]/page.tsx` — new dynamic route; validates `params.category` against `FAQ_CATEGORIES` keys (redirects to `/faqs` if invalid); `generateStaticParams()` returns all 7 category slugs; renders `<FAQPageContent initialCategory={category} />`.
+- `src/components/faq/FAQPageContent.tsx` — extracted from old `faqs/page.tsx`; accepts `initialCategory?: FAQCategoryKey | 'all'`; uses `useRouter` to navigate to `ROUTES.PUBLIC.FAQ_CATEGORY(key)` on category select; no more `useSearchParams` or `window.history.pushState`.
+
+#### Changed
+
+- `src/app/faqs/page.tsx` — rewritten as thin server wrapper (~30 lines); renders `<FAQPageContent initialCategory="all" />` inside `Suspense`. Removed 200+ lines of inline logic, `useSearchParams`, and `window.history.pushState` side-effect.
+- `src/components/homepage/FAQSection.tsx` — replaced single `featured=true` fetch with tabbed interface; default tab: `general`; per-tab fetch `?category=<key>&limit=6`; "View all" button replaced with `<Link href={ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)}>` using `UI_LABELS.ACTIONS.VIEW_ALL_ARROW`.
+- `src/components/faq/index.ts` — added `FAQPageContent` export.
+
+#### Technical Notes
+
+- `SectionTabs` uses URL-path navigation and is not suited for stateful homepage widgets; category tabs in `FAQSection` use styled `<button>` elements with local state.
+- `FAQCategorySidebar` keeps its `onCategorySelect` callback interface; `FAQPageContent` passes a `router.push`-based handler so category clicks update the URL path correctly.
+- The old `?category=` query-param URL format is fully removed.
+
+---
+
+### Phase 6 — Seller & User Pages + CRUD Drawers
+
+**Goal:** Seller product/order pages and user order page all URL-driven with `useUrlTable`, `SideDrawer` CRUD, and `TablePagination`. Delete redundant standalone new/edit routes.
+
+#### Changed
+
+- `src/app/seller/products/page.tsx` — full rewrite; replaced `useState`/`useRouter` + hardcoded `pageSize=100` with `useUrlTable` (defaults: `pageSize=25`, `sort=-createdAt`); "New product" button opens `<SideDrawer mode="create">` with `<ProductForm>` (no longer navigates to `/new`); per-row edit/delete opens `<SideDrawer mode="edit">`/`<SideDrawer mode="delete">`; `<AdminFilterBar withCard={false}>` with search + sort; `<TablePagination>` with `externalPagination` DataTable.
+- `src/app/seller/orders/page.tsx` — replaced `useState statusFilter` with `useUrlTable`; added `page` param to API call (previously missing); fixed data access from `data?.orders` → `data?.data?.orders` (raw `fetch()` wraps in `{success, data: {...}}`); added `<TablePagination>` with correct `meta` fields; revenue card shows per-page total.
+- `src/app/user/orders/page.tsx` — added `useUrlTable` + status filter tabs (All / Pending / Confirmed / Shipped / Delivered / Cancelled); **fixed runtime bug** where `apiClient.get()` result was accessed as `data?.data?.orders` instead of `data?.orders`, always returning `[]`; status tab click sets `?status=` URL param passed to API.
+- `src/components/seller/SellerQuickActions.tsx` — updated "Add product" link from `ROUTES.SELLER.PRODUCTS_NEW` → `ROUTES.SELLER.PRODUCTS` (drawer on list page).
+- `src/app/seller/page.tsx` — updated quick action `router.push` target from `ROUTES.SELLER.PRODUCTS_NEW` → `ROUTES.SELLER.PRODUCTS`.
+
+#### Deleted
+
+- `src/app/seller/products/new/page.tsx` — replaced by `SideDrawer mode="create"` on the list page.
+- `src/app/seller/products/[id]/edit/page.tsx` — replaced by `SideDrawer mode="edit"` on the list page.
+
+#### Verified
+
+- `src/app/admin/products/[[...action]]/page.tsx` — already uses `SideDrawer` + `useUrlTable` + `TablePagination` correctly.
+- `src/app/admin/coupons/[[...action]]/page.tsx` — already uses `SideDrawer` + `useUrlTable` + `TablePagination` correctly.
+- `src/app/admin/faqs/[[...action]]/page.tsx` — already uses `SideDrawer` + `useUrlTable` correctly.
+
+#### Technical Notes
+
+- `DataTable` only accepts `externalPagination?: boolean` — props `currentPage`, `totalPages`, `onPageChange` belong on `<TablePagination>` only.
+- Seller APIs use raw `fetch()` (not `apiClient`) so responses are `{success, data:{orders, meta}}` — access as `data?.data?.orders`.
+- User orders API uses `apiClient.get()` which extracts `data.data` once — access as `data?.orders` (no extra nesting).
+
+---
+
+### Phase 5 — Public List Pages (Feb 22, 2026)
+
+**Goal:** `products`, `search`, `auctions`, `blog`, `categories/[slug]` all URL-driven with `<Pagination>` and filter drawers.
+
+#### Changed
+
+- `src/app/products/page.tsx` — removed `useState`/`useEffect`/`useCallback`/`useRouter`/`useSearchParams`; replaced custom `updateUrl()` helper with `useUrlTable`; switched `apiClient.get()` → `fetch()` to preserve `meta` field; added `<FilterDrawer>` for mobile filters; added `<ActiveFilterChips>` above grid; replaced raw `<button>` prev/next with `<Pagination>`. Fixes latent bug where `meta` was always undefined.
+- `src/app/search/page.tsx` — removed `useRouter`/`useSearchParams`/`buildUrl()` helper (~30 lines); replaced with `useUrlTable`; kept `inputValue` local state + debounce for search input; updated all handlers (`handleSortChange`, `handleCategoryChange`, `handlePriceFilter`, `handleClearFilters`) to use `table.set()`/`table.setMany()`/`table.clear()`; updated `queryKey` to `table.params.toString()`; wired `onPageChange` to `table.setPage`.
+- `src/app/auctions/page.tsx` — replaced local `sort`/`page` useState with `useUrlTable` (defaults: `auctionEndDate` sort); wired sort `<select>` `onChange` to `table.set('sort', v)`; replaced raw `<button>` prev/next with `<Pagination>`; queryKey uses `table.params.toString()`.
+- `src/app/blog/page.tsx` — replaced `useState activeCategory`/`page` with `useUrlTable`; replaced `<Button>` prev/next with `<Pagination>`; queryKey uses `table.params.toString()`.
+- `src/app/categories/[slug]/page.tsx` — replaced `useState sort`/`page` with `useUrlTable`; added `totalPages` from `prodData.meta.totalPages`; sort `onSortChange` uses `table.set('sort', v)` (auto-resets page); replaced raw `<button>` prev/next with `<Pagination>`. **Fixes disabled-bug** where next button used `products.length < PAGE_SIZE` instead of `page >= totalPages`.
+
+#### Technical Notes
+
+- Public list APIs return `{ success: true, data: [...], meta: {...} }` directly — `apiClient.get()` strips to just the array (losing `meta`). All public list pages now use `fetch()` to preserve full response including pagination metadata.
+
+---
+
+### Phase 4 — Admin Pages (Feb 21, 2026)
+
+**Goal:** All 7 admin list pages use `useUrlTable`, real server pagination, sort UI, and filter bars.
+
+#### Changed
+
+- `src/app/admin/users/[[...action]]/page.tsx` — replaced 3 filter `useState` hooks (`activeTab`, `searchTerm`, `roleFilter`) with `useUrlTable`; `UserFilters` props wired to `table.set()`; added `externalPagination` to DataTable + `<TablePagination>`.
+- `src/app/admin/orders/[[...action]]/page.tsx` — replaced `statusFilter` useState with `useUrlTable`; tab buttons call `table.set('status', key)`; added `externalPagination` + `<TablePagination>`.
+- `src/app/admin/products/[[...action]]/page.tsx` — added `useUrlTable` (was missing entirely); added `<AdminFilterBar>` with search input + status dropdown; added `externalPagination` + `<TablePagination>`.
+- `src/app/admin/reviews/[[...action]]/page.tsx` — replaced 3 filter useStates with `useUrlTable` (default `status=pending`); updated select `onChange` handlers to `table.set()`; added `externalPagination` + `<TablePagination>`.
+- `src/app/admin/bids/[[...action]]/page.tsx` — replaced `statusFilter` useState with `useUrlTable` (default sort `-bidDate`); tab buttons call `table.set('status', key)`; added `externalPagination` + `<TablePagination>`.
+- `src/app/admin/coupons/[[...action]]/page.tsx` — added `useUrlTable` + search filter; added `<AdminFilterBar>` with search input; added `externalPagination` + `<TablePagination>`.
+- `src/app/admin/faqs/[[...action]]/page.tsx` — fixed data access bug (`data?.faqs || []` → `Array.isArray(data) ? data : []`); added `useUrlTable` + search via `?search=` param; added `<AdminFilterBar>` with search input; keeps internal DataTable pagination (FAQs API meta unavailable via api-client).
+
+#### Added
+
+- `src/constants/ui.ts` — `UI_LABELS.ADMIN.PRODUCTS.SEARCH_PLACEHOLDER`, `UI_LABELS.ADMIN.PRODUCTS.FILTER_ALL`, `UI_LABELS.ADMIN.COUPONS.SEARCH_PLACEHOLDER`, `UI_LABELS.ADMIN.FAQS.SEARCH_PLACEHOLDER`, `UI_LABELS.STATUS.ARCHIVED`.
+
+---
+
+### Phase 3 — Infrastructure Wiring (Feb 21, 2026)
+
+**Goal:** Update barrel exports, add `externalPagination` to DataTable, replace SearchResultsSection pagination with `<Pagination>` component.
+
+#### Added
+
+- `src/components/admin/DataTable.tsx` — `externalPagination?: boolean` prop (default: `false`). When `true`, disables internal row-slicing and pagination footer so the caller renders `<TablePagination>` externally. `showPagination` and `pageSize` marked `@deprecated` in JSDoc (still functional until all call sites migrate in Phases 4–6).
+
+#### Changed
+
+- `src/components/search/SearchResultsSection.tsx` — removed `onPrevPage`/`onNextPage` props; added `onPageChange: (page: number) => void`; replaced raw `<button>` Prev/Next HTML elements with `<Pagination currentPage totalPages onPageChange>` component.
+- `src/app/search/page.tsx` — updated `<SearchResultsSection>` call site: removed `onPrevPage`/`onNextPage` lambdas; added `onPageChange={(page) => router.replace(buildUrl({ page: String(page) }))}`.
+
+#### Tests
+
+- `src/components/admin/__tests__/DataTable.test.tsx` — 5 tests (3 existing + 2 new): `externalPagination=true` renders all rows without internal slicing; `externalPagination=false` slices to `pageSize` and shows pagination nav. Fixed module resolution: now mocks `@/constants` and `@/components` to avoid ESM sieve chain (same pattern as `DataTable.viewToggle.test.tsx`).
+- `src/components/search/__tests__/SearchResultsSection.test.tsx` — 7 new tests: `<Pagination>` rendered instead of raw buttons; `onPageChange(n)` called with correct page on forward/back navigation; Pagination hidden when `total ≤ 24`; empty state; loading skeleton.
+
+---
+
+### Phase 2 — Shared UI Primitives (Feb 21, 2026)
+
+**Goal:** All new reusable components created and barrel-exported. No page uses them yet.
+
+#### Added
+
+- `src/components/ui/FilterFacetSection.tsx` — collapsible filter group with checkbox selection, inline client-side search, and "Load more" pagination. Tier 1 shared primitive (public, seller, admin).
+- `src/components/ui/FilterDrawer.tsx` — left-side `<SideDrawer>` with trigger button, active-count badge, and `<DrawerFormFooter>` (Clear All / Apply). Wraps `FilterFacetSection` children.
+- `src/components/ui/ActiveFilterChips.tsx` — horizontal dismissible chip row for active filters; "Clear all" button; hidden when `filters.length === 0`. Exports `ActiveFilter` type.
+- `src/hooks/useUrlTable.ts` — URL-driven list/table state via `router.replace()`. Returns `get`, `getNumber`, `set`, `setMany`, `clear`, `setPage`, `setPageSize`, `setSort`, `buildSieveParams`, `buildSearchParams`. `set(key)` resets `page=1` on any key except `'page'`, `'pageSize'`, `'view'`.
+- `src/components/ui/SortDropdown.tsx` — labelled `<select>` sort control. Tier 1 (not admin-specific).
+- `src/components/ui/TablePagination.tsx` — "Showing X–Y of Z results" + `<Pagination>` + per-page `<select>`. Tier 1.
+- Barrel exports: all 5 new components/hooks exported from `src/components/ui/index.ts` and `src/hooks/index.ts`.
+
+#### Changed
+
+- `src/components/ui/SideDrawer.tsx` — added `side?: 'left' | 'right'` prop (default `'right'`); `positionClass` computed from `side`; swipe direction adapts. All 11 existing call sites updated with `side="right"` explicitly.
+- `src/components/admin/AdminFilterBar.tsx` — added `withCard?: boolean` prop (default `true`). When `false`, renders inner grid without `<Card>` wrapper (for public/seller pages).
+- `src/components/admin/DataTable.tsx` — added `showViewToggle`, `viewMode`, `defaultViewMode`, `onViewModeChange` props; `ViewMode = 'table' | 'grid' | 'list'` type; inline SVG toggle icon toolbar (`role="toolbar"`); grid/list render modes using `mobileCardRender`; backward-compatible (no `showViewToggle` = original behaviour).
+- `src/constants/ui.ts` — added `UI_LABELS.ADMIN.TABLE_VIEW`, `GRID_VIEW`, `LIST_VIEW` for DataTable toggle ARIA labels.
+
+#### Tests (48 new tests across 7 suites)
+
+- `src/hooks/__tests__/useUrlTable.test.ts` — 11 tests
+- `src/components/ui/__tests__/FilterFacetSection.test.tsx` — 7 tests
+- `src/components/ui/__tests__/ActiveFilterChips.test.tsx` — 4 tests
+- `src/components/ui/__tests__/SideDrawer.test.tsx` — 6 tests
+- `src/components/ui/__tests__/SortDropdown.test.tsx` — 4 tests
+- `src/components/ui/__tests__/TablePagination.test.tsx` — 5 tests
+- `src/components/admin/__tests__/DataTable.viewToggle.test.tsx` — 11 tests
+
+---
+
+**Goal:** All prerequisites in place. Nothing breaks. No UI changes.
+
+#### Added
+
+- `lucide-react` npm dependency installed
+- `src/constants/faq.ts` — `FAQ_CATEGORIES` constant and `FAQCategoryKey` type extracted from `FAQCategorySidebar.tsx`; exported from `src/constants/index.ts`
+- `src/constants/ui.ts` — new keys: `UI_LABELS.ROLES.ALL`, `UI_LABELS.ACTIONS.{ADD_ADDRESS, ADD_CATEGORY, VIEW_ALL_ARROW, LOAD_MORE, CLEAR_ALL, APPLY_FILTERS, ADD_PRODUCT}`, `UI_LABELS.FORM.{PICKUP_ADDRESS, CATEGORY, ROLE_FILTER}`, `UI_LABELS.TABLE.{SORT_BY, PER_PAGE, RESULTS, NO_RESULTS, LOAD_MORE}`, `UI_LABELS.ADMIN.PRODUCTS.PICKUP_ADDRESS`, `UI_LABELS.FILTERS`, `UI_LABELS.FOOTER.{SHOP, SELLERS_SECTION, SELL_ON_PLATFORM, SELLER_GUIDE, TRACK_ORDER, COOKIE_POLICY, REFUND_POLICY, MADE_IN}`, `UI_PLACEHOLDERS.{SELECT_ADDRESS, SELECT_CATEGORY}`
+- `src/constants/routes.ts` — `ROUTES.PUBLIC.FAQ_CATEGORY`, `ROUTES.PUBLIC.{TRACK_ORDER, SELLER_GUIDE, COOKIE_POLICY, REFUND_POLICY}`
+- `src/db/schema/products.ts` — `pickupAddressId?: string` field on `ProductDocument`; `'pickupAddressId'` in `PRODUCT_UPDATABLE_FIELDS`
+- `src/db/schema/field-names.ts` — `PRODUCT_FIELDS.PICKUP_ADDRESS_ID = 'pickupAddressId'`
+
+#### Changed
+
+- `src/constants/messages.ts` — `SUCCESS_MESSAGES.ADDRESS.CREATED` updated to `'Address saved successfully'`
+- `src/components/faq/FAQCategorySidebar.tsx` — removed inline `FAQ_CATEGORIES` definition; re-exports from `@/constants` for backward compat
+- `src/components/admin/users/UserFilters.tsx` — `ROLE_OPTIONS` labels now use `UI_LABELS.ROLES.*` instead of hardcoded strings; label uses `UI_LABELS.FORM.ROLE_FILTER`
+- `src/components/search/SearchFiltersRow.tsx` — inline `inputBase` string replaced with `THEME_CONSTANTS.input.base`
+
+#### Tests
+
+- `src/constants/__tests__/seo.test.ts` — 11 tests for `generateMetadata()` (title, description, openGraph, twitter, canonical, noIndex, image URL resolution)
+- `src/db/schema/__tests__/product.schema.test.ts` — 7 tests for `PRODUCT_FIELDS.PICKUP_ADDRESS_ID` and `PRODUCT_UPDATABLE_FIELDS`
+- `src/components/admin/users/__tests__/UserFilters.test.tsx` — 5 tests verifying role option labels match `UI_LABELS.ROLES.*`
+
+---
+
+### Docs — Clarify Filter Primitives as Tier 1 Universal (Feb 21, 2026)
+
+`FilterFacetSection`, `FilterDrawer`, and `ActiveFilterChips` were already planned in `src/components/ui/` but their descriptions and groupings implied admin-/product-page ownership. Corrected across all four docs:
+
+- **`docs/FRONTEND_REFACTOR_PLAN.md`**: Scope table row B: added `ActiveFilterChips` to deliverables. B2/B3 intros: added "Tier 1 — Shared primitive. Not admin-specific." + explicit consumer page list. B4 pages table: added missing `seller/products/page.tsx` row; updated admin row to note `FilterDrawer` optional for mobile. B5 (`ActiveFilterChips`): added Tier 1 note and "every list page" scope.
+- **`docs/IMPLEMENTATION_PLAN.md`**: §2.2, §2.3, §2.4 all prefixed with Tier 1 note and "Used by" line listing public, seller, and admin consumers.
+- **`.github/copilot-instructions.md`**: Replaced flat one-liner "Filter & Pagination" group with an expanded bulleted block titled "Filter / Facet / Pagination — Tier 1 shared primitives, used on **public, seller, and admin pages** alike".
+- **`docs/GUIDE.md`**: `FilterFacetSection`, `FilterDrawer`, `ActiveFilterChips` entries: added `Tier: 1` label and explicit `Used by` fields listing every consumer page.
+
+---
+
+### Audit — Genericness, Code Reuse & UX Consistency (Feb 22, 2026)
+
+#### What was audited
+
+Deep read of the actual source files before the Phase 2 implementation PR, to eliminate overspecifications added in the previous planning session.
+
+**`DataTable` (`src/components/admin/DataTable.tsx`):**
+
+- Already has `mobileCardRender` prop — view toggle reuses it for grid/list modes. No duplicate `renderCard` prop needed. New props are only `showViewToggle`, `viewMode`, `defaultViewMode`, `onViewModeChange`.
+- Internal `showPagination`/`pageSize` **graduated deprecation** (not immediate removal): new `externalPagination?: boolean` flag disables internal pagination per page. Props deleted in a cleanup PR after every call site in Phases 4–6 migrates.
+- View toggle icons: **inline SVGs** (no external library). Style matches existing SideDrawer close-button: `p-2 rounded-lg ring-1 ring-gray-200 dark:ring-gray-700`. Active: `bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300`.
+
+**`AdminFilterBar` (`src/components/admin/AdminFilterBar.tsx`):**
+
+- Already accepts `children`, `columns`, `className`. Only difference from a "FilterBar" is the `<Card>` wrapper.
+- **No new `FilterBar.tsx`** — a single `withCard?: boolean` (default: `true`) covers all use cases. `AdminFilterBar withCard={false}` is the pattern for public/seller pages.
+- All references to a separate `FilterBar` file removed from all planning documents and copilot-instructions.
+
+**Icons:** `lucide-react` is **not installed**. All plan references to it corrected — inline SVGs used everywhere.
+**`admin/index.ts`:** `SortDropdown`/`TablePagination` were never there — no removal step needed in Phase 3.
+
+#### Documents updated
+
+- **`docs/FRONTEND_REFACTOR_PLAN.md`** — §5 DataTable: `renderCard` → `mobileCardRender`, icons → inline SVGs. §6: new FilterBar file → `AdminFilterBar withCard` prop. File list, breakpoint table, implementation order, master file list all corrected.
+- **`docs/IMPLEMENTATION_PLAN.md`** — §2.8 `withCard` on AdminFilterBar. §2.9 view toggle spec corrected. Phase 3 pagination: graduated deprecation. Phase 5–6 view toggle notes: `renderCard` → `mobileCardRender`. Tests updated. `useUrlTable nonResettingKeys` pattern.
+- **`.github/copilot-instructions.md`** — View toggle example: `mobileCardRender` reuse. Filter list: removed FilterBar. AdminFilterBar note: `withCard={false}` for public/seller.
+- **`docs/GUIDE.md`** — DataTable props corrected. AdminFilterBar `withCard` added. SortDropdown entry cleaned. FilterBar entry replaced with `AdminFilterBar withCard={false}` usage note.
+
+---
+
+### Architecture Audit — Universal Filter/Sort/View Primitives (Feb 21, 2026)
+
+#### What was audited and changed
+
+**`docs/FRONTEND_REFACTOR_PLAN.md`** and **`docs/IMPLEMENTATION_PLAN.md`** updated:
+
+- **`AdminSortDropdown` renamed to `SortDropdown`** and moved from `src/components/admin/` to `src/components/ui/`. Sort controls are not admin-specific and are consumed by public pages, seller pages, and user pages too.
+- **`TablePagination` moved** from `src/components/admin/` to `src/components/ui/`. Pagination is a universal Tier 1 primitive — any page with a list can drop it in.
+- **New `FilterBar` component** (`src/components/ui/FilterBar.tsx`) — bare flex/grid container for filter controls on public and seller pages (no card wrapper). `AdminFilterBar` refactored as a thin wrapper around `FilterBar`.
+- **`DataTable` gets built-in grid / list / table view toggle** — new optional props: `showViewToggle`, `viewMode`, `defaultViewMode`, `onViewModeChange`, `renderCard`. Any page passes `renderCard` and gets a toggle; admin pages stay table-only (`showViewToggle=false`).
+- **`useUrlTable.set()` guard updated** — `'view'` added alongside `'page'` and `'pageSize'` as params that do **not** reset `page → 1` on change.
+- **Pages getting view toggle:** `products/page.tsx` (table/grid/list), `auctions/page.tsx` (grid/list), `categories/[slug]/page.tsx` (grid/list), `search/page.tsx` (grid/list), `seller/products/page.tsx` (grid/table). Admin pages remain table-only.
+- **Test specs updated:** `AdminSortDropdown.test.tsx` → `SortDropdown.test.tsx` (in `src/components/ui/__tests__/`); `TablePagination.test.tsx` also moved to `ui/`; new `DataTable.viewToggle.test.tsx` added; `useUrlTable` tests extended to cover `view` param no-page-reset behaviour.
+- **Barrel export plan updated:** `SortDropdown`, `TablePagination`, `FilterBar` exported from `src/components/ui/index.ts` (not `admin/index.ts`).
+
+**`docs/GUIDE.md`**, **`.github/copilot-instructions.md`**: `DataTable` props updated; `SortDropdown`/`TablePagination`/`FilterBar` descriptions added under `src/components/ui/`; `AdminSortDropdown` entry removed; `useUrlTable` view-toggle integration example added.
+
+---
+
+### Frontend Refactor — 15-Phase Implementation Plan with Embedded Tests (Feb 21, 2026)
+
+#### What was planned
+
+**`docs/IMPLEMENTATION_PLAN.md`** — Fully restructured from 17 phases to 15 phases:
+
+- **Merged** old Phase 10 (Constants Cleanup) into Phase 1 — trivial cleanup belongs at the foundation stage
+- **Deleted** standalone Phase 15 (Tests) — tests are now written at each sub-step, embedded inside every phase as `### N.x Tests — Phase N` subsections. Tests ship in the same PR as the implementation code they cover.
+- **Renumbered** phases 11→10 (Gestures + A11y), 12→11 (Homepage Sections), 13→12 (Dashboard Styling), 14→13 (Non-Tech UX), 16→14 (Code Deduplication), 17→15 (SEO)
+- **Dependency graph** updated — removed "Phase 15 (tests)" node, updated all phase numbers, corrected parallelism notes
+- **PR checklist** updated — Phase 16/17 rule references updated to Phase 14/15
+
+**Testing strategy change:** Every phase now ends with concrete test specs (file names + assertion bullets). This eliminates the separate "write tests after everything is done" anti-pattern and ensures tests are never skipped when under time pressure.
+
+**Net result:** 15 phases from 17. Every PR for every phase includes both implementation and tests.
+
+---
+
+### Docs Cleanup — GUIDE, QUICK_REFERENCE, copilot-instructions (Feb 21, 2026)
+
+#### What was updated
+
+**`docs/GUIDE.md`**:
+
+- Updated "Last Updated" date
+- Removed duplicate `### Admin Hooks` sections (session hooks `useUserSessions`, `useMySessions`, `useRevokeSession`, `useRevokeMySession`, `useRevokeUserSessions` were duplicated under Admin Hooks and Session Management Hooks — kept only the Session Management section)
+- Removed second entirely-redundant `### Admin Hooks` / `useAdminStats` block
+- Added `useLongPress` and `usePullToRefresh` to Gesture Hooks section (planned — Phase 10)
+- Added `useUrlTable` with full usage reference under a new "URL Table State Hook" section (planned — Phase 2)
+- Added `TablePagination`, `AdminSortDropdown` to Admin Components section (planned — Phase 2)
+- Added new "Filter & Pagination Components" section with `FilterFacetSection`, `FilterDrawer`, `ActiveFilterChips` (planned — Phase 2)
+- Updated `DataTable` description to clarify it is pagination-decoupled
+
+**`docs/QUICK_REFERENCE.md`** — full rewrite:
+
+- Old content used broken patterns: `withAuth()` (removed), `useApiRequest` (doesn't exist), direct `adminDb` Firestore queries in routes, `ROUTES.API.*` (wrong — use `API_ENDPOINTS`), stale deep imports (`@/hooks/useApiQuery`), nonexistent CLI scripts
+- New content: correct API route patterns (GET with Sieve, POST with `verifySessionCookie` + repositories + error classes), client component patterns (`useApiQuery`, `useApiMutation`), admin list page with `useUrlTable`, form with validators from `@/utils`, full constants table, repositories list, error/logging patterns, do/don't checklist
+
+**`.github/copilot-instructions.md`**:
+
+- Added `useLongPress` and `usePullToRefresh` to RULE 5 hooks table (planned)
+- Added `FilterFacetSection`, `FilterDrawer`, `ActiveFilterChips`, `TablePagination`, `AdminSortDropdown` to RULE 6 components list (planned)
+
+---
+
+#### What was implemented
+
+**Architecture policy** — Introduced a formal three-tier layered architecture to make the codebase pluggable and extraction-ready:
+
+- **Tier 1 — Shared Primitives** (`src/components/ui|forms|feedback…`, `src/hooks/`, `src/utils/`, `src/helpers/`, `src/classes/`, `src/constants/`)  
+  Feature-agnostic building blocks. These are the modules that can be extracted into `@letitrip/ui` / `@letitrip/utils` with only `tsconfig.json` alias changes — no page or feature code changes required.
+
+- **Tier 2 — Feature Modules** (`src/features/<name>/`)  
+  Vertically-sliced, self-contained domains. Each feature owns `components/`, `hooks/`, `types/`, `constants/`, `utils/`, and a public `index.ts` barrel. Features import from Tier 1 only — never from each other.
+
+- **Tier 3 — Page Layer** (`src/app/`)  
+  Thin orchestration. Composes Tier 1 + Tier 2. No business logic. < 150 lines JSX.
+
+**`src/features/README.md`** — Added pattern documentation, rules, migration guide, and barrel template.
+
+**`.github/copilot-instructions.md`** — Added:
+
+- Architecture diagram and tier definitions before Rule 1
+- `RULE 0: Feature Module Architecture` — enforces `src/features/<name>/` for new features, bans cross-feature imports, documents the cross-feature elevation pattern
+- Updated barrel import table with `@/features/<name>` row and Tier classification column
+- Updated Pre-Code Checklist with tier-awareness checks
+
+**`docs/GUIDE.md`** — Added:
+
+- `Section 0: Architecture Overview` — full three-tier diagram, table of Tier 1 modules with package targets, feature module directory conventions, import rules, package extraction path, migration strategy table
+- `Section 10: Feature Modules` — current feature module inventory, directory conventions, import examples, barrel template
+- Fixed broken TOC Snippets entry; renumbered Pages → 11, Types → 12, API Endpoints → 13, Lib Modules → 14
+
+#### Migration path
+
+Existing code under `src/components/<feature>/` continues working unchanged. Migration is gradual:
+
+1. New features → `src/features/<name>/`
+2. When an existing feature area is next modified → move to `src/features/<name>/components/`
+3. Feature-specific hooks in `src/hooks/` (e.g. `useRealtimeBids`, `useAdminStats`, `useRazorpay`) migrate to `src/features/<name>/hooks/` progressively
+
+---
+
+### Firestore-Native Query Builder with SieveJS Firebase Adapter (Feb 2026)
+
+#### What was implemented
+
+**New: `src/lib/query/firebase-sieve.ts`** — Core query builder  
+Uses `@mohasinac/sievejs` Firebase adapter (`createFirebaseAdapter`) to translate Sieve DSL directly into Firestore `.where()` / `.orderBy()` / `.offset()` / `.limit()` chains — **zero in-memory document iteration** for list queries.
+
+Key exports:
+
+- `applySieveToFirestore<T>(params)` — applies filters+sorts+pagination at the Firestore layer, returns `FirebaseSieveResult<T>` with `items`, `total`, `page`, `pageSize`, `totalPages`, `hasMore`
+- `SieveModel`, `FirebaseSieveFields`, `FirebaseSieveOptions`, `FirebaseSieveResult` types
+
+Billing impact per request (was: N docs + N-1 discarded; now):
+
+- 1 aggregation read — `filteredQuery.count().get()` → total count, no docs fetched
+- pageSize document reads — only current-page docs
+
+**`src/repositories/base.repository.ts`** — Added `protected sieveQuery()` method  
+All repositories can now call `this.sieveQuery(model, fields, opts?)` to run a Firestore-native Sieve query with optional `baseQuery` pre-filter.
+
+**Repository `list()` methods added (Firestore-native)**
+
+| Repository          | Method                             | Firestore pre-filter                                              |
+| ------------------- | ---------------------------------- | ----------------------------------------------------------------- |
+| `productRepository` | `list(model, opts?)`               | optional `status`, `sellerId`                                     |
+| `reviewRepository`  | `listForProduct(productId, model)` | `where productId == x`                                            |
+| `blogRepository`    | `listPublished(opts, model)`       | `where status == published` + optional `category`, `featuredOnly` |
+| `orderRepository`   | `listForSeller(productIds, model)` | `where productId in [...]` (≤30) or batched in-queries (>30)      |
+
+Each repository exposes a static `SIEVE_FIELDS` / `SELLER_SIEVE_FIELDS` constant defining allowed filter/sort fields.
+
+**Routes migrated (no full-collection scans)**
+
+| Route                     | Before                                                           | After                                                                    |
+| ------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `GET /api/products`       | `findAll()` → all products in RAM → filter                       | `productRepository.list(model)`                                          |
+| `GET /api/blog`           | `findAllPublished()` → all posts in RAM → filter                 | `blogRepository.listPublished(opts, model)`                              |
+| `GET /api/reviews` (list) | `findByProduct()` → all product reviews in RAM → filter          | `reviewRepository.listForProduct(productId, model)`                      |
+| `GET /api/seller/orders`  | `findAll()` ALL products + `findAll()` ALL orders → filter twice | `findBySeller(uid)` + `orderRepository.listForSeller(productIds, model)` |
+
+**`GET /api/seller/orders` improvement**  
+The previous implementation loaded every product and every order from Firestore on every request. The new implementation:
+
+1. `productRepository.findBySeller(uid)` — indexed query, only seller's products
+2. `orderRepository.listForSeller(productIds, model)` — `where productId in [ids]` + Sieve at DB layer
+
+#### Firebase adapter limitations (documented in `firebase-sieve.ts`)
+
+- `endsWith`, case-insensitive operators, negated string operators → not supported natively
+- Multi-field OR filters → not supported; use `applySieveToArray` as fallback
+- Full-text search → use Algolia/Typesense
+
+#### What stays in-memory (intentional)
+
+- `GET /api/faqs` — tags (`array-contains-any`) + multi-field full-text search + variable interpolation; already cached via `withCache` (30 min TTL)
+- `GET /api/search` — cross-collection multi-entity search (products + sellers + categories); inherently multi-collection
+- `orderRepository.listForSeller()` fallback — when a seller has >30 products the Firestore `in` operator limit is exceeded; chunks are queried separately then merged via `applySieveToArray`
+
+---
+
+### Admin Routes Sieve Cleanup — Full `applySieveToArray` Removal (Feb 2026)
+
+Completed the migration of every admin list route. All previously used `findAll()` + in-memory `applySieveToArray`. Each now uses a Firestore-native `sieveQuery()` repository method.
+
+**Repositories extended with `list()` / `listAll()`**
+
+| Repository          | New method              | Notes                                                                                                       |
+| ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `userRepository`    | `list(model)`           | `SIEVE_FIELDS`: uid, email, displayName, role, disabled, createdAt                                          |
+| `bidRepository`     | `list(model)`           | `SIEVE_FIELDS`: productId, productTitle, userId, userName, userEmail, bidAmount, status, isWinning, bidDate |
+| `payoutRepository`  | `list(model)`           | `SIEVE_FIELDS`: sellerId, sellerName, status, amount, createdAt, processedAt                                |
+| `orderRepository`   | `listAll(model)`        | `ADMIN_SIEVE_FIELDS`: userId, userEmail, productId, productTitle, status, paymentStatus, totalPrice         |
+| `blogRepository`    | `listAll(model)`        | No `status` pre-filter — all statuses visible to admin                                                      |
+| `reviewRepository`  | `listAll(model)`        | No `productId` filter — all products visible to admin                                                       |
+| `productRepository` | `SIEVE_FIELDS` expanded | Added `stockQuantity`                                                                                       |
+| `blogRepository`    | `SIEVE_FIELDS` expanded | Added `status`, `isFeatured`                                                                                |
+
+**Routes migrated**
+
+| Route                     | Before                                   | After                                                      |
+| ------------------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| `GET /api/admin/users`    | `findAll()` + `applySieveToArray`        | `userRepository.list(model)`                               |
+| `GET /api/admin/products` | `findAll()` + `applySieveToArray`        | `productRepository.list(model)`                            |
+| `GET /api/admin/orders`   | `findAll()` + `applySieveToArray`        | `orderRepository.listAll(model)`                           |
+| `GET /api/admin/bids`     | `findAll()` + `applySieveToArray`        | `bidRepository.list(model)`                                |
+| `GET /api/admin/reviews`  | `findAll()` + `applySieveToArray`        | `reviewRepository.listAll(model)`                          |
+| `GET /api/admin/coupons`  | `findAll()` + `applySieveToArray`        | `couponsRepository.list(model)`                            |
+| `GET /api/admin/blog`     | `findAll()` + `applySieveToArray` (list) | `findAll()` (stats only) + `blogRepository.listAll(model)` |
+| `GET /api/admin/payouts`  | `findAll()` + `applySieveToArray` (list) | `findAll()` (stats only) + `payoutRepository.list(model)`  |
+
+**Test files updated**: `products.test.ts`, `reviews.test.ts` — removed `applySieveToArray` mock from `@/helpers`, wired `mockList` / `mockListForProduct` to match the new repository API.
+
+---
+
+### Unit of Work Pattern (Feb 2026)
+
+#### What was implemented
+
+- **`src/repositories/unit-of-work.ts`** (NEW) — `UnitOfWork` class and `unitOfWork` singleton.
+  - `runTransaction(fn)` — wraps `db.runTransaction()` for atomic read-then-write across collections. Logs and wraps errors as `DatabaseError`.
+  - `runBatch(fn)` — wraps a `WriteBatch` commit for write-only atomic multi-collection operations (up to 500 ops).
+  - Exposes every repository singleton as a typed getter (`uow.users`, `uow.orders`, `uow.products`, etc.).
+
+- **`src/repositories/base.repository.ts`** — Added transaction-aware and batch-aware methods to `BaseRepository<T>`:
+  - `findByIdInTx(tx, id)` / `findByIdOrFailInTx(tx, id)` — transactional reads.
+  - `createInTx(tx, data)` / `createWithIdInTx(tx, id, data)` — transactional create (staged).
+  - `updateInTx(tx, id, data)` / `deleteInTx(tx, id)` — transactional update/delete (staged).
+  - `createInBatch(batch, data)` / `createWithIdInBatch(batch, id, data)` — batch create.
+  - `updateInBatch(batch, id, data)` / `deleteInBatch(batch, id)` — batch update/delete.
+
+- **`src/repositories/index.ts`** — Exports `unitOfWork` singleton and `UnitOfWork` type from barrel.
+
+#### Usage
+
+```ts
+import { unitOfWork } from "@/repositories";
+
+// Transaction (read → write)
+await unitOfWork.runTransaction(async (tx) => {
+  const product = await unitOfWork.products.findByIdOrFailInTx(tx, productId);
+  unitOfWork.products.updateInTx(tx, productId, { stock: product.stock - 1 });
+  unitOfWork.orders.updateInTx(tx, orderId, { status: "confirmed" });
+});
+
+// Batch (write only)
+await unitOfWork.runBatch((batch) => {
+  unitOfWork.products.updateInBatch(batch, productId, { featured: true });
+  unitOfWork.categories.updateInBatch(batch, categoryId, { productCount: 10 });
+});
+```
+
 ### Phase 7.10 — Complete Sieve Migration: All Routes & Admin UI (Jan 2026)
 
 #### What was implemented
 
 **New API Route**
 
-- `src/app/api/admin/reviews/route.ts` (NEW) — Admin-only endpoint that lists **all** reviews across all products without requiring `productId`. Uses `applySieveToArray` with fields: `id`, `productId`, `productTitle`, `userId`, `userName`, `userEmail`, `status`, `rating`, `verified`, `helpfulCount`, `createdAt`.
+- `src/app/api/admin/reviews/route.ts` (NEW, updated) — Admin-only endpoint that lists **all** reviews across all products without requiring `productId`. Now uses `reviewRepository.listAll()` (Firestore-native) instead of `applySieveToArray`. Fields: `id`, `productId`, `productTitle`, `userId`, `userName`, `status`, `rating`, `verified`, `helpfulCount`, `createdAt`.
 
 **API Routes Migrated to Sieve**
 

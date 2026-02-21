@@ -5,6 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import {
   COUPONS_COLLECTION,
   COUPON_USAGE_SUBCOLLECTION,
@@ -415,6 +416,57 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         `Failed to reactivate coupon: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    code: { canFilter: true, canSort: true },
+    name: { canFilter: true, canSort: true },
+    type: { canFilter: true, canSort: true },
+    "validity.isActive": {
+      path: "validity.isActive",
+      canFilter: true,
+      canSort: false,
+    },
+    "discount.value": {
+      path: "discount.value",
+      canFilter: true,
+      canSort: true,
+    },
+    "usage.currentUsage": {
+      path: "usage.currentUsage",
+      canFilter: true,
+      canSort: true,
+    },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native coupon list.
+   *
+   * @example
+   * ```ts
+   * const page = await couponsRepository.list({
+   *   filters:  'type==percentage,validity.isActive==true',
+   *   sorts:    '-createdAt',
+   *   page:     1,
+   *   pageSize: 50,
+   * });
+   * ```
+   */
+  async list(model: SieveModel): Promise<FirebaseSieveResult<CouponDocument>> {
+    return this.sieveQuery<CouponDocument>(
+      model,
+      CouponsRepository.SIEVE_FIELDS,
+      {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
+    );
   }
 }
 

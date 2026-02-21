@@ -1,21 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import {
+  API_ENDPOINTS,
+  THEME_CONSTANTS,
+  ROUTES,
+  UI_LABELS,
+  FAQ_CATEGORIES,
+} from "@/constants";
+import type { FAQCategoryKey } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import type { FAQDocument } from "@/db/schema";
 
 export function FAQSection() {
-  const router = useRouter();
+  const [activeCategory, setActiveCategory] =
+    useState<FAQCategoryKey>("general");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
   const { data, isLoading } = useApiQuery<FAQDocument[]>({
-    queryKey: ["faqs", "homepage"],
+    queryKey: ["faqs", "homepage", activeCategory],
     queryFn: () =>
-      apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?featured=true&limit=6`),
+      apiClient.get(
+        `${API_ENDPOINTS.FAQS.LIST}?category=${activeCategory}&limit=6`,
+      ),
   });
+
+  const handleCategoryChange = (cat: FAQCategoryKey) => {
+    setActiveCategory(cat);
+    setOpenFaqId(null);
+  };
 
   if (isLoading) {
     return (
@@ -39,10 +54,6 @@ export function FAQSection() {
 
   const faqs = data || [];
 
-  if (faqs.length === 0) {
-    return null;
-  }
-
   const toggleFaq = (faqId: string) => {
     setOpenFaqId(openFaqId === faqId ? null : faqId);
   };
@@ -53,7 +64,7 @@ export function FAQSection() {
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
@@ -66,8 +77,38 @@ export function FAQSection() {
           </p>
         </div>
 
+        {/* Category Tabs */}
+        <div className="flex flex-wrap gap-2 justify-center mb-8">
+          {(
+            Object.entries(FAQ_CATEGORIES) as [
+              FAQCategoryKey,
+              (typeof FAQ_CATEGORIES)[FAQCategoryKey],
+            ][]
+          ).map(([key, category]) => (
+            <button
+              key={key}
+              onClick={() => handleCategoryChange(key)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                activeCategory === key
+                  ? "bg-blue-600 text-white dark:bg-blue-500"
+                  : `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textSecondary} hover:bg-gray-100 dark:hover:bg-gray-700`
+              }`}
+            >
+              <span className="mr-1">{category.icon}</span>
+              {category.label}
+            </button>
+          ))}
+        </div>
+
         {/* FAQ Accordion */}
         <div className={`${THEME_CONSTANTS.spacing.stack} max-w-3xl mx-auto`}>
+          {faqs.length === 0 && (
+            <p
+              className={`text-center py-8 ${THEME_CONSTANTS.themed.textSecondary}`}
+            >
+              {UI_LABELS.EMPTY.NO_DATA}
+            </p>
+          )}
           {faqs.map((faq) => (
             <div
               key={faq.id}
@@ -120,12 +161,12 @@ export function FAQSection() {
 
         {/* View All Link */}
         <div className="text-center mt-8">
-          <button
+          <Link
+            href={ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)}
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
-            onClick={() => router.push(ROUTES.PUBLIC.FAQS)}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL} →
-          </button>
+            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+          </Link>
         </div>
       </div>
     </section>

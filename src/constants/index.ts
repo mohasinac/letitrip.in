@@ -60,3 +60,7 @@ export {
   MOCK_BLOG_ARTICLES,
 } from "./homepage-data";
 export type { TrustIndicator, SiteFeature, BlogArticle } from "./homepage-data";
+
+// FAQ category constants
+export { FAQ_CATEGORIES } from "./faq";
+export type { FAQCategoryKey } from "./faq";

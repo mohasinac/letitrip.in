@@ -7,6 +7,7 @@
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { DatabaseError } from "@/lib/errors";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import type {
   BidDocument,
   BidCreateInput,
@@ -305,6 +306,34 @@ class BidRepository extends BaseRepository<BidDocument> {
         error,
       );
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    productId: { canFilter: true, canSort: false },
+    productTitle: { canFilter: true, canSort: true },
+    userId: { canFilter: true, canSort: false },
+    userName: { canFilter: true, canSort: true },
+    userEmail: { canFilter: true, canSort: true },
+    bidAmount: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: true },
+    isWinning: { canFilter: true, canSort: false },
+    bidDate: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native bid list (admin use).
+   */
+  async list(model: SieveModel): Promise<FirebaseSieveResult<BidDocument>> {
+    return this.sieveQuery<BidDocument>(model, BidRepository.SIEVE_FIELDS, {
+      defaultPageSize: 50,
+      maxPageSize: 200,
+    });
   }
 }
 

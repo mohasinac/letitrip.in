@@ -71,6 +71,11 @@ export const UI_LABELS = {
     SHOWING: "Showing",
     OF: "of",
     ENTRIES: "entries",
+    SORT_BY: "Sort by",
+    PER_PAGE: "Per page",
+    RESULTS: "results",
+    NO_RESULTS: "No results found",
+    LOAD_MORE: "Load 10 more",
   },
 
   // Actions
@@ -117,6 +122,13 @@ export const UI_LABELS = {
     DISCARD: "Discard",
     COPY_LINK: "Copy Link",
     LINK_COPIED: "Link copied to clipboard!",
+    ADD_ADDRESS: "Add new address",
+    ADD_CATEGORY: "New category",
+    VIEW_ALL_ARROW: "View all →",
+    LOAD_MORE: "Load more",
+    CLEAR_ALL: "Clear all",
+    APPLY_FILTERS: "Apply filters",
+    ADD_PRODUCT: "Add product",
   },
 
   // Form labels
@@ -137,6 +149,9 @@ export const UI_LABELS = {
     COUNTRY: "Country",
     EMAIL_VERIFICATION: "Email Verification",
     PHONE_VERIFICATION: "Phone Verification",
+    PICKUP_ADDRESS: "Pickup Address",
+    CATEGORY: "Category",
+    ROLE_FILTER: "Role Filter",
   },
 
   // Status labels
@@ -151,6 +166,7 @@ export const UI_LABELS = {
     CANCELLED: "Cancelled",
     DRAFT: "Draft",
     PUBLISHED: "Published",
+    ARCHIVED: "Archived",
     EMAIL_VERIFIED: "Email Verified ✓",
     EMAIL_NOT_VERIFIED: "Email Not Verified",
     PHONE_VERIFIED: "Phone Verified ✓",
@@ -161,6 +177,7 @@ export const UI_LABELS = {
 
   // Role labels
   ROLES: {
+    ALL: "All Roles",
     USER: "User",
     SELLER: "Seller",
     MODERATOR: "Moderator",
@@ -437,6 +454,11 @@ export const UI_LABELS = {
 
   // Admin content management
   ADMIN: {
+    // View mode labels
+    TABLE_VIEW: "Table",
+    GRID_VIEW: "Grid",
+    LIST_VIEW: "List",
+
     DASHBOARD: {
       TITLE: "Dashboard Overview",
       SUBTITLE: "System statistics and quick actions",
@@ -559,6 +581,7 @@ export const UI_LABELS = {
       SHOW_VARIABLES: "Show Variables",
       HIDE_VARIABLES: "Hide Variables",
       INSERT_VARIABLE_HELP: "Click to insert variable into answer:",
+      SEARCH_PLACEHOLDER: "Search FAQs...",
     },
     SECTIONS: {
       TITLE: "Homepage Sections",
@@ -622,6 +645,8 @@ export const UI_LABELS = {
       PRICE_LABEL: "Price (₹)",
       STOCK_LABEL: "Stock Quantity",
       STATUS_LABEL: "Status",
+      SEARCH_PLACEHOLDER: "Search products...",
+      FILTER_ALL: "All Statuses",
       SELLER_LABEL: "Seller",
       FEATURED_LABEL: "Featured",
       TAGS_LABEL: "Tags (comma-separated)",
@@ -635,6 +660,7 @@ export const UI_LABELS = {
       MAIN_IMAGE_LABEL: "Main Image URL",
       CONFIRM_DELETE:
         "Are you sure you want to delete this product? This cannot be undone.",
+      PICKUP_ADDRESS: "Pickup Address",
     },
     ORDERS: {
       TITLE: "Orders",
@@ -735,6 +761,7 @@ export const UI_LABELS = {
       IS_ACTIVE_LABEL: "Active",
       FIRST_TIME_ONLY_LABEL: "First-Time Users Only",
       STATS: "Usage Stats",
+      SEARCH_PLACEHOLDER: "Search by code or name...",
     },
     PAYOUTS: {
       TITLE: "Payouts",
@@ -1643,6 +1670,12 @@ export const UI_LABELS = {
     CHECK_BACK: "Check back soon for new promotions!",
   },
 
+  FILTERS: {
+    TITLE: "Filters",
+    ACTIVE_COUNT: (n: number) => `Filters (${n})`,
+    SEARCH_IN: (section: string) => `Search ${section}...`,
+  },
+
   FOOTER: {
     QUICK_LINKS: "Quick Links",
     ABOUT_US: "About Us",
@@ -1662,6 +1695,14 @@ export const UI_LABELS = {
     COMPANY: "Company",
     SUPPORT: "Support",
     LEGAL: "Legal",
+    SHOP: "Shop",
+    SELLERS_SECTION: "For Sellers",
+    SELL_ON_PLATFORM: "Sell on Platform",
+    SELLER_GUIDE: "Seller Guide",
+    TRACK_ORDER: "Track Order",
+    COOKIE_POLICY: "Cookie Policy",
+    REFUND_POLICY: "Refund Policy",
+    MADE_IN: "Made in India",
   },
 
   // FAQ section
@@ -1734,6 +1775,8 @@ export const UI_PLACEHOLDERS = {
   CODE: "Enter code",
   PRICE: "Enter price",
   QUANTITY: "Enter quantity",
+  SELECT_ADDRESS: "Select a pickup address...",
+  SELECT_CATEGORY: "Select a category...",
 } as const;
 
 export const UI_HELP_TEXT = {

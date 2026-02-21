@@ -32,11 +32,11 @@ const TABS: { key: UserTab; label: string }[] = [
 ];
 
 const ROLE_OPTIONS = [
-  { value: "all", label: "All Roles" },
-  { value: "user", label: "User" },
-  { value: "seller", label: "Seller" },
-  { value: "moderator", label: "Moderator" },
-  { value: "admin", label: "Admin" },
+  { value: "all", label: UI_LABELS.ROLES.ALL },
+  { value: "user", label: UI_LABELS.ROLES.USER },
+  { value: "seller", label: UI_LABELS.ROLES.SELLER },
+  { value: "moderator", label: UI_LABELS.ROLES.MODERATOR },
+  { value: "admin", label: UI_LABELS.ROLES.ADMIN },
 ];
 
 export function UserFilters({
@@ -81,7 +81,7 @@ export function UserFilters({
         />
         <FormField
           name="roleFilter"
-          label="Role Filter"
+          label={UI_LABELS.FORM.ROLE_FILTER}
           type="select"
           value={roleFilter}
           onChange={onRoleFilterChange}

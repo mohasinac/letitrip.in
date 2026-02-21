@@ -13,7 +13,6 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { productRepository } from "@/repositories";
-import { applySieveToArray } from "@/helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -53,55 +52,11 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allProducts = await productRepository.findAll();
-
-    const sieveResult = await applySieveToArray({
-      items: allProducts,
-      model: { filters, sorts, page, pageSize },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        title: { canFilter: true, canSort: true },
-        category: { canFilter: true, canSort: true },
-        subcategory: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        sellerId: { canFilter: true, canSort: false },
-        sellerName: { canFilter: true, canSort: true },
-        featured: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        isAuction: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        isPromoted: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        price: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        stockQuantity: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: {
-        defaultPageSize: 50,
-        maxPageSize: 200,
-        throwExceptions: false,
-      },
+    const sieveResult = await productRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
     });
 
     return successResponse({

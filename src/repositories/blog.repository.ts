@@ -17,6 +17,7 @@ import {
 import { DatabaseError } from "@/lib/errors";
 import { FieldValue } from "firebase-admin/firestore";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
 class BlogRepository extends BaseRepository<BlogPostDocument> {
   constructor() {
@@ -255,6 +256,95 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
         `Failed to find related posts: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sieve-powered list query
+  // ---------------------------------------------------------------------------
+
+  /** Fields that consumers may filter or sort on. */
+  static readonly SIEVE_FIELDS = {
+    id: { canFilter: true, canSort: false },
+    title: { canFilter: true, canSort: true },
+    slug: { canFilter: true, canSort: false },
+    status: { canFilter: true, canSort: true },
+    category: { canFilter: true, canSort: true },
+    authorName: { canFilter: true, canSort: true },
+    isFeatured: { canFilter: true, canSort: false },
+    readTimeMinutes: { canFilter: true, canSort: true },
+    publishedAt: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated, Firestore-native published-post list.
+   *
+   * `status == 'published'` is always enforced at the Firestore level.
+   * Optional `category` and `featuredOnly` are also applied as Firestore
+   * `where()` clauses before Sieve runs.
+   *
+   * @example
+   * ```ts
+   * const result = await blogRepository.listPublished(
+   *   { category: 'travel', featuredOnly: false },
+   *   { sorts: '-publishedAt', page: 1, pageSize: 12 },
+   * );
+   * ```
+   */
+  async listPublished(
+    opts: { category?: BlogPostCategory; featuredOnly?: boolean },
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<BlogPostDocument>> {
+    let baseQuery = this.getCollection().where(
+      BLOG_POST_FIELDS.STATUS,
+      "==",
+      "published" as BlogPostStatus,
+    );
+
+    if (opts?.category) {
+      baseQuery = baseQuery.where(
+        BLOG_POST_FIELDS.CATEGORY,
+        "==",
+        opts.category,
+      ) as typeof baseQuery;
+    }
+
+    if (opts?.featuredOnly) {
+      baseQuery = baseQuery.where(
+        BLOG_POST_FIELDS.IS_FEATURED,
+        "==",
+        true,
+      ) as typeof baseQuery;
+    }
+
+    return this.sieveQuery<BlogPostDocument>(
+      model,
+      BlogRepository.SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 12,
+        maxPageSize: 50,
+      },
+    );
+  }
+
+  /**
+   * Paginated, Firestore-native blog post list across ALL statuses (admin use).
+   *
+   * Unlike `listPublished`, no `status` pre-filter is applied — admins can
+   * see drafts, archived posts, etc.
+   */
+  async listAll(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<BlogPostDocument>> {
+    return this.sieveQuery<BlogPostDocument>(
+      model,
+      BlogRepository.SIEVE_FIELDS,
+      {
+        defaultPageSize: 50,
+        maxPageSize: 200,
+      },
+    );
   }
 }
 

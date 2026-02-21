@@ -8,10 +8,10 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
-import { AuctionGrid } from "@/components";
+import { useMemo } from "react";
+import { AuctionGrid, Pagination } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
@@ -47,17 +47,19 @@ const SORT_OPTIONS = [
 ];
 
 export default function AuctionsPage() {
-  const [sort, setSort] = useState("auctionEndDate");
-  const [page, setPage] = useState(1);
-
-  const productsUrl = useMemo(() => {
-    const filters = encodeURIComponent("isAuction==true,status==published");
-    return `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${filters}&sorts=${encodeURIComponent(sort)}&page=${page}&pageSize=${PAGE_SIZE}`;
-  }, [sort, page]);
+  const table = useUrlTable({
+    defaults: { pageSize: String(PAGE_SIZE), sort: "auctionEndDate" },
+  });
+  const sort = table.get("sort") || "auctionEndDate";
+  const page = table.getNumber("page", 1);
 
   const { data, isLoading } = useApiQuery<ProductsResponse>({
-    queryKey: ["auctions", sort, String(page)],
-    queryFn: () => fetch(productsUrl).then((r) => r.json()),
+    queryKey: ["auctions", table.params.toString()],
+    queryFn: () => {
+      const filters = encodeURIComponent("isAuction==true,status==published");
+      const url = `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${filters}&sorts=${encodeURIComponent(sort)}&page=${page}&pageSize=${PAGE_SIZE}`;
+      return fetch(url).then((r) => r.json());
+    },
   });
 
   const auctions = useMemo(() => data?.data ?? [], [data]);
@@ -88,10 +90,7 @@ export default function AuctionsPage() {
           )}
           <select
             value={sort}
-            onChange={(e) => {
-              setSort(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => table.set("sort", e.target.value)}
             className={`h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           >
             {SORT_OPTIONS.map((opt) => (
@@ -111,25 +110,13 @@ export default function AuctionsPage() {
       />
 
       {/* Pagination */}
-      {total > PAGE_SIZE && (
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.BACK}
-          </button>
-          <span className={`px-4 py-2 text-sm ${themed.textSecondary}`}>
-            {page} / {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="px-4 py-2 rounded-lg text-sm border disabled:opacity-40"
-          >
-            {UI_LABELS.ACTIONS.NEXT}
-          </button>
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={table.setPage}
+          />
         </div>
       )}
     </main>

@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { bidRepository, productRepository } from "@/repositories";
+import { bidRepository, productRepository, unitOfWork } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
@@ -124,14 +124,22 @@ export async function POST(request: NextRequest) {
       ...(autoMaxBid ? { autoMaxBid } : {}),
     });
 
-    // Mark this bid as the winning bid (marks others as outbid)
-    await bidRepository.setWinningBid(bid.id, productId);
-
-    // Update product's currentBid and bidCount
-    await productRepository.update(productId, {
-      currentBid: bidAmount,
-      bidCount: (product.bidCount ?? 0) + 1,
-    } as Partial<typeof product>);
+    // Atomically: mark all previous bids for this product as outbid,
+    // set this bid as the winner, and update the product's currentBid/bidCount.
+    // (Replaces the separate setWinningBid + productRepository.update calls)
+    const allBids = await bidRepository.findBy("productId", productId);
+    await unitOfWork.runBatch((batch) => {
+      for (const b of allBids) {
+        unitOfWork.bids.updateInBatch(batch, b.id, {
+          isWinning: b.id === bid.id,
+          status: b.id === bid.id ? "active" : "outbid",
+        } as any);
+      }
+      unitOfWork.products.updateInBatch(batch, productId, {
+        currentBid: bidAmount,
+        bidCount: (product.bidCount ?? 0) + 1,
+      } as any);
+    });
 
     // Write to Realtime DB for live bid streaming
     try {
