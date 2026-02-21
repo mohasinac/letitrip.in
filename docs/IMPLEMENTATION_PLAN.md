@@ -982,7 +982,7 @@ src/components/faq/FAQCategorySidebar.tsx  + URL updates
 
 ---
 
-## Phase 8 — Footer & Navigation
+## Phase 8 — Footer & Navigation ✅ Done
 
 ### 8.1 Rewrite `Footer` — `src/components/layout/Footer.tsx`
 

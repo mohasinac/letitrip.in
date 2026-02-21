@@ -11,4 +11,3 @@ export { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
 export { FAQSection } from "./FAQSection";
 export { BlogArticlesSection } from "./BlogArticlesSection";
 export { NewsletterSection } from "./NewsletterSection";
-export { EnhancedFooter } from "./EnhancedFooter";

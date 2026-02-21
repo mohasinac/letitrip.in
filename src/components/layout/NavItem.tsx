@@ -50,14 +50,9 @@ export default function NavItem({
           isActive ? colors.bottomNav.active : colors.bottomNav.inactive
         }`}
       >
-        <svg
-          className={colors.bottomNav.icon}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <span className={`${colors.bottomNav.icon} flex items-center`}>
           {icon}
-        </svg>
+        </span>
         <span className={colors.bottomNav.text}>{label}</span>
       </Link>
     );
@@ -71,14 +66,9 @@ export default function NavItem({
         isActive ? `${colors.navbar.active}` : `${colors.navbar.inactive}`
       }`}
     >
-      <svg
-        className={`${colors.navbar.icon} flex-shrink-0`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <span className={`${colors.navbar.icon} flex-shrink-0 flex items-center`}>
         {icon}
-      </svg>
+      </span>
       <span className="whitespace-nowrap">{label}</span>
     </Link>
   );

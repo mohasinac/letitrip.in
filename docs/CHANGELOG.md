@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 8 — Footer & Navigation
+
+**Goal:** Rewrite `Footer` with a modern 5-column layout, replace legacy inline SVG nav icons with `lucide-react` components, delete `EnhancedFooter`.
+
+#### Added
+
+- `lucide-react` icons in `src/constants/navigation.tsx` — `MAIN_NAV_ITEMS` and `SIDEBAR_NAV_GROUPS` now use full lucide components (`Home`, `ShoppingBag`, `Gavel`, `Store`, `Tag`, `User`, `Package`, `Heart`, `MapPin`, `Settings`, `Mail`, `HelpCircle`) instead of raw `<path>` SVG children.
+
+#### Changed
+
+- `src/components/layout/Footer.tsx` — Rewrote with 5-column grid (Brand + social, Shop, Support, Sellers, Legal); social icons use `Facebook`, `Instagram`, `Twitter`, `Linkedin` from `lucide-react`; all links via `<Link>` + `ROUTES.*`; all text from `UI_LABELS.FOOTER.*`; removed `"use client"` (now a server component); bottom row shows copyright + `MADE_IN`.
+- `src/components/layout/NavItem.tsx` — Removed `<svg>` wrapper around nav icons; renders icon `ReactNode` directly so lucide components display correctly.
+- `src/components/layout/Sidebar.tsx` — Removed `<svg>` wrappers at both icon-render spots; wraps each `item.icon` in a `<span>` with the correct colour class instead.
+- `src/components/homepage/index.ts` — Removed `EnhancedFooter` export.
+
+#### Removed
+
+- `src/components/homepage/EnhancedFooter.tsx` — Deleted (unused; superseded by Footer rewrite).
+- `src/components/homepage/__tests__/EnhancedFooter.test.tsx` — Deleted (file under test removed).
+
+---
+
 ### Phase 7 — FAQ Routes + Homepage Tabs
 
 **Goal:** Introduce `/faqs/[category]` URL-segment routing, replace `?category=` query-param approach, add category tabs to the homepage `FAQSection`, and extract `FAQPageContent` as a shared component.

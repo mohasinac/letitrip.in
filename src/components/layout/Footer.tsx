@@ -1,85 +1,6 @@
-"use client";
-
+import Link from "next/link";
+import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { THEME_CONSTANTS, SITE_CONFIG, UI_LABELS, ROUTES } from "@/constants";
-import { ReactNode } from "react";
-
-/**
- * Footer Component
- *
- * The main site footer with brand information, quick links, support links,
- * social media icons, and copyright notice.
- * Uses a gradient background and is responsive with multi-column layout.
- *
- * @component
- * @example
- * ```tsx
- * <Footer />
- * ```
- */
-
-type FooterSection = {
-  title: string;
-  content:
-    | { type: "text"; text: string }
-    | { type: "links"; links: Array<{ href: string; label: string }> }
-    | {
-        type: "social";
-        socials: Array<{ name: string; href: string; icon: ReactNode }>;
-      };
-};
-
-const footerSections: FooterSection[] = [
-  {
-    title: SITE_CONFIG.brand.name,
-    content: {
-      type: "text" as const,
-      text: SITE_CONFIG.seo.description,
-    },
-  },
-  {
-    title: UI_LABELS.FOOTER.QUICK_LINKS,
-    content: {
-      type: "links" as const,
-      links: [
-        { href: SITE_CONFIG.nav.about, label: UI_LABELS.FOOTER.ABOUT_US },
-        { href: SITE_CONFIG.nav.contact, label: UI_LABELS.FOOTER.CONTACT },
-        { href: SITE_CONFIG.nav.blog, label: UI_LABELS.FOOTER.BLOG },
-      ],
-    },
-  },
-  {
-    title: UI_LABELS.FOOTER.SUPPORT,
-    content: {
-      type: "links" as const,
-      links: [
-        { href: ROUTES.PUBLIC.TERMS, label: UI_LABELS.FOOTER.TERMS_OF_SERVICE },
-        { href: ROUTES.PUBLIC.PRIVACY, label: UI_LABELS.FOOTER.PRIVACY_POLICY },
-      ],
-    },
-  },
-  {
-    title: UI_LABELS.FOOTER.CONNECT,
-    content: {
-      type: "social" as const,
-      socials: [
-        {
-          name: "Facebook",
-          href: SITE_CONFIG.social.facebook,
-          icon: (
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          ),
-        },
-        {
-          name: "Twitter",
-          href: SITE_CONFIG.social.twitter,
-          icon: (
-            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-          ),
-        },
-      ],
-    },
-  },
-];
 
 export default function Footer() {
   const { colors, layout } = THEME_CONSTANTS;
@@ -92,65 +13,196 @@ export default function Footer() {
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-12 md:py-16`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {footerSections.map((section) => (
-            <div key={section.title}>
-              <h3 className={`font-bold text-lg mb-4 ${colors.footer.title}`}>
-                {section.title}
-              </h3>
-
-              {section.content.type === "text" && (
-                <p className={`${colors.footer.text} text-sm`}>
-                  {section.content.text}
-                </p>
-              )}
-
-              {section.content.type === "links" && (
-                <ul className="space-y-2 text-sm">
-                  {section.content.links.map((link) => (
-                    <li key={link.href}>
-                      <a
-                        href={link.href}
-                        className={`${colors.footer.text} ${colors.footer.textHover}`}
-                      >
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {section.content.type === "social" && (
-                <div className="flex gap-3">
-                  {section.content.socials.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      className={`${colors.footer.text} ${colors.footer.textHover}`}
-                      aria-label={social.name}
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        {social.icon}
-                      </svg>
-                    </a>
-                  ))}
-                </div>
-              )}
+        {/* 5-column grid */}
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5">
+          {/* Column 1: Brand + tagline + social */}
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+            <p className={`font-bold text-lg mb-2 ${colors.footer.title}`}>
+              {SITE_CONFIG.brand.name}
+            </p>
+            <p className={`text-sm mb-4 ${colors.footer.text}`}>
+              {SITE_CONFIG.seo.description}
+            </p>
+            <div className="flex gap-3 mt-2">
+              <a
+                href={SITE_CONFIG.social.facebook}
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${colors.footer.text} ${colors.footer.textHover}`}
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href={SITE_CONFIG.social.instagram}
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${colors.footer.text} ${colors.footer.textHover}`}
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href={SITE_CONFIG.social.twitter}
+                aria-label="Twitter"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${colors.footer.text} ${colors.footer.textHover}`}
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a
+                href={SITE_CONFIG.social.linkedin}
+                aria-label="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${colors.footer.text} ${colors.footer.textHover}`}
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
             </div>
-          ))}
+          </div>
+
+          {/* Column 2: Shop */}
+          <div>
+            <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
+              {UI_LABELS.FOOTER.SHOP}
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {[
+                { href: ROUTES.PUBLIC.PRODUCTS, label: UI_LABELS.NAV.PRODUCTS },
+                { href: ROUTES.PUBLIC.AUCTIONS, label: UI_LABELS.NAV.AUCTIONS },
+                {
+                  href: ROUTES.PUBLIC.CATEGORIES,
+                  label: UI_LABELS.NAV.CATEGORIES,
+                },
+                {
+                  href: ROUTES.PUBLIC.PROMOTIONS,
+                  label: UI_LABELS.NAV.PROMOTIONS,
+                },
+                { href: ROUTES.PUBLIC.SEARCH, label: UI_LABELS.NAV.SEARCH },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`${colors.footer.text} ${colors.footer.textHover}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Support */}
+          <div>
+            <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
+              {UI_LABELS.FOOTER.SUPPORT}
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {[
+                {
+                  href: ROUTES.PUBLIC.HELP,
+                  label: UI_LABELS.FOOTER.HELP_CENTER,
+                },
+                { href: ROUTES.PUBLIC.FAQS, label: UI_LABELS.FOOTER.FAQS },
+                {
+                  href: ROUTES.PUBLIC.TRACK_ORDER,
+                  label: UI_LABELS.FOOTER.TRACK_ORDER,
+                },
+                {
+                  href: ROUTES.PUBLIC.CONTACT,
+                  label: UI_LABELS.FOOTER.CONTACT,
+                },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`${colors.footer.text} ${colors.footer.textHover}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Sellers */}
+          <div>
+            <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
+              {UI_LABELS.FOOTER.SELLERS_SECTION}
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {[
+                {
+                  href: ROUTES.PUBLIC.SELLERS,
+                  label: UI_LABELS.FOOTER.SELL_ON_PLATFORM,
+                },
+                {
+                  href: ROUTES.PUBLIC.SELLER_GUIDE,
+                  label: UI_LABELS.FOOTER.SELLER_GUIDE,
+                },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`${colors.footer.text} ${colors.footer.textHover}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 5: Legal */}
+          <div>
+            <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
+              {UI_LABELS.FOOTER.LEGAL}
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {[
+                {
+                  href: ROUTES.PUBLIC.PRIVACY,
+                  label: UI_LABELS.FOOTER.PRIVACY_POLICY,
+                },
+                {
+                  href: ROUTES.PUBLIC.TERMS,
+                  label: UI_LABELS.FOOTER.TERMS_OF_SERVICE,
+                },
+                {
+                  href: ROUTES.PUBLIC.COOKIE_POLICY,
+                  label: UI_LABELS.FOOTER.COOKIE_POLICY,
+                },
+                {
+                  href: ROUTES.PUBLIC.REFUND_POLICY,
+                  label: UI_LABELS.FOOTER.REFUND_POLICY,
+                },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`${colors.footer.text} ${colors.footer.textHover}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
+        {/* Bottom row */}
         <div
-          className={`border-t ${colors.footer.border} mt-8 pt-6 text-center text-sm ${colors.footer.copyright}`}
+          className={`border-t ${colors.footer.border} mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm ${colors.footer.copyright}`}
         >
-          {UI_LABELS.FOOTER.COPYRIGHT.replace(
-            "{year}",
-            new Date().getFullYear().toString(),
-          ).replace("{brand}", SITE_CONFIG.brand.name)}
+          <span>
+            {UI_LABELS.FOOTER.COPYRIGHT.replace(
+              "{year}",
+              new Date().getFullYear().toString(),
+            ).replace("{brand}", SITE_CONFIG.brand.name)}
+          </span>
+          <span>{UI_LABELS.FOOTER.MADE_IN}</span>
         </div>
       </div>
     </footer>

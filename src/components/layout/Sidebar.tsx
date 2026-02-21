@@ -349,14 +349,11 @@ export default function Sidebar({
                           }
                         `}
                         >
-                          <svg
-                            className={`w-4 h-4 ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                          <span
+                            className={`flex items-center ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
                           >
                             {item.icon}
-                          </svg>
+                          </span>
                         </div>
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
@@ -653,14 +650,11 @@ export default function Sidebar({
                         }
                       `}
                       >
-                        <svg
-                          className={`w-4 h-4 ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                        <span
+                          className={`flex items-center ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
                         >
                           {item.icon}
-                        </svg>
+                        </span>
                       </div>
                       <span
                         className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
