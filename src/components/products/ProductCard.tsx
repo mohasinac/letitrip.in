@@ -21,6 +21,7 @@ interface ProductCardProps {
     | "isAuction"
     | "currentBid"
     | "isPromoted"
+    | "slug"
   >;
   className?: string;
 }
@@ -34,7 +35,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
 
   return (
     <Link
-      href={`${ROUTES.PUBLIC.PRODUCTS}/${product.id}`}
+      href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
       className={`group block ${themed.bgPrimary} ${borderRadius.lg} overflow-hidden hover:shadow-xl transition-all duration-300 ${isOutOfStock ? "opacity-70" : ""} ${className}`}
     >
       {/* Image */}

@@ -1,6 +1,18 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
-import { THEME_CONSTANTS } from "@/constants";
+import {
+  THEME_CONSTANTS,
+  generateMetadata as genMetadata,
+  SEO_CONFIG,
+} from "@/constants";
 import { FAQPageContent } from "@/components/faq";
+
+export const metadata: Metadata = genMetadata({
+  title: SEO_CONFIG.pages.faqs.title,
+  description: SEO_CONFIG.pages.faqs.description,
+  keywords: [...SEO_CONFIG.pages.faqs.keywords],
+  path: "/faqs",
+});
 
 export default function FAQPage() {
   return (

@@ -4,6 +4,7 @@ import { UserTabs } from "@/components";
 export const metadata = {
   title: "My Account - LetItRip",
   description: "Manage your account, orders, wishlist, and settings",
+  robots: { index: false, follow: false },
 };
 
 interface UserLayoutProps {

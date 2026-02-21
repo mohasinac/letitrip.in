@@ -20,6 +20,9 @@ export interface ProductDocument {
   title: string;
   description: string;
   slug?: string; // SEO-friendly URL slug (e.g. "vintage-camera-1700000000000")
+  seoTitle?: string; // User-override SEO title (max 60 chars)
+  seoDescription?: string; // User-override SEO description (max 160 chars)
+  seoKeywords?: string[]; // User-override SEO keywords (max 10)
   category: string;
   subcategory?: string;
   brand?: string;
@@ -176,6 +179,10 @@ export const PRODUCT_PUBLIC_FIELDS = [
   "currentBid",
   "bidCount",
   "isPromoted",
+  "slug",
+  "seoTitle",
+  "seoDescription",
+  "seoKeywords",
   "createdAt",
 ] as const;
 
@@ -198,6 +205,9 @@ export const PRODUCT_UPDATABLE_FIELDS = [
   "shippingInfo",
   "returnPolicy",
   "pickupAddressId",
+  "seoTitle",
+  "seoDescription",
+  "seoKeywords",
 ] as const;
 
 // ============================================

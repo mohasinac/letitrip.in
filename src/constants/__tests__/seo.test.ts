@@ -5,7 +5,14 @@
  * objects for all supported options.
  */
 
-import { generateMetadata } from "../seo";
+import {
+  generateMetadata,
+  generateProductMetadata,
+  generateCategoryMetadata,
+  generateBlogMetadata,
+  generateAuctionMetadata,
+  generateSearchMetadata,
+} from "../seo";
 
 describe("generateMetadata()", () => {
   it("sets title, description, openGraph, twitter, and canonical", () => {
@@ -84,5 +91,137 @@ describe("generateMetadata()", () => {
   it("includes twitter card type summary_large_image", () => {
     const meta = generateMetadata({});
     expect((meta.twitter as { card: string }).card).toBe("summary_large_image");
+  });
+});
+
+describe("generateProductMetadata()", () => {
+  const base = {
+    title: "Running Shoes",
+    description: "Lightweight running shoes for all terrains.",
+    keywords: ["shoes", "running"],
+    slug: "running-shoes-123",
+    price: 1999,
+    currency: "INR",
+    inStock: true,
+  };
+
+  it("includes product title in metadata title", () => {
+    const meta = generateProductMetadata(base);
+    expect(meta.title as string).toContain("Running Shoes");
+  });
+
+  it("sets canonical URL to /products/<slug>", () => {
+    const meta = generateProductMetadata(base);
+    expect((meta.alternates as { canonical: string }).canonical).toMatch(
+      /\/products\/running-shoes-123$/,
+    );
+  });
+
+  it("sets openGraph type to product", () => {
+    const meta = generateProductMetadata(base);
+    expect((meta.openGraph as Record<string, unknown>).type).toBe("website");
+  });
+
+  it("sets description from input", () => {
+    const meta = generateProductMetadata(base);
+    expect(meta.description).toBe(base.description);
+  });
+});
+
+describe("generateCategoryMetadata()", () => {
+  const cat = {
+    name: "Electronics",
+    slug: "electronics",
+    description: "All electronic products",
+    seoTitle: "Electronics - LetItRip",
+    seoDescription: "Shop electronics online",
+    seoKeywords: ["electronics", "gadgets"],
+  };
+
+  it("uses seoTitle when provided", () => {
+    const meta = generateCategoryMetadata(cat);
+    expect(meta.title as string).toContain("Electronics - LetItRip");
+  });
+
+  it("falls back to name when seoTitle not provided", () => {
+    const meta = generateCategoryMetadata({
+      name: "Books",
+      slug: "books",
+      description: "Books",
+    });
+    expect(meta.title as string).toContain("Books");
+  });
+
+  it("sets canonical to /categories/<slug>", () => {
+    const meta = generateCategoryMetadata(cat);
+    expect((meta.alternates as { canonical: string }).canonical).toMatch(
+      /\/categories\/electronics$/,
+    );
+  });
+});
+
+describe("generateBlogMetadata()", () => {
+  const post = {
+    title: "Top 10 Tips",
+    slug: "top-10-tips",
+    excerpt: "Ten essential tips for online shoppers.",
+    publishedAt: new Date("2024-01-15"),
+    updatedAt: new Date("2024-02-01"),
+    authorName: "Jane Doe",
+  };
+
+  it("includes post title", () => {
+    const meta = generateBlogMetadata(post);
+    expect(meta.title as string).toContain("Top 10 Tips");
+  });
+
+  it("sets canonical to /blog/<slug>", () => {
+    const meta = generateBlogMetadata(post);
+    expect((meta.alternates as { canonical: string }).canonical).toMatch(
+      /\/blog\/top-10-tips$/,
+    );
+  });
+
+  it("sets openGraph type to article", () => {
+    const meta = generateBlogMetadata(post);
+    expect((meta.openGraph as { type: string }).type).toBe("article");
+  });
+});
+
+describe("generateAuctionMetadata()", () => {
+  const auction = {
+    title: "Vintage Watch",
+    slug: "vintage-watch-abc",
+    description: "Rare vintage watch from 1950.",
+    mainImage: "https://cdn.example.com/watch.jpg",
+  };
+
+  it("prefixes title with Auction:", () => {
+    const meta = generateAuctionMetadata(auction);
+    expect(meta.title as string).toMatch(/Auction:/);
+  });
+
+  it("sets canonical to /auctions/<slug>", () => {
+    const meta = generateAuctionMetadata(auction);
+    expect((meta.alternates as { canonical: string }).canonical).toMatch(
+      /\/auctions\/vintage-watch-abc$/,
+    );
+  });
+});
+
+describe("generateSearchMetadata()", () => {
+  it("includes query in title", () => {
+    const meta = generateSearchMetadata("shoes");
+    expect(meta.title as string).toContain("shoes");
+  });
+
+  it("sets noIndex", () => {
+    const meta = generateSearchMetadata("anything");
+    expect(meta.robots).toEqual({ index: false, follow: false });
+  });
+
+  it("handles empty query gracefully", () => {
+    const meta = generateSearchMetadata("");
+    expect(meta.title).toBeTruthy();
   });
 });

@@ -18,7 +18,7 @@ import {
   PRODUCT_COLLECTION,
   PRODUCT_FIELDS,
 } from "@/db/schema";
-import { generateUniqueId } from "@/utils";
+import { generateUniqueId, slugify } from "@/utils";
 import { DatabaseError } from "@/lib/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
@@ -65,6 +65,8 @@ class ProductRepository extends BaseRepository<ProductDocument> {
 
     const productData: Omit<ProductDocument, "id"> = {
       ...input,
+      // Auto-generate slug from title if not provided
+      slug: input.slug || `${slugify(input.title)}-${Date.now()}`,
       availableQuantity: input.stockQuantity, // Use stockQuantity for initial availableQuantity
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -111,6 +113,27 @@ class ProductRepository extends BaseRepository<ProductDocument> {
    */
   async findByCategory(category: string): Promise<ProductDocument[]> {
     return this.findBy(PRODUCT_FIELDS.CATEGORY, category);
+  }
+
+  /**
+   * Find a product by its SEO slug
+   * Returns undefined if not found
+   */
+  async findBySlug(slug: string): Promise<ProductDocument | undefined> {
+    const docs = await this.findBy(PRODUCT_FIELDS.SLUG, slug);
+    return docs[0] as ProductDocument | undefined;
+  }
+
+  /**
+   * Find a product by its ID or slug — tries slug first, then falls back to ID lookup
+   */
+  async findByIdOrSlug(idOrSlug: string): Promise<ProductDocument | undefined> {
+    // Try slug first (slug format is always lowercase-hyphenated)
+    const bySlug = await this.findBySlug(idOrSlug);
+    if (bySlug) return bySlug;
+    // Fall back to ID
+    const byId = await this.findById(idOrSlug);
+    return byId ?? undefined;
   }
 
   /**

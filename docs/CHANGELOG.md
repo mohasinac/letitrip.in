@@ -9,6 +9,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 15 — SEO: Full-Stack Coverage
+
+**Goal:** Complete SEO coverage — sitemap, robots, JSON-LD structured data, product slug URLs, per-page metadata, and noIndex for private routes.
+
+#### Added
+
+- `src/app/sitemap.ts` — dynamic `MetadataRoute.Sitemap`; fetches published products + active categories from Firestore via Admin SDK; static public pages included with correct `changeFrequency` and `priority` values; revalidates hourly.
+- `src/app/robots.ts` — `MetadataRoute.Robots` with `disallow` for `/admin/`, `/api/`, `/seller/`, `/user/`, `/auth/`, `/checkout/`, `/cart/`, `/demo/`; blocks GPTBot/ChatGPT-User/CCBot/Google-Extended; exposes sitemap URL.
+- `src/app/opengraph-image.tsx` — default edge-runtime OG image (1200×630) with gradient background and LetItRip branding using `ImageResponse`.
+- `src/lib/seo/json-ld.ts` — 9 JSON-LD helper functions: `productJsonLd`, `reviewJsonLd`, `aggregateRatingJsonLd`, `breadcrumbJsonLd`, `faqJsonLd`, `blogPostJsonLd`, `organizationJsonLd`, `searchBoxJsonLd`, `auctionJsonLd`.
+- `src/lib/seo/index.ts` — barrel re-exports from `./json-ld`.
+- `src/lib/seo/__tests__/json-ld.test.ts` — 18 tests covering all JSON-LD helpers.
+- `src/app/products/[slug]/` — new route segment replacing `[id]`; params renamed to `slug`; `useApiQuery` key and endpoint use `slug`.
+- `src/app/products/[slug]/layout.tsx` — server `generateMetadata` using `productRepository.findByIdOrSlug(slug)`; outputs per-product title, description, OG image, and canonical URL.
+- `src/app/products/layout.tsx` — static metadata for products list page.
+- `src/app/auctions/layout.tsx` — static metadata for auctions list page.
+- `src/app/categories/layout.tsx` — static metadata for categories list page.
+- `src/app/blog/layout.tsx` — static metadata for blog list page.
+- `src/app/search/layout.tsx` — metadata with `noIndex: true` for search results.
+- `src/app/contact/layout.tsx` — static contact page metadata.
+- `src/app/promotions/layout.tsx` — static promotions page metadata.
+- `src/app/sellers/layout.tsx` — static sellers directory metadata.
+- `src/app/checkout/layout.tsx` — noIndex layout for checkout flow.
+- `src/app/cart/layout.tsx` — noIndex layout for cart.
+- `ROUTES.PUBLIC.PRODUCT_DETAIL(slugOrId)` — new helper for canonical product URLs.
+- SEO types to `src/constants/seo.ts`: `ProductSeoInput`, `CategorySeoInput`, `BlogSeoInput`, `AuctionSeoInput`.
+- 5 new metadata generator functions: `generateProductMetadata`, `generateCategoryMetadata`, `generateBlogMetadata`, `generateAuctionMetadata`, `generateSearchMetadata`.
+- `src/db/schema/products.ts` — `seoTitle?`, `seoDescription?`, `seoKeywords?` added to `ProductDocument`; added to `PRODUCT_PUBLIC_FIELDS` and `PRODUCT_UPDATABLE_FIELDS`.
+- `src/db/schema/field-names.ts` — `PRODUCT_FIELDS.SEO_TITLE`, `.SEO_DESCRIPTION`, `.SEO_KEYWORDS`.
+- `productRepository.findBySlug(slug)` — queries by `PRODUCT_FIELDS.SLUG`.
+- `productRepository.findByIdOrSlug(idOrSlug)` — slug-first fallback to ID.
+- Auto-slug on product create: `slug: input.slug || slugify(title) + '-' + Date.now()`.
+
+#### Changed
+
+- `src/app/page.tsx` — added `export const metadata` using `SEO_CONFIG.pages.home`.
+- `src/app/faqs/page.tsx` — added `export const metadata` using `SEO_CONFIG.pages.faqs`.
+- `src/app/admin/layout.tsx` — added `robots: { index: false, follow: false }`.
+- `src/app/seller/layout.tsx` — added `robots: { index: false, follow: false }`.
+- `src/app/user/layout.tsx` — added `robots: { index: false, follow: false }`.
+- `src/app/api/products/[id]/route.ts` — GET uses `productRepository.findByIdOrSlug(id)` (transparent backward-compat for old ID links).
+- `src/components/products/ProductCard.tsx` — `href` uses `ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)`.
+- `src/constants/seo.ts` — `generateAuctionMetadata` path fixed from `/products/${slug}` → `/auctions/${slug}`; added `blog`, `faqs`, `about`, `contact`, `sellers` page defaults.
+- `src/constants/__tests__/seo.test.ts` — extended with 20 new tests for all 5 new generator functions.
+
+#### Deleted
+
+- `src/app/products/[id]/page.tsx` — replaced by `src/app/products/[slug]/page.tsx`.
+
+---
+
 ### Phase 14 — Code Deduplication
 
 **Goal:** Remove duplicate components, merge redundant lib files, consolidate API routes.

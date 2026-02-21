@@ -13,6 +13,8 @@ export const ROUTES = {
     FAQ_CATEGORY: (category: string) => `/faqs/${category}`,
     PROFILE: (userId: string) => `/profile/${userId}`,
     PRODUCTS: "/products",
+    /** Canonical product detail URL — pass `product.slug ?? product.id` */
+    PRODUCT_DETAIL: (slugOrId: string) => `/products/${slugOrId}`,
     AUCTIONS: "/auctions",
     AUCTION_DETAIL: (id: string) => `/auctions/${id}`,
     SELLERS: "/sellers",

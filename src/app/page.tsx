@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import {
   HeroCarousel,
   WelcomeSection,
   TrustFeaturesSection,
 } from "@/components/homepage";
+import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
+
+export const metadata: Metadata = genMetadata({
+  title: SEO_CONFIG.pages.home.title,
+  description: SEO_CONFIG.pages.home.description,
+  keywords: [...SEO_CONFIG.pages.home.keywords],
+  path: "/",
+});
 
 // Below-fold sections — dynamically imported to reduce initial JS bundle
 const TopCategoriesSection = dynamic(

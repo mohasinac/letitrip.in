@@ -133,6 +133,9 @@ export const PRODUCT_FIELDS = {
   IS_PROMOTED: "isPromoted",
   PROMOTION_END_DATE: "promotionEndDate",
   PICKUP_ADDRESS_ID: "pickupAddressId",
+  SEO_TITLE: "seoTitle",
+  SEO_DESCRIPTION: "seoDescription",
+  SEO_KEYWORDS: "seoKeywords",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
 

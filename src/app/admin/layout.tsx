@@ -5,6 +5,7 @@ import { THEME_CONSTANTS } from "@/constants";
 export const metadata = {
   title: "Admin Dashboard - LetItRip",
   description: "Admin panel for managing the LetItRip platform",
+  robots: { index: false, follow: false },
 };
 
 interface AdminLayoutProps {

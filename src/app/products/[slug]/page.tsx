@@ -21,16 +21,16 @@ interface ProductResponse {
 }
 
 interface ProductDetailPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
-  const { id } = use(params);
+  const { slug } = use(params);
 
   const { data, isLoading, error } = useApiQuery<ProductResponse>({
-    queryKey: ["product", id],
-    queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(id)),
-    enabled: Boolean(id),
+    queryKey: ["product", slug],
+    queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(slug)),
+    enabled: Boolean(slug),
   });
 
   const product = data?.data;
@@ -62,7 +62,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         className={`min-h-screen ${themed.bgSecondary} flex items-center justify-center`}
       >
         <div className="text-center py-16 px-4">
-          <span className="text-6xl mb-4 block">🔍</span>
+          <span className="text-6xl mb-4 block">­ƒöì</span>
           <h1 className={`text-2xl font-bold mb-2 ${themed.textPrimary}`}>
             {UI_LABELS.PRODUCT_DETAIL.PRODUCT_NOT_FOUND}
           </h1>
@@ -73,7 +73,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             href={ROUTES.PUBLIC.PRODUCTS}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
           >
-            ← {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
+            ÔåÉ {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
           </Link>
         </div>
       </div>
@@ -94,7 +94,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             href={ROUTES.PUBLIC.PRODUCTS}
             className={`${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
           >
-            ← {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
+            ÔåÉ {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
           </Link>
           {product.category && (
             <>

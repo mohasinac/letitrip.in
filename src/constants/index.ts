@@ -39,7 +39,22 @@ export type { ThemeMode } from "./theme";
 export { SITE_CONFIG } from "./site";
 
 // SEO configuration
-export { SEO_CONFIG, generateMetadata, generateProfileMetadata } from "./seo";
+export {
+  SEO_CONFIG,
+  generateMetadata,
+  generateProfileMetadata,
+  generateProductMetadata,
+  generateCategoryMetadata,
+  generateBlogMetadata,
+  generateAuctionMetadata,
+  generateSearchMetadata,
+} from "./seo";
+export type {
+  ProductSeoInput,
+  CategorySeoInput,
+  BlogSeoInput,
+  AuctionSeoInput,
+} from "./seo";
 
 // Navigation constants
 export {

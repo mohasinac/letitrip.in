@@ -114,6 +114,36 @@ export const SEO_CONFIG = {
         keywords: ["user management", "admin", "users"],
       },
     },
+    blog: {
+      title: "Blog - News, Tips & Updates",
+      description:
+        "Read the latest news, shopping tips, and platform updates from LetItRip.",
+      keywords: ["blog", "news", "tips", "updates", "e-commerce"],
+    },
+    faqs: {
+      title: "FAQs - Help & Support",
+      description:
+        "Find answers to frequently asked questions about LetItRip — shopping, selling, auctions, and more.",
+      keywords: ["faq", "help", "support", "questions", "answers"],
+    },
+    about: {
+      title: "About LetItRip",
+      description:
+        "Learn about LetItRip — our mission, team, and commitment to making online buying and selling better.",
+      keywords: ["about", "mission", "company", "team"],
+    },
+    contact: {
+      title: "Contact Us - LetItRip",
+      description:
+        "Get in touch with the LetItRip support team. We're here to help.",
+      keywords: ["contact", "support", "help", "email"],
+    },
+    sellers: {
+      title: "Seller Directory - LetItRip",
+      description:
+        "Browse our network of trusted sellers on LetItRip. Discover unique shops and products.",
+      keywords: ["sellers", "shops", "directory", "marketplace"],
+    },
   },
 } as const;
 
@@ -213,5 +243,167 @@ export function generateProfileMetadata(user: {
     image: profileImage,
     path: `/profile/${user.uid}`,
     type: "profile",
+  });
+}
+
+// ─── Typed input shapes (lightweight, schema-compatible) ─────────────────────
+
+export interface ProductSeoInput {
+  title: string;
+  description: string;
+  slug: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+  mainImage?: string;
+  category?: string;
+}
+
+export interface CategorySeoInput {
+  name: string;
+  slug: string;
+  description?: string;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+    ogImage?: string;
+  };
+}
+
+export interface BlogSeoInput {
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  authorName?: string;
+}
+
+export interface AuctionSeoInput {
+  title: string;
+  slug: string;
+  description: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  mainImage?: string;
+  auctionEndDate?: Date;
+}
+
+// ─── Resource-specific metadata generators ───────────────────────────────────
+
+/**
+ * Generate metadata for a product detail page
+ * Prefers seoTitle/seoDescription over auto-generated values
+ */
+export function generateProductMetadata(product: ProductSeoInput): Metadata {
+  const title = product.seoTitle || product.title;
+  const description =
+    product.seoDescription ||
+    product.description.slice(0, 160) ||
+    `Buy ${product.title} on LetItRip.`;
+  const keywords = product.seoKeywords || [
+    product.title,
+    ...(product.category ? [product.category] : []),
+    "buy",
+    "shop",
+    "LetItRip",
+  ];
+
+  return generateMetadata({
+    title,
+    description,
+    keywords,
+    image: product.mainImage || SEO_CONFIG.defaultImage,
+    path: `/products/${product.slug}`,
+    type: "website",
+  });
+}
+
+/**
+ * Generate metadata for a category page
+ * Prefers seo.title/seo.description over auto-generated values
+ */
+export function generateCategoryMetadata(category: CategorySeoInput): Metadata {
+  const title = category.seo?.title || `${category.name} - LetItRip`;
+  const description =
+    category.seo?.description ||
+    category.description ||
+    `Shop ${category.name} products on LetItRip — great deals from multiple sellers.`;
+  const keywords = category.seo?.keywords || [
+    category.name,
+    "products",
+    "shop",
+    "LetItRip",
+  ];
+
+  return generateMetadata({
+    title,
+    description,
+    keywords,
+    image: category.seo?.ogImage || SEO_CONFIG.defaultImage,
+    path: `/categories/${category.slug}`,
+    type: "website",
+  });
+}
+
+/**
+ * Generate metadata for a blog post page
+ * Sets publishedTime/modifiedTime in OG tags
+ */
+export function generateBlogMetadata(post: BlogSeoInput): Metadata {
+  const title = post.metaTitle || post.title;
+  const description = post.metaDescription || post.excerpt;
+
+  return generateMetadata({
+    title,
+    description,
+    image: post.coverImage || SEO_CONFIG.defaultImage,
+    path: `/blog/${post.slug}`,
+    type: "article",
+    author: post.authorName,
+    publishedTime: post.publishedAt?.toISOString(),
+    modifiedTime: post.updatedAt?.toISOString(),
+  });
+}
+
+/**
+ * Generate metadata for an auction detail page
+ */
+export function generateAuctionMetadata(auction: AuctionSeoInput): Metadata {
+  const title = auction.seoTitle || `Auction: ${auction.title}`;
+  const description =
+    auction.seoDescription ||
+    auction.description.slice(0, 160) ||
+    `Bid on ${auction.title} — live auction on LetItRip.`;
+
+  return generateMetadata({
+    title,
+    description,
+    image: auction.mainImage || SEO_CONFIG.defaultImage,
+    path: `/auctions/${auction.slug}`,
+    type: "website",
+  });
+}
+
+/**
+ * Generate metadata for the search results page
+ * Includes the active search query in the page title
+ */
+export function generateSearchMetadata(q: string, category?: string): Metadata {
+  const queryLabel = q ? `"${q}"` : "All Products";
+  const categoryLabel = category ? ` in ${category}` : "";
+  const title = `Search: ${queryLabel}${categoryLabel}`;
+  const description = `Search results for ${queryLabel}${categoryLabel} on LetItRip. Find great deals from multiple sellers.`;
+
+  return generateMetadata({
+    title,
+    description,
+    keywords: [q, ...(category ? [category] : []), "search", "LetItRip"],
+    path: q ? `/search?q=${encodeURIComponent(q)}` : "/search",
+    noIndex: true, // Search results pages should not be indexed
   });
 }

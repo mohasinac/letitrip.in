@@ -5,6 +5,7 @@ import { THEME_CONSTANTS } from "@/constants";
 export const metadata = {
   title: "Seller Dashboard - LetItRip",
   description: "Manage your listings, auctions, and sales on LetItRip",
+  robots: { index: false, follow: false },
 };
 
 interface SellerLayoutProps {

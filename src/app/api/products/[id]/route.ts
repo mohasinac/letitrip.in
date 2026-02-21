@@ -57,8 +57,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    // Fetch product from repository
-    const product = await productRepository.findById(id);
+    // Fetch product by ID or slug (supports both ID-based and slug-based lookup)
+    const product = await productRepository.findByIdOrSlug(id);
 
     // Handle not found
     if (!product) {
