@@ -335,6 +335,15 @@ export function DataTable<T extends Record<string, any>>({
                     <th
                       key={column.key}
                       scope="col"
+                      aria-sort={
+                        column.sortable
+                          ? sortKey === column.key
+                            ? sortDirection === "asc"
+                              ? "ascending"
+                              : "descending"
+                            : "none"
+                          : undefined
+                      }
                       className={`
                       px-6 py-3 text-left text-xs font-medium ${THEME_CONSTANTS.themed.textSecondary} uppercase tracking-wider
                       ${column.sortable ? `cursor-pointer select-none ${THEME_CONSTANTS.themed.hover}` : ""}

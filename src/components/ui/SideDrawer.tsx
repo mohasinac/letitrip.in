@@ -21,6 +21,15 @@ interface SideDrawerProps {
   side?: "left" | "right";
 }
 
+/** Selector for all keyboard-focusable elements */
+const FOCUSABLE_SELECTOR =
+  'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+function getFocusableElements(container: HTMLElement | null): Element[] {
+  if (!container) return [];
+  return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR));
+}
+
 export default function SideDrawer({
   isOpen,
   onClose,
@@ -33,6 +42,9 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  // Store the element that was focused before the drawer opened so we can
+  // restore focus when it closes (WCAG 2.4.3 focus order requirement).
+  const triggerRef = useRef<Element | null>(null);
 
   const attemptClose = useCallback(() => {
     if (isDirty && (mode === "create" || mode === "edit")) {
@@ -52,15 +64,60 @@ export default function SideDrawer({
   }, []);
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      if (e.key === "Escape") {
         attemptClose();
+        return;
+      }
+
+      // Focus trap: keep Tab / Shift+Tab cycling inside the drawer
+      if (e.key === "Tab" && drawerRef.current) {
+        const focusable = getFocusableElements(drawerRef.current);
+        if (focusable.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = focusable[0] as HTMLElement;
+        const last = focusable[focusable.length - 1] as HTMLElement;
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, attemptClose]);
+
+  // Save / restore focus on open / close (WCAG 2.4.3)
+  useEffect(() => {
+    if (isOpen) {
+      // Save the element that currently has focus so we can restore it later
+      triggerRef.current = document.activeElement;
+      // Move focus to the first focusable element inside the drawer
+      requestAnimationFrame(() => {
+        const focusable = getFocusableElements(drawerRef.current);
+        if (focusable.length > 0) {
+          (focusable[0] as HTMLElement).focus();
+        }
+      });
+    } else {
+      // Return focus to the trigger element when the drawer closes
+      if (triggerRef.current && "focus" in triggerRef.current) {
+        (triggerRef.current as HTMLElement).focus();
+      }
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {

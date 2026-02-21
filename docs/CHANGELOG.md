@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 10 — Gestures + Accessibility
+
+**Goal:** Every interactive component works correctly with touch gestures, keyboard navigation, and screen readers.
+
+#### Added
+
+- `src/hooks/useLongPress.ts` — new hook; fires `callback` after configurable hold duration (`ms`, default 500 ms); returns `{ onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd }`; no-op on quick tap; safe on unmount.
+- `src/hooks/usePullToRefresh.ts` — new hook; attaches touch listeners to `containerRef`; fires `onRefresh` when pull distance exceeds `threshold` (default 80 px); exposes `isPulling` and `progress (0–1)` for a loading indicator.
+- `src/hooks/__tests__/useLongPress.test.ts` — tests: fires after hold duration, no-op on quick tap (mouse & touch), no-op after unmount.
+- `src/hooks/__tests__/usePullToRefresh.test.ts` — tests: calls `onRefresh` past threshold, skips when released early, exposes `containerRef`.
+- `THEME_CONSTANTS.TABLE.PAGINATION_LABEL` constant — `"Pagination"` (used by `TablePagination` role label).
+- `UI_LABELS.HERO_CAROUSEL.ARIA_LABEL` — `"Featured promotions carousel"`.
+- `UI_LABELS.HERO_CAROUSEL.SLIDE_OF` — `(n, total) => \`Slide ${n} of ${total}\``(for`aria-live` region).
+
+#### Changed
+
+- `src/hooks/index.ts` — exported `useLongPress`, `usePullToRefresh`, `UsePullToRefreshOptions`, `UsePullToRefreshReturn`.
+- `src/components/ui/SideDrawer.tsx` — **focus trap**: Tab/Shift+Tab cycle stays inside open drawer; first focusable gets focus on open; trigger element restored on close (WCAG 2.4.3). Added `FOCUSABLE_SELECTOR` constant and `getFocusableElements()` helper.
+- `src/components/ui/Tabs.tsx` — `TabsList`: `onKeyDown` cycles focused tab via `←`/`→` Arrow keys. `TabsTrigger`: gains `id={`tab-${value}`}` so `TabsContent`'s `aria-labelledby` resolves correctly.
+- `src/components/ui/FilterFacetSection.tsx` — `↑`/`↓` keyboard navigation between checkboxes in the options list.
+- `src/components/ui/TablePagination.tsx` — outer div gains `role="navigation"` and `aria-label={UI_LABELS.TABLE.PAGINATION_LABEL}`.
+- `src/components/admin/DataTable.tsx` — sortable `<th>` elements gain `aria-sort` (`"ascending"` | `"descending"` | `"none"`).
+- `src/components/homepage/HeroCarousel.tsx` — `useSwipe` wired for swipe-left/swipe-right slide navigation; `←`/`→` keyboard navigation; `Space` toggles autoplay; autoplay paused on `onFocus` and restored on `onBlur`; `prefers-reduced-motion` disables autoplay; `aria-roledescription="carousel"`, `aria-label`, `tabIndex={0}`, `aria-live="polite"` region for slide change announcements.
+- `tailwind.config.js` — added `"slide-in": "slideInLeft 0.2s ease-out"` animation alias.
+- `src/components/ui/__tests__/SideDrawer.test.tsx` — Phase 10 swipe assertions: registers correct swipe handler per `side` prop; invoking callback triggers `onClose`.
+- `src/components/homepage/__tests__/HeroCarousel.test.tsx` — Phase 10 assertions: `aria-roledescription="carousel"`, `aria-label`, `aria-live` region, `ArrowRight`/`ArrowLeft` keyboard navigation, nav dots are `<button>` elements. Added `useSwipe`/`useMediaQuery` to hook mocks.
+
+#### Technical Notes
+
+- `globals.css` already contained a compliant `@media (prefers-reduced-motion: reduce)` rule — no change needed.
+- `ActiveFilterChips` and `FilterDrawer` ARIA attributes were already correct; no changes needed.
+- `SideDrawer` already had `role="dialog"`, `aria-modal`, `aria-labelledby`, Esc close, and `useSwipe` from Phase 2; Phase 10 added the focus lifecycle on top.
+
+---
+
 ### Phase 9 — Inline Create Drawers
 
 **Goal:** Add inline-create `SideDrawer` flows to `CategorySelectorCreate` and `AddressSelectorCreate` selectors; wire both into `ProductForm` to replace the plain category text field and add pickup address selection.

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useSwipe, useMediaQuery } from "@/hooks";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
@@ -13,6 +13,11 @@ export function HeroCarousel() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useMediaQuery(
+    "(prefers-reduced-motion: reduce)",
+  );
 
   const { data, isLoading } = useApiQuery<CarouselSlideDocument[]>({
     queryKey: ["carousel", "active"],
@@ -30,16 +35,30 @@ export function HeroCarousel() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Auto-advance carousel
+  const goNext = useCallback(
+    () => setCurrentSlide((prev) => (prev + 1) % slides.length),
+    [slides.length],
+  );
+
+  const goPrev = useCallback(
+    () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length),
+    [slides.length],
+  );
+
+  // Auto-advance carousel (pause on focus/hover and when prefers-reduced-motion)
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (slides.length <= 1 || isPaused || prefersReducedMotion) return;
 
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // 5 seconds per slide
-
+    const interval = setInterval(goNext, 5000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides.length, isPaused, prefersReducedMotion, goNext]);
+
+  // Swipe gestures
+  useSwipe(sectionRef, {
+    onSwipeLeft: goNext,
+    onSwipeRight: goPrev,
+    minSwipeDistance: 60,
+  });
 
   if (isLoading) {
     return (
@@ -90,8 +109,31 @@ export function HeroCarousel() {
     };
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") goNext();
+    if (e.key === "ArrowLeft") goPrev();
+    // Space toggles autoplay pause
+    if (e.key === " ") {
+      e.preventDefault();
+      setIsPaused((p) => !p);
+    }
+  };
+
   return (
-    <section className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden"
+      aria-roledescription="carousel"
+      aria-label={UI_LABELS.HERO_CAROUSEL.ARIA_LABEL}
+      onKeyDown={handleKeyDown}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+      tabIndex={0}
+    >
+      {/* Screen-reader live region — announces slide changes */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {UI_LABELS.HERO_CAROUSEL.SLIDE_OF(currentSlide + 1, slides.length)}
+      </div>
       {/* Background Media */}
       <div className="absolute inset-0">
         {slide.media.type === "image" ? (
@@ -243,11 +285,7 @@ export function HeroCarousel() {
         <>
           <button
             className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
-            onClick={() =>
-              setCurrentSlide(
-                (prev) => (prev - 1 + slides.length) % slides.length,
-              )
-            }
+            onClick={goPrev}
             aria-label={UI_LABELS.HERO_CAROUSEL.PREV_SLIDE}
           >
             <svg
@@ -266,9 +304,7 @@ export function HeroCarousel() {
           </button>
           <button
             className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
-            onClick={() =>
-              setCurrentSlide((prev) => (prev + 1) % slides.length)
-            }
+            onClick={goNext}
             aria-label={UI_LABELS.HERO_CAROUSEL.NEXT_SLIDE}
           >
             <svg

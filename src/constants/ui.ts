@@ -76,6 +76,7 @@ export const UI_LABELS = {
     RESULTS: "results",
     NO_RESULTS: "No results found",
     LOAD_MORE: "Load 10 more",
+    PAGINATION_LABEL: "Pagination",
   },
 
   // Actions
@@ -1725,6 +1726,9 @@ export const UI_LABELS = {
     PREV_SLIDE: "Previous slide",
     NEXT_SLIDE: "Next slide",
     GO_TO_SLIDE: (n: number) => `Go to slide ${n}`,
+    ARIA_LABEL: "Featured promotions carousel",
+    SLIDE_OF: (current: number, total: number) =>
+      `Slide ${current} of ${total}`,
   },
 
   NOTIFICATIONS: {

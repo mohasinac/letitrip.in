@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 interface FacetOption {
@@ -73,6 +73,24 @@ export function FilterFacetSection({
     onChange(next);
   };
 
+  /** ↑/↓ keyboard navigation between checkboxes */
+  const handleOptionsKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    const checkboxes = Array.from(
+      e.currentTarget.querySelectorAll<HTMLInputElement>(
+        'input[type="checkbox"]',
+      ),
+    );
+    const idx = checkboxes.indexOf(document.activeElement as HTMLInputElement);
+    if (idx === -1) return;
+    e.preventDefault();
+    if (e.key === "ArrowDown") {
+      checkboxes[(idx + 1) % checkboxes.length].focus();
+    } else {
+      checkboxes[(idx - 1 + checkboxes.length) % checkboxes.length].focus();
+    }
+  };
+
   return (
     <div
       role="group"
@@ -115,7 +133,7 @@ export function FilterFacetSection({
       </button>
 
       {!isCollapsed && (
-        <div className="mt-2 space-y-1">
+        <div className="mt-2 space-y-1" onKeyDown={handleOptionsKeyDown}>
           {/* Inline search */}
           {searchable && options.length > pageSize && (
             <div className="mb-2">

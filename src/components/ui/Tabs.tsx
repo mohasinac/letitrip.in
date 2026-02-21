@@ -75,9 +75,28 @@ interface TabsListProps {
 export function TabsList({ children, className = "" }: TabsListProps) {
   const { themed } = THEME_CONSTANTS;
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    const tabs = Array.from(
+      e.currentTarget.querySelectorAll<HTMLButtonElement>(
+        '[role="tab"]:not([disabled])',
+      ),
+    );
+    const focused = document.activeElement as HTMLButtonElement;
+    const idx = tabs.indexOf(focused);
+    if (idx === -1) return;
+    e.preventDefault();
+    if (e.key === "ArrowRight") {
+      tabs[(idx + 1) % tabs.length].focus();
+    } else {
+      tabs[(idx - 1 + tabs.length) % tabs.length].focus();
+    }
+  };
+
   return (
     <div
       role="tablist"
+      onKeyDown={handleKeyDown}
       className={`
         inline-flex items-center gap-1 p-1 rounded-lg
         ${themed.bgSecondary}
@@ -109,6 +128,7 @@ export function TabsTrigger({
 
   return (
     <button
+      id={`tab-${value}`}
       role="tab"
       aria-selected={isSelected}
       aria-controls={`tabpanel-${value}`}

@@ -99,3 +99,11 @@ export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";
 // Phase 2: URL-driven list/table state
 export { useUrlTable } from "./useUrlTable";
 export type { UseUrlTableOptions } from "./useUrlTable";
+
+// Phase 10: Gestures + Accessibility
+export { useLongPress } from "./useLongPress";
+export { usePullToRefresh } from "./usePullToRefresh";
+export type {
+  UsePullToRefreshOptions,
+  UsePullToRefreshReturn,
+} from "./usePullToRefresh";

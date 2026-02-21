@@ -1,10 +1,12 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { HeroCarousel } from "../HeroCarousel";
 
-// Mock useApiQuery
+// Mock useApiQuery and Phase 10 hooks
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  useSwipe: jest.fn(), // no-op — swipe is tested via keyboard equivalents
+  useMediaQuery: jest.fn().mockReturnValue(false), // default: no reduced-motion preference
 }));
 
 // Mock Button component
@@ -383,6 +385,55 @@ describe("HeroCarousel", () => {
 
       expect(screen.queryByLabelText("Previous slide")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Next slide")).not.toBeInTheDocument();
+    });
+  });
+
+  // ====================================
+  // Accessibility — Phase 10
+  // ====================================
+  describe("Accessibility (Phase 10)", () => {
+    beforeEach(() => {
+      mockUseApiQuery.mockReturnValue({ data: mockSlides, isLoading: false });
+    });
+
+    it("has aria-roledescription='carousel' on the section", () => {
+      const { container } = render(<HeroCarousel />);
+      const section = container.querySelector("section");
+      expect(section).toHaveAttribute("aria-roledescription", "carousel");
+    });
+
+    it("has aria-label on the section", () => {
+      const { container } = render(<HeroCarousel />);
+      const section = container.querySelector("section");
+      expect(section).toHaveAttribute("aria-label");
+      expect(section!.getAttribute("aria-label")).toBeTruthy();
+    });
+
+    it("ArrowRight key advances to next slide", () => {
+      const { container } = render(<HeroCarousel />);
+      const section = container.querySelector("section")!;
+      fireEvent.keyDown(section, { key: "ArrowRight" });
+      expect(screen.getByAltText("Second Slide image")).toBeInTheDocument();
+    });
+
+    it("ArrowLeft key goes to previous slide (wraps to last)", () => {
+      const { container } = render(<HeroCarousel />);
+      const section = container.querySelector("section")!;
+      fireEvent.keyDown(section, { key: "ArrowLeft" });
+      expect(screen.getByAltText("Third Slide image")).toBeInTheDocument();
+    });
+
+    it("has an aria-live region for slide announcements", () => {
+      const { container } = render(<HeroCarousel />);
+      const live = container.querySelector("[aria-live]");
+      expect(live).toBeInTheDocument();
+      expect(live).toHaveAttribute("aria-live", "polite");
+    });
+
+    it("navigation dots are <button> elements with aria-label", () => {
+      render(<HeroCarousel />);
+      const dot1 = screen.getByLabelText("Go to slide 1");
+      expect(dot1.tagName).toBe("BUTTON");
     });
   });
 });

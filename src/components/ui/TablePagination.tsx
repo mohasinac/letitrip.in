@@ -57,6 +57,8 @@ export function TablePagination({
 
   return (
     <div
+      role="navigation"
+      aria-label={UI_LABELS.TABLE.PAGINATION_LABEL}
       className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${spacing.padding.md} border-t ${themed.border} ${className}`}
     >
       {/* Result count */}
