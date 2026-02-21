@@ -50,7 +50,8 @@ describe("AdminPageHeader", () => {
       />,
     );
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Sub Page")).toBeInTheDocument();
+    // "Sub Page" appears in both the breadcrumb trail and as the h2 title
+    expect(screen.getAllByText("Sub Page").length).toBeGreaterThanOrEqual(1);
     expect(
       screen.getByRole("navigation", { name: "Breadcrumb" }),
     ).toBeInTheDocument();

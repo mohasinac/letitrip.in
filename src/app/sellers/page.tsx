@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 
 const LABELS = UI_LABELS.SELLERS_PAGE;
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, typography, spacing, button } = THEME_CONSTANTS;
 
 export const metadata = {
   title: `Sell on ${SITE_CONFIG.brand.name}`,
@@ -41,16 +41,10 @@ export default function SellersPage() {
             {LABELS.SUBTITLE}
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
-            <Link
-              href={ROUTES.AUTH.REGISTER}
-              className="bg-white text-emerald-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-emerald-50 transition-colors shadow-lg"
-            >
+            <Link href={ROUTES.AUTH.REGISTER} className={button.ctaPrimary}>
               {LABELS.HERO_CTA}
             </Link>
-            <a
-              href="#how-it-works"
-              className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors"
-            >
+            <a href="#how-it-works" className={button.ctaOutline}>
               {LABELS.HERO_SECONDARY}
             </a>
           </div>
@@ -165,7 +159,7 @@ export default function SellersPage() {
           <h2 className="text-3xl font-bold mb-4">{LABELS.CTA_TITLE}</h2>
           <Link
             href={ROUTES.AUTH.REGISTER}
-            className="inline-block bg-white text-emerald-700 font-bold px-10 py-4 rounded-full text-lg hover:bg-emerald-50 transition-colors shadow-lg mt-4"
+            className={`inline-block mt-4 ${button.ctaPrimary}`}
           >
             {LABELS.CTA_BUTTON}
           </Link>

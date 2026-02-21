@@ -24,12 +24,12 @@ jest.mock("next/dynamic", () => {
 jest.mock("@/components/homepage", () => ({
   HeroCarousel: () => <div data-testid="hero-carousel" />,
   WelcomeSection: () => <div data-testid="welcome-section" />,
-  TrustIndicatorsSection: () => <div data-testid="trust-indicators" />,
+  TrustFeaturesSection: () => <div data-testid="trust-features" />,
   TopCategoriesSection: () => <div data-testid="top-categories" />,
   FeaturedProductsSection: () => <div data-testid="featured-products" />,
   FeaturedAuctionsSection: () => <div data-testid="featured-auctions" />,
   AdvertisementBanner: () => <div data-testid="ad-banner" />,
-  SiteFeaturesSection: () => <div data-testid="site-features" />,
+
   CustomerReviewsSection: () => <div data-testid="customer-reviews" />,
   WhatsAppCommunitySection: () => <div data-testid="whatsapp-community" />,
   FAQSection: () => <div data-testid="faq-section" />,
@@ -44,14 +44,14 @@ describe("Home Page", () => {
     // Static (above-fold) sections are available immediately
     expect(screen.getByTestId("hero-carousel")).toBeInTheDocument();
     expect(screen.getByTestId("welcome-section")).toBeInTheDocument();
-    expect(screen.getByTestId("trust-indicators")).toBeInTheDocument();
+    expect(screen.getByTestId("trust-features")).toBeInTheDocument();
 
     // Dynamic (below-fold) sections load asynchronously via React.lazy
     expect(await screen.findByTestId("top-categories")).toBeInTheDocument();
     expect(await screen.findByTestId("featured-products")).toBeInTheDocument();
     expect(await screen.findByTestId("featured-auctions")).toBeInTheDocument();
     expect(await screen.findByTestId("ad-banner")).toBeInTheDocument();
-    expect(await screen.findByTestId("site-features")).toBeInTheDocument();
+
     expect(await screen.findByTestId("customer-reviews")).toBeInTheDocument();
     expect(await screen.findByTestId("whatsapp-community")).toBeInTheDocument();
     expect(await screen.findByTestId("faq-section")).toBeInTheDocument();

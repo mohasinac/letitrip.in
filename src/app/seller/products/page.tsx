@@ -20,6 +20,7 @@ import {
   ProductForm,
   getProductTableColumns,
   EmptyState,
+  Badge,
 } from "@/components";
 import { Store } from "lucide-react";
 import type { AdminProduct } from "@/components";
@@ -38,6 +39,7 @@ import {
   SUCCESS_MESSAGES,
 } from "@/constants";
 import { apiClient } from "@/lib/api-client";
+import { formatCurrency } from "@/utils";
 
 const { input, themed } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.ADMIN.PRODUCTS;
@@ -248,6 +250,68 @@ export default function SellerProductsPage() {
           emptyTitle={LABELS.NO_PRODUCTS}
           emptyMessage={SELLER_LABELS.NO_PRODUCTS_SUBTITLE}
           externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(product) => (
+            <div
+              className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full`}
+            >
+              {product.mainImage ? (
+                <div className="aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                  <img
+                    src={product.mainImage}
+                    alt={product.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>
+                    📦
+                  </span>
+                </div>
+              )}
+              <div className="p-3 space-y-2">
+                <p
+                  className={`text-sm font-semibold truncate ${themed.textPrimary}`}
+                >
+                  {product.title}
+                </p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className={`text-sm font-bold ${themed.textPrimary}`}>
+                    {formatCurrency(product.price)}
+                  </p>
+                  <Badge
+                    variant={
+                      product.status === "published"
+                        ? "success"
+                        : product.status === "out_of_stock"
+                          ? "warning"
+                          : "default"
+                    }
+                    className="text-xs capitalize"
+                  >
+                    {product.status.replace(/_/g, " ")}
+                  </Badge>
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={() => openEdit(product)}
+                    className="flex-1 text-xs py-1.5 rounded-lg border border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                  >
+                    {UI_LABELS.ACTIONS.EDIT}
+                  </button>
+                  <button
+                    onClick={() => setDeleteTarget(product)}
+                    className="flex-1 text-xs py-1.5 rounded-lg border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  >
+                    {UI_LABELS.ACTIONS.DELETE}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         />
       )}
 

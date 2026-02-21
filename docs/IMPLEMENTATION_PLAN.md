@@ -1,4 +1,4 @@
-# Frontend Implementation Plan
+﻿# Frontend Implementation Plan
 
 > **Source:** Derived from `FRONTEND_REFACTOR_PLAN.md` audit (Feb 20, 2026)  
 > **Principle:** Each phase is independently shippable. Later phases depend on earlier ones. Tests are last.
@@ -28,6 +28,7 @@
 | **15** | SEO — full-stack coverage                      | M                      | 🟢 Additive + schema change       | ~30                       |
 | **16** | Newsletter admin management                    | N                      | 🟢 Additive                       | ~8                        |
 | **17** | Next.js 16 compatibility — async params        | Maintenance            | 🟢 Zero breaking                  | ~5                        |
+| **18** | Dedicated test phase                           | All phases 1–17        | 🟢 Non-breaking (tests only)      | ~90 test files            |
 
 ---
 
@@ -35,25 +36,26 @@
 
 > Update this table as work proceeds. One phase at a time — mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
 
-| Phase  | Status  | Started    | Completed  | Notes                                                                                                                                                                                           |
-| ------ | ------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1**  | ✅ Done | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                 |
-| **2**  | ✅ Done | 2026-02-21 | 2026-02-21 | 48 tests · 9 components/hooks · 0 TS errors                                                                                                                                                     |
-| **3**  | ✅ Done | 2026-02-21 | 2026-02-21 | 12 tests · externalPagination · SearchResultsSection Pagination                                                                                                                                 |
-| **4**  | ✅ Done | 2026-02-21 | 2026-02-21 | 7 admin pages · useUrlTable · server pagination · filter bars · FAQs data bug fixed · 0 TS errors                                                                                               |
-| **5**  | ✅ Done | 2026-02-21 | 2026-02-21 | products · search · auctions · blog · categories/[slug] · FilterDrawer · ActiveFilterChips                                                                                                      |
-| **6**  | ✅ Done | 2026-02-21 | 2026-02-21 | seller/products drawer · seller/orders · user/orders · CRUD drawers verified                                                                                                                    |
-| **7**  | ✅ Done | 2026-02-21 | 2026-02-21 | FAQ dynamic route · category tabs · FAQCategorySidebar URL update                                                                                                                               |
-| **8**  | ✅ Done | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite · EnhancedFooter deleted · lucide-react nav icons · Sidebar polish                                                                                                         |
-| **9**  | ✅ Done | 2026-02-21 | 2026-02-21 | CategorySelectorCreate · AddressSelectorCreate · ProductForm wired                                                                                                                              |
-| **10** | ✅ Done | 2026-02-21 | 2026-02-21 | useLongPress · usePullToRefresh · SideDrawer focus trap · Tabs keyboard · HeroCarousel ARIA                                                                                                     |
-| **11** | ✅ Done | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) · HomepageSkeleton · mobile snap-scroll carousels · lucide icons · useSwipe · useApiMutation newsletter                                                           |
-| **12** | ✅ Done | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens · AdminDashboardSkeleton · SellerStatCard ReactNode icon · RecentActivityCard lucide · AdminPageHeader description+breadcrumb · user/profile hooks order fix |
-| **13** | ✅ Done | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets · EmptyState actionHref · SORT/HELP_TEXT/ACTIONS constants · messages human-friendly · search EmptyState+lucide · products empty state · seller onboarding       |
-| **14** | ✅ Done | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
-| **15** | ✅ Done | 2026-02-21 | 2026-02-21 | sitemap · robots · OG image · JSON-LD helpers · product slug URLs · per-page metadata · noIndex for auth/admin/seller/user/checkout/cart                                                        |
-| **16** | ✅ Done | 2026-02-22 | 2026-02-22 | newsletter subscriber list · stats · unsubscribe/resubscribe/delete · Sieve-powered API · admin nav entry                                                                                       |
-| **17** | ✅ Done | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page · .next cache cleared · 0 TS errors                                                                                             |
+| Phase  | Status         | Started    | Completed  | Notes                                                                                                                                                                                           |
+| ------ | -------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | ✅ Done        | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                 |
+| **2**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 48 tests · 9 components/hooks · 0 TS errors                                                                                                                                                     |
+| **3**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 12 tests · externalPagination · SearchResultsSection Pagination                                                                                                                                 |
+| **4**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 7 admin pages · useUrlTable · server pagination · filter bars · FAQs data bug fixed · 0 TS errors                                                                                               |
+| **5**  | ✅ Done        | 2026-02-21 | 2026-02-21 | products · search · auctions · blog · categories/[slug] · FilterDrawer · ActiveFilterChips                                                                                                      |
+| **6**  | ✅ Done        | 2026-02-21 | 2026-02-21 | seller/products drawer · seller/orders · user/orders · CRUD drawers verified                                                                                                                    |
+| **7**  | ✅ Done        | 2026-02-21 | 2026-02-21 | FAQ dynamic route · category tabs · FAQCategorySidebar URL update                                                                                                                               |
+| **8**  | ✅ Done        | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite · EnhancedFooter deleted · lucide-react nav icons · Sidebar polish                                                                                                         |
+| **9**  | ✅ Done        | 2026-02-21 | 2026-02-21 | CategorySelectorCreate · AddressSelectorCreate · ProductForm wired                                                                                                                              |
+| **10** | ✅ Done        | 2026-02-21 | 2026-02-21 | useLongPress · usePullToRefresh · SideDrawer focus trap · Tabs keyboard · HeroCarousel ARIA                                                                                                     |
+| **11** | ✅ Done        | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) · HomepageSkeleton · mobile snap-scroll carousels · lucide icons · useSwipe · useApiMutation newsletter                                                           |
+| **12** | ✅ Done        | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens · AdminDashboardSkeleton · SellerStatCard ReactNode icon · RecentActivityCard lucide · AdminPageHeader description+breadcrumb · user/profile hooks order fix |
+| **13** | ✅ Done        | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets · EmptyState actionHref · SORT/HELP_TEXT/ACTIONS constants · messages human-friendly · search EmptyState+lucide · products empty state · seller onboarding       |
+| **14** | ✅ Done        | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
+| **15** | ✅ Done        | 2026-02-21 | 2026-02-21 | sitemap · robots · OG image · JSON-LD helpers · product slug URLs · per-page metadata · noIndex for auth/admin/seller/user/checkout/cart                                                        |
+| **16** | ✅ Done        | 2026-02-22 | 2026-02-22 | newsletter subscriber list · stats · unsubscribe/resubscribe/delete · Sieve-powered API · admin nav entry                                                                                       |
+| **17** | ✅ Done        | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page · .next cache cleared · 0 TS errors                                                                                             |
+| **18** | ⬜ Not started | —          | —          | Dedicated test phase — all sub-phases below                                                                                                                                                     |
 
 **Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
 
@@ -2191,3 +2193,1259 @@ const mockContext = { params: Promise.resolve({ id: "abc" }) };
 
 - Each updated route handler still returns correct data when called with `Promise.resolve`-wrapped params
 - `npx tsc --noEmit` exits with code 0 after `.next` is deleted and rebuilt
+
+---
+
+## Phase 18 -- Dedicated Test Phase
+
+> **Audit source:** Coverage gap analysis -- Feb 21, 2026
+> **Goal:** Systematic, ordered test coverage for every deliverable from Phases 1--17. Work through sub-phases in order; each sub-phase must turn green (`npm test -- --testPathPattern=<pattern>` exits 0) before starting the next.
+> **Key:** _(NEW)_ = file does not yet exist. _(UPDATE)_ = file already exists, add or adjust cases.
+
+### Sub-phase overview
+
+| Sub   | Scope                                    | New files | Update files                                                       |
+| ----- | ---------------------------------------- | --------- | ------------------------------------------------------------------ |
+| 18.1  | Baseline audit + Phase 17 mock fixes     | 0         | All existing `api/__tests__/*.test.ts` with plain `params` objects |
+| 18.2  | Core data-fetching + form hooks          | 4         | 0                                                                  |
+| 18.3  | Security + UX hooks                      | 4         | 0                                                                  |
+| 18.4  | Address + profile hooks                  | 3         | 0                                                                  |
+| 18.5  | Interaction + responsive hooks           | 6         | 2 (useLongPress, usePullToRefresh already exist)                   |
+| 18.6  | Auth API routes                          | 6         | 1 (auth.test.ts already exists)                                    |
+| 18.7  | User API routes                          | 6         | 0                                                                  |
+| 18.8  | Public API routes -- products + search   | 1         | 2 (products.test.ts, products-id.test.ts already exist)            |
+| 18.9  | Public API routes -- content + social    | 5         | 4 (categories, faqs, carousel, reviews already exist)              |
+| 18.10 | Admin API routes -- tier 1               | 6         | 0                                                                  |
+| 18.11 | Admin API routes -- tier 2               | 6         | 0                                                                  |
+| 18.12 | Seller API routes                        | 3         | 0                                                                  |
+| 18.13 | Public pages -- products + auctions      | 4         | 0                                                                  |
+| 18.14 | Public pages -- blog + categories + FAQs | 4         | 1 (faqs page already exists)                                       |
+| 18.15 | Public pages -- search + static          | 7         | 0                                                                  |
+| 18.16 | Seller pages                             | 5         | 0                                                                  |
+| 18.17 | Admin pages -- missing coverage          | 9         | 0                                                                  |
+| 18.18 | Cart + checkout + profile pages          | 5         | 1 (profile/[userId] already exists)                                |
+| 18.19 | Full build verification                  | 0         | 0 (run commands; no files)                                         |
+
+### Sub-phase tracker
+
+| Sub   | Status      | Notes |
+| ----- | ----------- | ----- |
+| 18.1  | Not started |       |
+| 18.2  | Not started |       |
+| 18.3  | Not started |       |
+| 18.4  | Not started |       |
+| 18.5  | Not started |       |
+| 18.6  | Not started |       |
+| 18.7  | Not started |       |
+| 18.8  | Not started |       |
+| 18.9  | Not started |       |
+| 18.10 | Not started |       |
+| 18.11 | Not started |       |
+| 18.12 | Not started |       |
+| 18.13 | Not started |       |
+| 18.14 | Not started |       |
+| 18.15 | Not started |       |
+| 18.16 | Not started |       |
+| 18.17 | Not started |       |
+| 18.18 | Not started |       |
+| 18.19 | Not started |       |
+
+---
+
+### 18.1 -- Baseline Audit + Phase 17 Mock Fixes
+
+**Run the full suite first -- document all failures before writing any new tests.**
+
+```powershell
+npm test -- --passWithNoTests 2>&1 | Tee-Object test-baseline.txt
+```
+
+For every failing test: fix the root cause (stale mock, renamed import, moved component). Do **not** delete tests.
+
+**Phase 17 param mock update** -- every test file that passes `params` as a plain object to an async route handler must wrap it in `Promise.resolve`:
+
+```typescript
+// BEFORE (fails on Next.js 16 async params)
+const ctx = { params: { id: "abc" } };
+
+// AFTER
+const ctx = { params: Promise.resolve({ id: "abc" }) };
+```
+
+Search for affected files:
+
+```powershell
+Select-String -Path "src\app\api\__tests__\*.ts" -Pattern "params: \{" | Select-Object Filename, LineNumber, Line
+```
+
+Files likely affected: `auth.test.ts`, `products-id.test.ts`, `carousel.test.ts`, `categories.test.ts`, `faqs.test.ts`, `homepage-sections.test.ts`, `media.test.ts`, `profile.test.ts`, `reviews.test.ts`, `site-settings.test.ts`.
+
+**Acceptance criteria:** `npm test` exits 0 with no failures across all pre-existing test files.
+
+---
+
+### 18.2 -- Core Data-Fetching + Form Hooks
+
+**Mocking strategy:** Use `jest.spyOn(global, 'fetch')` returning `Promise.resolve(new Response(JSON.stringify(payload), { status: 200 }))`. Wrap every `renderHook` in `act`.
+
+---
+
+**`src/hooks/__tests__/useApiQuery.test.ts`** _(NEW)_
+
+- `it('returns isLoading=true and data=undefined before fetch resolves')`
+- `it('returns data and isLoading=false after successful fetch')`
+- `it('returns error and isLoading=false when fetch rejects')`
+- `it('returns error when server responds with 4xx status')`
+- `it('refetch() triggers a new fetch call')`
+- `it('changes to queryKey trigger a new fetch and reset data')`
+- `it('does not fetch when enabled=false')`
+- `it('starts fetching when enabled changes from false to true')`
+
+---
+
+**`src/hooks/__tests__/useApiMutation.test.ts`** _(NEW)_
+
+- `it('returns isLoading=false and no error in initial state')`
+- `it('sets isLoading=true while mutation is in flight')`
+- `it('resolves data and resets isLoading on success')`
+- `it('sets error and resets isLoading when fetch rejects')`
+- `it('sets error when server responds with 4xx')`
+- `it('calls onSuccess callback with response data on success')`
+- `it('calls onError callback with error on failure')`
+- `it('reset() clears error and data back to initial state')`
+
+---
+
+**`src/hooks/__tests__/useForm.test.ts`** _(NEW)_
+
+- `it('initialises field values from the provided initialValues')`
+- `it('updates a field value when handleChange is called')`
+- `it('sets isDirty=true after any field is changed')`
+- `it('isDirty remains false when value is reset to initial')`
+- `it('runs validator on submit and populates errors')`
+- `it('does not call onSubmit when validation fails')`
+- `it('calls onSubmit with current values when validation passes')`
+- `it('reset() restores all values to initialValues and clears errors')`
+- `it('setFieldError() adds a custom error for a specific field')`
+
+---
+
+**`src/hooks/__tests__/useMessage.test.ts`** _(NEW)_
+
+- `it('showSuccess() adds a success toast to the queue')`
+- `it('showError() adds an error toast with correct variant')`
+- `it('showWarning() adds a warning toast with correct variant')`
+- `it('showInfo() adds an info toast with correct variant')`
+- `it('toast disappears after the configured auto-dismiss duration')`
+- `it('dismiss(id) removes only the targeted toast')`
+- `it('multiple toasts stack without replacing each other')`
+
+---
+
+### 18.3 -- Security + UX Hooks
+
+---
+
+**`src/hooks/__tests__/useRBAC.test.ts`** _(NEW)_
+
+Mock `useAuth` from `@/hooks` to return different user objects per test group.
+
+- `useIsAdmin`:
+  - `it('returns true when user role is admin')`
+  - `it('returns false when user role is seller')`
+  - `it('returns false when user is unauthenticated')`
+- `useIsSeller`:
+  - `it('returns true when user role is seller')`
+  - `it('returns true when user role is admin (role hierarchy)')`
+  - `it('returns false when user role is user')`
+- `useHasRole(role)`:
+  - `it('returns true for exact role match')`
+  - `it('returns true for higher role (hierarchy)')`
+  - `it('returns false for lower role')`
+- `useCanAccess(route)`:
+  - `it('returns true for a route in RBAC_CONFIG that matches user role')`
+  - `it('returns false for a route that requires a higher role')`
+  - `it('returns false for any protected route when unauthenticated')`
+
+---
+
+**`src/hooks/__tests__/useUnsavedChanges.test.ts`** _(NEW)_
+
+- `it('does not attach beforeunload listener when isDirty=false')`
+- `it('attaches beforeunload listener when isDirty becomes true')`
+- `it('removes beforeunload listener when isDirty returns to false')`
+- `it('removes beforeunload listener on component unmount')`
+- `it('beforeunload handler returns a non-empty string to trigger browser dialog')`
+
+---
+
+**`src/hooks/__tests__/useAdminStats.test.ts`** _(NEW)_
+
+- `it('fetches admin stats endpoint on mount')`
+- `it('returns isLoading=true before response')`
+- `it('returns stats data with correct shape on success')`
+- `it('returns error state when endpoint returns 500')`
+- `it('only fires fetch when user has admin role')`
+- `it('does not fire fetch for non-admin users')`
+
+---
+
+**`src/hooks/__tests__/useSessions.test.ts`** _(NEW)_
+
+- `useMySessions`:
+  - `it('fetches session list for current user')`
+  - `it('revoke(sessionId) calls DELETE on correct endpoint')`
+  - `it('revokeAll() calls POST revoke-all endpoint')`
+  - `it('session list refreshes after a successful revoke')`
+- `useAdminSessions`:
+  - `it('fetches all active sessions with Sieve params')`
+  - `it('revokeUser(uid) calls POST revoke-user endpoint with uid')`
+  - `it('returns 403 error shape when called by non-admin')`
+
+---
+
+### 18.4 -- Address + Profile Hooks
+
+---
+
+**`src/hooks/__tests__/useAddresses.test.ts`** _(NEW)_
+
+- `it('fetches address list for current user on mount')`
+- `it('add(address) calls POST /api/user/addresses')`
+- `it('update(id, data) calls PATCH /api/user/addresses/:id')`
+- `it('remove(id) calls DELETE /api/user/addresses/:id')`
+- `it('setDefault(id) calls POST /api/user/addresses/:id/set-default')`
+- `it('address list refreshes after each successful mutation')`
+- `it('exposes isLoading=true during any in-flight mutation')`
+- `it('exposes error when a mutation fails')`
+
+---
+
+**`src/hooks/__tests__/useAddressForm.test.ts`** _(NEW)_
+
+- `it('initialises with empty strings when no address prop provided')`
+- `it('pre-fills fields when an existing address is passed')`
+- `it('validates required fields on submit attempt')`
+- `it('validates pincode format (6 digits)')`
+- `it('calls add() from useAddresses on submit when no id')`
+- `it('calls update() from useAddresses on submit when id present')`
+- `it('calls onSuccess callback after successful submit')`
+- `it('keeps form dirty after failed submit')`
+
+---
+
+**`src/hooks/__tests__/useProfile.test.ts`** _(NEW)_
+
+- `it('fetches profile data from /api/user/profile on mount')`
+- `it('updateProfile(data) calls PATCH /api/user/profile')`
+- `it('updatePassword(data) calls POST /api/user/change-password')`
+- `it('deleteAccount() calls DELETE /api/user/profile')`
+- `it('profile data refreshes after successful updateProfile')`
+- `it('exposes error state when PATCH returns 400')`
+
+---
+
+### 18.5 -- Interaction + Responsive Hooks
+
+---
+
+**`src/hooks/__tests__/useBreakpoint.test.ts`** _(NEW)_
+
+Mock `window.innerWidth` and fire a `resize` event via `window.dispatchEvent(new Event('resize'))`.
+
+- `it('returns "xs" at 375px')`
+- `it('returns "sm" at 640px')`
+- `it('returns "md" at 768px')`
+- `it('returns "lg" at 1024px')`
+- `it('returns "xl" at 1280px')`
+- `it('returns "2xl" at 1536px')`
+- `it('updates token reactively on window resize')`
+
+---
+
+**`src/hooks/__tests__/useMediaQuery.test.ts`** _(NEW)_
+
+Mock `window.matchMedia` via `Object.defineProperty`.
+
+- `it('returns true when matchMedia reports a match')`
+- `it('returns false when matchMedia reports no match')`
+- `it('updates when matchMedia listener fires a change event')`
+- `it('removes the matchMedia listener on unmount')`
+
+---
+
+**`src/hooks/__tests__/useClickOutside.test.ts`** _(NEW)_
+
+- `it('calls handler when click is outside the referenced element')`
+- `it('does not call handler when click is inside the referenced element')`
+- `it('removes the document event listener on unmount')`
+
+---
+
+**`src/hooks/__tests__/useKeyPress.test.ts`** _(NEW)_
+
+- `it('calls handler when the matching key is pressed')`
+- `it('does not call handler for a different key')`
+- `it('calls handler for modifier combo (e.g. Ctrl+S) when configured')`
+- `it('removes keydown listener on unmount')`
+
+---
+
+**`src/hooks/__tests__/useSwipe.test.ts`** _(NEW)_
+
+Simulate pointer events: `pointerdown` at origin, `pointermove` delta, `pointerup`.
+
+- `it('calls onSwipeLeft when horizontal delta exceeds threshold leftward')`
+- `it('calls onSwipeRight when horizontal delta exceeds threshold rightward')`
+- `it('calls onSwipeUp when vertical delta exceeds threshold upward')`
+- `it('calls onSwipeDown when vertical delta exceeds threshold downward')`
+- `it('does not fire when delta is below threshold')`
+- `it('does not call horizontal callback for predominantly vertical swipe')`
+
+---
+
+**`src/hooks/__tests__/useGesture.test.ts`** _(NEW)_
+
+- `it('fires onLongPress callback after the configured hold duration')`
+- `it('does not fire onLongPress for a quick tap')`
+- `it('fires onSwipeLeft together with onLongPress on the same ref without double-firing')`
+- `it('cancels long-press timer on pointerup before threshold')`
+
+---
+
+**`src/hooks/__tests__/useLongPress.test.ts`** _(UPDATE -- file exists)_
+
+Add to existing tests:
+
+- `it('cancels the timer when pointer leaves the element before threshold')`
+- `it('accepts a custom ms parameter')`
+
+---
+
+**`src/hooks/__tests__/usePullToRefresh.test.ts`** _(UPDATE -- file exists)_
+
+Add to existing tests:
+
+- `it('progress is 0 before any touch')`
+- `it('progress reaches 1 when pull distance equals threshold')`
+- `it('calls onRefresh when released at or past threshold')`
+- `it('does not call onRefresh when released below threshold')`
+
+---
+
+**`src/hooks/__tests__/useRealtimeBids.test.ts`** _(NEW)_
+
+Mock `@/lib/firebase/config` to provide a fake `realtimeDb` with `onValue` / `off`.
+
+- `it('subscribes to the correct Realtime DB path on mount')`
+- `it('delivers snapshot data to the caller on first emission')`
+- `it('updates state when onValue fires a new snapshot')`
+- `it('calls off() to unsubscribe on unmount')`
+- `it('returns null while awaiting first snapshot')`
+
+---
+
+**`src/hooks/__tests__/useRazorpay.test.ts`** _(NEW)_
+
+Mock `document.createElement` / `document.head.appendChild` to intercept script injection.
+
+- `it('appends a script tag pointing to the Razorpay checkout URL on first call')`
+- `it('does not append a second script if already loaded')`
+- `it('open(options) constructs a Razorpay instance with the provided options')`
+- `it('open(options) calls .open() on the Razorpay instance')`
+- `it('exposes isReady=false while script is loading')`
+- `it('exposes isReady=true once the script onload fires')`
+
+---
+
+### 18.6 -- Auth API Routes
+
+**Shared setup:** Create `src/app/api/__tests__/__mocks__/firebase-admin.ts` exporting mock implementations of `getAdminAuth()`, `verifySessionCookie()`, `getAdminDb()`. All existing API test files import this mock via `jest.mock('@/lib/firebase/admin')`.
+
+---
+
+**`src/app/api/__tests__/auth.test.ts`** _(UPDATE -- file exists)_
+
+Verify all existing cases still pass after Phase 17 param-mock fixes. Add any gaps:
+
+- `it('POST /api/auth/register returns 201 for valid payload')`
+- `it('POST /api/auth/register returns 409 when email already in use')`
+- `it('POST /api/auth/register returns 422 for missing required fields')`
+- `it('POST /api/auth/login sets __session cookie on valid credentials')`
+- `it('POST /api/auth/login returns 401 for wrong password')`
+- `it('POST /api/auth/login returns 403 for unverified email')`
+- `it('POST /api/auth/logout clears __session cookie and returns 200')`
+- `it('GET /api/auth/session returns 200 + user for valid session cookie')`
+- `it('GET /api/auth/session returns 401 when cookie is absent')`
+
+---
+
+**`src/app/api/__tests__/auth-forgot-password.test.ts`** _(NEW)_
+
+- `it('returns 200 for a known email address')`
+- `it('returns 200 for an unknown email (no information leak)')`
+- `it('returns 422 when email field is missing')`
+- `it('returns 422 when email format is invalid')`
+- `it('calls tokenRepository.create to persist the reset token')`
+
+---
+
+**`src/app/api/__tests__/auth-reset-password.test.ts`** _(NEW)_
+
+- `it('returns 200 and updates password for a valid, unexpired token')`
+- `it('returns 400 for an expired token')`
+- `it('returns 400 for an already-used token')`
+- `it('returns 422 when newPassword does not meet requirements')`
+- `it('marks token as used after successful reset')`
+
+---
+
+**`src/app/api/__tests__/auth-verify-email.test.ts`** _(NEW)_
+
+- `it('returns 200 and marks email as verified for a valid token')`
+- `it('returns 400 for an invalid or expired token')`
+- `it('returns 422 when token param is missing')`
+- `it('calls userRepository.update with emailVerified=true')`
+
+---
+
+**`src/app/api/__tests__/auth-phone-send.test.ts`** _(NEW)_
+
+- `it('returns 200 and sends OTP for a valid phone number')`
+- `it('returns 422 for an invalid phone format')`
+- `it('returns 429 when rate-limit is exceeded (if implemented)')`
+
+---
+
+**`src/app/api/__tests__/auth-phone-verify.test.ts`** _(NEW)_
+
+- `it('returns 200 and links phone to user when OTP matches')`
+- `it('returns 400 for an incorrect OTP')`
+- `it('returns 400 for an expired OTP')`
+
+---
+
+**`src/app/api/__tests__/auth-resend-verification.test.ts`** _(NEW)_
+
+- `it('returns 200 and sends a new verification email')`
+- `it('returns 400 when email is already verified')`
+- `it('returns 401 when not authenticated')`
+
+---
+
+### 18.7 -- User API Routes
+
+**Common pattern:** Every test file must include an unauthenticated case that returns 401, and all `[id]`-parameterised handlers must use `Promise.resolve` param wrapping.
+
+---
+
+**`src/app/api/__tests__/user-addresses.test.ts`** _(NEW)_
+
+- `it('GET /api/user/addresses returns 401 without session')`
+- `it('GET /api/user/addresses returns address list for current user')`
+- `it('POST /api/user/addresses creates a new address and returns 201')`
+- `it('POST /api/user/addresses returns 422 for invalid payload')`
+- `it('GET /api/user/addresses/:id returns single address')`
+- `it('GET /api/user/addresses/:id returns 404 for unknown id')`
+- `it('PATCH /api/user/addresses/:id updates fields')`
+- `it('DELETE /api/user/addresses/:id removes address')`
+- `it('POST /api/user/addresses/:id/set-default marks address as default')`
+
+---
+
+**`src/app/api/__tests__/user-orders.test.ts`** _(NEW)_
+
+- `it('GET /api/user/orders returns 401 without session')`
+- `it('GET /api/user/orders returns paginated order list scoped to user')`
+- `it('GET /api/user/orders/:id returns order detail')`
+- `it('GET /api/user/orders/:id returns 404 when order belongs to different user')`
+- `it('POST /api/user/orders/:id/cancel sets status to cancelled')`
+- `it('POST /api/user/orders/:id/cancel returns 400 when order is already delivered')`
+
+---
+
+**`src/app/api/__tests__/user-profile.test.ts`** _(UPDATE -- profile.test.ts exists)_
+
+After param-mock fix, verify and add:
+
+- `it('GET /api/user/profile returns 401 without session')`
+- `it('GET /api/user/profile returns current user document')`
+- `it('PATCH /api/user/profile updates displayName and bio')`
+- `it('PATCH /api/user/profile returns 422 for empty displayName')`
+- `it('PATCH /api/user/profile calls userRepository.update with correct fields')`
+
+---
+
+**`src/app/api/__tests__/user-sessions.test.ts`** _(NEW)_
+
+- `it('GET /api/user/sessions returns 401 without session')`
+- `it('GET /api/user/sessions returns list of active sessions for current user')`
+- `it('DELETE /api/user/sessions/:id revokes a specific session')`
+- `it('DELETE /api/user/sessions/:id returns 403 when session belongs to different user')`
+
+---
+
+**`src/app/api/__tests__/user-password.test.ts`** _(NEW)_
+
+- `it('returns 401 without session')`
+- `it('returns 200 when old password matches and new password meets requirements')`
+- `it('returns 400 when old password is incorrect')`
+- `it('returns 422 when new password does not meet minimum requirements')`
+- `it('calls Firebase Admin updateUser to persist the new password')`
+
+---
+
+**`src/app/api/__tests__/user-wishlist.test.ts`** _(NEW)_
+
+- `it('GET /api/user/wishlist returns 401 without session')`
+- `it('GET /api/user/wishlist returns list of wishlisted product IDs')`
+- `it('POST /api/user/wishlist/:productId adds product to wishlist')`
+- `it('POST /api/user/wishlist/:productId is idempotent when product already in wishlist')`
+- `it('DELETE /api/user/wishlist/:productId removes product')`
+- `it('DELETE /api/user/wishlist/:productId returns 200 when product was not in wishlist (idempotent)')`
+
+---
+
+### 18.8 -- Public API Routes -- Products + Search
+
+---
+
+**`src/app/api/__tests__/products.test.ts`** _(UPDATE -- file exists)_
+
+After param-mock fix, verify and add:
+
+- `it('returns paginated product list with default Sieve params')`
+- `it('forwards filters= query param to productRepository.list')`
+- `it('forwards sorts= query param to productRepository.list')`
+- `it('forwards page= and pageSize= to productRepository.list')`
+- `it('returns only published products when no admin session')`
+
+---
+
+**`src/app/api/__tests__/products-id.test.ts`** _(UPDATE -- file exists)_
+
+- `it('returns 200 + product for a known published slug')`
+- `it('returns 404 for an unknown slug')`
+- `it('returns 404 for a draft product when requested without admin session')`
+- `it('params are awaited correctly (Promise.resolve mock)')`
+
+---
+
+**`src/app/api/__tests__/public-search.test.ts`** _(NEW)_
+
+- `it('returns 400 when q param is missing')`
+- `it('returns 400 when q is an empty string')`
+- `it('returns { items, total, page, pageSize } for a valid query')`
+- `it('passes q, category, minPrice, maxPrice to search repository')`
+- `it('respects page and pageSize query params')`
+- `it('returns empty items array when no results found')`
+
+---
+
+### 18.9 -- Public API Routes -- Content + Social
+
+---
+
+**`src/app/api/__tests__/public-blog.test.ts`** _(NEW)_
+
+- `it('GET /api/blog returns paginated article list')`
+- `it('GET /api/blog filters by ?category= when provided')`
+- `it('GET /api/blog/[slug] returns article for known slug')`
+- `it('GET /api/blog/[slug] returns 404 for unknown slug')`
+- `it('GET /api/blog/[slug] returns 404 for draft article without admin session')`
+
+---
+
+**`src/app/api/__tests__/categories.test.ts`** _(UPDATE -- file exists)_
+
+After param-mock fix, verify and add:
+
+- `it('GET /api/categories returns full category tree')`
+- `it('GET /api/categories?flat=true returns flat list')`
+- `it('GET /api/categories/:id returns single category')`
+- `it('GET /api/categories/:id returns 404 for unknown id')`
+
+---
+
+**`src/app/api/__tests__/reviews.test.ts`** _(UPDATE -- file exists)_
+
+After param-mock fix, verify and add:
+
+- `it('GET /api/reviews returns paginated review list')`
+- `it('GET /api/reviews?productId= scopes to a product')`
+- `it('POST /api/reviews returns 401 without session')`
+- `it('POST /api/reviews creates review and returns 201')`
+- `it('POST /api/reviews/:id/vote increments helpful count')`
+- `it('DELETE /api/reviews/:id requires admin or review owner')`
+
+---
+
+**`src/app/api/__tests__/public-bids.test.ts`** _(NEW)_
+
+- `it('GET /api/bids?productId= returns bid list for auction')`
+- `it('GET /api/bids returns 422 when productId is missing')`
+- `it('POST /api/bids returns 401 without session')`
+- `it('POST /api/bids places a bid and returns 201')`
+- `it('POST /api/bids returns 400 when bid is below current highest bid')`
+- `it('POST /api/bids returns 400 when auction has ended')`
+- `it('DELETE /api/bids/:id cancels a bid (owner only)')`
+
+---
+
+**`src/app/api/__tests__/faqs.test.ts`** _(UPDATE -- file exists)_
+
+After param-mock fix, verify and add:
+
+- `it('GET /api/faqs returns FAQ list')`
+- `it('GET /api/faqs?category= filters by category')`
+- `it('GET /api/faqs/:id returns single FAQ')`
+- `it('POST /api/faqs/:id/vote increments helpful count')`
+
+---
+
+**`src/app/api/__tests__/carousel.test.ts`** _(UPDATE -- file exists)_
+
+After param-mock fix, verify and add:
+
+- `it('GET /api/carousel returns only active slides ordered by order field')`
+- `it('GET /api/carousel/:id returns single slide')`
+
+---
+
+**`src/app/api/__tests__/public-newsletter.test.ts`** _(NEW)_
+
+- `it('returns 200 for a valid new subscription')`
+- `it('returns 200 (not 409) when email is already subscribed -- no leak')`
+- `it('returns 422 for an invalid email format')`
+- `it('returns 422 when email field is missing')`
+- `it('calls newsletterRepository to persist the subscriber')`
+
+---
+
+**`src/app/api/__tests__/public-contact.test.ts`** _(NEW)_
+
+- `it('returns 200 and queues email when all required fields present')`
+- `it('returns 422 when name is missing')`
+- `it('returns 422 when message is missing')`
+- `it('returns 422 for invalid email in from field')`
+- `it('calls Resend SDK to send contact notification')`
+
+---
+
+**`src/app/api/__tests__/public-coupons.test.ts`** _(NEW)_
+
+- `it('returns 200 + coupon data for a valid unexpired code')`
+- `it('returns 400 for an expired coupon')`
+- `it('returns 400 for a coupon that has reached its usage limit')`
+- `it('returns 404 for an unknown coupon code')`
+- `it('returns 422 when code param is missing')`
+- `it('returned data includes discountType, discountValue, minOrderAmount')`
+
+---
+
+### 18.10 -- Admin API Routes -- Tier 1
+
+**Common pattern:** Every test group includes a non-admin case (role: `'seller'` or `'user'`) that must return 403.
+
+---
+
+**`src/app/api/__tests__/admin-dashboard.test.ts`** _(NEW)_
+
+- `it('returns 401 without session cookie')`
+- `it('returns 403 for seller role')`
+- `it('returns 200 + stats object for admin role')`
+- `it('stats object contains totalUsers, totalOrders, totalRevenue, totalProducts')`
+- `it('stats values are numbers (not strings or undefined)')`
+
+---
+
+**`src/app/api/__tests__/admin-newsletter.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns paginated subscriber list with Sieve params')`
+- `it('PATCH /:id unsubscribes a subscriber (isSubscribed = false)')`
+- `it('PATCH /:id resubscribes a subscriber (isSubscribed = true)')`
+- `it('DELETE /:id permanently removes subscriber record')`
+- `it('GET list supports ?status=subscribed and ?status=unsubscribed filters')`
+
+---
+
+**`src/app/api/__tests__/admin-orders.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns all orders with Sieve pagination')`
+- `it('GET /:id returns full order detail')`
+- `it('PATCH /:id updates order status')`
+- `it('PATCH /:id returns 400 for invalid status transition')`
+- `it('PATCH /:id returns 404 for unknown orderId')`
+
+---
+
+**`src/app/api/__tests__/admin-products.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns all products (not just published) with Sieve')`
+- `it('POST creates a product and returns 201')`
+- `it('PATCH /:id updates product fields')`
+- `it('PATCH /:id with status=published sets status to published')`
+- `it('PATCH /:id with status=draft un-publishes product')`
+- `it('DELETE /:id removes product record')`
+
+---
+
+**`src/app/api/__tests__/admin-users.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns all users with Sieve params')`
+- `it('GET /:uid returns user detail')`
+- `it('PATCH /:uid updates user role')`
+- `it('PATCH /:uid returns 400 when trying to demote self')`
+- `it('PATCH /:uid returns 422 for invalid role value')`
+- `it('PATCH /:uid disabled=true bans the user')`
+
+---
+
+**`src/app/api/__tests__/admin-sessions.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns all active sessions')`
+- `it('DELETE /:id revokes specific session')`
+- `it('DELETE /:id returns 404 for unknown session id')`
+- `it('POST /revoke-user deletes all sessions for a given uid')`
+- `it('POST /revoke-user returns 422 when uid is missing')`
+
+---
+
+### 18.11 -- Admin API Routes -- Tier 2
+
+---
+
+**`src/app/api/__tests__/admin-bids.test.ts`** _(NEW)_
+
+- `it('returns 403 for non-admin')`
+- `it('returns paginated bid list with Sieve params forwarded to bidRepository.list')`
+- `it('supports ?productId= filter mapped to productId==<value>')`
+
+---
+
+**`src/app/api/__tests__/admin-blog.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns all articles including drafts')`
+- `it('POST creates article and returns 201')`
+- `it('PATCH /:id updates article fields')`
+- `it('PATCH /:id with status=published sets publishedAt timestamp')`
+- `it('DELETE /:id removes article')`
+
+---
+
+**`src/app/api/__tests__/admin-coupons.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns coupon list with Sieve')`
+- `it('POST creates coupon and returns 201')`
+- `it('POST returns 409 when coupon code already exists')`
+- `it('PATCH /:id updates coupon discount value')`
+- `it('PATCH /:id sets isActive=false to disable coupon')`
+- `it('DELETE /:id removes coupon')`
+
+---
+
+**`src/app/api/__tests__/admin-payouts.test.ts`** _(NEW)_
+
+- `it('GET list returns 403 for non-admin')`
+- `it('GET list returns payout requests with Sieve')`
+- `it('GET /:id returns single payout detail')`
+- `it('PATCH /:id status=approved approves payout')`
+- `it('PATCH /:id status=rejected requires rejectionReason field')`
+- `it('PATCH /:id returns 400 for invalid status transition')`
+
+---
+
+**`src/app/api/__tests__/admin-analytics.test.ts`** _(NEW)_
+
+- `it('returns 403 for non-admin')`
+- `it('returns analytics object with revenue, orders, users, products keys')`
+- `it('uses default 30-day range when startDate/endDate are omitted')`
+- `it('scopes data to the provided startDate and endDate range')`
+- `it('all numeric values are numbers, not strings')`
+
+---
+
+**`src/app/api/__tests__/admin-algolia.test.ts`** _(NEW)_
+
+Mock Algolia client: `jest.mock('algoliasearch')`.
+
+- `it('returns 403 for non-admin')`
+- `it('POST sync fetches all published products and calls Algolia saveObjects')`
+- `it('returns { synced: N } with the count of synced records')`
+- `it('returns 500 and error message when Algolia throws')`
+
+---
+
+### 18.12 -- Seller API Routes
+
+---
+
+**`src/app/api/__tests__/seller-orders.test.ts`** _(NEW)_
+
+- `it('returns 401 without session')`
+- `it('returns 403 for user role (not seller)')`
+- `it('returns paginated order list scoped to sellerId from session')`
+- `it('does not return orders belonging to a different seller')`
+- `it('forwards Sieve params to orderRepository.list')`
+
+---
+
+**`src/app/api/__tests__/seller-analytics.test.ts`** _(NEW)_
+
+- `it('returns 401 without session')`
+- `it('returns 403 for user role')`
+- `it('returns analytics with revenue, orders, views, conversionRate')`
+- `it('revenue is scoped to sellerId from session')`
+- `it('uses 30-day default range when no date params provided')`
+
+---
+
+**`src/app/api/__tests__/seller-payouts.test.ts`** _(NEW)_
+
+- `it('returns 401 without session')`
+- `it('returns 403 for user role')`
+- `it('returns payout list scoped to current seller')`
+- `it('POST /request creates a new payout request')`
+- `it('POST /request returns 400 when pending payout already exists')`
+
+---
+
+### 18.13 -- Public Pages -- Products + Auctions
+
+**Mock strategy:** `jest.mock('@/hooks', () => ({ ...jest.requireActual('@/hooks'), useApiQuery: jest.fn() }))` -- return stub `{ data, isLoading: false }` per test.
+
+---
+
+**`src/app/products/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders loading skeleton when isLoading=true')`
+- `it('renders product grid cards when data is populated')`
+- `it('renders EmptyState when data.items is empty')`
+- `it('filter bar is present on desktop viewport')`
+- `it('FilterDrawer trigger button is present on mobile viewport')`
+- `it('ActiveFilterChips hidden when no filters active')`
+- `it('ActiveFilterChips shows chips when URL has active filters')`
+- `it('URL updates on filter change (router.replace called, not push)')`
+
+---
+
+**`src/app/products/[slug]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders product title and price')`
+- `it('renders Add to Cart button')`
+- `it('renders product image')`
+- `it('renders stock-out message when stockQuantity=0')`
+- `it('renders NotFound when product is null / 404')`
+- `it('structured data (JSON-LD) script tag is in document head')`
+
+---
+
+**`src/app/auctions/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders loading skeleton when isLoading=true')`
+- `it('renders auction cards with current bid and countdown')`
+- `it('renders EmptyState when no auctions')`
+- `it('sort dropdown updates ?sort= URL param')`
+- `it('pagination visible when totalPages > 1')`
+
+---
+
+**`src/app/auctions/[id]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders auction title, starting bid, current bid')`
+- `it('renders bid form with amount input and submit button')`
+- `it('bid form submit calls POST /api/bids')`
+- `it('bid form is disabled when auction has ended')`
+- `it('renders countdown timer')`
+- `it('renders NotFound for unknown auction id')`
+
+---
+
+### 18.14 -- Public Pages -- Blog + Categories + FAQs
+
+---
+
+**`src/app/blog/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders article cards with title, date, excerpt')`
+- `it('renders loading skeleton when isLoading=true')`
+- `it('renders EmptyState when no articles')`
+- `it('category filter tabs are present')`
+- `it('active category tab updates ?category= URL param')`
+- `it('Pagination component visible when totalPages > 1')`
+
+---
+
+**`src/app/blog/[slug]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders article title and body content')`
+- `it('renders author and published date')`
+- `it('renders related articles section')`
+- `it('renders NotFound for unknown slug')`
+- `it('JSON-LD article schema present in document head')`
+
+---
+
+**`src/app/categories/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders category grid cards')`
+- `it('each card links to /categories/:slug')`
+- `it('renders EmptyState when no categories')`
+- `it('renders breadcrumb with Home > Categories')`
+
+---
+
+**`src/app/categories/[slug]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders product list scoped to category')`
+- `it('renders category name as page heading')`
+- `it('FilterDrawer trigger visible on mobile')`
+- `it('view toggle renders grid and list buttons')`
+- `it('switching view mode updates ?view= URL param')`
+- `it('renders NotFound for invalid slug')`
+
+---
+
+**`src/app/faqs/__tests__/page.test.tsx`** _(UPDATE -- file exists)_
+
+After Phase 17 param fixes:
+
+- `it('renders FAQ accordion with questions and answers for default category')`
+- `it('sidebar renders all FAQ categories')`
+- `it('active sidebar link matches current category slug')`
+
+---
+
+**`src/app/faqs/[category]/__tests__/page.test.tsx`** _(NEW)_
+
+Note: async server component -- mock `params` as `Promise.resolve({ category: 'shipping' })`.
+
+- `it('renders FAQs filtered by the category slug in params')`
+- `it('sidebar active state matches the params.category value')`
+- `it('redirects to /faqs for an invalid category slug')`
+- `it('generateStaticParams returns an entry for every FAQ_CATEGORIES key')`
+
+---
+
+### 18.15 -- Public Pages -- Search + Static
+
+---
+
+**`src/app/search/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders search input pre-filled with ?q= URL param')`
+- `it('renders loading skeleton when isLoading=true')`
+- `it('renders ProductCard grid when results are present')`
+- `it('renders EmptyState with query text when no results')`
+- `it('ActiveFilterChips visible when category or price filters are active')`
+- `it('chip dismiss removes the filter and resets page to 1')`
+- `it('sort dropdown updates ?sort= URL param')`
+
+---
+
+**`src/app/about/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders without crashing')`
+- `it('renders the main heading')`
+- `it('renders the team section')`
+
+---
+
+**`src/app/contact/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders name, email, and message fields')`
+- `it('submit button is disabled while mutation is in flight')`
+- `it('form submission calls POST /api/contact')`
+- `it('shows success message after successful submission')`
+- `it('shows error message when submission fails')`
+
+---
+
+**`src/app/help/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders without crashing')`
+- `it('renders at least one help topic heading')`
+
+---
+
+**`src/app/privacy/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders without crashing')`
+- `it('page title contains "Privacy"')`
+
+---
+
+**`src/app/terms/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders without crashing')`
+- `it('page title contains "Terms"')`
+
+---
+
+**`src/app/promotions/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders promotion cards when promotions are returned by API')`
+- `it('renders EmptyState when no promotions are active')`
+
+---
+
+### 18.16 -- Seller Pages
+
+> Note: `/seller/products/new` and `/seller/products/[id]/edit` were **deleted in Phase 6**. All create/edit flows use `SideDrawer` on `/seller/products`. There is **no test file for those deleted routes**.
+
+---
+
+**`src/app/seller/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('redirects to login when not authenticated')`
+- `it('shows onboarding prompt for authenticated user without seller role')`
+- `it('shows stat cards when user has seller role')`
+- `it('stat cards include revenue, orders, products, views')`
+
+---
+
+**`src/app/seller/products/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders loading skeleton when isLoading=true')`
+- `it('renders product list with title, price, status columns')`
+- `it('renders EmptyState when seller has no products')`
+- `it('"Add product" button click opens SideDrawer create mode')`
+- `it('edit action per row opens SideDrawer edit mode pre-filled with product data')`
+- `it('delete action per row opens ConfirmDeleteModal')`
+- `it('view toggle renders grid and table icons in DataTable toolbar')`
+- `it('switching to grid view renders mobileCardRender cards')`
+- `it('?view= URL param persists the selected view mode')`
+- `it('search input updates ?q= URL param')`
+- `it('TablePagination visible when totalPages > 1')`
+
+---
+
+**`src/app/seller/orders/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders order list table')`
+- `it('status filter tabs present: All, Pending, Confirmed, Shipped, Delivered, Cancelled')`
+- `it('clicking a status tab updates ?status= URL param')`
+- `it('revenue total reads from API meta.totalRevenue, not client-side reduce')`
+- `it('TablePagination visible when totalPages > 1')`
+- `it('redirects to login when not authenticated')`
+
+---
+
+**`src/app/seller/analytics/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders loading skeleton while data is fetching')`
+- `it('renders revenue chart after data loads')`
+- `it('renders orders chart after data loads')`
+- `it('date range selector updates URL params')`
+
+---
+
+**`src/app/seller/payouts/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders payout history table')`
+- `it('renders payout request button')`
+- `it('clicking payout request opens confirmation modal or drawer')`
+- `it('renders EmptyState when no payout history')`
+
+---
+
+### 18.17 -- Admin Pages -- Missing Coverage
+
+---
+
+**`src/app/admin/newsletter/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders subscriber count stat')`
+- `it('renders DataTable with email, subscribedAt, status columns')`
+- `it('status filter tabs: All, Subscribed, Unsubscribed')`
+- `it('export button present')`
+- `it('TablePagination visible')`
+
+---
+
+**`src/app/admin/bids/[[...action]]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders bid list with bidAmount, productTitle, bidderName columns')`
+- `it('sort dropdown changes ?sort= URL param')`
+- `it('productId filter in URL scopes list to one auction')`
+- `it('TablePagination visible')`
+
+---
+
+**`src/app/admin/blog/[[...action]]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders article list with title, status, publishedAt')`
+- `it('"New article" button opens SideDrawer create mode')`
+- `it('edit action opens SideDrawer with pre-filled form')`
+- `it('delete action opens ConfirmDeleteModal')`
+
+---
+
+**`src/app/admin/coupons/[[...action]]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders coupon list with code, discountType, discountValue')`
+- `it('"New coupon" button opens SideDrawer')`
+- `it('duplicate code shows 409 error in drawer')`
+- `it('isActive toggle updates coupon status inline')`
+
+---
+
+**`src/app/admin/orders/[[...action]]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders order list with orderId, status, total, buyer')`
+- `it('status filter tabs: All, Pending, Confirmed, Shipped, Delivered, Cancelled')`
+- `it('row click or eye icon opens order detail drawer')`
+- `it('status change in drawer calls PATCH /api/admin/orders/:id')`
+
+---
+
+**`src/app/admin/products/[[...action]]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders product list with title, price, status, seller')`
+- `it('search input updates ?q= URL param')`
+- `it('status filter dropdown updates ?status= URL param')`
+- `it('publish toggle calls PATCH status=published')`
+- `it('unpublish toggle calls PATCH status=draft')`
+- `it('delete action calls DELETE /api/admin/products/:id')`
+
+---
+
+**`src/app/admin/analytics/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders AdminStatsCards with revenue, orders, users, products')`
+- `it('renders date range selector')`
+- `it('default date range is last 30 days')`
+- `it('changing date range refetches data with new params')`
+
+---
+
+**`src/app/admin/media/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders media grid with image thumbnails')`
+- `it('upload button is present')`
+- `it('clicking an image opens ImageCropModal or detail drawer')`
+- `it('delete action opens ConfirmDeleteModal')`
+- `it('renders EmptyState when no media files')`
+
+---
+
+**`src/app/admin/payouts/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders payout request list with seller, amount, status')`
+- `it('status filter: All, Pending, Approved, Rejected')`
+- `it('Approve button calls PATCH status=approved')`
+- `it('Reject button opens rejection-reason input before confirming')`
+- `it('TablePagination visible')`
+
+---
+
+### 18.18 -- Cart, Checkout + Profile Pages
+
+---
+
+**`src/app/cart/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders cart item list with product name, qty, price')`
+- `it('quantity increment button increases qty and recalculates subtotal')`
+- `it('quantity decrement to 0 removes the item from cart')`
+- `it('remove button removes item directly')`
+- `it('renders order summary with subtotal, shipping, total')`
+- `it('renders EmptyState with CTA link when cart is empty')`
+- `it('"Proceed to checkout" button links to /checkout')`
+
+---
+
+**`src/app/checkout/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders address selector with user addresses')`
+- `it('renders order summary matching cart items')`
+- `it('"Pay" button is disabled when no address is selected')`
+- `it('"Pay" button becomes enabled after address selection')`
+- `it('coupon input field is present; valid code applies discount')`
+- `it('clicking Pay calls useRazorpay open() with correct amount')`
+
+---
+
+**`src/app/checkout/success/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders success heading using SUCCESS_MESSAGES.ORDER.PLACED')`
+- `it('renders order ID from URL param or order state')`
+- `it('renders CTA to continue shopping')`
+
+---
+
+**`src/app/profile/[userId]/__tests__/page.test.tsx`** _(UPDATE -- file exists)_
+
+After Phase 17 param fixes, add / verify:
+
+- `it('renders seller info card with average rating stars using THEME_CONSTANTS.rating.filled')`
+- `it('empty star icons use THEME_CONSTANTS.rating.empty class')`
+- `it('renders own profile with edit controls when userId matches session')`
+- `it('renders read-only view when viewing another user profile')`
+- `it('renders seller reviews section when user is a seller')`
+
+---
+
+**`src/app/sellers/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders without crashing')`
+- `it('Hero CTA button links to ROUTES.AUTH.REGISTER')`
+- `it('secondary CTA link points to #how-it-works')`
+- `it('benefits section renders all 4 benefit cards')`
+- `it('how-it-works section renders 3 steps')`
+- `it('FAQ accordion items render')`
+- `it('final CTA links to ROUTES.AUTH.REGISTER')`
+
+---
+
+**`src/app/sellers/[id]/__tests__/page.test.tsx`** _(NEW)_
+
+- `it('renders seller display name and bio')`
+- `it('renders seller average rating with star icons')`
+- `it('filled star icons use THEME_CONSTANTS.rating.filled class')`
+- `it('empty star icons use THEME_CONSTANTS.rating.empty class')`
+- `it('renders seller product grid')`
+- `it('renders reviews section with per-review stars')`
+- `it('renders NotFound for unknown seller id')`
+
+---
+
+### 18.19 -- Full Build Verification
+
+Run all checks **in order**. Each must exit with code 0 before proceeding.
+
+```powershell
+# 1 -- Full test suite with coverage report
+npm test -- --coverage --coverageDirectory=coverage 2>&1 | Tee-Object test-results-final.txt
+
+# 2 -- TypeScript type-check
+npx tsc --noEmit 2>&1 | Tee-Object ts-check.txt
+
+# 3 -- ESLint
+npm run lint 2>&1 | Tee-Object lint-check.txt
+
+# 4 -- Production build
+npm run build 2>&1 | Tee-Object build-check.txt
+```
+
+**Minimum coverage targets:**
+
+| Layer                 | Statements | Branches |
+| --------------------- | ---------- | -------- |
+| `src/utils/**`        | >= 90 %    | >= 85 %  |
+| `src/helpers/**`      | >= 90 %    | >= 85 %  |
+| `src/hooks/**`        | >= 80 %    | >= 75 %  |
+| `src/app/api/**`      | >= 75 %    | >= 70 %  |
+| `src/components/**`   | >= 70 %    | >= 65 %  |
+| `src/app/**/page.tsx` | >= 65 %    | >= 60 %  |
+
+If any layer falls below target, identify the highest-risk uncovered branches (auth guards, payment paths, CRUD error paths) and add targeted tests before closing Phase 18.
+
+**Acceptance criteria:** All four commands exit with code 0. Coverage report written to `coverage/` -- no critical path (auth, payment, CRUD) has uncovered error branches.

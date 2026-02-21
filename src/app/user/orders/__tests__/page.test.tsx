@@ -17,6 +17,15 @@ jest.mock("@/hooks", () => ({
     error: null,
     refetch: jest.fn(),
   }),
+  useUrlTable: () => ({
+    get: jest.fn().mockReturnValue(""),
+    set: jest.fn(),
+    setMany: jest.fn(),
+    setPage: jest.fn(),
+    setSort: jest.fn(),
+    buildSieveParams: jest.fn().mockReturnValue(""),
+    params: new URLSearchParams(),
+  }),
 }));
 
 jest.mock("@/components", () => ({

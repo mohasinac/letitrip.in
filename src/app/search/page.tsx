@@ -153,7 +153,9 @@ export default function SearchPage() {
           autoFocus
           className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+        <span
+          className={`absolute right-4 top-1/2 -translate-y-1/2 ${THEME_CONSTANTS.icon.muted} pointer-events-none`}
+        >
           <SearchIcon className="w-5 h-5" />
         </span>
       </div>

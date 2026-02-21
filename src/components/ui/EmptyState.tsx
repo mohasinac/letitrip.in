@@ -41,7 +41,7 @@ export function EmptyState({
   actionHref,
   className = "",
 }: EmptyStateProps) {
-  const { spacing, typography, accent } = THEME_CONSTANTS;
+  const { spacing, typography, accent, button, colors } = THEME_CONSTANTS;
 
   return (
     <Card className={`p-12 text-center ${className}`}>
@@ -63,10 +63,11 @@ export function EmptyState({
         )}
 
         {actionLabel && actionHref && (
-          <Link href={actionHref}>
-            <Button variant="warning" size="lg">
-              {actionLabel}
-            </Button>
+          <Link
+            href={actionHref}
+            className={`${button.base} ${colors.button.warning} shadow-sm hover:shadow-md focus:ring-amber-500 ${button.active} px-4 py-2.5 text-base sm:px-6 sm:py-3 sm:text-lg gap-2.5 min-h-[44px]`}
+          >
+            <span>{actionLabel}</span>
           </Link>
         )}
 

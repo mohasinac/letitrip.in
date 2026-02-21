@@ -11,6 +11,46 @@ jest.mock("@/hooks", () => ({
   useMessage: () => mockUseMessage(),
 }));
 
+// Mock @/components so Input and Button render as plain HTML elements
+jest.mock("@/components", () => ({
+  Button: ({
+    children,
+    disabled,
+    ...props
+  }: {
+    children: React.ReactNode;
+    disabled?: boolean;
+    [key: string]: unknown;
+  }) => (
+    <button disabled={disabled} {...props}>
+      {children}
+    </button>
+  ),
+  Input: ({
+    onChange,
+    value,
+    disabled,
+    placeholder,
+    type,
+    ...props
+  }: {
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    value?: string;
+    disabled?: boolean;
+    placeholder?: string;
+    type?: string;
+    [key: string]: unknown;
+  }) => (
+    <input
+      onChange={onChange}
+      value={value}
+      disabled={disabled}
+      placeholder={placeholder}
+      type={type || "text"}
+    />
+  ),
+}));
+
 // Mock next/link
 jest.mock("next/link", () => {
   const MockLink = ({

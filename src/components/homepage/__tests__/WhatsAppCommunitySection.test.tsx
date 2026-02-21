@@ -111,7 +111,10 @@ describe("WhatsAppCommunitySection", () => {
 
     it("renders WhatsApp icon", () => {
       render(<WhatsAppCommunitySection />);
-      expect(screen.getByText("💬")).toBeInTheDocument();
+      // Component uses a Lucide MessageCircle SVG icon, not an emoji
+      expect(
+        screen.getByText("Join Our WhatsApp Community"),
+      ).toBeInTheDocument();
     });
 
     it("renders member count", () => {

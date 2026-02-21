@@ -11,7 +11,6 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  transformIgnorePatterns: ["/node_modules/(?!(?:@mohasinac/sievejs)/)"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
@@ -27,5 +26,14 @@ const config: Config = {
   ],
 };
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(config);
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async.
+// We override transformIgnorePatterns AFTER next/jest sets its own, so our custom ESM package
+// (@mohasinac/sievejs) is correctly included in Jest's transform pipeline.
+const nextJestConfig = createJestConfig(config);
+export default async () => {
+  const finalConfig = await nextJestConfig();
+  finalConfig.transformIgnorePatterns = [
+    "node_modules/(?!(@mohasinac/sievejs)/)",
+  ];
+  return finalConfig;
+};

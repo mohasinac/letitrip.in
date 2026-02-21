@@ -132,7 +132,11 @@ describe("TablePagination", () => {
         isLoading
       />,
     );
-    const nav = screen.getByRole("navigation", { name: /pagination/i });
-    expect(nav).toHaveAttribute("data-disabled", "true");
+    // Multiple navigation elements exist (wrapper + Pagination mock);
+    // find the inner Pagination mock nav which has data-disabled attr
+    const navs = screen.getAllByRole("navigation", { name: /pagination/i });
+    const disabledNav = navs.find((n) => n.hasAttribute("data-disabled"));
+    expect(disabledNav).toBeDefined();
+    expect(disabledNav).toHaveAttribute("data-disabled", "true");
   });
 });

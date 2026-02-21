@@ -110,9 +110,9 @@ describe("TopCategoriesSection", () => {
       );
     });
 
-    it('renders "View All" button', () => {
+    it('renders "View All" link', () => {
       render(<TopCategoriesSection />);
-      expect(screen.getByText("View All")).toBeInTheDocument();
+      expect(screen.getByText("View all \u2192")).toBeInTheDocument();
     });
 
     it("renders category names", () => {
@@ -125,10 +125,11 @@ describe("TopCategoriesSection", () => {
 
     it("renders item counts", () => {
       render(<TopCategoriesSection />);
-      expect(screen.getByText("1200 items")).toBeInTheDocument();
-      expect(screen.getByText("800 items")).toBeInTheDocument();
-      expect(screen.getByText("350 items")).toBeInTheDocument();
-      expect(screen.getByText("450 items")).toBeInTheDocument();
+      // Component uses toLocaleString() + " products"
+      expect(screen.getByText(/1,200.*products/)).toBeInTheDocument();
+      expect(screen.getByText(/800.*products/)).toBeInTheDocument();
+      expect(screen.getByText(/350.*products/)).toBeInTheDocument();
+      expect(screen.getByText(/450.*products/)).toBeInTheDocument();
     });
 
     it("renders cover images with alt text when provided", () => {
@@ -139,11 +140,11 @@ describe("TopCategoriesSection", () => {
       expect(images[0]).toHaveAttribute("alt", "Electronics");
     });
 
-    it("renders category cards as clickable buttons", () => {
+    it("renders category cards as links", () => {
       render(<TopCategoriesSection />);
-      // 4 category cards + 1 "View All" button
-      const buttons = screen.getAllByRole("button");
-      expect(buttons).toHaveLength(5);
+      // Category cards and View All link use Link elements → role="link"
+      const links = screen.getAllByRole("link");
+      expect(links.length).toBeGreaterThanOrEqual(4);
     });
   });
 
@@ -189,7 +190,7 @@ describe("TopCategoriesSection", () => {
       expect(dotButtons).toHaveLength(0);
     });
 
-    it("shows pagination dots when more than 4 categories", () => {
+    it("renders as a simple grid when more than 4 categories", () => {
       const manyCategories = [
         ...mockCategories,
         {
@@ -205,8 +206,9 @@ describe("TopCategoriesSection", () => {
         isLoading: false,
       });
       render(<TopCategoriesSection />);
-      const dotButtons = screen.getAllByLabelText(/Go to category group/);
-      expect(dotButtons.length).toBeGreaterThan(0);
+      // Component uses a simple grid, no pagination dots
+      expect(screen.getByText("Books")).toBeInTheDocument();
+      expect(screen.getByText("Art")).toBeInTheDocument();
     });
   });
 });

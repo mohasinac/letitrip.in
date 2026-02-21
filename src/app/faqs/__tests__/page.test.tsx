@@ -84,8 +84,11 @@ jest.mock("@/hooks", () => ({
 
 // Mock next/navigation
 const mockSearchParams = new URLSearchParams();
+const mockPush = jest.fn();
+const mockReplace = jest.fn();
 jest.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
+  useRouter: () => ({ push: mockPush, replace: mockReplace }),
 }));
 
 describe("FAQ Page", () => {

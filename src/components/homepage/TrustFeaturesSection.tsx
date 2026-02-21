@@ -67,10 +67,10 @@ export function TrustFeaturesSection() {
     if (!el) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      ([entry], obs) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.disconnect();
+          obs.disconnect();
         }
       },
       { threshold: 0.15 },

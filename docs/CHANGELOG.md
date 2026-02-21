@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6.3 Completion — THEME_CONSTANTS Per-File Replacements + View Toggle
+
+**Goal:** Complete the pending Phase 6.3 work: replace all remaining raw Tailwind strings in pages with `THEME_CONSTANTS` references, and wire up the long-planned view toggle for `seller/products/page.tsx`.
+
+#### Changed
+
+- `src/app/sellers/page.tsx` — added `button` to `THEME_CONSTANTS` destructure; replaced Hero CTA button className with `button.ctaPrimary`; secondary link className with `button.ctaOutline`; final CTA section button className with `inline-block mt-4 ${button.ctaPrimary}`.
+- `src/app/search/page.tsx` — replaced raw `text-gray-400` on search icon `<span>` with `THEME_CONSTANTS.icon.muted`.
+- `src/app/seller/orders/page.tsx` — replaced inline tab-inactive template literal with `THEME_CONSTANTS.tab.inactive`.
+- `src/app/profile/[userId]/page.tsx` — replaced all three star-rating `className` expressions: filled stars from `"text-yellow-400"` / `THEME_CONSTANTS.themed.textMuted` to `THEME_CONSTANTS.rating.filled` / `THEME_CONSTANTS.rating.empty` (3 locations: overview rating card, seller reviews header, seller reviews list per-review).
+- `src/app/sellers/[id]/page.tsx` — same star-rating replacements (3 locations: seller info header single star, reviews section average star row, reviews list per-review stars).
+- `src/app/seller/products/page.tsx` — added `Badge` to `@/components` import; added `formatCurrency` from `@/utils`; added `showViewToggle`, `viewMode` (driven by `useUrlTable` `view` param), `onViewModeChange`, and `mobileCardRender` props to `<DataTable>`. Card renders product image (with fallback), title, formatted price, status badge, and inline Edit/Delete buttons.
+
+---
+
 ### Phase 17 — Next.js 16 Compatibility: Async Params
 
 **Goal:** Fix all route handlers and page components using the pre-Next.js-15 synchronous `params` pattern; clear stale `.next` cache references from deleted routes; achieve zero TypeScript errors.

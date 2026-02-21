@@ -385,7 +385,7 @@ export default function PublicProfilePage() {
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-5 h-5 ${i < Math.floor(user.stats?.rating || 0) ? "text-yellow-400" : THEME_CONSTANTS.themed.textMuted}`}
+                    className={`w-5 h-5 ${i < Math.floor(user.stats?.rating || 0) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -475,7 +475,7 @@ export default function PublicProfilePage() {
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-4 h-4 ${i < Math.round(reviewsData.data.averageRating) ? "text-yellow-400" : "text-gray-300"}`}
+                        className={`w-4 h-4 ${i < Math.round(reviewsData.data.averageRating) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -523,7 +523,7 @@ export default function PublicProfilePage() {
                           {[...Array(5)].map((_, i) => (
                             <svg
                               key={i}
-                              className={`w-3.5 h-3.5 ${i < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                              className={`w-3.5 h-3.5 ${i < review.rating ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >

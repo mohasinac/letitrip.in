@@ -1,61 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import RegisterPage from "../page";
-import { UI_LABELS } from "@/constants";
 
-const mockPush = jest.fn();
-
-jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush }),
-}));
-
-jest.mock("next/link", () => ({
-  __esModule: true,
-  default: ({
-    children,
-    href,
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => <a href={href}>{children}</a>,
-}));
-
-jest.mock("@/hooks", () => ({
-  useAuth: () => ({ user: null, loading: false }),
-  useRegister: () => ({ mutate: jest.fn(), isLoading: false }),
-  useGoogleLogin: () => ({ mutate: jest.fn(), isLoading: false }),
-  useAppleLogin: () => ({ mutate: jest.fn(), isLoading: false }),
-}));
-
-jest.mock("@/components", () => ({
-  Button: ({ children, ...props }: { children: React.ReactNode }) => (
-    <button {...props}>{children}</button>
-  ),
-  Alert: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Checkbox: (props: { id?: string }) => <input type="checkbox" {...props} />,
-  Spinner: () => <div data-testid="spinner" />,
-  FormField: ({ label }: { label?: string }) => (
-    <label>
-      {label}
-      <input />
-    </label>
-  ),
-  PasswordStrengthIndicator: () => <div data-testid="password-strength" />,
+// Page-level test: verify the page composes the RegisterForm feature component.
+// Feature-level tests for RegisterForm live in src/features/auth/__tests__/.
+jest.mock("@/features/auth", () => ({
+  RegisterForm: () => <div data-testid="register-form" />,
 }));
 
 describe("Register Page", () => {
-  it("renders the registration form", () => {
+  it("renders the RegisterForm feature component", () => {
     render(<RegisterPage />);
-
-    expect(
-      screen.getByRole("button", {
-        name: UI_LABELS.AUTH.REGISTER.CREATE_ACCOUNT,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: UI_LABELS.AUTH.LOGIN.GOOGLE }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: UI_LABELS.AUTH.LOGIN.APPLE }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("register-form")).toBeInTheDocument();
   });
 });

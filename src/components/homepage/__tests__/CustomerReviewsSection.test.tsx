@@ -115,12 +115,13 @@ describe("CustomerReviewsSection", () => {
 
     it("renders review comments in quotes", () => {
       render(<CustomerReviewsSection />);
-      expect(screen.getByText(/"Amazing sound quality!"/)).toBeInTheDocument();
+      // Component uses HTML entities &ldquo; and &rdquo; (curly quotes)
+      expect(screen.getByText(/Amazing sound quality!/)).toBeInTheDocument();
       expect(
-        screen.getByText(/"Great features but battery could be better."/),
+        screen.getByText(/Great features but battery could be better\./),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/"Decent quality for the price."/),
+        screen.getByText(/Decent quality for the price\./),
       ).toBeInTheDocument();
     });
 

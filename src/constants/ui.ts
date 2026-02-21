@@ -313,6 +313,7 @@ export const UI_LABELS = {
     // Login page
     LOGIN: {
       TITLE: "Sign in to your account",
+      OR: "Or",
       CREATE_ACCOUNT_LINK: "create a new account",
       REMEMBER_ME: "Remember me",
       FORGOT_PASSWORD_LINK: "Forgot password?",

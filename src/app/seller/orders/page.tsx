@@ -160,7 +160,7 @@ export default function SellerOrdersPage() {
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               statusFilter === tab.key
                 ? "border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
-                : `border-transparent ${themed.textSecondary} hover:text-gray-700 dark:hover:text-gray-300`
+                : THEME_CONSTANTS.tab.inactive
             }`}
           >
             {tab.label}

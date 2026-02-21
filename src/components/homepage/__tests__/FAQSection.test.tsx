@@ -62,16 +62,16 @@ describe("FAQSection", () => {
   // No Data State
   // ====================================
   describe("No Data State", () => {
-    it("returns null when no FAQ data", () => {
+    it("shows empty state when no FAQ data", () => {
       mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
-      const { container } = render(<FAQSection />);
-      expect(container.innerHTML).toBe("");
+      render(<FAQSection />);
+      expect(screen.getByText(/no data available/i)).toBeInTheDocument();
     });
 
-    it("returns null when faqs array is empty", () => {
+    it("shows empty state when faqs array is empty", () => {
       mockUseApiQuery.mockReturnValue({ data: [], isLoading: false });
-      const { container } = render(<FAQSection />);
-      expect(container.innerHTML).toBe("");
+      render(<FAQSection />);
+      expect(screen.getByText(/no data available/i)).toBeInTheDocument();
     });
   });
 
