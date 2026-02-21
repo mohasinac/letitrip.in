@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 12 — Dashboard Page Styling
+
+**Goal:** Admin, seller, and user dashboard pages styled with lucide-react icons, `THEME_CONSTANTS.enhancedCard.stat.*` tokens, proper skeleton screens, no emoji icons, React hooks order compliance.
+
+#### Added
+
+- `src/components/admin/dashboard/AdminDashboardSkeleton.tsx` — full skeleton for admin dashboard; header + 6-card stats grid + quick actions + recent activity; uses `THEME_CONSTANTS.skeleton.*` tokens; `aria-busy="true"`.
+- `UI_LABELS.ADMIN.STATS.*` — 10 stat card labels: `TOTAL_USERS`, `ACTIVE_USERS`, `NEW_USERS`, `DISABLED_USERS`, `TOTAL_PRODUCTS`, `TOTAL_ORDERS`, `TOTAL_LISTINGS`, `ACTIVE_LISTINGS`, `ACTIVE_AUCTIONS`, `DRAFT_PRODUCTS`.
+- `AdminPageHeader` — added `description?: string` prop (shown below subtitle) and `breadcrumb?: Array<{label: string; href?: string}>` prop (nav trail above title) using `ChevronRight` lucide icon.
+
+#### Changed
+
+- `src/components/admin/AdminStatsCards.tsx` — replaced emoji icons (👥 ✅ 🆕 🚫 📦 🛒) with lucide-react icons (`Users`, `UserCheck`, `UserPlus`, `UserX`, `Package`, `ShoppingCart`); replaced `Card/Heading/Text` wrapper with bare `div` + `THEME_CONSTANTS.enhancedCard.stat.*`; all labels now from `UI_LABELS.ADMIN.STATS.*`.
+- `src/components/admin/dashboard/RecentActivityCard.tsx` — replaced emoji `👤`/`📊` icons with `UserPlus`/`Activity` from lucide-react with accessible coloured icon containers.
+- `src/components/seller/SellerStatCard.tsx` — `icon` prop changed from `string` (emoji) to `React.ReactNode`; added `cardClass?: string` and `iconClass?: string` props; uses `THEME_CONSTANTS.enhancedCard.*`; removed `Card` wrapper.
+- `src/app/seller/page.tsx` — added `enhancedCard` to `THEME_CONSTANTS` destructure; removed unused `Button` import; stat cards use lucide icons (`Package`, `Store`, `Gavel`, `FileText`) + `enhancedCard.stat.*` tokens.
+- `src/app/admin/dashboard/page.tsx` — loading state replaced with `AdminDashboardSkeleton` instead of `Spinner`.
+- `src/app/user/profile/page.tsx` — moved `useApiQuery` hooks before conditional `return` statements to comply with React rules of hooks.
+- `src/components/admin/dashboard/index.ts` — added `AdminDashboardSkeleton` export.
+
+#### Tests
+
+- `src/components/admin/__tests__/AdminStatsCards.test.tsx` — updated: tests now check `UI_LABELS.ADMIN.STATS.*` text labels and numeric values (removed broken `getAllByRole("heading")` assertion from stat card `<p>` structure).
+- `src/components/admin/__tests__/AdminPageHeader.test.tsx` — added tests for `description` prop rendering and `breadcrumb` prop (nav element, link with href, plain label).
+
+---
+
 ### Phase 11 — Homepage Sections
 
 **Goal:** All homepage section components use mobile-friendly carousels, lucide-react icons, merged trust/features card grid, and properly wired newsletter mutation.

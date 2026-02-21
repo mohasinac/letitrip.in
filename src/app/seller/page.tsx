@@ -10,13 +10,13 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { Package, Store, Gavel, FileText } from "lucide-react";
 import { Spinner, EmptyState } from "@/components";
 import {
   SellerStatCard,
   SellerQuickActions,
   SellerRecentListings,
 } from "@/components";
-import { Button } from "@/components/ui";
 import { Heading, Text } from "@/components/typography";
 import { useAuth, useApiQuery } from "@/hooks";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
@@ -30,7 +30,7 @@ interface ProductsResponse {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, enhancedCard } = THEME_CONSTANTS;
 
 export default function SellerDashboardPage() {
   const router = useRouter();
@@ -97,29 +97,33 @@ export default function SellerDashboardPage() {
         <SellerStatCard
           label={UI_LABELS.SELLER_PAGE.TOTAL_PRODUCTS}
           value={stats.total}
-          icon="📦"
-          colorClass="text-indigo-600 dark:text-indigo-400"
+          icon={<Package className="w-5 h-5" />}
+          cardClass={enhancedCard.stat.indigo}
+          iconClass="text-indigo-600 dark:text-indigo-400"
           loading={productsLoading}
         />
         <SellerStatCard
           label={UI_LABELS.SELLER_PAGE.ACTIVE_LISTINGS}
           value={stats.activeListings}
-          icon="🏪"
-          colorClass="text-green-600 dark:text-green-400"
+          icon={<Store className="w-5 h-5" />}
+          cardClass={enhancedCard.stat.emerald}
+          iconClass="text-emerald-600 dark:text-emerald-400"
           loading={productsLoading}
         />
         <SellerStatCard
           label={UI_LABELS.SELLER_PAGE.ACTIVE_AUCTIONS}
           value={stats.activeAuctions}
-          icon="🔨"
-          colorClass="text-purple-600 dark:text-purple-400"
+          icon={<Gavel className="w-5 h-5" />}
+          cardClass={enhancedCard.stat.teal}
+          iconClass="text-teal-600 dark:text-teal-400"
           loading={productsLoading}
         />
         <SellerStatCard
           label={UI_LABELS.SELLER_PAGE.DRAFT_PRODUCTS}
           value={stats.drafts}
-          icon="📝"
-          colorClass="text-yellow-600 dark:text-yellow-400"
+          icon={<FileText className="w-5 h-5" />}
+          cardClass={enhancedCard.stat.amber}
+          iconClass="text-amber-600 dark:text-amber-400"
           loading={productsLoading}
         />
       </div>
@@ -134,7 +138,7 @@ export default function SellerDashboardPage() {
       {/* Empty State */}
       {!productsLoading && (productsData?.data?.length ?? 0) === 0 && (
         <EmptyState
-          icon={<span className="text-4xl">🏪</span>}
+          icon={<Store className="w-10 h-10 text-gray-400" />}
           title={UI_LABELS.SELLER_PAGE.NO_PRODUCTS}
           description={UI_LABELS.SELLER_PAGE.NO_PRODUCTS_SUBTITLE}
           actionLabel={UI_LABELS.SELLER_PAGE.ADD_PRODUCT}

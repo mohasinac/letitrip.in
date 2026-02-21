@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import {
   Card,
   Button,
-  Spinner,
   Heading,
   AdminStatsCards,
   AdminPageHeader,
@@ -21,6 +20,7 @@ import {
 import {
   QuickActionsGrid,
   RecentActivityCard,
+  AdminDashboardSkeleton,
 } from "@/components/admin/dashboard";
 import { useAuth, useAdminStats } from "@/hooks";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -41,11 +41,7 @@ export default function AdminDashboardPage() {
   }, [user, authLoading, router]);
 
   if (authLoading || isLoading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Spinner size="xl" variant="primary" />
-      </div>
-    );
+    return <AdminDashboardSkeleton />;
   }
 
   if (!user || (user.role !== "admin" && user.role !== "moderator")) {

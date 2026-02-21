@@ -17,6 +17,18 @@ export default function UserProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
+    queryKey: ["user-orders-count"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.LIST),
+    enabled: !!user,
+  });
+
+  const { data: addressesData } = useApiQuery<{ data: unknown[] }>({
+    queryKey: ["user-addresses-count"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
+    enabled: !!user,
+  });
+
   useEffect(() => {
     if (!loading && !user) {
       router.push(ROUTES.AUTH.LOGIN);
@@ -36,18 +48,6 @@ export default function UserProfilePage() {
   }
 
   const { spacing } = THEME_CONSTANTS;
-
-  const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
-    queryKey: ["user-orders-count"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.LIST),
-    enabled: !!user,
-  });
-
-  const { data: addressesData } = useApiQuery<{ data: unknown[] }>({
-    queryKey: ["user-addresses-count"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
-    enabled: !!user,
-  });
 
   const stats = {
     orders: ordersData?.data?.total ?? 0,

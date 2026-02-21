@@ -1,9 +1,19 @@
 /**
  * Admin Stats Cards Component
+ *
+ * Displays key admin statistics using THEME_CONSTANTS.enhancedCard.stat tokens
+ * and lucide-react icons. No hardcoded strings — all labels from UI_LABELS.
  */
 
-import { Card, Heading, Text } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import {
+  Users,
+  UserCheck,
+  UserPlus,
+  UserX,
+  Package,
+  ShoppingCart,
+} from "lucide-react";
+import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 interface StatsCardsProps {
   stats: {
@@ -13,67 +23,79 @@ interface StatsCardsProps {
   };
 }
 
-export function AdminStatsCards({ stats }: StatsCardsProps) {
-  const { themed } = THEME_CONSTANTS;
+const { enhancedCard, spacing } = THEME_CONSTANTS;
 
-  const cards = [
-    {
-      label: "Total Users",
-      value: stats.users.total,
-      color: "text-blue-600",
-      icon: "👥",
-    },
-    {
-      label: "Active Users",
-      value: stats.users.active,
-      color: "text-green-600",
-      icon: "✅",
-    },
-    {
-      label: "New Users",
-      value: stats.users.new,
-      color: "text-purple-600",
-      icon: "🆕",
-    },
-    {
-      label: "Disabled",
-      value: stats.users.disabled,
-      color: "text-red-600",
-      icon: "🚫",
-    },
-    {
-      label: "Total Products",
-      value: stats.products.total,
-      color: "text-indigo-600",
-      icon: "📦",
-    },
-    {
-      label: "Total Orders",
-      value: stats.orders.total,
-      color: "text-pink-600",
-      icon: "🛒",
-    },
-  ];
+const STAT_CARDS = (stats: StatsCardsProps["stats"]) => [
+  {
+    label: UI_LABELS.ADMIN.STATS.TOTAL_USERS,
+    value: stats.users.total,
+    cardClass: enhancedCard.stat.indigo,
+    iconClass: "text-indigo-600 dark:text-indigo-400",
+    Icon: Users,
+  },
+  {
+    label: UI_LABELS.ADMIN.STATS.ACTIVE_USERS,
+    value: stats.users.active,
+    cardClass: enhancedCard.stat.emerald,
+    iconClass: "text-emerald-600 dark:text-emerald-400",
+    Icon: UserCheck,
+  },
+  {
+    label: UI_LABELS.ADMIN.STATS.NEW_USERS,
+    value: stats.users.new,
+    cardClass: enhancedCard.stat.teal,
+    iconClass: "text-teal-600 dark:text-teal-400",
+    Icon: UserPlus,
+  },
+  {
+    label: UI_LABELS.ADMIN.STATS.DISABLED_USERS,
+    value: stats.users.disabled,
+    cardClass: enhancedCard.stat.rose,
+    iconClass: "text-rose-600 dark:text-rose-400",
+    Icon: UserX,
+  },
+  {
+    label: UI_LABELS.ADMIN.STATS.TOTAL_PRODUCTS,
+    value: stats.products.total,
+    cardClass: enhancedCard.stat.amber,
+    iconClass: "text-amber-600 dark:text-amber-400",
+    Icon: Package,
+  },
+  {
+    label: UI_LABELS.ADMIN.STATS.TOTAL_ORDERS,
+    value: stats.orders.total,
+    cardClass: enhancedCard.stat.indigo,
+    iconClass: "text-indigo-600 dark:text-indigo-400",
+    Icon: ShoppingCart,
+  },
+];
+
+export function AdminStatsCards({ stats }: StatsCardsProps) {
+  const cards = STAT_CARDS(stats);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {cards.map((card) => (
-        <Card
+        <div
           key={card.label}
-          className={`${themed.bgSecondary} hover:shadow-md transition-shadow`}
+          className={`${card.cardClass} hover:shadow-md transition-shadow ${spacing.padding.md}`}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <Text className={`${themed.textSecondary} text-sm mb-2`}>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
                 {card.label}
-              </Text>
-              <Heading level={2} className={card.color}>
+              </p>
+              <p className={`text-3xl font-bold ${card.iconClass}`}>
                 {card.value.toLocaleString()}
-              </Heading>
+              </p>
             </div>
-            <span className="text-3xl">{card.icon}</span>
+            <div
+              className={`p-2 rounded-lg bg-gray-50 dark:bg-gray-800 ${card.iconClass}`}
+            >
+              <card.Icon className="w-6 h-6" />
+            </div>
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );

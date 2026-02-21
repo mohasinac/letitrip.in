@@ -475,6 +475,19 @@ export const UI_LABELS = {
       NEW_USERS_REGISTERED: (count: number) =>
         `${count} new ${count === 1 ? "user" : "users"} registered in the last 30 days`,
     },
+    STATS: {
+      TOTAL_USERS: "Total Users",
+      ACTIVE_USERS: "Active Users",
+      NEW_USERS: "New Users",
+      DISABLED_USERS: "Disabled Accounts",
+      TOTAL_PRODUCTS: "Total Products",
+      TOTAL_ORDERS: "Total Orders",
+      // Seller stats
+      TOTAL_LISTINGS: "Total Listings",
+      ACTIVE_LISTINGS: "Active Listings",
+      ACTIVE_AUCTIONS: "Active Auctions",
+      DRAFT_PRODUCTS: "Drafts",
+    },
     USERS: {
       TITLE: "Users",
       SUBTITLE: "Manage user accounts and permissions",
