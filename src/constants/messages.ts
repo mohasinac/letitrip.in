@@ -25,6 +25,8 @@ export const ERROR_MESSAGES = {
     API_KEY_NOT_CONFIGURED: "Firebase API key not configured",
     TOKEN_EXCHANGE_FAILED: "Failed to exchange custom token for ID token",
     ADMIN_ACCESS_REQUIRED: "Admin access required",
+    WRONG_PASSWORD: "Incorrect email or password. Please try again.",
+    EMAIL_IN_USE: "An account with this email already exists. Try signing in.",
   },
 
   // Validation Errors
@@ -121,6 +123,13 @@ export const ERROR_MESSAGES = {
     PROFILE_PRIVATE: "This profile is private",
     SERVER_CONFIG_ERROR: "Server configuration error",
     NOT_IMPLEMENTED: "This feature is not yet implemented",
+    TRY_AGAIN: "Something went wrong. Please try again in a moment.",
+  },
+
+  // Network Errors
+  NETWORK: {
+    OFFLINE: "You appear to be offline. Check your connection and try again.",
+    TIMEOUT: "The request is taking too long. Please check your connection.",
   },
 
   // Database Errors

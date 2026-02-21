@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -25,6 +26,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | "danger"
     | "warning";
   size?: "sm" | "md" | "lg";
+  isLoading?: boolean;
   children: React.ReactNode;
 }
 
@@ -32,6 +34,8 @@ export default function Button({
   variant = "primary",
   size = "md",
   className = "",
+  isLoading = false,
+  disabled,
   children,
   ...props
 }: ButtonProps) {
@@ -47,17 +51,25 @@ export default function Button({
   };
 
   const sizes = {
-    sm: "px-2.5 py-1.5 text-xs sm:px-3 sm:text-sm gap-1.5",
-    md: "px-3 py-2 text-sm sm:px-4 sm:py-2.5 sm:text-base gap-2",
-    lg: "px-4 py-2.5 text-base sm:px-6 sm:py-3 sm:text-lg gap-2.5",
+    sm: "px-2.5 py-1.5 text-xs sm:px-3 sm:text-sm gap-1.5 min-h-[36px]",
+    md: "px-3 py-2 text-sm sm:px-4 sm:py-2.5 sm:text-base gap-2 min-h-[44px]",
+    lg: "px-4 py-2.5 text-base sm:px-6 sm:py-3 sm:text-lg gap-2.5 min-h-[44px]",
   };
 
   return (
     <button
       className={`${button.base} ${variants[variant]} ${sizes[size]} ${className}`}
+      disabled={disabled || isLoading}
+      aria-busy={isLoading || undefined}
       {...props}
     >
-      {children}
+      {isLoading && (
+        <Loader2
+          className="w-4 h-4 animate-spin flex-shrink-0"
+          aria-hidden="true"
+        />
+      )}
+      <span className={isLoading ? "opacity-70" : undefined}>{children}</span>
     </button>
   );
 }

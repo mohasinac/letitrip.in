@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 13 — Non-Tech Friendly UX
+
+**Goal:** Plain language, guided flows, contextual empty states, and accessible touch targets throughout the app.
+
+#### Added
+
+- `UI_LABELS.SORT.*` — `NEWEST_FIRST`, `PRICE_LOW_HIGH`, `PRICE_HIGH_LOW`, `MOST_POPULAR`, `ENDING_SOON`, `TITLE_AZ`, `LABEL`.
+- `UI_LABELS.ACTIONS.*` — added `PLACE_ORDER`, `SEND_MESSAGE`, `START_SELLING`, `TRACK_MY_ORDER`, `WRITE_REVIEW`, `BROWSE_PRODUCTS`, `CLEAR_SEARCH`, `VIEW_MY_LISTINGS` to the shared ACTIONS block.
+- `UI_HELP_TEXT.*` — added `PRODUCT_TITLE`, `PRODUCT_PRICE`, `AUCTION_START_PRICE`, `AUCTION_END_DATE`, `PRODUCT_CATEGORY`, `PICKUP_ADDRESS`, `COUPON_CODE` for form field inline help.
+- `ERROR_MESSAGES.AUTH.WRONG_PASSWORD` — `"Incorrect email or password. Please try again."`
+- `ERROR_MESSAGES.AUTH.EMAIL_IN_USE` — `"An account with this email already exists. Try signing in."`
+- `ERROR_MESSAGES.GENERIC.TRY_AGAIN` — `"Something went wrong. Please try again in a moment."`
+- `ERROR_MESSAGES.NETWORK.*` — new section with `OFFLINE` and `TIMEOUT` messages.
+- `EmptyState.actionHref?: string` — renders a Next.js `<Link>` button when href provided (no callback needed for navigation CTAs).
+- `src/components/ui/__tests__/EmptyState.test.tsx` — new test file: title/description/icon slot/onAction/actionHref/className coverage.
+
+#### Changed
+
+- `src/components/ui/Button.tsx` — added `isLoading?: boolean` prop: renders `Loader2` spinner (lucide), sets `disabled` + `aria-busy="true"`, dims children text with `opacity-70`. Added WCAG 2.5.5 touch targets: `min-h-[36px]` on `sm`, `min-h-[44px]` on `md` and `lg`.
+- `src/app/search/page.tsx` — replaced garbled emoji `🔍` in search box with lucide `Search` icon; replaced plain paragraph "no filter" empty state with `<EmptyState>` component.
+- `src/app/products/page.tsx` — added `<EmptyState>` (with `PackageSearch` lucide icon) when `!isLoading && products.length === 0`; shows "Clear filters" CTA when filters are active.
+- `src/app/seller/products/page.tsx` — replaced empty `<DataTable>` with `<EmptyState>` (Store icon, friendly title/description, "Add New Listing" CTA calling the drawer) when no products found.
+
+#### Tests
+
+- `src/components/ui/__tests__/Button.test.tsx` — added `isLoading` suite (disabled, aria-busy, spinner SVG, children visible); added touch-target `min-h-*` assertions.
+- `src/components/ui/__tests__/EmptyState.test.tsx` — new: title, description, icon slot, onAction, actionHref link, both-provided prefers href, custom className.
+
+---
+
 ### Phase 12 — Dashboard Page Styling
 
 **Goal:** Admin, seller, and user dashboard pages styled with lucide-react icons, `THEME_CONSTANTS.enhancedCard.stat.*` tokens, proper skeleton screens, no emoji icons, React hooks order compliance.

@@ -19,7 +19,9 @@ import {
   ConfirmDeleteModal,
   ProductForm,
   getProductTableColumns,
+  EmptyState,
 } from "@/components";
+import { Store } from "lucide-react";
 import type { AdminProduct } from "@/components";
 import {
   useAuth,
@@ -224,16 +226,30 @@ export default function SellerProductsPage() {
         </select>
       </AdminFilterBar>
 
-      <DataTable<AdminProduct>
-        data={products}
-        columns={columns}
-        keyExtractor={(p) => p.id}
-        loading={isLoading}
-        actions={actions}
-        emptyTitle={LABELS.NO_PRODUCTS}
-        emptyMessage={SELLER_LABELS.NO_PRODUCTS_SUBTITLE}
-        externalPagination
-      />
+      {!isLoading && products.length === 0 ? (
+        <EmptyState
+          icon={<Store className="w-16 h-16" />}
+          title={searchParam ? LABELS.NO_PRODUCTS : SELLER_LABELS.NO_PRODUCTS}
+          description={
+            searchParam
+              ? SELLER_LABELS.NO_PRODUCTS_SUBTITLE
+              : SELLER_LABELS.NO_PRODUCTS_SUBTITLE
+          }
+          actionLabel={SELLER_LABELS.ADD_PRODUCT}
+          onAction={openCreate}
+        />
+      ) : (
+        <DataTable<AdminProduct>
+          data={products}
+          columns={columns}
+          keyExtractor={(p) => p.id}
+          loading={isLoading}
+          actions={actions}
+          emptyTitle={LABELS.NO_PRODUCTS}
+          emptyMessage={SELLER_LABELS.NO_PRODUCTS_SUBTITLE}
+          externalPagination
+        />
+      )}
 
       {(meta?.totalPages ?? 1) > 1 && (
         <TablePagination

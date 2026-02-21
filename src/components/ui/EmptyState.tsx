@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Card, Heading, Text, Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -27,6 +28,7 @@ interface EmptyStateProps {
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
+  actionHref?: string;
   className?: string;
 }
 
@@ -36,6 +38,7 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
+  actionHref,
   className = "",
 }: EmptyStateProps) {
   const { spacing, typography, accent } = THEME_CONSTANTS;
@@ -59,7 +62,15 @@ export function EmptyState({
           </Text>
         )}
 
-        {actionLabel && onAction && (
+        {actionLabel && actionHref && (
+          <Link href={actionHref}>
+            <Button variant="warning" size="lg">
+              {actionLabel}
+            </Button>
+          </Link>
+        )}
+
+        {actionLabel && onAction && !actionHref && (
           <Button variant="warning" onClick={onAction} size="lg">
             {actionLabel}
           </Button>

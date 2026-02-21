@@ -130,6 +130,26 @@ export const UI_LABELS = {
     CLEAR_ALL: "Clear all",
     APPLY_FILTERS: "Apply filters",
     ADD_PRODUCT: "Add product",
+    PLACE_ORDER: "Place order",
+    SEND_MESSAGE: "Send message",
+    START_SELLING: "Start selling",
+    TRACK_MY_ORDER: "Track my order",
+    WRITE_REVIEW: "Write a review",
+    BROWSE_PRODUCTS: "Browse products",
+    CLEAR_SEARCH: "Clear search",
+    VIEW_MY_LISTINGS: "View my listings",
+  },
+
+  // Sort labels — plain-language; use instead of raw API values visible to users
+  SORT: {
+    LABEL: "Sort by",
+    NEWEST_FIRST: "Newest first",
+    OLDEST_FIRST: "Oldest first",
+    PRICE_LOW_HIGH: "Price: low to high",
+    PRICE_HIGH_LOW: "Price: high to low",
+    MOST_POPULAR: "Most popular",
+    ENDING_SOON: "Ending soon",
+    TITLE_AZ: "Title A–Z",
   },
 
   // Form labels
@@ -1805,4 +1825,13 @@ export const UI_HELP_TEXT = {
   EMAIL_VERIFICATION: "Please verify your email to access all features",
   AVATAR_UPLOAD: "Upload a profile picture. Recommended size: 400x400px",
   AVATAR_FORMATS: "Supported formats: JPEG, PNG, WebP, GIF (max 5MB)",
+  // Product / listing form helper text
+  PRODUCT_TITLE: "Be specific — e.g. 'Handmade leather wallet, brown'",
+  PRODUCT_PRICE: "Set a fair price. You can change it anytime.",
+  AUCTION_START_PRICE: "This is the lowest bid you'll accept",
+  AUCTION_END_DATE: "When should bidding close?",
+  PRODUCT_CATEGORY: "Pick the best fit — buyers search by category",
+  PICKUP_ADDRESS:
+    "Where should the buyer collect from, or where do you ship from?",
+  COUPON_CODE: "Letters and numbers only, no spaces",
 } as const;

@@ -9,8 +9,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Search as SearchIcon } from "lucide-react";
 import { PRODUCT_SORT_VALUES } from "@/components";
-import { SearchFiltersRow, SearchResultsSection } from "@/components";
+import {
+  SearchFiltersRow,
+  SearchResultsSection,
+  EmptyState,
+} from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { debounce } from "@/utils";
@@ -148,8 +153,8 @@ export default function SearchPage() {
           autoFocus
           className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-          ðŸ”
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <SearchIcon className="w-5 h-5" />
         </span>
       </div>
 
@@ -177,11 +182,11 @@ export default function SearchPage() {
           onPageChange={table.setPage}
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <p className={`text-xl ${themed.textSecondary}`}>
-            {UI_LABELS.SEARCH_PAGE.EMPTY_QUERY}
-          </p>
-        </div>
+        <EmptyState
+          icon={<SearchIcon className="w-16 h-16" />}
+          title={UI_LABELS.SEARCH_PAGE.EMPTY_QUERY}
+          description={UI_LABELS.SEARCH_PAGE.SUBTITLE}
+        />
       )}
     </main>
   );

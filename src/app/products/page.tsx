@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useMemo } from "react";
+import { PackageSearch } from "lucide-react";
 import {
   ProductGrid,
   ProductFilters,
@@ -9,6 +10,7 @@ import {
   ActiveFilterChips,
   Pagination,
   PRODUCT_SORT_VALUES,
+  EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { UI_LABELS, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
@@ -196,11 +198,27 @@ export default function ProductsPage() {
             </div>
 
             {/* Grid */}
-            <ProductGrid
-              products={products}
-              loading={isLoading}
-              skeletonCount={PAGE_SIZE}
-            />
+            {!isLoading && products.length === 0 ? (
+              <EmptyState
+                icon={<PackageSearch className="w-16 h-16" />}
+                title={UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS}
+                description={UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS_SUBTITLE}
+                actionLabel={
+                  hasActiveFilters ? UI_LABELS.ACTIONS.CLEAR_ALL : undefined
+                }
+                onAction={
+                  hasActiveFilters
+                    ? () => table.clear(["category", "minPrice", "maxPrice"])
+                    : undefined
+                }
+              />
+            ) : (
+              <ProductGrid
+                products={products}
+                loading={isLoading}
+                skeletonCount={PAGE_SIZE}
+              />
+            )}
 
             {/* Pagination */}
             {(meta?.totalPages ?? 1) > 1 && (
