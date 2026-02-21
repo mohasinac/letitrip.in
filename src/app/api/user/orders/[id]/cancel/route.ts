@@ -18,7 +18,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const cancelSchema = z.object({
@@ -36,7 +36,7 @@ const CANCELLABLE_STATUSES = ["pending", "confirmed"] as const;
 export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
     const user = await requireAuth();
-    const { id } = params;
+    const { id } = await params;
 
     const order = await orderRepository.findById(id);
 

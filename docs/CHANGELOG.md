@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 17 — Next.js 16 Compatibility: Async Params
+
+**Goal:** Fix all route handlers and page components using the pre-Next.js-15 synchronous `params` pattern; clear stale `.next` cache references from deleted routes; achieve zero TypeScript errors.
+
+#### Changed
+
+- `src/app/api/user/addresses/[id]/route.ts` — `RouteContext.params` updated from `{ id: string }` to `Promise<{ id: string }>`. All three handlers (`GET`, `PATCH`, `DELETE`) now `await params` before destructuring `id`.
+- `src/app/api/user/addresses/[id]/set-default/route.ts` — same async params migration (`POST` handler).
+- `src/app/api/user/orders/[id]/route.ts` — same async params migration (`GET` handler).
+- `src/app/api/user/orders/[id]/cancel/route.ts` — same async params migration (`POST` handler).
+- `src/app/faqs/[category]/page.tsx` — `Props.params` changed to `Promise<{ category: string }>`. Component made `async`; `category` now obtained via `await params`. Redirect on invalid category unchanged.
+
+#### Fixed
+
+- Deleted stale `.next` directory that referenced `products/[id]/page.js` (renamed to `[slug]`), `seller/products/new/page.js` (deleted in Phase 6), `api/profile/update/route.js` and `api/profile/update-password/route.js` (deleted in Phase 14). These stale references caused four spurious `TS2307 Cannot find module` errors in `.next/dev/types/validator.ts`.
+- `npx tsc --noEmit` now exits with code 0 (was: 8 errors).
+
+---
+
 ### Phase 16 — Newsletter Admin Management
 
 **Goal:** Full admin UI for managing newsletter subscribers — list, filter, unsubscribe, resubscribe, delete, and stats.

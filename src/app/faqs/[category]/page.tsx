@@ -5,15 +5,15 @@ import type { FAQCategoryKey } from "@/constants";
 import { FAQPageContent } from "@/components/faq";
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 export function generateStaticParams() {
   return Object.keys(FAQ_CATEGORIES).map((category) => ({ category }));
 }
 
-export default function FAQCategoryPage({ params }: Props) {
-  const { category } = params;
+export default async function FAQCategoryPage({ params }: Props) {
+  const { category } = await params;
 
   if (!(category in FAQ_CATEGORIES)) {
     redirect(ROUTES.PUBLIC.FAQS);

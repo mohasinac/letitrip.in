@@ -27,6 +27,7 @@
 | **14** | Code deduplication                             | L                      | 🟡 Minor breaking (route renames) | ~12                       |
 | **15** | SEO — full-stack coverage                      | M                      | 🟢 Additive + schema change       | ~30                       |
 | **16** | Newsletter admin management                    | N                      | 🟢 Additive                       | ~8                        |
+| **17** | Next.js 16 compatibility — async params        | Maintenance            | 🟢 Zero breaking                  | ~5                        |
 
 ---
 
@@ -52,6 +53,7 @@
 | **14** | ✅ Done | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
 | **15** | ✅ Done | 2026-02-21 | 2026-02-21 | sitemap · robots · OG image · JSON-LD helpers · product slug URLs · per-page metadata · noIndex for auth/admin/seller/user/checkout/cart                                                        |
 | **16** | ✅ Done | 2026-02-22 | 2026-02-22 | newsletter subscriber list · stats · unsubscribe/resubscribe/delete · Sieve-powered API · admin nav entry                                                                                       |
+| **17** | ✅ Done | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page · .next cache cleared · 0 TS errors                                                                                             |
 
 **Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
 
@@ -2076,3 +2078,116 @@ Before merging any phase:
 - [ ] No `alt=""` on meaningful images — all product/category/blog images have descriptive alt text
 - [ ] All new/modified public pages export `metadata` or `generateMetadata()` (Phase 15 rule)
 - [ ] Deleted API route paths are updated in `API_ENDPOINTS` constants and all callers
+
+---
+
+## Phase 17 — Next.js 16 Compatibility: Async Params
+
+> **Audit source:** `npx tsc --noEmit` — 8 errors in `.next/dev/types/validator.ts` (Feb 21, 2026)  
+> **Root cause:** Next.js 15+ made `params` in route handlers and page components a `Promise`. Four API routes and one page file still use the old synchronous `params: { id: string }` interface, causing type-checker failures.
+
+### Background
+
+In Next.js 15 / 16 the `context.params` object passed to route handlers and page components is a `Promise`. The `.next/dev/types/validator.ts` auto-generated validator enforces this — a `RouteContext` whose `params` is **not** a `Promise` will fail the constraint check.
+
+**Pattern before (Next.js 13/14 — broken in 15/16):**
+
+```typescript
+interface RouteContext {
+  params: { id: string };
+}
+export async function GET(_req: NextRequest, { params }: RouteContext) {
+  const { id } = params; // ❌ sync access
+}
+```
+
+**Pattern after (Next.js 15/16 compatible):**
+
+```typescript
+interface RouteContext {
+  params: Promise<{ id: string }>;
+}
+export async function GET(_req: NextRequest, { params }: RouteContext) {
+  const { id } = await params; // ✅ async access
+}
+```
+
+### 17.1 API Routes to migrate (4 files)
+
+| File                                                   | Param key                   |
+| ------------------------------------------------------ | --------------------------- |
+| `src/app/api/user/addresses/[id]/route.ts`             | `id` (GET · PATCH · DELETE) |
+| `src/app/api/user/addresses/[id]/set-default/route.ts` | `id` (POST)                 |
+| `src/app/api/user/orders/[id]/route.ts`                | `id` (GET)                  |
+| `src/app/api/user/orders/[id]/cancel/route.ts`         | `id` (POST)                 |
+
+For each:
+
+1. Change `params: { id: string }` → `params: Promise<{ id: string }>` in `RouteContext`
+2. Change `const { id } = params` → `const { id } = await params` in every handler
+
+### 17.2 Page file to migrate (1 file)
+
+**`src/app/faqs/[category]/page.tsx`** — server component, not an async function, uses `params` prop:
+
+```tsx
+// BEFORE (sync — incompatible with Next.js 15/16)
+interface Props { params: { category: string }; }
+export default function FAQCategoryPage({ params }: Props) {
+  const { category } = params;
+  ...
+}
+
+// AFTER — make component async and await params
+interface Props { params: Promise<{ category: string }>; }
+export default async function FAQCategoryPage({ params }: Props) {
+  const { category } = await params;
+  ...
+}
+```
+
+### 17.3 Stale `.next` cache entries
+
+The following files were deleted in previous phases but remain referenced in `.next/dev/types/validator.ts`:
+
+| Stale reference                                | Deleted in                    |
+| ---------------------------------------------- | ----------------------------- |
+| `src/app/products/[id]/page.js`                | Phase 15 (renamed → `[slug]`) |
+| `src/app/seller/products/new/page.js`          | Phase 6                       |
+| `src/app/api/profile/update-password/route.js` | Phase 14                      |
+| `src/app/api/profile/update/route.js`          | Phase 14                      |
+
+**Fix:** Delete `.next` directory so Next.js regenerates `validator.ts` cleanly on next build.
+
+```bash
+Remove-Item -Recurse -Force .next
+```
+
+### 17.4 Files changed in Phase 17
+
+```
+src/app/api/user/addresses/[id]/route.ts                  RouteContext async params
+src/app/api/user/addresses/[id]/set-default/route.ts      RouteContext async params
+src/app/api/user/orders/[id]/route.ts                     RouteContext async params
+src/app/api/user/orders/[id]/cancel/route.ts              RouteContext async params
+src/app/faqs/[category]/page.tsx                          async component + await params
+```
+
+### 17.5 Tests — Phase 17
+
+Update any test files that mock `params` as a plain object to use `Promise.resolve(...)`:
+
+**`src/app/api/__tests__/` affected tests** — search for mock params patterns and update:
+
+```typescript
+// BEFORE
+const mockContext = { params: { id: "abc" } };
+
+// AFTER
+const mockContext = { params: Promise.resolve({ id: "abc" }) };
+```
+
+**Assertions:**
+
+- Each updated route handler still returns correct data when called with `Promise.resolve`-wrapped params
+- `npx tsc --noEmit` exits with code 0 after `.next` is deleted and rebuilt

@@ -20,7 +20,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -31,7 +31,7 @@ interface RouteContext {
 export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const user = await requireAuth();
-    const { id } = params;
+    const { id } = await params;
 
     const address = await addressRepository.findById(user.uid, id);
 
@@ -54,7 +54,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const user = await requireAuth();
-    const { id } = params;
+    const { id } = await params;
 
     const body = await request.json();
     const validation = validateRequestBody(userAddressUpdateSchema, body);
@@ -92,7 +92,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   try {
     const user = await requireAuth();
-    const { id } = params;
+    const { id } = await params;
 
     await addressRepository.delete(user.uid, id);
 

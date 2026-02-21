@@ -16,7 +16,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -28,7 +28,7 @@ interface RouteContext {
 export async function POST(_request: NextRequest, { params }: RouteContext) {
   try {
     const user = await requireAuth();
-    const { id } = params;
+    const { id } = await params;
 
     const address = await addressRepository.setDefault(user.uid, id);
 
