@@ -21,7 +21,11 @@ import {
   getProductTableColumns,
   EmptyState,
   Badge,
+  FilterDrawer,
+  FilterFacetSection,
+  ActiveFilterChips,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { Store } from "lucide-react";
 import type { AdminProduct } from "@/components";
 import {
@@ -44,6 +48,13 @@ import { formatCurrency } from "@/utils";
 const { input, themed } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.ADMIN.PRODUCTS;
 const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
+
+const STATUS_OPTIONS = [
+  { value: "published", label: "Published" },
+  { value: "draft", label: "Draft" },
+  { value: "out_of_stock", label: "Out of Stock" },
+  { value: "archived", label: "Archived" },
+];
 
 const PAGE_SIZE = 25;
 
@@ -77,6 +88,7 @@ export default function SellerProductsPage() {
   });
   const searchParam = table.get("q");
   const sortParam = table.get("sort") || "-createdAt";
+  const statusParam = table.get("status");
   const page = table.getNumber("page", 1);
 
   // Drawer state
@@ -96,6 +108,7 @@ export default function SellerProductsPage() {
     if (!user?.uid) return null;
     const filtersArr = [`sellerId==${user.uid}`];
     if (searchParam) filtersArr.push(`title@=*${searchParam}`);
+    if (statusParam) filtersArr.push(`status==${statusParam}`);
     const params = new URLSearchParams({
       filters: filtersArr.join(","),
       pageSize: String(PAGE_SIZE),
@@ -103,7 +116,7 @@ export default function SellerProductsPage() {
       sorts: sortParam,
     });
     return `${API_ENDPOINTS.PRODUCTS.LIST}?${params.toString()}`;
-  }, [user?.uid, searchParam, page, sortParam]);
+  }, [user?.uid, searchParam, page, sortParam, statusParam]);
 
   const { data, isLoading, refetch } = useApiQuery<{
     data: AdminProduct[];
@@ -207,26 +220,58 @@ export default function SellerProductsPage() {
       />
 
       {/* Filter bar */}
-      <AdminFilterBar withCard={false} columns={2}>
-        <input
-          type="search"
-          value={searchParam}
-          onChange={(e) => table.set("q", e.target.value)}
-          placeholder={LABELS.SEARCH_PLACEHOLDER}
-          className={input.base}
-        />
-        <select
-          value={sortParam}
-          onChange={(e) => table.setSort(e.target.value)}
-          className={input.base}
+      <div className="flex flex-wrap items-center gap-2">
+        <AdminFilterBar withCard={false} columns={2}>
+          <input
+            type="search"
+            value={searchParam}
+            onChange={(e) => table.set("q", e.target.value)}
+            placeholder={LABELS.SEARCH_PLACEHOLDER}
+            className={input.base}
+          />
+          <select
+            value={sortParam}
+            onChange={(e) => table.setSort(e.target.value)}
+            className={input.base}
+          >
+            <option value="-createdAt">Newest First</option>
+            <option value="createdAt">Oldest First</option>
+            <option value="title">Title A–Z</option>
+            <option value="-price">Price High–Low</option>
+            <option value="price">Price Low–High</option>
+          </select>
+        </AdminFilterBar>
+        <FilterDrawer
+          activeCount={statusParam ? 1 : 0}
+          onClearAll={() => table.set("status", "")}
         >
-          <option value="-createdAt">Newest First</option>
-          <option value="createdAt">Oldest First</option>
-          <option value="title">Title A–Z</option>
-          <option value="-price">Price High–Low</option>
-          <option value="price">Price Low–High</option>
-        </select>
-      </AdminFilterBar>
+          <FilterFacetSection
+            title="Status"
+            options={STATUS_OPTIONS}
+            selected={statusParam ? [statusParam] : []}
+            onChange={(vals) => table.set("status", vals[0] ?? "")}
+            searchable={false}
+          />
+        </FilterDrawer>
+      </div>
+
+      {statusParam && (
+        <ActiveFilterChips
+          filters={
+            [
+              {
+                key: "status",
+                label: "Status",
+                value:
+                  STATUS_OPTIONS.find((o) => o.value === statusParam)?.label ??
+                  statusParam,
+              },
+            ] satisfies ActiveFilter[]
+          }
+          onRemove={() => table.set("status", "")}
+          onClearAll={() => table.set("status", "")}
+        />
+      )}
 
       {!isLoading && products.length === 0 ? (
         <EmptyState

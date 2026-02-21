@@ -27,9 +27,11 @@ jest.mock("@/hooks", () => ({
   useMessage: () => ({ showError: jest.fn(), showSuccess: jest.fn() }),
   useUrlTable: () => ({
     get: jest.fn().mockReturnValue(""),
+    getNumber: jest.fn().mockReturnValue(1),
     set: jest.fn(),
     setMany: jest.fn(),
     setPage: jest.fn(),
+    setPageSize: jest.fn(),
     setSort: jest.fn(),
     buildSieveParams: jest.fn().mockReturnValue(""),
     params: new URLSearchParams(),
@@ -58,6 +60,9 @@ jest.mock("@/components", () => ({
   DrawerFormFooter: () => <div data-testid="drawer-footer" />,
   getFaqTableColumns: () => ({ columns: [], actions: [] }),
   FaqForm: () => <div data-testid="faq-form" />,
+  AdminFilterBar: () => <div data-testid="admin-filter-bar" />,
+  FormField: () => <div data-testid="form-field" />,
+  TablePagination: () => <div data-testid="table-pagination" />,
 }));
 
 describe("Admin FAQs Page", () => {

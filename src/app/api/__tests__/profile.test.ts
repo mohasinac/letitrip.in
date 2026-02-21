@@ -136,6 +136,7 @@ jest.mock("@/constants", () => ({
       NOT_AUTHENTICATED: "Not authenticated",
       NOT_FOUND: "User not found",
     },
+    DATABASE: { NOT_FOUND: "Not found" },
     GENERIC: {
       INTERNAL_ERROR: "Internal server error",
       USER_ID_REQUIRED: "User ID is required",
@@ -176,7 +177,10 @@ jest.mock("@/db/schema/users", () => ({
 // Imports (after mocks)
 // ============================================
 
-import { PATCH as updatePATCH } from "../user/profile/route";
+import {
+  GET as userProfileGET,
+  PATCH as updatePATCH,
+} from "../user/profile/route";
 import { GET as profileGET } from "../profile/[userId]/route";
 
 // ============================================
@@ -414,5 +418,61 @@ describe("Profile API - GET /api/profile/[userId]", () => {
     const { body } = await parseResponse(res);
 
     expect(body.data.role).toBe("user");
+  });
+});
+
+// ============================================
+// Tests: GET /api/user/profile (authenticated)
+// ============================================
+
+describe("Profile API - GET /api/user/profile", () => {
+  const seedUsers = getSeedUsers();
+  const defaultUser = seedUsers.johnDoe;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    setupAuthenticatedUser(defaultUser);
+  });
+
+  it("returns 200 with the authenticated user's profile", async () => {
+    const req = buildRequest("/api/user/profile", { method: "GET" });
+    const res = await userProfileGET(req);
+    const { status, body } = await parseResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data?.user?.uid ?? body.data?.uid).toBe(defaultUser.uid);
+  });
+
+  it("returns 401 when no session cookie is present", async () => {
+    setupAuthenticatedUser(null);
+
+    const req = buildRequest("/api/user/profile", { method: "GET" });
+    const res = await userProfileGET(req);
+    const { status } = await parseResponse(res);
+
+    expect(status).toBe(401);
+  });
+
+  it("returns 401 when session cookie is invalid", async () => {
+    mockGetRequiredSessionCookie.mockReturnValue("invalid-cookie");
+    mockVerifySessionCookie.mockResolvedValueOnce(null);
+
+    const req = buildRequest("/api/user/profile", { method: "GET" });
+    const res = await userProfileGET(req);
+    const { status } = await parseResponse(res);
+
+    expect(status).toBe(401);
+  });
+
+  it("returns 401 when user is not found in the repository", async () => {
+    mockFindById.mockResolvedValueOnce(null);
+
+    const req = buildRequest("/api/user/profile", { method: "GET" });
+    const res = await userProfileGET(req);
+    const { status } = await parseResponse(res);
+
+    // Route throws AuthenticationError (401) when user record is missing
+    expect(status).toBe(401);
   });
 });

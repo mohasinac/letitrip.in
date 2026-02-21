@@ -25,6 +25,7 @@ const mockUpdate = jest.fn();
 jest.mock("@/repositories", () => ({
   productRepository: {
     findById: (...args: unknown[]) => mockFindById(...args),
+    findByIdOrSlug: (...args: unknown[]) => mockFindById(...args),
     update: (...args: unknown[]) => mockUpdate(...args),
   },
 }));

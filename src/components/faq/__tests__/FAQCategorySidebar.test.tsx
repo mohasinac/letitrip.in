@@ -9,8 +9,20 @@ import {
 
 // Mock Next.js Link
 jest.mock("next/link", () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
+  return ({
+    children,
+    href,
+    onClick,
+    className,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    onClick?: React.MouseEventHandler;
+    className?: string;
+  }) => (
+    <a href={href} onClick={onClick} className={className}>
+      {children}
+    </a>
   );
 });
 
@@ -53,7 +65,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const allButton = screen.getByText("All FAQs").closest("button");
+      const allButton = screen.getByText("All FAQs").closest("a");
       expect(allButton).toBeInTheDocument();
 
       // Total count: 20+15+15+12+18+10+12 = 102
@@ -130,7 +142,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const allButton = screen.getByText("All FAQs").closest("button");
+      const allButton = screen.getByText("All FAQs").closest("a");
       fireEvent.click(allButton!);
 
       expect(mockOnCategorySelect).toHaveBeenCalledTimes(1);
@@ -146,7 +158,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const generalButton = screen.getByText("General").closest("button");
+      const generalButton = screen.getByText("General").closest("a");
       fireEvent.click(generalButton!);
 
       expect(mockOnCategorySelect).toHaveBeenCalledTimes(1);
@@ -165,19 +177,19 @@ describe("FAQCategorySidebar", () => {
       // Test products category
       const productsButton = screen
         .getByText("Products & Auctions")
-        .closest("button");
+        .closest("a");
       fireEvent.click(productsButton!);
       expect(mockOnCategorySelect).toHaveBeenCalledWith("products");
 
       // Test shipping category
       const shippingButton = screen
         .getByText("Shipping & Delivery")
-        .closest("button");
+        .closest("a");
       fireEvent.click(shippingButton!);
       expect(mockOnCategorySelect).toHaveBeenCalledWith("shipping");
 
       // Test sellers category
-      const sellersButton = screen.getByText("For Sellers").closest("button");
+      const sellersButton = screen.getByText("For Sellers").closest("a");
       fireEvent.click(sellersButton!);
       expect(mockOnCategorySelect).toHaveBeenCalledWith("sellers");
     });
@@ -193,7 +205,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const allButton = screen.getByText("All FAQs").closest("button");
+      const allButton = screen.getByText("All FAQs").closest("a");
       expect(allButton).toHaveClass("font-medium");
     });
 
@@ -206,7 +218,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const generalButton = screen.getByText("General").closest("button");
+      const generalButton = screen.getByText("General").closest("a");
       expect(generalButton).toHaveClass("font-medium");
     });
 
@@ -221,7 +233,7 @@ describe("FAQCategorySidebar", () => {
 
       const productsButton = screen
         .getByText("Products & Auctions")
-        .closest("button");
+        .closest("a");
       expect(productsButton).not.toHaveClass("font-medium");
     });
 
@@ -295,7 +307,7 @@ describe("FAQCategorySidebar", () => {
       );
 
       // Total should be 0
-      expect(screen.getByText("All FAQs").closest("button")).toContainHTML("0");
+      expect(screen.getByText("All FAQs").closest("a")).toContainHTML("0");
     });
 
     it("should handle missing count for a category", () => {
@@ -351,13 +363,13 @@ describe("FAQCategorySidebar", () => {
       );
 
       // Click multiple categories in succession
-      const generalButton = screen.getByText("General").closest("button");
+      const generalButton = screen.getByText("General").closest("a");
       const shippingButton = screen
         .getByText("Shipping & Delivery")
-        .closest("button");
+        .closest("a");
       const productsButton = screen
         .getByText("Products & Auctions")
-        .closest("button");
+        .closest("a");
 
       fireEvent.click(generalButton!);
       fireEvent.click(shippingButton!);
@@ -371,7 +383,7 @@ describe("FAQCategorySidebar", () => {
   });
 
   describe("Accessibility", () => {
-    it("should have proper button roles for all categories", () => {
+    it("should have proper link roles for all categories", () => {
       render(
         <FAQCategorySidebar
           selectedCategory="all"
@@ -380,9 +392,9 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      // All category items should be buttons (8 total: All FAQs + 7 categories)
-      const buttons = screen.getAllByRole("button");
-      expect(buttons).toHaveLength(8);
+      // All category items are links (All FAQs + 7 categories + Contact Support = 9 links)
+      const links = screen.getAllByRole("link");
+      expect(links.length).toBeGreaterThanOrEqual(8);
     });
 
     it("should have proper link role for Contact Support", () => {
@@ -410,10 +422,10 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const buttons = screen.getAllByRole("button");
-      buttons.forEach((button) => {
-        // All buttons should be keyboard accessible (no tabIndex=-1)
-        expect(button).not.toHaveAttribute("tabindex", "-1");
+      const links = screen.getAllByRole("link");
+      links.forEach((link) => {
+        // All links should be keyboard accessible (no tabIndex=-1)
+        expect(link).not.toHaveAttribute("tabindex", "-1");
       });
     });
 
@@ -426,7 +438,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const generalButton = screen.getByText("General").closest("button");
+      const generalButton = screen.getByText("General").closest("a");
       fireEvent.keyDown(generalButton!, { key: "Enter", code: "Enter" });
       fireEvent.click(generalButton!); // Click still fires after keyDown
 

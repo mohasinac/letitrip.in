@@ -16,8 +16,17 @@ import {
   FaqForm,
   AdminFilterBar,
   FormField,
+  TablePagination,
 } from "@/components";
 import type { FAQ, FaqDrawerMode } from "@/components";
+
+interface FAQsListResponse {
+  items: FAQ[];
+  total: number;
+  page: number;
+  totalPages: number;
+  pageSize: number;
+}
 
 interface PageProps {
   params: Promise<{ action?: string[] }>;
@@ -34,16 +43,25 @@ export default function AdminFAQsPage({ params }: PageProps) {
   });
   const searchTerm = table.get("q");
 
-  const { data, isLoading, error, refetch } = useApiQuery<FAQ[]>({
+  const { data, isLoading, error, refetch } = useApiQuery<
+    FAQsListResponse | FAQ[]
+  >({
     queryKey: ["faqs", "list", table.params.toString()],
     queryFn: () => {
       const params = new URLSearchParams();
       const sort = table.get("sort") || "-priority,order";
       params.set("sorts", sort);
+      params.set("page", table.get("page") || "1");
+      params.set("pageSize", table.get("pageSize") || "50");
       if (searchTerm) params.set("search", searchTerm);
       return apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?${params.toString()}`);
     },
   });
+
+  const faqs = Array.isArray(data)
+    ? data
+    : ((data as FAQsListResponse)?.items ?? []);
+  const faqMeta = Array.isArray(data) ? null : (data as FAQsListResponse);
 
   const createMutation = useApiMutation<any, any>({
     mutationFn: (data) => apiClient.post(API_ENDPOINTS.FAQS.LIST, data),
@@ -62,8 +80,6 @@ export default function AdminFAQsPage({ params }: PageProps) {
   const [drawerMode, setDrawerMode] = useState<FaqDrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const initialFormRef = useRef<string>("");
-
-  const faqs = Array.isArray(data) ? data : [];
 
   const isDirty = useMemo(() => {
     if (!editingFAQ || drawerMode === "delete") return false;
@@ -254,7 +270,19 @@ export default function AdminFAQsPage({ params }: PageProps) {
               keyExtractor={(faq) => faq.id}
               onRowClick={handleEdit}
               actions={actions}
+              externalPagination
             />
+            {(faqMeta?.totalPages ?? 1) > 1 && (
+              <TablePagination
+                currentPage={faqMeta?.page ?? 1}
+                totalPages={faqMeta?.totalPages ?? 1}
+                pageSize={faqMeta?.pageSize ?? 50}
+                total={faqMeta?.total ?? faqs.length}
+                onPageChange={table.setPage}
+                onPageSizeChange={table.setPageSize}
+                isLoading={isLoading}
+              />
+            )}
           </>
         )}
       </div>

@@ -10,6 +10,7 @@ import {
   Button,
   Text,
   StatusBadge,
+  TablePagination,
 } from "@/components";
 import { useRouter } from "next/navigation";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
@@ -41,17 +42,25 @@ const STATUS_TABS = [
 export default function UserOrdersPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const table = useUrlTable({});
+  const table = useUrlTable({ defaults: { pageSize: "10" } });
   const statusFilter = table.get("status");
+  const page = table.getNumber("page", 1);
+  const pageSize = table.getNumber("pageSize", 10);
 
   const ordersUrl = useMemo(() => {
     const url = API_ENDPOINTS.ORDERS.LIST;
-    return statusFilter ? `${url}?status=${statusFilter}` : url;
-  }, [statusFilter]);
+    const params = new URLSearchParams();
+    if (statusFilter) params.set("status", statusFilter);
+    params.set("page", String(page));
+    params.set("pageSize", String(pageSize));
+    return `${url}?${params.toString()}`;
+  }, [statusFilter, page, pageSize]);
 
   const { data, isLoading } = useApiQuery<{
     orders: OrderDocument[];
     total: number;
+    page: number;
+    totalPages: number;
   }>({
     queryKey: ["user-orders", table.params.toString()],
     queryFn: () => apiClient.get(ordersUrl),
@@ -59,6 +68,8 @@ export default function UserOrdersPage() {
   });
 
   const orders: OrderDocument[] = data?.orders ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const totalOrders = data?.total ?? 0;
 
   if (loading || isLoading) {
     return (
@@ -166,6 +177,17 @@ export default function UserOrdersPage() {
             </Card>
           ))}
         </div>
+      )}
+
+      {totalPages > 1 && (
+        <TablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          total={totalOrders}
+          onPageChange={table.setPage}
+          isLoading={isLoading}
+        />
       )}
     </div>
   );

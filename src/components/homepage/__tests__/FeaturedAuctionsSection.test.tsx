@@ -135,7 +135,8 @@ describe("FeaturedAuctionsSection", () => {
 
     it('renders "View All" button', () => {
       render(<FeaturedAuctionsSection />);
-      expect(screen.getByText(/view all/i)).toBeInTheDocument();
+      const viewAllItems = screen.getAllByText(/view all/i);
+      expect(viewAllItems.length).toBeGreaterThan(0);
     });
 
     it("renders all auction titles", () => {

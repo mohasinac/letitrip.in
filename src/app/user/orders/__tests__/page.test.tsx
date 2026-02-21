@@ -19,9 +19,11 @@ jest.mock("@/hooks", () => ({
   }),
   useUrlTable: () => ({
     get: jest.fn().mockReturnValue(""),
+    getNumber: jest.fn().mockReturnValue(1),
     set: jest.fn(),
     setMany: jest.fn(),
     setPage: jest.fn(),
+    setPageSize: jest.fn(),
     setSort: jest.fn(),
     buildSieveParams: jest.fn().mockReturnValue(""),
     params: new URLSearchParams(),

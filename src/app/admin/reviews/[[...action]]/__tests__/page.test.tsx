@@ -27,9 +27,11 @@ jest.mock("@/hooks", () => ({
   useMessage: () => ({ showError: jest.fn(), showSuccess: jest.fn() }),
   useUrlTable: () => ({
     get: jest.fn().mockReturnValue(""),
+    getNumber: jest.fn().mockReturnValue(1),
     set: jest.fn(),
     setMany: jest.fn(),
     setPage: jest.fn(),
+    setPageSize: jest.fn(),
     setSort: jest.fn(),
     buildSieveParams: jest.fn().mockReturnValue(""),
     params: new URLSearchParams(),
@@ -55,6 +57,9 @@ jest.mock("@/components", () => ({
   getReviewTableColumns: () => [],
   ReviewRowActions: () => <div data-testid="review-actions" />,
   ReviewDetailView: () => <div data-testid="review-detail" />,
+  TablePagination: () => <div data-testid="table-pagination" />,
+  Modal: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ConfirmDeleteModal: () => <div data-testid="confirm-delete" />,
   useToast: () => ({ showToast: jest.fn() }),
 }));
 

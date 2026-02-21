@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { NewsletterSection } from "../NewsletterSection";
 
 // Mock hooks
@@ -139,10 +145,12 @@ describe("NewsletterSection", () => {
       });
       render(<NewsletterSection />);
 
-      fireEvent.change(screen.getByRole("textbox"), {
+      const input = screen.getByRole("textbox");
+      fireEvent.change(input, {
         target: { value: "not-an-email" },
       });
-      fireEvent.click(screen.getByRole("button", { name: /subscribe/i }));
+      // Use fireEvent.submit to bypass jsdom's HTML5 email constraint validation
+      fireEvent.submit(input.closest("form")!);
       await waitFor(() => expect(showError).toHaveBeenCalled());
     });
 

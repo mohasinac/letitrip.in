@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { THEME_CONSTANTS, FAQ_CATEGORIES } from "@/constants";
+import { THEME_CONSTANTS, FAQ_CATEGORIES, ROUTES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 
 // Re-export for backward compatibility — consumers that imported from this file continue to work.
@@ -9,7 +9,8 @@ export type { FAQCategoryKey } from "@/constants";
 
 interface FAQCategorySidebarProps {
   selectedCategory: FAQCategoryKey | "all";
-  onCategorySelect: (category: FAQCategoryKey | "all") => void;
+  /** Called after navigation for any local state sync. Navigation is handled by the Link href. */
+  onCategorySelect?: (category: FAQCategoryKey | "all") => void;
   categoryCounts: Record<FAQCategoryKey, number>;
 }
 
@@ -35,9 +36,10 @@ export function FAQCategorySidebar({
       </h2>
 
       {/* All FAQs */}
-      <button
-        onClick={() => onCategorySelect("all")}
-        className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
+      <Link
+        href={ROUTES.PUBLIC.FAQS}
+        onClick={() => onCategorySelect?.("all")}
+        className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
           selectedCategory === "all"
             ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
             : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -54,7 +56,7 @@ export function FAQCategorySidebar({
             {totalCount}
           </span>
         </div>
-      </button>
+      </Link>
 
       {/* Category List */}
       <div className="pt-3 mt-2 border-t ${THEME_CONSTANTS.themed.border}">
@@ -63,10 +65,11 @@ export function FAQCategorySidebar({
           const count = categoryCounts[key as FAQCategoryKey] || 0;
 
           return (
-            <button
+            <Link
               key={key}
-              onClick={() => onCategorySelect(key as FAQCategoryKey)}
-              className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
+              href={ROUTES.PUBLIC.FAQ_CATEGORY(key)}
+              onClick={() => onCategorySelect?.(key as FAQCategoryKey)}
+              className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
                 isSelected
                   ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
                   : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -92,7 +95,7 @@ export function FAQCategorySidebar({
                   {category.description}
                 </p>
               )}
-            </button>
+            </Link>
           );
         })}
       </div>

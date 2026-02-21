@@ -12,10 +12,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { PRODUCT_SORT_VALUES } from "@/components";
 import {
-  SearchFiltersRow,
+  FilterDrawer,
+  FilterFacetSection,
+  ActiveFilterChips,
   SearchResultsSection,
   EmptyState,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { debounce } from "@/utils";
@@ -120,6 +123,40 @@ export default function SearchPage() {
   const total = searchData?.meta?.total ?? 0;
   const totalPages = searchData?.meta?.totalPages ?? 1;
 
+  const categoryOptions = useMemo(
+    () => topCategories.map((c) => ({ value: c.id, label: c.name })),
+    [topCategories],
+  );
+
+  const activeFilterCount = [urlCategory, urlMinPrice, urlMaxPrice].filter(
+    Boolean,
+  ).length;
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    const result: ActiveFilter[] = [];
+    if (urlCategory) {
+      result.push({
+        key: "category",
+        label: "Category",
+        value:
+          topCategories.find((c) => c.id === urlCategory)?.name ?? urlCategory,
+      });
+    }
+    if (urlMinPrice || urlMaxPrice) {
+      result.push({
+        key: "price",
+        label: "Price",
+        value:
+          urlMinPrice && urlMaxPrice
+            ? `₹${urlMinPrice}–₹${urlMaxPrice}`
+            : urlMinPrice
+              ? `from ₹${urlMinPrice}`
+              : `up to ₹${urlMaxPrice}`,
+      });
+    }
+    return result;
+  }, [urlCategory, urlMinPrice, urlMaxPrice, topCategories]);
+
   const handleSortChange = (sort: string) => table.set("sort", sort);
   const handleCategoryChange = (cat: string) => table.set("category", cat);
   const handlePriceFilter = (min: string, max: string) =>
@@ -160,16 +197,31 @@ export default function SearchPage() {
         </span>
       </div>
 
-      <SearchFiltersRow
-        urlCategory={urlCategory}
-        topCategories={topCategories}
-        urlMinPrice={urlMinPrice}
-        urlMaxPrice={urlMaxPrice}
-        showClear={hasActiveFilters}
-        onCategoryChange={handleCategoryChange}
-        onPriceFilter={handlePriceFilter}
-        onClearFilters={handleClearFilters}
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <FilterDrawer
+          activeCount={activeFilterCount}
+          onClearAll={handleClearFilters}
+        >
+          <FilterFacetSection
+            title="Category"
+            options={categoryOptions}
+            selected={urlCategory ? [urlCategory] : []}
+            onChange={(vals) => table.set("category", vals[0] ?? "")}
+            searchable={categoryOptions.length > 6}
+          />
+        </FilterDrawer>
+        <ActiveFilterChips
+          filters={activeFilters}
+          onRemove={(key) => {
+            if (key === "price") {
+              table.setMany({ minPrice: "", maxPrice: "" });
+            } else {
+              table.set(key, "");
+            }
+          }}
+          onClearAll={handleClearFilters}
+        />
+      </div>
 
       {hasAnyFilter ? (
         <SearchResultsSection

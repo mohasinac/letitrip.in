@@ -9,7 +9,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { AuctionGrid, Pagination } from "@/components";
+import {
+  AuctionGrid,
+  Pagination,
+  FilterDrawer,
+  FilterFacetSection,
+  ActiveFilterChips,
+} from "@/components";
+import type { ActiveFilter } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import type { ProductDocument } from "@/db/schema";
@@ -38,6 +45,13 @@ interface ProductsResponse {
   meta: { page: number; limit: number; total: number; totalPages: number };
 }
 
+const PRICE_BUCKETS = [
+  { value: "0-1000", label: "Under ₹1,000" },
+  { value: "1000-5000", label: "₹1,000 – ₹5,000" },
+  { value: "5000-20000", label: "₹5,000 – ₹20,000" },
+  { value: "20000+", label: "Over ₹20,000" },
+];
+
 const SORT_OPTIONS = [
   { value: "auctionEndDate", label: UI_LABELS.AUCTIONS_PAGE.SORT_ENDING_SOON },
   { value: "-auctionEndDate", label: "Ending Latest" },
@@ -52,11 +66,21 @@ export default function AuctionsPage() {
   });
   const sort = table.get("sort") || "auctionEndDate";
   const page = table.getNumber("page", 1);
+  const priceRange = table.get("priceRange");
+  const [minBid, maxBid] = useMemo(() => {
+    if (!priceRange) return ["", ""];
+    if (priceRange.endsWith("+")) return [priceRange.replace("+", ""), ""];
+    const parts = priceRange.split("-");
+    return [parts[0] ?? "", parts[1] ?? ""];
+  }, [priceRange]);
 
   const { data, isLoading } = useApiQuery<ProductsResponse>({
     queryKey: ["auctions", table.params.toString()],
     queryFn: () => {
-      const filters = encodeURIComponent("isAuction==true,status==published");
+      const filterParts = ["isAuction==true", "status==published"];
+      if (minBid) filterParts.push(`currentBid>=${minBid}`);
+      if (maxBid) filterParts.push(`currentBid<=${maxBid}`);
+      const filters = encodeURIComponent(filterParts.join(","));
       const url = `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${filters}&sorts=${encodeURIComponent(sort)}&page=${page}&pageSize=${PAGE_SIZE}`;
       return fetch(url).then((r) => r.json());
     },
@@ -65,6 +89,20 @@ export default function AuctionsPage() {
   const auctions = useMemo(() => data?.data ?? [], [data]);
   const total = data?.meta?.total ?? 0;
   const totalPages = data?.meta?.totalPages ?? 1;
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    if (!priceRange) return [];
+    return [
+      {
+        key: "priceRange",
+        label: "Bid Range",
+        value:
+          PRICE_BUCKETS.find((b) => b.value === priceRange)?.label ??
+          priceRange,
+      },
+    ];
+  }, [priceRange]);
+  const activeFilterCount = activeFilters.length;
 
   return (
     <main
@@ -100,6 +138,27 @@ export default function AuctionsPage() {
             ))}
           </select>
         </div>
+      </div>
+
+      {/* Filters row */}
+      <div className="flex flex-wrap items-center gap-3">
+        <FilterDrawer
+          activeCount={activeFilterCount}
+          onClearAll={() => table.set("priceRange", "")}
+        >
+          <FilterFacetSection
+            title="Bid Range"
+            options={PRICE_BUCKETS}
+            selected={priceRange ? [priceRange] : []}
+            onChange={(vals) => table.set("priceRange", vals[0] ?? "")}
+            searchable={false}
+          />
+        </FilterDrawer>
+        <ActiveFilterChips
+          filters={activeFilters}
+          onRemove={() => table.set("priceRange", "")}
+          onClearAll={() => table.set("priceRange", "")}
+        />
       </div>
 
       {/* Auction Grid */}

@@ -9,6 +9,168 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 18.7 — User API Route Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for all user-facing API routes. Result: 5 new test files + 1 updated, 34 new tests, 218/218 suites green, 2733/2737 tests passing (4 pre-existing skips).
+
+#### Added
+
+- `src/app/api/__tests__/user-addresses.test.ts` _(NEW)_ — 9 tests: GET returns 200 with address list, empty array, calls repository with uid, returns 401 unauthenticated; POST returns 201 with created address, calls create with correct args, returns 400 for missing fields, returns 422 when limit (10) reached, returns 401 unauthenticated.
+- `src/app/api/__tests__/user-sessions.test.ts` _(NEW)_ — 4 tests: GET returns 200 with sessions + activeCount + total, correct activeCount, calls findAllByUser with uid and limit 20, returns 401 unauthenticated.
+- `src/app/api/__tests__/user-password.test.ts` _(NEW)_ — 6 tests: POST returns 200 on success, calls updateUser with new password, returns 400 for short password, returns 400 when same as current, returns 400 when currentPassword missing, returns 401 when session absent.
+- `src/app/api/__tests__/user-orders.test.ts` _(NEW)_ — 6 tests: GET returns 200 with orders+total, calls findByUser with uid, orders sorted desc, filters by valid status param, ignores invalid status, returns 401 unauthenticated.
+- `src/app/api/__tests__/user-wishlist.test.ts` _(NEW)_ — 9 tests: GET returns 200 with enriched items, enriches with product details, excludes items with missing product, returns 401 unauthenticated; POST returns 201 on add, calls addItem with correct args, returns 400 for missing productId, returns 404 for unknown product, returns 401 unauthenticated.
+
+#### Updated
+
+- `src/app/api/__tests__/profile.test.ts` _(UPDATED)_ — 4 GET `/api/user/profile` tests added: returns 200 with authenticated user profile, returns 401 when no session, returns 401 when session invalid, returns 401 when user not found in repository (route throws AuthenticationError on null user).
+
+#### Notes
+
+- `requireAuth()` must be mocked as `jest.fn()` on `@/lib/firebase/auth-server` — routes call it as a plain function, not a constructor.
+- Reject mock with `AuthenticationError` to simulate unauthenticated state across all routes using `requireAuth`.
+- `successResponse` mock needs an optional 3rd `status` param to correctly return 201 for create operations.
+- Route throws `AuthenticationError` (401) when `userRepository.findById` returns null — not `NotFoundError` (404). Test assertions must reflect actual route behavior.
+- `wishlistRepository` is exported separately from `@/repositories` alongside `productRepository` — mock both in the same factory.
+
+---
+
+### Phase 18.6 — Auth API Route Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for all auth API routes. Result: 6 new test files, 25 new tests, 218/218 suites green.
+
+#### Added
+
+- `src/app/api/__tests__/auth-forgot-password.test.ts` _(NEW)_ — 6 tests: returns 200 for known email, returns 200 for unknown email (no info leak), returns 400 for missing email, returns 400 for invalid format, calls sendPasswordResetEmailWithLink, returns 429 on rate limit.
+- `src/app/api/__tests__/auth-reset-password.test.ts` _(NEW)_ — 4 tests: returns 200 for valid token+password, returns 400 when token missing, returns 400 when newPassword missing, returns 400 when newPassword < 8 chars.
+- `src/app/api/__tests__/auth-verify-email.test.ts` _(NEW)_ — 3 tests: returns 200 for valid token query param, returns 400 when token absent, returns 400 for empty token.
+- `src/app/api/__tests__/auth-send-verification.test.ts` _(NEW)_ — 4 tests: returns 200 + sends link for unverified user, calls sendVerificationEmailWithLink, returns 400 for already-verified email, returns 400 for invalid email format.
+- `src/app/api/__tests__/auth-logout.test.ts` _(NEW)_ — 4 tests: returns 200 + clears cookies, calls sessionRepository.revokeSession when **session_id present, returns 200 when no cookies, does not call revokeSession when **session_id absent.
+- `src/app/api/__tests__/auth-session.test.ts` _(NEW)_ — 4 tests: returns 200 with sessionId for valid idToken, returns 400 when idToken missing, returns 400 when idToken verification fails (null), calls createSession with verified uid.
+
+#### Notes
+
+- Phone routes (`auth-phone-send`, `auth-phone-verify`) do not exist in the codebase — skipped.
+- `auth/send-verification` uses `getAdminAuth()` from `@/lib/firebase/admin` (NOT `getAuth` from `firebase-admin/auth`) — mock the admin module directly.
+- `auth/session` route uses dynamic `import()` inside the handler — mock `firebase-admin/auth`, `firebase-admin/firestore`, and `@/lib/firebase/admin` at module level even though they are dynamically loaded; Jest resolves them via the registry.
+- `SUCCESS_MESSAGES.USER.PASSWORD_CHANGED` must be in the auth-reset-password constants mock — the route accesses that key (not `SUCCESS_MESSAGES.PASSWORD.CHANGED`).
+- Forgot-password intentionally swallows `auth/user-not-found` errors to prevent email enumeration — test the 200 response on unknown email explicitly.
+
+---
+
+### Phase 18.5 — Interaction + Responsive Hook Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for interaction, gesture, responsive, and realtime hooks. Result: 48 new tests across 8 files, 207/207 suites green, 2670/2674 tests passing (4 pre-existing skips).
+
+#### Added
+
+- `src/hooks/__tests__/useMediaQuery.test.ts` _(NEW)_ — 6 tests: returns true/false from `window.matchMedia`, updates state on change event, registers/removes listener, passes query string through.
+- `src/hooks/__tests__/useBreakpoint.test.ts` _(NEW)_ — 5 tests: mobile/tablet/desktop detection, all flags returned, fallback to 'desktop' when no query matches.
+- `src/hooks/__tests__/useClickOutside.test.tsx` _(NEW)_ — 6 tests: fires on click outside, no-op inside, disabled when `enabled=false`, custom eventType, touchstart support, cleanup on unmount.
+- `src/hooks/__tests__/useKeyPress.test.ts` _(NEW)_ — 7 tests: matching key fires, non-matching ignores, array of keys, ctrl modifier match/mismatch, `enabled=false` guard, cleanup on unmount.
+- `src/hooks/__tests__/useSwipe.test.tsx` _(NEW)_ — 6 tests: left/right/up/down swipe detection via mouse events, below-threshold no-op, `onSwipe` receives correct direction.
+- `src/hooks/__tests__/useGesture.test.tsx` _(NEW)_ — 5 tests: single tap via mousedown+mouseup fires `onTap` with coords, two quick taps fire `onDoubleTap`, excessive movement suppresses tap, coordinates passed correctly, cleanup on unmount.
+- `src/hooks/__tests__/useRealtimeBids.test.ts` _(NEW)_ — 7 tests: null values initially, state update on snapshot, `connected=true` after snapshot, null snapshot handling, `connected=false` on error, `off()` called on unmount, no-op when `productId=null`.
+- `src/hooks/__tests__/useRazorpay.test.ts` _(NEW)_ — 6 tests: `isLoading=false` when Razorpay defined, `isLoading=true` when not, script injected, no duplicate injection, `openRazorpay` calls `.open()`, rejects when script not loaded.
+
+#### Notes
+
+- Mock `window.matchMedia` as `jest.fn()` returning `{ matches, addEventListener, removeEventListener }` — `addEventListener` must push to a captured array so tests can fire the change event.
+- `useBreakpoint` delegates entirely to `useMediaQuery` (3 calls) — mock matchMedia via query string matching.
+- For click-outside, swipe, and gesture hooks, render a React component to get a real DOM ref; hooks attach listeners to the real element.
+- `document.dispatchEvent(new KeyboardEvent(..., { bubbles: true }))` is sufficient for `useKeyPress` since it defaults to `document` as target.
+- Mock `firebase/database` (`ref`, `onValue`, `off`) and `@/lib/firebase/config` (`realtimeDb`) for `useRealtimeBids`; capture the `onValue` success/error callbacks via closure to trigger them inside `act`.
+- `useRazorpay` reads `window.Razorpay` at render time; define it before `renderHook` to control `isLoading` initial state; clean up with `delete (window as any).Razorpay` in `afterEach`.
+
+---
+
+### Phase 18.4 — Address + Profile Hook Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for address and profile hooks. Result: 33 new tests across 3 files, 199/199 suites green, 2622/2626 tests passing (4 pre-existing skips).
+
+#### Added
+
+- `src/hooks/__tests__/useAddresses.test.ts` _(NEW)_ — 12 tests: `useAddresses` (fetch on mount, error state, enabled=false guard, onSuccess callback), `useCreateAddress` (POST + 2-arg onSuccess, error), `useUpdateAddress` (PATCH + 2-arg onSuccess, error), `useDeleteAddress` (DELETE, error), `useSetDefaultAddress` (POST to set-default, error).
+- `src/hooks/__tests__/useAddressForm.test.ts` _(NEW)_ — 11 tests: default empty state, initialData pre-fill, handleChange update and error-clearing, validate() required fields and pincode format, validate() pass on valid data, reset() clear, reset(data) partial-fill, setFormData direct override, boolean field (isDefault).
+- `src/hooks/__tests__/useProfile.test.ts` _(NEW)_ — 10 tests: `useProfile` (fetch, error, enabled=false, onSuccess, onError), `useUpdateProfile` (PATCH + 2-arg onSuccess, error, idle initial state, isLoading in-flight).
+
+#### Notes
+
+- `jest.requireActual('@/lib/api-client')` must be spread in the mock factory to preserve `ApiClientError` (used by `useApiMutation` internally).
+- `cacheManager.clear()` in `beforeEach` required for all query-hook tests — the singleton persists across `renderHook` calls.
+- `useApiMutation.mutate()` re-throws; wrap error assertions in `try { await mutate() } catch {}` inside `act`.
+- `useApiMutation.onSuccess(result, variables)` — always assert with `toHaveBeenCalledWith(data, expect.anything())`.
+- `isLoading` initializes `true` when no cache and `enabled=false`. Only assert `mockGet.not.toHaveBeenCalled()` for disabled queries.
+
+---
+
+### Phase 18.3 — Security + UX Hook Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for `useRBAC` and `useUnsavedChanges`. Result: 41 new tests across 2 files, 196/196 suites green, 2589/2593 tests passing (4 pre-existing skips).
+
+#### Added
+
+- `src/hooks/__tests__/useRBAC.test.ts` _(NEW)_ — 26 tests across 7 hooks: `useHasRole` (role hierarchy, array of roles, unauthenticated), `useIsAdmin` (true/false/null), `useIsModerator` (hierarchy: admin satisfies moderator), `useIsSeller` (hierarchy), `useCanAccess` (public route = allowed, admin route = admin only, user route = unauthenticated blocked; uses actual RBAC_CONFIG routes `/admin/dashboard`, `/user/profile`), `useRoleChecks` (isAuthenticated flag, combined role flags, hasRole() hierarchy), `useIsOwner` (uid match, admin override, null resource).
+- `src/hooks/__tests__/useUnsavedChanges.test.ts` _(NEW)_ — 11 tests: clean state when values match initial, dirty when field differs, `extraDirty` flag, `beforeunload` listener added when dirty / absent when clean / removed on unmount, `markClean()` resets snapshot, `confirmLeave()` short-circuits when clean / calls `window.confirm` when dirty / returns `false` when user cancels, `isFormDirty=false` when `initialValues=null`, snapshot set when `initialValues` arrives after `null`.
+
+#### Notes
+
+- `jest.mock` factories must be self-contained (no references to variables declared in the same file) because Jest hoists `jest.mock` calls above all variable declarations. Fixed by using literal strings inside the factory and declaring a matching `const` below for use in assertions.
+- `useCanAccess` tests must use routes that exist in `RBAC_CONFIG` (e.g. `/admin/dashboard`, not `/admin`) since paths with no config entry always return `{ allowed: true }`.
+
+---
+
+### Phase 18.2 — Core Data-Fetching + Form Hook Tests (2026-02-21)
+
+**Goal:** Write comprehensive tests for 4 core hooks. Result: 42 new tests, 194/194 suites green.
+
+#### Added
+
+- `src/hooks/__tests__/useApiQuery.test.ts` _(NEW)_ — 11 tests covering: initial loading state, successful fetch, error handling, ApiClientError 4xx, refetch (relative call count to handle React 18 Strict Mode), queryKey changes, enabled=false guard, enabled false→true transition, onSuccess callback, onError callback. Uses `cacheTTL: 0` on all tests to bypass CacheManager singleton.
+- `src/hooks/__tests__/useApiMutation.test.ts` _(NEW)_ — 11 tests covering: initial state, isLoading during flight, success with data and callbacks (onSuccess, onSettled), error handling with ApiClientError preservation and callbacks (onError, onSettled), reset() after error and after success.
+- `src/hooks/__tests__/useForm.test.ts` _(NEW)_ — 11 tests covering: initial values, handleChange field updates and error clearing, validation error population, onSubmit guard, onSubmit callback with values, no-validator path, reset(), isSubmitting flag (sync act + void pattern), e.preventDefault() forwarding.
+- `src/hooks/__tests__/useMessage.test.ts` _(NEW)_ — 9 tests covering: initial null state, showSuccess/showError type+text, clearMessage, timer cancellation on clear, 5000ms auto-dismiss, sub-threshold persistence, timer reset on second message.
+
+---
+
+### Phase 18.1 — Baseline Audit: All Test Suites Green (2026-02-21)
+
+**Goal:** Fix all pre-existing test failures before writing new tests. Result: 190/190 suites passing, 2506/2510 tests (4 pre-existing skips).
+
+#### Fixed
+
+- `src/app/admin/faqs/[[...action]]/page.tsx` — removed duplicate `const faqs` stale declaration (left behind after FAQsListResponse was added in gap-fix) that caused SyntaxError.
+- `src/components/faq/FAQCategorySidebar.tsx` — fixed mismatched JSX tag: `</button>` → `</Link>` for the "All FAQs" navigation item.
+- `src/app/api/__tests__/products-id.test.ts` — added `findByIdOrSlug` to productRepository mock (route calls `findByIdOrSlug`, mock only had `findById`).
+- `src/app/user/orders/__tests__/page.test.tsx` — added `getNumber` and `setPageSize` to useUrlTable mock.
+- `src/app/admin/users/[[...action]]/__tests__/page.test.tsx` — same useUrlTable additions + added `TablePagination` to `@/components` mock.
+- `src/app/admin/reviews/[[...action]]/__tests__/page.test.tsx` — same useUrlTable additions + added `TablePagination`, `Modal`, `ConfirmDeleteModal` to `@/components` mock.
+- `src/app/admin/faqs/[[...action]]/__tests__/page.test.tsx` — same useUrlTable additions + added `TablePagination`, `AdminFilterBar`, `FormField` to `@/components` mock.
+- `src/components/homepage/__tests__/FAQSection.test.tsx` — updated stale `buttons.length===4` assertion to `toBeGreaterThanOrEqual(4)`.
+- `src/components/homepage/__tests__/FeaturedAuctionsSection.test.tsx` — changed `getByText(/view all/i)` → `getAllByText` (multiple matches).
+- `src/components/layout/__tests__/Footer.test.tsx` — replaced stale `/quick links/i` with `getAllByText(/shop/i)`.
+- `src/components/homepage/__tests__/NewsletterSection.test.tsx` — used `fireEvent.submit(form)` to bypass jsdom HTML5 email constraint validation.
+- `src/components/homepage/__tests__/TrustFeaturesSection.test.tsx` — fixed IntersectionObserver mock to pass instance as second arg so `obs.disconnect()` works.
+- `src/components/faq/__tests__/FAQCategorySidebar.test.tsx` — updated `next/link` mock to pass `onClick`/`className`; replaced `.closest("button")` → `.closest("a")`; updated accessibility tests to use `link` role.
+
+---
+
+### Post-Audit Gap Fixes — Phases 4–7 (2026-02-21)
+
+**Goal:** Resolve 7 gaps identified in a cross-phase audit of Phases 1–17. All 7 files verified 0 TypeScript errors after fixes.
+
+#### Fixed
+
+- `src/app/admin/faqs/[[...action]]/page.tsx` — added `TablePagination` import; introduced `FAQsListResponse` interface (`{ items, total, page, totalPages, pageSize }`); updated `queryFn` to pass `page`/`pageSize` URL params; response type is `FAQsListResponse | FAQ[]` with runtime `Array.isArray()` guard; added `externalPagination` to `DataTable`; added conditional `<TablePagination>` below table. _(Gap: admin FAQs had no server pagination.)_
+- `src/app/search/page.tsx` — removed `SearchFiltersRow` import; added `FilterDrawer`, `FilterFacetSection`, `ActiveFilterChips`, and `ActiveFilter` type; added `categoryOptions` useMemo from `topCategories`; added `activeFilters` useMemo (category chip + price chip); replaced `<SearchFiltersRow>` with `<FilterDrawer>` containing `<FilterFacetSection title="Category">` + `<ActiveFilterChips>` (price `onRemove` calls `table.setMany({ minPrice: "", maxPrice: "" })`). _(Gap: search still used the old SearchFiltersRow instead of FilterDrawer.)_
+- `src/app/auctions/page.tsx` — added `FilterDrawer`, `FilterFacetSection`, `ActiveFilterChips`, `ActiveFilter` type; added `PRICE_BUCKETS` const with encoded range values (`"0-1000"`, `"20000+"`); added `priceRange` URL param decoded to `[minBid, maxBid]` via useMemo; updated queryFn to append bid-range Sieve filter parts; added filter row with `<FilterDrawer>` + `<FilterFacetSection title="Bid Range">` + `<ActiveFilterChips>`. _(Gap: auctions lacked FilterDrawer.)_
+- `src/app/categories/[slug]/page.tsx` — added `FilterDrawer`, `FilterFacetSection`, `ActiveFilterChips`, `ActiveFilter` type; added `PRICE_BUCKETS` const; added `priceRange` URL param decoded to `minPrice`/`maxPrice`; updated `productsUrl` to include price range Sieve filter parts (`price>=${minPrice}`, `price<=${maxPrice}`); added `activeFilters` useMemo; added filter row before `<ProductSortBar>`. _(Gap: categories/[slug] lacked FilterDrawer.)_
+- `src/app/seller/products/page.tsx` — added `FilterDrawer`, `FilterFacetSection`, `ActiveFilterChips`, `ActiveFilter` type; added module-level `STATUS_OPTIONS` const; added `statusParam = table.get("status")`; updated `productsUrl` to include `status==${statusParam}` Sieve filter when set; wrapped `AdminFilterBar` in a flex row alongside `<FilterDrawer>` containing `<FilterFacetSection title="Status" searchable={false}>`; added conditional `<ActiveFilterChips>` below filter area. _(Gap: seller/products FilterDrawer + ActiveFilterChips were missing.)_
+- `src/app/user/orders/page.tsx` — added `TablePagination` import; added `pageSize: "10"` default to `useUrlTable`; extracted `page`/`pageSize` from table; updated `ordersUrl` to include `page`/`pageSize` params; updated response type to include `totalPages`; added `<TablePagination>` at bottom. _(Gap: user/orders had no pagiation.)_
+- `src/components/faq/FAQCategorySidebar.tsx` — changed `<button onClick={onCategorySelect}>` to `<Link href={ROUTES.PUBLIC.FAQ_CATEGORY(key)}>` with `onClick={() => onCategorySelect?.(key)}`; made `onCategorySelect` optional; "All FAQs" links to `ROUTES.PUBLIC.FAQS`. _(Gap: sidebar used `<button>` instead of `<Link>`, breaking direct URL navigation.)_
+
+---
+
 ### Phase 6.3 Completion — THEME_CONSTANTS Per-File Replacements + View Toggle
 
 **Goal:** Complete the pending Phase 6.3 work: replace all remaining raw Tailwind strings in pages with `THEME_CONSTANTS` references, and wire up the long-planned view toggle for `seller/products/page.tsx`.

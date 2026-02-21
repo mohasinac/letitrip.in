@@ -8,12 +8,13 @@ beforeAll(() => {
   Object.defineProperty(window, "IntersectionObserver", {
     writable: true,
     value: jest.fn().mockImplementation((cb: IntersectionObserverCallback) => {
-      // Immediately fire as visible
+      const instance = { observe: mockObserve, disconnect: mockDisconnect };
+      // Immediately fire as visible, passing the instance as the observer arg
       cb(
         [{ isIntersecting: true }] as IntersectionObserverEntry[],
-        {} as IntersectionObserver,
+        instance as unknown as IntersectionObserver,
       );
-      return { observe: mockObserve, disconnect: mockDisconnect };
+      return instance;
     }),
   });
 });

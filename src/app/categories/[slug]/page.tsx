@@ -16,7 +16,11 @@ import {
   Pagination,
   PRODUCT_SORT_VALUES,
   Spinner,
+  FilterDrawer,
+  FilterFacetSection,
+  ActiveFilterChips,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
@@ -25,6 +29,13 @@ import type { ProductSortValue } from "@/components";
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
+
+const PRICE_BUCKETS = [
+  { value: "0-500", label: "Under ₹500" },
+  { value: "500-2000", label: "₹500 – ₹2,000" },
+  { value: "2000-10000", label: "₹2,000 – ₹10,000" },
+  { value: "10000+", label: "Over ₹10,000" },
+];
 
 type ProductCardData = Pick<
   ProductDocument,
@@ -61,6 +72,13 @@ export default function CategoryProductsPage({ params }: Props) {
   const sort = (table.get("sort") ||
     PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
   const page = table.getNumber("page", 1);
+  const priceRange = table.get("priceRange");
+  const [minPrice, maxPrice] = useMemo(() => {
+    if (!priceRange) return ["", ""];
+    if (priceRange.endsWith("+")) return [priceRange.replace("+", ""), ""];
+    const parts = priceRange.split("-");
+    return [parts[0] ?? "", parts[1] ?? ""];
+  }, [priceRange]);
 
   /* ---- Fetch all categories (flat) to resolve slug → category doc ---- */
   const { data: catData, isLoading: catLoading } =
@@ -80,9 +98,11 @@ export default function CategoryProductsPage({ params }: Props) {
   /* ---- Fetch products filtered by category id ---- */
   const productsUrl = useMemo(() => {
     if (!category) return null;
-    const filters = `status==published,category==${category.id}`;
-    return `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${encodeURIComponent(filters)}&sorts=${encodeURIComponent(sort)}&page=${String(page)}&pageSize=${String(PAGE_SIZE)}`;
-  }, [category, sort, page]);
+    const filterParts = ["status==published", `category==${category.id}`];
+    if (minPrice) filterParts.push(`price>=${minPrice}`);
+    if (maxPrice) filterParts.push(`price<=${maxPrice}`);
+    return `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${String(page)}&pageSize=${String(PAGE_SIZE)}`;
+  }, [category, sort, page, minPrice, maxPrice]);
 
   const { data: prodData, isLoading: prodLoading } =
     useApiQuery<ProductsResponse>({
@@ -99,6 +119,20 @@ export default function CategoryProductsPage({ params }: Props) {
   const products = useMemo(() => prodData?.data ?? [], [prodData]);
   const totalProducts = prodData?.meta?.total ?? 0;
   const totalPages = prodData?.meta?.totalPages ?? 1;
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    if (!priceRange) return [];
+    return [
+      {
+        key: "priceRange",
+        label: "Price",
+        value:
+          PRICE_BUCKETS.find((b) => b.value === priceRange)?.label ??
+          priceRange,
+      },
+    ];
+  }, [priceRange]);
+  const activeFilterCount = activeFilters.length;
 
   /* -------------------------------------------------------------------- */
 
@@ -159,6 +193,27 @@ export default function CategoryProductsPage({ params }: Props) {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Sort Bar */}
+      <div className="flex flex-wrap items-center gap-3">
+        <FilterDrawer
+          activeCount={activeFilterCount}
+          onClearAll={() => table.set("priceRange", "")}
+        >
+          <FilterFacetSection
+            title="Price Range"
+            options={PRICE_BUCKETS}
+            selected={priceRange ? [priceRange] : []}
+            onChange={(vals) => table.set("priceRange", vals[0] ?? "")}
+            searchable={false}
+          />
+        </FilterDrawer>
+        <ActiveFilterChips
+          filters={activeFilters}
+          onRemove={() => table.set("priceRange", "")}
+          onClearAll={() => table.set("priceRange", "")}
+        />
       </div>
 
       {/* Sort Bar */}

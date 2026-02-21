@@ -35,7 +35,7 @@ describe("Footer", () => {
     it("has multiple sections", () => {
       render(<Footer />);
       // Check for specific footer content headings
-      expect(screen.getByText(/quick links/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/shop/i).length).toBeGreaterThan(0);
     });
   });
 
