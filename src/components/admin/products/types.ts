@@ -7,6 +7,7 @@ export interface AdminProduct {
   title: string;
   description: string;
   category: string;
+  categoryId?: string;
   subcategory?: string;
   brand?: string;
   price: number;
@@ -30,6 +31,7 @@ export interface AdminProduct {
   bidCount?: number;
   isPromoted?: boolean;
   promotionEndDate?: string;
+  pickupAddressId?: string;
   createdAt: string;
   updatedAt: string;
 }

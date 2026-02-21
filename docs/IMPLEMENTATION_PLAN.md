@@ -1072,7 +1072,7 @@ src/components/layout/Header.tsx (or navbar)  scroll blur + active route
 
 ---
 
-## Phase 9 — Inline Create Drawers
+## Phase 9 — Inline Create Drawers ✅ Done
 
 ### 9.1 `CategorySelectorCreate` — `src/components/ui/CategorySelectorCreate.tsx`
 

@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 9 — Inline Create Drawers
+
+**Goal:** Add inline-create `SideDrawer` flows to `CategorySelectorCreate` and `AddressSelectorCreate` selectors; wire both into `ProductForm` to replace the plain category text field and add pickup address selection.
+
+#### Added
+
+- `src/components/ui/CategorySelectorCreate.tsx` — new `"use client"` component; fetches categories via `useApiQuery(['categories'])`; renders a `<select>` populated with flattened category tree + a "+ New category" `Button` (`aria-haspopup="dialog"`); opens `SideDrawer` with inner `CreateCategoryContent` subcomponent that wraps `CategoryForm` + `DrawerFormFooter`; on success auto-selects new category ID, closes drawer, and calls `refetch()`.
+- `src/components/ui/AddressSelectorCreate.tsx` — same pattern; fetches saved addresses via `useApiQuery(['user-addresses'])`; formats each option as "label — fullName — city — state"; opens `SideDrawer` with `AddressForm`; on success auto-selects new address ID.
+- `src/components/ui/__tests__/CategorySelectorCreate.test.tsx` — tests: dropdown populated from API, "New category" button has `aria-haspopup="dialog"`, drawer opens on click, `onChange` fires on select change, `onChange` called with new ID after creation, button hidden when `disabled`.
+- `src/components/ui/__tests__/AddressSelectorCreate.test.tsx` — same coverage for address selector.
+- `src/components/admin/products/__tests__/ProductForm.test.tsx` — tests: `CategorySelectorCreate` rendered in place of plain text category input, `AddressSelectorCreate` rendered for pickup address, both wired to form state.
+
+#### Changed
+
+- `src/components/admin/products/types.ts` — `AdminProduct` interface: added `categoryId?: string` and `pickupAddressId?: string`.
+- `src/components/admin/products/ProductForm.tsx` — replaced plain `<FormField type="text">` category field with `<CategorySelectorCreate>`; added `<AddressSelectorCreate>` for `pickupAddressId` before the shipping info section.
+- `src/components/ui/index.ts` — exported `CategorySelectorCreate`, `CategorySelectorCreateProps`, `AddressSelectorCreate`, `AddressSelectorCreateProps`.
+
+#### Technical Notes
+
+- `AddressFormData` is imported from `@/hooks` (exported via `useAddresses.ts`) — not re-exported from `@/components` to avoid duplicate export ambiguity.
+- `flattenCategories` from `@/components` used to flatten the category tree before rendering the select options.
+- `.next/` type validator errors (pre-existing, unrelated to Phase 9) remain; all `src/` files type-check clean.
+
+---
+
 ### Phase 8 — Footer & Navigation
 
 **Goal:** Rewrite `Footer` with a modern 5-column layout, replace legacy inline SVG nav icons with `lucide-react` components, delete `EnhancedFooter`.

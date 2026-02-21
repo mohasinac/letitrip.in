@@ -58,4 +58,10 @@ export type { SectionTab } from "./SectionTabs";
 export { StatusBadge } from "./StatusBadge";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
+
+// Phase 9: Inline Create Selectors
+export { CategorySelectorCreate } from "./CategorySelectorCreate";
+export type { CategorySelectorCreateProps } from "./CategorySelectorCreate";
+export { AddressSelectorCreate } from "./AddressSelectorCreate";
+export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
 export { default as NotificationBell } from "./NotificationBell";

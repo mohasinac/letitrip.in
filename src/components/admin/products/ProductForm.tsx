@@ -7,7 +7,11 @@
 
 "use client";
 
-import { FormField } from "@/components";
+import {
+  FormField,
+  CategorySelectorCreate,
+  AddressSelectorCreate,
+} from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { AdminProduct } from "./types";
 import { PRODUCT_STATUS_OPTIONS } from "./types";
@@ -54,14 +58,11 @@ export function ProductForm({
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField
-          name="category"
+        <CategorySelectorCreate
           label={LABELS.CATEGORY_LABEL}
-          type="text"
-          value={product.category || ""}
-          onChange={(value) => update({ category: value })}
+          value={product.categoryId || product.category || ""}
+          onChange={(id) => update({ categoryId: id, category: id })}
           disabled={isReadonly}
-          placeholder="e.g. Electronics"
         />
         <FormField
           name="subcategory"
@@ -214,6 +215,13 @@ export function ProductForm({
       )}
 
       {/* Shipping & Returns */}
+      <AddressSelectorCreate
+        label={LABELS.PICKUP_ADDRESS}
+        value={product.pickupAddressId || ""}
+        onChange={(id) => update({ pickupAddressId: id })}
+        disabled={isReadonly}
+      />
+
       <FormField
         name="shippingInfo"
         label={LABELS.SHIPPING_LABEL}
