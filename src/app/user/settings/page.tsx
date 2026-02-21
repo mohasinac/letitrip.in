@@ -78,7 +78,7 @@ export default function UserSettingsPage() {
     setMessage(null);
 
     try {
-      const response = await fetch(API_ENDPOINTS.PROFILE.UPDATE, {
+      const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export default function UserSettingsPage() {
     if (!profile?.uid) return;
 
     try {
-      const response = await fetch(API_ENDPOINTS.PROFILE.UPDATE, {
+      const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

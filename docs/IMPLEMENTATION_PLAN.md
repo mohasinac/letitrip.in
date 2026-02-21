@@ -48,7 +48,8 @@
 | **11** | ✅ Done        | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) · HomepageSkeleton · mobile snap-scroll carousels · lucide icons · useSwipe · useApiMutation newsletter                                                           |
 | **12** | ✅ Done        | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens · AdminDashboardSkeleton · SellerStatCard ReactNode icon · RecentActivityCard lucide · AdminPageHeader description+breadcrumb · user/profile hooks order fix |
 | **13** | ✅ Done        | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets · EmptyState actionHref · SORT/HELP_TEXT/ACTIONS constants · messages human-friendly · search EmptyState+lucide · products empty state · seller onboarding       |
-| **14** | 🔵 In progress | 2026-02-21 | —          |                                                                                                                                                                                                 |
+| **14** | ✅ Done        | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
+| **15** | 🔵 In progress | 2026-02-21 | —          |                                                                                                                                                                                                 |
 | **15** | ⬜ Not started | —          | —          |                                                                                                                                                                                                 |
 
 **Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
@@ -1728,7 +1729,7 @@ src/app/products/page.tsx                  no-results empty state
 
 ---
 
-## Phase 14 — Code Deduplication
+## Phase 14 — Code Deduplication ✅ Done
 
 > **Sections:** L  
 > **Risk:** 🟡 Minor breaking — two API route renames; one lib file merge; one component delete  

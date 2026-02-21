@@ -5,15 +5,17 @@ import { usePathname } from "next/navigation";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
- * Breadcrumbs Component
+ * AutoBreadcrumbs Component
  *
- * Generates and displays breadcrumb navigation based on current URL path.
- * Automatically creates clickable links for each path segment.
+ * Generates and displays breadcrumb navigation automatically based on the
+ * current URL path. Clickable links are created for each path segment.
+ *
+ * No props required — reads path from Next.js router.
  *
  * @component
  * @example
  * ```tsx
- * <Breadcrumbs />
+ * <AutoBreadcrumbs />
  * ```
  */
 
@@ -44,7 +46,7 @@ const pathLabels: Record<string, string> = {
   edit: "Edit",
 };
 
-export default function Breadcrumbs() {
+export default function AutoBreadcrumbs() {
   const pathname = usePathname();
 
   // Don't show breadcrumbs on home page

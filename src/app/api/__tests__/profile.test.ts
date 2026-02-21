@@ -6,7 +6,7 @@
  * Profile API Integration Tests
  *
  * Tests:
- * - PATCH /api/profile/update
+ * - PATCH /api/user/profile (update profile)
  * - GET /api/profile/[userId]  (public profile)
  */
 
@@ -19,14 +19,19 @@ import {
 } from "./helpers";
 
 // ============================================
-// Mocks for PATCH /api/profile/update
-// (uses createApiHandler which calls getAuthenticatedUser)
+// Mocks for PATCH /api/user/profile
+// (uses verifySessionCookie + getRequiredSessionCookie)
 // ============================================
 
-const mockGetAuthenticatedUser = jest.fn();
+const mockVerifySessionCookie = jest.fn();
 jest.mock("@/lib/firebase/auth-server", () => ({
-  getAuthenticatedUser: (...args: unknown[]) =>
-    mockGetAuthenticatedUser(...args),
+  verifySessionCookie: (...args: unknown[]) => mockVerifySessionCookie(...args),
+}));
+
+const mockGetRequiredSessionCookie = jest.fn().mockReturnValue("test-session");
+jest.mock("@/lib/api/request-helpers", () => ({
+  getRequiredSessionCookie: (...args: unknown[]) =>
+    mockGetRequiredSessionCookie(...args),
 }));
 
 const mockFindById = jest.fn();
@@ -137,6 +142,7 @@ jest.mock("@/constants", () => ({
       PROFILE_PRIVATE: "This profile is private",
     },
     VALIDATION: { INVALID_INPUT: "Invalid input" },
+    API: { PROFILE_UPDATE_ERROR: "Profile update error" },
   },
   SUCCESS_MESSAGES: {
     USER: { PROFILE_UPDATED: "Profile updated successfully" },
@@ -170,7 +176,7 @@ jest.mock("@/db/schema/users", () => ({
 // Imports (after mocks)
 // ============================================
 
-import { PATCH as updatePATCH } from "../profile/update/route";
+import { PATCH as updatePATCH } from "../user/profile/route";
 import { GET as profileGET } from "../profile/[userId]/route";
 
 // ============================================
@@ -187,19 +193,28 @@ function setupFirestoreDoc(data: any = null) {
 }
 
 function setupAuthenticatedUser(user: any = null) {
-  mockGetAuthenticatedUser.mockResolvedValue(user);
   if (user) {
+    mockGetRequiredSessionCookie.mockReturnValue("test-session");
+    mockVerifySessionCookie.mockResolvedValue({
+      uid: user.uid,
+      email: user.email,
+      phone_number: user.phoneNumber,
+    });
     mockFindById.mockResolvedValue(user);
   } else {
+    const { AuthenticationError } = jest.requireMock("@/lib/errors");
+    mockGetRequiredSessionCookie.mockImplementation(() => {
+      throw new AuthenticationError("Unauthorized");
+    });
     mockFindById.mockResolvedValue(null);
   }
 }
 
 // ============================================
-// Tests: PATCH /api/profile/update
+// Tests: PATCH /api/user/profile (update)
 // ============================================
 
-describe("Profile API - PATCH /api/profile/update", () => {
+describe("Profile API - PATCH /api/user/profile", () => {
   // Use seed data for realistic test users
   const seedUsers = getSeedUsers();
   const defaultUser = seedUsers.johnDoe;
@@ -215,7 +230,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
       displayName: "Updated Name",
     });
 
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { displayName: "Updated Name" },
     });
@@ -230,7 +245,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
   it("calls updateProfileWithVerificationReset", async () => {
     mockUpdateProfileWithVerificationReset.mockResolvedValue(defaultUser);
 
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { displayName: "New Name" },
     });
@@ -249,7 +264,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
       emailVerified: false,
     });
 
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { email: "new@example.com" },
     });
@@ -262,7 +277,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
   it("returns 401 when not authenticated", async () => {
     setupAuthenticatedUser(null);
 
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { displayName: "Test" },
     });
@@ -273,7 +288,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
   });
 
   it("returns 400 for invalid email in body", async () => {
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { email: "not-an-email" },
     });
@@ -288,7 +303,7 @@ describe("Profile API - PATCH /api/profile/update", () => {
       new Error("DB error"),
     );
 
-    const req = buildRequest("/api/profile/update", {
+    const req = buildRequest("/api/user/profile", {
       method: "PATCH",
       body: { displayName: "Name" },
     });

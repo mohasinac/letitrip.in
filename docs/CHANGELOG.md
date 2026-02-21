@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 14 — Code Deduplication
+
+**Goal:** Remove duplicate components, merge redundant lib files, consolidate API routes.
+
+#### Added
+
+- `src/components/layout/AutoBreadcrumbs.tsx` — auto-path breadcrumb (migrated from `utility/Breadcrumbs.tsx`); uses `usePathname()` with a `pathLabels` map to generate breadcrumb trail from the current URL.
+- `PATCH /api/user/profile` handler added to `src/app/api/user/profile/route.ts` — consolidates profile update (formerly at `/api/profile/update`) into the canonical user-profile route; handles `displayName`, `email`, `phoneNumber`, `photoURL`, `avatarMetadata`.
+
+#### Changed
+
+- `src/components/LayoutClient.tsx` — import updated from `./utility/Breadcrumbs` → `./layout/AutoBreadcrumbs`.
+- `src/lib/validation/schemas.ts` — merged 6 Zod schemas from deleted `lib/api/validation-schemas.ts`: `userRoleSchema`, `updateUserRoleSchema`, `toggleUserStatusSchema`, `updatePasswordSchema`, `deleteAccountSchema`, `userFilterSchema`.
+- `src/constants/api-endpoints.ts` — `PROFILE.UPDATE` now points to `/api/user/profile` (deprecated alias); `PROFILE.UPDATE_PASSWORD` now points to `/api/user/change-password` (deprecated alias); both marked `@deprecated`.
+- `src/hooks/useProfile.ts` — `useUpdateProfile` mutation switched to `API_ENDPOINTS.USER.PROFILE`.
+- `src/app/user/settings/page.tsx` — two `fetch` calls switched from `PROFILE.UPDATE` → `USER.PROFILE`.
+- `src/app/api/profile/delete-account/route.ts` — import updated from `@/lib/api/validation-schemas` → `@/lib/validation/schemas`.
+- `src/app/api/__tests__/profile.test.ts` — suite updated to import from new `user/profile/route`; mocks switched from `getAuthenticatedUser` → `verifySessionCookie`.
+
+#### Deleted
+
+- `src/components/utility/Breadcrumbs.tsx` — replaced by `src/components/layout/AutoBreadcrumbs.tsx`.
+- `src/lib/api/validation-schemas.ts` — all exports merged into `src/lib/validation/schemas.ts`.
+- `src/app/api/profile/update/route.ts` — functionality consolidated into `PATCH /api/user/profile`.
+- `src/app/api/profile/update-password/route.ts` — no callers; canonical endpoint is `POST /api/user/change-password`.
+
+---
+
 ### Phase 13 — Non-Tech Friendly UX
 
 **Goal:** Plain language, guided flows, contextual empty states, and accessible touch targets throughout the app.

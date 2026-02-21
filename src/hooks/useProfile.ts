@@ -67,7 +67,7 @@ export function useUpdateProfile(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, UpdateProfileData>({
-    mutationFn: (data) => apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE, data),
+    mutationFn: (data) => apiClient.patch(API_ENDPOINTS.USER.PROFILE, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

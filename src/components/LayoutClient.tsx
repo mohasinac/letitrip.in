@@ -7,7 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
-import Breadcrumbs from "./utility/Breadcrumbs";
+import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
 import { BackgroundRenderer } from "./utility";
 import { classNames } from "@/helpers";
 import { logger } from "@/classes";
@@ -136,7 +136,7 @@ export default function LayoutClient({
       />
 
       {/* Breadcrumbs - shown on all pages except home */}
-      <Breadcrumbs />
+      <AutoBreadcrumbs />
 
       {/* Content with Sidebar */}
       <div className="flex flex-1 relative w-full overflow-x-hidden">

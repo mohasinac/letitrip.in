@@ -895,6 +895,60 @@ export const uploadProgressSchema = z.object({
 });
 
 // ============================================
+// AUTH / USER MANAGEMENT SCHEMAS
+// (migrated from lib/api/validation-schemas.ts)
+// ============================================
+
+/**
+ * User role enum schema
+ */
+export const userRoleSchema = z.enum(["user", "moderator", "admin"]);
+
+/**
+ * Update user role schema (admin endpoint)
+ */
+export const updateUserRoleSchema = z.object({
+  role: userRoleSchema,
+});
+
+/**
+ * Toggle user enabled/disabled schema
+ */
+export const toggleUserStatusSchema = z.object({
+  disabled: z.boolean(),
+});
+
+/**
+ * Change password schema — uses the strong passwordSchema defined above
+ */
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+/**
+ * Delete account confirmation schema
+ */
+export const deleteAccountSchema = z.object({
+  confirmation: z.literal("DELETE"),
+});
+
+/**
+ * User list filter schema
+ */
+export const userFilterSchema = z.object({
+  role: userRoleSchema.optional(),
+  disabled: z.boolean().optional(),
+  search: z.string().optional(),
+});
+
+// ============================================
 // HELPER FUNCTIONS
 // ============================================
 

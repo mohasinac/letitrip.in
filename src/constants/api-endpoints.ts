@@ -51,10 +51,12 @@ export const API_ENDPOINTS = {
       `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=6`,
     GET_STOREFRONT_PRODUCTS: (userId: string) =>
       `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=12`,
-    UPDATE: "/api/profile/update",
+    /** @deprecated Use API_ENDPOINTS.USER.PROFILE with PATCH */
+    UPDATE: "/api/user/profile",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",
-    UPDATE_PASSWORD: "/api/profile/update-password",
+    /** @deprecated Use API_ENDPOINTS.USER.CHANGE_PASSWORD */
+    UPDATE_PASSWORD: "/api/user/change-password",
     DELETE_ACCOUNT: "/api/profile/delete-account",
   },
 

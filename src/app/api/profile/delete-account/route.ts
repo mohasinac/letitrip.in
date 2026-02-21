@@ -5,7 +5,7 @@
 
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
-import { deleteAccountSchema } from "@/lib/api/validation-schemas";
+import { deleteAccountSchema } from "@/lib/validation/schemas";
 import {
   userRepository,
   tokenRepository,
